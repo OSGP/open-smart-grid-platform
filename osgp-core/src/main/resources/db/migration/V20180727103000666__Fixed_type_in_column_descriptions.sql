@@ -1,0 +1,1 @@
+COMMENT ON COLUMN public.event.index IS 'The relay on which this event occurred.';

@@ -1,0 +1,677 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright 2015 Smart Society Services B.V.
+
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>parent-platform</artifactId>
+  <groupId>org.opensmartgridplatform</groupId>
+  <version>4.32.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>parent-platform</name>
+  <!-- Description, Organization, Licences, URL and Distribution Management 
+    elements are needed for the maven-jxr-plugin to generate a maven site -->
+  <description>Parent module.</description>
+  <organization>
+    <name>OSGP</name>
+    <url>http://opensmartgridplatform.org</url>
+  </organization>
+  <licenses>
+    <license>
+      <name>APACHE 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+    </license>
+  </licenses>
+  <!-- URL is passed in as a maven argument: -Dmaven.site.url=http://my/url/for/the/site -->
+  <url>${maven.site.url}</url>
+  <distributionManagement>
+    <site>
+      <id>platform</id>
+      <name>platform</name>
+      <!-- URL is passed in as a maven argument: -Dmaven.site.distributionManagement.site.url=file:////the/path/to/deploy/the/site/to -->
+      <url>${maven.site.distributionManagement.site.url}</url>
+    </site>
+  </distributionManagement>
+
+  <properties>
+    <module.baseUri>${project.baseUri}/../</module.baseUri>
+    <osgp.version>${project.version}</osgp.version>
+    <shared.version>4.32.0-SNAPSHOT</shared.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <spring.version>4.3.5.RELEASE</spring.version>
+    <spring.ws.version>2.4.0.RELEASE</spring.ws.version>
+    <spring.data.version>1.10.6.RELEASE</spring.data.version>
+    <spring.security.version>4.2.1.RELEASE</spring.security.version>
+    <servlet.version>3.0.1</servlet.version>
+    <servlet.jstl.version>1.2</servlet.jstl.version>
+    <hibernate.version>4.2.16.Final</hibernate.version>
+    <hibernate.validator.version>4.3.1.Final</hibernate.validator.version>
+    <junit.version>4.12</junit.version>
+    <assertj.version>3.9.1</assertj.version>
+    <mockito.version>1.10.19</mockito.version>
+    <joda.version>2.4</joda.version>
+    <flyway.version>4.1.2</flyway.version>
+    <slf4j.version>1.7.7</slf4j.version>
+    <apache.commons.lang.version>3.3.2</apache.commons.lang.version>
+    <apache.httpcomponents.version>4.3.5</apache.httpcomponents.version>
+    <commons.codec.version>1.9</commons.codec.version>
+    <orika.version>1.5.2</orika.version>
+    <jxr.version>2.5</jxr.version>
+    <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
+    <maven.site.plugin>3.7.1</maven.site.plugin>
+    <apache.activemq.version>5.10.0</apache.activemq.version>
+    <commons.pool.version>1.6</commons.pool.version>
+    <proton-jms.version>0.7</proton-jms.version>
+    <logback.version>1.1.2</logback.version>
+    <logback.ext.version>0.1.2</logback.ext.version>
+    <SunriseSunsetCalculator.version>1.1</SunriseSunsetCalculator.version>
+    <apache.commons.schema>2.0.3</apache.commons.schema>
+    <maven.compiler.plugin.version>3.6.0</maven.compiler.plugin.version>
+    <license.maven.plugin>2.11</license.maven.plugin>
+    <hikaricp.version>2.4.0</hikaricp.version>
+  </properties>
+
+  <repositories>
+    <repository>
+      <id>fuse-repo</id>
+      <name>Fuse Source</name>
+      <url>http://repo.fusesource.com/nexus/content/groups/public/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <dependencyManagement>
+    <dependencies>
+      <!-- Open Smart Grid Platform -->
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-dto</artifactId>
+        <version>${shared.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>shared</artifactId>
+        <version>${shared.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-ws-smartmetering</artifactId>
+        <version>${shared.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-ws-core</artifactId>
+        <version>${shared.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-ws-admin</artifactId>
+        <version>${shared.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-ws-tariffswitching</artifactId>
+        <version>${shared.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-ws-publiclighting</artifactId>
+        <version>${shared.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-ws-microgrids</artifactId>
+        <version>${shared.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-ws-distributionautomation</artifactId>
+        <version>${shared.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-adapter-ws-shared</artifactId>
+        <version>${osgp.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-adapter-ws-shared-db</artifactId>
+        <version>${osgp.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-domain-core</artifactId>
+        <version>${osgp.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-domain-microgrids</artifactId>
+        <version>${osgp.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-domain-distributionautomation</artifactId>
+        <version>${osgp.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-domain-logging</artifactId>
+        <version>${osgp.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-adapter-ws-admin</artifactId>
+        <version>${osgp.version}</version>
+        <classifier>classes</classifier>
+      </dependency>
+
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-adapter-ws-core</artifactId>
+        <version>${osgp.version}</version>
+        <classifier>classes</classifier>
+      </dependency>
+
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-adapter-ws-microgrids</artifactId>
+        <version>${osgp.version}</version>
+        <classifier>classes</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-adapter-ws-distributionautomation</artifactId>
+        <version>${osgp.version}</version>
+        <classifier>classes</classifier>
+      </dependency>
+
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-adapter-ws-publiclighting</artifactId>
+        <version>${osgp.version}</version>
+        <classifier>classes</classifier>
+      </dependency>
+
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-adapter-ws-tariffswitching</artifactId>
+        <version>${osgp.version}</version>
+        <classifier>classes</classifier>
+      </dependency>
+
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-adapter-domain-shared</artifactId>
+        <version>${osgp.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-adapter-domain-admin</artifactId>
+        <version>${osgp.version}</version>
+        <classifier>classes</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-adapter-domain-core</artifactId>
+        <version>${osgp.version}</version>
+        <classifier>classes</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-adapter-domain-microgrids</artifactId>
+        <version>${osgp.version}</version>
+        <classifier>classes</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-adapter-domain-distributionautomation</artifactId>
+        <version>${osgp.version}</version>
+        <classifier>classes</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-adapter-domain-publiclighting</artifactId>
+        <version>${osgp.version}</version>
+        <classifier>classes</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-adapter-domain-tariffswitching</artifactId>
+        <version>${osgp.version}</version>
+        <classifier>classes</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-adapter-domain-smartmetering</artifactId>
+        <version>${osgp.version}</version>
+        <classifier>classes</classifier>
+      </dependency>
+
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-core</artifactId>
+        <version>${osgp.version}</version>
+        <classifier>classes</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-logging</artifactId>
+        <version>${osgp.version}</version>
+      </dependency>
+
+      <!-- Spring Framework -->
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-beans</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-core</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context-support</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-jdbc</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-orm</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-tx</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-web</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-webmvc</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-test</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+      <!-- Spring WS -->
+      <dependency>
+        <groupId>org.springframework.ws</groupId>
+        <artifactId>spring-ws-core</artifactId>
+        <version>${spring.ws.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.ws</groupId>
+        <artifactId>spring-ws-security</artifactId>
+        <version>${spring.ws.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.ws</groupId>
+        <artifactId>spring-ws-support</artifactId>
+        <version>${spring.ws.version}</version>
+      </dependency>
+
+      <!-- Spring JMS -->
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-jms</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+
+      <!-- Spring Data -->
+      <dependency>
+        <groupId>org.springframework.data</groupId>
+        <artifactId>spring-data-jpa</artifactId>
+        <version>${spring.data.version}</version>
+      </dependency>
+
+      <!-- Spring Security -->
+      <dependency>
+        <groupId>org.springframework.security</groupId>
+        <artifactId>spring-security-core</artifactId>
+        <version>${spring.security.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.security</groupId>
+        <artifactId>spring-security-web</artifactId>
+        <version>${spring.security.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.security</groupId>
+        <artifactId>spring-security-config</artifactId>
+        <version>${spring.security.version}</version>
+      </dependency>
+
+      <!-- Servlet API 3.0 -->
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>javax.servlet-api</artifactId>
+        <version>${servlet.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>jstl</artifactId>
+        <version>${servlet.jstl.version}</version>
+      </dependency>
+
+      <!-- Joda Time (Date/Time functions) -->
+      <dependency>
+        <groupId>joda-time</groupId>
+        <artifactId>joda-time</artifactId>
+        <version>${joda.version}</version>
+      </dependency>
+
+      <!-- Hikari connection pooling -->
+      <dependency>
+        <groupId>com.zaxxer</groupId>
+        <artifactId>HikariCP</artifactId>
+        <version>${hikaricp.version}</version>
+      </dependency>
+
+      <!-- Hibernate -->
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-core</artifactId>
+        <version>${hibernate.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-entitymanager</artifactId>
+        <version>${hibernate.version}</version>
+      </dependency>
+
+      <!-- Hibernate validator -->
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-validator</artifactId>
+        <version>${hibernate.validator.version}</version>
+      </dependency>
+
+      <!-- Flyway (DB Migration) -->
+      <dependency>
+        <groupId>org.flywaydb</groupId>
+        <artifactId>flyway-core</artifactId>
+        <version>${flyway.version}</version>
+      </dependency>
+
+      <!-- Jakarta commons codec -->
+      <dependency>
+        <groupId>commons-codec</groupId>
+        <artifactId>commons-codec</artifactId>
+        <version>${commons.codec.version}</version>
+      </dependency>
+
+      <!-- Apache HTTP client -->
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient</artifactId>
+        <version>${apache.httpcomponents.version}</version>
+      </dependency>
+
+      <!-- Apache MQ client -->
+      <dependency>
+        <groupId>org.apache.activemq</groupId>
+        <artifactId>activemq-client</artifactId>
+        <version>${apache.activemq.version}</version>
+        <!-- Exclude the non-client JAR files -->
+        <exclusions>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activeio-core</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>kahadb</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.jasypt</groupId>
+            <artifactId>jasypt</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.activemq.protobuf</groupId>
+            <artifactId>activemq-protobuf</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>commons-net</groupId>
+            <artifactId>commons-net</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.fusesource.mqtt-client</groupId>
+            <artifactId>mqtt-client</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.fusesource.fuse-extra</groupId>
+            <artifactId>fusemq-leveldb</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.activemq</groupId>
+        <artifactId>activemq-spring</artifactId>
+        <version>${apache.activemq.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.activemq</groupId>
+        <artifactId>activemq-pool</artifactId>
+        <version>${apache.activemq.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>commons-pool</groupId>
+        <artifactId>commons-pool</artifactId>
+        <version>${commons.pool.version}</version>
+      </dependency>
+
+      <!-- Orika (mapping framework) -->
+      <dependency>
+        <groupId>ma.glasnost.orika</groupId>
+        <artifactId>orika-core</artifactId>
+        <version>${orika.version}</version>
+      </dependency>
+
+      <!-- Testing dependencies -->
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>${junit.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.assertj</groupId>
+        <artifactId>assertj-core</artifactId>
+        <version>${assertj.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-all</artifactId>
+        <version>${mockito.version}</version>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>${apache.commons.lang.version}</version>
+      </dependency>
+
+      <!-- Logging dependencies -->
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>${logback.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.logback-extensions</groupId>
+        <artifactId>logback-ext-spring</artifactId>
+        <version>${logback.ext.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.mycila</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <version>${license.maven.plugin}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+
+        <plugin>
+          <groupId>external.atlassian.jgitflow</groupId>
+          <artifactId>jgitflow-maven-plugin</artifactId>
+          <version>1.0-m5.1</version>
+          <configuration>
+            <pushFeatures>true</pushFeatures>
+            <pushHotfixes>true</pushHotfixes>
+            <pushReleases>true</pushReleases>
+            <enableSshAgent>true</enableSshAgent>
+            <flowInitContext>
+              <masterBranchName>master</masterBranchName>
+              <developBranchName>development</developBranchName>
+              <featureBranchPrefix>feature-</featureBranchPrefix>
+              <releaseBranchPrefix>release-</releaseBranchPrefix>
+              <hotfixBranchPrefix>hotfix-</hotfixBranchPrefix>
+              <versionTagPrefix>${project.artifactId}-</versionTagPrefix>
+            </flowInitContext>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>${maven.compiler.plugin.version}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-project-info-reports-plugin</artifactId>
+          <version>${maven.project.info.reports.plugin.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jxr-plugin</artifactId>
+          <version>${jxr.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>${maven.site.plugin}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>com.mycila</groupId>
+          <artifactId>license-maven-plugin</artifactId>
+          <version>${license.maven.plugin}</version>
+          <configuration>
+            <header>${license.maven.plugin.location}</header>
+            <properties>
+              <owner>Mycila</owner>
+              <email>mathieu.carbou@gmail.com</email>
+            </properties>
+            <excludes>
+              <exclude>**/README.md</exclude>
+              <exclude>src/test/resources/**</exclude>
+              <exclude>src/main/resources/**</exclude>
+            </excludes>
+          </configuration>
+          <executions>
+            <execution>
+              <goals>
+                <goal>check</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <fork>true</fork>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>${maven.project.info.reports.plugin.version}</version>
+        <configuration>
+          <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
+          <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jxr-plugin</artifactId>
+        <version>${jxr.version}</version>
+      </plugin>
+    </plugins>
+  </reporting>
+</project>

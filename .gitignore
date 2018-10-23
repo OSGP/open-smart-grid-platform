@@ -1,0 +1,42 @@
+#################
+## Eclipse     ##
+#################
+
+*.pydevproject
+.project
+.metadata
+.gradle
+bin/
+tmp/
+target/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.classpath
+.settings/
+.loadpath
+
+
+# External tool builders
+.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+
+# CDT-specific
+.cproject
+
+# PDT-specific
+.buildpath
+
+####################
+# IntelliJ
+####################
+*.iml
+.idea/
+
+*~
+*.log
+.checkstyle
