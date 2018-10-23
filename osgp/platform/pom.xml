@@ -88,15 +88,15 @@
   <modules>
     <!-- Shared Libs -->
     <module>parent-platform</module>
-    <module>Shared/shared</module>
-    <module>Shared/osgp-dto</module>
-    <module>Shared/osgp-ws-smartmetering</module>
-    <module>Shared/osgp-ws-core</module>
-    <module>Shared/osgp-ws-admin</module>
-    <module>Shared/osgp-ws-tariffswitching</module>
-    <module>Shared/osgp-ws-publiclighting</module>
-    <module>Shared/osgp-ws-distributionautomation</module>
-    <module>Shared/osgp-ws-microgrids</module>
+    <module>../shared/shared</module>
+    <module>../shared/osgp-dto</module>
+    <module>../shared/osgp-ws-smartmetering</module>
+    <module>../shared/osgp-ws-core</module>
+    <module>../shared/osgp-ws-admin</module>
+    <module>../shared/osgp-ws-tariffswitching</module>
+    <module>../shared/osgp-ws-publiclighting</module>
+    <module>../shared/osgp-ws-distributionautomation</module>
+    <module>../shared/osgp-ws-microgrids</module>
 
     <!-- Domain -->
     <module>osgp-domain-core</module>
