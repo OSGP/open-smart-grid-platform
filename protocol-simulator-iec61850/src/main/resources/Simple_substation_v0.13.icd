@@ -1,0 +1,223 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SCL xmlns="http://www.iec.ch/61850/2003/SCL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2007" revision="B">
+  <Header id="WAGO61850Server" nameStructure="IEDName" />
+  <!--Create on WAGO Kontakttechnik GmbH Co KG with Configurator Version 3.0.0 at 13-4-2017 16:24:58-->
+  <Communication>
+    <SubNetwork name="node">
+      <ConnectedAP iedName="WAGO61850Server" apName="W1">
+        <Address>
+          <P type="IP">192.168.123.100</P>
+          <P type="IP-SUBNET">255.255.255.0</P>
+          <P type="IP-GATEWAY">192.168.123.1</P>
+          <P type="MMS-Port">102</P>
+          <P type="OSI-AP-Title">1,1,1,999,1</P>
+          <P type="OSI-AE-Qualifier">12</P>
+          <P type="OSI-PSEL">00000001</P>
+          <P type="OSI-SSEL">0001</P>
+          <P type="OSI-TSEL">0001</P>
+        </Address>
+      </ConnectedAP>
+    </SubNetwork>
+  </Communication>
+  <IED name="WAGO61850Server" type="Telecontrol application" manufacturer="WAGO Kontakttechnik GmbH Co KG" configVersion="3.0.0" engRight="full" owner="">
+    <Services nameLength="64">
+      <ClientServices />
+      <DynAssociation />
+      <SettingGroups />
+      <GetDirectory />
+      <GetDataObjectDefinition />
+      <GetDataSetValue />
+      <SetDataSetValue />
+      <DataSetDirectory />
+      <ConfDataSet max="1" />
+      <ReadWrite />
+      <TimerActivatedControl />
+      <ConfReportControl max="10" />
+      <GetCBValues />
+      <ReportSettings cbName="Fix" datSet="Fix" rptID="Dyn" optFields="Dyn" bufTime="Dyn" trgOps="Dyn" intgPd="Dyn" />
+      <ConfLNs fixPrefix="true" fixLnInst="true" />
+      <GOOSE max="0" />
+    </Services>
+    <AccessPoint name="W1" desc="">
+      <Server desc="">
+        <Authentication none="true" />
+        <LDevice inst="RTU1" desc="">
+          <LN0 desc="" lnType="LLN0_0" lnClass="LLN0" inst="">
+            <DOI name="NamPlt">
+              <DAI name="ldNs">
+                <Val>IEC 61850-7-4:2007A</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Health">
+              <DAI name="stVal">
+                <Val>Ok</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Mod">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+          </LN0>
+          <LN desc="" lnType="LPHD_1" lnClass="LPHD" inst="1" prefix="">
+            <DOI name="PhyHealth">
+              <DAI name="stVal">
+                <Val>Ok</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Proxy">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN desc="" lnType="MMXU_2" lnClass="MMXU" inst="1" prefix="">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN desc="" lnType="MMXU_3" lnClass="MMXU" inst="2" prefix="">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+          </LN>
+        </LDevice>
+      </Server>
+    </AccessPoint>
+  </IED>
+  <DataTypeTemplates>
+    <LNodeType id="LLN0_0" lnClass="LLN0">
+      <DO name="NamPlt" type="LPL_0" />
+      <DO name="Beh" type="ENS_0" />
+      <DO name="Health" type="ENS_1" />
+      <DO name="Mod" type="ENC_0" />
+    </LNodeType>
+    <LNodeType id="LPHD_1" lnClass="LPHD">
+      <DO name="PhyNam" type="DPL_0" />
+      <DO name="PhyHealth" type="ENS_2" />
+      <DO name="Proxy" type="SPS_0" />
+    </LNodeType>
+    <LNodeType id="MMXU_2" lnClass="MMXU">
+      <DO name="Beh" type="ENS_0" />
+      <DO name="TotW" type="MV_0" />
+      <DO name="TotVAr" type="MV_0" />
+      <DO name="PPV" type="DEL_0" />
+      <DO name="A" type="WYE_0" />
+      <DO name="W" type="WYE_0" />
+      <DO name="VAr" type="WYE_0" />
+    </LNodeType>
+    <LNodeType id="MMXU_3" lnClass="MMXU">
+      <DO name="Beh" type="ENS_0" />
+      <DO name="TotW" type="MV_0" />
+      <DO name="TotVAr" type="MV_0" />
+      <DO name="PPV" type="DEL_0" />
+      <DO name="A" type="WYE_0" />
+      <DO name="W" type="WYE_0" />
+      <DO name="VAr" type="WYE_0" />
+    </LNodeType>
+    <DOType id="CMV_0" cdc="CMV">
+      <DA name="cVal" fc="MX" bType="Struct" type="Vector_0" />
+      <DA name="q" fc="MX" qchg="true" bType="Quality" />
+      <DA name="t" fc="MX" bType="Timestamp" />
+    </DOType>
+    <DOType id="DEL_0" cdc="DEL">
+      <SDO name="phsAB" type="CMV_0" />
+      <SDO name="phsBC" type="CMV_0" />
+      <SDO name="phsCA" type="CMV_0" />
+    </DOType>
+    <DOType id="DPL_0" cdc="DPL">
+      <DA name="vendor" fc="DC" bType="VisString255" />
+    </DOType>
+    <DOType id="ENC_0" cdc="ENC">
+      <DA name="stVal" fc="ST" dchg="true" bType="Enum" type="Mod" />
+      <DA name="q" fc="ST" qchg="true" bType="Quality" />
+      <DA name="t" fc="ST" bType="Timestamp" />
+      <DA name="ctlModel" fc="CF" dchg="true" bType="Enum" type="CtlModels" />
+    </DOType>
+    <DOType id="ENS_0" cdc="ENS">
+      <DA name="stVal" fc="ST" dchg="true" bType="Enum" type="Beh" />
+      <DA name="q" fc="ST" qchg="true" bType="Quality" />
+      <DA name="t" fc="ST" bType="Timestamp" />
+    </DOType>
+    <DOType id="ENS_1" cdc="ENS">
+      <DA name="stVal" fc="ST" dchg="true" bType="Enum" type="Health" />
+      <DA name="q" fc="ST" qchg="true" bType="Quality" />
+      <DA name="t" fc="ST" bType="Timestamp" />
+    </DOType>
+    <DOType id="ENS_2" cdc="ENS">
+      <DA name="stVal" fc="ST" dchg="true" bType="Enum" type="PhyHealth" />
+      <DA name="q" fc="ST" qchg="true" bType="Quality" />
+      <DA name="t" fc="ST" bType="Timestamp" />
+    </DOType>
+    <DOType id="LPL_0" cdc="LPL">
+      <DA name="vendor" fc="DC" bType="VisString255" />
+      <DA name="swRev" fc="DC" bType="VisString255" />
+      <DA name="configRev" fc="DC" bType="VisString255" />
+      <DA name="ldNs" fc="EX" bType="VisString255" />
+    </DOType>
+    <DOType id="MV_0" cdc="MV">
+      <DA name="mag" fc="MX" bType="Struct" type="AnalogueValue_0" />
+      <DA name="q" fc="MX" qchg="true" bType="Quality" />
+      <DA name="t" fc="MX" bType="Timestamp" />
+    </DOType>
+    <DOType id="SPS_0" cdc="SPS">
+      <DA name="stVal" fc="ST" dchg="true" bType="BOOLEAN" />
+      <DA name="q" fc="ST" qchg="true" bType="Quality" />
+      <DA name="t" fc="ST" bType="Timestamp" />
+    </DOType>
+    <DOType id="WYE_0" cdc="WYE">
+      <SDO name="phsA" type="CMV_0" />
+      <SDO name="phsB" type="CMV_0" />
+      <SDO name="phsC" type="CMV_0" />
+    </DOType>
+    <DAType id="AnalogueValue_0">
+      <BDA name="f" bType="FLOAT32" />
+    </DAType>
+    <DAType id="Vector_0">
+      <BDA name="mag" bType="Struct" type="AnalogueValue_0" />
+    </DAType>
+    <EnumType id="Beh">
+      <EnumVal ord="1">on</EnumVal>
+      <EnumVal ord="2">blocked</EnumVal>
+      <EnumVal ord="3">test</EnumVal>
+      <EnumVal ord="4">test/blocked</EnumVal>
+      <EnumVal ord="5">off</EnumVal>
+    </EnumType>
+    <EnumType id="PhyHealth">
+      <EnumVal ord="1">Ok</EnumVal>
+      <EnumVal ord="2">Warning</EnumVal>
+      <EnumVal ord="3">Alarm</EnumVal>
+    </EnumType>
+    <EnumType id="Mod">
+      <EnumVal ord="1">on</EnumVal>
+      <EnumVal ord="2">blocked</EnumVal>
+      <EnumVal ord="3">test</EnumVal>
+      <EnumVal ord="4">test/blocked</EnumVal>
+      <EnumVal ord="5">off</EnumVal>
+    </EnumType>
+    <EnumType id="CtlModels">
+      <EnumVal ord="0">status-only</EnumVal>
+      <EnumVal ord="1">direct-with-normal-security</EnumVal>
+      <EnumVal ord="2">sbo-with-normal-security</EnumVal>
+      <EnumVal ord="3">direct-with-enhanced-security</EnumVal>
+      <EnumVal ord="4">sbo-with-enhanced-security</EnumVal>
+    </EnumType>
+    <EnumType id="Health">
+      <EnumVal ord="1">Ok</EnumVal>
+      <EnumVal ord="2">Warning</EnumVal>
+      <EnumVal ord="3">Alarm</EnumVal>
+    </EnumType>
+  </DataTypeTemplates>
+</SCL>
