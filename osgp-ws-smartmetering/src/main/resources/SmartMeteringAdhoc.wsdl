@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Platform version: ${display.version} -->
+
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+  xmlns:smadhoc="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-adhoc/2014/10"
+  xmlns:common="http://www.opensmartgridplatform.org/schemas/common/2014/10"
+  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns:tns="http://www.opensmartgridplatform.org/definitions/smartmetering/sm-adhoc-v1.0"
+  targetNamespace="http://www.opensmartgridplatform.org/definitions/smartmetering/sm-adhoc-v1.0">
+
+  <wsdl:types>
+    <xsd:schema
+      targetNamespace="http://www.opensmartgridplatform.org/definitions/smartmetering/sm-adhoc/imports"
+      xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+      <xsd:import
+        namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-adhoc/2014/10"
+        schemaLocation="schemas/sm-adhoc.xsd" />
+    </xsd:schema>
+  </wsdl:types>
+
+  <wsdl:message name="ActionHeader">
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
+    <wsdl:part element="common:UserName" name="UserName" />
+    <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+  </wsdl:message>
+  
+
+  <!-- SYNCHRONIZE_TIME -->
+
+  <wsdl:message name="SynchronizeTimeRequest">
+    <wsdl:part element="smadhoc:SynchronizeTimeRequest" name="SynchronizeTimeRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SynchronizeTimeAsyncResponse">
+    <wsdl:part element="smadhoc:SynchronizeTimeAsyncResponse"
+      name="SynchronizeTimeAsyncResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SynchronizeTimeAsyncRequest">
+    <wsdl:part element="smadhoc:SynchronizeTimeAsyncRequest"
+      name="SynchronizeTimeAsyncRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SynchronizeTimeResponse">
+    <wsdl:part element="smadhoc:SynchronizeTimeResponse" name="SynchronizeTimeResponse">
+    </wsdl:part>
+  </wsdl:message>
+
+  <!-- RETRIEVE ATTRIBUTE VALUES -->
+  <wsdl:message name="GetSpecificAttributeValueRequest">
+    <wsdl:part element="smadhoc:GetSpecificAttributeValueRequest"
+      name="GetSpecificAttributeValueRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetSpecificAttributeValueAsyncResponse">
+    <wsdl:part element="smadhoc:GetSpecificAttributeValueAsyncResponse"
+      name="GetSpecificAttributeValueAsyncResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetSpecificAttributeValueAsyncRequest">
+    <wsdl:part element="smadhoc:GetSpecificAttributeValueAsyncRequest"
+      name="GetSpecificAttributeValueAsyncRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetSpecificAttributeValueResponse">
+    <wsdl:part element="smadhoc:GetSpecificAttributeValueResponse"
+      name="GetSpecificAttributeValueResponse">
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:message name="GetAllAttributeValuesRequest">
+    <wsdl:part element="smadhoc:GetAllAttributeValuesRequest"
+      name="GetAllAttributeValuesRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetAllAttributeValuesAsyncResponse">
+    <wsdl:part element="smadhoc:GetAllAttributeValuesAsyncResponse"
+      name="GetAllAttributeValuesAsyncResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetAllAttributeValuesAsyncRequest">
+    <wsdl:part element="smadhoc:GetAllAttributeValuesAsyncRequest"
+      name="GetAllAttributeValuesAsyncRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetAllAttributeValuesResponse">
+    <wsdl:part element="smadhoc:GetAllAttributeValuesResponse"
+      name="GetAllAttributeValuesResponse">
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:message name="GetAssociationLnObjectsRequest">
+    <wsdl:part element="smadhoc:GetAssociationLnObjectsRequest"
+      name="GetAssociationLnObjectsRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetAssociationLnObjectsAsyncResponse">
+    <wsdl:part element="smadhoc:GetAssociationLnObjectsAsyncResponse"
+      name="GetAssociationLnObjectsAsyncResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetAssociationLnObjectsAsyncRequest">
+    <wsdl:part element="smadhoc:GetAssociationLnObjectsAsyncRequest"
+      name="GetAssociationLnObjectsAsyncRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetAssociationLnObjectsResponse">
+    <wsdl:part element="smadhoc:GetAssociationLnObjectsResponse"
+      name="GetAssociationLnObjectsResponse">
+    </wsdl:part>
+  </wsdl:message>
+
+
+  <!-- RETRIEVE MBUS CHANNEL IDENTIFICATION -->
+  <wsdl:message name="ScanMbusChannelsRequest">
+    <wsdl:part element="smadhoc:ScanMbusChannelsRequest"
+      name="ScanMbusChannelsRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="ScanMbusChannelsAsyncResponse">
+    <wsdl:part element="smadhoc:ScanMbusChannelsAsyncResponse"
+      name="ScanMbusChannelsAsyncResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="ScanMbusChannelsAsyncRequest">
+    <wsdl:part element="smadhoc:ScanMbusChannelsAsyncRequest"
+      name="ScanMbusChannelsAsyncRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="ScanMbusChannelsResponse">
+    <wsdl:part element="smadhoc:ScanMbusChannelsResponse"
+      name="ScanMbusChannelsResponse">
+    </wsdl:part>
+  </wsdl:message>
+  
+  <wsdl:portType name="SmartMeteringAdhocPort">
+    <wsdl:operation name="SynchronizeTime">
+      <wsdl:input message="tns:SynchronizeTimeRequest" name="SynchronizeTimeRequest" />
+      <wsdl:output message="tns:SynchronizeTimeAsyncResponse"
+        name="SynchronizeTimeAsyncResponse" />
+    </wsdl:operation>
+
+    <wsdl:operation name="GetSynchronizeTimeResponse">
+      <wsdl:input message="tns:SynchronizeTimeAsyncRequest"
+        name="SynchronizeTimeAsyncRequest" />
+      <wsdl:output message="tns:SynchronizeTimeResponse"
+        name="SynchronizeTimeResponse" />
+    </wsdl:operation>
+
+    <wsdl:operation name="GetAllAttributeValues">
+      <wsdl:input message="tns:GetAllAttributeValuesRequest"
+        name="GetAllAttributeValuesRequest" />
+      <wsdl:output message="tns:GetAllAttributeValuesAsyncResponse"
+        name="GetAllAttributeValuesAsyncResponse" />
+    </wsdl:operation>
+
+    <wsdl:operation name="GetAllAttributeValuesResponse">
+      <wsdl:input message="tns:GetAllAttributeValuesAsyncRequest"
+        name="GetAllAttributeValuesAsyncRequest" />
+      <wsdl:output message="tns:GetAllAttributeValuesResponse"
+        name="GetAllAttributeValuesResponse" />
+    </wsdl:operation>
+
+    <wsdl:operation name="GetSpecificAttributeValue">
+      <wsdl:input message="tns:GetSpecificAttributeValueRequest"
+        name="GetSpecificAttributeValueRequest" />
+      <wsdl:output message="tns:GetSpecificAttributeValueAsyncResponse"
+        name="GetSpecificAttributeValueAsyncResponse" />
+    </wsdl:operation>
+
+    <wsdl:operation name="GetSpecificAttributeValueResponse">
+      <wsdl:input message="tns:GetSpecificAttributeValueAsyncRequest"
+        name="GetSpecificAttributeValueAsyncRequest" />
+      <wsdl:output message="tns:GetSpecificAttributeValueResponse"
+        name="GetSpecificAttributeValueResponse" />
+    </wsdl:operation>
+
+    <wsdl:operation name="GetAssociationLnObjects">
+      <wsdl:input message="tns:GetAssociationLnObjectsRequest"
+        name="GetAssociationLnObjectsRequest" />
+      <wsdl:output message="tns:GetAssociationLnObjectsAsyncResponse"
+        name="GetAssociationLnObjectsAsyncResponse" />
+    </wsdl:operation>
+
+    <wsdl:operation name="GetGetAssociationLnObjectsResponse">
+      <wsdl:input message="tns:GetAssociationLnObjectsAsyncRequest"
+        name="GetAssociationLnObjectsAsyncRequest" />
+      <wsdl:output message="tns:GetAssociationLnObjectsResponse"
+        name="GetAssociationLnObjectsResponse" />
+    </wsdl:operation>
+
+    <wsdl:operation name="ScanMbusChannels">
+      <wsdl:input message="tns:ScanMbusChannelsRequest"
+        name="ScanMbusChannelsRequest" />
+      <wsdl:output message="tns:ScanMbusChannelsAsyncResponse"
+        name="ScanMbusChannelsAsyncResponse" />
+    </wsdl:operation>
+
+    <wsdl:operation name="ScanMbusChannelsResponse">
+      <wsdl:input message="tns:ScanMbusChannelsAsyncRequest"
+        name="ScanMbusChannelsAsyncRequest" />
+      <wsdl:output message="tns:ScanMbusChannelsResponse"
+        name="ScanMbusChannelsResponse" />
+    </wsdl:operation>
+  </wsdl:portType>
+      
+  <wsdl:binding name="SmartMeteringAdhocPortSoap11" type="tns:SmartMeteringAdhocPort">
+    <soap:binding style="document"
+      transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="SynchronizeTime">
+      <soap:operation soapAction="" />
+      <wsdl:input name="SynchronizeTimeRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SynchronizeTimeAsyncResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetSynchronizeTimeResponse">
+      <soap:operation soapAction="" />
+      <wsdl:input name="SynchronizeTimeAsyncRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SynchronizeTimeResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetAllAttributeValues">
+      <soap:operation soapAction="" />
+      <wsdl:input name="GetAllAttributeValuesRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="GetAllAttributeValuesAsyncResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetAllAttributeValuesResponse">
+      <soap:operation soapAction="" />
+      <wsdl:input name="GetAllAttributeValuesAsyncRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="GetAllAttributeValuesResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetSpecificAttributeValue">
+      <soap:operation soapAction="" />
+      <wsdl:input name="GetSpecificAttributeValueRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="GetSpecificAttributeValueAsyncResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetSpecificAttributeValueResponse">
+      <soap:operation soapAction="" />
+      <wsdl:input name="GetSpecificAttributeValueAsyncRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="GetSpecificAttributeValueResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetAssociationLnObjects">
+      <soap:operation soapAction="" />
+      <wsdl:input name="GetAssociationLnObjectsRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="GetAssociationLnObjectsAsyncResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetGetAssociationLnObjectsResponse">
+      <soap:operation soapAction="" />
+      <wsdl:input name="GetAssociationLnObjectsAsyncRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="GetAssociationLnObjectsResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="ScanMbusChannels">
+      <soap:operation soapAction="" />
+      <wsdl:input name="ScanMbusChannelsRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="ScanMbusChannelsAsyncResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="ScanMbusChannelsResponse">
+      <soap:operation soapAction="" />
+      <wsdl:input name="ScanMbusChannelsAsyncRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="ScanMbusChannelsResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+    
+  <wsdl:service name="SmartMeteringAdhocPortService">
+    <wsdl:port binding="tns:SmartMeteringAdhocPortSoap11"
+      name="SmartMeteringAdhocPortSoap11">
+      <soap:address
+        location="http://localhost:8080/osgp-adapter-ws-smartmetering/smartMetering/adhocService/" />
+    </wsdl:port>
+  </wsdl:service>
+
+</wsdl:definitions>

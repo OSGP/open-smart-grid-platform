@@ -1,0 +1,29 @@
+<!-- Copyright 2015 Smart Society Services B.V. Licensed under the Apache 
+  License, Version 2.0 (the "License"); you may not use this file except in 
+  compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 -->
+<jxb:bindings version="2.0" xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <jxb:bindings schemaLocation="common.xsd">
+    <jxb:schemaBindings>
+      <jxb:package
+        name="org.opensmartgridplatform.adapter.ws.schema.smartmetering.common"></jxb:package>
+    </jxb:schemaBindings>
+    
+    <jxb:bindings node="//xs:complexType[@name='CaptureObjects']//xs:element[@name='CaptureObject']">
+      <jxb:property name="captureObjects" />
+    </jxb:bindings>
+    
+    <jxb:bindings node="//xs:complexType[@name='ProfileEntries']//xs:element[@name='ProfileEntry']">
+      <jxb:property name="profileEntries" />
+    </jxb:bindings>
+  </jxb:bindings>
+
+  <jxb:bindings schemaLocation="sm-installation.xsd">
+    <jxb:schemaBindings>
+      <jxb:package
+        name="org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation"></jxb:package>
+    </jxb:schemaBindings>
+  </jxb:bindings>
+
+</jxb:bindings>

@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Platform version: ${display.version} -->
+
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+  xmlns:ahman="http://www.opensmartgridplatform.org/schemas/publiclighting/adhocmanagement/2014/10"
+  xmlns:common="http://www.opensmartgridplatform.org/schemas/common/2014/10"
+  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns:tns="http://www.opensmartgridplatform.org/definitions/publiclighting/adhocmanagement-v1.0"
+  targetNamespace="http://www.opensmartgridplatform.org/definitions/publiclighting/adhocmanagement-v1.0">
+
+  <wsdl:types>
+    <xsd:schema
+      targetNamespace="http://www.opensmartgridplatform.org/definitions/publiclighting/adhocmanagement/imports"
+      xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:import
+        namespace="http://www.opensmartgridplatform.org/schemas/publiclighting/adhocmanagement/2014/10"
+        schemaLocation="schemas/pl-adhocmanagement.xsd" />
+    </xsd:schema>
+  </wsdl:types>
+
+  <!-- An additional SOAP header 'MessagePriority' can be set. Values between 0 (low) and 9 (high), the default value is 4 (medium). -->
+
+  <wsdl:message name="FindAllDevicesHeader">
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
+    <wsdl:part element="common:UserName" name="UserName" />
+    <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+  </wsdl:message>
+  <wsdl:message name="FindAllDevicesRequest">
+    <wsdl:part element="ahman:FindAllDevicesRequest" name="FindAllDevicesRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="FindAllDevicesResponse">
+    <wsdl:part element="ahman:FindAllDevicesResponse" name="FindAllDevicesResponse">
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:message name="SetLightHeader">
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
+    <wsdl:part element="common:UserName" name="UserName" />
+    <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+  </wsdl:message>
+  <wsdl:message name="SetLightRequest">
+    <wsdl:part element="ahman:SetLightRequest" name="SetLightRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetLightAsyncResponse">
+    <wsdl:part element="ahman:SetLightAsyncResponse" name="SetLightAsyncResponse">
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:message name="SetLightAsyncHeader">
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
+    <wsdl:part element="common:UserName" name="UserName" />
+    <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+  </wsdl:message>
+  <wsdl:message name="SetLightAsyncRequest">
+    <wsdl:part element="ahman:SetLightAsyncRequest" name="SetLightAsyncRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetLightResponse">
+    <wsdl:part element="ahman:SetLightResponse" name="SetLightResponse">
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:message name="GetStatusHeader">
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
+    <wsdl:part element="common:UserName" name="UserName" />
+    <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+  </wsdl:message>
+  <wsdl:message name="GetStatusRequest">
+    <wsdl:part element="ahman:GetStatusRequest" name="GetStatusRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetStatusAsyncResponse">
+    <wsdl:part element="ahman:GetStatusAsyncResponse" name="GetStatusAsyncResponse">
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:message name="GetStatusAsyncHeader">
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
+    <wsdl:part element="common:UserName" name="UserName" />
+    <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+  </wsdl:message>
+  <wsdl:message name="GetStatusAsyncRequest">
+    <wsdl:part element="ahman:GetStatusAsyncRequest" name="GetStatusAsyncRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetStatusResponse">
+    <wsdl:part element="ahman:GetStatusResponse" name="GetStatusResponse">
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:message name="ResumeScheduleHeader">
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
+    <wsdl:part element="common:UserName" name="UserName" />
+    <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+  </wsdl:message>
+  <wsdl:message name="ResumeScheduleRequest">
+    <wsdl:part element="ahman:ResumeScheduleRequest" name="ResumeScheduleRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="ResumeScheduleAsyncResponse">
+    <wsdl:part element="ahman:ResumeScheduleAsyncResponse"
+      name="ResumeScheduleAsyncResponse">
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:message name="ResumeScheduleAsyncHeader">
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
+    <wsdl:part element="common:UserName" name="UserName" />
+    <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+  </wsdl:message>
+  <wsdl:message name="ResumeScheduleAsyncRequest">
+    <wsdl:part element="ahman:ResumeScheduleAsyncRequest"
+      name="ResumeScheduleAsyncRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="ResumeScheduleResponse">
+    <wsdl:part element="ahman:ResumeScheduleResponse" name="ResumeScheduleResponse">
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:message name="SetTransitionHeader">
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
+    <wsdl:part element="common:UserName" name="UserName" />
+    <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+  </wsdl:message>
+  <wsdl:message name="SetTransitionRequest">
+    <wsdl:part element="ahman:SetTransitionRequest" name="SetTransitionRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetTransitionAsyncResponse">
+    <wsdl:part element="ahman:SetTransitionAsyncResponse"
+      name="SetTransitionAsyncResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetTransitionAsyncHeader">
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
+    <wsdl:part element="common:UserName" name="UserName" />
+    <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+  </wsdl:message>
+  <wsdl:message name="SetTransitionAsyncRequest">
+    <wsdl:part element="ahman:SetTransitionAsyncRequest" name="SetTransitionAsyncRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetTransitionResponse">
+    <wsdl:part element="ahman:SetTransitionResponse" name="SetTransitionResponse">
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:message name="SetLightMeasurementDeviceHeader">
+    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+    <wsdl:part element="common:UserName" name="UserName" />
+    <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+  </wsdl:message>
+  <wsdl:message name="SetLightMeasurementDeviceRequest">
+    <wsdl:part element="ahman:SetLightMeasurementDeviceRequest" name="SetLightMeasurementDeviceRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetLightMeasurementDeviceResponse">
+    <wsdl:part element="ahman:SetLightMeasurementDeviceResponse" name="SetLightMeasurementDeviceResponse">
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:portType name="PublicLightingAdHocManagementPort">
+    <wsdl:operation name="FindAllDevices">
+      <wsdl:input message="tns:FindAllDevicesRequest" name="FindAllDevicesRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:FindAllDevicesResponse"
+        name="FindAllDevicesResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="SetLight">
+      <wsdl:input message="tns:SetLightRequest" name="SetLightRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:SetLightAsyncResponse" name="SetLightAsyncResponse">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSetLightResponse">
+      <wsdl:input message="tns:SetLightAsyncRequest" name="SetLightAsyncRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:SetLightResponse" name="SetLightResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetStatus">
+      <wsdl:input message="tns:GetStatusRequest" name="GetStatusRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:GetStatusAsyncResponse"
+        name="GetStatusAsyncResponse">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetGetStatusResponse">
+      <wsdl:input message="tns:GetStatusAsyncRequest" name="GetStatusAsyncRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:GetStatusResponse" name="GetStatusResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="ResumeSchedule">
+      <wsdl:input message="tns:ResumeScheduleRequest" name="ResumeScheduleRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:ResumeScheduleAsyncResponse"
+        name="ResumeScheduleAsyncResponse">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetResumeScheduleResponse">
+      <wsdl:input message="tns:ResumeScheduleAsyncRequest"
+        name="ResumeScheduleAsyncRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:ResumeScheduleResponse"
+        name="ResumeScheduleResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="SetTransition">
+      <wsdl:input message="tns:SetTransitionRequest" name="SetTransitionRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:SetTransitionAsyncResponse"
+        name="SetTransitionAsyncResponse">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSetTransitionResponse">
+      <wsdl:input message="tns:SetTransitionAsyncRequest"
+        name="SetTransitionAsyncRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:SetTransitionResponse" name="SetTransitionResponse">
+      </wsdl:output>
+    </wsdl:operation>
+    
+    <wsdl:operation name="SetLightMeasurementDevice">
+      <wsdl:input message="tns:SetLightMeasurementDeviceRequest" name="SetLightMeasurementDeviceRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:SetLightMeasurementDeviceResponse" name="SetLightMeasurementDeviceResponse">
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+
+  <wsdl:binding name="PublicLightingAdHocManagementPortSoap11"
+    type="tns:PublicLightingAdHocManagementPort">
+    <soap:binding style="document"
+      transport="http://schemas.xmlsoap.org/soap/http" />
+
+    <wsdl:operation name="FindAllDevices">
+      <soap:operation soapAction="" />
+      <wsdl:input name="FindAllDevicesRequest">
+        <soap:header message="tns:FindAllDevicesHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:FindAllDevicesHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:FindAllDevicesHeader"
+          part="ApplicationName" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="FindAllDevicesResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="SetLight">
+      <soap:operation soapAction="" />
+      <wsdl:input name="SetLightRequest">
+        <soap:header message="tns:SetLightHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:SetLightHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:SetLightHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SetLightAsyncResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSetLightResponse">
+      <soap:operation soapAction="" />
+      <wsdl:input name="SetLightAsyncRequest">
+        <soap:header message="tns:SetLightAsyncHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:SetLightAsyncHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:SetLightAsyncHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SetLightResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetStatus">
+      <soap:operation soapAction="" />
+      <wsdl:input name="GetStatusRequest">
+        <soap:header message="tns:GetStatusHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:GetStatusHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:GetStatusHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="GetStatusAsyncResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetGetStatusResponse">
+      <soap:operation soapAction="" />
+      <wsdl:input name="GetStatusAsyncRequest">
+        <soap:header message="tns:GetStatusAsyncHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:GetStatusAsyncHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:GetStatusAsyncHeader"
+          part="ApplicationName" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="GetStatusResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="ResumeSchedule">
+      <soap:operation soapAction="" />
+      <wsdl:input name="ResumeScheduleRequest">
+        <soap:header message="tns:ResumeScheduleHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:ResumeScheduleHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:ResumeScheduleHeader"
+          part="ApplicationName" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="ResumeScheduleAsyncResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetResumeScheduleResponse">
+      <soap:operation soapAction="" />
+      <wsdl:input name="ResumeScheduleAsyncRequest">
+        <soap:header message="tns:ResumeScheduleAsyncHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:ResumeScheduleAsyncHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:ResumeScheduleAsyncHeader"
+          part="ApplicationName" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="ResumeScheduleResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="SetTransition">
+      <soap:operation soapAction="" />
+      <wsdl:input name="SetTransitionRequest">
+        <soap:header message="tns:SetTransitionHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:SetTransitionHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:SetTransitionHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SetTransitionAsyncResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSetTransitionResponse">
+      <soap:operation soapAction="" />
+      <wsdl:input name="SetTransitionAsyncRequest">
+        <soap:header message="tns:SetTransitionAsyncHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:SetTransitionAsyncHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:SetTransitionAsyncHeader"
+          part="ApplicationName" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SetTransitionResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    
+    <wsdl:operation name="SetLightMeasurementDevice">
+      <soap:operation soapAction="" />
+      <wsdl:input name="SetLightMeasurementDeviceRequest">
+        <soap:header message="tns:SetLightMeasurementDeviceHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:SetLightMeasurementDeviceHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:SetLightMeasurementDeviceHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SetLightMeasurementDeviceResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+
+  <wsdl:service name="PublicLightingAdHocManagementPortService">
+    <wsdl:port binding="tns:PublicLightingAdHocManagementPortSoap11"
+      name="PublicLightingAdHocManagementPortSoap11">
+      <soap:address
+        location="http://localhost:8080/osgp-adapter-ws-publiclighting/publiclighting/adHocManagementService/" />
+    </wsdl:port>
+  </wsdl:service>
+
+</wsdl:definitions>

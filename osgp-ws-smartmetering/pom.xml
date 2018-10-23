@@ -1,0 +1,170 @@
+<!--
+
+    Copyright 2017 Smart Society Services B.V.
+
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.opensmartgridplatform</groupId>
+    <artifactId>parent-shared</artifactId>
+    <version>4.32.0-SNAPSHOT</version>
+    <relativePath>../parent-shared/pom.xml</relativePath>
+  </parent>
+
+  <artifactId>osgp-ws-smartmetering</artifactId>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jaxb2-maven-plugin</artifactId>
+        <version>1.5</version>
+        <executions>
+          <execution>
+            <id>smart-metering-bundle</id>
+            <goals>
+              <goal>xjc</goal>
+            </goals>
+            <configuration>
+              <bindingDirectory>src/main/resources/schemas</bindingDirectory>
+              <bindingFiles>sm-bundle.xjb</bindingFiles>
+              <schemaDirectory>src/main/resources</schemaDirectory>
+              <schemaFiles>SmartMeteringBundle.wsdl</schemaFiles>
+              <wsdl>true</wsdl>
+              <xmlschema>false</xmlschema>
+              <staleFile>${project.build.directory}/jaxb2/.schema-smart-metering-bundle-stale-flag</staleFile>
+              <!-- USE THIS ONLY FOR THE FIRST EXECUTION -->
+              <clearOutputDir>false</clearOutputDir>
+            </configuration>
+          </execution>
+          <execution>
+            <id>smart-metering-management</id>
+            <goals>
+              <goal>xjc</goal>
+            </goals>
+            <configuration>
+              <bindingDirectory>src/main/resources/schemas</bindingDirectory>
+              <bindingFiles>sm-management.xjb</bindingFiles>
+              <schemaDirectory>src/main/resources</schemaDirectory>
+              <schemaFiles>SmartMeteringManagement.wsdl</schemaFiles>
+              <wsdl>true</wsdl>
+              <xmlschema>false</xmlschema>
+              <staleFile>${project.build.directory}/jaxb2/.schema-smart-metering-management-stale-flag</staleFile>
+              <!-- USE THIS ONLY FOR THE FIRST EXECUTION -->
+              <clearOutputDir>false</clearOutputDir>
+            </configuration>
+          </execution>
+          <execution>
+            <id>smart-metering-installation</id>
+            <goals>
+              <goal>xjc</goal>
+            </goals>
+            <configuration>
+              <bindingDirectory>src/main/resources/schemas</bindingDirectory>
+              <bindingFiles>sm-installation.xjb</bindingFiles>
+              <schemaDirectory>src/main/resources</schemaDirectory>
+              <schemaFiles>SmartMeteringInstallation.wsdl</schemaFiles>
+              <wsdl>true</wsdl>
+              <xmlschema>false</xmlschema>
+              <staleFile>${project.build.directory}/jaxb2/.schema-smart-metering-installation-stale-flag</staleFile>
+              <!-- USE THIS ONLY FOR THE FIRST EXECUTION -->
+              <clearOutputDir>false</clearOutputDir>
+            </configuration>
+          </execution>
+          <execution>
+            <id>smart-metering-notification</id>
+            <goals>
+              <goal>xjc</goal>
+            </goals>
+            <configuration>
+              <bindingDirectory>src/main/resources/schemas</bindingDirectory>
+              <bindingFiles>sm-notification.xjb</bindingFiles>
+              <schemaDirectory>src/main/resources</schemaDirectory>
+              <schemaFiles>SmartMeteringNotification.wsdl</schemaFiles>
+              <wsdl>true</wsdl>
+              <xmlschema>false</xmlschema>
+              <staleFile>${project.build.directory}/jaxb2/.schema-smart-metering-notification-stale-flag</staleFile>
+              <!-- USE THIS ONLY FOR THE FIRST EXECUTION -->
+              <clearOutputDir>false</clearOutputDir>
+            </configuration>
+          </execution>
+          <execution>
+            <id>smart-metering-monitoring</id>
+            <goals>
+              <goal>xjc</goal>
+            </goals>
+            <configuration>
+              <bindingDirectory>src/main/resources/schemas</bindingDirectory>
+              <bindingFiles>sm-monitoring.xjb</bindingFiles>
+              <schemaDirectory>src/main/resources</schemaDirectory>
+              <schemaFiles>SmartMeteringMonitoring.wsdl</schemaFiles>
+              <wsdl>true</wsdl>
+              <xmlschema>false</xmlschema>
+              <staleFile>${project.build.directory}/jaxb2/.schema-smart-metering-moitoring-stale-flag</staleFile>
+              <!-- USE THIS ONLY FOR THE FIRST EXECUTION -->
+              <clearOutputDir>false</clearOutputDir>
+            </configuration>
+          </execution>
+          <execution>
+            <id>smart-metering-adhoc</id>
+            <goals>
+              <goal>xjc</goal>
+            </goals>
+            <configuration>
+              <bindingDirectory>src/main/resources/schemas</bindingDirectory>
+              <bindingFiles>sm-adhoc.xjb</bindingFiles>
+              <schemaDirectory>src/main/resources</schemaDirectory>
+              <schemaFiles>SmartMeteringAdhoc.wsdl</schemaFiles>
+              <wsdl>true</wsdl>
+              <xmlschema>false</xmlschema>
+              <staleFile>${project.build.directory}/jaxb2/.schema-smart-metering-adhoc-stale-flag</staleFile>
+              <!-- USE THIS ONLY FOR THE FIRST EXECUTION -->
+              <clearOutputDir>false</clearOutputDir>
+            </configuration>
+          </execution>
+          <execution>
+            <id>smart-metering-configuration</id>
+            <goals>
+              <goal>xjc</goal>
+            </goals>
+            <configuration>
+              <bindingDirectory>src/main/resources/schemas</bindingDirectory>
+              <bindingFiles>sm-configuration.xjb</bindingFiles>
+              <schemaDirectory>src/main/resources</schemaDirectory>
+              <schemaFiles>SmartMeteringConfiguration.wsdl</schemaFiles>
+              <wsdl>true</wsdl>
+              <xmlschema>false</xmlschema>
+              <staleFile>${project.build.directory}/jaxb2/.schema-smart-metering-configuration-stale-flag</staleFile>
+              <!-- USE THIS ONLY FOR THE FIRST EXECUTION -->
+              <clearOutputDir>false</clearOutputDir>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+
+    <!-- Spring Framework -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+    </dependency>
+    <!-- Spring WS -->
+    <dependency>
+      <groupId>org.springframework.ws</groupId>
+      <artifactId>spring-ws-core</artifactId>
+    </dependency>
+  </dependencies>
+</project>

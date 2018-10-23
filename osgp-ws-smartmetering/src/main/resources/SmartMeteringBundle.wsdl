@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Platform version: ${display.version} -->
+
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+  xmlns:bundle="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-bundle/2014/10"
+  xmlns:common="http://www.opensmartgridplatform.org/schemas/common/2014/10"
+  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns:tns="http://www.opensmartgridplatform.org/definitions/smartmetering/sm-bundle-v1.0"
+  targetNamespace="http://www.opensmartgridplatform.org/definitions/smartmetering/sm-bundle-v1.0">
+
+  <wsdl:types>
+    <xsd:schema
+      targetNamespace="http://www.opensmartgridplatform.org/definitions/smartmetering/sm-bundle/imports"
+      xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+      <xsd:import
+        namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-bundle/2014/10"
+        schemaLocation="schemas/sm-bundle.xsd" />
+      <xsd:import
+        namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-management/2014/10"
+        schemaLocation="schemas/sm-management.xsd" />
+    </xsd:schema>
+  </wsdl:types>
+
+  <wsdl:message name="BundleHeader">
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
+    <wsdl:part element="common:UserName" name="UserName" />
+    <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+    <wsdl:part element="common:ResponseUrl" name="ResponseUrl" />
+  </wsdl:message>
+  <wsdl:message name="BundleRequest">
+    <wsdl:part element="bundle:BundleRequest" name="BundleRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="BundleAsyncResponse">
+    <wsdl:part element="bundle:BundleAsyncResponse" name="BundleAsyncResponse">
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:message name="BundleAsyncHeader">
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
+    <wsdl:part element="common:UserName" name="UserName" />
+    <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+    <wsdl:part element="common:ResponseUrl" name="ResponseUrl" />
+  </wsdl:message>
+  <wsdl:message name="BundleAsyncRequest">
+    <wsdl:part element="bundle:BundleAsyncRequest" name="BundleAsyncRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="BundleResponse">
+    <wsdl:part element="bundle:BundleResponse" name="BundleResponse">
+    </wsdl:part>
+  </wsdl:message>
+
+
+  <wsdl:portType name="SmartMeteringBundlePort">
+
+    <wsdl:operation name="Bundle">
+      <wsdl:input message="tns:BundleRequest" name="BundleRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:BundleAsyncResponse" name="BundleAsyncResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetBundleResponse">
+      <wsdl:input message="tns:BundleAsyncRequest" name="BundleAsyncRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:BundleResponse" name="BundleResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+
+  </wsdl:portType>
+
+  <wsdl:binding name="SmartMeteringBundlePortSoap11" type="tns:SmartMeteringBundlePort">
+
+    <soap:binding style="document"
+      transport="http://schemas.xmlsoap.org/soap/http" />
+
+    <wsdl:operation name="Bundle">
+      <soap:operation soapAction="" />
+      <wsdl:input name="BundleRequest">
+        <soap:header message="tns:BundleHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:BundleHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:BundleHeader" part="ApplicationName"
+          use="literal" />
+        <soap:header message="tns:BundleHeader" part="ResponseUrl"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="BundleAsyncResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetBundleResponse">
+      <soap:operation soapAction="" />
+      <wsdl:input name="BundleAsyncRequest">
+        <soap:header message="tns:BundleHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:BundleHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:BundleHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="BundleResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+
+  </wsdl:binding>
+
+  <wsdl:service name="SmartMeteringBundlePortService">
+    <wsdl:port binding="tns:SmartMeteringBundlePortSoap11"
+      name="SmartMeteringBundlePortSoap11">
+      <soap:address
+        location="http://localhost:8080/osgp-adapter-ws-smartmetering/smartMetering/bundleService/" />
+    </wsdl:port>
+  </wsdl:service>
+
+</wsdl:definitions>

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Platform version: ${display.version} -->
+
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+  xmlns:ahman="http://www.opensmartgridplatform.org/schemas/tariffswitching/adhocmanagement/2014/10"
+  xmlns:common="http://www.opensmartgridplatform.org/schemas/common/2014/10"
+  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns:tns="http://www.opensmartgridplatform.org/definitions/tariffswitching/adhocmanagement-v1.0"
+  targetNamespace="http://www.opensmartgridplatform.org/definitions/tariffswitching/adhocmanagement-v1.0">
+
+  <wsdl:types>
+    <xsd:schema
+      targetNamespace="http://www.opensmartgridplatform.org/definitions/tariffswitching/adhocmanagement/imports"
+      xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:import
+        namespace="http://www.opensmartgridplatform.org/schemas/tariffswitching/adhocmanagement/2014/10"
+        schemaLocation="schemas/ts-adhocmanagement.xsd" />
+    </xsd:schema>
+  </wsdl:types>
+
+  <!-- An additional SOAP header 'MessagePriority' can be set. Values between 0 (low) and 9 (high), the default value is 4 (medium). -->
+
+  <wsdl:message name="GetDevicesHeader">
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
+    <wsdl:part element="common:UserName" name="UserName" />
+    <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+  </wsdl:message>
+  <wsdl:message name="GetDevicesRequest">
+    <wsdl:part element="ahman:GetDevicesRequest" name="GetDevicesRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetDevicesResponse">
+    <wsdl:part element="ahman:GetDevicesResponse" name="GetDevicesResponse">
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:message name="GetStatusHeader">
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
+    <wsdl:part element="common:UserName" name="UserName" />
+    <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+  </wsdl:message>
+  <wsdl:message name="GetStatusRequest">
+    <wsdl:part element="ahman:GetStatusRequest" name="GetStatusRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetStatusAsyncResponse">
+    <wsdl:part element="ahman:GetStatusAsyncResponse" name="GetStatusAsyncResponse">
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:message name="GetStatusAsyncHeader">
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
+    <wsdl:part element="common:UserName" name="UserName" />
+    <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+  </wsdl:message>
+  <wsdl:message name="GetStatusAsyncRequest">
+    <wsdl:part element="ahman:GetStatusAsyncRequest" name="GetStatusAsyncRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetStatusResponse">
+    <wsdl:part element="ahman:GetStatusResponse" name="GetStatusResponse">
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:portType name="TariffSwitchingAdHocManagementPort">
+    <wsdl:operation name="GetDevices">
+      <wsdl:input message="tns:GetDevicesRequest" name="GetDevicesRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:GetDevicesResponse" name="GetDevicesResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetStatus">
+      <wsdl:input message="tns:GetStatusRequest" name="GetStatusRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:GetStatusAsyncResponse"
+        name="GetStatusAsyncResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetGetStatusResponse">
+      <wsdl:input message="tns:GetStatusAsyncRequest" name="GetStatusAsyncRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:GetStatusResponse" name="GetStatusResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+  </wsdl:portType>
+
+  <wsdl:binding name="TariffSwitchingAdHocManagementPortSoap11"
+    type="tns:TariffSwitchingAdHocManagementPort">
+
+    <soap:binding style="document"
+      transport="http://schemas.xmlsoap.org/soap/http" />
+
+    <wsdl:operation name="GetDevices">
+      <soap:operation soapAction="" />
+      <wsdl:input name="GetDevicesRequest">
+        <soap:header message="tns:GetDevicesHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:GetDevicesHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:GetDevicesHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="GetDevicesResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetStatus">
+      <soap:operation soapAction="" />
+      <wsdl:input name="GetStatusRequest">
+        <soap:header message="tns:GetStatusHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:GetStatusHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:GetStatusHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="GetStatusAsyncResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetGetStatusResponse">
+      <soap:operation soapAction="" />
+      <wsdl:input name="GetStatusAsyncRequest">
+        <soap:header message="tns:GetStatusAsyncHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:GetStatusAsyncHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:GetStatusAsyncHeader"
+          part="ApplicationName" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="GetStatusResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+  </wsdl:binding>
+
+  <wsdl:service name="TariffSwitchingAdHocManagementPortService">
+    <wsdl:port binding="tns:TariffSwitchingAdHocManagementPortSoap11"
+      name="TariffSwitchingAdHocManagementPortSoap11">
+      <soap:address
+        location="http://localhost:8080/osgp-adapter-ws-tariffswitching/tariffSwitching/adHocManagementService/" />
+    </wsdl:port>
+  </wsdl:service>
+
+</wsdl:definitions>

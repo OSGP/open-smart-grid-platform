@@ -1,0 +1,54 @@
+<!--
+
+    Copyright 2015 Smart Society Services B.V.
+
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+-->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:common="http://www.opensmartgridplatform.org/schemas/common/2014/10"
+  xmlns:tns="http://www.opensmartgridplatform.org/schemas/adhocmanagement/2014/10"
+  attributeFormDefault="unqualified" elementFormDefault="qualified"
+  targetNamespace="http://www.opensmartgridplatform.org/schemas/adhocmanagement/2014/10">
+
+  <xsd:import namespace="http://www.opensmartgridplatform.org/schemas/common/2014/10"
+    schemaLocation="../schemas/common-ws-core.xsd" />
+
+  <xsd:element name="SetRebootRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="common:Identification"
+          minOccurs="1" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="SetRebootAsyncResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="AsyncResponse" type="common:AsyncResponse" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="SetRebootAsyncRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="AsyncRequest" type="common:AsyncRequest" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="SetRebootResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Result" type="common:OsgpResultType"
+          minOccurs="1" />
+        <xsd:element name="Description" type="xsd:string" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+</xsd:schema>

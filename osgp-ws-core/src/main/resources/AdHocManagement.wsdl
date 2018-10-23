@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Platform version: ${display.version} -->
+
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+  xmlns:ahman="http://www.opensmartgridplatform.org/schemas/adhocmanagement/2014/10"
+  xmlns:common="http://www.opensmartgridplatform.org/schemas/common/2014/10"
+  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns:tns="http://www.opensmartgridplatform.org/definitions/common/adhocmanagement-v1.0"
+  targetNamespace="http://www.opensmartgridplatform.org/definitions/common/adhocmanagement-v1.0">
+
+  <wsdl:types>
+    <xsd:schema
+      targetNamespace="http://www.opensmartgridplatform.org/definitions/common/adhocmanagement/imports"
+      xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:import
+        namespace="http://www.opensmartgridplatform.org/schemas/adhocmanagement/2014/10"
+        schemaLocation="schemas/adhocmanagement-ws-core.xsd" />
+    </xsd:schema>
+  </wsdl:types>
+
+  <!-- An additional SOAP header 'MessagePriority' can be set. Values between 0 (low) and 9 (high), the default value is 4 (medium). -->
+
+  <wsdl:message name="SetRebootHeader">
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
+    <wsdl:part element="common:UserName" name="UserName" />
+    <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+  </wsdl:message>
+  <wsdl:message name="SetRebootRequest">
+    <wsdl:part element="ahman:SetRebootRequest" name="SetRebootRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetRebootAsyncResponse">
+    <wsdl:part element="ahman:SetRebootAsyncResponse" name="SetRebootAsyncResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetRebootAsyncHeader">
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
+    <wsdl:part element="common:UserName" name="UserName" />
+    <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+  </wsdl:message>
+  <wsdl:message name="SetRebootAsyncRequest">
+    <wsdl:part element="ahman:SetRebootAsyncRequest" name="SetRebootAsyncRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetRebootResponse">
+    <wsdl:part element="ahman:SetRebootResponse" name="SetRebootResponse">
+    </wsdl:part>
+  </wsdl:message>
+
+
+  <wsdl:portType name="AdHocManagementPort">
+
+    <wsdl:operation name="SetReboot">
+      <wsdl:input message="tns:SetRebootRequest" name="SetRebootRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:SetRebootAsyncResponse"
+        name="SetRebootAsyncResponse">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSetRebootResponse">
+      <wsdl:input message="tns:SetRebootAsyncRequest" name="SetRebootAsyncRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:SetRebootResponse" name="SetRebootResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+  </wsdl:portType>
+
+  <wsdl:binding name="AdHocManagementPortSoap11" type="tns:AdHocManagementPort">
+    <soap:binding style="document"
+      transport="http://schemas.xmlsoap.org/soap/http" />
+
+    <wsdl:operation name="SetReboot">
+      <soap:operation soapAction="" />
+      <wsdl:input name="SetRebootRequest">
+        <soap:header message="tns:SetRebootHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:SetRebootHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:SetRebootHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SetRebootAsyncResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetSetRebootResponse">
+      <soap:operation soapAction="" />
+      <wsdl:input name="SetRebootAsyncRequest">
+        <soap:header message="tns:SetRebootAsyncHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:SetRebootAsyncHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:SetRebootAsyncHeader"
+          part="ApplicationName" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SetRebootResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+  </wsdl:binding>
+
+  <wsdl:service name="AdHocManagementPortService">
+    <wsdl:port binding="tns:AdHocManagementPortSoap11" name="AdHocManagementPortSoap11">
+      <soap:address
+        location="http://localhost:8080/osgp-adapter-ws-core/common/adHocManagementService/" />
+    </wsdl:port>
+  </wsdl:service>
+
+</wsdl:definitions>

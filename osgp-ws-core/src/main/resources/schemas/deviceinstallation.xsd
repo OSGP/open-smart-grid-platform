@@ -1,0 +1,392 @@
+<!--
+
+    Copyright 2015 Smart Society Services B.V.
+
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+-->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:tns="http://www.opensmartgridplatform.org/schemas/deviceinstallation/2014/10"
+  xmlns:common="http://www.opensmartgridplatform.org/schemas/common/2014/10"
+  attributeFormDefault="unqualified" elementFormDefault="qualified"
+  targetNamespace="http://www.opensmartgridplatform.org/schemas/deviceinstallation/2014/10">
+
+  <xsd:import namespace="http://www.opensmartgridplatform.org/schemas/common/2014/10"
+    schemaLocation="../schemas/common-ws-core.xsd" />
+
+  <xsd:element name="AddDeviceRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Device" type="tns:Device" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="AddDeviceResponse">
+    <xsd:complexType />
+  </xsd:element>
+
+  <xsd:element name="UpdateDeviceRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="common:Identification" />
+        <xsd:element name="UpdatedDevice" type="tns:Device" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="UpdateDeviceResponse">
+    <xsd:complexType />
+  </xsd:element>
+
+  <xsd:element name="FindRecentDevicesRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="FindRecentDevicesResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element maxOccurs="unbounded" name="Devices"
+          type="tns:Device" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="GetStatusRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="common:Identification"
+          minOccurs="1" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="GetStatusAsyncResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="AsyncResponse" type="common:AsyncResponse" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="GetStatusAsyncRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="AsyncRequest" type="common:AsyncRequest" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="GetStatusResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Result" type="common:OsgpResultType"
+          minOccurs="1" />
+        <xsd:element name="Description" type="xsd:string" />
+        <xsd:element name="DeviceStatus" type="tns:DeviceStatus" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="StartDeviceTestRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="common:Identification" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="StartDeviceTestAsyncResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="AsyncResponse" type="common:AsyncResponse" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="StartDeviceTestAsyncRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="AsyncRequest" type="common:AsyncRequest" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="StartDeviceTestResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Result" type="common:OsgpResultType"
+          minOccurs="1" />
+        <xsd:element name="Description" type="xsd:string" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="StopDeviceTestRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="common:Identification" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="StopDeviceTestAsyncResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="AsyncResponse" type="common:AsyncResponse" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="StopDeviceTestAsyncRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="AsyncRequest" type="common:AsyncRequest" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="StopDeviceTestResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Result" type="common:OsgpResultType"
+          minOccurs="1" />
+        <xsd:element name="Description" type="xsd:string" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:simpleType name="IPType">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern
+        value="((1?[0-9]?[0-9]|2[0-4][0-9]|25[0-5]).){3}(1?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:complexType name="Device">
+    <xsd:sequence>
+      <xsd:element name="DeviceUid" type="xsd:string"
+        minOccurs="0" />
+      <xsd:element name="DeviceIdentification" type="common:Identification" />
+      <xsd:element name="Alias" type="xsd:string" minOccurs="0" />
+      <xsd:element name="Owner" type="xsd:string" minOccurs="0" />
+      <xsd:element name="ContainerPostalCode" type="xsd:string"
+        minOccurs="0" />
+      <xsd:element name="ContainerCity" type="xsd:string"
+        minOccurs="0" />
+      <xsd:element name="ContainerStreet" type="xsd:string"
+        minOccurs="0" />
+      <xsd:element name="ContainerNumber" type="xsd:string"
+        minOccurs="0" />
+      <xsd:element name="ContainerMunicipality" type="xsd:string"
+        minOccurs="0" />
+      <xsd:element name="GpsLatitude" type="xsd:float"
+        minOccurs="0" />
+      <xsd:element name="GpsLongitude" type="xsd:float"
+        minOccurs="0" />
+      <xsd:element name="Activated" type="xsd:boolean"
+        minOccurs="0" />
+      <xsd:element name="HasSchedule" type="xsd:boolean"
+        minOccurs="0" />
+      <xsd:element name="PublicKeyPresent" type="xsd:boolean"
+        minOccurs="0" />
+      <xsd:element name="DeviceModel" type="tns:DeviceModel" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="DeviceStatus">
+    <xsd:annotation>
+      <xsd:documentation>
+        DeviceStatus represents the retrieved status of a smart device.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="LightValues" type="tns:LightValue"
+        maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation>
+            The list of 'LightValues' can contain:
+            - relay status values in case of SSLD (Substation Lighting Device) smart devices;
+            - light sensor values in case of LMD (Light Measurement Device) smart devices.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="TariffValues" type="tns:TariffValue"
+        maxOccurs="unbounded" />
+      <xsd:element name="PreferredLinkType" type="tns:LinkType"
+        minOccurs="1" maxOccurs="1" />
+      <xsd:element name="ActualLinkType" type="tns:LinkType"
+        minOccurs="1" maxOccurs="1" />
+      <xsd:element name="LightType" type="tns:LightType"
+        minOccurs="0" maxOccurs="1" />
+      <xsd:element name="EventNotifications" type="tns:EventNotificationType"
+        minOccurs="0" maxOccurs="8" />
+      <xsd:element name="NumberOfOutputs" type="xsd:int"
+        minOccurs="0" maxOccurs="1" />
+      <xsd:element name="DcOutputVoltageMaximum" type="xsd:int"
+        minOccurs="0" maxOccurs="1" />
+      <xsd:element name="DcOutputVoltageCurrent" type="xsd:int"
+        minOccurs="0" maxOccurs="1" />
+      <xsd:element name="MaximumOutputPowerOnDcOutput" type="xsd:int"
+        minOccurs="0" maxOccurs="1" />
+      <xsd:element name="SerialNumber" minOccurs="0"
+        maxOccurs="1">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:minLength value="0" />
+            <xsd:maxLength value="18" />
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="MacAddress" minOccurs="0"
+        maxOccurs="1">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:length value="17" />
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="HardwareId" minOccurs="0"
+        maxOccurs="1">
+        <xsd:simpleType>
+          <xsd:restriction base="common:AlphaNumericType">
+            <xsd:minLength value="10" />
+            <xsd:maxLength value="25" />
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="InternalFlashMemSize" type="xsd:int"
+        minOccurs="0" maxOccurs="1" />
+      <xsd:element name="ExternalFlashMemSize" type="xsd:int"
+        minOccurs="0" maxOccurs="1" />
+      <xsd:element name="LastInternalTestResultCode" type="xsd:int"
+        minOccurs="0" maxOccurs="1" />
+      <xsd:element name="StartupCounter" type="xsd:int"
+        minOccurs="0" maxOccurs="1" />
+      <xsd:element name="BootLoaderVersion" type="xsd:string"
+        minOccurs="0" maxOccurs="1" />
+      <xsd:element name="FirmwareVersion" type="xsd:string"
+        minOccurs="0" maxOccurs="1" />
+      <xsd:element name="CurrentConfigurationBackUsed"
+        minOccurs="0" maxOccurs="1">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:int">
+            <xsd:minInclusive value="0" />
+            <xsd:maxInclusive value="1" />
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="Name" type="xsd:string" minOccurs="0"
+        maxOccurs="1" />
+      <xsd:element name="CurrentTime" type="xsd:string"
+        minOccurs="0" maxOccurs="1" />
+      <xsd:element name="CurrentIp" type="xsd:string"
+        minOccurs="0" maxOccurs="1" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="LightValue">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="Index">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:int">
+            <xsd:minInclusive value="0" />
+            <xsd:maxInclusive value="6" />
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="On" type="xsd:boolean" />
+      <xsd:element minOccurs="0" name="DimValue">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:int">
+            <xsd:minInclusive value="1" />
+            <xsd:maxInclusive value="100" />
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="TariffValue">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="Index">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:int">
+            <xsd:minInclusive value="0" />
+            <xsd:maxInclusive value="6" />
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="High" type="xsd:boolean" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:simpleType name="LightType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="LT_NOT_SET" />
+      <xsd:enumeration value="RELAY" />
+      <xsd:enumeration value="ONE_TO_TEN_VOLT" />
+      <xsd:enumeration value="ONE_TO_TEN_VOLT_REVERSE" />
+      <xsd:enumeration value="ONE_TO_TWENTY_FOUR_VOLT" />
+      <xsd:enumeration value="DALI" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="LinkType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="LINK_NOT_SET" />
+      <xsd:enumeration value="GPRS" />
+      <xsd:enumeration value="CDMA" />
+      <xsd:enumeration value="ETHERNET" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="EventNotificationType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="DIAG_EVENTS" />
+      <xsd:enumeration value="HARDWARE_FAILURE" />
+      <xsd:enumeration value="LIGHT_EVENTS" />
+      <xsd:enumeration value="TARIFF_EVENTS" />
+      <xsd:enumeration value="MONITOR_EVENTS" />
+      <xsd:enumeration value="FIRMWARE_EVENTS" />
+      <xsd:enumeration value="COMM_EVENTS" />
+      <xsd:enumeration value="SECURITY_EVENTS" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:complexType name="DeviceModel">
+    <xsd:sequence>
+      <xsd:element name="Manufacturer" minOccurs="1"
+        maxOccurs="1">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="4" />
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="ModelCode" minOccurs="0" maxOccurs="1">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="255" />
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="Description" minOccurs="0"
+        maxOccurs="1">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="255" />
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="Metered" type="xsd:boolean"
+        minOccurs="1" maxOccurs="1" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+</xsd:schema>

@@ -1,0 +1,141 @@
+<!--
+
+    Copyright 2015 Smart Society Services B.V.
+
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+-->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:common="http://www.opensmartgridplatform.org/schemas/common/2014/10"
+  xmlns:tns="http://www.opensmartgridplatform.org/schemas/publiclighting/devicemonitoring/2014/10"
+  attributeFormDefault="unqualified" elementFormDefault="qualified"
+  targetNamespace="http://www.opensmartgridplatform.org/schemas/publiclighting/devicemonitoring/2014/10">
+
+  <xsd:import namespace="http://www.opensmartgridplatform.org/schemas/common/2014/10"
+    schemaLocation="common.xsd" />
+
+  <xsd:element name="GetPowerUsageHistoryRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="common:Identification"
+          minOccurs="1" maxOccurs="1" />
+        <xsd:element name="TimePeriod" type="tns:TimePeriod"
+          minOccurs="1" maxOccurs="1" />
+        <xsd:element name="HistoryTermType" type="tns:HistoryTermType"
+          minOccurs="1" maxOccurs="1" />
+        <xsd:element name="scheduled_time" type="xsd:dateTime"
+          minOccurs="0" maxOccurs="1" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetPowerUsageHistoryAsyncResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="AsyncResponse" type="common:AsyncResponse" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetPowerUsageHistoryAsyncRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="AsyncRequest" type="common:AsyncRequest" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetPowerUsageHistoryResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Result" type="common:OsgpResultType"
+          minOccurs="1" />
+        <xsd:element name="Description" type="xsd:string" />
+        <xsd:element name="PowerUsageData" type="tns:PowerUsageData"
+          minOccurs="1" maxOccurs="400" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="TimePeriod">
+    <xsd:sequence>
+      <xsd:element name="StartTime" type="xsd:dateTime"
+        minOccurs="1" maxOccurs="1" />
+      <xsd:element name="EndTime" type="xsd:dateTime"
+        minOccurs="1" maxOccurs="1" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:simpleType name="HistoryTermType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="SHORT" />
+      <xsd:enumeration value="LONG" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="MeterType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="P1" />
+      <xsd:enumeration value="PULSE" />
+      <xsd:enumeration value="AUX" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:complexType name="PowerUsageData">
+    <xsd:sequence>
+      <xsd:element name="RecordTime" type="xsd:dateTime"
+        minOccurs="1" maxOccurs="1" />
+      <xsd:element name="MeterType" type="tns:MeterType"
+        minOccurs="1" maxOccurs="1" />
+      <xsd:element name="TotalConsumedEnergy" type="xsd:long"
+        minOccurs="1" maxOccurs="1" />
+      <xsd:element name="ActualConsumedPower" type="xsd:int"
+        minOccurs="1" maxOccurs="1" />
+      <xsd:element name="PsldData" type="tns:PsldData"
+        minOccurs="0" maxOccurs="1" />
+      <xsd:element name="SsldData" type="tns:SsldData"
+        minOccurs="0" maxOccurs="1" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="PsldData">
+    <xsd:sequence>
+      <xsd:element name="TotalLightingHours" type="xsd:int"
+        minOccurs="1" maxOccurs="1" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="SsldData">
+    <xsd:sequence>
+      <xsd:element name="actualCurrent1" type="xsd:int"
+        minOccurs="1" maxOccurs="1" />
+      <xsd:element name="actualCurrent2" type="xsd:int"
+        minOccurs="1" maxOccurs="1" />
+      <xsd:element name="actualCurrent3" type="xsd:int"
+        minOccurs="1" maxOccurs="1" />
+      <xsd:element name="actualPower1" type="xsd:int"
+        minOccurs="1" maxOccurs="1" />
+      <xsd:element name="actualPower2" type="xsd:int"
+        minOccurs="1" maxOccurs="1" />
+      <xsd:element name="actualPower3" type="xsd:int"
+        minOccurs="1" maxOccurs="1" />
+      <xsd:element name="averagePowerFactor1" type="xsd:int"
+        minOccurs="1" maxOccurs="1" />
+      <xsd:element name="averagePowerFactor2" type="xsd:int"
+        minOccurs="1" maxOccurs="1" />
+      <xsd:element name="averagePowerFactor3" type="xsd:int"
+        minOccurs="1" maxOccurs="1" />
+      <xsd:element name="relayData" type="tns:RelayData"
+        minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="RelayData">
+    <xsd:sequence>
+      <xsd:element name="index" type="xsd:int" minOccurs="1"
+        maxOccurs="1" />
+      <xsd:element name="totalLightingMinutes" type="xsd:int"
+        minOccurs="1" maxOccurs="1" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+</xsd:schema>

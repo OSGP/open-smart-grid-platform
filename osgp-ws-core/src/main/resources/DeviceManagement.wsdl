@@ -1,0 +1,656 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Platform version: ${display.version} -->
+
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+  xmlns:dman="http://www.opensmartgridplatform.org/schemas/devicemanagement/2014/10"
+  xmlns:common="http://www.opensmartgridplatform.org/schemas/common/2014/10"
+  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns:tns="http://www.opensmartgridplatform.org/definitions/common/devicemanagement-v1.0"
+  targetNamespace="http://www.opensmartgridplatform.org/definitions/common/devicemanagement-v1.0">
+
+  <wsdl:types>
+    <xsd:schema
+      targetNamespace="http://www.opensmartgridplatform.org/definitions/common/devicemanagement/imports"
+      xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:import
+        namespace="http://www.opensmartgridplatform.org/schemas/devicemanagement/2014/10"
+        schemaLocation="schemas/devicemanagement-ws-core.xsd" />
+    </xsd:schema>
+  </wsdl:types>
+
+  <!-- An additional SOAP header 'MessagePriority' can be set. Values between 0 (low) and 9 (high), the default value is 4 (medium). -->
+  <wsdl:message name="OsgpMessageHeader">
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
+    <wsdl:part element="common:UserName" name="UserName" />
+    <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+  </wsdl:message>
+
+  <wsdl:message name="FindEventsResponse">
+    <wsdl:part element="dman:FindEventsResponse" name="FindEventsResponse">
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:message name="SetEventNotificationsRequest">
+    <wsdl:part element="dman:SetEventNotificationsRequest"
+      name="SetEventNotificationsRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetEventNotificationsAsyncResponse">
+    <wsdl:part element="dman:SetEventNotificationsAsyncResponse"
+      name="SetEventNotificationsAsyncResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetEventNotificationsAsyncRequest">
+    <wsdl:part element="dman:SetEventNotificationsAsyncRequest"
+      name="SetEventNotificationsAsyncRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetEventNotificationsResponse">
+    <wsdl:part element="dman:SetEventNotificationsResponse"
+      name="SetEventNotificationsResponse">
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:message name="FindEventsRequest">
+    <wsdl:part element="dman:FindEventsRequest" name="FindEventsRequest">
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:message name="FindOrganisationResponse">
+    <wsdl:part element="dman:FindOrganisationResponse" name="FindOrganisationResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="FindOrganisationRequest">
+    <wsdl:part element="dman:FindOrganisationRequest" name="FindOrganisationRequest">
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:message name="FindAllOrganisationsResponse">
+    <wsdl:part element="dman:FindAllOrganisationsResponse" name="FindAllOrganisationsResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="FindAllOrganisationsRequest">
+    <wsdl:part element="dman:FindAllOrganisationsRequest" name="FindAllOrganisationsRequest">
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:message name="FindDevicesRequest">
+    <wsdl:part element="dman:FindDevicesRequest" name="FindDevicesRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="FindDevicesResponse">
+    <wsdl:part element="dman:FindDevicesResponse" name="FindDevicesResponse">
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:message name="FindScheduledTasksRequest">
+    <wsdl:part element="dman:FindScheduledTasksRequest" name="FindScheduledTasksRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="FindScheduledTasksResponse">
+    <wsdl:part element="dman:FindScheduledTasksResponse" name="FindScheduledTasksResponse">
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:message name="UpdateDeviceResponse">
+    <wsdl:part element="dman:UpdateDeviceResponse" name="UpdateDeviceResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="UpdateDeviceRequest">
+    <wsdl:part element="dman:UpdateDeviceRequest" name="UpdateDeviceRequest">
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:message name="SetDeviceAliasResponse">
+    <wsdl:part element="dman:SetDeviceAliasResponse" name="SetDeviceAliasResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetDeviceAliasRequest">
+    <wsdl:part element="dman:SetDeviceAliasRequest" name="SetDeviceAliasRequest">
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:message name="SetMaintenanceStatusResponse">
+    <wsdl:part element="dman:SetMaintenanceStatusResponse"
+      name="SetMaintenanceStatusResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetMaintenanceStatusRequest">
+    <wsdl:part element="dman:SetMaintenanceStatusRequest"
+      name="SetMaintenanceStatusRequest">
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:message name="UpdateDeviceSslCertificationRequest">
+    <wsdl:part element="dman:UpdateDeviceSslCertificationRequest"
+      name="UpdateDeviceSslCertificationRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="UpdateDeviceSslCertificationAsyncResponse">
+    <wsdl:part element="dman:UpdateDeviceSslCertificationAsyncResponse"
+      name="UpdateDeviceSslCertificationAsyncResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="UpdateDeviceSslCertificationAsyncRequest">
+    <wsdl:part element="dman:UpdateDeviceSslCertificationAsyncRequest"
+      name="UpdateDeviceSslCertificationAsyncRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="UpdateDeviceSslCertificationResponse">
+    <wsdl:part element="dman:UpdateDeviceSslCertificationResponse"
+      name="UpdateDeviceSslCertificationResponse">
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:message name="SetDeviceVerificationKeyRequest">
+    <wsdl:part element="dman:SetDeviceVerificationKeyRequest"
+      name="SetDeviceVerificationKeyRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetDeviceVerificationKeyAsyncResponse">
+    <wsdl:part element="dman:SetDeviceVerificationKeyAsyncResponse"
+      name="SetDeviceVerificationKeyAsyncResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetDeviceVerificationKeyAsyncRequest">
+    <wsdl:part element="dman:SetDeviceVerificationKeyAsyncRequest"
+      name="SetDeviceVerificationKeyAsyncRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetDeviceVerificationKeyResponse">
+    <wsdl:part element="dman:SetDeviceVerificationKeyResponse"
+      name="SetDeviceVerificationKeyResponse">
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:message name="SetDeviceLifecycleStatusRequest">
+    <wsdl:part element="dman:SetDeviceLifecycleStatusRequest"
+      name="SetDeviceLifecycleStatusRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetDeviceLifecycleStatusAsyncResponse">
+    <wsdl:part element="dman:SetDeviceLifecycleStatusAsyncResponse"
+      name="SetDeviceLifecycleStatusAsyncResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetDeviceLifecycleStatusAsyncRequest">
+    <wsdl:part element="dman:SetDeviceLifecycleStatusAsyncRequest"
+      name="SetDeviceLifecycleStatusAsyncRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetDeviceLifecycleStatusResponse">
+    <wsdl:part element="dman:SetDeviceLifecycleStatusResponse"
+      name="SetDeviceLifecycleStatusResponse">
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:message name="UpdateDeviceCdmaSettingsRequest">
+    <wsdl:part element="dman:UpdateDeviceCdmaSettingsRequest"
+      name="UpdateDeviceCdmaSettingsRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="UpdateDeviceCdmaSettingsAsyncResponse">
+    <wsdl:part element="dman:UpdateDeviceCdmaSettingsAsyncResponse"
+      name="UpdateDeviceCdmaSettingsAsyncResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="UpdateDeviceCdmaSettingsAsyncRequest">
+    <wsdl:part element="dman:UpdateDeviceCdmaSettingsAsyncRequest"
+      name="UpdateDeviceCdmaSettingsAsyncRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="UpdateDeviceCdmaSettingsResponse">
+    <wsdl:part element="dman:UpdateDeviceCdmaSettingsResponse"
+      name="UpdateDeviceCdmaSettingsResponse">
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:portType name="DeviceManagementPort">
+    <wsdl:operation name="FindEvents">
+      <wsdl:input message="tns:FindEventsRequest" name="FindEventsRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:FindEventsResponse" name="FindEventsResponse">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SetEventNotifications">
+      <wsdl:input message="tns:SetEventNotificationsRequest"
+        name="SetEventNotificationsRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:SetEventNotificationsAsyncResponse"
+        name="SetEventNotificationsAsyncResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetSetEventNotificationsResponse">
+      <wsdl:input message="tns:SetEventNotificationsAsyncRequest"
+        name="SetEventNotificationsAsyncRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:SetEventNotificationsResponse"
+        name="SetEventNotificationsResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="FindOrganisation">
+      <wsdl:input message="tns:FindOrganisationRequest"
+        name="FindOrganisationRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:FindOrganisationResponse"
+        name="FindOrganisationResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="FindAllOrganisations">
+      <wsdl:input message="tns:FindAllOrganisationsRequest"
+        name="FindAllOrganisationsRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:FindAllOrganisationsResponse"
+        name="FindAllOrganisationsResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="FindDevices">
+      <wsdl:input message="tns:FindDevicesRequest" name="FindDevicesRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:FindDevicesResponse" name="FindDevicesResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="FindScheduledTasks">
+      <wsdl:input message="tns:FindScheduledTasksRequest"
+        name="FindScheduledTasksRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:FindScheduledTasksResponse"
+        name="FindScheduledTasksResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="UpdateDevice">
+      <wsdl:input message="tns:UpdateDeviceRequest" name="UpdateDeviceRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:UpdateDeviceResponse" name="UpdateDeviceResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="SetDeviceAlias">
+      <wsdl:input message="tns:SetDeviceAliasRequest" name="SetDeviceAliasRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:SetDeviceAliasResponse"
+        name="SetDeviceAliasResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="SetMaintenanceStatus">
+      <wsdl:input message="tns:SetMaintenanceStatusRequest"
+        name="SetMaintenanceStatusRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:SetMaintenanceStatusResponse"
+        name="SetMaintenanceStatusResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="UpdateDeviceSslCertification">
+      <wsdl:input message="tns:UpdateDeviceSslCertificationRequest"
+        name="UpdateDeviceSslCertificationRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:UpdateDeviceSslCertificationAsyncResponse"
+        name="UpdateDeviceSslCertificationAsyncResponse">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetUpdateDeviceSslCertificationResponse">
+      <wsdl:input message="tns:UpdateDeviceSslCertificationAsyncRequest"
+        name="UpdateDeviceSslCertificationAsyncRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:UpdateDeviceSslCertificationResponse"
+        name="UpdateDeviceSslCertificationResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="SetDeviceVerificationKey">
+      <wsdl:input message="tns:SetDeviceVerificationKeyRequest"
+        name="SetDeviceVerificationKeyRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:SetDeviceVerificationKeyAsyncResponse"
+        name="SetDeviceVerificationKeyAsyncResponse">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSetDeviceVerificationKeyResponse">
+      <wsdl:input message="tns:SetDeviceVerificationKeyAsyncRequest"
+        name="SetDeviceVerificationKeyAsyncRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:SetDeviceVerificationKeyResponse"
+        name="SetDeviceVerificationKeyResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="SetDeviceLifecycleStatus">
+      <wsdl:input message="tns:SetDeviceLifecycleStatusRequest"
+        name="SetDeviceLifecycleStatusRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:SetDeviceLifecycleStatusAsyncResponse"
+        name="SetDeviceLifecycleStatusAsyncResponse">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSetDeviceLifecycleStatusResponse">
+      <wsdl:input message="tns:SetDeviceLifecycleStatusAsyncRequest"
+        name="SetDeviceLifecycleStatusAsyncRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:SetDeviceLifecycleStatusResponse"
+        name="SetDeviceLifecycleStatusResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="UpdateDeviceCdmaSettings">
+      <wsdl:input message="tns:UpdateDeviceCdmaSettingsRequest"
+        name="UpdateDeviceCdmaSettingsRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:UpdateDeviceCdmaSettingsAsyncResponse"
+        name="UpdateDeviceCdmaSettingsAsyncResponse">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetUpdateDeviceCdmaSettingsResponse">
+      <wsdl:input message="tns:UpdateDeviceCdmaSettingsAsyncRequest"
+        name="UpdateDeviceCdmaSettingsAsyncRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:UpdateDeviceCdmaSettingsResponse"
+        name="UpdateDeviceCdmaSettingsResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+  </wsdl:portType>
+
+  <wsdl:binding name="DeviceManagementPortSoap11" type="tns:DeviceManagementPort">
+    <soap:binding style="document"
+      transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="FindEvents">
+      <soap:operation soapAction="" />
+      <wsdl:input name="FindEventsRequest">
+        <soap:header message="tns:OsgpMessageHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:OsgpMessageHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:OsgpMessageHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="FindEventsResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="SetEventNotifications">
+      <soap:operation soapAction="" />
+      <wsdl:input name="SetEventNotificationsRequest">
+        <soap:header message="tns:OsgpMessageHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:OsgpMessageHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:OsgpMessageHeader"
+          part="ApplicationName" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SetEventNotificationsAsyncResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSetEventNotificationsResponse">
+      <soap:operation soapAction="" />
+      <wsdl:input name="SetEventNotificationsAsyncRequest">
+        <soap:header message="tns:OsgpMessageHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:OsgpMessageHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:OsgpMessageHeader"
+          part="ApplicationName" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SetEventNotificationsResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="FindOrganisation">
+      <soap:operation soapAction="" />
+      <wsdl:input name="FindOrganisationRequest">
+        <soap:header message="tns:OsgpMessageHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:OsgpMessageHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:OsgpMessageHeader"
+          part="ApplicationName" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="FindOrganisationResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="FindAllOrganisations">
+      <soap:operation soapAction="" />
+      <wsdl:input name="FindAllOrganisationsRequest">
+        <soap:header message="tns:OsgpMessageHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:OsgpMessageHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:OsgpMessageHeader"
+          part="ApplicationName" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="FindAllOrganisationsResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="FindDevices">
+      <soap:operation soapAction="" />
+      <wsdl:input name="FindDevicesRequest">
+        <soap:header message="tns:OsgpMessageHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:OsgpMessageHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:OsgpMessageHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="FindDevicesResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="FindScheduledTasks">
+      <soap:operation soapAction="" />
+      <wsdl:input name="FindScheduledTasksRequest">
+        <soap:header message="tns:OsgpMessageHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:OsgpMessageHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:OsgpMessageHeader"
+          part="ApplicationName" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="FindScheduledTasksResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="UpdateDevice">
+      <soap:operation soapAction="" />
+      <wsdl:input name="UpdateDeviceRequest">
+        <soap:header message="tns:OsgpMessageHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:OsgpMessageHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:OsgpMessageHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="UpdateDeviceResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="SetDeviceAlias">
+      <soap:operation soapAction="" />
+      <wsdl:input name="SetDeviceAliasRequest">
+        <soap:header message="tns:OsgpMessageHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:OsgpMessageHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:OsgpMessageHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SetDeviceAliasResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="SetMaintenanceStatus">
+      <soap:operation soapAction="" />
+      <wsdl:input name="SetMaintenanceStatusRequest">
+        <soap:header message="tns:OsgpMessageHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:OsgpMessageHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:OsgpMessageHeader"
+          part="ApplicationName" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SetMaintenanceStatusResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="UpdateDeviceSslCertification">
+      <soap:operation soapAction="" />
+      <wsdl:input name="UpdateDeviceSslCertificationRequest">
+        <soap:header message="tns:OsgpMessageHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:OsgpMessageHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:OsgpMessageHeader"
+          part="ApplicationName" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="UpdateDeviceSslCertificationAsyncResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetUpdateDeviceSslCertificationResponse">
+      <soap:operation soapAction="" />
+      <wsdl:input name="UpdateDeviceSslCertificationAsyncRequest">
+        <soap:header message="tns:OsgpMessageHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:OsgpMessageHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:OsgpMessageHeader"
+          part="ApplicationName" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="UpdateDeviceSslCertificationResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="SetDeviceVerificationKey">
+      <soap:operation soapAction="" />
+      <wsdl:input name="SetDeviceVerificationKeyRequest">
+        <soap:header message="tns:OsgpMessageHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:OsgpMessageHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:OsgpMessageHeader"
+          part="ApplicationName" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SetDeviceVerificationKeyAsyncResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSetDeviceVerificationKeyResponse">
+      <soap:operation soapAction="" />
+      <wsdl:input name="SetDeviceVerificationKeyAsyncRequest">
+        <soap:header message="tns:OsgpMessageHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:OsgpMessageHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:OsgpMessageHeader"
+          part="ApplicationName" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SetDeviceVerificationKeyResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="SetDeviceLifecycleStatus">
+      <soap:operation soapAction="" />
+      <wsdl:input name="SetDeviceLifecycleStatusRequest">
+        <soap:header message="tns:OsgpMessageHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:OsgpMessageHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:OsgpMessageHeader"
+          part="ApplicationName" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SetDeviceLifecycleStatusAsyncResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSetDeviceLifecycleStatusResponse">
+      <soap:operation soapAction="" />
+      <wsdl:input name="SetDeviceLifecycleStatusAsyncRequest">
+        <soap:header message="tns:OsgpMessageHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:OsgpMessageHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:OsgpMessageHeader"
+          part="ApplicationName" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SetDeviceLifecycleStatusResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    
+    <wsdl:operation name="UpdateDeviceCdmaSettings">
+      <soap:operation soapAction="" />
+      <wsdl:input name="UpdateDeviceCdmaSettingsRequest">
+        <soap:header message="tns:OsgpMessageHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:OsgpMessageHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:OsgpMessageHeader"
+          part="ApplicationName" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="UpdateDeviceCdmaSettingsAsyncResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetUpdateDeviceCdmaSettingsResponse">
+      <soap:operation soapAction="" />
+      <wsdl:input name="UpdateDeviceCdmaSettingsAsyncRequest">
+        <soap:header message="tns:OsgpMessageHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:OsgpMessageHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:OsgpMessageHeader"
+          part="ApplicationName" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="UpdateDeviceCdmaSettingsResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    
+  </wsdl:binding>
+
+  <wsdl:service name="DeviceManagementPortService">
+    <wsdl:port binding="tns:DeviceManagementPortSoap11" name="DeviceManagementPortSoap11">
+      <soap:address
+        location="http://localhost:8080/osgp-adapter-ws-core/common/deviceManagementService/" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
