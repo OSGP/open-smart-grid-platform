@@ -1,9 +1,9 @@
-// Pipeline script for the OSGP Nightly Build Functional Tests job in Jenkins
+// Pipeline script for the OSGP Nightly Build job in Jenkins
 
 def stream = 'osgp'
 def servername = stream + '-at-' + env.BUILD_NUMBER
 def playbook = stream + '-at.yml'
-def repo = 'git@github.com:OSGP/Integration-Tests.git'
+def repo = 'git@github.com:OSGP/open-smart-grid-platform.git'
 
 pipeline {
     agent any
@@ -17,14 +17,6 @@ pipeline {
     }
 
     stages {
-
-        // The nightly job will clone the git repository, but nothing more. So gitmodules are not downloaded. Therefore we
-        // need to trigger this manually
-        stage ('Update submodules') {
-            steps {
-                sh "git submodule update --remote --init"
-            }
-        }
 
         stage('Build') {
             steps {
@@ -86,7 +78,7 @@ pipeline {
             build job: 'Destroy an AWS System', parameters: [string(name: 'SERVERNAME', value: servername), string(name: 'PLAYBOOK', value: playbook)]            
         }
         failure {
-            step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: 'kevin.smeets@cgi.com,ruud.lemmers@cgi.com', sendToIndividuals: false])
+            step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: 'kevin.smeets@cgi.com,ruud.lemmers@cgi.com,sander.van.der.heijden@cgi.com', sendToIndividuals: false])
         }
         success {
             // Clean the complete workspace
