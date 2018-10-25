@@ -34,7 +34,7 @@ echo "  [${CMD}]"
 ${CMD}
 
 echo "- Copy over necessary files to ${SERVER} ..."
-CMD="scp -oStrictHostKeyChecking=no ${SSH_KEY_FILE} integration-tests/certificates/* ${USER}@${SERVER}:/data/software/certificates"
+CMD="scp -oStrictHostKeyChecking=no ${SSH_KEY_FILE} certificates/* ${USER}@${SERVER}:/data/software/certificates"
 echo "  [${CMD}]"
 ${CMD}
 
