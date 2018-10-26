@@ -39,7 +39,7 @@ public class ProtocolMessagingConfig extends AbstractConfig {
 
     // JMS Settings
     private static final String PROPERTY_NAME_JMS_ACTIVEMQ_BROKER_URL = "jms.protocol.activemq.broker.url";
-    private static final String PROPERTY_NAME_JMS_ACTIVEMQ_MESSAGEGROUP_CACHESIZE = "jms.protocol.activemq.messageroup.cachesize";
+    private static final String PROPERTY_NAME_JMS_ACTIVEMQ_MESSAGEGROUP_CACHESIZE = "jms.protocol.activemq.messagegroup.cachesize";
 
     private static final String PROPERTY_NAME_JMS_DEFAULT_INITIAL_REDELIVERY_DELAY = "jms.protocol.default.initial.redelivery.delay";
     private static final String PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERIES = "jms.protocol.default.maximum.redeliveries";
