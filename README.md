@@ -19,5 +19,3 @@ Open smart grid platform detailed documentation:
 
 Open smart grid platform issue tracker:
 * [Open smart grid platform Jira](https://smartsocietyservices.atlassian.net/projects/OC/issues/)
-
-
