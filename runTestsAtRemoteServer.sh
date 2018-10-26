@@ -39,7 +39,7 @@ echo "  [${CMD}]"
 ${CMD}
 
 echo "- Copy over cucumber project ${PROJECT} to ${SERVER} ..."
-CMD="scp -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${PROJECT}/target/cucumber-*test-jar-with-dependencies.jar ${USER}@${SERVER}:/data/software/${PROJECT}"
+CMD="scp -oStrictHostKeyChecking=no ${SSH_KEY_FILE} integration-tests/${PROJECT}/target/cucumber-*test-jar-with-dependencies.jar ${USER}@${SERVER}:/data/software/${PROJECT}"
 echo "  [${CMD}]"
 ${CMD}
 

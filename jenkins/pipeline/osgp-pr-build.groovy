@@ -3,7 +3,7 @@
 def stream = 'osgp'
 def servername = stream + '-at-pr-' + env.BUILD_NUMBER
 def playbook = stream + '-at.yml'
-def repo = 'git@github.com:OSGP/Integration-Tests.git'
+def repo = 'git@github.com:OSGP/open-smart-grid-platform.git'
 // Choose the branch to use for SmartSocietyServices/release repository. Default value is 'master'.
 def branchReleaseRepo = 'master'
 
@@ -161,7 +161,7 @@ echo Found cucumber tags: [$EXTRACTED_TAGS]'''
         }
         failure {
             // Mail everyone that the job failed
-            step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: 'kevin.smeets@cgi.com,ruud.lemmers@cgi.com', sendToIndividuals: false])
+            step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: 'kevin.smeets@cgi.com,ruud.lemmers@cgi.com,sander.van.der.heijden@cgi.com', sendToIndividuals: false])
             step([$class: 'GitHubSetCommitStatusBuilder', contextSource: [$class: 'ManuallyEnteredCommitContextSource']])
 
             // Clean only those things which are unnecessary to keep.
