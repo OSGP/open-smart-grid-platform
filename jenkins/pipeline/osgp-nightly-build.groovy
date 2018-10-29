@@ -24,7 +24,15 @@ pipeline {
                         maven: 'Apache Maven 3.5.0',
                         mavenLocalRepo: '.repository',
                         options: [
-                                artifactsPublisher(disabled: true)
+                                artifactsPublisher(disabled: true),
+                                junitPublisher(disabled: true),
+                                findbugsPublisher(disabled: true),
+                                openTasksPublisher(disabled: true),
+                                dependenciesFingerprintPublisher(disabled: true),
+                                concordionPublisher(disabled: true),
+                                invokerPublisher(disabled: true),
+                                jgivenPublisher(disabled: true),
+                                jacocoPublisher(disabled: true)
                         ]) {
                     sh "mvn clean install -DskipTestJarWithDependenciesAssembly=false"
                 }
