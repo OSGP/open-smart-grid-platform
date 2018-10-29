@@ -79,6 +79,16 @@ pipeline {
             }
         }
 
+        stage ('Sonar Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube local') {
+                    sh "mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.2:sonar -Dmaven.test.failure.ignore=true -Dclirr=true " +
+                          "-Dsonar.github.repository=OSGP/open-smart-grid-platform -Dsonar.analysis.mode=preview " +
+                          "-Dsonar.issuesReport.console.enable=true -Dsonar.forceUpdate=true -Dsonar.github.pullRequest=$ghprbPullId " 
+                }
+            }
+        }
+
         stage ('Deploy local artifacts') {
             steps {
                 // Deploy stream specific system using the local artifacts from /data/software/artifacts on the system
