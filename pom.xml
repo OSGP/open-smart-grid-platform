@@ -160,5 +160,7 @@
     <module>integration-tests/cucumber-tests-platform-smartmetering</module>
     <module>integration-tests/cucumber-tests-platform-microgrids</module>
 
+    <module>public-lighting-demo-app/parent-os-webapps</module>
+    <module>public-lighting-demo-app/web-demo-app</module>
   </modules>
 </project>
