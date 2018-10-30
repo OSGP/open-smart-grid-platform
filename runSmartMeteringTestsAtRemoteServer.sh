@@ -8,16 +8,17 @@ then
 fi
 
 SERVERNAME=$1
-PROJECT=$2
-USER=$3
-SSH_KEY_FILE=$4
-ADDITIONAL_PARAMETERS=$5
+FOLDER=$2
+PROJECT=$3
+USER=$4
+SSH_KEY_FILE=$5
+ADDITIONAL_PARAMETERS=$6
 
 # If a space is found in the identity file then create a shortcut as the -i parameter for ssh can't handle spaces.
-[ "${SSH_KEY_FILE}"!="" ] && [ "${SSH_KEY_FILE}"=~" " ] && echo "Creating link ${HOME}/.ssh/${4/ /} => ${HOME}/.ssh/${4} ..." && ln -sf "${HOME}/.ssh/${4}" "${HOME}/.ssh/${4/ /}"
+[ "${SSH_KEY_FILE}"!="" ] && [ "${SSH_KEY_FILE}"=~" " ] && echo "Creating link ${HOME}/.ssh/${5/ /} => ${HOME}/.ssh/${4} ..." && ln -sf "${HOME}/.ssh/${5}" "${HOME}/.ssh/${5/ /}"
 
 # Now determine if a -i parameter should be generated
-[ "${SSH_KEY_FILE}"!="" ] && SSH_KEY_FILE="-i \"${HOME}/.ssh/${4/ /}\"" && echo "SSH_KEY_FILE=[${SSH_KEY_FILE}]"
+[ "${SSH_KEY_FILE}"!="" ] && SSH_KEY_FILE="-i \"${HOME}/.ssh/${5/ /}\"" && echo "SSH_KEY_FILE=[${SSH_KEY_FILE}]"
 
 echo "Going to run the cucumber project ${PROJECT} on ${SERVERNAME} ..."
 echo "- Create directory structure ..."
@@ -28,4 +29,4 @@ ssh -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${USER}@${SERVERNAME} "sudo chown
 echo "- Copy over nesseccary files to ${SERVERNAME} ..."
 scp -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${PROJECT}/soap-ui-project/* ${USER}@${SERVERNAME}:/data/software/${PROJECT}/soap-ui-project/
 
-./runTestsAtRemoteServer.sh ${SERVERNAME} ${PROJECT} ${USER} "$4" "-Ddynamic.properties.base.url=https://${SERVERNAME}/osgp-simulator-dlms-triggered/wakeup ${ADDITIONAL_PARAMETERS}" "$6" "$7"
+./runTestsAtRemoteServer.sh ${SERVERNAME} ${FOLDER} ${PROJECT} ${USER} "$5" "-Ddynamic.properties.base.url=https://${SERVERNAME}/osgp-simulator-dlms-triggered/wakeup ${ADDITIONAL_PARAMETERS}" "$7" "$8"

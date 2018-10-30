@@ -8,15 +8,16 @@ then
 fi
 
 SERVER=$1
-PROJECT=$2
-USER=$3
-SSH_KEY_FILE=$4
-ADDITIONAL_PARAMETERS=$5
-XVFB=$6
-ADDITIONAL_CUCUMBER_OPTIONS=$7
+FOLDER=$2
+PROJECT=$3
+USER=$4
+SSH_KEY_FILE=$5
+ADDITIONAL_PARAMETERS=$6
+XVFB=$7
+ADDITIONAL_CUCUMBER_OPTIONS=$8
 
 # If a space is found in the identity file then create a shortcut as the -i parameter for ssh can't handle spaces.
-[ "${SSH_KEY_FILE}"!="" ] && [ "${SSH_KEY_FILE}"=~" " ] && echo "Creating link ${HOME}/.ssh/${4/ /} => ${HOME}/.ssh/${4} ..." && ln -sf "${HOME}/.ssh/${4}" "${HOME}/.ssh/${4/ /}"
+[ "${SSH_KEY_FILE}"!="" ] && [ "${SSH_KEY_FILE}"=~" " ] && echo "Creating link ${HOME}/.ssh/${5/ /} => ${HOME}/.ssh/${5} ..." && ln -sf "${HOME}/.ssh/${5}" "${HOME}/.ssh/${5/ /}"
 
 # Now determine if a -i parameter should be generated
 [ "${SSH_KEY_FILE}"!="" ] && SSH_KEY_FILE="-oIdentityFile=\"${HOME}/.ssh/${4/ /}\"" && echo "SSH_KEY_FILE=[${SSH_KEY_FILE}]"
@@ -39,7 +40,7 @@ echo "  [${CMD}]"
 ${CMD}
 
 echo "- Copy over cucumber project ${PROJECT} to ${SERVER} ..."
-CMD="scp -oStrictHostKeyChecking=no ${SSH_KEY_FILE} integration-tests/${PROJECT}/target/cucumber-*test-jar-with-dependencies.jar ${USER}@${SERVER}:/data/software/${PROJECT}"
+CMD="scp -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${FOLDER}/${PROJECT}/target/cucumber-*test-jar-with-dependencies.jar ${USER}@${SERVER}:/data/software/${PROJECT}"
 echo "  [${CMD}]"
 ${CMD}
 
