@@ -47,6 +47,14 @@ pipeline {
                         mavenLocalRepo: '.repository',
                         options: [
                                 artifactsPublisher(disabled: true),
+                                junitPublisher(disabled: true),
+                                findbugsPublisher(disabled: true),
+                                openTasksPublisher(disabled: true),
+                                dependenciesFingerprintPublisher(disabled: true),
+                                concordionPublisher(disabled: true),
+                                invokerPublisher(disabled: true),
+                                jgivenPublisher(disabled: true),
+                                jacocoPublisher(disabled: true)
                         ]) {
                     sh "mvn clean install -DskipTestJarWithDependenciesAssembly=false"
                 }
@@ -76,6 +84,17 @@ pipeline {
 
                 // Now create a new single instance (not stream specific) and put all the artifacts in /data/software/artifacts
                 sh "cd release && plays/deploy-files-to-system.yml -e osgp_version=${POMVERSION} -e deployment_name=${servername} -e directory_to_deploy=../../target/artifacts -e tomcat_restart=false -e ec2_instance_type=m4.large -e ami_name=CentOS6SingleInstance -e ami_owner=self"
+            }
+        }
+
+        stage ('Sonar Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube local') {
+                    sh "mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.2:sonar -Dmaven.test.failure.ignore=true -Dclirr=true " +
+                          "-Dsonar.github.repository=OSGP/open-smart-grid-platform -Dsonar.analysis.mode=preview " +
+                          "-Dsonar.issuesReport.console.enable=true -Dsonar.forceUpdate=true -Dsonar.github.pullRequest=$ghprbPullId " +
+                          "${SONAR_EXTRA_PROPS}"
+                }
             }
         }
 
