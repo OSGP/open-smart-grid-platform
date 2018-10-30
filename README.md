@@ -1,6 +1,6 @@
 # Code for Open Smart Grid Platform
 
-### Component Description
+### Project Description
 
 This repository contains all code for the Open Smart Grid Platform.
 
