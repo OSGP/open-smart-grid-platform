@@ -1,6 +1,6 @@
 # Code for Open Smart Grid Platform
 
-### Component Description
+### Project Description
 
 This repository contains all code for the Open Smart Grid Platform.
 
@@ -15,7 +15,7 @@ High-level project information and news can be found on the open smart grid plat
 * [www.opensmartgridplatform.org](http://opensmartgridplatform.org/)
 
 Open smart grid platform detailed documentation:
-* [documentation.opensmartgridplatform.org/](http://documentation.opensmartgridplatform.org/)
+* [documentation.opensmartgridplatform.org](http://documentation.opensmartgridplatform.org/)
 
 Open smart grid platform issue tracker:
 * [Open smart grid platform Jira](https://smartsocietyservices.atlassian.net/projects/OC/issues/)
