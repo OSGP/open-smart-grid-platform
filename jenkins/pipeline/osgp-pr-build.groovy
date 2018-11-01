@@ -3,7 +3,7 @@
 def stream = 'osgp'
 def servername = stream + '-at-pr-' + env.BUILD_NUMBER
 def playbook = stream + '-at.yml'
-def repo = 'git@github.com:OSGP/open-smart-grid-platform.git'
+
 // Choose the branch to use for SmartSocietyServices/release repository. Default value is 'master'.
 def branchReleaseRepo = 'master'
 

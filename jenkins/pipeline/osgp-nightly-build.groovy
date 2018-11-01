@@ -3,7 +3,6 @@
 def stream = 'osgp'
 def servername = stream + '-at-' + env.BUILD_NUMBER
 def playbook = stream + '-at.yml'
-def repo = 'git@github.com:OSGP/open-smart-grid-platform.git'
 
 pipeline {
     agent any
