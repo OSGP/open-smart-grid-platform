@@ -40,7 +40,7 @@
       <url>${maven.site.distributionManagement.site.url}</url>
     </site>
   </distributionManagement>
-  <version>4.31.2-SNAPSHOT</version>
+  <version>4.31.2</version>
 
   <parent>
     <groupId>org.springframework.boot</groupId>
