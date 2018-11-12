@@ -13,23 +13,19 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.UpdateKeyRequest;
 
-import ma.glasnost.orika.MapperFacade;
-
 /**
  * Service class used for sending and receiving SOAP messages to/from the
  * platform.
  *
  */
 public class OsgpAdminClientSoapService {
+	
+    private final String PUBLIC_KEY =
+        "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEFhUImXFJdqmputquVAc2CPdnn9Ju00M3m/Ice7wABNN+oAYKQbw/OceqvZmFF1+r4nO/vCm/f1JO5nEorE2jNQ==";
+    private final int OSLP_ELSTER_PROTOCOL = 4;
 
     @Autowired
     SoapRequestHelper soapRequestHelper;
-
-    private final MapperFacade adminAdHocMapperFacade;
-
-    public OsgpAdminClientSoapService(final MapperFacade mapper) {
-        this.adminAdHocMapperFacade = mapper;
-    }
 
     /**
      * Create a new UpdateKey Request adds it to the WebServiceTemplate and
@@ -40,14 +36,12 @@ public class OsgpAdminClientSoapService {
         final UpdateKeyRequest keyRequest = new UpdateKeyRequest();
 
         keyRequest.setDeviceIdentification(device.getDeviceIdentification());
-        keyRequest.setPublicKey(
-                "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEFhUImXFJdqmputquVAc2CPdnn9Ju00M3m/Ice7wABNN+oAYKQbw/OceqvZmFF1+r4nO/vCm/f1JO5nEorE2jNQ==");
-        keyRequest.setProtocolInfoId(1);
+        keyRequest.setPublicKey(PUBLIC_KEY);
+        keyRequest.setProtocolInfoId(OSLP_ELSTER_PROTOCOL);
 
         final WebServiceTemplate template = this.soapRequestHelper.createAdminRequest();
 
         template.marshalSendAndReceive(keyRequest);
-
     }
 
 }
