@@ -49,7 +49,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <spring.version>4.3.18.RELEASE</spring.version>
-    <spring.data.version>1.10.6.RELEASE</spring.data.version>
+    <spring.data.version>1.11.6.RELEASE</spring.data.version>
     <spring.wscore.version>2.4.0.RELEASE</spring.wscore.version>
     <spring.wssecurity.version>2.4.0.RELEASE</spring.wssecurity.version>
     <spring.wssupport.version>2.4.0.RELEASE</spring.wssupport.version>
