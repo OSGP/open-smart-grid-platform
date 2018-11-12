@@ -16,13 +16,12 @@ import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.Update
 /**
  * Service class used for sending and receiving SOAP messages to/from the
  * platform.
- *
  */
 public class OsgpAdminClientSoapService {
-	
-    private final String PUBLIC_KEY =
+
+    private static final String PUBLIC_KEY =
         "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEFhUImXFJdqmputquVAc2CPdnn9Ju00M3m/Ice7wABNN+oAYKQbw/OceqvZmFF1+r4nO/vCm/f1JO5nEorE2jNQ==";
-    private final int OSLP_ELSTER_PROTOCOL = 4;
+    private static final int OSLP_ELSTER_PROTOCOL = 4;
 
     @Autowired
     SoapRequestHelper soapRequestHelper;
