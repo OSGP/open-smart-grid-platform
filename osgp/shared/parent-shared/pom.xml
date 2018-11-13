@@ -69,7 +69,7 @@
     <jxr.version>2.5</jxr.version>
     <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
     <maven.site.plugin>3.7.1</maven.site.plugin>
-    <apache.activemq.version>5.10.0</apache.activemq.version>
+    <apache.activemq.version>5.15.7</apache.activemq.version>
     <commons.pool.version>1.6</commons.pool.version>
     <jackson.jaxrs.version>2.8.6</jackson.jaxrs.version>
     <proton-jms.version>0.7</proton-jms.version>

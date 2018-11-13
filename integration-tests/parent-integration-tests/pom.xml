@@ -78,7 +78,7 @@
     <checkstyle.version>2.12.1</checkstyle.version>
     <pmd.version>3.8</pmd.version>
     <findbug.version>3.0.0</findbug.version>
-    <apache.activemq.version>5.10.0</apache.activemq.version>
+    <apache.activemq.version>5.15.7</apache.activemq.version>
     <commons.pool.version>1.6</commons.pool.version>
     <jackson.jaxrs.version>2.8.6</jackson.jaxrs.version>
     <proton-jms.version>0.7</proton-jms.version>

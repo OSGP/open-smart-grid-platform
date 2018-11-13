@@ -7,6 +7,8 @@
  */
 package org.opensmartgridplatform.core.application.config;
 
+import java.util.Arrays;
+
 import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.broker.region.policy.RedeliveryPolicyMap;
 import org.apache.activemq.pool.PooledConnectionFactory;
@@ -39,6 +41,10 @@ public class ProtocolMessagingConfig extends AbstractConfig {
 
     // JMS Settings
     private static final String PROPERTY_NAME_JMS_ACTIVEMQ_BROKER_URL = "jms.protocol.activemq.broker.url";
+
+    private static final String PROPERTY_NAME_JMS_ACTIVEMQ_TRUST_ALL_PACKAGES = "jms.activemq.trust.all.packages";
+    private static final String PROPERTY_NAME_JMS_ACTIVEMQ_TRUSTED_PACKAGES = "jms.activemq.trusted.packages";
+
     private static final String PROPERTY_NAME_JMS_ACTIVEMQ_MESSAGEGROUP_CACHESIZE = "jms.protocol.activemq.messagegroup.cachesize";
 
     private static final String PROPERTY_NAME_JMS_DEFAULT_INITIAL_REDELIVERY_DELAY = "jms.protocol.default.initial.redelivery.delay";
@@ -118,6 +124,14 @@ public class ProtocolMessagingConfig extends AbstractConfig {
                 .setBrokerURL(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_ACTIVEMQ_BROKER_URL));
 
         activeMQConnectionFactory.setNonBlockingRedelivery(true);
+
+        final boolean trustAllPackages = Boolean
+                .parseBoolean(this.environment.getProperty(PROPERTY_NAME_JMS_ACTIVEMQ_TRUST_ALL_PACKAGES));
+        activeMQConnectionFactory.setTrustAllPackages(trustAllPackages);
+        if (!trustAllPackages) {
+            activeMQConnectionFactory.setTrustedPackages(Arrays.asList(
+                    this.environment.getRequiredProperty(PROPERTY_NAME_JMS_ACTIVEMQ_TRUSTED_PACKAGES).split(",")));
+        }
 
         return activeMQConnectionFactory;
     }
