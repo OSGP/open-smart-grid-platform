@@ -109,7 +109,7 @@ public class ApplicationContext {
      */
     @Bean
     public OsgpAdminClientSoapService osgpAdminClientSoapService() {
-        return new OsgpAdminClientSoapService(this.adminAdHocMapperFacade());
+        return new OsgpAdminClientSoapService();
     }
 
     /**
@@ -147,19 +147,6 @@ public class ApplicationContext {
             LOGGER.error("Unable to set MessageFactory instance", e);
         }
         return messageFactory;
-    }
-
-    /**
-     * Customized mapper facade for Orika
-     *
-     * @return MapperFacade
-     */
-    private MapperFacade adminAdHocMapperFacade() {
-        final MapperFactory factory = new DefaultMapperFactory.Builder().build();
-        factory.classMap(org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.Device.class,
-                org.opensmartgridplatform.webdemoapp.domain.Device.class).byDefault().register();
-
-        return factory.getMapperFacade();
     }
 
     /**
