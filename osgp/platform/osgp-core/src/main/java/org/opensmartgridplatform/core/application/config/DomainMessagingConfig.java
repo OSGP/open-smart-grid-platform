@@ -7,18 +7,12 @@
  */
 package org.opensmartgridplatform.core.application.config;
 
+import java.util.Arrays;
+
 import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.broker.region.policy.RedeliveryPolicyMap;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.apache.activemq.spring.ActiveMQConnectionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
-
 import org.opensmartgridplatform.core.infra.jms.JmsTemplateSettings;
 import org.opensmartgridplatform.core.infra.jms.domain.DomainRequestMessageListenerContainerFactory;
 import org.opensmartgridplatform.core.infra.jms.domain.DomainResponseMessageJmsTemplateFactory;
@@ -27,6 +21,13 @@ import org.opensmartgridplatform.core.infra.jms.domain.in.DomainResponseMessageL
 import org.opensmartgridplatform.domain.core.repositories.DomainInfoRepository;
 import org.opensmartgridplatform.domain.core.repositories.ProtocolInfoRepository;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 
 @Configuration
 @PropertySources({ @PropertySource("classpath:osgp-core.properties"),
@@ -36,6 +37,8 @@ public class DomainMessagingConfig extends AbstractConfig {
 
     // JMS Settings
     private static final String PROPERTY_NAME_JMS_ACTIVEMQ_BROKER_URL = "jms.domain.activemq.broker.url";
+    private static final String PROPERTY_NAME_JMS_ACTIVEMQ_TRUST_ALL_PACKAGES = "jms.activemq.trust.all.packages";
+    private static final String PROPERTY_NAME_JMS_ACTIVEMQ_TRUSTED_PACKAGES = "jms.activemq.trusted.packages";
 
     private static final String PROPERTY_NAME_JMS_DEFAULT_INITIAL_REDELIVERY_DELAY = "jms.domain.default.initial.redelivery.delay";
     private static final String PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERIES = "jms.domain.default.maximum.redeliveries";
@@ -89,11 +92,18 @@ public class DomainMessagingConfig extends AbstractConfig {
 
         final ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory();
         activeMQConnectionFactory.setRedeliveryPolicyMap(this.domainRedeliveryPolicyMap());
-        activeMQConnectionFactory.setBrokerURL(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_ACTIVEMQ_BROKER_URL));
+        activeMQConnectionFactory
+                .setBrokerURL(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_ACTIVEMQ_BROKER_URL));
 
         activeMQConnectionFactory.setNonBlockingRedelivery(true);
 
+        final boolean trustAllPackages = Boolean
+                .parseBoolean(this.environment.getProperty(PROPERTY_NAME_JMS_ACTIVEMQ_TRUST_ALL_PACKAGES));
+        activeMQConnectionFactory.setTrustAllPackages(trustAllPackages);
+        if (!trustAllPackages) {
+            activeMQConnectionFactory.setTrustedPackages(Arrays.asList(
+                    this.environment.getRequiredProperty(PROPERTY_NAME_JMS_ACTIVEMQ_TRUSTED_PACKAGES).split(",")));
+        }
         return activeMQConnectionFactory;
     }
 
@@ -112,18 +122,18 @@ public class DomainMessagingConfig extends AbstractConfig {
 
         final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
 
-        redeliveryPolicy.setInitialRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_INITIAL_REDELIVERY_DELAY)));
-        redeliveryPolicy.setMaximumRedeliveries(Integer.parseInt(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERIES)));
-        redeliveryPolicy.setMaximumRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERY_DELAY)));
-        redeliveryPolicy.setRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_REDELIVERY_DELAY)));
-        redeliveryPolicy.setBackOffMultiplier(Double.parseDouble(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_BACK_OFF_MULTIPLIER)));
-        redeliveryPolicy.setUseExponentialBackOff(Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_USE_EXPONENTIAL_BACK_OFF)));
+        redeliveryPolicy.setInitialRedeliveryDelay(Long
+                .parseLong(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_INITIAL_REDELIVERY_DELAY)));
+        redeliveryPolicy.setMaximumRedeliveries(
+                Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERIES)));
+        redeliveryPolicy.setMaximumRedeliveryDelay(Long
+                .parseLong(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERY_DELAY)));
+        redeliveryPolicy.setRedeliveryDelay(
+                Long.parseLong(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_REDELIVERY_DELAY)));
+        redeliveryPolicy.setBackOffMultiplier(Double
+                .parseDouble(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_BACK_OFF_MULTIPLIER)));
+        redeliveryPolicy.setUseExponentialBackOff(Boolean.parseBoolean(
+                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_USE_EXPONENTIAL_BACK_OFF)));
 
         return redeliveryPolicy;
     }
@@ -135,10 +145,11 @@ public class DomainMessagingConfig extends AbstractConfig {
     public DomainResponseMessageJmsTemplateFactory domainResponseJmsTemplateFactory() {
         LOGGER.debug("Creating bean: domainResponseJmsTemplateFactory");
 
-        final JmsTemplateSettings jmsTemplateSettings = new JmsTemplateSettings(Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_DOMAIN_RESPONSES_EXPLICIT_QOS_ENABLED)),
-                Long.parseLong(this.environment
-                        .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_DOMAIN_RESPONSES_TIME_TO_LIVE)),
+        final JmsTemplateSettings jmsTemplateSettings = new JmsTemplateSettings(
+                Boolean.parseBoolean(this.environment
+                        .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_DOMAIN_RESPONSES_EXPLICIT_QOS_ENABLED)),
+                Long.parseLong(
+                        this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_DOMAIN_RESPONSES_TIME_TO_LIVE)),
                 Boolean.parseBoolean(this.environment
                         .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_DOMAIN_RESPONSES_DELIVERY_PERSISTENT)));
         return new DomainResponseMessageJmsTemplateFactory(this.domainPooledConnectionFactory(), jmsTemplateSettings,
@@ -155,8 +166,8 @@ public class DomainMessagingConfig extends AbstractConfig {
         final DomainRequestMessageListenerContainerFactory messageListenerContainer = new DomainRequestMessageListenerContainerFactory(
                 this.domainInfoRepository.findAll());
         messageListenerContainer.setConnectionFactory(this.domainPooledConnectionFactory());
-        messageListenerContainer.setConcurrentConsumers(Integer.parseInt(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_INCOMING_DOMAIN_REQUESTS_CONCURRENT_CONSUMERS)));
+        messageListenerContainer.setConcurrentConsumers(Integer.parseInt(
+                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_INCOMING_DOMAIN_REQUESTS_CONCURRENT_CONSUMERS)));
         messageListenerContainer.setMaxConcurrentConsumers(Integer.parseInt(this.environment
                 .getRequiredProperty(PROPERTY_NAME_JMS_INCOMING_DOMAIN_REQUESTS_MAX_CONCURRENT_CONSUMERS)));
 
@@ -168,10 +179,11 @@ public class DomainMessagingConfig extends AbstractConfig {
 
     @Bean
     public DomainRequestMessageJmsTemplateFactory domainRequestMessageJmsTemplateFactory() {
-        final JmsTemplateSettings jmsTemplateSettings = new JmsTemplateSettings(Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_DOMAIN_REQUESTS_EXPLICIT_QOS_ENABLED)),
-                Long.parseLong(this.environment
-                        .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_DOMAIN_REQUESTS_TIME_TO_LIVE)),
+        final JmsTemplateSettings jmsTemplateSettings = new JmsTemplateSettings(
+                Boolean.parseBoolean(this.environment
+                        .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_DOMAIN_REQUESTS_EXPLICIT_QOS_ENABLED)),
+                Long.parseLong(
+                        this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_DOMAIN_REQUESTS_TIME_TO_LIVE)),
                 Boolean.parseBoolean(this.environment
                         .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_DOMAIN_REQUESTS_DELIVERY_PERSISTENT)));
 
@@ -199,8 +211,8 @@ public class DomainMessagingConfig extends AbstractConfig {
 
     @Bean
     public Long getPowerUsageHistoryRequestTimeToLive() {
-        return Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_GET_POWER_USAGE_HISTORY_REQUEST_TIME_TO_LIVE));
+        return Long.parseLong(
+                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_GET_POWER_USAGE_HISTORY_REQUEST_TIME_TO_LIVE));
     }
 
     @Bean

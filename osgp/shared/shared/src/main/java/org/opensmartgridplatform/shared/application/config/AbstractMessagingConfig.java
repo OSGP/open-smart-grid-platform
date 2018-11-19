@@ -7,15 +7,16 @@
  */
 package org.opensmartgridplatform.shared.application.config;
 
+import java.util.Arrays;
+
 import org.apache.activemq.ActiveMQPrefetchPolicy;
 import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.broker.region.policy.RedeliveryPolicyMap;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.apache.activemq.spring.ActiveMQConnectionFactory;
+import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-
-import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationFactory;
 
 /**
  * This class provides the basic components used for JMS messaging.
@@ -51,6 +52,12 @@ public abstract class AbstractMessagingConfig extends AbstractConfig {
 
     @Value("${jms.activemq.connection.send.timeout:0}")
     private int sendTimeout;
+
+    @Value("${jms.activemq.trust.all.packages:true}")
+    private boolean trustAllPackages;
+
+    @Value("${jms.activemq.trusted.packages:org.opensmartgridplatform,org.joda.time,java.util}")
+    private String trustedPackages;
 
     protected String getActiveMQBroker() {
         return this.activeMqBroker;
@@ -100,6 +107,11 @@ public abstract class AbstractMessagingConfig extends AbstractConfig {
         activeMQConnectionFactory.setNonBlockingRedelivery(true);
         activeMQConnectionFactory.setPrefetchPolicy(activeMQPrefetchPolicy);
         activeMQConnectionFactory.setSendTimeout(this.sendTimeout);
+        activeMQConnectionFactory.setTrustAllPackages(this.trustAllPackages);
+        if (!this.trustAllPackages) {
+            activeMQConnectionFactory.setTrustedPackages(Arrays.asList(this.trustedPackages.split(",")));
+        }
+
         return activeMQConnectionFactory;
     }
 
