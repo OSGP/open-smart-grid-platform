@@ -14,7 +14,7 @@
 
   <artifactId>parent-os-webapps</artifactId>
   <groupId>org.opensmartgridplatform</groupId>
-  <version>4.32.0-SNAPSHOT</version>
+  <version>4.33.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>os-webapps</name>
   <!-- Description, Organization, Licenses, URL and Distribution Management elements are needed for the maven-jxr-plugin 
@@ -47,12 +47,12 @@
   <properties>
     <module.baseUri>${project.baseUri}/../</module.baseUri>
     <osgp.version>${project.version}</osgp.version>
-    <osgp.shared.version>4.32.0-SNAPSHOT</osgp.shared.version>
+    <osgp.shared.version>4.33.0-SNAPSHOT</osgp.shared.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <spring.version>4.3.5.RELEASE</spring.version>
     <spring.ws.version>2.4.0.RELEASE</spring.ws.version>
-    <spring.data.version>1.10.6.RELEASE</spring.data.version>
+    <spring.data.version>1.11.16.RELEASE</spring.data.version>
     <spring.security.version>4.2.1.RELEASE</spring.security.version>
     <servlet.version>3.0.1</servlet.version>
     <servlet.jstl.version>1.2</servlet.jstl.version>
