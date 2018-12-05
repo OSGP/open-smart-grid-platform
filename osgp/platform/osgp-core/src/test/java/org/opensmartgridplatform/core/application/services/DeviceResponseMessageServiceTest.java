@@ -19,6 +19,7 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -81,35 +82,18 @@ public class DeviceResponseMessageServiceTest {
      */
     @Test
     public void testProcessScheduledMessageRetry() {
-        final ResponseMessageResultType result = ResponseMessageResultType.NOT_OK;
-        final Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DATE, 1);
-        final Date scheduledRetryTime = calendar.getTime();
-
-        // since the retryCount is smaller than the maxRetries, the message
-        // should be retried
-        final RetryHeader retryHeader = new RetryHeader(0, 1, scheduledRetryTime);
-
         final String exceptionMessage = "message";
-        final OsgpException exception = new OsgpException(ComponentType.OSGP_CORE, exceptionMessage);
+        this.testProcessScheduledMessageRetry(exceptionMessage, exceptionMessage);
+    }
 
-        final ProtocolResponseMessage message = new ProtocolResponseMessage.Builder()
-                .deviceMessageMetadata(DEVICE_MESSAGE_DATA).domain(DOMAIN).domainVersion(DOMAIN_VERSION).result(result)
-                .dataObject(DATA_OBJECT).scheduled(true).retryHeader(retryHeader).osgpException(exception).build();
-        final ScheduledTask scheduledTask = new ScheduledTask(DEVICE_MESSAGE_DATA, DOMAIN, DOMAIN, DATA_OBJECT,
-                SCHEDULED_TIME);
-
-        when(this.scheduledTaskRepository.findByCorrelationUid(anyString())).thenReturn(scheduledTask);
-        this.deviceResponseMessageService.processMessage(message);
-
-        // check if the message is not send and the task is not deleted
-        verify(this.domainResponseMessageSender, never()).send(message);
-        verify(this.scheduledTaskRepository, never()).delete(scheduledTask);
-        verify(this.scheduledTaskRepository).save(scheduledTask);
-
-        // check if the scheduled time is updated to the message retry time
-        assertEquals(new Timestamp(scheduledRetryTime.getTime()), scheduledTask.getscheduledTime());
-        assertTrue(scheduledTask.getErrorLog().contains(exceptionMessage));
+    /**
+     * test processMessage with a scheduled task that must be retried with an error message longer than 255 characters
+     */
+    @Test
+    public void testProcessScheduledMessageRetryWithTruncatedError() {
+        final String exceptionMessageWith255Characters = StringUtils.repeat('x', 255);
+        final String tooLongExceptionMessage = exceptionMessageWith255Characters + "extra";
+        this.testProcessScheduledMessageRetry(tooLongExceptionMessage, exceptionMessageWith255Characters);
     }
 
     /**
@@ -139,4 +123,34 @@ public class DeviceResponseMessageServiceTest {
         verify(this.scheduledTaskRepository).delete(scheduledTask);
     }
 
+    private void testProcessScheduledMessageRetry(final String exceptionMessage, final String expectedMessage) {
+        final ResponseMessageResultType result = ResponseMessageResultType.NOT_OK;
+        final Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, 1);
+        final Date scheduledRetryTime = calendar.getTime();
+
+        // since the retryCount is smaller than the maxRetries, the message
+        // should be retried
+        final RetryHeader retryHeader = new RetryHeader(0, 1, scheduledRetryTime);
+
+        final OsgpException exception = new OsgpException(ComponentType.OSGP_CORE, exceptionMessage);
+
+        final ProtocolResponseMessage message = new ProtocolResponseMessage.Builder()
+                .deviceMessageMetadata(DEVICE_MESSAGE_DATA).domain(DOMAIN).domainVersion(DOMAIN_VERSION).result(result)
+                .dataObject(DATA_OBJECT).scheduled(true).retryHeader(retryHeader).osgpException(exception).build();
+        final ScheduledTask scheduledTask = new ScheduledTask(DEVICE_MESSAGE_DATA, DOMAIN, DOMAIN, DATA_OBJECT,
+                SCHEDULED_TIME);
+
+        when(this.scheduledTaskRepository.findByCorrelationUid(anyString())).thenReturn(scheduledTask);
+        this.deviceResponseMessageService.processMessage(message);
+
+        // check if the message is not send and the task is not deleted
+        verify(this.domainResponseMessageSender, never()).send(message);
+        verify(this.scheduledTaskRepository, never()).delete(scheduledTask);
+        verify(this.scheduledTaskRepository).save(scheduledTask);
+
+        // check if the scheduled time is updated to the message retry time
+        assertEquals(new Timestamp(scheduledRetryTime.getTime()), scheduledTask.getscheduledTime());
+        assertTrue(scheduledTask.getErrorLog().contains(expectedMessage));
+    }
 }
