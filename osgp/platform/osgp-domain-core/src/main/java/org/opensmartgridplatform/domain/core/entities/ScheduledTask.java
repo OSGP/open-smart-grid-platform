@@ -16,6 +16,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Type;
 
 import org.opensmartgridplatform.domain.core.valueobjects.ScheduledTaskStatusType;
@@ -30,6 +31,7 @@ public class ScheduledTask extends AbstractEntity {
      * Serial Version UID.
      */
     private static final long serialVersionUID = -77027372763748726L;
+    private static final int MAX_ERROR_MESSAGE_LENGTH = 255;
 
     @Column(length = 255)
     private String domain;
@@ -144,7 +146,7 @@ public class ScheduledTask extends AbstractEntity {
 
     public void setFailed(final String errorLog) {
         this.status = ScheduledTaskStatusType.FAILED;
-        this.errorLog = errorLog;
+        this.errorLog = StringUtils.left(errorLog, MAX_ERROR_MESSAGE_LENGTH);
     }
 
     public void setComplete() {
