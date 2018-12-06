@@ -19,8 +19,6 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Cascade;
-
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
 
 @Entity
@@ -327,6 +325,20 @@ public class DlmsDevice extends AbstractEntity {
 
     public void setMbusManufacturerIdentification(final String mbusManufacturerIdentification) {
         this.mbusManufacturerIdentification = mbusManufacturerIdentification;
+    }
+
+    public String getProtocol() {
+        return protocol;
+    }
+
+    public String getProtocolVersion() {
+        return protocolVersion;
+    }
+
+    public DlmsDevice setProtocol(final String protocol, final String protocolVersion) {
+        this.protocol = protocol;
+        this.protocolVersion = protocolVersion;
+        return this;
     }
 
     /**

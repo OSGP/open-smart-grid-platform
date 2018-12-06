@@ -12,13 +12,14 @@ public enum FirmwareModuleType {
     COMMUNICATION("COMMUNICATION_MODULE_ACTIVE_FIRMWARE"),
     FUNCTIONAL("Functional"),
     SECURITY("Security"),
-    M_BUS("M-bus"),
     MODULE_ACTIVE("MODULE_ACTIVE_FIRMWARE"),
-    ACTIVE_FIRMWARE("ACTIVE_FIRMWARE");
+    ACTIVE_FIRMWARE("ACTIVE_FIRMWARE"),
+    M_BUS_DRIVER_ACTIVE("M_BUS_DRIVER_ACTIVE_FIRMWARE");
+
 
     private final String description;
 
-    private FirmwareModuleType(final String description) {
+    FirmwareModuleType(final String description) {
         this.description = description;
     }
 
