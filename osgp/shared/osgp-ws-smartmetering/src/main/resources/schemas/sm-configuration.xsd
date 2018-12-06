@@ -163,6 +163,7 @@
       <xsd:enumeration value="ACTIVE_FIRMWARE" />
       <xsd:enumeration value="MODULE_ACTIVE_FIRMWARE" />
       <xsd:enumeration value="COMMUNICATION_MODULE_ACTIVE_FIRMWARE" />
+      <xsd:enumeration value="M_BUS_DRIVER_ACTIVE_FIRMWARE" />
     </xsd:restriction>
   </xsd:simpleType>
 

@@ -44,6 +44,8 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
     private boolean inDebugMode = PlatformSmartmeteringDefaults.IN_DEBUG_MODE;
     private Long mbusIdentificationNumber = null;
     private String mbusManufacturerIdentification = null;
+    private String protocol = "DSMR";
+    private String protocolVersion = "4.2.2";
 
     private final SecurityKeyBuilder passwordBuilder = new SecurityKeyBuilder()
             .setSecurityKeyType(SecurityKeyType.PASSWORD).setKey(PlatformSmartmeteringDefaults.PASSWORD);
@@ -345,6 +347,7 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
         dlmsDevice.setInDebugMode(this.inDebugMode);
         dlmsDevice.setMbusIdentificationNumber(this.mbusIdentificationNumber);
         dlmsDevice.setMbusManufacturerIdentification(this.mbusManufacturerIdentification);
+        dlmsDevice.setProtocol(protocol, protocolVersion);
 
         /**
          * It is not ideal that the build() method for security keys is called

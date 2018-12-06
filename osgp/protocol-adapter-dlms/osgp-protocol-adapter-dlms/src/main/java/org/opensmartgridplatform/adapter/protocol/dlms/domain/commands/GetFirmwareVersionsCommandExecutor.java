@@ -10,7 +10,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands;
 import static java.util.Arrays.asList;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.openmuc.jdlms.AttributeAddress;
@@ -49,7 +48,7 @@ public class GetFirmwareVersionsCommandExecutor extends AbstractCommandExecutor<
             new AttributeAddress(CLASS_ID, OBIS_CODE_COMMUNICATION_MODULE_ACTIVE_FIRMWARE_VERSION, ATTRIBUTE_ID),
             new AttributeAddress(CLASS_ID, OBIS_CODE_MBUS_DRIVER_ACTIVE_FIRMWARE_VERSION, ATTRIBUTE_ID));
 
-    private static final AttributeAddress[] FOR_DLMS_1 = ALL_ATTRIBUTE_ADDRESSES.subList(0, 3)
+    private static final AttributeAddress[] FOR_DSMR_4_2_2 = ALL_ATTRIBUTE_ADDRESSES.subList(0, 3)
             .toArray(new AttributeAddress[3]);
     private static final AttributeAddress[] FOR_SMR_5_1 = ALL_ATTRIBUTE_ADDRESSES.subList(0, 4)
             .toArray(new AttributeAddress[4]);
@@ -80,7 +79,7 @@ public class GetFirmwareVersionsCommandExecutor extends AbstractCommandExecutor<
         if (isAnSmr51Device(device)) {
             return getFirmwareVersions(conn, device, FOR_SMR_5_1);
         }
-        return getFirmwareVersions(conn, device, FOR_DLMS_1);
+        return getFirmwareVersions(conn, device, FOR_DSMR_4_2_2);
     }
 
     private boolean isAnSmr51Device(DlmsDevice device) {
