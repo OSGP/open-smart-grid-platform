@@ -57,8 +57,7 @@ public class DlmsDevice extends AbstractEntity {
     @Column
     private boolean hls5Active;
 
-    @OneToMany(mappedBy = "dlmsDevice", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
-    @Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
+    @OneToMany(mappedBy = "dlmsDevice", fetch = FetchType.EAGER, cascade = { CascadeType.ALL }, orphanRemoval=true)
     private final List<SecurityKey> securityKeys = new ArrayList<>();
 
     @Column
@@ -99,6 +98,12 @@ public class DlmsDevice extends AbstractEntity {
     @Column(length = 3)
     private String mbusManufacturerIdentification;
 
+    @Column(nullable = false, length = 255)
+    private String protocol;
+
+    @Column(nullable = false, length = 255)
+    private String protocolVersion;
+
     // -- This comes from: Core Device.
 
     @Transient
@@ -125,10 +130,12 @@ public class DlmsDevice extends AbstractEntity {
     public String toString() {
         return String.format(
                 "DlmsDevice[deviceId=%s, lls1=%b, hls3=%b, hls4=%b, hls5=%b, ipAddress=%s, port=%s, logicalId=%s, clientId=%s, "
-                        + "debug=%b, hdlc=%b, sn=%b, mbusIdentification=%s, mbusManufacturer=%s]",
+                        + "debug=%b, hdlc=%b, sn=%b, mbusIdentification=%s, mbusManufacturer=%s, protocol=%s, "
+                        + "protocolVersion=%s]",
                 this.deviceIdentification, this.lls1Active, this.hls3Active, this.hls4Active, this.hls5Active,
                 this.ipAddress, this.port, this.logicalId, this.clientId, this.inDebugMode, this.useHdlc, this.useSn,
-                this.mbusIdentificationNumber, this.mbusManufacturerIdentification);
+                this.mbusIdentificationNumber, this.mbusManufacturerIdentification, this.protocol,
+                this.protocolVersion);
     }
 
     @Override
