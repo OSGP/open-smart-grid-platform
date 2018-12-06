@@ -98,14 +98,17 @@ public class DlmsPushNotificationDecoder extends ReplayingDecoder<DlmsPushNotifi
     }
 
     private void decodeReceivedData(final ChannelBuffer buffer) throws UnrecognizedMessageDataException {
-        if (buffer.readableBytes() > Math.max(NUMBER_OF_BYTES_FOR_ALARM, NUMBER_OF_BYTES_FOR_LOGICAL_NAME)) {
+        // SLIM-1711 Is a very weird bug, where readableBytes turns out to be almost MAXINT
+        // Seems like BigEndianHeapChannelBuffer has some kind of overflow/underflow.
+        final int readableBytes = buffer.writerIndex() - buffer.readerIndex();
+        if (readableBytes > Math.max(NUMBER_OF_BYTES_FOR_ALARM, NUMBER_OF_BYTES_FOR_LOGICAL_NAME)) {
             throw new UnrecognizedMessageDataException("length of data bytes is not " + NUMBER_OF_BYTES_FOR_ALARM
                     + " (alarm) or " + NUMBER_OF_BYTES_FOR_LOGICAL_NAME + " (obiscode)");
         }
 
-        if (buffer.readableBytes() == NUMBER_OF_BYTES_FOR_ALARM) {
+        if (readableBytes == NUMBER_OF_BYTES_FOR_ALARM) {
             this.decodeAlarmRegisterData(buffer);
-        } else if (buffer.readableBytes() == NUMBER_OF_BYTES_FOR_LOGICAL_NAME) {
+        } else if (readableBytes == NUMBER_OF_BYTES_FOR_LOGICAL_NAME) {
             this.decodeObisCodeData(buffer);
         } else {
             this.waitForMoreBytes(buffer);
