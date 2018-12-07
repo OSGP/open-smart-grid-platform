@@ -5,8 +5,8 @@ BEGIN
 IF NOT EXISTS (
     SELECT 1
     FROM   protocol_info
-    WHERE  protocol = 'SMR'
-    AND    protocol_version  = '5.1') THEN
+    WHERE  protocol = 'DSMR'
+    AND    protocol_version  = '4.2.2') THEN
 
 INSERT INTO protocol_info(
     id,
