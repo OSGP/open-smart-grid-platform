@@ -91,6 +91,12 @@
     </dependency>
     <dependency>
       <groupId>org.opensmartgridplatform</groupId>
+      <artifactId>osgp-dto</artifactId>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opensmartgridplatform</groupId>
       <artifactId>shared</artifactId>
     </dependency>
 

@@ -129,6 +129,12 @@
       </dependency>
       <dependency>
         <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-dto</artifactId>
+        <version>${osgp.shared.version}</version>
+        <type>test-jar</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>shared</artifactId>
         <version>${osgp.shared.version}</version>
       </dependency>
