@@ -1,3 +1,10 @@
+/**
+ * Copyright 2018 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands;
 
 import static java.util.Arrays.asList;
@@ -83,7 +90,7 @@ public class GetFirmwareVersionsCommandExecutorTest {
     }
 
     @Test
-    public void returns4FirmwareVersionsForSMR51Device() throws Exception {
+    public void returns4FirmwareVersionsForSmr51Device() throws Exception {
         DlmsDevice device = new DlmsDevice().setProtocol("SMR", "5.1");
 
         GetResult getResult1 = new GetResultBuilder().build();

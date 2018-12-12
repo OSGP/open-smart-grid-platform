@@ -55,7 +55,7 @@ public class DlmsDevice extends AbstractEntity {
     @Column
     private boolean hls5Active;
 
-    @OneToMany(mappedBy = "dlmsDevice", fetch = FetchType.EAGER, cascade = { CascadeType.ALL }, orphanRemoval=true)
+    @OneToMany(mappedBy = "dlmsDevice", fetch = FetchType.EAGER, cascade = { CascadeType.ALL }, orphanRemoval = true)
     private final List<SecurityKey> securityKeys = new ArrayList<>();
 
     @Column
