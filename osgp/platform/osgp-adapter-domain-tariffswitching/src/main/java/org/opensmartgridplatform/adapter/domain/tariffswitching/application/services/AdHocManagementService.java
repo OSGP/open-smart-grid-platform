@@ -145,14 +145,18 @@ public class AdHocManagementService extends AbstractService {
             boolean updated = false;
             for (final RelayStatus relayStatus : relayStatuses) {
                 if (relayStatus.getIndex() == tariffValue.getIndex()) {
-                    relayStatus.updateLastKnownState(tariffValue.isHigh(), new Date());
+                    // The relay state is true, during the LOW tariff period
+                    final boolean state = !tariffValue.isHigh();
+                    relayStatus.updateLastKnownState(state, new Date());
                     updated = true;
                     break;
                 }
             }
             if (!updated) {
+                // The relay state is true, during the LOW tariff period
+                final boolean state = !tariffValue.isHigh();
                 final RelayStatus newRelayStatus = new RelayStatus.Builder(device, tariffValue.getIndex())
-                        .withLastKnownState(tariffValue.isHigh(), new Date()).build();
+                        .withLastKnownState(state, new Date()).build();
                 relayStatuses.add(newRelayStatus);
             }
         }
