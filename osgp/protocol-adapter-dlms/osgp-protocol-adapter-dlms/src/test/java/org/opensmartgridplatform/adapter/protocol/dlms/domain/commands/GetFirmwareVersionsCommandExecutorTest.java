@@ -21,11 +21,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
-import org.openmuc.jdlms.datatypes.DataObject;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
@@ -60,7 +58,7 @@ public class GetFirmwareVersionsCommandExecutorTest {
     }
 
     @Test
-    public void returns3FirmwareVersionsForDlms1Device() throws Exception {
+    public void returns3FirmwareVersionsForDsmr422Device() throws Exception {
         DlmsDevice device = new DlmsDevice();
 
         GetResult getResult1 = new GetResultBuilder().build();

@@ -44,8 +44,8 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
     private boolean inDebugMode = PlatformSmartmeteringDefaults.IN_DEBUG_MODE;
     private Long mbusIdentificationNumber = null;
     private String mbusManufacturerIdentification = null;
-    private String protocol = "DSMR";
-    private String protocolVersion = "4.2.2";
+    private String protocol = PlatformSmartmeteringDefaults.PROTOCOL;
+    private String protocolVersion = PlatformSmartmeteringDefaults.PROTOCOL_VERSION;
 
     private final SecurityKeyBuilder passwordBuilder = new SecurityKeyBuilder()
             .setSecurityKeyType(SecurityKeyType.PASSWORD).setKey(PlatformSmartmeteringDefaults.PASSWORD);

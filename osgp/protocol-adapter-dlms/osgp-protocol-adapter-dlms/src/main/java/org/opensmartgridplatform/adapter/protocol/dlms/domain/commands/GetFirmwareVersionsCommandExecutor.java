@@ -79,7 +79,7 @@ public class GetFirmwareVersionsCommandExecutor extends AbstractCommandExecutor<
         if (isAnSmr51Device(device)) {
             return getFirmwareVersions(conn, device, FOR_SMR_5_1);
         }
-        return getFirmwareVersions(conn, device, FOR_DSMR_4_2_2);
+        return this.getFirmwareVersions(conn, device, FOR_DSMR_4_2_2);
     }
 
     private boolean isAnSmr51Device(DlmsDevice device) {

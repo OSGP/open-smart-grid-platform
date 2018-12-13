@@ -5,11 +5,10 @@ BEGIN
 IF NOT EXISTS (
     SELECT 1
     FROM   protocol_info
-    WHERE  protocol = 'DSMR'
-    AND    protocol_version  = '4.2.2') THEN
+    WHERE  protocol = 'SMR'
+    AND    protocol_version  = '5.1') THEN
 
 INSERT INTO protocol_info(
-    id,
     creation_time,
     modification_time,
     version,
@@ -21,7 +20,6 @@ INSERT INTO protocol_info(
     outgoing_protocol_responses_queue,
     parallel_requests_allowed)
 VALUES (
-    nextval('protocol_info_id_seq'),
     '2018-12-10 00:00:00',
     '2018-12-10 00:00:00',
     0,
