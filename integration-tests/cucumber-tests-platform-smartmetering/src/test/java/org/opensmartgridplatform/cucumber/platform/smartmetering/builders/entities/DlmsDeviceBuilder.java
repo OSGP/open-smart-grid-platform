@@ -20,6 +20,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityK
 import org.opensmartgridplatform.cucumber.platform.core.builders.CucumberBuilder;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
+import org.opensmartgridplatform.domain.core.entities.ProtocolInfo;
 
 public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
 
@@ -166,6 +167,12 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
 
     public DlmsDeviceBuilder setMbusManufacturerIdentification(final String value) {
         this.mbusManufacturerIdentification = value;
+        return this;
+    }
+
+    public DlmsDeviceBuilder setProtocol(ProtocolInfo protocolInfo) {
+        this.protocol = protocolInfo.getProtocol();
+        this.protocolVersion = protocolInfo.getProtocolVersion();
         return this;
     }
 

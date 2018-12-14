@@ -33,5 +33,14 @@ VALUES (
 
 END IF;
 
+IF NOT EXISTS (
+    SELECT 1
+    FROM   firmware_module
+    WHERE  description = 'm_bus_driver_active_firmware') THEN
+
+INSERT INTO firmware_module (description) VALUES ('m_bus_driver_active_firmware');
+
+END IF;
+
 END;
 $$

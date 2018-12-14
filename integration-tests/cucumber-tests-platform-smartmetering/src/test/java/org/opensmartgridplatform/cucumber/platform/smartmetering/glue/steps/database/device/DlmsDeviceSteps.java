@@ -150,7 +150,7 @@ public class DlmsDeviceSteps {
 
         assertNotNull(smartMeter);
         assertEquals(smartMeter.getSupplier(), settings.get(PlatformSmartmeteringKeys.SUPPLIER));
-        assertEquals(smartMeter.getChannel(), settings.get(PlatformSmartmeteringKeys.CHANNEL));
+        assertEquals(smartMeter.getChannel(), getShort(settings, PlatformSmartmeteringKeys.CHANNEL));
         assertEquals(smartMeter.getMbusIdentificationNumber(),
                 getLong(settings, PlatformSmartmeteringKeys.MBUS_IDENTIFICATION_NUMBER, null));
         assertEquals(smartMeter.getMbusManufacturerIdentification(),
@@ -430,7 +430,9 @@ public class DlmsDeviceSteps {
     }
 
     private void createDlmsDeviceInProtocolAdapterDatabase(final Map<String, String> inputSettings) {
-        final DlmsDeviceBuilder dlmsDeviceBuilder = new DlmsDeviceBuilder();
+        final ProtocolInfo protocolInfo = this.getProtocolInfo(inputSettings);
+
+        final DlmsDeviceBuilder dlmsDeviceBuilder = new DlmsDeviceBuilder().setProtocol(protocolInfo);
         /*
          * Enable the necessary security key builders in the DLMS device builder
          * before calling withSettings. This allows the withSettings to be
