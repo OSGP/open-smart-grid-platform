@@ -15,11 +15,14 @@ import org.springframework.stereotype.Component;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FirmwareVersion;
 import org.opensmartgridplatform.adapter.ws.shared.db.domain.repositories.writable.WritableFirmwareFileRepository;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
+import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleData;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
 import org.opensmartgridplatform.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
 
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.ConfigurableMapper;
+import ma.glasnost.orika.metadata.Type;
+import ma.glasnost.orika.metadata.TypeFactory;
 
 @Component(value = "coreFirmwareManagementMapper")
 public class FirmwareManagementMapper extends ConfigurableMapper {
@@ -55,6 +58,8 @@ public class FirmwareManagementMapper extends ConfigurableMapper {
                 .field("manufacturer.code", "manufacturer").byDefault().toClassMap());
 
         mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
+
+        mapperFactory.registerObjectFactory(new FirmwareModuleDataFactory(), TypeFactory.valueOf(FirmwareModuleData.class));
     }
 
 }
