@@ -23,6 +23,7 @@ import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLContexts;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
@@ -32,8 +33,6 @@ import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.ws.soap.security.support.KeyStoreFactoryBean;
 import org.springframework.ws.transport.http.HttpComponentsMessageSender;
-
-import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
 
 public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFactory {
 
@@ -241,23 +240,27 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
         }
 
         webServiceTemplate.setInterceptors(interceptors.toArray(new ClientInterceptor[interceptors.size()]));
-
-        if (this.isSecurityEnabled) {
-            try {
-                webServiceTemplate.setMessageSender(this.webServiceMessageSender(organisationIdentification));
-            } catch (GeneralSecurityException | IOException e) {
-                LOGGER.error("Webservice exception occurred: Certificate not available", e);
-                throw new WebServiceSecurityException("Certificate not available", e);
-            }
-        } else {
-            webServiceTemplate.setMessageSender(this.webServiceMessageSender());
-        }
+        webServiceTemplate.setMessageSender(this.webServiceMessageSender(organisationIdentification));
 
         return webServiceTemplate;
     }
 
-    private HttpComponentsMessageSender webServiceMessageSender() {
+    private HttpComponentsMessageSender webServiceMessageSender(final String keystore)
+            throws WebServiceSecurityException {
+
         final HttpClientBuilder clientbuilder = HttpClientBuilder.create();
+        if (this.isSecurityEnabled) {
+            try {
+                clientbuilder.setSSLSocketFactory(this.getSSLConnectionSocketFactory(keystore));
+            } catch (GeneralSecurityException | IOException e) {
+                LOGGER.error("Webservice exception occurred: Certificate not available", e);
+                throw new WebServiceSecurityException("Certificate not available", e);
+            }
+        }
+
+        clientbuilder.setMaxConnPerRoute(this.maxConnectionsPerRoute);
+        clientbuilder.setMaxConnTotal(this.maxConnectionsTotal);
+
         // Add intercepter to prevent issue with duplicate headers.
         // See also:
         // http://forum.spring.io/forum/spring-projects/web-services/118857-spring-ws-2-1-4-0-httpclient-proxy-content-length-header-already-present
@@ -268,9 +271,8 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
         return new HttpComponentsMessageSender(clientbuilder.build());
     }
 
-    private HttpComponentsMessageSender webServiceMessageSender(final String keystore)
+    private SSLConnectionSocketFactory getSSLConnectionSocketFactory(final String keystore)
             throws GeneralSecurityException, IOException {
-
         // Open keystore, assuming same identity
         final KeyStoreFactoryBean keyStoreFactory = new KeyStoreFactoryBean();
         keyStoreFactory.setType(this.keyStoreType);
@@ -289,21 +291,6 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
                 .loadKeyMaterial(keyStore, this.keyStorePassword.toCharArray())
                 .loadTrustMaterial(this.trustStoreFactory.getObject(), new TrustSelfSignedStrategy()).build();
 
-        final HttpClientBuilder clientbuilder = HttpClientBuilder.create();
-        final SSLConnectionSocketFactory connectionFactory = new SSLConnectionSocketFactory(sslContext,
-                SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-        clientbuilder.setSSLSocketFactory(connectionFactory);
-
-        clientbuilder.setMaxConnPerRoute(this.maxConnectionsPerRoute);
-        clientbuilder.setMaxConnTotal(this.maxConnectionsTotal);
-
-        // Add intercepter to prevent issue with duplicate headers.
-        // See also:
-        // http://forum.spring.io/forum/spring-projects/web-services/118857-spring-ws-2-1-4-0-httpclient-proxy-content-length-header-already-present
-        clientbuilder.addInterceptorFirst(new HttpComponentsMessageSender.RemoveSoapHeadersInterceptor());
-
-        final RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(this.connectionTimeout).build();
-        clientbuilder.setDefaultRequestConfig(requestConfig);
-        return new HttpComponentsMessageSender(clientbuilder.build());
+        return new SSLConnectionSocketFactory(sslContext, SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
     }
 }
