@@ -65,8 +65,9 @@ public class FirmwareModuleData implements Serializable {
     private final String moduleVersionSec;
     private final String moduleVersionMBusDriverActive;
 
-    public FirmwareModuleData(String moduleVersionComm, String moduleVersionFunc, String moduleVersionMa,
-            String moduleVersionMbus, String moduleVersionSec, String moduleVersionMBusDriverActive) {
+    public FirmwareModuleData(final String moduleVersionComm, final String moduleVersionFunc,
+            final String moduleVersionMa, final String moduleVersionMbus, final String moduleVersionSec,
+            final String moduleVersionMBusDriverActive) {
         this.moduleVersionComm = moduleVersionComm;
         this.moduleVersionFunc = moduleVersionFunc;
         this.moduleVersionMa = moduleVersionMa;
@@ -117,7 +118,7 @@ public class FirmwareModuleData implements Serializable {
     public Map<FirmwareModule, String> getVersionsByModule(final FirmwareModuleRepository firmwareModuleRepository,
             final boolean isForSmartMeters) {
 
-        final Map<FirmwareModule, String> versionsByModule =  new TreeMap<>();
+        final Map<FirmwareModule, String> versionsByModule = new TreeMap<>();
 
         this.addVersionForModuleIfNonBlank(versionsByModule, firmwareModuleRepository, this.moduleVersionComm,
                 MODULE_DESCRIPTION_COMM);

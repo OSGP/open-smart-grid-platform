@@ -53,8 +53,8 @@ public class GetFirmwareVersionsCommandExecutorTest {
 
     @Before
     public void setUp() throws Exception {
-        executor = new GetFirmwareVersionsCommandExecutor(helperService);
-        connectionHolder = new DlmsConnectionHolder(null, null, listener, null);
+        this.executor = new GetFirmwareVersionsCommandExecutor(this.helperService);
+        this.connectionHolder = new DlmsConnectionHolder(null, null, this.listener, null);
     }
 
     @Test
@@ -65,18 +65,18 @@ public class GetFirmwareVersionsCommandExecutorTest {
         GetResult getResult2 = new GetResultBuilder().build();
         GetResult getResult3 = new GetResultBuilder().build();
 
-        when(this.helperService.getAndCheck(same(connectionHolder),
+        when(this.helperService.getAndCheck(same(this.connectionHolder),
                 same(device),
                 eq("retrieve firmware versions"),
                 refEq(new AttributeAddress(CLASS_ID, OBIS_CODE_ACTIVE_FIRMWARE_VERSION, ATTRIBUTE_ID)),
                 refEq(new AttributeAddress(CLASS_ID, OBIS_CODE_MODULE_ACTIVE_FIRMWARE_VERSION, ATTRIBUTE_ID)),
                 refEq(new AttributeAddress(CLASS_ID, OBIS_CODE_COMMUNICATION_MODULE_ACTIVE_FIRMWARE_VERSION, ATTRIBUTE_ID))))
                 .thenReturn(asList(getResult1, getResult2, getResult3));
-        when(helperService.readString(getResult1.getResultData(), FirmwareModuleType.ACTIVE_FIRMWARE.getDescription()))
+        when(this.helperService.readString(getResult1.getResultData(), FirmwareModuleType.ACTIVE_FIRMWARE.getDescription()))
                 .thenReturn("string1");
-        when(helperService.readString(getResult2.getResultData(), FirmwareModuleType.MODULE_ACTIVE.getDescription()))
+        when(this.helperService.readString(getResult2.getResultData(), FirmwareModuleType.MODULE_ACTIVE.getDescription()))
                 .thenReturn("string2");
-        when(helperService.readString(getResult3.getResultData(), FirmwareModuleType.COMMUNICATION.getDescription()))
+        when(this.helperService.readString(getResult3.getResultData(), FirmwareModuleType.COMMUNICATION.getDescription()))
                 .thenReturn("string3");
 
         List<FirmwareVersionDto> result = executor.execute(connectionHolder, device, null);
@@ -96,7 +96,7 @@ public class GetFirmwareVersionsCommandExecutorTest {
         GetResult getResult3 = new GetResultBuilder().build();
         GetResult getResult4 = new GetResultBuilder().build();
 
-        when(this.helperService.getAndCheck(same(connectionHolder),
+        when(this.helperService.getAndCheck(same(this.connectionHolder),
                 same(device),
                 eq("retrieve firmware versions"),
                 refEq(new AttributeAddress(CLASS_ID, OBIS_CODE_ACTIVE_FIRMWARE_VERSION, ATTRIBUTE_ID)),
@@ -104,13 +104,13 @@ public class GetFirmwareVersionsCommandExecutorTest {
                 refEq(new AttributeAddress(CLASS_ID, OBIS_CODE_COMMUNICATION_MODULE_ACTIVE_FIRMWARE_VERSION, ATTRIBUTE_ID)),
                 refEq(new AttributeAddress(CLASS_ID, OBIS_CODE_MBUS_DRIVER_ACTIVE_FIRMWARE_VERSION, ATTRIBUTE_ID))))
                 .thenReturn(asList(getResult1, getResult2, getResult3, getResult4));
-        when(helperService.readString(getResult1.getResultData(), FirmwareModuleType.ACTIVE_FIRMWARE.getDescription()))
+        when(this.helperService.readString(getResult1.getResultData(), FirmwareModuleType.ACTIVE_FIRMWARE.getDescription()))
                 .thenReturn("string1");
-        when(helperService.readString(getResult2.getResultData(), FirmwareModuleType.MODULE_ACTIVE.getDescription()))
+        when(this.helperService.readString(getResult2.getResultData(), FirmwareModuleType.MODULE_ACTIVE.getDescription()))
                 .thenReturn("string2");
-        when(helperService.readString(getResult3.getResultData(), FirmwareModuleType.COMMUNICATION.getDescription()))
+        when(this.helperService.readString(getResult3.getResultData(), FirmwareModuleType.COMMUNICATION.getDescription()))
                 .thenReturn("string3");
-        when(helperService.readString(getResult4.getResultData(), FirmwareModuleType.M_BUS_DRIVER_ACTIVE.getDescription()))
+        when(this.helperService.readString(getResult4.getResultData(), FirmwareModuleType.M_BUS_DRIVER_ACTIVE.getDescription()))
                 .thenReturn("string4");
 
         List<FirmwareVersionDto> result = executor.execute(connectionHolder, device, null);
