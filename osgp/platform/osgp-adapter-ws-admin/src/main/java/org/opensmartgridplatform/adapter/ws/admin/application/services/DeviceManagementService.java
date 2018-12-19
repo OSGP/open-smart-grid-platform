@@ -36,7 +36,6 @@ import org.opensmartgridplatform.domain.core.services.CorrelationIdProviderServi
 import org.opensmartgridplatform.domain.core.services.DeviceDomainService;
 import org.opensmartgridplatform.domain.core.services.OrganisationDomainService;
 import org.opensmartgridplatform.domain.core.services.SecurityService;
-import org.opensmartgridplatform.shared.validation.Identification;
 import org.opensmartgridplatform.domain.core.validation.PublicKey;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup;
@@ -52,16 +51,18 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionTyp
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.opensmartgridplatform.shared.validation.Identification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 
 @Service(value = "wsAdminDeviceManagementService")
@@ -322,7 +323,7 @@ public class DeviceManagementService {
         return this.authorizationRepository.findByDeviceForOrganisation(device, organisation);
     }
 
-    public Page<DeviceLogItem> findOslpMessages(@Identification final String organisationIdentification,
+    public Slice<DeviceLogItem> findDeviceMessages(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Min(value = 0) final int pageNumber)
             throws FunctionalException {
 
@@ -335,7 +336,7 @@ public class DeviceManagementService {
         final PageRequest request = new PageRequest(pageNumber, this.pagingSettings.getMaximumPageSize(),
                 Sort.Direction.DESC, "modificationTime");
 
-        if (deviceIdentification != null && !deviceIdentification.isEmpty()) {
+        if (!StringUtils.isEmpty(deviceIdentification)) {
             return this.logItemRepository.findByDeviceIdentification(deviceIdentification, request);
         }
 

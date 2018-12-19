@@ -11,17 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.validator.method.MethodConstraintViolationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.domain.Page;
-import org.springframework.transaction.TransactionSystemException;
-import org.springframework.ws.server.endpoint.annotation.Endpoint;
-import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
-import org.springframework.ws.server.endpoint.annotation.RequestPayload;
-import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
-
 import org.opensmartgridplatform.adapter.ws.admin.application.mapping.DeviceManagementMapper;
 import org.opensmartgridplatform.adapter.ws.admin.application.services.DeviceManagementService;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
@@ -70,6 +59,16 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Slice;
+import org.springframework.transaction.TransactionSystemException;
+import org.springframework.ws.server.endpoint.annotation.Endpoint;
+import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
+import org.springframework.ws.server.endpoint.annotation.RequestPayload;
+import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 /**
  * Device Management Endpoint class
@@ -224,12 +223,11 @@ public class DeviceManagementEndpoint {
         final FindMessageLogsResponse response = new FindMessageLogsResponse();
 
         try {
-            final Page<DeviceLogItem> page = this.deviceManagementService.findOslpMessages(organisationIdentification,
-                    request.getDeviceIdentification(), request.getPage());
+            final Slice<DeviceLogItem> page = this.deviceManagementService.findDeviceMessages(
+                    organisationIdentification, request.getDeviceIdentification(), request.getPage());
 
             // Map to output
             final MessageLogPage logPage = new MessageLogPage();
-            logPage.setTotalPages(page.getTotalPages());
             logPage.getMessageLogs().addAll(this.deviceManagementMapper.mapAsList(page.getContent(), MessageLog.class));
 
             response.setMessageLogPage(logPage);
