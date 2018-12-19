@@ -58,8 +58,6 @@ public class FirmwareManagementMapper extends ConfigurableMapper {
                 .field("manufacturer.code", "manufacturer").byDefault().toClassMap());
 
         mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
-
-        mapperFactory.registerObjectFactory(new FirmwareModuleDataFactory(), TypeFactory.valueOf(FirmwareModuleData.class));
     }
 
 }

@@ -136,6 +136,7 @@
         <executions>
           <execution>
             <goals>
+              <!-- Produce an additional jar with the test sources: -->
               <goal>test-jar</goal>
             </goals>
           </execution>

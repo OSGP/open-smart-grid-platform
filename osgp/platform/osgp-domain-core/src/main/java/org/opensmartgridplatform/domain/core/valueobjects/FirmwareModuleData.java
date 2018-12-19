@@ -96,6 +96,10 @@ public class FirmwareModuleData implements Serializable {
         return this.moduleVersionSec;
     }
 
+    public String getModuleVersionMBusDriverActive() {
+        return moduleVersionMBusDriverActive;
+    }
+
     /**
      * Returns the FirmwareModuleData as a map of FirmwareModule to version
      * String.
