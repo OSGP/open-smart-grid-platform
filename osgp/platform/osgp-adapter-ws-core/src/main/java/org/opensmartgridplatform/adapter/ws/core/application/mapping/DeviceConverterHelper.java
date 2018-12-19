@@ -41,17 +41,16 @@ class DeviceConverterHelper<T extends org.opensmartgridplatform.domain.core.enti
 
     @SuppressWarnings("unchecked")
     T initEntity(final Device source) {
-        if (source.getGpsLatitude() == null) {
-            source.setGpsLatitude("0");
-        }
-        if (source.getGpsLongitude() == null) {
-            source.setGpsLongitude("0");
-        }
         T destination;
         final Address containerAddress = new Address(source.getContainerCity(), source.getContainerPostalCode(),
                 source.getContainerStreet(), source.getContainerNumber(), source.getContainerMunicipality());
-        final GpsCoordinates gpsCoordinates = new GpsCoordinates(Float.valueOf(source.getGpsLatitude()),
-                Float.valueOf(source.getGpsLongitude()));
+
+        GpsCoordinates gpsCoordinates = null;
+        if (source.getGpsLatitude() != null && source.getGpsLongitude() != null) {
+            gpsCoordinates = new GpsCoordinates(Float.valueOf(source.getGpsLatitude()),
+                    Float.valueOf(source.getGpsLongitude()));
+        }
+
         if (this.clazz.isAssignableFrom(SmartMeter.class)) {
             destination = (T) new SmartMeter(source.getDeviceIdentification(), source.getAlias(), containerAddress,
                     gpsCoordinates);
