@@ -75,7 +75,8 @@ public class DeviceSteps extends BaseDeviceSteps {
                     device.getOwner().getOrganisationIdentification());
         }
         if (settings.containsKey(PlatformKeys.CONTAINER_POSTALCODE)) {
-            Assert.assertEquals(settings.get(PlatformKeys.CONTAINER_POSTALCODE), device.getContainerAddress().getPostalCode());
+            Assert.assertEquals(settings.get(PlatformKeys.CONTAINER_POSTALCODE),
+                    device.getContainerAddress().getPostalCode());
         }
         if (settings.containsKey(PlatformKeys.CONTAINER_CITY)) {
             Assert.assertEquals(settings.get(PlatformKeys.CONTAINER_CITY), device.getContainerAddress().getCity());
@@ -245,6 +246,16 @@ public class DeviceSteps extends BaseDeviceSteps {
 
             Assert.assertNotEquals("MbusDevice should not be coupled to this GatewayDevice", gatewayDevice,
                     mbusDevice.getGatewayDevice());
+        });
+    }
+
+    @Then("^the default values for the GPS coordinates remain$")
+    public void theDefaultValuesForTheGpsCoordinatesRemain(final Map<String, String> expectedEntity) {
+        Wait.until(() -> {
+            final Device device = this.deviceRepository
+                    .findByDeviceIdentification(getString(expectedEntity, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
+
+            Assert.assertEquals("GpsCoordinates is not null", device.getGpsCoordinates(), null);
         });
     }
 

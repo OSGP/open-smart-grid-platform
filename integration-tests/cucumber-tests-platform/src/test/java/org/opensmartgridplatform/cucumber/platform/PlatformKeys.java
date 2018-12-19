@@ -70,7 +70,7 @@ public class PlatformKeys extends Keys {
     public static final String KEY_ACTUAL_LINKTYPE = "ActualLinkType";
 
     public static final String KEY_ORGANIZATION_NAME = "OrganizationName";
-    public static final String KEY_ALIAS = "alias";
+    public static final String KEY_ALIAS = "Alias";
     public static final String KEY_BEGIN_DATE = "BeginDate";
 
     public static final String KEY_CDMA_BATCH_NUMBER = "BatchNumber";

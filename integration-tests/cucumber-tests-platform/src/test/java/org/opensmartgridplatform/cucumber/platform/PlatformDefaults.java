@@ -82,12 +82,14 @@ public class PlatformDefaults {
 
     public static final Boolean DEFAULT_IS_ACTIVATED = true;
     public static final Boolean DEFAULT_ISIMMEDIATE = false;
-    public static final Float DEFAULT_LATITUDE = 0f;
+    public static final Float DEFAULT_LATITUDE = null;
+    public static final String DEFAULT_LATITUDE_STRING = null;
     public static final String DEFAULT_LIGHTVALUES = "";
     public static final String DEFAULT_TARIFFVALUES = "";
 
     public static final Integer DEFAULT_LONG_INTERVAL = 1;
-    public static final Float DEFAULT_LONGITUDE = 0f;
+    public static final Float DEFAULT_LONGITUDE = null;
+    public static final String DEFAULT_LONGITUDE_STRING = null;
     public static final String DEFAULT_MANUFACTURER_CODE = "Test";
     public static final String DEFAULT_MANUFACTURER_NAME = "Test";
     public static final Boolean DEFAULT_MANUFACTURER_USE_PREFIX = false;

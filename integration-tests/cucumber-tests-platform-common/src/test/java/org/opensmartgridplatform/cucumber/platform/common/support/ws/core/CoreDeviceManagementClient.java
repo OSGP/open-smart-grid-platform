@@ -34,6 +34,8 @@ import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateD
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceCdmaSettingsAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceCdmaSettingsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceCdmaSettingsResponse;
+import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceRequest;
+import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceResponse;
 import org.opensmartgridplatform.cucumber.platform.support.ws.BaseClient;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
 import org.opensmartgridplatform.shared.infra.ws.DefaultWebServiceTemplateFactory;
@@ -147,6 +149,13 @@ public class CoreDeviceManagementClient extends BaseClient {
         final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
         return (UpdateDeviceCdmaSettingsResponse) wst.marshalSendAndReceive(asyncRequest);
+    }
+
+    public UpdateDeviceResponse updateDevice(final UpdateDeviceRequest request)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
+        return (UpdateDeviceResponse) wst.marshalSendAndReceive(request);
     }
 
 }

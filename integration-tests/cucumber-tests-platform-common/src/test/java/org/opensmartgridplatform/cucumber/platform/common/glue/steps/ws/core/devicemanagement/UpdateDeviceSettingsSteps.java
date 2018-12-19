@@ -1,5 +1,5 @@
 /**
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2018 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -7,10 +7,9 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.core.deviceinstallation;
+package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.core.devicemanagement;
 
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
-import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getFloat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.io.IOException;
@@ -18,17 +17,17 @@ import java.security.GeneralSecurityException;
 import java.util.Map;
 
 import org.junit.Assert;
-import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.AddDeviceRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.AddDeviceResponse;
-import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.Device;
-import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.DeviceModel;
-import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.UpdateDeviceRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.UpdateDeviceResponse;
+import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device;
+import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.DeviceModel;
+import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Manufacturer;
+import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceRequest;
+import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceResponse;
 import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
+import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonDefaults;
-import org.opensmartgridplatform.cucumber.platform.common.support.ws.core.CoreDeviceInstallationClient;
+import org.opensmartgridplatform.cucumber.platform.common.support.ws.core.CoreDeviceManagementClient;
 import org.opensmartgridplatform.cucumber.platform.glue.steps.ws.GenericResponseSteps;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,45 +36,12 @@ import org.springframework.ws.soap.client.SoapFaultClientException;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-/**
- * Class with all the create organization requests steps
- */
-public class CreateDeviceSteps extends GlueBase {
+public class UpdateDeviceSettingsSteps extends GlueBase {
 
     @Autowired
-    private CoreDeviceInstallationClient client;
+    private CoreDeviceManagementClient client;
 
-    @When("^receiving an add device request$")
-    public void receivingAnAddDeviceRequest(final Map<String, String> settings) {
-        final AddDeviceRequest request = new AddDeviceRequest();
-        final Device device = this.createDevice(settings);
-        request.setDevice(device);
-
-        try {
-            ScenarioContext.current().put(PlatformKeys.RESPONSE, this.client.addDevice(request));
-        } catch (final SoapFaultClientException | WebServiceSecurityException | GeneralSecurityException
-                | IOException ex) {
-            ScenarioContext.current().put(PlatformKeys.RESPONSE, ex);
-        }
-    }
-
-    @When("^receiving an add device request with an unknown organization$")
-    public void receivingAnAddDeviceRequestWithAnUnknownOrganization(final Map<String, String> settings) {
-        ScenarioContext.current().put(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
-        this.receivingAnAddDeviceRequest(settings);
-    }
-
-    /**
-     * Verify the response of a add device request.
-     *
-     * @throws Throwable
-     */
-    @Then("^the add device response is successful$")
-    public void theAddDeviceResponseIsSuccessful() {
-        Assert.assertTrue(ScenarioContext.current().get(PlatformKeys.RESPONSE) instanceof AddDeviceResponse);
-    }
-
-    @When("^receiving an update device request")
+    @When("^receiving a device management update device request")
     public void receivingAnUpdateDeviceRequest(final Map<String, String> settings) {
         final UpdateDeviceRequest request = new UpdateDeviceRequest();
 
@@ -115,20 +81,30 @@ public class CreateDeviceSteps extends GlueBase {
                 getString(settings, PlatformKeys.KEY_STREET, PlatformCommonDefaults.DEFAULT_CONTAINER_STREET));
         device.setDeviceIdentification(getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
                 PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+
         final DeviceModel deviceModel = new DeviceModel();
         deviceModel.setDescription(getString(settings, PlatformKeys.KEY_DEVICE_MODEL_DESCRIPTION,
                 PlatformCommonDefaults.DEFAULT_DEVICE_MODEL_DESCRIPTION));
-        deviceModel.setManufacturer(getString(settings, PlatformKeys.KEY_DEVICE_MODEL_MANUFACTURER,
+
+        final Manufacturer manufacturer = new Manufacturer();
+        manufacturer.setName(
+                getString(settings, PlatformKeys.MANUFACTURER_NAME, PlatformDefaults.DEFAULT_MANUFACTURER_NAME));
+        manufacturer.setManufacturerId(getString(settings, PlatformKeys.KEY_DEVICE_MODEL_MANUFACTURER,
                 PlatformCommonDefaults.DEFAULT_DEVICE_MODEL_MANUFACTURER));
+        manufacturer.setUsePrefix(
+                getBoolean(settings, PlatformKeys.USE_PREFIX, PlatformDefaults.DEFAULT_MANUFACTURER_USE_PREFIX));
+        deviceModel.setManufacturer(manufacturer);
+
         deviceModel.setMetered(getBoolean(settings, PlatformKeys.KEY_DEVICE_MODEL_METERED,
                 PlatformCommonDefaults.DEFAULT_DEVICE_MODEL_METERED));
         deviceModel.setModelCode(getString(settings, PlatformKeys.KEY_DEVICE_MODEL_MODELCODE,
                 PlatformCommonDefaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
         device.setDeviceModel(deviceModel);
         device.setDeviceUid(getString(settings, PlatformKeys.KEY_DEVICE_UID, PlatformCommonDefaults.DEVICE_UID));
-        device.setGpsLatitude(getFloat(settings, PlatformKeys.KEY_LATITUDE, PlatformCommonDefaults.DEFAULT_LATITUDE));
+        device.setGpsLatitude(
+                getString(settings, PlatformKeys.KEY_LATITUDE, PlatformCommonDefaults.DEFAULT_LATITUDE_STRING));
         device.setGpsLongitude(
-                getFloat(settings, PlatformKeys.KEY_LONGITUDE, PlatformCommonDefaults.DEFAULT_LONGITUDE));
+                getString(settings, PlatformKeys.KEY_LONGITUDE, PlatformCommonDefaults.DEFAULT_LONGITUDE_STRING));
         device.setHasSchedule(
                 getBoolean(settings, PlatformKeys.KEY_HAS_SCHEDULE, PlatformCommonDefaults.DEFAULT_HASSCHEDULE));
         device.setOwner(getString(settings, PlatformKeys.KEY_OWNER, PlatformCommonDefaults.DEFAULT_OWNER));
@@ -139,44 +115,12 @@ public class CreateDeviceSteps extends GlueBase {
         return device;
     }
 
-    /**
-     * Verify the response of an update device request.
-     *
-     * @throws Throwable
-     */
-    @Then("^the update device response is successful$")
+    @Then("^the device management update device response is successful$")
     public void theUpdateDeviceResponseIsSuccessfull() {
         Assert.assertTrue(ScenarioContext.current().get(PlatformKeys.RESPONSE) instanceof UpdateDeviceResponse);
     }
 
-    /**
-     * Verify that the create organization response contains the fault with the
-     * given expectedResult parameters.
-     *
-     * @throws Throwable
-     */
-    @Then("^the add device response contains$")
-    public void theAddDeviceResponseContains(final Map<String, String> expectedResult) {
-        Assert.assertTrue(ScenarioContext.current().get(PlatformKeys.RESPONSE) instanceof AddDeviceResponse);
-    }
-
-    @Then("^the add device response contains soap fault$")
-    public void theAddDeviceResponseContainsSoapFault(final Map<String, String> expectedResult) {
-        GenericResponseSteps.verifySoapFault(expectedResult);
-    }
-
-    @Then("^the update device response contains$")
-    public void theUpdateDeviceResponseContains(final Map<String, String> expectedResult) {
-        Assert.assertTrue(ScenarioContext.current().get(PlatformKeys.RESPONSE) instanceof UpdateDeviceResponse);
-    }
-
-    /**
-     * Verify that the update device response contains the fault with the given
-     * expectedResult parameters.
-     *
-     * @throws Throwable
-     */
-    @Then("^the update device response contains soap fault$")
+    @Then("^the device management update device response contains soap fault$")
     public void theUpdateDeviceResponseContainsSoapFault(final Map<String, String> expectedResult) {
         GenericResponseSteps.verifySoapFault(expectedResult);
     }
