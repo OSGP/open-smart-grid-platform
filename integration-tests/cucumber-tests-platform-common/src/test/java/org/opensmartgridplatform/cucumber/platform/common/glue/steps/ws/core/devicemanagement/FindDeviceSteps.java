@@ -15,9 +15,6 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStri
 import java.util.Map;
 
 import org.junit.Assert;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ws.soap.client.SoapFaultClientException;
-
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.DeviceActivatedFilterType;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.DeviceExternalManagedFilterType;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.DeviceFilter;
@@ -30,6 +27,8 @@ import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonKeys;
 import org.opensmartgridplatform.cucumber.platform.common.support.ws.core.CoreDeviceManagementClient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -57,7 +56,7 @@ public class FindDeviceSteps extends GlueBase {
 
         if (requestParameters.containsKey(PlatformKeys.KEY_DEVICE_IDENTIFICATION)
                 || requestParameters.containsKey(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION)
-                || requestParameters.containsKey(PlatformKeys.KEY_ALIAS)
+                || requestParameters.containsKey(PlatformKeys.ALIAS)
                 || requestParameters.containsKey(PlatformKeys.KEY_CITY)
                 || requestParameters.containsKey(PlatformKeys.KEY_POSTCODE)
                 || requestParameters.containsKey(PlatformKeys.KEY_STREET)
@@ -88,8 +87,8 @@ public class FindDeviceSteps extends GlueBase {
                         getString(requestParameters, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
             }
 
-            if (requestParameters.containsKey(PlatformKeys.KEY_ALIAS)) {
-                deviceFilter.setAlias(getString(requestParameters, PlatformKeys.KEY_ALIAS));
+            if (requestParameters.containsKey(PlatformKeys.ALIAS)) {
+                deviceFilter.setAlias(getString(requestParameters, PlatformKeys.ALIAS));
             }
 
             if (requestParameters.containsKey(PlatformKeys.KEY_CITY)) {

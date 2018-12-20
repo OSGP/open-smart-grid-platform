@@ -7,13 +7,6 @@
  */
 package org.opensmartgridplatform.cucumber.platform.publiclighting.support.ws.publiclighting;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.ws.client.core.WebServiceTemplate;
-
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.devicemonitoring.GetPowerUsageHistoryAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.devicemonitoring.GetPowerUsageHistoryAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.devicemonitoring.GetPowerUsageHistoryRequest;
@@ -21,6 +14,9 @@ import org.opensmartgridplatform.adapter.ws.schema.publiclighting.devicemonitori
 import org.opensmartgridplatform.cucumber.platform.support.ws.BaseClient;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
 import org.opensmartgridplatform.shared.infra.ws.DefaultWebServiceTemplateFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.ws.client.core.WebServiceTemplate;
 
 @Component
 public class PublicLightingDeviceMonitoringClient extends BaseClient {
@@ -29,14 +25,14 @@ public class PublicLightingDeviceMonitoringClient extends BaseClient {
     private DefaultWebServiceTemplateFactory publicLightingDeviceMonitoringWstf;
 
     public GetPowerUsageHistoryResponse getGetPowerUsageHistoryResponse(final GetPowerUsageHistoryAsyncRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException {
         final WebServiceTemplate webServiceTemplate = this.publicLightingDeviceMonitoringWstf
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (GetPowerUsageHistoryResponse) webServiceTemplate.marshalSendAndReceive(request);
     }
 
     public GetPowerUsageHistoryAsyncResponse getPowerUsageHistory(final GetPowerUsageHistoryRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException {
         final WebServiceTemplate webServiceTemplate = this.publicLightingDeviceMonitoringWstf
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (GetPowerUsageHistoryAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);

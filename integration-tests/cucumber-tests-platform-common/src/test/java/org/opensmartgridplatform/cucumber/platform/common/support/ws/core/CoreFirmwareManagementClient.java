@@ -7,13 +7,6 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.support.ws.core;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.ws.client.core.WebServiceTemplate;
-
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.AddDeviceModelRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.AddFirmwareRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.AddFirmwareResponse;
@@ -39,6 +32,9 @@ import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.Updat
 import org.opensmartgridplatform.cucumber.platform.support.ws.BaseClient;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
 import org.opensmartgridplatform.shared.infra.ws.DefaultWebServiceTemplateFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.ws.client.core.WebServiceTemplate;
 
 @Component
 public class CoreFirmwareManagementClient extends BaseClient {
@@ -47,35 +43,35 @@ public class CoreFirmwareManagementClient extends BaseClient {
     private DefaultWebServiceTemplateFactory coreFirmwareManagementWstf;
 
     public GetFirmwareVersionAsyncResponse getFirmwareVersion(final GetFirmwareVersionRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException {
         final WebServiceTemplate wst = this.coreFirmwareManagementWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
         return (GetFirmwareVersionAsyncResponse) wst.marshalSendAndReceive(request);
     }
 
     public GetFirmwareVersionResponse getGetFirmwareVersion(final GetFirmwareVersionAsyncRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException {
         final WebServiceTemplate wst = this.coreFirmwareManagementWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
         return (GetFirmwareVersionResponse) wst.marshalSendAndReceive(request);
     }
 
     public UpdateFirmwareAsyncResponse updateFirmware(final UpdateFirmwareRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException {
         final WebServiceTemplate wst = this.coreFirmwareManagementWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
         return (UpdateFirmwareAsyncResponse) wst.marshalSendAndReceive(request);
     }
 
     public UpdateFirmwareResponse getUpdateFirmware(final UpdateFirmwareAsyncRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException {
         final WebServiceTemplate wst = this.coreFirmwareManagementWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
         return (UpdateFirmwareResponse) wst.marshalSendAndReceive(request);
     }
 
     public ChangeFirmwareResponse changeFirmware(final ChangeFirmwareRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException {
         final WebServiceTemplate wst = this.coreFirmwareManagementWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
         return (ChangeFirmwareResponse) wst.marshalSendAndReceive(request);

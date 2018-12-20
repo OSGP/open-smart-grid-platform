@@ -11,7 +11,7 @@ Feature: CoreDeviceInstallation Device Creating
     When receiving an add device request
       | DeviceUid              | <DeviceUid>             |
       | DeviceIdentification   | <DeviceIdentification>  |
-      | alias                  | <Alias>                 |
+      | Alias                  | <Alias>                 |
       | Owner                  | <Owner>                 |
       | containerPostalCode    | <ContainerPostalCode>   |
       | containerCity          | <ContainerCity>         |
@@ -29,7 +29,7 @@ Feature: CoreDeviceInstallation Device Creating
     Then the add device response is successful
     And the device exists
       | DeviceIdentification       | <DeviceIdentification>  |
-      | alias                      | <Alias>                 |
+      | Alias                      | <Alias>                 |
       | OrganizationIdentification | <Owner>                 |
       | containerPostalCode        | <ContainerPostalCode>   |
       | containerCity              | <ContainerCity>         |
@@ -55,7 +55,7 @@ Feature: CoreDeviceInstallation Device Creating
     When receiving an add device request
       | DeviceUid               | <DeviceUid>             |
       | DeviceIdentification    | <DeviceIdentification>  |
-      | alias                   | <Alias>                 |
+      | Alias                   | <Alias>                 |
       | owner                   | <Owner>                 |
       | containerPostalCode     | <ContainerPostalCode>   |
       | containerCity           | <ContainerCity>         |
@@ -88,7 +88,7 @@ Feature: CoreDeviceInstallation Device Creating
     When receiving an add device request
       | DeviceUid               | <DeviceUid>             |
       | DeviceIdentification    | <DeviceIdentification>  |
-      | alias                   | <Alias>                 |
+      | Alias                   | <Alias>                 |
       | owner                   | <Owner>                 |
       | containerPostalCode     | <ContainerPostalCode>   |
       | containerCity           | <ContainerCity>         |
@@ -123,7 +123,7 @@ Feature: CoreDeviceInstallation Device Creating
     When receiving an add device request
       | DeviceUid              | <DeviceUid>             |
       | DeviceIdentification   | <DeviceIdentification>  |
-      | alias                  | <Alias>                 |
+      | Alias                  | <Alias>                 |
       | Owner                  | <Owner>                 |
       | containerPostalCode    | <ContainerPostalCode>   |
       | containerCity          | <ContainerCity>         |
@@ -168,7 +168,7 @@ Feature: CoreDeviceInstallation Device Creating
       | Metered   | true       |
     And a device
       | DeviceIdentification       | TEST1024000000001 |
-      | alias                      | ALIAS_ORIGINAL    |
+      | Alias                      | ALIAS_ORIGINAL    |
       | OrganizationIdentification | test-org          |
       | containerPostalCode        | 1234AA            |
       | containerCity              | Maastricht        |
@@ -185,7 +185,7 @@ Feature: CoreDeviceInstallation Device Creating
     When receiving an add device request
       | DeviceUid              |        1234567890 |
       | DeviceIdentification   | TEST1024000000001 |
-      | alias                  | ALIAS_NEW         |
+      | Alias                  | ALIAS_NEW         |
       | Owner                  | test-org          |
       | containerPostalCode    | 5678BB            |
       | containerCity          | Heerlen           |
@@ -203,7 +203,7 @@ Feature: CoreDeviceInstallation Device Creating
     Then the add device response is successful
     And the device exists
       | DeviceIdentification       | TEST1024000000001 |
-      | alias                      | ALIAS_NEW         |
+      | Alias                      | ALIAS_NEW         |
       | OrganizationIdentification | test-org          |
       | containerPostalCode        | 5678BB            |
       | containerCity              | Heerlen           |

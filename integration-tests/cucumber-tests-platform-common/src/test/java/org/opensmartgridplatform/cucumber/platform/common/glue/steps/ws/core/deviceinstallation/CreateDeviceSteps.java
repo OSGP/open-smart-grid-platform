@@ -13,8 +13,6 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBool
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getFloat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -53,8 +51,7 @@ public class CreateDeviceSteps extends GlueBase {
 
         try {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, this.client.addDevice(request));
-        } catch (final SoapFaultClientException | WebServiceSecurityException | GeneralSecurityException
-                | IOException ex) {
+        } catch (final Exception ex) {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, ex);
         }
     }
@@ -93,8 +90,7 @@ public class CreateDeviceSteps extends GlueBase {
 
         try {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, this.client.updateDevice(request));
-        } catch (final SoapFaultClientException | WebServiceSecurityException | GeneralSecurityException
-                | IOException ex) {
+        } catch (final WebServiceSecurityException | SoapFaultClientException ex) {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, ex);
         }
     }
@@ -102,7 +98,7 @@ public class CreateDeviceSteps extends GlueBase {
     private Device createDevice(final Map<String, String> settings) {
 
         final Device device = new Device();
-        device.setAlias(getString(settings, PlatformKeys.KEY_ALIAS, PlatformCommonDefaults.DEFAULT_ALIAS));
+        device.setAlias(getString(settings, PlatformKeys.ALIAS, PlatformCommonDefaults.DEFAULT_ALIAS));
         device.setContainerCity(
                 getString(settings, PlatformKeys.KEY_CITY, PlatformCommonDefaults.DEFAULT_CONTAINER_CITY));
         device.setContainerMunicipality(getString(settings, PlatformKeys.KEY_MUNICIPALITY,
@@ -145,7 +141,7 @@ public class CreateDeviceSteps extends GlueBase {
      * @throws Throwable
      */
     @Then("^the update device response is successful$")
-    public void theUpdateDeviceResponseIsSuccessfull() {
+    public void theUpdateDeviceResponseIsSuccessful() {
         Assert.assertTrue(ScenarioContext.current().get(PlatformKeys.RESPONSE) instanceof UpdateDeviceResponse);
     }
 

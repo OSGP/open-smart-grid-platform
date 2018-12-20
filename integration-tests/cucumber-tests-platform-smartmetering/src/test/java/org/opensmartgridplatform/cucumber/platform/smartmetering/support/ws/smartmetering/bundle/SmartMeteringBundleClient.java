@@ -7,13 +7,6 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.bundle;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.ws.client.core.WebServiceTemplate;
-
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.BundleAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.BundleAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.BundleRequest;
@@ -21,6 +14,9 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.BundleRe
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.SmartMeteringBaseClient;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
 import org.opensmartgridplatform.shared.infra.ws.DefaultWebServiceTemplateFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.ws.client.core.WebServiceTemplate;
 
 @Component
 public class SmartMeteringBundleClient extends SmartMeteringBaseClient {
@@ -28,13 +24,12 @@ public class SmartMeteringBundleClient extends SmartMeteringBaseClient {
     @Autowired
     private DefaultWebServiceTemplateFactory smartMeteringBundleWebServiceTemplateFactory;
 
-    public BundleAsyncResponse sendBundleRequest(final BundleRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+    public BundleAsyncResponse sendBundleRequest(final BundleRequest request) throws WebServiceSecurityException {
         return (BundleAsyncResponse) this.getTemplate().marshalSendAndReceive(request);
     }
 
     public BundleResponse retrieveBundleResponse(final BundleAsyncRequest asyncRequest)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException {
 
         final String correlationUid = asyncRequest.getCorrelationUid();
         this.waitForNotification(correlationUid);
@@ -42,7 +37,7 @@ public class SmartMeteringBundleClient extends SmartMeteringBaseClient {
         return (BundleResponse) this.getTemplate().marshalSendAndReceive(asyncRequest);
     }
 
-    private WebServiceTemplate getTemplate() throws WebServiceSecurityException, GeneralSecurityException, IOException {
+    private WebServiceTemplate getTemplate() throws WebServiceSecurityException {
         return this.smartMeteringBundleWebServiceTemplateFactory.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
     }

@@ -15,7 +15,6 @@ import java.util.Map;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.junit.Assert;
-
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.LightMeasurementDevice;
 import org.opensmartgridplatform.cucumber.core.GlueBase;
@@ -30,8 +29,8 @@ public class DeviceSteps extends GlueBase {
                     actualDevice.getDeviceIdentification());
         }
 
-        if (expectedDevice.containsKey(PlatformKeys.KEY_ALIAS)) {
-            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_ALIAS), actualDevice.getAlias());
+        if (expectedDevice.containsKey(PlatformKeys.ALIAS)) {
+            Assert.assertEquals(getString(expectedDevice, PlatformKeys.ALIAS), actualDevice.getAlias());
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_CITY)) {

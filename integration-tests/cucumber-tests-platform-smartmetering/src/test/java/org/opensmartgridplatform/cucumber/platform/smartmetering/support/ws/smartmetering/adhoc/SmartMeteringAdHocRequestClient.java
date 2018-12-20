@@ -7,17 +7,13 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.adhoc;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.ws.client.core.WebServiceTemplate;
-
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.AsyncResponse;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.SmartMeteringBaseClient;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
 import org.opensmartgridplatform.shared.infra.ws.DefaultWebServiceTemplateFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.ws.client.core.WebServiceTemplate;
 
 @Component
 public class SmartMeteringAdHocRequestClient<T extends AsyncResponse, V> extends SmartMeteringBaseClient {
@@ -25,12 +21,12 @@ public class SmartMeteringAdHocRequestClient<T extends AsyncResponse, V> extends
     @Autowired
     private DefaultWebServiceTemplateFactory smartMeteringAdHocWebServiceTemplateFactory;
 
-    private WebServiceTemplate getTemplate() throws WebServiceSecurityException, GeneralSecurityException, IOException {
+    private WebServiceTemplate getTemplate() throws WebServiceSecurityException {
         return this.smartMeteringAdHocWebServiceTemplateFactory.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
     }
 
-    public T doRequest(final V request) throws WebServiceSecurityException, GeneralSecurityException, IOException {
+    public T doRequest(final V request) throws WebServiceSecurityException {
         return (T) this.getTemplate().marshalSendAndReceive(request);
     }
 }

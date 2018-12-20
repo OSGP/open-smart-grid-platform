@@ -249,13 +249,13 @@ public class DeviceSteps extends BaseDeviceSteps {
         });
     }
 
-    @Then("^the default values for the GPS coordinates remain$")
-    public void theDefaultValuesForTheGpsCoordinatesRemain(final Map<String, String> expectedEntity) {
+    @Then("^the default values for the GPS coordinates remain for device (.+)$")
+    public void theDefaultValuesForTheGpsCoordinatesRemainForDevice(final String deviceIdentification) {
         Wait.until(() -> {
-            final Device device = this.deviceRepository
-                    .findByDeviceIdentification(getString(expectedEntity, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
+            final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
 
-            Assert.assertEquals("GpsCoordinates is not null", device.getGpsCoordinates(), null);
+            Assert.assertNotNull("Device is null", device);
+            Assert.assertNull("GpsCoordinates is not null", device.getGpsCoordinates());
         });
     }
 

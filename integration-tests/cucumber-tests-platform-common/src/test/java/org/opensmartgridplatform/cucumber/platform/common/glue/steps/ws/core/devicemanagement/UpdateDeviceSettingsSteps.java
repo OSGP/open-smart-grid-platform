@@ -12,8 +12,6 @@ package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.core.de
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -59,8 +57,7 @@ public class UpdateDeviceSettingsSteps extends GlueBase {
 
         try {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, this.client.updateDevice(request));
-        } catch (final SoapFaultClientException | WebServiceSecurityException | GeneralSecurityException
-                | IOException ex) {
+        } catch (final WebServiceSecurityException | SoapFaultClientException ex) {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, ex);
         }
     }
@@ -68,7 +65,7 @@ public class UpdateDeviceSettingsSteps extends GlueBase {
     private Device createDevice(final Map<String, String> settings) {
 
         final Device device = new Device();
-        device.setAlias(getString(settings, PlatformKeys.KEY_ALIAS, PlatformCommonDefaults.DEFAULT_ALIAS));
+        device.setAlias(getString(settings, PlatformKeys.ALIAS, PlatformCommonDefaults.DEFAULT_ALIAS));
         device.setContainerCity(
                 getString(settings, PlatformKeys.KEY_CITY, PlatformCommonDefaults.DEFAULT_CONTAINER_CITY));
         device.setContainerMunicipality(getString(settings, PlatformKeys.KEY_MUNICIPALITY,
@@ -116,7 +113,7 @@ public class UpdateDeviceSettingsSteps extends GlueBase {
     }
 
     @Then("^the device management update device response is successful$")
-    public void theUpdateDeviceResponseIsSuccessfull() {
+    public void theUpdateDeviceResponseIsSuccessful() {
         Assert.assertTrue(ScenarioContext.current().get(PlatformKeys.RESPONSE) instanceof UpdateDeviceResponse);
     }
 

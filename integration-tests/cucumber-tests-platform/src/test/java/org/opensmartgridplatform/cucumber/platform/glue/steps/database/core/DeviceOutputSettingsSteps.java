@@ -53,7 +53,7 @@ public class DeviceOutputSettingsSteps extends GlueBase {
                         PlatformDefaults.DEFAULT_DEVICE_OUTPUT_SETTING_EXTERNALID),
                 getEnum(settings, PlatformKeys.KEY_RELAY_TYPE, RelayType.class,
                         PlatformDefaults.DEFAULT_DEVICE_OUTPUT_SETTING_RELAY_TYPE),
-                getString(settings, PlatformKeys.KEY_ALIAS, PlatformDefaults.DEFAULT_DEVICE_OUTPUT_SETTING_ALIAS));
+                getString(settings, PlatformKeys.ALIAS, PlatformDefaults.DEFAULT_DEVICE_OUTPUT_SETTING_ALIAS));
         outputSettings.add(deviceOutputSetting);
 
         this.saveDeviceOutputSettingsAndRelayStatuses(outputSettings, device);
