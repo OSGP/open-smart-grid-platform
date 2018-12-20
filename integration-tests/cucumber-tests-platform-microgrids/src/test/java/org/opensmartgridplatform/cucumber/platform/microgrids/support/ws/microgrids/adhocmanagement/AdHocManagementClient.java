@@ -7,17 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.microgrids.support.ws.microgrids.adhocmanagement;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.concurrent.TimeUnit;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import org.springframework.ws.client.core.WebServiceTemplate;
 
 import org.opensmartgridplatform.adapter.ws.schema.microgrids.adhocmanagement.GetDataAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.microgrids.adhocmanagement.GetDataAsyncResponse;
@@ -32,6 +22,13 @@ import org.opensmartgridplatform.cucumber.platform.microgrids.support.ws.microgr
 import org.opensmartgridplatform.cucumber.platform.support.ws.BaseClient;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
 import org.opensmartgridplatform.shared.infra.ws.DefaultWebServiceTemplateFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.springframework.ws.client.core.WebServiceTemplate;
 
 @Component
 public class AdHocManagementClient extends BaseClient {
@@ -48,22 +45,19 @@ public class AdHocManagementClient extends BaseClient {
     @Value("${iec61850.rtu.response.wait.fail.duration:15000}")
     private int waitFailMillis;
 
-    public GetDataAsyncResponse getDataAsync(final GetDataRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+    public GetDataAsyncResponse getDataAsync(final GetDataRequest request) throws WebServiceSecurityException {
         final WebServiceTemplate webServiceTemplate = this.webServiceTemplateFactoryMicrogridsAdHocManagement
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (GetDataAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
     }
 
-    public SetDataAsyncResponse setDataAsync(final SetDataRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+    public SetDataAsyncResponse setDataAsync(final SetDataRequest request) throws WebServiceSecurityException {
         final WebServiceTemplate webServiceTemplate = this.webServiceTemplateFactoryMicrogridsAdHocManagement
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (SetDataAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
     }
 
-    public GetDataResponse getData(final GetDataAsyncRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+    public GetDataResponse getData(final GetDataAsyncRequest request) throws WebServiceSecurityException {
 
         final String correlationUid = request.getAsyncRequest().getCorrelationUid();
         this.waitForNotification(correlationUid);
@@ -73,8 +67,7 @@ public class AdHocManagementClient extends BaseClient {
         return (GetDataResponse) webServiceTemplate.marshalSendAndReceive(request);
     }
 
-    public SetDataResponse setData(final SetDataAsyncRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+    public SetDataResponse setData(final SetDataAsyncRequest request) throws WebServiceSecurityException {
 
         final String correlationUid = request.getAsyncRequest().getCorrelationUid();
         this.waitForNotification(correlationUid);

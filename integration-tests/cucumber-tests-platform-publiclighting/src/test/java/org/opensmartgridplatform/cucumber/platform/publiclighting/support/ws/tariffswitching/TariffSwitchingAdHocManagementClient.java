@@ -7,13 +7,6 @@
  */
 package org.opensmartgridplatform.cucumber.platform.publiclighting.support.ws.tariffswitching;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.ws.client.core.WebServiceTemplate;
-
 import org.opensmartgridplatform.adapter.ws.schema.tariffswitching.adhocmanagement.GetStatusAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.tariffswitching.adhocmanagement.GetStatusAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.tariffswitching.adhocmanagement.GetStatusRequest;
@@ -21,6 +14,9 @@ import org.opensmartgridplatform.adapter.ws.schema.tariffswitching.adhocmanageme
 import org.opensmartgridplatform.cucumber.platform.support.ws.BaseClient;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
 import org.opensmartgridplatform.shared.infra.ws.DefaultWebServiceTemplateFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.ws.client.core.WebServiceTemplate;
 
 @Component
 public class TariffSwitchingAdHocManagementClient extends BaseClient {
@@ -35,7 +31,7 @@ public class TariffSwitchingAdHocManagementClient extends BaseClient {
     }
 
     public GetStatusResponse getGetStatusResponse(final GetStatusAsyncRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException {
         final WebServiceTemplate webServiceTemplate = this.tariffSwitchingAdHocManagementWstf
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (GetStatusResponse) webServiceTemplate.marshalSendAndReceive(request);

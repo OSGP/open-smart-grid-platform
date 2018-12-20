@@ -129,7 +129,7 @@ public abstract class BaseDeviceSteps extends GlueBase {
             device.addOrganisation(getString(settings, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
                     PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
         }
-        device.updateMetaData(getString(settings, PlatformKeys.KEY_ALIAS, PlatformDefaults.DEFAULT_ALIAS),
+        device.updateMetaData(getString(settings, PlatformKeys.ALIAS, PlatformDefaults.DEFAULT_ALIAS),
                 new Address(getString(settings, PlatformKeys.KEY_CITY, PlatformDefaults.DEFAULT_CONTAINER_CITY),
                         getString(settings, PlatformKeys.KEY_POSTCODE, PlatformDefaults.DEFAULT_CONTAINER_POSTALCODE),
                         getString(settings, PlatformKeys.KEY_STREET, PlatformDefaults.DEFAULT_CONTAINER_STREET),

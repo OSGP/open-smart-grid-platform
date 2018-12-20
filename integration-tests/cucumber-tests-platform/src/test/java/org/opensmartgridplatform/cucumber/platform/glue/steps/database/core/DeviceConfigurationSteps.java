@@ -15,8 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -24,6 +22,7 @@ import org.opensmartgridplatform.domain.core.entities.DeviceOutputSetting;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
 import org.opensmartgridplatform.domain.core.repositories.SsldRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.RelayType;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import cucumber.api.java.en.Given;
 
@@ -48,7 +47,7 @@ public class DeviceConfigurationSteps extends GlueBase {
                         PlatformDefaults.DEFAULT_DEVICE_OUTPUT_SETTING_EXTERNALID),
                 getEnum(settings, PlatformKeys.KEY_RELAY_TYPE, RelayType.class,
                         PlatformDefaults.DEFAULT_DEVICE_OUTPUT_SETTING_RELAY_TYPE),
-                getString(settings, PlatformKeys.KEY_ALIAS, PlatformDefaults.DEFAULT_DEVICE_OUTPUT_SETTING_ALIAS));
+                getString(settings, PlatformKeys.ALIAS, PlatformDefaults.DEFAULT_DEVICE_OUTPUT_SETTING_ALIAS));
         outputSettings.add(deviceOutputSetting);
         device.updateOutputSettings(outputSettings);
 

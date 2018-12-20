@@ -14,7 +14,6 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStri
 import java.util.Map;
 
 import org.junit.Assert;
-
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.Device;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 
@@ -45,7 +44,7 @@ public class DeviceSteps {
         localExpectedDevice = expectedDevice;
 
         checkAndAssert(PlatformKeys.KEY_DEVICE_IDENTIFICATION, actualDevice.getDeviceIdentification());
-        checkAndAssert(PlatformKeys.KEY_ALIAS, actualDevice.getAlias());
+        checkAndAssert(PlatformKeys.ALIAS, actualDevice.getAlias());
         checkAndAssert(PlatformKeys.KEY_CITY, actualDevice.getContainerCity());
         checkAndAssert(PlatformKeys.KEY_MUNICIPALITY, actualDevice.getContainerMunicipality());
         checkAndAssert(PlatformKeys.KEY_NUMBER, actualDevice.getContainerNumber());
@@ -70,8 +69,8 @@ public class DeviceSteps {
                     actualDevice.getDeviceIdentification());
         }
 
-        if (expectedDevice.containsKey(PlatformKeys.KEY_ALIAS)) {
-            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_ALIAS), actualDevice.getAlias());
+        if (expectedDevice.containsKey(PlatformKeys.ALIAS)) {
+            Assert.assertEquals(getString(expectedDevice, PlatformKeys.ALIAS), actualDevice.getAlias());
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_CITY)) {
