@@ -327,7 +327,7 @@ public class DeviceManagementService {
             @Identification final String deviceIdentification, @Min(value = 0) final int pageNumber)
             throws FunctionalException {
 
-        LOGGER.debug("findOslpMessage called with organisation {}, device {} and pagenumber {}",
+        LOGGER.debug("findDeviceMessages called with organisation {}, device {} and pagenumber {}",
                 organisationIdentification, deviceIdentification, pageNumber);
 
         final Organisation organisation = this.findOrganisation(organisationIdentification);

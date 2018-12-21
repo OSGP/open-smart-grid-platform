@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.QueryException;
@@ -57,7 +56,6 @@ import org.opensmartgridplatform.domain.core.valueobjects.EventNotificationMessa
 import org.opensmartgridplatform.domain.core.valueobjects.EventNotificationType;
 import org.opensmartgridplatform.domain.core.valueobjects.EventType;
 import org.opensmartgridplatform.domain.core.valueobjects.PlatformFunction;
-import org.opensmartgridplatform.logging.domain.entities.DeviceLogItem;
 import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemRepository;
 import org.opensmartgridplatform.shared.application.config.PageSpecifier;
 import org.opensmartgridplatform.shared.application.config.PagingSettings;
@@ -75,7 +73,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specifications;
 import org.springframework.stereotype.Service;
@@ -188,27 +185,6 @@ public class DeviceManagementService {
             organisations.add(org);
             return organisations;
         }
-    }
-
-    @Transactional(value = "readableTransactionManager")
-    public Slice<DeviceLogItem> findDeviceMessages(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, @Min(value = 0) final int pageNumber)
-            throws FunctionalException {
-
-        LOGGER.debug("findOslpMessage called with organisation {}, device {} and pagenumber {}",
-                organisationIdentification, deviceIdentification, pageNumber);
-
-        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
-        this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_MESSAGES);
-
-        final PageRequest request = new PageRequest(pageNumber, this.pagingSettings.getMaximumPageSize(),
-                Sort.Direction.DESC, "modificationTime");
-
-        if (deviceIdentification != null && !deviceIdentification.isEmpty()) {
-            return this.logItemRepository.findByDeviceIdentification(deviceIdentification, request);
-        }
-
-        return this.logItemRepository.findAll(request);
     }
 
     @Transactional(value = "transactionManager")
