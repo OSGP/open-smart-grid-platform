@@ -13,13 +13,12 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-
 import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 
 import cucumber.api.java.en.Then;
 
@@ -33,12 +32,12 @@ public class DeviceLogItemSteps extends GlueBase {
             final String deviceIdentification) throws Throwable {
 
         final Pageable pageable = new PageRequest(0, Integer.MAX_VALUE);
-        final Page<org.opensmartgridplatform.logging.domain.entities.DeviceLogItem> deviceLogPage = this.deviceLogItemRepository
+        final Slice<org.opensmartgridplatform.logging.domain.entities.DeviceLogItem> slice = this.deviceLogItemRepository
                 .findByDeviceIdentification(deviceIdentification, pageable);
 
-        assertTrue("device log items are present", deviceLogPage.hasContent());
+        assertTrue("device log items are present", slice.hasContent());
 
-        final List<org.opensmartgridplatform.logging.domain.entities.DeviceLogItem> deviceLogItems = deviceLogPage
+        final List<org.opensmartgridplatform.logging.domain.entities.DeviceLogItem> deviceLogItems = slice
                 .getContent();
         for (final org.opensmartgridplatform.logging.domain.entities.DeviceLogItem deviceLogItem : deviceLogItems) {
             assertNotNull("encoded message", deviceLogItem.getEncodedMessage());
@@ -52,9 +51,9 @@ public class DeviceLogItemSteps extends GlueBase {
             final String deviceIdentification) throws Throwable {
 
         final Pageable pageable = new PageRequest(0, Integer.MAX_VALUE);
-        final Page<org.opensmartgridplatform.logging.domain.entities.DeviceLogItem> deviceLogPage = this.deviceLogItemRepository
+        final Slice<org.opensmartgridplatform.logging.domain.entities.DeviceLogItem> slice = this.deviceLogItemRepository
                 .findByDeviceIdentification(deviceIdentification, pageable);
 
-        assertEquals("number of device log items for " + deviceIdentification, 0, deviceLogPage.getTotalElements());
+        assertEquals("number of device log items for " + deviceIdentification, 0, slice.getNumberOfElements());
     }
 }

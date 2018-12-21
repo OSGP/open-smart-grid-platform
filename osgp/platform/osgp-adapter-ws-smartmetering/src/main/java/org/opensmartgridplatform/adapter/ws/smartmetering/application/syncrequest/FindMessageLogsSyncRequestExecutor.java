@@ -9,16 +9,15 @@ package org.opensmartgridplatform.adapter.ws.smartmetering.application.syncreque
 
 import java.io.Serializable;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.logging.domain.entities.DeviceLogItem;
 import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemRepository;
 import org.opensmartgridplatform.shared.application.config.PagingSettings;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Component;
 
 @Component
 public class FindMessageLogsSyncRequestExecutor extends SyncRequestExecutor {
@@ -40,7 +39,7 @@ public class FindMessageLogsSyncRequestExecutor extends SyncRequestExecutor {
             final PageRequest request = new PageRequest(pageNumber, this.pagingSettings.getMaximumPageSize(),
                     Sort.Direction.DESC, "modificationTime");
 
-            Page<DeviceLogItem> pages = null;
+            Slice<DeviceLogItem> pages = null;
             if (deviceIdentification != null && !deviceIdentification.isEmpty()) {
                 pages = this.logItemRepository.findByDeviceIdentification(deviceIdentification, request);
             } else {

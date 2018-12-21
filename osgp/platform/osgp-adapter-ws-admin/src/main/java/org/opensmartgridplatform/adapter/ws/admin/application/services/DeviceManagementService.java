@@ -340,7 +340,7 @@ public class DeviceManagementService {
             return this.logItemRepository.findByDeviceIdentification(deviceIdentification, request);
         }
 
-        return this.logItemRepository.findAll(request);
+        return this.logItemRepository.findAllBy(request);
     }
 
     // === REMOVE DEVICE ===

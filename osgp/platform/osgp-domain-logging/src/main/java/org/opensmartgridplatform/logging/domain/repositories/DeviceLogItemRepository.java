@@ -7,14 +7,15 @@
  */
 package org.opensmartgridplatform.logging.domain.repositories;
 
-import org.springframework.data.domain.Page;
+import org.opensmartgridplatform.logging.domain.entities.DeviceLogItem;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import org.opensmartgridplatform.logging.domain.entities.DeviceLogItem;
-
 @Repository
 public interface DeviceLogItemRepository extends JpaRepository<DeviceLogItem, Long> {
-    Page<DeviceLogItem> findByDeviceIdentification(String deviceIdentification, Pageable pagable);
+    Slice<DeviceLogItem> findByDeviceIdentification(String deviceIdentification, Pageable pagable);
+
+    Slice<DeviceLogItem> findAllBy(Pageable pageable);
 }
