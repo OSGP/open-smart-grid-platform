@@ -7,6 +7,8 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.mapping;
 
+import java.util.Date;
+
 import org.apache.commons.codec.binary.Hex;
 import org.assertj.core.api.Assertions;
 import org.joda.time.DateTimeUtils;
@@ -21,18 +23,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SmartMeteringDev
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SmartMeteringDeviceDtoBuilder;
 
 public class DeviceConverterTest {
-    private static final long CURRENT_MILLIS = 1234567890L;
     private DeviceConverter converter = new DeviceConverter();
-
-    @Before
-    public void setUp() {
-        DateTimeUtils.setCurrentMillisFixed(CURRENT_MILLIS);
-    }
-
-    @After
-    public void tearDown() {
-        DateTimeUtils.setCurrentMillisOffset(0);
-    }
 
     @Test
     public void convertsSmartMeteringDtoToDlmsDevice() {
@@ -41,7 +32,10 @@ public class DeviceConverterTest {
 
         final DlmsDevice expected = converted(dto);
 
-        Assertions.assertThat(result).isEqualToComparingFieldByFieldRecursively(expected);
+        Assertions.assertThat(result).isEqualToIgnoringGivenFields(expected, "creationTime", "modificationTime", "version");
+        Assertions.assertThat(result.getSecurityKeys())
+                .usingElementComparatorIgnoringFields("creationTime", "modificationTime", "version")
+                .isEqualTo(expected.getSecurityKeys());
     }
 
     private DlmsDevice converted(final SmartMeteringDeviceDto dto) {

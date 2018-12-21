@@ -21,8 +21,6 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Version;
 
-import org.joda.time.DateTimeUtils;
-
 /**
  * Abstract base class for entities.
  */
@@ -43,10 +41,10 @@ public abstract class AbstractEntity implements Serializable {
     protected Long id;
 
     @Column(nullable = false)
-    private Date creationTime = new Date(DateTimeUtils.currentTimeMillis());
+    private Date creationTime = new Date();
 
     @Column(nullable = false)
-    private Date modificationTime = new Date(DateTimeUtils.currentTimeMillis());
+    private Date modificationTime = new Date();
 
     @Version
     private Long version = -1L;
