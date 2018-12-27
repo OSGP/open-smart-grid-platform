@@ -31,7 +31,7 @@ public class DeviceLogItemSteps extends GlueBase {
     public void theGetAdministrativeStatusCommunicationForDeviceShouldBeInTheDeviceLogItemTable(
             final String deviceIdentification) throws Throwable {
 
-        final Pageable pageable = new PageRequest(0, Integer.MAX_VALUE);
+        final Pageable pageable = new PageRequest(0, Integer.MAX_VALUE - 1);
         final Slice<org.opensmartgridplatform.logging.domain.entities.DeviceLogItem> slice = this.deviceLogItemRepository
                 .findByDeviceIdentification(deviceIdentification, pageable);
 
@@ -50,7 +50,7 @@ public class DeviceLogItemSteps extends GlueBase {
     public void theGetAdministrativeStatusCommunicationForDeviceShouldNotBeInTheDeviceLogItemTable(
             final String deviceIdentification) throws Throwable {
 
-        final Pageable pageable = new PageRequest(0, Integer.MAX_VALUE);
+        final Pageable pageable = new PageRequest(0, Integer.MAX_VALUE - 1);
         final Slice<org.opensmartgridplatform.logging.domain.entities.DeviceLogItem> slice = this.deviceLogItemRepository
                 .findByDeviceIdentification(deviceIdentification, pageable);
 
