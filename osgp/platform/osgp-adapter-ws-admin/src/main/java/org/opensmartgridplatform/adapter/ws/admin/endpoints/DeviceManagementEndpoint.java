@@ -229,7 +229,7 @@ public class DeviceManagementEndpoint {
             // Map to output
             final MessageLogPage logPage = new MessageLogPage();
             logPage.getMessageLogs().addAll(this.deviceManagementMapper.mapAsList(page.getContent(), MessageLog.class));
-            logPage.setHasNext(page.hasNext());
+            logPage.setNextPageAvailable(page.hasNext());
             response.setMessageLogPage(logPage);
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error(EXCEPTION_OCCURED, e);

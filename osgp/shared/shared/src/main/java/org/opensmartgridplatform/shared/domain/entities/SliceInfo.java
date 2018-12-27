@@ -11,17 +11,17 @@ import java.util.List;
 
 public class SliceInfo<T> {
 
-    private final boolean next;
+    private final boolean nextPageAvailable;
 
     private final List<T> contents;
 
-    public SliceInfo(final boolean next, final List<T> contents) {
-        this.next = next;
+    public SliceInfo(final boolean nextPageAvailable, final List<T> contents) {
+        this.nextPageAvailable = nextPageAvailable;
         this.contents = contents;
     }
 
-    public boolean isNext() {
-        return this.next;
+    public boolean isNextPageAvailable() {
+        return this.nextPageAvailable;
     }
 
     public List<T> getContents() {

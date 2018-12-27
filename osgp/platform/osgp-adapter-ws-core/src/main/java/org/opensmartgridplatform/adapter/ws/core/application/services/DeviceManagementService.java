@@ -56,7 +56,6 @@ import org.opensmartgridplatform.domain.core.valueobjects.EventNotificationMessa
 import org.opensmartgridplatform.domain.core.valueobjects.EventNotificationType;
 import org.opensmartgridplatform.domain.core.valueobjects.EventType;
 import org.opensmartgridplatform.domain.core.valueobjects.PlatformFunction;
-import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemRepository;
 import org.opensmartgridplatform.shared.application.config.PageSpecifier;
 import org.opensmartgridplatform.shared.application.config.PagingSettings;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
@@ -107,9 +106,6 @@ public class DeviceManagementService {
 
     @Autowired
     private FirmwareManagementService firmwareManagementService;
-
-    @Autowired
-    private DeviceLogItemRepository logItemRepository;
 
     @Autowired
     private EventRepository eventRepository;
