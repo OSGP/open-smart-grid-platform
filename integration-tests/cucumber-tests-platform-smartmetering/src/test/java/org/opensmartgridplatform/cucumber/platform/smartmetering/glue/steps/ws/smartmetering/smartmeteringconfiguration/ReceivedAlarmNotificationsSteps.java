@@ -85,7 +85,7 @@ public class ReceivedAlarmNotificationsSteps {
 
         final Runnable assertion = () -> {
 
-            final Pageable pageable = new PageRequest(0, Integer.MAX_VALUE);
+            final Pageable pageable = new PageRequest(0, Integer.MAX_VALUE - 1);
             final Slice<DeviceLogItem> deviceLogPage = this.deviceLogItemRepository
                     .findByDeviceIdentification(deviceIdentification, pageable);
             final List<DeviceLogItem> filteredDeviceLogItems = deviceLogPage.getContent().stream().filter(filter)
