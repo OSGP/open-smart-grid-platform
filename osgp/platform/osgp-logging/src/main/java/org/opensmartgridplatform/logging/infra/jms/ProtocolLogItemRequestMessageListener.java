@@ -12,13 +12,12 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
+import org.opensmartgridplatform.logging.domain.entities.DeviceLogItem;
+import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemPagingRepository;
+import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import org.opensmartgridplatform.logging.domain.entities.DeviceLogItem;
-import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemRepository;
-import org.opensmartgridplatform.shared.infra.jms.Constants;
 
 //This class should fetch incoming messages from a logging requests queue.
 public class ProtocolLogItemRequestMessageListener implements MessageListener {
@@ -26,7 +25,7 @@ public class ProtocolLogItemRequestMessageListener implements MessageListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProtocolLogItemRequestMessageListener.class);
 
     @Autowired
-    private DeviceLogItemRepository deviceLogRepository;
+    private DeviceLogItemPagingRepository deviceLogRepository;
 
     @Override
     public void onMessage(final Message message) {

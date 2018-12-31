@@ -21,11 +21,11 @@ import org.opensmartgridplatform.cucumber.core.RetryableAssert;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.logging.domain.entities.DeviceLogItem;
-import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemRepository;
+import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemPagingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 
 import cucumber.api.java.en.Then;
 
@@ -33,7 +33,7 @@ public class AuditTrail {
     private static final String PATTERN_RETRY_OPERATION = "retry count= .*, correlationuid= .*";
 
     @Autowired
-    private DeviceLogItemRepository deviceLogItemRepository;
+    private DeviceLogItemPagingRepository deviceLogItemRepository;
 
     @Then("^the audit trail contains multiple retry log records$")
     public void theAuditTrailContainsMultipleRetryLogRecords(final Map<String, String> settings) throws Throwable {
@@ -47,7 +47,7 @@ public class AuditTrail {
         final Runnable assertion = () -> {
 
             final Pageable pageable = new PageRequest(0, Integer.MAX_VALUE);
-            final Slice<DeviceLogItem> deviceLogPage = this.deviceLogItemRepository
+            final Page<DeviceLogItem> deviceLogPage = this.deviceLogItemRepository
                     .findByDeviceIdentification(deviceIdentification, pageable);
             final List<DeviceLogItem> filteredDeviceLogItems = deviceLogPage.getContent().stream().filter(filter)
                     .collect(Collectors.toList());

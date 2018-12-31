@@ -15,6 +15,9 @@ import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 
 import org.hibernate.ejb.HibernatePersistence;
+import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemPagingRepository;
+import org.opensmartgridplatform.shared.application.config.AbstractCustomConfig;
+import org.opensmartgridplatform.shared.infra.db.DefaultConnectionPoolFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -24,12 +27,10 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemRepository;
-import org.opensmartgridplatform.shared.application.config.AbstractCustomConfig;
-import org.opensmartgridplatform.shared.infra.db.DefaultConnectionPoolFactory;
 import com.zaxxer.hikari.HikariDataSource;
 
-@EnableJpaRepositories(entityManagerFactoryRef = "readableEntityManagerFactory", basePackageClasses = { DeviceLogItemRepository.class })
+@EnableJpaRepositories(entityManagerFactoryRef = "readableEntityManagerFactory", basePackageClasses = {
+        DeviceLogItemPagingRepository.class })
 @Configuration
 @EnableTransactionManagement()
 public class ReadOnlyLoggingConfig extends AbstractCustomConfig {
@@ -90,20 +91,20 @@ public class ReadOnlyLoggingConfig extends AbstractCustomConfig {
             final int databasePort = Integer.parseInt(ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_DATABASE_PORT));
             final String databaseName = ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_DATABASE_NAME);
 
-            final int minPoolSize = Integer.parseInt(ENVIRONMENT
-                    .getRequiredProperty(PROPERTY_NAME_DATABASE_MIN_POOL_SIZE));
-            final int maxPoolSize = Integer.parseInt(ENVIRONMENT
-                    .getRequiredProperty(PROPERTY_NAME_DATABASE_MAX_POOL_SIZE));
-            final boolean isAutoCommit = Boolean.parseBoolean(ENVIRONMENT
-                    .getRequiredProperty(PROPERTY_NAME_DATABASE_AUTO_COMMIT));
-            final int idleTimeout = Integer.parseInt(ENVIRONMENT
-                    .getRequiredProperty(PROPERTY_NAME_DATABASE_IDLE_TIMEOUT));
+            final int minPoolSize = Integer
+                    .parseInt(ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_DATABASE_MIN_POOL_SIZE));
+            final int maxPoolSize = Integer
+                    .parseInt(ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_DATABASE_MAX_POOL_SIZE));
+            final boolean isAutoCommit = Boolean
+                    .parseBoolean(ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_DATABASE_AUTO_COMMIT));
+            final int idleTimeout = Integer
+                    .parseInt(ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_DATABASE_IDLE_TIMEOUT));
 
             final DefaultConnectionPoolFactory.Builder builder = new DefaultConnectionPoolFactory.Builder()
-            .withUsername(username).withPassword(password).withDriverClassName(driverClassName)
-            .withProtocol(databaseProtocol).withDatabaseHost(databaseHost).withDatabasePort(databasePort)
-            .withDatabaseName(databaseName).withMinPoolSize(minPoolSize).withMaxPoolSize(maxPoolSize)
-            .withAutoCommit(isAutoCommit).withIdleTimeout(idleTimeout);
+                    .withUsername(username).withPassword(password).withDriverClassName(driverClassName)
+                    .withProtocol(databaseProtocol).withDatabaseHost(databaseHost).withDatabasePort(databasePort)
+                    .withDatabaseName(databaseName).withMinPoolSize(minPoolSize).withMaxPoolSize(maxPoolSize)
+                    .withAutoCommit(isAutoCommit).withIdleTimeout(idleTimeout);
             final DefaultConnectionPoolFactory factory = builder.build();
             this.dataSource = factory.getDefaultConnectionPool();
         }
@@ -147,8 +148,8 @@ public class ReadOnlyLoggingConfig extends AbstractCustomConfig {
 
         entityManagerFactoryBean.setPersistenceUnitName("OSGP_DOMAIN_LOGGING");
         entityManagerFactoryBean.setDataSource(this.getReadableDataSource());
-        entityManagerFactoryBean.setPackagesToScan(ENVIRONMENT
-                .getRequiredProperty(PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN));
+        entityManagerFactoryBean
+                .setPackagesToScan(ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN));
         entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistence.class);
 
         final Properties jpaProperties = new Properties();

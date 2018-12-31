@@ -68,8 +68,7 @@ public class SmartMeteringRequestMessageSender {
     }
 
     /**
-     * Method for sending a request message to the public lighting requests
-     * queue
+     * Method for sending a request message to the smart metering requests queue
      *
      * @param requestMessage
      *            The SmartMeteringRequestMessage request message to send.

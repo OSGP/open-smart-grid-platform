@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2018 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -14,7 +14,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface DeviceLogItemRepository extends JpaRepository<DeviceLogItem, Long> {
+public interface DeviceLogItemSlicingRepository extends JpaRepository<DeviceLogItem, Long> {
     Slice<DeviceLogItem> findByDeviceIdentification(String deviceIdentification, Pageable pagable);
 
     Slice<DeviceLogItem> findAllBy(Pageable pageable);

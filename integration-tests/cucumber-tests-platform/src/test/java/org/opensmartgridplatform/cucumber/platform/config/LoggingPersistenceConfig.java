@@ -10,6 +10,7 @@ package org.opensmartgridplatform.cucumber.platform.config;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
+import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemPagingRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -19,10 +20,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
-import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemRepository;
-
 @Configuration
-@EnableJpaRepositories(entityManagerFactoryRef = "entityMgrLogging", transactionManagerRef = "txMgrLogging", basePackageClasses = { DeviceLogItemRepository.class })
+@EnableJpaRepositories(entityManagerFactoryRef = "entityMgrLogging", transactionManagerRef = "txMgrLogging", basePackageClasses = {
+        DeviceLogItemPagingRepository.class })
 public class LoggingPersistenceConfig extends ApplicationPersistenceConfiguration {
 
     @Value("${db.name.osgp_logging}")

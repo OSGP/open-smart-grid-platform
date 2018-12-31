@@ -23,13 +23,13 @@ import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.hooks.SimulatePushedAlarmsHooks;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ServiceEndpoint;
 import org.opensmartgridplatform.logging.domain.entities.DeviceLogItem;
-import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemRepository;
+import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemPagingRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -40,7 +40,7 @@ public class ReceivedAlarmNotificationsSteps {
     private static final String PATTERN = "DlmsPushNotification \\[device = \\w*, trigger type = Push alarm monitor, alarms=\\[(\\w*(, )?)+\\]\\]";
 
     @Autowired
-    private DeviceLogItemRepository deviceLogItemRepository;
+    private DeviceLogItemPagingRepository deviceLogItemRepository;
 
     @Autowired
     private ServiceEndpoint serviceEndpoint;
@@ -85,8 +85,8 @@ public class ReceivedAlarmNotificationsSteps {
 
         final Runnable assertion = () -> {
 
-            final Pageable pageable = new PageRequest(0, Integer.MAX_VALUE - 1);
-            final Slice<DeviceLogItem> deviceLogPage = this.deviceLogItemRepository
+            final Pageable pageable = new PageRequest(0, Integer.MAX_VALUE);
+            final Page<DeviceLogItem> deviceLogPage = this.deviceLogItemRepository
                     .findByDeviceIdentification(deviceIdentification, pageable);
             final List<DeviceLogItem> filteredDeviceLogItems = deviceLogPage.getContent().stream().filter(filter)
                     .collect(Collectors.toList());

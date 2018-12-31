@@ -43,7 +43,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.PlatformDomain;
 import org.opensmartgridplatform.domain.core.valueobjects.PlatformFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.PlatformFunctionGroup;
 import org.opensmartgridplatform.logging.domain.entities.DeviceLogItem;
-import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemRepository;
+import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemSlicingRepository;
 import org.opensmartgridplatform.shared.application.config.PagingSettings;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
@@ -90,7 +90,7 @@ public class DeviceManagementService {
     private DeviceRepository deviceRepository;
 
     @Autowired
-    private DeviceLogItemRepository logItemRepository;
+    private DeviceLogItemSlicingRepository logItemRepository;
 
     @Autowired
     private DeviceAuthorizationRepository authorizationRepository;
