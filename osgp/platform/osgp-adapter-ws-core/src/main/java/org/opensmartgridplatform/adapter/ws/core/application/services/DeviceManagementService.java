@@ -327,102 +327,7 @@ public class DeviceManagementService {
 
         try {
             if (deviceFilter != null) {
-                Specifications<Device> specifications;
-
-                if (!StringUtils.isEmpty(deviceFilter.getOrganisationIdentification())) {
-                    final Organisation org = this.domainHelperService
-                            .findOrganisation(deviceFilter.getOrganisationIdentification());
-                    specifications = where(this.deviceSpecifications.forOrganisation(org));
-                } else {
-                    // dummy for 'not initialized'
-                    specifications = where(this.deviceSpecifications.forOrganisation(organisation));
-                }
-                if (!StringUtils.isEmpty(deviceFilter.getDeviceIdentification())) {
-                    String searchString = deviceFilter.getDeviceIdentification();
-
-                    if (!deviceFilter.isExactMatch()) {
-                        searchString = searchString.replaceAll(WILDCARD, "%") + "%";
-                    }
-
-                    specifications = specifications.and(this.deviceSpecifications.hasDeviceIdentification(searchString,
-                            deviceFilter.isExactMatch()));
-                }
-                if (!StringUtils.isEmpty(deviceFilter.getAlias())) {
-                    specifications = specifications.and(this.deviceSpecifications
-                            .hasAlias(deviceFilter.getAlias().replaceAll(WILDCARD, "%") + "%"));
-                }
-                if (!StringUtils.isEmpty(deviceFilter.getCity())) {
-                    specifications = specifications.and(
-                            this.deviceSpecifications.hasCity(deviceFilter.getCity().replaceAll(WILDCARD, "%") + "%"));
-                }
-                if (!StringUtils.isEmpty(deviceFilter.getPostalCode())) {
-                    specifications = specifications.and(this.deviceSpecifications
-                            .hasPostalCode(deviceFilter.getPostalCode().replaceAll(WILDCARD, "%") + "%"));
-                }
-                if (!StringUtils.isEmpty(deviceFilter.getStreet())) {
-                    specifications = specifications.and(this.deviceSpecifications
-                            .hasStreet(deviceFilter.getStreet().replaceAll(WILDCARD, "%") + "%"));
-                }
-                if (!StringUtils.isEmpty(deviceFilter.getNumber())) {
-                    specifications = specifications.and(this.deviceSpecifications
-                            .hasNumber(deviceFilter.getNumber().replaceAll(WILDCARD, "%") + "%"));
-                }
-                if (!StringUtils.isEmpty(deviceFilter.getMunicipality())) {
-                    specifications = specifications.and(this.deviceSpecifications
-                            .hasMunicipality(deviceFilter.getMunicipality().replaceAll(WILDCARD, "%") + "%"));
-                }
-                if (deviceFilter.getDeviceExternalManaged() != null
-                        && !DeviceExternalManagedFilterType.BOTH.equals(deviceFilter.getDeviceExternalManaged())) {
-                    specifications = specifications.and(this.deviceSpecifications
-                            .isManagedExternally(deviceFilter.getDeviceExternalManaged().getValue()));
-                }
-                if (deviceFilter.getDeviceActivated() != null
-                        && !DeviceActivatedFilterType.BOTH.equals(deviceFilter.getDeviceActivated())) {
-                    specifications = specifications
-                            .and(this.deviceSpecifications.isActived(deviceFilter.getDeviceActivated().getValue()));
-                }
-                if (deviceFilter.getDeviceInMaintenance() != null
-                        && !DeviceInMaintenanceFilterType.BOTH.equals(deviceFilter.getDeviceInMaintenance())) {
-                    specifications = specifications.and(this.deviceSpecifications
-                            .isInMaintenance(deviceFilter.getDeviceInMaintenance().getValue()));
-                }
-                if (deviceFilter.isHasTechnicalInstallation()) {
-                    specifications = specifications.and(this.deviceSpecifications.hasTechnicalInstallationDate());
-                }
-                if (!StringUtils.isEmpty(deviceFilter.getOwner())) {
-                    specifications = specifications.and(this.deviceSpecifications
-                            .forOwner(deviceFilter.getOwner().replaceAll(WILDCARD, "%") + "%"));
-                }
-                if (!StringUtils.isEmpty(deviceFilter.getDeviceType())) {
-                    specifications = specifications.and(this.deviceSpecifications
-                            .forDeviceType(deviceFilter.getDeviceType().replaceAll(WILDCARD, "%") + "%"));
-                }
-                if (!StringUtils.isEmpty(deviceFilter.getModel())) {
-                    specifications = specifications.and(this.deviceSpecifications
-                            .forDeviceModel(deviceFilter.getModel().replaceAll(WILDCARD, "%") + "%"));
-                }
-                if (!StringUtils.isEmpty(deviceFilter.getManufacturer())) {
-                    final Manufacturer manufacturer = this.firmwareManagementService
-                            .findManufacturer(deviceFilter.getManufacturer());
-                    specifications = specifications.and(this.deviceSpecifications.forManufacturer(manufacturer));
-                }
-                if (!StringUtils.isEmpty(deviceFilter.getFirmwareModuleVersion())) {
-                    specifications = specifications.and(
-                            this.deviceSpecifications.forFirmwareModuleVersion(deviceFilter.getFirmwareModuleType(),
-                                    deviceFilter.getFirmwareModuleVersion().replaceAll(WILDCARD, "%") + "%"));
-                }
-                if (deviceFilter.getDeviceIdentificationsToUse() != null
-                        && !deviceFilter.getDeviceIdentificationsToUse().isEmpty()) {
-                    specifications = specifications.and(this.deviceSpecifications
-                            .existsInDeviceIdentificationList(deviceFilter.getDeviceIdentificationsToUse()));
-
-                }
-                if (deviceFilter.getDeviceIdentificationsToExclude() != null
-                        && !deviceFilter.getDeviceIdentificationsToExclude().isEmpty()) {
-                    specifications = specifications.and(this.deviceSpecifications
-                            .excludeDeviceIdentificationList(deviceFilter.getDeviceIdentificationsToExclude()));
-
-                }
+                final Specifications<Device> specifications = this.doApplyFilter(deviceFilter, organisation);
                 devices = this.deviceRepository.findAll(specifications, request);
             } else {
                 if (organisation != null) {
@@ -440,6 +345,198 @@ public class DeviceManagementService {
         }
 
         return devices;
+    }
+
+    private Specifications<Device> doApplyFilter(final DeviceFilter deviceFilter, final Organisation organisation)
+            throws FunctionalException, ArgumentNullOrEmptyException {
+
+        Specifications<Device> specifications = this.doFilterOnOrganisationIdentification(deviceFilter, organisation);
+        specifications = this.doFilterOnDeviceIdentification(deviceFilter, specifications);
+        specifications = this.doFilterOnDeviceAlias(deviceFilter, specifications);
+        specifications = this.doFilterOnAddress(deviceFilter, specifications);
+        specifications = this.doFilterOnExternalManaged(deviceFilter, specifications);
+        specifications = this.doFilterOnActivated(deviceFilter, specifications);
+        specifications = this.doFilterOnInMaintenance(deviceFilter, specifications);
+        specifications = this.doFilterOnHasTechnicalInstallationDate(deviceFilter, specifications);
+        specifications = this.doFilterOnOwner(deviceFilter, specifications);
+        specifications = this.doFilterOnDeviceType(deviceFilter, specifications);
+        specifications = this.doFilterOnDeviceModel(deviceFilter, specifications);
+        specifications = this.doFilterOnManufacturer(deviceFilter, specifications);
+        specifications = this.doFilterOnFirmwareModuleVersion(deviceFilter, specifications);
+        specifications = this.doFilterOnDeviceIdentificationsToUse(deviceFilter, specifications);
+        specifications = this.doFilterOnDeviceIdentificationsToExclude(deviceFilter, specifications);
+
+        return specifications;
+    }
+
+    private Specifications<Device> doFilterOnDeviceIdentificationsToExclude(final DeviceFilter deviceFilter,
+            Specifications<Device> specifications) throws ArgumentNullOrEmptyException {
+        if (deviceFilter.getDeviceIdentificationsToExclude() != null
+                && !deviceFilter.getDeviceIdentificationsToExclude().isEmpty()) {
+            specifications = specifications.and(this.deviceSpecifications
+                    .excludeDeviceIdentificationList(deviceFilter.getDeviceIdentificationsToExclude()));
+
+        }
+        return specifications;
+    }
+
+    private Specifications<Device> doFilterOnDeviceIdentificationsToUse(final DeviceFilter deviceFilter,
+            Specifications<Device> specifications) throws ArgumentNullOrEmptyException {
+        if (deviceFilter.getDeviceIdentificationsToUse() != null
+                && !deviceFilter.getDeviceIdentificationsToUse().isEmpty()) {
+            specifications = specifications.and(this.deviceSpecifications
+                    .existsInDeviceIdentificationList(deviceFilter.getDeviceIdentificationsToUse()));
+
+        }
+        return specifications;
+    }
+
+    private Specifications<Device> doFilterOnFirmwareModuleVersion(final DeviceFilter deviceFilter,
+            Specifications<Device> specifications) throws ArgumentNullOrEmptyException {
+        if (!StringUtils.isEmpty(deviceFilter.getFirmwareModuleVersion())) {
+            specifications = specifications
+                    .and(this.deviceSpecifications.forFirmwareModuleVersion(deviceFilter.getFirmwareModuleType(),
+                            deviceFilter.getFirmwareModuleVersion().replaceAll(WILDCARD, "%") + "%"));
+        }
+        return specifications;
+    }
+
+    private Specifications<Device> doFilterOnManufacturer(final DeviceFilter deviceFilter,
+            Specifications<Device> specifications) throws ArgumentNullOrEmptyException {
+        if (!StringUtils.isEmpty(deviceFilter.getManufacturer())) {
+            final Manufacturer manufacturer = this.firmwareManagementService
+                    .findManufacturer(deviceFilter.getManufacturer());
+            specifications = specifications.and(this.deviceSpecifications.forManufacturer(manufacturer));
+        }
+        return specifications;
+    }
+
+    private Specifications<Device> doFilterOnDeviceModel(final DeviceFilter deviceFilter,
+            Specifications<Device> specifications) throws ArgumentNullOrEmptyException {
+        if (!StringUtils.isEmpty(deviceFilter.getModel())) {
+            specifications = specifications.and(
+                    this.deviceSpecifications.forDeviceModel(deviceFilter.getModel().replaceAll(WILDCARD, "%") + "%"));
+        }
+        return specifications;
+    }
+
+    private Specifications<Device> doFilterOnDeviceType(final DeviceFilter deviceFilter,
+            Specifications<Device> specifications) throws ArgumentNullOrEmptyException {
+        if (!StringUtils.isEmpty(deviceFilter.getDeviceType())) {
+            specifications = specifications.and(this.deviceSpecifications
+                    .forDeviceType(deviceFilter.getDeviceType().replaceAll(WILDCARD, "%") + "%"));
+        }
+        return specifications;
+    }
+
+    private Specifications<Device> doFilterOnOwner(final DeviceFilter deviceFilter,
+            Specifications<Device> specifications) throws ArgumentNullOrEmptyException {
+        if (!StringUtils.isEmpty(deviceFilter.getOwner())) {
+            specifications = specifications
+                    .and(this.deviceSpecifications.forOwner(deviceFilter.getOwner().replaceAll(WILDCARD, "%") + "%"));
+        }
+        return specifications;
+    }
+
+    private Specifications<Device> doFilterOnHasTechnicalInstallationDate(final DeviceFilter deviceFilter,
+            Specifications<Device> specifications) throws ArgumentNullOrEmptyException {
+        if (deviceFilter.isHasTechnicalInstallation()) {
+            specifications = specifications.and(this.deviceSpecifications.hasTechnicalInstallationDate());
+        }
+        return specifications;
+    }
+
+    private Specifications<Device> doFilterOnInMaintenance(final DeviceFilter deviceFilter,
+            Specifications<Device> specifications) throws ArgumentNullOrEmptyException {
+        if (deviceFilter.getDeviceInMaintenance() != null
+                && !DeviceInMaintenanceFilterType.BOTH.equals(deviceFilter.getDeviceInMaintenance())) {
+            specifications = specifications
+                    .and(this.deviceSpecifications.isInMaintenance(deviceFilter.getDeviceInMaintenance().getValue()));
+        }
+        return specifications;
+    }
+
+    private Specifications<Device> doFilterOnActivated(final DeviceFilter deviceFilter,
+            Specifications<Device> specifications) throws ArgumentNullOrEmptyException {
+        if (deviceFilter.getDeviceActivated() != null
+                && !DeviceActivatedFilterType.BOTH.equals(deviceFilter.getDeviceActivated())) {
+            specifications = specifications
+                    .and(this.deviceSpecifications.isActived(deviceFilter.getDeviceActivated().getValue()));
+        }
+        return specifications;
+    }
+
+    private Specifications<Device> doFilterOnExternalManaged(final DeviceFilter deviceFilter,
+            Specifications<Device> specifications) throws ArgumentNullOrEmptyException {
+        if (deviceFilter.getDeviceExternalManaged() != null
+                && !DeviceExternalManagedFilterType.BOTH.equals(deviceFilter.getDeviceExternalManaged())) {
+            specifications = specifications.and(
+                    this.deviceSpecifications.isManagedExternally(deviceFilter.getDeviceExternalManaged().getValue()));
+        }
+        return specifications;
+    }
+
+    private Specifications<Device> doFilterOnAddress(final DeviceFilter deviceFilter,
+            Specifications<Device> specifications) throws ArgumentNullOrEmptyException {
+        if (!StringUtils.isEmpty(deviceFilter.getCity())) {
+            specifications = specifications
+                    .and(this.deviceSpecifications.hasCity(deviceFilter.getCity().replaceAll(WILDCARD, "%") + "%"));
+        }
+        if (!StringUtils.isEmpty(deviceFilter.getPostalCode())) {
+            specifications = specifications.and(this.deviceSpecifications
+                    .hasPostalCode(deviceFilter.getPostalCode().replaceAll(WILDCARD, "%") + "%"));
+        }
+        if (!StringUtils.isEmpty(deviceFilter.getStreet())) {
+            specifications = specifications
+                    .and(this.deviceSpecifications.hasStreet(deviceFilter.getStreet().replaceAll(WILDCARD, "%") + "%"));
+        }
+        if (!StringUtils.isEmpty(deviceFilter.getNumber())) {
+            specifications = specifications
+                    .and(this.deviceSpecifications.hasNumber(deviceFilter.getNumber().replaceAll(WILDCARD, "%") + "%"));
+        }
+        if (!StringUtils.isEmpty(deviceFilter.getMunicipality())) {
+            specifications = specifications.and(this.deviceSpecifications
+                    .hasMunicipality(deviceFilter.getMunicipality().replaceAll(WILDCARD, "%") + "%"));
+        }
+        return specifications;
+    }
+
+    private Specifications<Device> doFilterOnDeviceAlias(final DeviceFilter deviceFilter,
+            Specifications<Device> specifications) throws ArgumentNullOrEmptyException {
+        if (!StringUtils.isEmpty(deviceFilter.getAlias())) {
+            specifications = specifications
+                    .and(this.deviceSpecifications.hasAlias(deviceFilter.getAlias().replaceAll(WILDCARD, "%") + "%"));
+        }
+        return specifications;
+    }
+
+    private Specifications<Device> doFilterOnDeviceIdentification(final DeviceFilter deviceFilter,
+            Specifications<Device> specifications) throws ArgumentNullOrEmptyException {
+        if (!StringUtils.isEmpty(deviceFilter.getDeviceIdentification())) {
+            String searchString = deviceFilter.getDeviceIdentification();
+
+            if (!deviceFilter.isExactMatch()) {
+                searchString = searchString.replaceAll(WILDCARD, "%") + "%";
+            }
+
+            specifications = specifications
+                    .and(this.deviceSpecifications.hasDeviceIdentification(searchString, deviceFilter.isExactMatch()));
+        }
+        return specifications;
+    }
+
+    private Specifications<Device> doFilterOnOrganisationIdentification(final DeviceFilter deviceFilter,
+            final Organisation organisation) throws FunctionalException, ArgumentNullOrEmptyException {
+        Specifications<Device> specifications;
+        if (!StringUtils.isEmpty(deviceFilter.getOrganisationIdentification())) {
+            final Organisation org = this.domainHelperService
+                    .findOrganisation(deviceFilter.getOrganisationIdentification());
+            specifications = where(this.deviceSpecifications.forOrganisation(org));
+        } else {
+            // dummy for 'not initialized'
+            specifications = where(this.deviceSpecifications.forOrganisation(organisation));
+        }
+        return specifications;
     }
 
     // === SET EVENT NOTIFICATIONS ===
