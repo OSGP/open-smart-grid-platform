@@ -1104,7 +1104,7 @@ public class OslpDeviceSteps {
     private OslpEnvelope send(final OslpEnvelope request, final Map<String, String> settings)
             throws IOException, DeviceSimulatorException {
         final String deviceIdentification = getString(settings, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION);
-        final String hostname = "127.0.0.1";// this.configuration.getPlatform();
+        final String hostname = this.configuration.getPlatform();
 
         // See PlatformPubliclightingKeys.KEY_PROTOCOL and
         // PlatformPubliclightingDefaults.DEFAULT_PROTOCOL when using the
