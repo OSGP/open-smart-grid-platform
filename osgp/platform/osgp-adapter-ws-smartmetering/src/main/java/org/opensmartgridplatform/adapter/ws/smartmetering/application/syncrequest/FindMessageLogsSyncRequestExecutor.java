@@ -9,22 +9,21 @@ package org.opensmartgridplatform.adapter.ws.smartmetering.application.syncreque
 
 import java.io.Serializable;
 
+import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
+import org.opensmartgridplatform.logging.domain.entities.DeviceLogItem;
+import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemPagingRepository;
+import org.opensmartgridplatform.shared.application.config.PagingSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.logging.domain.entities.DeviceLogItem;
-import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemRepository;
-import org.opensmartgridplatform.shared.application.config.PagingSettings;
-
 @Component
 public class FindMessageLogsSyncRequestExecutor extends SyncRequestExecutor {
 
     @Autowired
-    private DeviceLogItemRepository logItemRepository;
+    private DeviceLogItemPagingRepository logItemRepository;
 
     @Autowired
     private PagingSettings pagingSettings;

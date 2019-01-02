@@ -13,10 +13,6 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.opensmartgridplatform.adapter.ws.schema.core.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.DeviceLifecycleStatus;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.SetDeviceLifecycleStatusAsyncRequest;
@@ -29,23 +25,18 @@ import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.common.support.ws.core.CoreDeviceManagementClient;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
-import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 public class DeviceLifecycleStatusSteps {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceLifecycleStatusSteps.class);
+    @Autowired
+    private CoreDeviceManagementClient deviceManagementClient;
 
     @Autowired
-    CoreDeviceManagementClient deviceManagementClient;
-
-    @Autowired
-    DeviceRepository DeviceRepository;
-
-    @Autowired
-    private DeviceLogItemRepository deviceLogItemRepository;
+    private DeviceRepository DeviceRepository;
 
     @When("^the SetDeviceLifecycleStatus request is received$")
     public void theSetDeviceLifecycleStatusRequestIsReceived(final Map<String, String> settings) throws Throwable {

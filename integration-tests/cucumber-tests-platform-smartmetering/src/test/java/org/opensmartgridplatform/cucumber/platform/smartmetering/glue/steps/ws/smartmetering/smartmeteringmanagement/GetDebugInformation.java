@@ -11,8 +11,6 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.FindMessageLogsAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.FindMessageLogsAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.FindMessageLogsRequest;
@@ -25,7 +23,8 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smar
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.management.SmartMeteringManagementRequestClient;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.management.SmartMeteringManagementResponseClient;
 import org.opensmartgridplatform.logging.domain.entities.DeviceLogItem;
-import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemRepository;
+import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemPagingRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -34,7 +33,7 @@ import cucumber.api.java.en.When;
 public class GetDebugInformation {
 
     @Autowired
-    private DeviceLogItemRepository logItemRepository;
+    private DeviceLogItemPagingRepository logItemRepository;
 
     @Autowired
     private DeviceLogItemBuilder deviceLogItemBuilder;

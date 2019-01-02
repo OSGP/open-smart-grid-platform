@@ -7,8 +7,8 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.core.audittrail;
 
-import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 import static org.junit.Assert.assertFalse;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.List;
 import java.util.Map;
@@ -17,16 +17,15 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-
 import org.opensmartgridplatform.cucumber.core.RetryableAssert;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.logging.domain.entities.DeviceLogItem;
-import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemRepository;
+import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemPagingRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import cucumber.api.java.en.Then;
 
@@ -34,7 +33,7 @@ public class AuditTrail {
     private static final String PATTERN_RETRY_OPERATION = "retry count= .*, correlationuid= .*";
 
     @Autowired
-    private DeviceLogItemRepository deviceLogItemRepository;
+    private DeviceLogItemPagingRepository deviceLogItemRepository;
 
     @Then("^the audit trail contains multiple retry log records$")
     public void theAuditTrailContainsMultipleRetryLogRecords(final Map<String, String> settings) throws Throwable {

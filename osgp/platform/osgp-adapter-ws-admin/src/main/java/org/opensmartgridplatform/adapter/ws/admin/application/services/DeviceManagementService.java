@@ -43,7 +43,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.PlatformDomain;
 import org.opensmartgridplatform.domain.core.valueobjects.PlatformFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.PlatformFunctionGroup;
 import org.opensmartgridplatform.logging.domain.entities.DeviceLogItem;
-import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemRepository;
+import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemSlicingRepository;
 import org.opensmartgridplatform.shared.application.config.PagingSettings;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
@@ -90,7 +90,7 @@ public class DeviceManagementService {
     private DeviceRepository deviceRepository;
 
     @Autowired
-    private DeviceLogItemRepository logItemRepository;
+    private DeviceLogItemSlicingRepository logItemRepository;
 
     @Autowired
     private DeviceAuthorizationRepository authorizationRepository;
@@ -327,7 +327,7 @@ public class DeviceManagementService {
             @Identification final String deviceIdentification, @Min(value = 0) final int pageNumber)
             throws FunctionalException {
 
-        LOGGER.debug("findOslpMessage called with organisation {}, device {} and pagenumber {}",
+        LOGGER.debug("findDeviceMessages called with organisation {}, device {} and pagenumber {}",
                 organisationIdentification, deviceIdentification, pageNumber);
 
         final Organisation organisation = this.findOrganisation(organisationIdentification);
@@ -340,7 +340,7 @@ public class DeviceManagementService {
             return this.logItemRepository.findByDeviceIdentification(deviceIdentification, request);
         }
 
-        return this.logItemRepository.findAll(request);
+        return this.logItemRepository.findAllBy(request);
     }
 
     // === REMOVE DEVICE ===

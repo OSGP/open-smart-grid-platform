@@ -933,10 +933,8 @@ public class OslpDeviceSteps {
 
         try {
             final OslpEnvelope request = this
-                    .createEnvelopeBuilder(
-                            getString(settings, PlatformPubliclightingKeys.KEY_DEVICE_UID,
-                                    PlatformPubliclightingDefaults.DEVICE_UID),
-                            this.oslpMockServer.getSequenceNumber())
+                    .createEnvelopeBuilder(getString(settings, PlatformPubliclightingKeys.KEY_DEVICE_UID,
+                            PlatformPubliclightingDefaults.DEVICE_UID), this.oslpMockServer.getSequenceNumber())
                     .withPayloadMessage(
                             Message.newBuilder()
                                     .setRegisterDeviceRequest(Oslp.RegisterDeviceRequest.newBuilder()
@@ -1128,15 +1126,15 @@ public class OslpDeviceSteps {
 
     @Then("^an update firmware \"([^\"]*)\" message is sent to device \"([^\"]*)\"$")
     public void anUpdateFirmwareOSLPMessageIsSentToTheDevice(final String protocol, final String deviceIdentification,
-            final Map<String, String> expectedParameters) {
+            final Map<String, String> expectedParameters) throws UnknownHostException {
         final Message message = this.oslpMockServer.waitForRequest(MessageType.UPDATE_FIRMWARE);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasUpdateFirmwareRequest());
 
         final UpdateFirmwareRequest request = message.getUpdateFirmwareRequest();
 
-        Assert.assertEquals(getString(expectedParameters, PlatformPubliclightingKeys.FIRMWARE_DOMAIN,
-                PlatformPubliclightingDefaults.FIRMARE_DOMAIN), request.getFirmwareDomain());
+        // Check if the URL is equal to the file path as given by
+        // 'firmware.path' property of OSGP.
         Assert.assertEquals(getString(expectedParameters, PlatformPubliclightingKeys.FIRMWARE_URL,
                 PlatformPubliclightingDefaults.FIRMWARE_URL), request.getFirmwareUrl());
     }

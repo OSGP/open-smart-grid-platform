@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2018 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -7,14 +7,15 @@
  */
 package org.opensmartgridplatform.logging.domain.repositories;
 
-import org.springframework.data.domain.Page;
+import org.opensmartgridplatform.logging.domain.entities.DeviceLogItem;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import org.opensmartgridplatform.logging.domain.entities.DeviceLogItem;
-
 @Repository
-public interface DeviceLogItemRepository extends JpaRepository<DeviceLogItem, Long> {
-    Page<DeviceLogItem> findByDeviceIdentification(String deviceIdentification, Pageable pagable);
+public interface DeviceLogItemSlicingRepository extends JpaRepository<DeviceLogItem, Long> {
+    Slice<DeviceLogItem> findByDeviceIdentification(String deviceIdentification, Pageable pagable);
+
+    Slice<DeviceLogItem> findAllBy(Pageable pageable);
 }
