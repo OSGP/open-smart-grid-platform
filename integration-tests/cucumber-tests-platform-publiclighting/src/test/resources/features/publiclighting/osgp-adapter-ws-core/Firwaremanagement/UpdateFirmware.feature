@@ -18,7 +18,8 @@ Feature: FirmwareManagement update firmware
     Then the update firmware async response contains
       | DeviceIdentification | TEST1024000000001 |
     And an update firmware "<Protocol>" message is sent to device "TEST1024000000001"
-      | FirmwareDomain | 127.0.0.1     |
+      # Instead of using a hard-coded IP address to assert, use InetAddress.getLocalHost().getHostAddress().
+      #| FirmwareDomain | 127.0.0.1     |
       | FirmwareUrl    | /firmware/F01 |
     And the platform buffers a set reboot response message for device "TEST1024000000001"
       | Result | OK |
