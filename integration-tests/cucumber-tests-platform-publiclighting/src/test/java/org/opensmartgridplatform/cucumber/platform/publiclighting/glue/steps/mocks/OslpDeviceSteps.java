@@ -1133,13 +1133,6 @@ public class OslpDeviceSteps {
 
         final UpdateFirmwareRequest request = message.getUpdateFirmwareRequest();
 
-        // Try to get the IP address of the server.
-        final String ipAddress = InetAddress.getLocalHost().getHostAddress();
-
-        // Check if the IP address of the server is equal to the IP address as
-        // given by 'firmware.domain' property of OSGP.
-        Assert.assertEquals(ipAddress, request.getFirmwareDomain());
-
         // Check if the URL is equal to the file path as given by
         // 'firmware.path' property of OSGP.
         Assert.assertEquals(getString(expectedParameters, PlatformPubliclightingKeys.FIRMWARE_URL,
