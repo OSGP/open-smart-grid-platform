@@ -86,6 +86,12 @@
       <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-ws-core</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.opensmartgridplatform</groupId>
+      <artifactId>osgp-ws-core</artifactId>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
 
     <!-- Spring Framework -->
     <dependency>

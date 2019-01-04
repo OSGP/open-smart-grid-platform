@@ -119,6 +119,12 @@
       </dependency>
       <dependency>
         <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-ws-core</artifactId>
+        <type>test-jar</type>
+        <version>${shared.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-ws-admin</artifactId>
         <version>${shared.version}</version>
       </dependency>
@@ -159,6 +165,12 @@
         <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-domain-core</artifactId>
         <version>${osgp.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-domain-core</artifactId>
+        <version>${osgp.version}</version>
+        <type>test-jar</type>
       </dependency>
 
       <dependency>

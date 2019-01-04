@@ -23,14 +23,17 @@ public class FirmwareModuleData implements Serializable {
     private final String moduleVersionMa;
     private final String moduleVersionMbus;
     private final String moduleVersionSec;
+    private final String moduleVersionMBusDriverActive;
 
     public FirmwareModuleData(final String moduleVersionComm, final String moduleVersionFunc,
-            final String moduleVersionMa, final String moduleVersionMbus, final String moduleVersionSec) {
+            final String moduleVersionMa, final String moduleVersionMbus, final String moduleVersionSec,
+            final String moduleVersionMBusDriverActive) {
         this.moduleVersionComm = moduleVersionComm;
         this.moduleVersionFunc = moduleVersionFunc;
         this.moduleVersionMa = moduleVersionMa;
         this.moduleVersionMbus = moduleVersionMbus;
         this.moduleVersionSec = moduleVersionSec;
+        this.moduleVersionMBusDriverActive = moduleVersionMBusDriverActive;
     }
 
     public String getModuleVersionComm() {
@@ -53,6 +56,10 @@ public class FirmwareModuleData implements Serializable {
         return this.moduleVersionSec;
     }
 
+    public String getModuleVersionMBusDriverActive() {
+        return moduleVersionMBusDriverActive;
+    }
+
     public int countNumberOfModules() {
         int count = 0;
         if (StringUtils.isNotEmpty(this.moduleVersionComm)) {
@@ -68,6 +75,9 @@ public class FirmwareModuleData implements Serializable {
             count++;
         }
         if (StringUtils.isNotEmpty(this.moduleVersionSec)) {
+            count++;
+        }
+        if (StringUtils.isNotEmpty(this.moduleVersionMBusDriverActive)) {
             count++;
         }
         return count;

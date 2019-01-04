@@ -27,6 +27,7 @@ public class FirmwareFileBuilder implements CucumberBuilder<FirmwareFile> {
     private String moduleVersionMa = PlatformDefaults.FIRMWARE_MODULE_VERSION_MA;
     private String moduleVersionMbus = PlatformDefaults.FIRMWARE_MODULE_VERSION_MBUS;
     private String moduleVersionSec = PlatformDefaults.FIRMWARE_MODULE_VERSION_SEC;
+    private String moduleVersionMBusDriverActive = PlatformDefaults.FIRMWARE_MODULE_VERSION_M_BUS_DRIVER_ACTIVE;
     private byte file[];
     private String hash;
 
@@ -102,7 +103,8 @@ public class FirmwareFileBuilder implements CucumberBuilder<FirmwareFile> {
         firmwareFile.setFile(this.file);
         firmwareFile.setHash(this.hash);
         firmwareFile.updateFirmwareModuleData(new FirmwareModuleData(this.moduleVersionComm, this.moduleVersionFunc,
-                this.moduleVersionMa, this.moduleVersionMbus, this.moduleVersionSec)
+                this.moduleVersionMa, this.moduleVersionMbus, this.moduleVersionSec,
+                this.moduleVersionMBusDriverActive)
                         .getVersionsByModule(firmwareModuleRepository, isForSmartMeters));
         return firmwareFile;
     }

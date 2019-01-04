@@ -14,11 +14,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.HashMap;
 import java.util.List;
 
+import org.assertj.core.api.Assertions;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.opensmartgridplatform.domain.core.valueobjects.Configuration;
 import org.opensmartgridplatform.domain.core.valueobjects.DaliConfiguration;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFixedIp;
+import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleData;
+import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleDataBuilder;
 import org.opensmartgridplatform.domain.core.valueobjects.LightType;
 import org.opensmartgridplatform.domain.core.valueobjects.LinkType;
 import org.opensmartgridplatform.domain.core.valueobjects.LongTermIntervalType;
@@ -41,6 +44,22 @@ import org.opensmartgridplatform.dto.valueobjects.RelayTypeDto;
 
 public class DomainCoreMapperTest {
     private final DomainCoreMapper mapper = new DomainCoreMapper();
+
+    @Test
+    public void mapsFirmwareModuleDate() {
+        org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleData source =
+                new FirmwareModuleDataBuilder().build();
+
+        org.opensmartgridplatform.dto.valueobjects.FirmwareModuleData mappedValue = map(source);
+        Assertions.assertThat(this.mapper.map(source, org.opensmartgridplatform.dto.valueobjects.FirmwareModuleData.class))
+                .isEqualToComparingFieldByFieldRecursively(mappedValue);
+    }
+
+    private org.opensmartgridplatform.dto.valueobjects.FirmwareModuleData map(FirmwareModuleData source) {
+        return new org.opensmartgridplatform.dto.valueobjects.FirmwareModuleData(source.getModuleVersionComm(),
+                source.getModuleVersionFunc(), source.getModuleVersionMa(), source.getModuleVersionMbus(),
+                source.getModuleVersionSec(), source.getModuleVersionMBusDriverActive());
+    }
 
     @Test
     public void convertsConfigurationDtoToConfiguration() {
@@ -174,3 +193,4 @@ public class DomainCoreMapperTest {
         return map;
     }
 }
+

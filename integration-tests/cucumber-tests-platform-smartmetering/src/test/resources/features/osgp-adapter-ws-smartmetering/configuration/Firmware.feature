@@ -4,10 +4,13 @@ Feature: SmartMetering Configuration - Firmware
   I want to be able to perform SmartMeteringFirmware operations on a device
   In order to ...
 
-  Scenario: Get the firmware version from device
+  Scenario: Get the firmware version from DSMR 4.2.2 device
     Given a dlms device
       | DeviceIdentification      | TEST1024000000001 |
       | DeviceType                | SMART_METER_E     |
+      | Protocol                  | DSMR              |
+      | ProtocolVersion           | 4.2.2             |
+      | Port                      | 1024              |
       | FirmwareModuleVersionComm | V 1.1             |
       | FirmwareModuleVersionMa   | V 1.2             |
       | FirmwareModuleVersionFunc | V 1.3             |
@@ -28,6 +31,38 @@ Feature: SmartMetering Configuration - Firmware
       | FirmwareModuleVersionComm | Telit 10.00.154        |
       | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
       | FirmwareModuleVersionFunc | M57 4836               |
+      | FirmwareIsForSmartMeters  | true                   |
+
+  Scenario: Get the firmware version from SMR 5.1 device
+    Given a dlms device
+      | DeviceIdentification      | TEST1027000000001 |
+      | DeviceType                | SMART_METER_E     |
+      | Protocol                  | SMR               |
+      | ProtocolVersion           | 5.1               |
+      | Port                      | 1027              |
+      | FirmwareModuleVersionComm | V 1.1             |
+      | FirmwareModuleVersionMa   | V 1.2             |
+      | FirmwareModuleVersionFunc | V 1.3             |
+      | FirmwareModuleVersionMbda | V 1.4             |
+    And a dlms device
+      | DeviceIdentification        | TESTG102400000001 |
+      | DeviceType                  | SMART_METER_G     |
+      | GatewayDeviceIdentification | TEST1027000000001 |
+      | Channel                     | 1                 |
+    When the get firmware version request is received
+      | DeviceIdentification | TEST1027000000001 |
+    Then the firmware version result should be returned
+      | DeviceIdentification      | TEST1027000000001      |
+      | FirmwareModuleVersionComm | Telit 10.00.154        |
+      | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
+      | FirmwareModuleVersionFunc | M57 4836               |
+      | FirmwareModuleVersionMbda | M00 0000               |
+    And the database should be updated with the device firmware version
+      | DeviceIdentification      | TEST1027000000001      |
+      | FirmwareModuleVersionComm | Telit 10.00.154        |
+      | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
+      | FirmwareModuleVersionFunc | M57 4836               |
+      | FirmwareModuleVersionMbda | M00 0000               |
       | FirmwareIsForSmartMeters  | true                   |
 
   Scenario: successful upgrade of firmware
