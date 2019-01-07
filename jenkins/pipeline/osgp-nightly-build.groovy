@@ -4,6 +4,9 @@ def stream = 'osgp'
 def servername = stream + '-at-' + env.BUILD_NUMBER
 def playbook = stream + '-at.yml'
 
+// Choose the branch to use for SmartSocietyServices/release repository. Default value is 'master'.
+def branchReleaseRepo = 'FLEX-4638-ssh-connection-refused'
+
 pipeline {
     agent any
 
@@ -40,7 +43,9 @@ pipeline {
 
         stage ('Deploy AWS system') {
             steps {
-                build job: 'Deploy an AWS System', parameters: [string(name: 'SERVERNAME', value: servername), string(name: 'PLAYBOOK', value: playbook)]
+                build job: 'Deploy an AWS System', parameters: [string(name: 'SERVERNAME', value: servername),
+                                                                string(name: 'PLAYBOOK', value: playbook),
+                                                                string(name: 'BRANCH', value: branchReleaseRepo)]
             }
         }
 
