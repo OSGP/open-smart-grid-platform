@@ -52,12 +52,7 @@ public abstract class AbstractSchedulingConfig extends AbstractConfig {
     protected Scheduler constructScheduler(final SchedulingConfigProperties schedulingConfigProperties)
             throws SchedulerException {
 
-        final Properties properties = this.constructQuartzConfiguration(schedulingConfigProperties);
-
-        final StdSchedulerFactory factory = new StdSchedulerFactory();
-        factory.initialize(properties);
-        final Scheduler scheduler = factory.getScheduler();
-        scheduler.setJobFactory(this.springBeanJobFactory());
+        final Scheduler scheduler = this.constructBareScheduler(schedulingConfigProperties);
 
         final JobDetail jobDetail = this.createJobDetail(schedulingConfigProperties.getJobClass());
         scheduler.addJob(jobDetail, true);
@@ -71,11 +66,25 @@ public abstract class AbstractSchedulingConfig extends AbstractConfig {
         return scheduler;
     }
 
+    protected Scheduler constructBareScheduler(final SchedulingConfigProperties schedulingConfigProperties)
+            throws SchedulerException {
+
+        final Properties properties = this.constructQuartzConfiguration(schedulingConfigProperties);
+
+        final StdSchedulerFactory factory = new StdSchedulerFactory();
+        factory.initialize(properties);
+        final Scheduler scheduler = factory.getScheduler();
+        scheduler.setJobFactory(this.springBeanJobFactory());
+
+        return scheduler;
+    }
+
     private Properties constructQuartzConfiguration(final SchedulingConfigProperties schedulingConfigProperties) {
         final Properties properties = new Properties();
 
         // Default Properties
-        properties.put("org.quartz.scheduler.instanceName", schedulingConfigProperties.getJobClass().getSimpleName());
+        // properties.put("org.quartz.scheduler.instanceName",
+        // schedulingConfigProperties.getJobClass().getSimpleName());
         properties.put("org.quartz.scheduler.instanceId", "AUTO");
         properties.put("org.quartz.scheduler.rmi.export", Boolean.FALSE.toString());
         properties.put("org.quartz.scheduler.rmi.proxy", Boolean.FALSE.toString());
@@ -117,11 +126,11 @@ public abstract class AbstractSchedulingConfig extends AbstractConfig {
         return properties;
     }
 
-    private JobDetail createJobDetail(final Class<? extends Job> jobClass) {
+    protected JobDetail createJobDetail(final Class<? extends Job> jobClass) {
         return JobBuilder.newJob().ofType(jobClass).storeDurably().withIdentity(jobClass.getSimpleName()).build();
     }
 
-    private Trigger createJobTrigger(final JobDetail jobDetail, final String cronExpression) {
+    protected Trigger createJobTrigger(final JobDetail jobDetail, final String cronExpression) {
         return TriggerBuilder.newTrigger().forJob(jobDetail).withIdentity(jobDetail.getKey().getName() + "-Trigger")
                 .forJob(jobDetail).withSchedule(CronScheduleBuilder.cronSchedule(cronExpression)).build();
     }
