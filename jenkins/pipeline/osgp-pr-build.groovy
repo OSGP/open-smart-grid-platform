@@ -138,7 +138,8 @@ echo Found cucumber tags: [$EXTRACTED_TAGS]'''
                 sh "./runTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-common centos \"OSGP Development.pem\" \"\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
                 sh "./runPubliclightingTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-publiclighting centos \"OSGP Development.pem\" \"\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
                 sh "./runMicrogridsTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-microgrids centos \"OSGP Development.pem\" \"\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
-                sh "./runSmartMeteringTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-smartmetering centos \"OSGP Development.pem\" \"\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
+                // Smart metering test have been disabled due to dlms simulator problems caused by SLIM-1869.
+                //sh "./runSmartMeteringTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-smartmetering centos \"OSGP Development.pem\" \"\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
             }
         }
 
