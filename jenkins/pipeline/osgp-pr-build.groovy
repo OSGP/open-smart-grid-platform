@@ -27,20 +27,20 @@ pipeline {
 
         // The pr job will clone the git repository, but nothing more. So gitmodules are not downloaded. Therefore we
         // need to trigger this manually
-        stage ('Update submodules') {
+        stage ('Update Submodules') {
             steps {
                 sh "git submodule update --remote --init"
             }
         }
 
-        stage ('Set status') {
+        stage ('Set GitHub Status') {
             steps {
                 step([$class: 'GitHubSetCommitStatusBuilder',
                       contextSource: [$class: 'ManuallyEnteredCommitContextSource']])
             }
         }
         
-        stage ('Build') {
+        stage ('Maven Build') {
             steps {
                 withMaven(
                         maven: 'Apache Maven 3.5.0',
@@ -56,7 +56,7 @@ pipeline {
                                 jgivenPublisher(disabled: true),
                                 jacocoPublisher(disabled: true)
                         ]) {
-                    sh "mvn clean install -DskipTestJarWithDependenciesAssembly=false"
+                    sh "mvn clean install -B -DskipTestJarWithDependenciesAssembly=false"
                 }
 
                 // Collect all build wars and copy them to target/artifacts
@@ -90,7 +90,7 @@ pipeline {
         stage ('Sonar Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube local') {
-                    sh "mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.2:sonar -Dmaven.test.failure.ignore=true -Dclirr=true " +
+                    sh "mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.2:sonar -B -Dmaven.test.failure.ignore=true -Dclirr=true " +
                           "-Dsonar.github.repository=OSGP/open-smart-grid-platform -Dsonar.analysis.mode=preview " +
                           "-Dsonar.issuesReport.console.enable=true -Dsonar.forceUpdate=true -Dsonar.github.pullRequest=$ghprbPullId " +
                           "${SONAR_EXTRA_PROPS}"
@@ -98,7 +98,7 @@ pipeline {
             }
         }
 
-        stage ('Deploy local artifacts') {
+        stage ('Deploy AWS System') {
             steps {
                 // Deploy stream specific system using the local artifacts from /data/software/artifacts on the system
                 build job: 'Deploy an AWS System', parameters: [
@@ -112,7 +112,7 @@ pipeline {
             }
         }
        
-        stage('Run tests') {
+        stage('Run Tests') {
             steps {
                 sh '''echo Searching for specific Cucumber tags in git commit.
 
@@ -138,11 +138,12 @@ echo Found cucumber tags: [$EXTRACTED_TAGS]'''
                 sh "./runTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-common centos \"OSGP Development.pem\" \"\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
                 sh "./runPubliclightingTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-publiclighting centos \"OSGP Development.pem\" \"\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
                 sh "./runMicrogridsTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-microgrids centos \"OSGP Development.pem\" \"\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
-                sh "./runSmartMeteringTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-smartmetering centos \"OSGP Development.pem\" \"\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
+                // Smart metering test have been disabled due to dlms simulator problems caused by SLIM-1869.
+                //sh "./runSmartMeteringTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-smartmetering centos \"OSGP Development.pem\" \"\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
             }
         }
 
-        stage ('Collect coverage') {
+        stage ('Collect Coverage') {
             steps {
                 withMaven(
                         maven: 'Apache Maven 3.5.0',
@@ -166,25 +167,26 @@ echo Found cucumber tags: [$EXTRACTED_TAGS]'''
                 step([$class: 'LogParserPublisher', projectRulePath: 'console-test-result-rules', unstableOnWarning: true, useProjectRule: true])
             }
         }
-    }
+    } // stages
 
     post {
         always {
+            echo "End of pipeline"
             // Always destroy the test environment
             build job: 'Destroy an AWS System', parameters: [string(name: 'SERVERNAME', value: servername), string(name: 'PLAYBOOK', value: playbook)]
         }
         success {
-            // Clean the complete workspace
-            cleanWs()
             step([$class: 'GitHubSetCommitStatusBuilder', contextSource: [$class: 'ManuallyEnteredCommitContextSource']])
         }
         failure {
             // Mail everyone that the job failed
             step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: 'kevin.smeets@cgi.com,ruud.lemmers@cgi.com,sander.van.der.heijden@cgi.com', sendToIndividuals: false])
             step([$class: 'GitHubSetCommitStatusBuilder', contextSource: [$class: 'ManuallyEnteredCommitContextSource']])
-
-            // Clean only those things which are unnecessary to keep.
-            cleanWs(patterns: [[pattern: '**/target/*-SNAPSHOT/', type: 'INCLUDE']])
         }
-    }
-}
+        cleanup {
+            // Delete workspace folder.
+            cleanWs()
+        }
+    } // post
+} // pipeline
+
