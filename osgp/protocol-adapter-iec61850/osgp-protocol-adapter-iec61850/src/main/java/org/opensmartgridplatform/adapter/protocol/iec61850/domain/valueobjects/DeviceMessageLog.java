@@ -9,6 +9,7 @@ package org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.openmuc.openiec61850.Fc;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
@@ -39,8 +40,8 @@ public class DeviceMessageLog {
         String result = "LogicalDevice: " + this.ied.getDescription() + this.logicalDevice.getDescription();
         result = result.concat(" messageType: ").concat(this.messageType).concat(" {\n");
 
-        for (final String key : this.readVariables.keySet()) {
-            result = result.concat(key).concat(": ").concat(this.readVariables.get(key)).concat("\n");
+        for (final Entry<String, String> entry : this.readVariables.entrySet()) {
+            result = result.concat(entry.getKey()).concat(": ").concat(entry.getValue()).concat("\n");
         }
 
         result = result.concat(" }");
