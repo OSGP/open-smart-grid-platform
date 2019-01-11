@@ -8,7 +8,11 @@ def playbook = stream + '-at.yml'
 def branchReleaseRepo = 'master'
 
 pipeline {
-    agent any
+    agent {
+        node {
+            label 'master'
+        }
+    }
 
     environment {
         // Default the pom version
