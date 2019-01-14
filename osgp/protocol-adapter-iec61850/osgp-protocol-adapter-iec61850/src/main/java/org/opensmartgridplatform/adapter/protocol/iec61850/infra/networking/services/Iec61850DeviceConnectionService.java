@@ -18,11 +18,6 @@ import org.openmuc.openiec61850.ClientAssociation;
 import org.openmuc.openiec61850.Fc;
 import org.openmuc.openiec61850.FcModelNode;
 import org.openmuc.openiec61850.ServerModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.entities.Iec61850Device;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
@@ -41,6 +36,10 @@ import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.help
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.reporting.Iec61850ClientBaseEventListener;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.reporting.Iec61850ClientEventListenerFactory;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.reporting.Iec61850RtuDeviceReportingService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
 public class Iec61850DeviceConnectionService {
@@ -119,7 +118,8 @@ public class Iec61850DeviceConnectionService {
         // Create instance of appropriate event listener.
         Iec61850ClientBaseEventListener eventListener = null;
         try {
-            eventListener = this.iec61850ClientEventListenerFactory.getEventListener(ied, deviceIdentification);
+            eventListener = this.iec61850ClientEventListenerFactory.getEventListener(ied, deviceIdentification,
+                    organisationIdentification);
         } catch (final ProtocolAdapterException e) {
             this.logProtocolAdapterException(deviceIdentification, e);
         }
