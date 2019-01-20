@@ -5,7 +5,7 @@ def servername = stream + '-at-pr-' + env.BUILD_NUMBER
 def playbook = stream + '-at.yml'
 
 // Choose the branch to use for SmartSocietyServices/release repository. Default value is 'master'.
-def branchReleaseRepo = 'bug/cicd-223-fix-artifactory-download-for-latest-version'
+def branchReleaseRepo = 'master'
 
 pipeline {
     agent {
