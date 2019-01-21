@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2016 Smart Society Services B.V.
+ * Copyright 2019 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -33,10 +33,10 @@ public class DeviceResponseService {
         switch (status) {
         case FAILURE:
             LOGGER.info("Failure device message status received: {}", status);
-            throw new TechnicalException(ComponentType.PROTOCOL_IEC61850, "Device reports failure.");
+            throw new TechnicalException(ComponentType.PROTOCOL_IEC60870, "Device reports failure.");
         case REJECTED:
             LOGGER.info("Rejected device message status received: {}", status);
-            throw new TechnicalException(ComponentType.PROTOCOL_IEC61850, "Device reports rejected.");
+            throw new TechnicalException(ComponentType.PROTOCOL_IEC60870, "Device reports rejected.");
         case OK:
             LOGGER.info("OK device message status received: {}", status);
             break;
