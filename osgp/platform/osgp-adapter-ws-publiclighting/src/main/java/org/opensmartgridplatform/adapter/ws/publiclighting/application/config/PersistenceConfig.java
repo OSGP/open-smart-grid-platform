@@ -10,6 +10,9 @@ package org.opensmartgridplatform.adapter.ws.publiclighting.application.config;
 import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 
+import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
+import org.opensmartgridplatform.shared.application.config.AbstractPersistenceConfig;
+import org.opensmartgridplatform.shared.infra.db.DefaultConnectionPoolFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,12 +21,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
-import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
-import org.opensmartgridplatform.shared.application.config.AbstractPersistenceConfig;
-import org.opensmartgridplatform.shared.infra.db.DefaultConnectionPoolFactory;
 import com.zaxxer.hikari.HikariDataSource;
 
-@EnableJpaRepositories(entityManagerFactoryRef = "entityManagerFactory", basePackageClasses = {
+@EnableJpaRepositories(entityManagerFactoryRef = "coreEntityManagerFactory", basePackageClasses = {
         DeviceRepository.class })
 @Configuration
 @PropertySource("classpath:osgp-adapter-ws-publiclighting.properties")
@@ -37,14 +37,17 @@ public class PersistenceConfig extends AbstractPersistenceConfig {
     @Value("${db.readonly.password}")
     private String password;
 
-    @Value("${db.host}")
+    @Value("${db.host.core}")
     private String databaseHost;
 
-    @Value("${db.port}")
+    @Value("${db.port.core}")
     private int databasePort;
 
-    @Value("${db.name}")
+    @Value("${db.name.core}")
     private String databaseName;
+
+    @Value("${entitymanager.packages.to.scan.core}")
+    private String entitymanagerPackagesToScan;
 
     private HikariDataSource dataSourceCore;
 
@@ -63,16 +66,17 @@ public class PersistenceConfig extends AbstractPersistenceConfig {
     }
 
     @Override
-    @Bean
+    @Bean(name = "coreTransactionManager")
     public JpaTransactionManager transactionManager() {
         return super.transactionManager();
     }
 
     @Override
-    @Bean
+    @Bean(name = "coreEntityManagerFactory")
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
 
-        return super.entityManagerFactory("OSGP_WS_ADAPTER_PUBLICLIGHTING", this.getDataSourceCore());
+        return super.entityManagerFactory("OSGP_WS_ADAPTER_PUBLICLIGHTING", this.getDataSourceCore(),
+                this.entitymanagerPackagesToScan);
     }
 
     @Override

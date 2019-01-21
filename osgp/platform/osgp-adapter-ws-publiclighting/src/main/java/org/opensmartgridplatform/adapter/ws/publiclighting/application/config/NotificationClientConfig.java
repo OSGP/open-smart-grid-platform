@@ -5,9 +5,9 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.ws.core.application.config;
+package org.opensmartgridplatform.adapter.ws.publiclighting.application.config;
 
-import org.opensmartgridplatform.adapter.ws.core.application.services.NotificationServiceWsCore;
+import org.opensmartgridplatform.adapter.ws.publiclighting.application.services.NotificationServicePublicLighting;
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationServiceBlackHole;
 import org.opensmartgridplatform.adapter.ws.shared.services.PublicLightingNotificationClientConfigBase;
@@ -16,15 +16,15 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
 @Configuration
-@PropertySource("classpath:osgp-adapter-ws-core.properties")
+@PropertySource("classpath:osgp-adapter-ws-publiclighting.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
-@PropertySource(value = "file:${osgp/AdapterWsCore/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/AdapterWsPublicLighting/config}", ignoreResourceNotFound = true)
 public class NotificationClientConfig extends PublicLightingNotificationClientConfigBase {
 
     @Bean
     public NotificationService notificationService() {
         if (this.isWebserviceNotificationEnabled()) {
-            return new NotificationServiceWsCore();
+            return new NotificationServicePublicLighting();
         } else {
             return new NotificationServiceBlackHole();
         }

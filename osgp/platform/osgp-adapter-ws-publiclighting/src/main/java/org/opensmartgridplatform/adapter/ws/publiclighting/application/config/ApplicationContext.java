@@ -10,34 +10,33 @@ package org.opensmartgridplatform.adapter.ws.publiclighting.application.config;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeZone;
+import org.opensmartgridplatform.shared.application.config.AbstractConfig;
+import org.opensmartgridplatform.ws.publiclighting.config.PublicLightingWebServiceConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
-
-import org.opensmartgridplatform.shared.application.config.AbstractConfig;
-import org.opensmartgridplatform.ws.publiclighting.config.PublicLightingWebServiceConfig;
 
 /**
  * An application context Java configuration class. The usage of Java
  * configuration requires Spring Framework 3.0
  */
 @Configuration
-@ComponentScan(basePackages = {"org.opensmartgridplatform.domain.core", "org.opensmartgridplatform.adapter.ws.publiclighting"})
+@ComponentScan(basePackages = { "org.opensmartgridplatform.domain.core",
+        "org.opensmartgridplatform.adapter.ws.publiclighting", "org.opensmartgridplatform.adapter.ws.shared.services" })
 @EnableTransactionManagement()
 @ImportResource("classpath:applicationContext.xml")
 @Import({ MessagingConfig.class, PersistenceConfig.class, WebServiceConfig.class,
         PublicLightingWebServiceConfig.class })
-@PropertySources({ @PropertySource("classpath:osgp-adapter-ws-publiclighting.properties"),
-        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:${osgp/AdapterWsPublicLighting/config}", ignoreResourceNotFound = true), })
+@PropertySource("classpath:osgp-adapter-ws-publiclighting.properties")
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/AdapterWsPublicLighting/config}", ignoreResourceNotFound = true)
 public class ApplicationContext extends AbstractConfig {
 
     private static final String LOCAL_TIME_ZONE_IDENTIFIER = "Europe/Paris";
@@ -45,9 +44,6 @@ public class ApplicationContext extends AbstractConfig {
     private static final int TIME_ZONE_OFFSET_MINUTES = LOCAL_TIME_ZONE.getStandardOffset(new DateTime().getMillis())
             / DateTimeConstants.MILLIS_PER_MINUTE;
 
-    /**
-     * @return
-     */
     @Bean
     public LocalValidatorFactoryBean validator() {
         final LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
@@ -56,9 +52,6 @@ public class ApplicationContext extends AbstractConfig {
         return localValidatorFactoryBean;
     }
 
-    /**
-     * @return
-     */
     @Bean
     public MethodValidationPostProcessor methodValidationPostProcessor() {
         final MethodValidationPostProcessor m = new MethodValidationPostProcessor();

@@ -42,6 +42,7 @@
     <xsd:restriction base="xsd:string">
       <xsd:enumeration value="DEVICE_AUTHORIZATION_UPDATED" />
       <xsd:enumeration value="DEVICE_UPDATED" />
+      <xsd:enumeration value="SET_LIGHT_SCHEDULE" />
     </xsd:restriction>
   </xsd:simpleType>
 
