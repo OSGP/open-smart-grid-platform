@@ -12,14 +12,13 @@ import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
+import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
-
-import org.opensmartgridplatform.shared.infra.jms.Constants;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
 
 // Send response message to the web service adapter.
 //@Component(value = "domainTariffSwitchingOutgoingWebServiceResponseMessageSender")
@@ -37,6 +36,7 @@ public class WebServiceResponseMessageSender implements ResponseMessageSender {
             @Override
             public Message createMessage(final Session session) throws JMSException {
                 final ObjectMessage objectMessage = session.createObjectMessage(responseMessage);
+                objectMessage.setJMSType(responseMessage.getMessageType());
                 objectMessage.setJMSPriority(responseMessage.getMessagePriority());
                 objectMessage.setJMSCorrelationID(responseMessage.getCorrelationUid());
                 objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,

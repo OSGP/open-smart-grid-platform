@@ -114,7 +114,6 @@ Feature: TariffSwitchingScheduleManagement Set Tariff Schedule
       | FaultString  | VALIDATION_ERROR                                                                               |
       | InnerMessage | Validation Exception, violations: startDay may not be null when weekDay is set to ABSOLUTEDAY; |
 
-  # Note: Result is 'NOT_FOUND' because there isn't a record in the database with a CorrelationUID
   # Note: HasScheduled is set to 'false' because the response type is 'NOT_OK', but should be 'OK'
   @OslpMockServer
   Scenario Outline: Set tariff schedule with 50 schedules # Success
@@ -139,8 +138,10 @@ Feature: TariffSwitchingScheduleManagement Set Tariff Schedule
       | Time          | <Time>          |
       | TariffValues  | <TariffValues>  |
       | ScheduledTime | <ScheduledTime> |
-    And the platform buffers a set tariff schedule response message for device "TEST1024000000001"
-      | Result | NOT_FOUND |
+    And the platform buffers a set reverse tariff schedule response message for device "TEST1024000000001" contains soap fault
+      | FaultCode   | SOAP-ENV:Server            |
+      | FaultString | CorrelationUid is unknown. |
+
 
     Examples: 
       | Protocol    | WeekDay     | StartDay   | EndDay     | Time         | TariffValues | ScheduledTime |
