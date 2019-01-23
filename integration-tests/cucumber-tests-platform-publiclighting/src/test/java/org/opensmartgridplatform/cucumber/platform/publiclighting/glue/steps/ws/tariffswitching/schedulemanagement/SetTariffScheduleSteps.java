@@ -225,7 +225,7 @@ public class SetTariffScheduleSteps {
         }
     }
 
-    @Then("^the platform buffers a set tariff schedule response message for device \"([^\"]*)\" contains soap fault$")
+    @Then("^the platform buffers a set tariff schedule response message for device \"([^\"]*)\" that contains a soap fault$")
     public void thePlatformBuffersASetTariffScheduleResponseMessageForDeviceContainsSoapFault(
             final String deviceIdentification, final Map<String, String> expectedResult) throws Throwable {
         final SetScheduleAsyncRequest request = new SetScheduleAsyncRequest();

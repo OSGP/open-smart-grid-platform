@@ -5,9 +5,9 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.ws.da.application.config;
+package org.opensmartgridplatform.adapter.ws.smartmetering.application.config;
 
-import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataCleanupConfigBase;
+import org.opensmartgridplatform.adapter.ws.shared.services.AbstractResponseDataCleanupSchedulingConfig;
 import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataCleanupJob;
 import org.opensmartgridplatform.shared.application.config.SchedulingConfigProperties;
 import org.opensmartgridplatform.shared.application.config.SchedulingConfigProperties.Builder;
@@ -21,15 +21,15 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @EnableScheduling
 @Configuration
-@PropertySource("classpath:osgp-adapter-ws-distributionautomation.properties")
+@PropertySource("classpath:osgp-adapter-ws-smartmetering.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
-@PropertySource(value = "file:${osgp/AdapterWsDistributionAutomation/config}", ignoreResourceNotFound = true)
-public class SchedulingConfig extends ResponseDataCleanupConfigBase {
+@PropertySource(value = "file:${osgp/AdapterWsSmartMetering/config}", ignoreResourceNotFound = true)
+public class SmartMetringReponseDataCleanUpSchedulingConfig extends AbstractResponseDataCleanupSchedulingConfig {
 
-    private static final String KEY_CLEANUP_JOB_CRON_EXPRESSION = "distributionautomation.scheduling.job.cleanup.response.data.cron.expression";
-    private static final String KEY_CLEANUP_JOB_THREAD_COUNT = "distributionautomation.scheduling.job.cleanup.response.data.thread.count";
+    private static final String KEY_CLEANUP_JOB_CRON_EXPRESSION = "smartmetering.scheduling.job.cleanup.response.data.cron.expression";
+    private static final String KEY_CLEANUP_JOB_THREAD_COUNT = "smartmetering.scheduling.job.cleanup.response.data.thread.count";
 
-    @Value("${distributionautomation.scheduling.job.cleanup.response.data.retention.time.in.days}")
+    @Value("${smartmetering.scheduling.job.cleanup.response.data.retention.time.in.days}")
     private int cleanupJobRetentionTimeInDays;
 
     @Override

@@ -12,15 +12,21 @@ import org.opensmartgridplatform.adapter.ws.schema.core.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.core.notification.Notification;
 import org.opensmartgridplatform.adapter.ws.schema.core.notification.NotificationType;
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
+import org.opensmartgridplatform.adapter.ws.tariffswitching.application.config.TariffSwitchingNotificationClientConfig;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
-public class NotificationServiceTariffSwitching implements NotificationService {
+/**
+ * An instance of this class is created by a bean function in an application
+ * context class. See
+ * {@link TariffSwitchingNotificationClientConfig#notificationService()}.
+ */
+public class TariffSwitchingNotificationService implements NotificationService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(NotificationServiceTariffSwitching.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TariffSwitchingNotificationService.class);
 
     @Autowired
     private SendNotificationServiceClient sendNotificationServiceClient;

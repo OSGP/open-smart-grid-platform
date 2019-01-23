@@ -76,7 +76,7 @@ public class SetReverseTariffScheduleSteps {
                 expectedResult);
     }
 
-    @Then("^the platform buffers a set reverse tariff schedule response message for device \"([^\"]*)\" contains soap fault$")
+    @Then("^the platform buffers a set reverse tariff schedule response message for device \"([^\"]*)\" that contains a soap fault$")
     public void thePlatformBuffersASetReverseTariffScheduleResponseMessageForDeviceContainsSoapFault(
             final String deviceIdentification, final Map<String, String> expectedResult) throws Throwable {
         this.setTariffScheduleSteps.thePlatformBuffersASetTariffScheduleResponseMessageForDeviceContainsSoapFault(

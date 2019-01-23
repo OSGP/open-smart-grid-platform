@@ -24,11 +24,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Assert;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ws.soap.client.SoapFaultClientException;
-
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.common.AsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.schedulemanagement.ActionTimeType;
@@ -48,6 +43,10 @@ import org.opensmartgridplatform.cucumber.platform.glue.steps.ws.GenericResponse
 import org.opensmartgridplatform.cucumber.platform.publiclighting.PlatformPubliclightingDefaults;
 import org.opensmartgridplatform.cucumber.platform.publiclighting.PlatformPubliclightingKeys;
 import org.opensmartgridplatform.cucumber.platform.publiclighting.support.ws.publiclighting.PublicLightingScheduleManagementClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -219,8 +218,8 @@ public class SetLightScheduleSteps {
      *
      * @param expectedResponseData
      *            The table with the expected fields in the response.
-     * @apiNote The response will contain the correlation uid, so store that in the
-     *       current scenario context for later use.
+     * @apiNote The response will contain the correlation uid, so store that in
+     *          the current scenario context for later use.
      * @throws Throwable
      */
     @Then("^the set light schedule async response contains$")
@@ -275,7 +274,7 @@ public class SetLightScheduleSteps {
         }
     }
 
-    @Then("^the platform buffers a set light schedule response message for device \"([^\"]*)\" contains soap fault$")
+    @Then("^the platform buffers a set light schedule response message for device \"([^\"]*)\" that contains a soap fault$")
     public void thePlatformBuffersASetLightScheduleResponseMessageForDeviceContainsSoapFault(
             final String deviceIdentification, final Map<String, String> expectedResponseData) throws Throwable {
         final SetScheduleAsyncRequest request = new SetScheduleAsyncRequest();

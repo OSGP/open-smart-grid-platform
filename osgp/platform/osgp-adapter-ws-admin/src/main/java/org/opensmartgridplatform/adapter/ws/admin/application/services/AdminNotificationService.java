@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
-import org.opensmartgridplatform.adapter.ws.admin.application.config.NotificationClientConfig;
+import org.opensmartgridplatform.adapter.ws.admin.application.config.AdminNotificationClientConfig;
 import org.opensmartgridplatform.adapter.ws.clients.SendNotificationServiceClient;
 import org.opensmartgridplatform.adapter.ws.schema.core.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.core.notification.Notification;
@@ -15,11 +15,11 @@ import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityExce
 
 /**
  * An instance of this class is created by a bean function in an application
- * context class. See {@link NotificationClientConfig#notificationService()}.
+ * context class. See {@link AdminNotificationClientConfig#notificationService()}.
  */
-public class NotificationServiceWsAdmin implements NotificationService {
+public class AdminNotificationService implements NotificationService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(NotificationServiceWsAdmin.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AdminNotificationService.class);
 
     private static final String CAUGHT_EXCEPTION = "Caught exception when sending notification";
 

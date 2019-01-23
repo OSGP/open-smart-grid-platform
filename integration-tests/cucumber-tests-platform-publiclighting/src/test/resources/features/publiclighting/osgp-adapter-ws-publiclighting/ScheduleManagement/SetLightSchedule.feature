@@ -113,7 +113,7 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | TriggerType   |              |
       | TriggerWindow |              |
     # Note: The platform throws a TechnicalException when the status is 'FAILURE'.
-    And the platform buffers a set light schedule response message for device "TEST1024000000001" contains soap fault
+    And the platform buffers a set light schedule response message for device "TEST1024000000001" that contains a soap fault
       | Message | Device reports failure |
 
     Examples: 
@@ -148,7 +148,7 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | TriggerType   |              |
       | TriggerWindow |              |
     # Note: The platform throws a TechnicalException when the status is 'REJECTED'.
-    And the platform buffers a set light schedule response message for device "TEST1024000000001" contains soap fault
+    And the platform buffers a set light schedule response message for device "TEST1024000000001" that contains a soap fault
       | Message | Device reports rejected |
 
     Examples: 
@@ -208,7 +208,7 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | TriggerType   | <TriggerType>   |
       | TriggerWindow | <TriggerWindow> |
       | ScheduledTime | <ScheduledTime> |
-    And the platform buffers a set light schedule response message for device "TEST1024000000001" contains soap fault
+    And the platform buffers a set light schedule response message for device "TEST1024000000001" that contains a soap fault
       | FaultCode   | SOAP-ENV:Server            |
       | FaultString | CorrelationUid is unknown. |
 

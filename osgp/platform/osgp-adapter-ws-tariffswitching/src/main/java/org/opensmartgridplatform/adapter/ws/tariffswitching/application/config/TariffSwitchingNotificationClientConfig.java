@@ -5,26 +5,26 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.ws.publiclighting.application.config;
+package org.opensmartgridplatform.adapter.ws.tariffswitching.application.config;
 
-import org.opensmartgridplatform.adapter.ws.publiclighting.application.services.NotificationServicePublicLighting;
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationServiceBlackHole;
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationClientConfigBase;
+import org.opensmartgridplatform.adapter.ws.tariffswitching.application.services.TariffSwitchingNotificationService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
 @Configuration
-@PropertySource("classpath:osgp-adapter-ws-publiclighting.properties")
+@PropertySource("classpath:osgp-adapter-ws-tariffswitching.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
-@PropertySource(value = "file:${osgp/AdapterWsPublicLighting/config}", ignoreResourceNotFound = true)
-public class NotificationClientConfig extends NotificationClientConfigBase {
+@PropertySource(value = "file:${osgp/AdapterWsTariffSwitching/config}", ignoreResourceNotFound = true)
+public class TariffSwitchingNotificationClientConfig extends NotificationClientConfigBase {
 
     @Bean
     public NotificationService notificationService() {
         if (this.isWebserviceNotificationEnabled()) {
-            return new NotificationServicePublicLighting();
+            return new TariffSwitchingNotificationService();
         } else {
             return new NotificationServiceBlackHole();
         }

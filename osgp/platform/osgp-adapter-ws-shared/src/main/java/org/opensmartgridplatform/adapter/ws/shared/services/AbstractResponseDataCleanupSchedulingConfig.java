@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 /**
  * Base class for ResponseDataCleanupConfig classes for components of OSGP.
  */
-public abstract class ResponseDataCleanupConfigBase extends AbstractSchedulingConfig {
+public abstract class AbstractResponseDataCleanupSchedulingConfig extends AbstractSchedulingConfig {
 
     @Value("${db.driver}")
     protected String databaseDriver;

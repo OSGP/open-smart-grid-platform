@@ -8,6 +8,7 @@
 package org.opensmartgridplatform.adapter.ws.publiclighting.application.services;
 
 import org.opensmartgridplatform.adapter.ws.clients.SendNotificationServiceClient;
+import org.opensmartgridplatform.adapter.ws.publiclighting.application.config.PublicLightingNotificationClientConfig;
 import org.opensmartgridplatform.adapter.ws.schema.core.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.core.notification.Notification;
 import org.opensmartgridplatform.adapter.ws.schema.core.notification.NotificationType;
@@ -18,9 +19,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
-public class NotificationServicePublicLighting implements NotificationService {
+/**
+ * An instance of this class is created by a bean function in an application
+ * context class. See
+ * {@link PublicLightingNotificationClientConfig#notificationService()}.
+ */
+public class PublicLightingNotificationService implements NotificationService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(NotificationServicePublicLighting.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PublicLightingNotificationService.class);
 
     @Autowired
     private SendNotificationServiceClient sendNotificationServiceClient;

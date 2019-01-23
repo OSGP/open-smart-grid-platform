@@ -61,7 +61,7 @@ Feature: TariffSwitchingScheduleManagement Set Reverse Tariff Schedule
       | Time         | 18:00:00.000 |
       | TariffValues | 0,false      |
     # Note: The platform throws a TechnicalException when the status is 'FAILURE'.
-    And the platform buffers a set reverse tariff schedule response message for device "TEST1024000000001" contains soap fault
+    And the platform buffers a set reverse tariff schedule response message for device "TEST1024000000001" that contains a soap fault
       | Message | Device reports failure |
 
     Examples: 
@@ -91,7 +91,7 @@ Feature: TariffSwitchingScheduleManagement Set Reverse Tariff Schedule
       | Time         | 18:00:00.000 |
       | TariffValues | 0,false      |
     # Note: The platform throws a TechnicalException when the status is 'REJECTED'.
-    And the platform buffers a set reverse tariff schedule response message for device "TEST1024000000001" contains soap fault
+    And the platform buffers a set reverse tariff schedule response message for device "TEST1024000000001" that contains a soap fault
       | Message | Device reports rejected |
 
     Examples: 
