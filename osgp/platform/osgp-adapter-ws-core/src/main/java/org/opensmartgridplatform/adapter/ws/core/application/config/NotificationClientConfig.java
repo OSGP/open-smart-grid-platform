@@ -10,7 +10,7 @@ package org.opensmartgridplatform.adapter.ws.core.application.config;
 import org.opensmartgridplatform.adapter.ws.core.application.services.NotificationServiceWsCore;
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationServiceBlackHole;
-import org.opensmartgridplatform.adapter.ws.shared.services.PublicLightingNotificationClientConfigBase;
+import org.opensmartgridplatform.adapter.ws.shared.services.NotificationClientConfigBase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -19,7 +19,7 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource("classpath:osgp-adapter-ws-core.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/AdapterWsCore/config}", ignoreResourceNotFound = true)
-public class NotificationClientConfig extends PublicLightingNotificationClientConfigBase {
+public class NotificationClientConfig extends NotificationClientConfigBase {
 
     @Bean
     public NotificationService notificationService() {

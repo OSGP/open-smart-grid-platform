@@ -18,10 +18,9 @@ import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.ws.soap.security.support.KeyStoreFactoryBean;
 
 /**
- * Base class for NotificationClientConfig classes for public lighting
- * components of OSGP.
+ * Base class for NotificationClientConfig classes for components of OSGP.
  */
-public class PublicLightingNotificationClientConfigBase extends AbstractConfig {
+public class NotificationClientConfigBase extends AbstractConfig {
 
     // Notification web service global properties.
 

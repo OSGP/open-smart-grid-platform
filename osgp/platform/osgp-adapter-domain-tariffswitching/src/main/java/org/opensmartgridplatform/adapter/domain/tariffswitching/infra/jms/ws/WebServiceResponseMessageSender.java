@@ -21,7 +21,6 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
 // Send response message to the web service adapter.
-//@Component(value = "domainTariffSwitchingOutgoingWebServiceResponseMessageSender")
 public class WebServiceResponseMessageSender implements ResponseMessageSender {
 
     @Autowired
