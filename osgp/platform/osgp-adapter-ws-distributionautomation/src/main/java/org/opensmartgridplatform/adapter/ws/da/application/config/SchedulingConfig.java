@@ -7,6 +7,10 @@
  */
 package org.opensmartgridplatform.adapter.ws.da.application.config;
 
+import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataCleanupConfigBase;
+import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataCleanupJob;
+import org.opensmartgridplatform.shared.application.config.SchedulingConfigProperties;
+import org.opensmartgridplatform.shared.application.config.SchedulingConfigProperties.Builder;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,61 +19,37 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataCleanupJob;
-import org.opensmartgridplatform.shared.application.config.AbstractSchedulingConfig;
-import org.opensmartgridplatform.shared.application.config.SchedulingConfigProperties;
-
 @EnableScheduling
 @Configuration
 @PropertySource("classpath:osgp-adapter-ws-distributionautomation.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/AdapterWsDistributionAutomation/config}", ignoreResourceNotFound = true)
-public class SchedulingConfig extends AbstractSchedulingConfig {
+public class SchedulingConfig extends ResponseDataCleanupConfigBase {
 
     private static final String KEY_CLEANUP_JOB_CRON_EXPRESSION = "distributionautomation.scheduling.job.cleanup.response.data.cron.expression";
     private static final String KEY_CLEANUP_JOB_THREAD_COUNT = "distributionautomation.scheduling.job.cleanup.response.data.thread.count";
 
-    @Value("${db.driver}")
-    private String databaseDriver;
-
-    @Value("${db.password}")
-    private String databasePassword;
-
-    @Value("${db.protocol}")
-    private String databaseProtocol;
-
-    @Value("${db.host}")
-    private String databaseHost;
-
-    @Value("${db.port}")
-    private String databasePort;
-
-    @Value("${db.name}")
-    private String databaseName;
-
-    @Value("${db.username}")
-    private String databaseUsername;
-
     @Value("${distributionautomation.scheduling.job.cleanup.response.data.retention.time.in.days}")
     private int cleanupJobRetentionTimeInDays;
 
+    @Override
     @Bean
     public int cleanupJobRetentionTimeInDays() {
         return this.cleanupJobRetentionTimeInDays;
     }
 
+    @Override
     @Bean(destroyMethod = "shutdown")
-    public Scheduler cleanupJobScheduler() throws SchedulerException {
-
-        SchedulingConfigProperties schedulingConfigProperties = SchedulingConfigProperties.newBuilder()
-                .withJobClass(ResponseDataCleanupJob.class).withThreadCountKey(KEY_CLEANUP_JOB_THREAD_COUNT)
-                .withCronExpressionKey(KEY_CLEANUP_JOB_CRON_EXPRESSION).withJobStoreDbUrl(this.getDatabaseUrl())
-                .withJobStoreDbUsername(this.databaseUsername).withJobStoreDbPassword(this.databasePassword)
-                .withJobStoreDbDriver(this.databaseDriver).build();
-        return this.constructScheduler(schedulingConfigProperties);
+    public Scheduler cleanupResponseDataScheduler() throws SchedulerException {
+        return this.constructScheduler(
+                this.abstractSchedulingConfigBuilder().withJobClass(ResponseDataCleanupJob.class).build());
     }
 
-    private String getDatabaseUrl() {
-        return this.databaseProtocol + this.databaseHost + ":" + this.databasePort + "/" + this.databaseName;
+    @Override
+    protected Builder abstractSchedulingConfigBuilder() {
+        return SchedulingConfigProperties.newBuilder().withThreadCountKey(KEY_CLEANUP_JOB_THREAD_COUNT)
+                .withCronExpressionKey(KEY_CLEANUP_JOB_CRON_EXPRESSION).withJobStoreDbUrl(this.getDatabaseUrl())
+                .withJobStoreDbUsername(this.databaseUsername).withJobStoreDbPassword(this.databasePassword)
+                .withJobStoreDbDriver(this.databaseDriver);
     }
 }

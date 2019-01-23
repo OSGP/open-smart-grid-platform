@@ -7,8 +7,8 @@
  */
 package org.opensmartgridplatform.adapter.ws.tariffswitching.application.config;
 
+import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataCleanupConfigBase;
 import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataCleanupJob;
-import org.opensmartgridplatform.shared.application.config.AbstractSchedulingConfig;
 import org.opensmartgridplatform.shared.application.config.SchedulingConfigProperties;
 import org.opensmartgridplatform.shared.application.config.SchedulingConfigProperties.Builder;
 import org.quartz.Scheduler;
@@ -24,51 +24,29 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @PropertySource("classpath:osgp-adapter-ws-tariffswitching.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/AdapterWsTariffSwitching/config}", ignoreResourceNotFound = true)
-public class SchedulingConfig extends AbstractSchedulingConfig {
+public class SchedulingConfig extends ResponseDataCleanupConfigBase {
 
     private static final String KEY_CLEANUP_JOB_CRON_EXPRESSION = "tariffswitching.scheduling.job.cleanup.response.data.cron.expression";
     private static final String KEY_CLEANUP_JOB_THREAD_COUNT = "tariffswitching.scheduling.job.cleanup.response.data.thread.count";
 
-    @Value("${db.driver}")
-    private String databaseDriver;
-
-    @Value("${db.password}")
-    private String databasePassword;
-
-    @Value("${db.protocol}")
-    private String databaseProtocol;
-
-    @Value("${db.host}")
-    private String databaseHost;
-
-    @Value("${db.port}")
-    private String databasePort;
-
-    @Value("${db.name}")
-    private String databaseName;
-
-    @Value("${db.username}")
-    private String databaseUsername;
-
     @Value("${tariffswitching.scheduling.job.cleanup.response.data.retention.time.in.days}")
     private int cleanupJobRetentionTimeInDays;
 
+    @Override
     @Bean
     public int cleanupJobRetentionTimeInDays() {
         return this.cleanupJobRetentionTimeInDays;
     }
 
+    @Override
     @Bean(destroyMethod = "shutdown")
     public Scheduler cleanupResponseDataScheduler() throws SchedulerException {
         return this.constructScheduler(
                 this.abstractSchedulingConfigBuilder().withJobClass(ResponseDataCleanupJob.class).build());
     }
 
-    private String getDatabaseUrl() {
-        return this.databaseProtocol + this.databaseHost + ":" + this.databasePort + "/" + this.databaseName;
-    }
-
-    private Builder abstractSchedulingConfigBuilder() {
+    @Override
+    protected Builder abstractSchedulingConfigBuilder() {
         return SchedulingConfigProperties.newBuilder().withThreadCountKey(KEY_CLEANUP_JOB_THREAD_COUNT)
                 .withCronExpressionKey(KEY_CLEANUP_JOB_CRON_EXPRESSION).withJobStoreDbUrl(this.getDatabaseUrl())
                 .withJobStoreDbUsername(this.databaseUsername).withJobStoreDbPassword(this.databasePassword)
