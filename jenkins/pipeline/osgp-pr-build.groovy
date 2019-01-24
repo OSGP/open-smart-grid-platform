@@ -60,7 +60,7 @@ pipeline {
                                 jgivenPublisher(disabled: true),
                                 jacocoPublisher(disabled: true)
                         ]) {
-                    sh "mvn clean install -B -DskipTestJarWithDependenciesAssembly=false"
+                    sh "mvn clean install -B -T2 -DskipTestJarWithDependenciesAssembly=false"
                 }
 
                 // Collect all build wars and copy them to target/artifacts

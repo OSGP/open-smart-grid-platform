@@ -138,7 +138,7 @@ Feature: TariffSwitchingScheduleManagement Set Reverse Tariff Schedule
       | EndDay       | 2016-12-31   |
       | Time         | 18:00:00.000 |
       | TariffValues | 0,false      |
-    And the platform buffers a set reverse tariff schedule response message for device "TEST1024000000001" contains soap fault
+    And the platform buffers a set reverse tariff schedule response message for device "TEST1024000000001" that contains a soap fault
       | FaultCode   | SOAP-ENV:Server            |
       | FaultString | CorrelationUid is unknown. |
 
