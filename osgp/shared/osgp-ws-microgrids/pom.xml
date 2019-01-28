@@ -35,7 +35,7 @@
               <bindingDirectory>src/main/resources/schemas</bindingDirectory>
               <bindingFiles>adhocmanagement.xjb</bindingFiles>
               <schemaDirectory>src/main/resources</schemaDirectory>
-              <schemaFiles>AdHocManagement.wsdl</schemaFiles>
+              <schemaFiles>MicrogridsAdHocManagement.wsdl</schemaFiles>
               <wsdl>true</wsdl>
               <xmlschema>false</xmlschema>
               <staleFile>${project.build.directory}/jaxb2/.schema-ad-hoc-management-stale-flag</staleFile>
