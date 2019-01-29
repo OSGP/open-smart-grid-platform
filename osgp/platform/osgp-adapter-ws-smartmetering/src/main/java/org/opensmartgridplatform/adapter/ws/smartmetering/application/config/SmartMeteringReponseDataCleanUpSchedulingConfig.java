@@ -24,7 +24,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @PropertySource("classpath:osgp-adapter-ws-smartmetering.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/AdapterWsSmartMetering/config}", ignoreResourceNotFound = true)
-public class SmartMetringReponseDataCleanUpSchedulingConfig extends AbstractResponseDataCleanupSchedulingConfig {
+public class SmartMeteringReponseDataCleanUpSchedulingConfig extends AbstractResponseDataCleanupSchedulingConfig {
 
     private static final String KEY_CLEANUP_JOB_CRON_EXPRESSION = "smartmetering.scheduling.job.cleanup.response.data.cron.expression";
     private static final String KEY_CLEANUP_JOB_THREAD_COUNT = "smartmetering.scheduling.job.cleanup.response.data.thread.count";

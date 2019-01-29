@@ -9,7 +9,7 @@ package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.dat
 
 import java.util.Map;
 
-import org.opensmartgridplatform.adapter.ws.smartmetering.domain.entities.ResponseUrlData;
+import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseUrlData;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 
 public class ResponseUrlDataBuilder {

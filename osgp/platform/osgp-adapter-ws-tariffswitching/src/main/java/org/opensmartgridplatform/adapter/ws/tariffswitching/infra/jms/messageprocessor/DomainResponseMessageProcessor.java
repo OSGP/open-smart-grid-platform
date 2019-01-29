@@ -14,7 +14,7 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
-import org.opensmartgridplatform.adapter.ws.schema.core.notification.NotificationType;
+import org.opensmartgridplatform.adapter.ws.schema.tariffswitching.notification.NotificationType;
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
 import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataService;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
@@ -106,8 +106,8 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
         }
 
         try {
-            LOGGER.info("Calling application service function to handle response: {} with correlationUid: {}",
-                    jmsType, correlationUid);
+            LOGGER.info("Calling application service function to handle response: {} with correlationUid: {}", jmsType,
+                    correlationUid);
 
             final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification,
                     correlationUid);

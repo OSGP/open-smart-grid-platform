@@ -8,7 +8,7 @@
     </jxb:schemaBindings>
   </jxb:bindings>
 
-  <jxb:bindings schemaLocation="devicemonitoring.xsd">
+  <jxb:bindings schemaLocation="pl-devicemonitoring.xsd">
     <jxb:schemaBindings>
       <jxb:package
         name="org.opensmartgridplatform.adapter.ws.schema.publiclighting.devicemonitoring"></jxb:package>

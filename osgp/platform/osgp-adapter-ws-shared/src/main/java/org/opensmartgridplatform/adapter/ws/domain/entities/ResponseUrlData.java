@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.ws.smartmetering.domain.entities;
+package org.opensmartgridplatform.adapter.ws.domain.entities;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

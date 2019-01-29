@@ -22,9 +22,11 @@ public class TariffSwitchingWebServiceConfig {
     private static final String COMMON_XSD_PATH = "schemas/common.xsd";
     private static final String TS_ADHOCMANAGEMENT_XSD_PATH = "schemas/ts-adhocmanagement.xsd";
     private static final String TS_SCHEDULE_MANAGEMENT_XSD_PATH = "schemas/ts-schedulemanagement.xsd";
+    private static final String TS_NOTIFICATION_XSD_PATH = "schemas/ts-notification.xsd";
 
     private static final String TS_ADHOC_MANAGEMENT_WSDL_PATH = "TariffSwitchingAdHocManagement.wsdl";
     private static final String TS_SCHEDULE_MANAGEMENT_WSDL_PATH = "TariffSwitchingScheduleManagement.wsdl";
+    private static final String TS_NOTIFICATION_WSDL_PATH = "TariffSwitchingNotification.wsdl";
 
     @Bean
     public PayloadValidatingInterceptor payloadValidatingInterceptor() {
@@ -59,5 +61,15 @@ public class TariffSwitchingWebServiceConfig {
     @Bean(name = "ts-schedulemanagement")
     public SimpleXsdSchema tariffSwitchingScheduleManagementXsd() {
         return new SimpleXsdSchema(new ClassPathResource(TS_SCHEDULE_MANAGEMENT_XSD_PATH));
+    }
+
+    @Bean(name = "TariffSwitchingNotification")
+    public WsdlDefinition tariffSwitchingNotificationWsdl() {
+        return new SimpleWsdl11Definition(new ClassPathResource(TS_NOTIFICATION_WSDL_PATH));
+    }
+
+    @Bean(name = "ts-notification")
+    public SimpleXsdSchema tariffSwitchingNotificationXsd() {
+        return new SimpleXsdSchema(new ClassPathResource(TS_NOTIFICATION_XSD_PATH));
     }
 }

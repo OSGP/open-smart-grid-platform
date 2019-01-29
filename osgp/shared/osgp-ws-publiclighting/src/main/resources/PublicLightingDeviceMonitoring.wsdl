@@ -14,7 +14,7 @@
       xmlns:xsd="http://www.w3.org/2001/XMLSchema">
       <xsd:import
         namespace="http://www.opensmartgridplatform.org/schemas/publiclighting/devicemonitoring/2014/10"
-        schemaLocation="schemas/devicemonitoring.xsd" />
+        schemaLocation="schemas/pl-devicemonitoring.xsd" />
     </xsd:schema>
   </wsdl:types>
 

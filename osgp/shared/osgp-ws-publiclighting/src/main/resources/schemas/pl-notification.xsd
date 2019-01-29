@@ -1,5 +1,5 @@
 <!--
-  Copyright 2018 Smart Society Services B.V.
+  Copyright 2019 Smart Society Services B.V.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -8,13 +8,13 @@
   http://www.apache.org/licenses/LICENSE-2.0
 -->
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-  xmlns:tns="http://www.opensmartgridplatform.org/schemas/netmanagement/osgp-notification/2018/01"
+  xmlns:tns="http://www.opensmartgridplatform.org/schemas/netmanagement/osgp-notification/public-lighting/2019/01"
   xmlns:common="http://www.opensmartgridplatform.org/schemas/common/2014/10"
   attributeFormDefault="unqualified" elementFormDefault="qualified"
-  targetNamespace="http://www.opensmartgridplatform.org/schemas/netmanagement/osgp-notification/2018/01">
+  targetNamespace="http://www.opensmartgridplatform.org/schemas/netmanagement/osgp-notification/public-lighting/2019/01">
 
   <xsd:import namespace="http://www.opensmartgridplatform.org/schemas/common/2014/10"
-    schemaLocation="common-ws-core.xsd" />
+    schemaLocation="common.xsd" />
 
   <xsd:element name="SendNotificationRequest">
     <xsd:complexType>
@@ -40,7 +40,7 @@
 
   <xsd:simpleType name="NotificationType">
     <xsd:restriction base="xsd:string">
-      <xsd:enumeration value="DEVICE_UPDATED" />
+      <xsd:enumeration value="SET_LIGHT_SCHEDULE" />
     </xsd:restriction>
   </xsd:simpleType>
 

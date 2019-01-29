@@ -25,54 +25,54 @@ public class NotificationClientConfigBase extends AbstractConfig {
     // Notification web service global properties.
 
     @Value("${web.service.notification.enabled:true}")
-    private boolean webserviceNotificationEnabled;
+    protected boolean webserviceNotificationEnabled;
 
     @Value("${web.service.notification.security.enabled:false}")
-    private boolean webserviceNotificationSecurityEnabled;
+    protected boolean webserviceNotificationSecurityEnabled;
 
-    @Value("${web.service.notification.url:http://localhost:8080/web-api-net-management/soap/osgp/notificationService/}")
-    private String webserviceNotificationUrl;
+    @Value("${web.service.notification.url:http://localhost:8080/web-api-net-management/soap/osgp/notificationService}")
+    protected String webserviceNotificationUrl;
 
     @Value("${jaxb2.marshaller.context.path.notification:org.opensmartgridplatform.adapter.ws.schema.core.notification}")
-    private String marshallerContextPathNotification;
+    protected String marshallerContextPathNotification;
 
     @Value("${apache.client.max.connections.per.route:20}")
-    private int maxConnectionsPerRoute;
+    protected int maxConnectionsPerRoute;
 
     @Value("${apache.client.max.connections.total:400}")
-    private int maxConnectionsTotal;
+    protected int maxConnectionsTotal;
 
     // Notification web service application name, user name and organization
     // properties.
 
     @Value("${web.service.notification.application.name:OSGP}")
-    private String applicationName;
+    protected String applicationName;
 
     @Value("${web.service.notification.username:OSGP}")
-    private String webserviceNotificationUsername;
+    protected String webserviceNotificationUsername;
 
     @Value("${web.service.notification.organisation:OSGP}")
-    private String webserviceNotificationOrganisation;
+    protected String webserviceNotificationOrganisation;
 
     // Notification web service security properties.
 
     @Value("${web.service.truststore.location:/etc/ssl/certs/trust.jks}")
-    private String webserviceTruststoreLocation;
+    protected String webserviceTruststoreLocation;
 
     @Value("${web.service.truststore.password:123456}")
-    private String webserviceTruststorePassword;
+    protected String webserviceTruststorePassword;
 
     @Value("${web.service.truststore.type:jks}")
-    private String webserviceTruststoreType;
+    protected String webserviceTruststoreType;
 
     @Value("${web.service.keystore.location:/etc/ssl/certs}")
-    private String webserviceKeystoreLocation;
+    protected String webserviceKeystoreLocation;
 
     @Value("${web.service.keystore.password:1234}")
-    private String webserviceKeystorePassword;
+    protected String webserviceKeystorePassword;
 
     @Value("${web.service.keystore.type:pkcs12}")
-    private String webserviceKeystoreType;
+    protected String webserviceKeystoreType;
 
     @Bean
     public SaajSoapMessageFactory messageFactory() {

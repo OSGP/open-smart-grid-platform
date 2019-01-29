@@ -5,14 +5,13 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.ws.smartmetering.domain.repositories;
+package org.opensmartgridplatform.adapter.ws.domain.repositories;
 
 import java.util.Date;
 
+import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseUrlData;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
-import org.opensmartgridplatform.adapter.ws.smartmetering.domain.entities.ResponseUrlData;
 
 @Repository
 public interface ResponseUrlDataRepository extends JpaRepository<ResponseUrlData, Long> {
