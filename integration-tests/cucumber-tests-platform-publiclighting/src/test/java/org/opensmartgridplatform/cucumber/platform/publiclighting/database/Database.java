@@ -7,11 +7,10 @@
  */
 package org.opensmartgridplatform.cucumber.platform.publiclighting.database;
 
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.repositories.OslpDeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.repositories.OslpDeviceRepository;
 
 @Component
 public class Database {
@@ -19,15 +18,9 @@ public class Database {
     @Autowired
     private OslpDeviceRepository oslpDeviceRepository;
 
-    @Transactional
-    private void insertDefaultData() {
-    }
-
     @Transactional("txMgrOslp")
-    public void prepareDatabaseForScenario() {
-        // First remove stuff from osgp_adapter_protocol_oslp
+    public void prepareOslpDatabaseForScenario() {
+        // First remove stuff from osgp_adapter_protocol_oslp.
         this.oslpDeviceRepository.deleteAllInBatch();
-
-        this.insertDefaultData();
     }
 }
