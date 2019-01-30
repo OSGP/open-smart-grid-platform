@@ -8,12 +8,9 @@
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.config;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-import org.opensmartgridplatform.adapter.ws.clients.NotificationWebServiceTemplateFactory;
-import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.AnnotationMethodArgumentResolver;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.BypassRetry;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.CertificateAndSoapHeaderAuthorizationEndpointInterceptor;
@@ -24,16 +21,9 @@ import org.opensmartgridplatform.adapter.ws.endpointinterceptors.ScheduleTime;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.SoapHeaderEndpointInterceptor;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.SoapHeaderInterceptor;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.X509CertificateRdnAttributeValueEndpointInterceptor;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification.SendNotificationRequest;
-import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
-import org.opensmartgridplatform.adapter.ws.shared.services.NotificationServiceBlackHole;
-import org.opensmartgridplatform.adapter.ws.shared.services.ResponseUrlService;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.exceptionhandling.DetailSoapFaultMappingExceptionResolver;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.exceptionhandling.SoapFaultMapper;
-import org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping.NotificationMapper;
-import org.opensmartgridplatform.adapter.ws.smartmetering.application.services.CorrelationUidTargetedNotificationService;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
-import org.opensmartgridplatform.shared.infra.ws.OrganisationIdentificationClientInterceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,12 +31,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
-import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 import org.springframework.ws.server.endpoint.adapter.DefaultMethodEndpointAdapter;
 import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadMethodProcessor;
 import org.springframework.ws.server.endpoint.adapter.method.MethodArgumentResolver;
 import org.springframework.ws.server.endpoint.adapter.method.MethodReturnValueHandler;
-import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 
 @Configuration
 @PropertySource("classpath:osgp-adapter-ws-smartmetering.properties")
@@ -69,18 +57,6 @@ public class WebServiceConfig extends AbstractConfig {
     @Value("${jaxb2.marshaller.context.path.smartmetering.monitoring}")
     private String marshallerContextPathMonitoring;
 
-    @Value("${web.service.notification.enabled}")
-    private boolean webserviceNotificationEnabled;
-
-    @Value("${web.service.notification.username:#{null}}")
-    private String webserviceNotificationUsername;
-
-    @Value("${web.service.notification.organisation:OSGP}")
-    private String webserviceNotificationOrganisation;
-
-    @Value("${application.name}")
-    private String applicationName;
-
     private static final String ORGANISATION_IDENTIFICATION_HEADER = "OrganisationIdentification";
     private static final String ORGANISATION_IDENTIFICATION_CONTEXT = ORGANISATION_IDENTIFICATION_HEADER;
 
@@ -93,36 +69,6 @@ public class WebServiceConfig extends AbstractConfig {
     private static final String X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME = "CommonNameSet";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceConfig.class);
-
-    @Bean
-    public NotificationService smartMeteringNotificationService(
-            final NotificationWebServiceTemplateFactory templateFactory, final NotificationMapper mapper,
-            final ResponseUrlService responseUrlService) {
-
-        if (!this.webserviceNotificationEnabled) {
-            return new NotificationServiceBlackHole();
-        }
-        final Class<SendNotificationRequest> notificationRequestType = SendNotificationRequest.class;
-        return new CorrelationUidTargetedNotificationService<>(templateFactory, notificationRequestType, mapper,
-                responseUrlService);
-    }
-
-    @Bean
-    public NotificationWebServiceTemplateFactory notificationWebServiceTemplateFactory(
-            final NotificationWebServiceConfigurationRepository configRepository) {
-
-        final ClientInterceptor addOsgpHeadersInterceptor = OrganisationIdentificationClientInterceptor.newBuilder()
-                .withOrganisationIdentification(this.webserviceNotificationOrganisation)
-                .withUserName(this.webserviceNotificationUsername).withApplicationName(this.applicationName).build();
-
-        return new NotificationWebServiceTemplateFactory(configRepository, this.messageFactory(),
-                Arrays.asList(addOsgpHeadersInterceptor));
-    }
-
-    @Bean
-    public SaajSoapMessageFactory messageFactory() {
-        return new SaajSoapMessageFactory();
-    }
 
     // Client WS code
 

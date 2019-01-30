@@ -5,18 +5,18 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.ws.tariffswitching.application.config;
+package org.opensmartgridplatform.adapter.ws.smartmetering.application.config;
 
 import java.util.Arrays;
 
 import org.opensmartgridplatform.adapter.ws.clients.NotificationWebServiceTemplateFactory;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
-import org.opensmartgridplatform.adapter.ws.schema.tariffswitching.notification.SendNotificationRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification.SendNotificationRequest;
 import org.opensmartgridplatform.adapter.ws.shared.services.CorrelationUidTargetedNotificationService;
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationServiceBlackHole;
 import org.opensmartgridplatform.adapter.ws.shared.services.ResponseUrlService;
-import org.opensmartgridplatform.adapter.ws.tariffswitching.application.mapping.NotificationMapper;
+import org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping.NotificationMapper;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.infra.ws.OrganisationIdentificationClientInterceptor;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,25 +27,25 @@ import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 
 @Configuration
-@PropertySource("classpath:osgp-adapter-ws-tariffswitching.properties")
+@PropertySource("classpath:osgp-adapter-ws-smartmetering.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
-@PropertySource(value = "file:${osgp/AdapterWsTariffSwitching/config}", ignoreResourceNotFound = true)
-public class TariffSwitchingNotificationClientConfig extends AbstractConfig {
+@PropertySource(value = "file:${osgp/AdapterWsSmartMetering/config}", ignoreResourceNotFound = true)
+public class SmartMeteringNotificationClientConfig extends AbstractConfig {
 
-    @Value("${web.service.notification.enabled:false}")
+    @Value("${web.service.notification.enabled}")
     private boolean webserviceNotificationEnabled;
 
-    @Value("${web.service.notification.username:OSGP}")
+    @Value("${web.service.notification.username:#{null}}")
     private String webserviceNotificationUsername;
 
     @Value("${web.service.notification.organisation:OSGP}")
     private String webserviceNotificationOrganisation;
 
-    @Value("${application.name:WS_TARIFF_SWITCHING}")
+    @Value("${application.name}")
     private String applicationName;
 
     @Bean
-    public NotificationService tariffSwitchingNotificationService(
+    public NotificationService smartMeteringNotificationService(
             final NotificationWebServiceTemplateFactory templateFactory, final NotificationMapper mapper,
             final ResponseUrlService responseUrlService) {
 

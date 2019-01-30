@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.ws.tariffswitching.application.services;
+package org.opensmartgridplatform.adapter.ws.shared.services;
 
 import org.opensmartgridplatform.adapter.ws.clients.NotificationWebServiceTemplateFactory;
 import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceLookupKey;
