@@ -22,7 +22,7 @@ public class MicroGridsWebServiceConfig {
     private static final String COMMON_XSD_PATH = "schemas/common.xsd";
     private static final String ADHOC_MANAGEMENT_XSD_PATH = "schemas/adhocmanagement.xsd";
 
-    private static final String ADHOC_MANAGEMENT_WSDL_PATH = "AdHocManagement.wsdl";
+    private static final String ADHOC_MANAGEMENT_WSDL_PATH = "MicrogridsAdHocManagement.wsdl";
 
     @Bean
     public PayloadValidatingInterceptor payloadValidatingInterceptor() {
@@ -33,17 +33,17 @@ public class MicroGridsWebServiceConfig {
         return payloadValidatingInterceptor;
     }
 
-    @Bean(name = "common")
+    @Bean(name = "common-ws-microgrids")
     public SimpleXsdSchema commonXsd() {
         return new SimpleXsdSchema(new ClassPathResource(COMMON_XSD_PATH));
     }
 
-    @Bean(name = "AdHocManagement")
-    public WsdlDefinition adHocManagementWsdl() {
+    @Bean(name = "MicrogridsAdHocManagement")
+    public WsdlDefinition microgridsAdHocManagementWsdl() {
         return new SimpleWsdl11Definition(new ClassPathResource(ADHOC_MANAGEMENT_WSDL_PATH));
     }
 
-    @Bean(name = "adhocmanagement")
+    @Bean(name = "adhocmanagement-ws-microgrids")
     public SimpleXsdSchema adHocManagementXsd() {
         return new SimpleXsdSchema(new ClassPathResource(ADHOC_MANAGEMENT_XSD_PATH));
     }
