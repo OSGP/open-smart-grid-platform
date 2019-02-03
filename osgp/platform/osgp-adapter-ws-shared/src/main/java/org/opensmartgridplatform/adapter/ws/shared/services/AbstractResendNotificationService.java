@@ -186,7 +186,6 @@ public abstract class AbstractResendNotificationService<T extends Enum<T>> {
         return delay;
     }
 
-    // public void resendNotification(ResponseData responseData);
     public void resendNotification(final ResponseData responseData) {
 
         if (!EnumUtils.isValidEnum(this.notificationClass, responseData.getMessageType())) {
