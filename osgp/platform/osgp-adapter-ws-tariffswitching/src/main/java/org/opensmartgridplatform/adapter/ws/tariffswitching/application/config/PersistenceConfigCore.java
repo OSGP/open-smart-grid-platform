@@ -29,7 +29,7 @@ import com.zaxxer.hikari.HikariDataSource;
 @PropertySource("classpath:osgp-adapter-ws-tariffswitching.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/AdapterWsTariffSwitching/config}", ignoreResourceNotFound = true)
-public class PersistenceConfig extends AbstractPersistenceConfig {
+public class PersistenceConfigCore extends AbstractPersistenceConfig {
 
     @Value("${db.readonly.username}")
     private String username;

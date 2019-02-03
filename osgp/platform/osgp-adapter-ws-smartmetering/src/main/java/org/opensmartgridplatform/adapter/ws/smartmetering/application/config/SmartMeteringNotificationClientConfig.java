@@ -11,12 +11,12 @@ import java.util.Arrays;
 
 import org.opensmartgridplatform.adapter.ws.clients.NotificationWebServiceTemplateFactory;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
+import org.opensmartgridplatform.adapter.ws.mapping.NotificationMapper;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification.SendNotificationRequest;
 import org.opensmartgridplatform.adapter.ws.shared.services.CorrelationUidTargetedNotificationService;
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationServiceBlackHole;
 import org.opensmartgridplatform.adapter.ws.shared.services.ResponseUrlService;
-import org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping.NotificationMapper;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.infra.ws.OrganisationIdentificationClientInterceptor;
 import org.springframework.beans.factory.annotation.Value;

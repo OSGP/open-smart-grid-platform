@@ -40,7 +40,7 @@ public class TariffSwitchingReponseDataCleanUpSchedulingConfig extends AbstractR
 
     @Override
     @Bean(destroyMethod = "shutdown")
-    public Scheduler cleanupResponseDataScheduler() throws SchedulerException {
+    public Scheduler responseDataCleanupScheduler() throws SchedulerException {
         return this.constructScheduler(
                 this.abstractSchedulingConfigBuilder().withJobClass(ResponseDataCleanupJob.class).build());
     }

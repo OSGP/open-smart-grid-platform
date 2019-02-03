@@ -40,7 +40,7 @@ public class PublicLightingReponseDataCleanUpSchedulingConfig extends AbstractRe
 
     @Override
     @Bean(destroyMethod = "shutdown")
-    public Scheduler cleanupResponseDataScheduler() throws SchedulerException {
+    public Scheduler responseDataCleanupScheduler() throws SchedulerException {
         return this.constructScheduler(
                 this.abstractSchedulingConfigBuilder().withJobClass(ResponseDataCleanupJob.class).build());
     }

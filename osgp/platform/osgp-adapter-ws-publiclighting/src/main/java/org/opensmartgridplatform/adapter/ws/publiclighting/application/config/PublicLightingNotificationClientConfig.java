@@ -11,7 +11,7 @@ import java.util.Arrays;
 
 import org.opensmartgridplatform.adapter.ws.clients.NotificationWebServiceTemplateFactory;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
-import org.opensmartgridplatform.adapter.ws.publiclighting.application.mapping.NotificationMapper;
+import org.opensmartgridplatform.adapter.ws.mapping.NotificationMapper;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.notification.SendNotificationRequest;
 import org.opensmartgridplatform.adapter.ws.shared.services.CorrelationUidTargetedNotificationService;
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;

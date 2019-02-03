@@ -7,11 +7,9 @@
  */
 package org.opensmartgridplatform.adapter.ws.microgrids.application.services;
 
-import org.apache.commons.lang3.EnumUtils;
-import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
-import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceLookupKey;
+import javax.annotation.PostConstruct;
+
 import org.opensmartgridplatform.adapter.ws.schema.microgrids.notification.NotificationType;
-import org.opensmartgridplatform.adapter.ws.schema.shared.notification.GenericNotification;
 import org.opensmartgridplatform.adapter.ws.shared.services.AbstractResendNotificationService;
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,24 +18,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service(value = "resendNotificationServiceMicrogrids")
 @Transactional(value = "transactionManager")
-public class ResendNotificationService extends AbstractResendNotificationService {
+public class ResendNotificationService extends AbstractResendNotificationService<NotificationType> {
 
     @Autowired
-    private NotificationService notificationService;
+    private NotificationService microgridsNotificationService;
 
-    @Override
-    public void resendNotification(final ResponseData responseData) {
+    public ResendNotificationService() {
+        super(NotificationType.class);
+    }
 
-        if (!EnumUtils.isValidEnum(NotificationType.class, responseData.getMessageType())) {
-            this.logUnknownNotificationTypeError(responseData.getCorrelationUid(), responseData.getMessageType(),
-                    this.notificationService.getClass().getName());
-            return;
-        }
-
-        this.notificationService.sendNotification(
-                new NotificationWebServiceLookupKey(responseData.getOrganisationIdentification(), "ZownStream"),
-                new GenericNotification(this.getNotificationMessage(responseData.getMessageType()),
-                        responseData.getResultType().name(), responseData.getDeviceIdentification(),
-                        responseData.getCorrelationUid(), responseData.getMessageType()));
+    @PostConstruct
+    public void initialize() {
+        this.setNotificationService(this.microgridsNotificationService);
     }
 }

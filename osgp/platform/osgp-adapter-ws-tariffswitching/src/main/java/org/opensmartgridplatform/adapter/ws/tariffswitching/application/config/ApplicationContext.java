@@ -28,11 +28,11 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
  */
 @Configuration
 @ComponentScan(basePackages = { "org.opensmartgridplatform.domain.core",
-        "org.opensmartgridplatform.adapter.ws.tariffswitching",
-        "org.opensmartgridplatform.adapter.ws.shared.services" })
+        "org.opensmartgridplatform.adapter.ws.tariffswitching", "org.opensmartgridplatform.adapter.ws.shared.services",
+        "org.opensmartgridplatform.adapter.ws.mapping" })
 @EnableTransactionManagement()
 @ImportResource("classpath:applicationContext.xml")
-@Import({ PersistenceConfig.class, MessagingConfig.class, WebServiceConfig.class,
+@Import({ PersistenceConfigCore.class, MessagingConfig.class, WebServiceConfig.class,
         TariffSwitchingWebServiceConfig.class })
 @PropertySource("classpath:osgp-adapter-ws-tariffswitching.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)

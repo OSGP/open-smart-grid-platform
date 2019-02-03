@@ -187,7 +187,7 @@ public class WebServiceConfig extends AbstractConfig {
     }
 
     @Bean
-    public NotificationService notificationService(final NotificationWebServiceTemplateFactory templateFactory,
+    public NotificationService distributionAutomationNotificationService(final NotificationWebServiceTemplateFactory templateFactory,
             final DistributionAutomationMapper mapper) {
 
         if (!this.webserviceNotificationEnabled) {

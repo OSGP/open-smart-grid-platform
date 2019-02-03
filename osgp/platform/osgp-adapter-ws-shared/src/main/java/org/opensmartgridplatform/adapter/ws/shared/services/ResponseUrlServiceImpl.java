@@ -19,42 +19,42 @@ public class ResponseUrlServiceImpl implements ResponseUrlService {
     private ResponseUrlDataRepository responseUrlDataRepository;
 
     @Override
-    public void saveResponseUrl(final String correlId, final String responseUrl) {
-        this.responseUrlDataRepository.save(new ResponseUrlData(correlId, responseUrl));
+    public void saveResponseUrl(final String correlationUid, final String responseUrl) {
+        this.responseUrlDataRepository.save(new ResponseUrlData(correlationUid, responseUrl));
     }
 
     @Override
-    public void saveResponseUrlIfNeeded(final String correlId, final String responseUrl) {
-        if (correlId != null && !correlId.isEmpty() && responseUrl != null && !responseUrl.isEmpty()) {
-            this.saveResponseUrl(correlId, responseUrl);
+    public void saveResponseUrlIfNeeded(final String correlationUid, final String responseUrl) {
+        if (correlationUid != null && !correlationUid.isEmpty() && responseUrl != null && !responseUrl.isEmpty()) {
+            this.saveResponseUrl(correlationUid, responseUrl);
         }
     }
 
     @Override
-    public boolean hasResponseUrl(final String correlId) {
-        return this.responseUrlDataRepository.findSingleResultByCorrelationUid(correlId) != null;
+    public boolean hasResponseUrl(final String correlationUid) {
+        return this.responseUrlDataRepository.findSingleResultByCorrelationUid(correlationUid) != null;
     }
 
     @Override
-    public String findResponseUrl(final String correlId) {
+    public String findResponseUrl(final String correlationUid) {
         final ResponseUrlData responseDataUrl = this.responseUrlDataRepository
-                .findSingleResultByCorrelationUid(correlId);
+                .findSingleResultByCorrelationUid(correlationUid);
         return responseDataUrl == null ? null : responseDataUrl.getResponseUrl();
     }
 
     @Override
-    public void deleteResponseUrl(final String correlId) {
+    public void deleteResponseUrl(final String correlationUid) {
         final ResponseUrlData responseDataUrl = this.responseUrlDataRepository
-                .findSingleResultByCorrelationUid(correlId);
+                .findSingleResultByCorrelationUid(correlationUid);
         if (responseDataUrl != null) {
             this.responseUrlDataRepository.delete(responseDataUrl);
         }
     }
 
     @Override
-    public String popResponseUrl(final String correlId) {
+    public String popResponseUrl(final String correlationUid) {
         final ResponseUrlData responseDataUrl = this.responseUrlDataRepository
-                .findSingleResultByCorrelationUid(correlId);
+                .findSingleResultByCorrelationUid(correlationUid);
         if (responseDataUrl != null) {
             this.responseUrlDataRepository.delete(responseDataUrl);
             return responseDataUrl.getResponseUrl();

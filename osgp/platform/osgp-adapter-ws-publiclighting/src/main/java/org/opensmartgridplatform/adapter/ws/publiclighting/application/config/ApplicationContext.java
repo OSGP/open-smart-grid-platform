@@ -29,10 +29,11 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
  */
 @Configuration
 @ComponentScan(basePackages = { "org.opensmartgridplatform.domain.core",
-        "org.opensmartgridplatform.adapter.ws.publiclighting", "org.opensmartgridplatform.adapter.ws.shared.services" })
+        "org.opensmartgridplatform.adapter.ws.publiclighting", "org.opensmartgridplatform.adapter.ws.shared.services",
+        "org.opensmartgridplatform.adapter.ws.mapping" })
 @EnableTransactionManagement()
 @ImportResource("classpath:applicationContext.xml")
-@Import({ MessagingConfig.class, PersistenceConfig.class, WebServiceConfig.class,
+@Import({ MessagingConfig.class, PersistenceConfigCore.class, WebServiceConfig.class,
         PublicLightingWebServiceConfig.class })
 @PropertySource("classpath:osgp-adapter-ws-publiclighting.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)

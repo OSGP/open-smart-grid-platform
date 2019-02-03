@@ -7,8 +7,8 @@
  */
 package org.opensmartgridplatform.adapter.ws.publiclighting.application.config;
 
+import org.opensmartgridplatform.adapter.ws.shared.services.AbstractResendNotificationSchedulingConfig;
 import org.opensmartgridplatform.adapter.ws.shared.services.ResendNotificationJob;
-import org.opensmartgridplatform.shared.application.config.AbstractSchedulingConfig;
 import org.opensmartgridplatform.shared.application.config.SchedulingConfigProperties;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -23,31 +23,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @PropertySource("classpath:osgp-adapter-ws-publiclighting.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/AdapterWsPublicLighting/config}", ignoreResourceNotFound = true)
-public class ResendNotificationSchedulingConfig extends AbstractSchedulingConfig {
+public class ResendNotificationSchedulingConfig extends AbstractResendNotificationSchedulingConfig {
 
     private static final String KEY_RESEND_NOTIFICATION_CRON_EXPRESSION = "publiclighting.scheduling.job.resend.notification.cron.expression";
     private static final String KEY_RESEND_NOTIFICATION_THREAD_COUNT = "publiclighting.scheduling.job.resend.notification.thread.count";
-
-    @Value("${db.driver}")
-    private String databaseDriver;
-
-    @Value("${db.password}")
-    private String databasePassword;
-
-    @Value("${db.protocol}")
-    private String databaseProtocol;
-
-    @Value("${db.host}")
-    private String databaseHost;
-
-    @Value("${db.port}")
-    private String databasePort;
-
-    @Value("${db.name}")
-    private String databaseName;
-
-    @Value("${db.username}")
-    private String databaseUsername;
 
     @Value("${publiclighting.scheduling.job.resend.notification.maximum:2}")
     private short resendNotificationMaximum;
@@ -61,26 +40,31 @@ public class ResendNotificationSchedulingConfig extends AbstractSchedulingConfig
     @Value("${publiclighting.scheduling.job.resend.notification.page.size:1}")
     private int resendPageSize;
 
+    @Override
     @Bean
     public short resendNotificationMaximum() {
         return this.resendNotificationMaximum;
     }
 
+    @Override
     @Bean
     public int resendNotificationMultiplier() {
         return this.resendNotificationMultiplier;
     }
 
+    @Override
     @Bean
     public int resendThresholdInMinutes() {
         return this.resendThresholdInMinutes;
     }
 
+    @Override
     @Bean
     public int resendPageSize() {
         return this.resendPageSize;
     }
 
+    @Override
     @Bean(destroyMethod = "shutdown")
     public Scheduler resendNotificationScheduler() throws SchedulerException {
 
@@ -91,9 +75,5 @@ public class ResendNotificationSchedulingConfig extends AbstractSchedulingConfig
                 .withJobStoreDbDriver(this.databaseDriver).build();
 
         return this.constructScheduler(schedulingConfigProperties);
-    }
-
-    private String getDatabaseUrl() {
-        return this.databaseProtocol + this.databaseHost + ":" + this.databasePort + "/" + this.databaseName;
     }
 }

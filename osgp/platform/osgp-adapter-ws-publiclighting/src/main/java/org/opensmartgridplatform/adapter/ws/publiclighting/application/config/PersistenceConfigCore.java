@@ -29,7 +29,7 @@ import com.zaxxer.hikari.HikariDataSource;
 @PropertySource("classpath:osgp-adapter-ws-publiclighting.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/AdapterWsPublicLighting/config}", ignoreResourceNotFound = true)
-public class PersistenceConfig extends AbstractPersistenceConfig {
+public class PersistenceConfigCore extends AbstractPersistenceConfig {
 
     @Value("${db.readonly.username}")
     private String username;
@@ -54,7 +54,6 @@ public class PersistenceConfig extends AbstractPersistenceConfig {
     private DataSource getDataSourceCore() {
 
         if (this.dataSourceCore == null) {
-
             final DefaultConnectionPoolFactory.Builder builder = super.builder().withUsername(this.username)
                     .withPassword(this.password).withDatabaseHost(this.databaseHost).withDatabasePort(this.databasePort)
                     .withDatabaseName(this.databaseName);

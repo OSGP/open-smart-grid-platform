@@ -13,13 +13,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
-public class Database {
+public class OslpDatabase {
 
     @Autowired
     private OslpDeviceRepository oslpDeviceRepository;
 
     @Transactional("txMgrOslp")
-    public void prepareOslpDatabaseForScenario() {
+    public void prepareDatabaseForScenario() {
         // First remove stuff from osgp_adapter_protocol_oslp.
         this.oslpDeviceRepository.deleteAllInBatch();
     }

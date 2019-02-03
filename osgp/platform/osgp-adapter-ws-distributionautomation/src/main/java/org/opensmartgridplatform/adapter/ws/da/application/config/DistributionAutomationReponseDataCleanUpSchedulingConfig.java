@@ -24,7 +24,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @PropertySource("classpath:osgp-adapter-ws-distributionautomation.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/AdapterWsDistributionAutomation/config}", ignoreResourceNotFound = true)
-public class DistributionAutomationReponseDataCleanUpSchedulingConfig extends AbstractResponseDataCleanupSchedulingConfig {
+public class DistributionAutomationReponseDataCleanUpSchedulingConfig
+        extends AbstractResponseDataCleanupSchedulingConfig {
 
     private static final String KEY_CLEANUP_JOB_CRON_EXPRESSION = "distributionautomation.scheduling.job.cleanup.response.data.cron.expression";
     private static final String KEY_CLEANUP_JOB_THREAD_COUNT = "distributionautomation.scheduling.job.cleanup.response.data.thread.count";
@@ -40,7 +41,7 @@ public class DistributionAutomationReponseDataCleanUpSchedulingConfig extends Ab
 
     @Override
     @Bean(destroyMethod = "shutdown")
-    public Scheduler cleanupResponseDataScheduler() throws SchedulerException {
+    public Scheduler responseDataCleanupScheduler() throws SchedulerException {
         return this.constructScheduler(
                 this.abstractSchedulingConfigBuilder().withJobClass(ResponseDataCleanupJob.class).build());
     }

@@ -8,15 +8,15 @@
 package org.opensmartgridplatform.adapter.ws.shared.services;
 
 import org.opensmartgridplatform.shared.application.config.AbstractSchedulingConfig;
-import org.opensmartgridplatform.shared.application.config.SchedulingConfigProperties.Builder;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Value;
 
 /**
- * Base class for ResponseDataCleanupConfig classes for components of OSGP.
+ * Base class for ResendNotificationSchedulingConfig classes for components of
+ * OSGP.
  */
-public abstract class AbstractResponseDataCleanupSchedulingConfig extends AbstractSchedulingConfig {
+public abstract class AbstractResendNotificationSchedulingConfig extends AbstractSchedulingConfig {
 
     @Value("${db.driver}")
     protected String databaseDriver;
@@ -39,14 +39,17 @@ public abstract class AbstractResponseDataCleanupSchedulingConfig extends Abstra
     @Value("${db.username}")
     protected String databaseUsername;
 
-    public String getDatabaseUrl() {
+    protected abstract short resendNotificationMaximum();
+
+    protected abstract int resendNotificationMultiplier();
+
+    protected abstract int resendThresholdInMinutes();
+
+    protected abstract int resendPageSize();
+
+    protected abstract Scheduler resendNotificationScheduler() throws SchedulerException;
+
+    protected String getDatabaseUrl() {
         return this.databaseProtocol + this.databaseHost + ":" + this.databasePort + "/" + this.databaseName;
     }
-
-    public abstract int cleanupJobRetentionTimeInDays();
-
-    public abstract Scheduler responseDataCleanupScheduler() throws SchedulerException;
-
-    protected abstract Builder abstractSchedulingConfigBuilder();
-
 }
