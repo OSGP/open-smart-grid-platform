@@ -13,8 +13,10 @@ import org.apache.commons.lang3.EnumUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
+import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceLookupKey;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
+import org.opensmartgridplatform.adapter.ws.schema.shared.notification.GenericNotification;
 import org.opensmartgridplatform.shared.exceptionhandling.CircuitBreakerOpenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +47,8 @@ public abstract class AbstractResendNotificationService<T extends Enum<T>> {
 
     private final Class<T> notificationClass;
 
+    private String applicationName;
+
     private NotificationService notificationServiceReference;
 
     public AbstractResendNotificationService(final Class<T> notificationClass) {
@@ -53,6 +57,10 @@ public abstract class AbstractResendNotificationService<T extends Enum<T>> {
 
     public void setNotificationService(final NotificationService notificationService) {
         this.notificationServiceReference = notificationService;
+    }
+
+    public void setApplicationName(final String applicationName) {
+        this.applicationName = applicationName;
     }
 
     public void execute() {
@@ -194,12 +202,14 @@ public abstract class AbstractResendNotificationService<T extends Enum<T>> {
             return;
         }
 
-        final T notificationType = Enum.valueOf(this.notificationClass, responseData.getMessageType());
-        this.notificationServiceReference.sendNotification(responseData.getOrganisationIdentification(),
-                responseData.getDeviceIdentification(), responseData.getResultType().name(),
-                responseData.getCorrelationUid(), this.getNotificationMessage(responseData.getMessageType()),
-                notificationType);
+        final NotificationWebServiceLookupKey notificationWebServiceLookupKey = new NotificationWebServiceLookupKey(
+                responseData.getOrganisationIdentification(), this.applicationName);
+        final String notificationMessage = this.getNotificationMessage(responseData.getMessageType());
+        final GenericNotification genericNotification = new GenericNotification(notificationMessage,
+                responseData.getResultType().name(), responseData.getDeviceIdentification(),
+                responseData.getCorrelationUid(), responseData.getMessageType());
 
+        this.notificationServiceReference.sendNotification(notificationWebServiceLookupKey, genericNotification);
     }
 
     public String getNotificationMessage(final String responseData) {

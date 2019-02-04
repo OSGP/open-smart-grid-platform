@@ -41,8 +41,8 @@ public class PublicLightingNotificationClientConfig extends AbstractConfig {
     @Value("${web.service.notification.organisation:OSGP}")
     private String webserviceNotificationOrganisation;
 
-    @Value("${application.name:WS_PUBLIC_LIGHTING}")
-    private String applicationName;
+    @Value("${web.service.notification.application.name}")
+    private String webserviceNotificationApplicationName;
 
     @Bean
     public NotificationService publicLightingNotificationService(
@@ -63,7 +63,8 @@ public class PublicLightingNotificationClientConfig extends AbstractConfig {
 
         final ClientInterceptor addOsgpHeadersInterceptor = OrganisationIdentificationClientInterceptor.newBuilder()
                 .withOrganisationIdentification(this.webserviceNotificationOrganisation)
-                .withUserName(this.webserviceNotificationUsername).withApplicationName(this.applicationName).build();
+                .withUserName(this.webserviceNotificationUsername)
+                .withApplicationName(this.webserviceNotificationApplicationName).build();
 
         return new NotificationWebServiceTemplateFactory(configRepository, this.messageFactory(),
                 Arrays.asList(addOsgpHeadersInterceptor));

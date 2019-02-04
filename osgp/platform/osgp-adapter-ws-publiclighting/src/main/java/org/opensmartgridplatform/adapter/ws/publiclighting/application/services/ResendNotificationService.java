@@ -13,6 +13,7 @@ import org.opensmartgridplatform.adapter.ws.schema.publiclighting.notification.N
 import org.opensmartgridplatform.adapter.ws.shared.services.AbstractResendNotificationService;
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,9 @@ public class ResendNotificationService extends AbstractResendNotificationService
     @Autowired
     private NotificationService publicLightingNotificationService;
 
+    @Value("web.service.notification.application.name")
+    private String webserviceNotificationApplicationName;
+
     public ResendNotificationService() {
         super(NotificationType.class);
     }
@@ -30,5 +34,6 @@ public class ResendNotificationService extends AbstractResendNotificationService
     @PostConstruct
     public void initialize() {
         this.setNotificationService(this.publicLightingNotificationService);
+        this.setApplicationName(this.webserviceNotificationApplicationName);
     }
 }
