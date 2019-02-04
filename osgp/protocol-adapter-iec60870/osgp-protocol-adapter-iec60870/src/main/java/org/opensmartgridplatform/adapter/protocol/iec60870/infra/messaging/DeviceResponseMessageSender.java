@@ -112,28 +112,39 @@ public class DeviceResponseMessageSender implements ResponseMessageSender {
                 responseMessage.getCorrelationUid(), responseMessage.getDeviceIdentification(),
                 responseMessage.getMessageType(), responseMessage.getMessagePriority());
 
-        this.iec60870ResponsesJmsTemplate.send(new MessageCreator() {
-            @Override
-            public Message createMessage(final Session session) throws JMSException {
-                final ObjectMessage objectMessage = session.createObjectMessage(responseMessage);
-                objectMessage.setJMSCorrelationID(responseMessage.getCorrelationUid());
-                objectMessage.setStringProperty(Constants.DOMAIN, responseMessage.getDomain());
-                objectMessage.setStringProperty(Constants.DOMAIN_VERSION, responseMessage.getDomainVersion());
-                objectMessage.setJMSType(responseMessage.getMessageType());
-                objectMessage.setJMSPriority(responseMessage.getMessagePriority());
-                objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
-                        responseMessage.getOrganisationIdentification());
-                objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
-                        responseMessage.getDeviceIdentification());
-                objectMessage.setStringProperty(Constants.RESULT, responseMessage.getResult().toString());
-                if (responseMessage.getOsgpException() != null) {
-                    objectMessage.setStringProperty(Constants.DESCRIPTION,
-                            responseMessage.getOsgpException().getMessage());
-                }
-                objectMessage.setBooleanProperty(Constants.IS_SCHEDULED, responseMessage.isScheduled());
-                objectMessage.setIntProperty(Constants.RETRY_COUNT, responseMessage.getRetryCount());
-                return objectMessage;
-            }
-        });
+        final MessageCreator responseMessageCreator = new ResponseMessageCreator(responseMessage);
+        this.iec60870ResponsesJmsTemplate.send(responseMessageCreator);
     }
+
+    private class ResponseMessageCreator implements MessageCreator {
+
+        private final ProtocolResponseMessage responseMessage;
+
+        public ResponseMessageCreator(final ProtocolResponseMessage responseMessage) {
+            this.responseMessage = responseMessage;
+        }
+
+        @Override
+        public Message createMessage(final Session session) throws JMSException {
+            final ObjectMessage objectMessage = session.createObjectMessage(this.responseMessage);
+            objectMessage.setJMSCorrelationID(this.responseMessage.getCorrelationUid());
+            objectMessage.setStringProperty(Constants.DOMAIN, this.responseMessage.getDomain());
+            objectMessage.setStringProperty(Constants.DOMAIN_VERSION, this.responseMessage.getDomainVersion());
+            objectMessage.setJMSType(this.responseMessage.getMessageType());
+            objectMessage.setJMSPriority(this.responseMessage.getMessagePriority());
+            objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
+                    this.responseMessage.getOrganisationIdentification());
+            objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
+                    this.responseMessage.getDeviceIdentification());
+            objectMessage.setStringProperty(Constants.RESULT, this.responseMessage.getResult().toString());
+            if (this.responseMessage.getOsgpException() != null) {
+                objectMessage.setStringProperty(Constants.DESCRIPTION,
+                        this.responseMessage.getOsgpException().getMessage());
+            }
+            objectMessage.setBooleanProperty(Constants.IS_SCHEDULED, this.responseMessage.isScheduled());
+            objectMessage.setIntProperty(Constants.RETRY_COUNT, this.responseMessage.getRetryCount());
+            return objectMessage;
+        }
+    }
+
 }

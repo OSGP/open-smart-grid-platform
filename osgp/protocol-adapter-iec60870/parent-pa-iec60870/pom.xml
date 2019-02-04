@@ -50,23 +50,16 @@
     <spring.ws.version>2.4.0.RELEASE</spring.ws.version>
     <spring.data.version>1.11.6.RELEASE</spring.data.version>
     <spring.data.key.version>1.2.16.RELEASE</spring.data.key.version>
-<!--
-    <spring.security.version>4.2.4.RELEASE</spring.security.version> -->
     <servlet.version>3.0.1</servlet.version>
-<!--     <servlet.jstl.version>1.2</servlet.jstl.version> -->
     <hibernate.version>4.2.16.Final</hibernate.version>
     <hibernate.validator.version>4.3.1.Final</hibernate.validator.version>
     <junit.version>4.11</junit.version>
-<!--
-    <joda.version>2.4</joda.version> -->
     <flyway.version>4.1.2</flyway.version>
     <slf4j.version>1.7.7</slf4j.version>
     <apache.commons.lang.version>3.3.2</apache.commons.lang.version>
     <apache.httpcomponents.version>4.3.6</apache.httpcomponents.version>
-<!--    <commons.codec.version>1.9</commons.codec.version> -->
     <orika.version>1.5.1</orika.version>
     <netty.version>3.9.4.Final</netty.version> 
-<!--    <jxr.version>2.5</jxr.version> -->
     <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
     <maven.site.plugin>3.7.1</maven.site.plugin>
     <pmd.version>4.3</pmd.version>
@@ -75,9 +68,6 @@
     <proton-jms.version>0.7</proton-jms.version>
     <logback.version>1.1.2</logback.version>
     <logback.ext.version>0.1.2</logback.ext.version>
-<!--
-    <SunriseSunsetCalculator.version>1.1</SunriseSunsetCalculator.version> 
-    <mockito.version>1.9.5</mockito.version> -->
     <apache.commons.schema>2.0.3</apache.commons.schema>
     <maven.compiler.plugin.version>3.2</maven.compiler.plugin.version>
     <guava.version>18.0</guava.version>
@@ -119,12 +109,6 @@
         <artifactId>osgp-iec60870</artifactId>
         <version>${osgp.version}</version>
       </dependency>
-<!--
-      <dependency>
-        <groupId>org.opensmartgridplatform</groupId>
-        <artifactId>osgp-core-db-api-iec61850</artifactId>
-        <version>${osgp.version}</version>
-      </dependency> -->
 
       <!-- Guava for Joiner class -->
       <dependency>
@@ -174,30 +158,7 @@
         <artifactId>spring-web</artifactId>
         <version>${spring.version}</version>
       </dependency>
-<!--       
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-webmvc</artifactId>
-        <version>${spring.version}</version>
-      </dependency> -->
-      <!-- Spring WS -->
-<!--
-      <dependency>
-        <groupId>org.springframework.ws</groupId>
-        <artifactId>spring-ws-core</artifactId>
-        <version>${spring.ws.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework.ws</groupId>
-        <artifactId>spring-ws-security</artifactId>
-        <version>${spring.ws.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework.ws</groupId>
-        <artifactId>spring-ws-support</artifactId>
-        <version>${spring.ws.version}</version>
-      </dependency>
--->
+
       <!-- Spring JMS -->
       <dependency>
         <groupId>org.springframework</groupId>
@@ -225,21 +186,7 @@
         <version>${servlet.version}</version>
         <scope>provided</scope>
       </dependency>
-<!--
-      <dependency>
-        <groupId>javax.servlet</groupId>
-        <artifactId>jstl</artifactId>
-        <version>${servlet.jstl.version}</version>
-      </dependency>
--->
-      <!-- Joda Time (Date/Time functions) -->
-<!--
-      <dependency>
-        <groupId>joda-time</groupId>
-        <artifactId>joda-time</artifactId>
-        <version>${joda.version}</version>
-      </dependency>
--->
+      
       <!-- Hikari connection pooling -->
       <dependency>
         <groupId>com.zaxxer</groupId>
@@ -259,14 +206,7 @@
         <version>${hibernate.version}</version>
       </dependency>
 
-      <!-- Hibernate validator -->
-<!--
-      <dependency>
-        <groupId>org.hibernate</groupId>
-        <artifactId>hibernate-validator</artifactId>
-        <version>${hibernate.validator.version}</version>
-      </dependency>
--->
+
       <!-- Flyway (DB Migration) -->
       <dependency>
         <groupId>org.flywaydb</groupId>
@@ -274,14 +214,6 @@
         <version>${flyway.version}</version>
       </dependency>
 
-      <!-- Jakarta commons codec -->
-<!--
-      <dependency>
-        <groupId>commons-codec</groupId>
-        <artifactId>commons-codec</artifactId>
-        <version>${commons.codec.version}</version>
-      </dependency>
--->
       <!-- Apache HTTP client -->
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
@@ -356,13 +288,7 @@
         <artifactId>j60870</artifactId>
         <version>${openmuc.j60870.version}</version>
       </dependency>
-<!--
-      <dependency>
-        <groupId>commons-pool</groupId>
-        <artifactId>commons-pool</artifactId>
-        <version>${commons.pool.version}</version>
-      </dependency>
--->
+      
       <!-- Orika (mapping framework) -->
       <dependency>
         <groupId>ma.glasnost.orika</groupId>
@@ -382,13 +308,6 @@
         <version>${junit.version}</version>
         <scope>test</scope>
       </dependency>
-<!--
-      <dependency>
-        <groupId>org.mockito</groupId>
-        <artifactId>mockito-all</artifactId>
-        <version>${mockito.version}</version>
-      </dependency>
--->
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>

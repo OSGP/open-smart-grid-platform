@@ -5,7 +5,11 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.protocol.iec60870.device;
+package org.opensmartgridplatform.adapter.protocol.iec60870.device.responses;
+
+import org.opensmartgridplatform.adapter.protocol.iec60870.device.DeviceMessageStatus;
+import org.opensmartgridplatform.adapter.protocol.iec60870.device.DeviceRequest;
+import org.opensmartgridplatform.adapter.protocol.iec60870.device.DeviceResponse;
 
 public class EmptyDeviceResponse extends DeviceResponse {
 

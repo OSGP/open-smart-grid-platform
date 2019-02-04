@@ -12,7 +12,7 @@ public class DeviceConnectionParameters {
     final String ipAddress;
     final String deviceIdentification;
     final int commonAddress;
-    final int port;
+    final Integer port;
 
     public DeviceConnectionParameters(final Builder builder) {
         this.ipAddress = builder.ipAddress;
@@ -25,7 +25,7 @@ public class DeviceConnectionParameters {
         private String ipAddress = null;
         private String deviceIdentification = null;
         private int commonAddress;
-        private int port;
+        private Integer port;
 
         public Builder ipAddress(final String ipAddress) {
             this.ipAddress = ipAddress;
@@ -42,7 +42,7 @@ public class DeviceConnectionParameters {
             return this;
         }
 
-        public Builder port(final int port) {
+        public Builder port(final Integer port) {
             this.port = port;
             return this;
         }
@@ -69,7 +69,7 @@ public class DeviceConnectionParameters {
         return this.commonAddress;
     }
 
-    public int getPort() {
+    public Integer getPort() {
         return this.port;
     }
 

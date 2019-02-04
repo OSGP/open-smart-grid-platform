@@ -24,14 +24,10 @@ public class DeviceMessageLog {
 
     }
 
-    private void addReadVariable(final String variable, final String value) {
-        this.readVariables.put(variable, value);
-    }
-
     public String getMessage() {
         // String result = "LogicalDevice: " + this.ied.getDescription() +
         // this.logicalDevice.getDescription();
-        String result = new String().concat(" messageType: ").concat(this.messageType).concat(" {\n");
+        String result = " messageType: " + this.messageType + " {\n";
 
         for (final Entry<String, String> entry : this.readVariables.entrySet()) {
             result = result.concat(entry.getKey()).concat(": ").concat(entry.getValue()).concat("\n");

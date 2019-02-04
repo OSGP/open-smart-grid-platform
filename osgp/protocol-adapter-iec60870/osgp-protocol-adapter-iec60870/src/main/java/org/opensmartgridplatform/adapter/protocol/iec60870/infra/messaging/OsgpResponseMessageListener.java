@@ -22,22 +22,8 @@ public class OsgpResponseMessageListener implements MessageListener {
     public void onMessage(final Message message) {
         try {
             LOGGER.info("Received message of type: {}", message.getJMSType());
-
-            /*
-             TODO: provide implementation, when we implement an incoming message for this protocol
-              @formatter:off
-            final ObjectMessage objectMessage = (ObjectMessage) message;
-            final String messageType = objectMessage.getJMSType();
-            final String deviceIdentification = objectMessage.getStringProperty(Constants.DEVICE_IDENTIFICATION);
-            final ResponseMessage responseMessage = (ResponseMessage) objectMessage.getObject();
-            final String result = responseMessage == null ? null : responseMessage.getResult().toString();
-            final OsgpException osgpException = responseMessage == null ? null : responseMessage.getOsgpException();
-
-            @formatter:on
-             */
-
+            LOGGER.info("Message: {}", message);
             LOGGER.info("Handle the incoming message");
-
         } catch (final JMSException ex) {
             LOGGER.error("Exception: {} ", ex.getMessage(), ex);
         }

@@ -59,16 +59,6 @@
       <groupId>org.opensmartgridplatform</groupId>
       <artifactId>shared</artifactId>
     </dependency>
-<!--
-    <dependency>
-      <groupId>org.opensmartgridplatform</groupId>
-      <artifactId>osgp-iec60870</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opensmartgridplatform</groupId>
-      <artifactId>osgp-core-db-api-iec60870</artifactId>
-    </dependency>
--->
 
     <!-- Spring Framework -->
     <dependency>
@@ -100,18 +90,6 @@
       <artifactId>spring-tx</artifactId>
     </dependency>
 
-    <!-- Spring WS -->
-<!--
-    <dependency>
-      <groupId>org.springframework.ws</groupId>
-      <artifactId>spring-ws-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.ws</groupId>
-      <artifactId>spring-ws-support</artifactId>
-    </dependency>
--->
-
     <!-- Spring JMS -->
     <dependency>
       <groupId>org.springframework</groupId>
@@ -124,13 +102,6 @@
       <artifactId>spring-data-jpa</artifactId>
     </dependency>
 
-    <!-- Joda Time (Date/Time util) -->
-<!--
-    <dependency>
-      <groupId>joda-time</groupId>
-      <artifactId>joda-time</artifactId>
-    </dependency>
--->
     <!-- Hikari connection pooling -->
     <dependency>
       <groupId>com.zaxxer</groupId>
@@ -147,13 +118,6 @@
       <artifactId>hibernate-entitymanager</artifactId>
     </dependency>
 
-    <!-- Hibernate validator -->
-<!--
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-validator</artifactId>
-    </dependency>
--->
     <!-- Flyway (DB Migration) -->
     <dependency>
       <groupId>org.flywaydb</groupId>
@@ -180,13 +144,7 @@
       <artifactId>javax.servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
-    <!-- Jakarta commons codec -->
-<!--
-    <dependency>
-      <groupId>commons-codec</groupId>
-      <artifactId>commons-codec</artifactId>
-    </dependency>
--->
+    
     <!-- Apache commons -->
     <dependency>
       <groupId>org.apache.commons</groupId>

@@ -11,7 +11,7 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 
 import org.opensmartgridplatform.adapter.protocol.iec60870.device.DeviceResponse;
-import org.opensmartgridplatform.adapter.protocol.iec60870.device.EmptyDeviceResponse;
+import org.opensmartgridplatform.adapter.protocol.iec60870.device.responses.EmptyDeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DomainInformation;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.helper.RequestMessageData;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.services.Iec60870DeviceResponseHandler;

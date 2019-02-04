@@ -30,8 +30,8 @@ import org.springframework.stereotype.Component;
 public class Iec60870Client {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec60870Client.class);
-    // private static final String COULD_NOT_EXECUTE_COMMAND = "Could not
-    // execute command";
+
+    private static final int IEC60870_DEFAULT_PORT = 2404;
 
     @Autowired
     private int connectionTimeout;
@@ -49,9 +49,10 @@ public class Iec60870Client {
 
         final InetAddress address = this.convertIpAddress(deviceConnectionParameters.getIpAddress());
         final String deviceIdentification = deviceConnectionParameters.getDeviceIdentification();
+        final int port = deviceConnectionParameters.getPort() == null ? IEC60870_DEFAULT_PORT
+                : deviceConnectionParameters.getPort();
 
-        final ClientConnectionBuilder clientConnectionBuilder = new ClientConnectionBuilder(address)
-                .setPort(deviceConnectionParameters.getPort());
+        final ClientConnectionBuilder clientConnectionBuilder = new ClientConnectionBuilder(address).setPort(port);
 
         try {
             LOGGER.info("Connecting to device: {}...", deviceIdentification);

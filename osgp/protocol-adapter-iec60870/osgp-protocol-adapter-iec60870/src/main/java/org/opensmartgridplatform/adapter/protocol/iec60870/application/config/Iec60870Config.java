@@ -41,11 +41,21 @@ public class Iec60870Config extends AbstractConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec60870Config.class);
 
+    private static final String PROPERTY_NAME_CONNECTION_RESPONSE_TIMEOUT = "connection.response.timeout";
     private static final String PROPERTY_NAME_IEC60870_TIMEOUT_CONNECT = "iec60870.timeout.connect";
     private static final String PROPERTY_NAME_IEC60870_PORT_LISTENER = "iec60870.port.listener";
 
     public Iec60870Config() {
         InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
+    }
+
+    /**
+     * The amount of time, in milliseconds, the library will wait for a response
+     * after sending a request.
+     */
+    @Bean
+    public int responseTimeout() {
+        return Integer.parseInt(this.environment.getProperty(PROPERTY_NAME_CONNECTION_RESPONSE_TIMEOUT));
     }
 
     @Bean

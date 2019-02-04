@@ -14,8 +14,6 @@ import org.flywaydb.core.Flyway;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.repositories.Iec60870DeviceRepository;
 import org.opensmartgridplatform.shared.application.config.AbstractPersistenceConfig;
 import org.opensmartgridplatform.shared.infra.db.DefaultConnectionPoolFactory;
-//import org.jboss.netty.logging.InternalLoggerFactory;
-//import org.jboss.netty.logging.Slf4JLoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -49,12 +47,6 @@ public class Iec60870PersistenceConfig extends AbstractPersistenceConfig {
     private String databaseName;
 
     private HikariDataSource dataSourceIec60870;
-
-    public Iec60870PersistenceConfig() {
-        // TODO: is onderstaande regel nodig? Zo ja, waarvoor? Voor logging door
-        // netty?
-        // InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
-    }
 
     public DataSource getDataSourceIec60870() {
         if (this.dataSourceIec60870 == null) {

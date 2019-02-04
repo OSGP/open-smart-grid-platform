@@ -16,7 +16,7 @@ import org.openmuc.j60870.IeQualifierOfInterrogation;
 import org.opensmartgridplatform.adapter.protocol.iec60870.device.DeviceMessageStatus;
 import org.opensmartgridplatform.adapter.protocol.iec60870.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec60870.device.DeviceResponseHandler;
-import org.opensmartgridplatform.adapter.protocol.iec60870.device.EmptyDeviceResponse;
+import org.opensmartgridplatform.adapter.protocol.iec60870.device.responses.EmptyDeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.iec60870.device.responses.GetHealthStatusDeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.entities.Iec60870Device;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.repositories.Iec60870DeviceRepository;

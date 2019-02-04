@@ -15,7 +15,6 @@ import org.openmuc.j60870.Connection;
 import org.openmuc.j60870.ConnectionEventListener;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceConnectionParameters;
 import org.opensmartgridplatform.adapter.protocol.iec60870.exceptions.ConnectionFailureException;
-import org.opensmartgridplatform.adapter.protocol.iec60870.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.Iec60870Client;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.helper.DeviceConnection;
 import org.slf4j.Logger;
@@ -28,10 +27,9 @@ public class Iec60870DeviceConnectionService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec60870DeviceConnectionService.class);
 
-    private static ConcurrentHashMap<String, DeviceConnection> cache = new ConcurrentHashMap<>();
-
-    private static final int IEC60870_DEFAULT_PORT = 2404;
     private static final int PARALLELLISM_THRESHOLD = 1;
+
+    private static ConcurrentHashMap<String, DeviceConnection> cache = new ConcurrentHashMap<>();
 
     @Autowired
     private Iec60870Client iec60870Client;
@@ -53,17 +51,14 @@ public class Iec60870DeviceConnectionService {
         }
     }
 
-    @PreDestroy
-    public void closeAllConnections() {
-        LOGGER.warn("Closing connections for {} devices", cache.size());
-
-        cache.forEachKey(PARALLELLISM_THRESHOLD, this::disconnect);
-    }
-
-    private void logProtocolAdapterException(final String deviceIdentification, final ProtocolAdapterException e) {
-        LOGGER.error(
-                "ProtocolAdapterException: no Iec60870ClientBaseEventListener instance could be constructed, continue without event listener for deviceIdentification: {}",
-                deviceIdentification, e);
+    private DeviceConnection fetchDeviceConnection(final String deviceIdentification) {
+        final DeviceConnection connection = cache.get(deviceIdentification);
+        if (connection != null) {
+            LOGGER.info("Connection found for device: {}", deviceIdentification);
+        } else {
+            LOGGER.info("No connection found for device: {}", deviceIdentification);
+        }
+        return connection;
     }
 
     /**
@@ -85,14 +80,11 @@ public class Iec60870DeviceConnectionService {
         }
     }
 
-    private DeviceConnection fetchDeviceConnection(final String deviceIdentification) {
-        final DeviceConnection connection = cache.get(deviceIdentification);
-        if (connection != null) {
-            LOGGER.info("Connection found for device: {}", deviceIdentification);
-        } else {
-            LOGGER.info("No connection found for device: {}", deviceIdentification);
-        }
-        return connection;
+    @PreDestroy
+    public void closeAllConnections() {
+        LOGGER.warn("Closing connections for {} devices", cache.size());
+
+        cache.forEachKey(PARALLELLISM_THRESHOLD, this::disconnect);
     }
 
 }
