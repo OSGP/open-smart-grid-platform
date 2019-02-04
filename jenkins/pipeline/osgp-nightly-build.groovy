@@ -5,7 +5,7 @@ def servername = stream + '-at-' + env.BUILD_NUMBER
 def playbook = stream + '-at.yml'
 
 // Choose the branch to use for SmartSocietyServices/release repository. Default value is 'master'.
-def branchReleaseRepo = 'SLIM-1869_Add_dlms_simulator_starting_options'
+def branchReleaseRepo = 'SLIM-1869_Make_it_easier_to_simulate_devices'
 
 pipeline {
     agent any
