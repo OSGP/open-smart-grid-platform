@@ -15,6 +15,7 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.device.EmptyDeviceRes
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DomainInformation;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.helper.RequestMessageData;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.services.Iec60870DeviceResponseHandler;
+import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.services.Iec60870DeviceService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.services.DeviceResponseService;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
@@ -47,7 +48,14 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
     @Qualifier("iec60870DeviceRequestMessageProcessorMap")
     protected MessageProcessorMap iec60870RequestMessageProcessorMap;
 
+    @Autowired
+    private Iec60870DeviceService deviceService;
+
     protected MessageType messageType;
+
+    public Iec60870DeviceService getDeviceService() {
+        return this.deviceService;
+    }
 
     protected void printDomainInfo(final RequestMessageData requestMessageData) {
         LOGGER.info("Calling DeviceService function: {} for domain: {} {}", requestMessageData.getMessageType(),

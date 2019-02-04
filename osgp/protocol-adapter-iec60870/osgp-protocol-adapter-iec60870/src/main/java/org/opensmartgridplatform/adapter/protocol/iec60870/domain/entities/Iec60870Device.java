@@ -27,6 +27,9 @@ public class Iec60870Device extends AbstractEntity {
     @Column(unique = true, nullable = false, length = 40)
     private String deviceIdentification;
 
+    @Column(nullable = false)
+    private Integer commonAddress;
+
     @Column
     private Integer port;
 
@@ -40,7 +43,8 @@ public class Iec60870Device extends AbstractEntity {
 
     @Override
     public String toString() {
-        return String.format("Iec60870Device[deviceId=%s, port=%s]", this.deviceIdentification, this.port);
+        return String.format("Iec60870Device[deviceId=%s, commonAddress=%s, port=%s]", this.deviceIdentification,
+                this.commonAddress, this.port);
     }
 
     @Override
@@ -64,6 +68,14 @@ public class Iec60870Device extends AbstractEntity {
 
     public String getDeviceIdentification() {
         return this.deviceIdentification;
+    }
+
+    public Integer getCommonAddress() {
+        return this.commonAddress;
+    }
+
+    public void setCommonAddress(final Integer commonAddress) {
+        this.commonAddress = commonAddress;
     }
 
     public Integer getPort() {

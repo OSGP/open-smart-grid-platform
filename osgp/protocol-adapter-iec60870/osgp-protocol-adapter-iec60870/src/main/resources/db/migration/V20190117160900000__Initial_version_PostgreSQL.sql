@@ -7,6 +7,7 @@ BEGIN
     modification_time timestamp without time zone NOT NULL,
     version bigint,
     device_identification character varying(40) NOT NULL,
+    common_address integer NOT NULL,
     port integer,
     CONSTRAINT iec60870_device_pkey PRIMARY KEY (id),
     CONSTRAINT iec60870_device_device_identification_key UNIQUE (device_identification)
@@ -16,6 +17,7 @@ BEGIN
   
   COMMENT ON COLUMN iec60870_device.id IS 'Unique technical id of this IEC60870 device.';
   COMMENT ON COLUMN iec60870_device.device_identification IS 'Business key; identification of this IEC60870 device.';
+  COMMENT ON COLUMN iec60870_device.common_address IS 'Common address of this IEC60870 device.';
   COMMENT ON COLUMN iec60870_device.port IS 'The port of this IEC60870 device.';
 
 END$$;

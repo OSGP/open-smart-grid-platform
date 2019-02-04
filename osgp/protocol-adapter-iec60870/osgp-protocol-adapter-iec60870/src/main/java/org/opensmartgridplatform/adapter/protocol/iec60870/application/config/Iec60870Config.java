@@ -7,6 +7,22 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.application.config;
 
+import java.net.InetSocketAddress;
+import java.util.concurrent.Executors;
+
+import org.jboss.netty.bootstrap.ServerBootstrap;
+import org.jboss.netty.channel.ChannelFactory;
+import org.jboss.netty.channel.ChannelHandler;
+import org.jboss.netty.channel.ChannelPipeline;
+import org.jboss.netty.channel.ChannelPipelineFactory;
+import org.jboss.netty.channel.Channels;
+import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
+import org.jboss.netty.handler.logging.LoggingHandler;
+import org.jboss.netty.logging.InternalLogLevel;
+import org.jboss.netty.logging.InternalLoggerFactory;
+import org.jboss.netty.logging.Slf4JLoggerFactory;
+import org.opensmartgridplatform.adapter.protocol.iec60870.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.Iec60870ChannelHandlerServer;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,16 +42,10 @@ public class Iec60870Config extends AbstractConfig {
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec60870Config.class);
 
     private static final String PROPERTY_NAME_IEC60870_TIMEOUT_CONNECT = "iec60870.timeout.connect";
-    private static final String PROPERTY_NAME_IEC60870_PORT_CLIENT = "iec60870.port.client";
-    private static final String PROPERTY_NAME_IEC60870_PORT_CLIENTLOCAL = "iec60870.port.clientlocal";
-    private static final String PROPERTY_NAME_IEC60870_SSLD_PORT_SERVER = "iec60870.ssld.port.server";
-    private static final String PROPERTY_NAME_IEC60870_RTU_PORT_SERVER = "iec60870.rtu.port.server";
     private static final String PROPERTY_NAME_IEC60870_PORT_LISTENER = "iec60870.port.listener";
 
     public Iec60870Config() {
-        // TODO: Is onderstaande regel nodig? Zo ja, waarvoor? Voor logging door
-        // netty?
-        // InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
+        InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
     }
 
     @Bean
@@ -43,33 +53,12 @@ public class Iec60870Config extends AbstractConfig {
         return Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_IEC60870_TIMEOUT_CONNECT));
     }
 
-    @Bean
-    public int iec60870PortClient() {
-        return Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_IEC60870_PORT_CLIENT));
-    }
-
-    @Bean
-    public int iec60870PortClientLocal() {
-        return Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_IEC60870_PORT_CLIENTLOCAL));
-    }
-
-    @Bean
-    public int iec60870SsldPortServer() {
-        return Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_IEC60870_SSLD_PORT_SERVER));
-    }
-
-    @Bean
-    public int iec60870RtuPortServer() {
-        return Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_IEC60870_RTU_PORT_SERVER));
-    }
-
     /**
      * Returns a ServerBootstrap setting up a server pipeline listening for
-     * incoming IEC60870 register device requests.
+     * incoming IEC60870 device requests.
      *
      * @return an IEC60870 server bootstrap.
      */
-    /* @formatter:off
     @Bean(destroyMethod = "releaseExternalResources")
     public ServerBootstrap serverBootstrap() {
         final ChannelFactory factory = new NioServerSocketChannelFactory(Executors.newCachedThreadPool(),
@@ -96,19 +85,16 @@ public class Iec60870Config extends AbstractConfig {
 
         return bootstrap;
     }
+
     private ChannelPipeline createChannelPipeline(final ChannelHandler handler) {
         final ChannelPipeline pipeline = Channels.pipeline();
 
         pipeline.addLast("loggingHandler", new LoggingHandler(InternalLogLevel.INFO, true));
 
-        pipeline.addLast("iec60870RegisterDeviceRequestDecoder", new RegisterDeviceRequestDecoder());
-
         pipeline.addLast("iec60870ChannelHandler", handler);
 
         return pipeline;
     }
-   @formatter:on
-*/
 
     /**
      * Returns the port the server is listening on for incoming IEC60870
@@ -124,12 +110,9 @@ public class Iec60870Config extends AbstractConfig {
     /**
      * @return a new {@link Iec60870ChannelHandlerServer}.
      */
-    /* @formatter:off
     @Bean
     public Iec60870ChannelHandlerServer iec60870ChannelHandlerServer() {
         return new Iec60870ChannelHandlerServer();
     }
-    @formatter:on
-    */
 
 }

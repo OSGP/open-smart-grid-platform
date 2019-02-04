@@ -7,15 +7,17 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.services;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.lang3.StringUtils;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.repositories.Iec60870DeviceRepository;
+import javax.annotation.PreDestroy;
+
+import org.openmuc.j60870.Connection;
+import org.openmuc.j60870.ConnectionEventListener;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceConnectionParameters;
 import org.opensmartgridplatform.adapter.protocol.iec60870.exceptions.ConnectionFailureException;
 import org.opensmartgridplatform.adapter.protocol.iec60870.exceptions.ProtocolAdapterException;
-import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.Iec60870Connection;
+import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.Iec60870Client;
+import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.helper.DeviceConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,38 +28,36 @@ public class Iec60870DeviceConnectionService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec60870DeviceConnectionService.class);
 
-    private static ConcurrentHashMap<String, Iec60870Connection> cache = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<String, DeviceConnection> cache = new ConcurrentHashMap<>();
 
     private static final int IEC60870_DEFAULT_PORT = 2404;
+    private static final int PARALLELLISM_THRESHOLD = 1;
 
     @Autowired
-    private Iec60870DeviceRepository iec60870DeviceRepository;
+    private Iec60870Client iec60870Client;
 
-    // @Autowired
-    // private Iec60870ClientEventListenerFactory
-    // iec60870ClientEventListenerFactory;
-
-    // @Autowired
-    // private Iec60870Client iec60870Client;
-
-    @Autowired
-    private int iec60870SsldPortServer;
-
-    @Autowired
-    private int responseTimeout;
-
-    /* @formatter:off
     public DeviceConnection connect(final DeviceConnectionParameters deviceConnectionParameters,
-            final String organisationIdentification) throws ConnectionFailureException {
-        return this.connect(deviceConnectionParameters, organisationIdentification, true);
-    }
-     @formatter:on
-    */
+            final ConnectionEventListener asduListener) throws ConnectionFailureException {
 
+        final DeviceConnection cachedDeviceConnection = this
+                .fetchDeviceConnection(deviceConnectionParameters.getDeviceIdentification());
+
+        if (cachedDeviceConnection != null) {
+            return cachedDeviceConnection;
+        } else {
+            final DeviceConnection newDeviceConnection = this.iec60870Client.connect(deviceConnectionParameters,
+                    asduListener);
+            cache.put(deviceConnectionParameters.getDeviceIdentification(), newDeviceConnection);
+
+            return newDeviceConnection;
+        }
+    }
+
+    @PreDestroy
     public void closeAllConnections() {
         LOGGER.warn("Closing connections for {} devices", cache.size());
-        // TODO: close all connections in the cache
-        cache.clear();
+
+        cache.forEachKey(PARALLELLISM_THRESHOLD, this::disconnect);
     }
 
     private void logProtocolAdapterException(final String deviceIdentification, final ProtocolAdapterException e) {
@@ -67,43 +67,32 @@ public class Iec60870DeviceConnectionService {
     }
 
     /**
-     * Closes the {@link ClientAssociation}, send a disconnect request and close
-     * the socket.
+     * Closes the {@link Connection}, send a disconnect request and close the
+     * socket.
+     *
+     * @param deviceIdentification
+     *            Device for which to close the connection.
      */
     public void disconnect(final String deviceIdentification) {
-        // TODO: implement
+        final DeviceConnection deviceConnection = cache.get(deviceIdentification);
+
+        if (deviceConnection != null) {
+            this.iec60870Client.disconnect(deviceConnection);
+
+            cache.remove(deviceIdentification);
+        } else {
+            LOGGER.warn("No connection found for deviceIdentification {}", deviceIdentification);
+        }
     }
 
-    // public Iec60870Client getIec60870Client() {
-    // return this.iec60870Client;
-    // }
-
-    public Iec60870Connection getIec60870Connection(final String deviceIdentification) {
-        return this.fetchIec60870Connection(deviceIdentification);
-    }
-
-    private Iec60870Connection fetchIec60870Connection(final String deviceIdentification) {
-        final Iec60870Connection iec60870Connection = cache.get(deviceIdentification);
-        if (iec60870Connection == null) {
+    private DeviceConnection fetchDeviceConnection(final String deviceIdentification) {
+        final DeviceConnection connection = cache.get(deviceIdentification);
+        if (connection != null) {
+            LOGGER.info("Connection found for device: {}", deviceIdentification);
+        } else {
             LOGGER.info("No connection found for device: {}", deviceIdentification);
         }
-        return iec60870Connection;
+        return connection;
     }
 
-    private void removeIec60870Connection(final String deviceIdentification) {
-        cache.remove(deviceIdentification);
-    }
-
-    private InetAddress convertIpAddress(final String ipAddress) throws ConnectionFailureException {
-        try {
-            if (StringUtils.isEmpty(ipAddress)) {
-                throw new ConnectionFailureException("Ip address is null");
-            }
-
-            return InetAddress.getByName(ipAddress);
-        } catch (final UnknownHostException e) {
-            LOGGER.error("Unexpected exception during convertIpAddress", e);
-            throw new ConnectionFailureException(e.getMessage(), e);
-        }
-    }
 }
