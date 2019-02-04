@@ -46,11 +46,13 @@ public class Database {
 
     private List<NotificationWebServiceConfiguration> notificationEndpointConfigurations() {
         final NotificationWebServiceConfigurationBuilder builder = new NotificationWebServiceConfigurationBuilder()
-                .withApplicationName("ZownStream")
+                .withApplicationName("").withOrganisationIdentification("test-org")
                 .withMarshallerContextPath("org.opensmartgridplatform.adapter.ws.schema.microgrids.notification");
+
         final NotificationWebServiceConfiguration testOrgConfig = builder.build();
         final NotificationWebServiceConfiguration noOrganisationConfig = builder
                 .withOrganisationIdentification("no-organisation").build();
+
         return Arrays.asList(testOrgConfig, noOrganisationConfig);
     }
 
