@@ -74,7 +74,7 @@ public class WebServiceConfig extends AbstractConfig {
     @Value("${web.service.notification.organisation:OSGP}")
     private String webserviceNotificationOrganisation;
 
-    @Value("web.service.notification.application.name")
+    @Value("${web.service.notification.application.name}")
     private String webserviceNotificationApplicationName;
 
     private static final String SERVER = "SERVER";

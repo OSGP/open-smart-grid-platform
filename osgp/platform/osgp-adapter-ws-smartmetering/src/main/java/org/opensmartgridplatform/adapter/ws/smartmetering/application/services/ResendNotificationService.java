@@ -24,7 +24,7 @@ public class ResendNotificationService extends AbstractResendNotificationService
     @Autowired
     private NotificationService smartMeteringNotificationService;
 
-    @Value("web.service.notification.application.name")
+    @Value("${web.service.notification.application.name}")
     private String webserviceNotificationApplicationName;
 
     public ResendNotificationService() {
