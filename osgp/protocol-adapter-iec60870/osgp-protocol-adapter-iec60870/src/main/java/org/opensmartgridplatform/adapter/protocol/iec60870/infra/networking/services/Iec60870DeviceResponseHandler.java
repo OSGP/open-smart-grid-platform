@@ -15,12 +15,12 @@ import javax.jms.JMSException;
 import org.opensmartgridplatform.adapter.protocol.iec60870.device.DeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.iec60870.device.DeviceResponseHandler;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DomainInformation;
-import org.opensmartgridplatform.adapter.protocol.iec60870.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.BaseMessageProcessor;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.helper.RequestMessageData;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.ConnectionFailureException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.exceptionhandling.ProtocolAdapterException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
@@ -82,8 +82,11 @@ public class Iec60870DeviceResponseHandler implements DeviceResponseHandler {
         Objects.requireNonNull(t, "handleConnectionFailure() Throwable t may not be null");
         final ConnectionFailureException connectionFailureException = new ConnectionFailureException(
                 ComponentType.PROTOCOL_IEC60870, t.getMessage());
-        this.messageProcessor.checkForRedelivery(this.deviceMessageMetadata, connectionFailureException,
-                this.domainInformation, this.jmsxDeliveryCount);
+        // TODO: methode verwijderen, na controle of hij inderdaad niet meer
+        // nodig is.
+        // this.messageProcessor.checkForRedeliveryOud(this.deviceMessageMetadata,
+        // connectionFailureException,
+        // this.domainInformation, this.jmsxDeliveryCount);
     }
 
     /*

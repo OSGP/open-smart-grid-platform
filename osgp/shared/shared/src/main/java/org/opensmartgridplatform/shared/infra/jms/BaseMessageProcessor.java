@@ -12,12 +12,11 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Base class for MessageProcessor implementations. Each MessageProcessor
@@ -89,10 +88,10 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
     }
 
     /**
-     * In case of an error, this function can be used to send a response containing
-     * the exception to the web-service-adapter.
+     * In case of an error, this function can be used to send a response
+     * containing the exception to the web-service-adapter.
      *
-     *  @param e
+     * @param e
      *            The exception.
      * @param correlationUid
      *            The correlation UID.
@@ -107,8 +106,8 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
      */
     protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
             final String deviceIdentification, final String messageType, final int messagePriority) {
-        LOGGER.info("handeling error: {} for message type: {}", e.getMessage(), messageType);
-        final OsgpException osgpException = osgpExceptionOf(e);
+        LOGGER.info("handling error: {} for message type: {}", e.getMessage(), messageType);
+        final OsgpException osgpException = this.osgpExceptionOf(e);
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
@@ -117,10 +116,10 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
         this.responseMessageSender.send(responseMessage);
     }
 
-    private OsgpException osgpExceptionOf(Exception e) {
+    private OsgpException osgpExceptionOf(final Exception e) {
         if (e instanceof OsgpException) {
-            return  (OsgpException) e;
+            return (OsgpException) e;
         }
-        return new TechnicalException(componentType, "An unknown error occurred", e);
+        return new TechnicalException(this.componentType, "An unknown error occurred", e);
     }
 }

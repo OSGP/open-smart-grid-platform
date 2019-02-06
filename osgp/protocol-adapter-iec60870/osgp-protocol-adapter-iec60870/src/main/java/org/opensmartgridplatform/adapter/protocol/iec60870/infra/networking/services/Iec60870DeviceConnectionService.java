@@ -14,9 +14,9 @@ import javax.annotation.PreDestroy;
 import org.openmuc.j60870.Connection;
 import org.openmuc.j60870.ConnectionEventListener;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceConnectionParameters;
-import org.opensmartgridplatform.adapter.protocol.iec60870.exceptions.ConnectionFailureException;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.Iec60870Client;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.helper.DeviceConnection;
+import org.opensmartgridplatform.shared.exceptionhandling.ConnectionFailureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +45,22 @@ public class Iec60870DeviceConnectionService {
         } else {
             final DeviceConnection newDeviceConnection = this.iec60870Client.connect(deviceConnectionParameters,
                     asduListener);
+            cache.put(deviceConnectionParameters.getDeviceIdentification(), newDeviceConnection);
+
+            return newDeviceConnection;
+        }
+    }
+
+    public DeviceConnection connect(final DeviceConnectionParameters deviceConnectionParameters)
+            throws ConnectionFailureException {
+
+        final DeviceConnection cachedDeviceConnection = this
+                .fetchDeviceConnection(deviceConnectionParameters.getDeviceIdentification());
+
+        if (cachedDeviceConnection != null) {
+            return cachedDeviceConnection;
+        } else {
+            final DeviceConnection newDeviceConnection = this.iec60870Client.connect(deviceConnectionParameters);
             cache.put(deviceConnectionParameters.getDeviceIdentification(), newDeviceConnection);
 
             return newDeviceConnection;

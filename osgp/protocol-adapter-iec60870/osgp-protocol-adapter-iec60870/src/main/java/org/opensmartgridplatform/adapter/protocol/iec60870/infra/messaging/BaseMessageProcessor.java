@@ -7,18 +7,18 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging;
 
+import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
-import javax.jms.Message;
 
 import org.opensmartgridplatform.adapter.protocol.iec60870.device.DeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.iec60870.device.responses.EmptyDeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DomainInformation;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.helper.RequestMessageData;
-import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.services.Iec60870DeviceResponseHandler;
-import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.services.Iec60870DeviceService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.services.DeviceResponseService;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.exceptionhandling.ProtocolAdapterException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -31,85 +31,55 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.support.JmsUtils;
 
+/**
+ * Base class for MessageProcessor implementations. Each MessageProcessor
+ * implementation should be annotated with @Component. Further the MessageType
+ * the MessageProcessor implementation can process should be passed in at
+ * construction. The Singleton instance is added to the HashMap of
+ * MessageProcessors after dependency injection has completed.
+ */
 public abstract class BaseMessageProcessor implements MessageProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseMessageProcessor.class);
 
     @Autowired
-    protected int maxRedeliveriesForIec60870Requests;
+    private int maxRedeliveriesForIec60870Requests;
 
     @Autowired
-    protected DeviceResponseMessageSender responseMessageSender;
+    private DeviceResponseMessageSender responseMessageSender;
 
     @Autowired
-    protected DeviceResponseService deviceResponseService;
+    private DeviceResponseService deviceResponseService;
 
     @Autowired
-    @Qualifier("iec60870DeviceRequestMessageProcessorMap")
-    protected MessageProcessorMap iec60870RequestMessageProcessorMap;
+    @Qualifier("iec60870RequestMessageProcessorMap")
+    private MessageProcessorMap iec60870RequestMessageProcessorMap;
 
-    @Autowired
-    private Iec60870DeviceService deviceService;
+    private MessageType messageType;
 
-    protected MessageType messageType;
+    /**
+     * Each MessageProcessor should register its MessageType at construction.
+     *
+     * @param messageType
+     *            The MessageType the MessageProcessor implementation can
+     *            process.
+     */
+    protected BaseMessageProcessor(final MessageType messageType) {
+        this.messageType = messageType;
+    }
 
-    public Iec60870DeviceService getDeviceService() {
-        return this.deviceService;
+    /**
+     * Initialization function executed after dependency injection has finished.
+     * The MessageProcessor Singleton is added to the Map of MessageProcessors.
+     */
+    @PostConstruct
+    public void init() {
+        this.iec60870RequestMessageProcessorMap.addMessageProcessor(this.messageType, this);
     }
 
     protected void printDomainInfo(final RequestMessageData requestMessageData) {
         LOGGER.info("Calling DeviceService function: {} for domain: {} {}", requestMessageData.getMessageType(),
                 requestMessageData.getDomain(), requestMessageData.getDomainVersion());
-    }
-
-    /**
-     * Get the delivery count for a {@link Message} using 'JMSXDeliveryCount'
-     * property.
-     */
-    public Integer getJmsXdeliveryCount(final Message message) {
-        try {
-            final int jmsXdeliveryCount = message.getIntProperty("JMSXDeliveryCount");
-            LOGGER.info("jmsXdeliveryCount: {}", jmsXdeliveryCount);
-            return jmsXdeliveryCount;
-        } catch (final JMSException e) {
-            LOGGER.error("JMSException while reading JMSXDeliveryCount", e);
-            return null;
-        }
-    }
-
-    /**
-     * Use 'jmsxDeliveryCount' to determine if a request should be retried using
-     * the re-delivery options. In case a JMSException is thrown, the request
-     * will be rolled-back to the message-broker and will be re-delivered
-     * according to the re-delivery policy set. If the maximum number of
-     * re-deliveries have been executed, a protocol response message will be
-     * sent to osgp-core.
-     */
-    public void checkForRedelivery(final DeviceMessageMetadata deviceMessageMetadata, final OsgpException e,
-            final DomainInformation domainInformation, final int jmsxDeliveryCount) throws JMSException {
-        final int jmsxRedeliveryCount = jmsxDeliveryCount - 1;
-        LOGGER.info("jmsxDeliveryCount: {}, jmsxRedeliveryCount: {}, maxRedeliveriesForIec60870Requests: {}",
-                jmsxDeliveryCount, jmsxRedeliveryCount, this.maxRedeliveriesForIec60870Requests);
-        if (jmsxRedeliveryCount < this.maxRedeliveriesForIec60870Requests) {
-            LOGGER.info(
-                    "Redelivering message with messageType: {}, correlationUid: {}, for device: {} - jmsxRedeliveryCount: {} is less than maxRedeliveriesForIec60870Requests: {}",
-                    deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getCorrelationUid(),
-                    deviceMessageMetadata.getDeviceIdentification(), jmsxRedeliveryCount,
-                    this.maxRedeliveriesForIec60870Requests);
-            final JMSException jmsException = new JMSException(
-                    e == null ? "checkForRedelivery() unknown error: OsgpException e is null" : e.getMessage());
-            throw JmsUtils.convertJmsAccessException(jmsException);
-        } else {
-            LOGGER.warn(
-                    "All redelivery attempts failed for message with messageType: {}, correlationUid: {}, for device: {}",
-                    deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getCorrelationUid(),
-                    deviceMessageMetadata.getDeviceIdentification());
-            final DeviceResponse deviceResponse = new DeviceResponse(
-                    deviceMessageMetadata.getOrganisationIdentification(),
-                    deviceMessageMetadata.getDeviceIdentification(), deviceMessageMetadata.getCorrelationUid(),
-                    deviceMessageMetadata.getMessagePriority());
-            this.handleExpectedError(deviceResponse, e, domainInformation, deviceMessageMetadata.getMessageType());
-        }
     }
 
     /**
@@ -143,26 +113,58 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
         responseMessageSender.send(protocolResponseMessage);
     }
 
-    protected void handleExpectedError(final DeviceResponse deviceResponse, final OsgpException e,
-            final DomainInformation domainInformation, final String messageType) {
-        LOGGER.error("Expected error while processing message", e);
+    // TODO: retries werkend maken
+    // TODO: nakijken of de "expected error" direct een response moet sturen of
+    // dat die retries moet gebruiken.
+    protected void handleExpectedErrorRuud(final MessageMetadata messageMetadata, final ProtocolAdapterException e)
+            throws JMSException {
+        LOGGER.error("Expected error while processing message - Ruud", e);
 
-        final int retryCount = Integer.MAX_VALUE;
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(messageMetadata);
 
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(
-                deviceResponse.getDeviceIdentification(), deviceResponse.getOrganisationIdentification(),
-                deviceResponse.getCorrelationUid(), messageType, deviceResponse.getMessagePriority());
         final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage.Builder()
-                .domain(domainInformation.getDomain()).domainVersion(domainInformation.getDomainVersion())
+                .domain(messageMetadata.getDomain()).domainVersion(messageMetadata.getDomainVersion())
                 .deviceMessageMetadata(deviceMessageMetadata).result(ResponseMessageResultType.NOT_OK).osgpException(e)
-                .retryCount(retryCount).build();
+                .retryCount(Integer.MAX_VALUE).build();
+
+        if (this.hasRemainingRedeliveries(messageMetadata)) {
+            this.redeliverMessage(messageMetadata, e);
+        } else {
+            this.sendErrorResponse(messageMetadata, protocolResponseMessage);
+        }
+
+    }
+
+    private boolean hasRemainingRedeliveries(final MessageMetadata messageMetadata) {
+        final int jmsxRedeliveryCount = messageMetadata.getJmsxDeliveryCount() - 1;
+        LOGGER.info("jmsxDeliveryCount: {}, jmsxRedeliveryCount: {}, maxRedeliveriesForIec60870Requests: {}",
+                messageMetadata.getJmsxDeliveryCount(), jmsxRedeliveryCount, this.maxRedeliveriesForIec60870Requests);
+
+        return jmsxRedeliveryCount < this.maxRedeliveriesForIec60870Requests;
+    }
+
+    private void redeliverMessage(final MessageMetadata messageMetadata, final ProtocolAdapterException e) {
+        final int jmsxRedeliveryCount = messageMetadata.getJmsxDeliveryCount() - 1;
+
+        LOGGER.info(
+                "Redelivering message with messageType: {}, correlationUid: {}, for device: {} - jmsxRedeliveryCount: {} is less than maxRedeliveriesForIec60870Requests: {}",
+                messageMetadata.getMessageType(), messageMetadata.getCorrelationUid(),
+                messageMetadata.getDeviceIdentification(), jmsxRedeliveryCount,
+                this.maxRedeliveriesForIec60870Requests);
+        final JMSException jmsException = new JMSException(
+                e == null ? "checkForRedelivery() unknown error: OsgpException e is null" : e.getMessage());
+        throw JmsUtils.convertJmsAccessException(jmsException);
+
+    }
+
+    private void sendErrorResponse(final MessageMetadata messageMetadata,
+            final ProtocolResponseMessage protocolResponseMessage) {
+        LOGGER.warn(
+                "All redelivery attempts failed for message with messageType: {}, correlationUid: {}, for device: {}",
+                messageMetadata.getMessageType(), messageMetadata.getCorrelationUid(),
+                messageMetadata.getDeviceIdentification());
+
         this.responseMessageSender.send(protocolResponseMessage);
     }
 
-    protected Iec60870DeviceResponseHandler createIec60870DeviceResponseHandler(
-            final RequestMessageData requestMessageData, final Message message) {
-        final Integer jsmxDeliveryCount = this.getJmsXdeliveryCount(message);
-        return new Iec60870DeviceResponseHandler(this, jsmxDeliveryCount, requestMessageData,
-                this.responseMessageSender);
-    }
 }

@@ -19,8 +19,9 @@ import org.openmuc.j60870.ClientConnectionBuilder;
 import org.openmuc.j60870.Connection;
 import org.openmuc.j60870.ConnectionEventListener;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceConnectionParameters;
-import org.opensmartgridplatform.adapter.protocol.iec60870.exceptions.ConnectionFailureException;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.helper.DeviceConnection;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
+import org.opensmartgridplatform.shared.exceptionhandling.ConnectionFailureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,7 +68,33 @@ public class Iec60870Client {
                     + deviceConnectionParameters.getIpAddress();
             LOGGER.error(errorMessage, e);
 
-            throw new ConnectionFailureException(errorMessage);
+            throw new ConnectionFailureException(ComponentType.PROTOCOL_IEC60870, errorMessage);
+        }
+
+    }
+
+    public DeviceConnection connect(final DeviceConnectionParameters deviceConnectionParameters)
+            throws ConnectionFailureException {
+
+        final InetAddress address = this.convertIpAddress(deviceConnectionParameters.getIpAddress());
+        final String deviceIdentification = deviceConnectionParameters.getDeviceIdentification();
+        final int port = deviceConnectionParameters.getPort() == null ? IEC60870_DEFAULT_PORT
+                : deviceConnectionParameters.getPort();
+
+        final ClientConnectionBuilder clientConnectionBuilder = new ClientConnectionBuilder(address).setPort(port);
+
+        try {
+            final Connection connection = clientConnectionBuilder.connect();
+            LOGGER.info("Created connection without starting data transfer to: {}", deviceIdentification);
+
+            return new DeviceConnection(connection, deviceConnectionParameters);
+
+        } catch (final IOException e) {
+            final String errorMessage = "Unable to connect to remote host: "
+                    + deviceConnectionParameters.getIpAddress();
+            LOGGER.error(errorMessage, e);
+
+            throw new ConnectionFailureException(ComponentType.PROTOCOL_IEC60870, errorMessage);
         }
 
     }
@@ -75,13 +102,13 @@ public class Iec60870Client {
     private InetAddress convertIpAddress(final String ipAddress) throws ConnectionFailureException {
         try {
             if (StringUtils.isEmpty(ipAddress)) {
-                throw new ConnectionFailureException("Ip address is null");
+                throw new ConnectionFailureException(ComponentType.PROTOCOL_IEC60870, "Ip address is null");
             }
 
             return InetAddress.getByName(ipAddress);
         } catch (final UnknownHostException e) {
             LOGGER.error("Unexpected exception during convertIpAddress", e);
-            throw new ConnectionFailureException(e.getMessage(), e);
+            throw new ConnectionFailureException(ComponentType.PROTOCOL_IEC60870, e.getMessage());
         }
     }
 

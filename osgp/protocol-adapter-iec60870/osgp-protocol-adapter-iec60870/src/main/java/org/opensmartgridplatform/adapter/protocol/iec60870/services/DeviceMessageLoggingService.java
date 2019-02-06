@@ -7,10 +7,10 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.services;
 
-import org.opensmartgridplatform.adapter.protocol.iec60870.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceMessageLog;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.Iec60870LogItemRequestMessage;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.Iec60870LogItemRequestMessageSender;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,12 +28,12 @@ public class DeviceMessageLoggingService {
         DeviceMessageLoggingService.iec60870LogItemRequestMessageSender = iec60870LogItemRequestMessageSender;
     }
 
-    public static void logMessage(final DeviceRequest deviceRequest, final boolean incoming, final boolean valid,
+    public static void logMessage(final MessageMetadata messageMetadata, final boolean incoming, final boolean valid,
             final String message, final int size) {
 
-        final String deviceIdentification = deviceRequest.getDeviceIdentification();
-        final String organisationIdentification = deviceRequest.getOrganisationIdentification();
-        final String command = deviceRequest.getClass().getSimpleName();
+        final String deviceIdentification = messageMetadata.getDeviceIdentification();
+        final String organisationIdentification = messageMetadata.getOrganisationIdentification();
+        final String command = messageMetadata.getClass().getSimpleName();
 
         final Iec60870LogItemRequestMessage iec60870LogItemRequestMessage = new Iec60870LogItemRequestMessage(
                 deviceIdentification, organisationIdentification, incoming, valid, command + " - " + message, size);

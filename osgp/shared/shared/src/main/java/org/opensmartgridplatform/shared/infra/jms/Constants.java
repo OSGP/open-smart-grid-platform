@@ -202,6 +202,11 @@ public class Constants {
      */
     public static final String MESSAGE_GROUP = "JMSXGroupID";
 
+    /**
+     * JMS constant for delivery count of the message.
+     */
+    public static final String DELIVERY_COUNT = "JMSXDeliveryCount";
+
     // === DEPRECATED ===
 
     /**

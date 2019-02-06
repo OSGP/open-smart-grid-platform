@@ -7,8 +7,6 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging;
 
-import java.io.Serializable;
-
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.ObjectMessage;
@@ -18,8 +16,8 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.NotSupportedException;
-import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
@@ -35,7 +33,7 @@ public class DeviceRequestMessageListener implements SessionAwareMessageListener
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceRequestMessageListener.class);
 
     @Autowired
-    @Qualifier("iec60870DeviceRequestMessageProcessorMap")
+    @Qualifier("iec60870RequestMessageProcessorMap")
     private MessageProcessorMap iec60870RequestMessageProcessorMap;
 
     @Autowired
@@ -50,43 +48,47 @@ public class DeviceRequestMessageListener implements SessionAwareMessageListener
      */
     @Override
     public void onMessage(final Message message, final Session session) throws JMSException {
-        final ObjectMessage objectMessage = (ObjectMessage) message;
-        String correlationUid = null;
-        String messageType = null;
-        int messagePriority;
-        MessageProcessor processor;
+
+        ObjectMessage objectMessage = null;
+        MessageMetadata messageMetadata = null;
         try {
-            correlationUid = message.getJMSCorrelationID();
-            messageType = message.getJMSType();
-            messagePriority = message.getJMSPriority();
-            LOGGER.info("Received message [correlationUid={}, messageType={}, messagePriority={}]", correlationUid,
-                    messageType, messagePriority);
-            processor = this.iec60870RequestMessageProcessorMap.getMessageProcessor(objectMessage);
-        } catch (final IllegalArgumentException | JMSException e) {
-            LOGGER.error("Unexpected exception for message [correlationUid={}]", correlationUid, e);
-            this.createAndSendException(objectMessage, messageType);
+            objectMessage = (ObjectMessage) message;
+            messageMetadata = MessageMetadata.fromMessage(objectMessage);
+        } catch (final Exception e) {
+            LOGGER.error("UNRECOVERABLE ERROR, unable to read JMS message instance, giving up.", e);
             return;
         }
-        processor.processMessage(objectMessage);
-    }
 
-    private void createAndSendException(final ObjectMessage objectMessage, final String messageType) {
-        this.sendException(objectMessage, new NotSupportedException(ComponentType.PROTOCOL_IEC60870, messageType));
-    }
-
-    private void sendException(final ObjectMessage objectMessage, final Exception exception) {
         try {
-            final String domain = objectMessage.getStringProperty(Constants.DOMAIN);
-            final String domainVersion = objectMessage.getStringProperty(Constants.DOMAIN_VERSION);
-            final ResponseMessageResultType result = ResponseMessageResultType.NOT_OK;
+            LOGGER.info("Received message [correlationUid={}, messageType={}, messagePriority={}]",
+                    messageMetadata.getCorrelationUid(), messageMetadata.getMessageType(),
+                    messageMetadata.getMessagePriority());
+
+            final MessageProcessor processor = this.iec60870RequestMessageProcessorMap
+                    .getMessageProcessor(objectMessage);
+
+            processor.processMessage(objectMessage);
+
+        } catch (final IllegalArgumentException e) {
+            LOGGER.error("Unexpected exception for message [correlationUid={}]", messageMetadata.getCorrelationUid(),
+                    e);
+            this.sendNotSupportedException(objectMessage, messageMetadata);
+        }
+    }
+
+    private void sendNotSupportedException(final ObjectMessage objectMessage, final MessageMetadata messageMetadata) {
+
+        try {
+            final Exception exception = new NotSupportedException(ComponentType.PROTOCOL_IEC60870,
+                    messageMetadata.getMessageType());
             final FunctionalException osgpException = new FunctionalException(
                     FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION, ComponentType.PROTOCOL_IEC60870, exception);
-            final Serializable dataObject = objectMessage.getObject();
 
             final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(objectMessage);
             final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage.Builder()
-                    .deviceMessageMetadata(deviceMessageMetadata).domain(domain).domainVersion(domainVersion)
-                    .result(result).osgpException(osgpException).dataObject(dataObject).scheduled(false).build();
+                    .deviceMessageMetadata(deviceMessageMetadata).domain(messageMetadata.getDomain())
+                    .domainVersion(messageMetadata.getDomainVersion()).result(ResponseMessageResultType.NOT_OK)
+                    .osgpException(osgpException).dataObject(objectMessage.getObject()).scheduled(false).build();
 
             this.deviceResponseMessageSender.send(protocolResponseMessage);
         } catch (final Exception e) {

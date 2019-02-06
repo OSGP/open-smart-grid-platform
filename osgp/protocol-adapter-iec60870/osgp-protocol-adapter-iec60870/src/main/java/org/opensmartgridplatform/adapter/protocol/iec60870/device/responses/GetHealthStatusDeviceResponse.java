@@ -7,18 +7,18 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.device.responses;
 
-import org.opensmartgridplatform.adapter.protocol.iec60870.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec60870.device.DeviceResponse;
 import org.opensmartgridplatform.dto.da.GetHealthStatusResponseDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 public class GetHealthStatusDeviceResponse extends DeviceResponse {
 
     private final GetHealthStatusResponseDto deviceHealthStatus;
 
-    public GetHealthStatusDeviceResponse(final DeviceRequest deviceRequest,
+    public GetHealthStatusDeviceResponse(final MessageMetadata messageMetadata,
             final GetHealthStatusResponseDto deviceHealthStatus) {
-        super(deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
-                deviceRequest.getCorrelationUid(), deviceRequest.getMessagePriority());
+        super(messageMetadata.getOrganisationIdentification(), messageMetadata.getDeviceIdentification(),
+                messageMetadata.getCorrelationUid(), messageMetadata.getMessagePriority());
         this.deviceHealthStatus = deviceHealthStatus;
     }
 

@@ -14,17 +14,17 @@ import org.openmuc.j60870.Connection;
 import org.openmuc.j60870.ConnectionEventListener;
 import org.openmuc.j60870.IeQualifierOfInterrogation;
 import org.opensmartgridplatform.adapter.protocol.iec60870.device.DeviceMessageStatus;
-import org.opensmartgridplatform.adapter.protocol.iec60870.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec60870.device.DeviceResponseHandler;
 import org.opensmartgridplatform.adapter.protocol.iec60870.device.responses.EmptyDeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.iec60870.device.responses.GetHealthStatusDeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.entities.Iec60870Device;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.repositories.Iec60870DeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceConnectionParameters;
-import org.opensmartgridplatform.adapter.protocol.iec60870.exceptions.ConnectionFailureException;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.GetHealthStatusListener;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.helper.DeviceConnection;
 import org.opensmartgridplatform.dto.da.GetHealthStatusResponseDto;
+import org.opensmartgridplatform.shared.exceptionhandling.ConnectionFailureException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,14 +42,14 @@ public class Iec60870DeviceService {
     @Autowired
     private Iec60870DeviceRepository deviceRepository;
 
-    public void getHealthStatus(final DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler)
-            throws JMSException {
+    public void getHealthStatus(final MessageMetadata messageMetadata,
+            final DeviceResponseHandler deviceResponseHandler) throws JMSException {
 
-        LOGGER.info("getHealthStatus for IEC 60870-5-104 device");
+        LOGGER.info("getHealthStatus for IEC 60870-5-104 device {}", messageMetadata.getDeviceIdentification());
 
         try {
             final ConnectionEventListener asduListener = new GetHealthStatusListener();
-            final DeviceConnection deviceConnection = this.connectToDevice(deviceRequest, asduListener);
+            final DeviceConnection deviceConnection = this.connectToDevice(messageMetadata, asduListener);
 
             final Connection connection = deviceConnection.getConnection();
             final int commonAddress = deviceConnection.getDeviceConnectionParameters().getCommonAddress();
@@ -57,30 +57,30 @@ public class Iec60870DeviceService {
             Thread.sleep(2000);
 
             final GetHealthStatusResponseDto response = new GetHealthStatusResponseDto(HEALTH_STATUS_OK);
-            final GetHealthStatusDeviceResponse deviceResponse = new GetHealthStatusDeviceResponse(deviceRequest,
+            final GetHealthStatusDeviceResponse deviceResponse = new GetHealthStatusDeviceResponse(messageMetadata,
                     response);
 
             deviceResponseHandler.handleResponse(deviceResponse);
         } catch (final ConnectionFailureException se) {
-            this.handleConnectionFailureException(deviceRequest, deviceResponseHandler, se);
+            this.handleConnectionFailureException(messageMetadata, deviceResponseHandler, se);
         } catch (final Exception e) {
-            this.handleException(deviceRequest, deviceResponseHandler, e);
+            this.handleException(messageMetadata, deviceResponseHandler, e);
         }
 
     }
 
-    // ======================================
-    // PRIVATE DEVICE COMMUNICATION METHODS =
-    // ======================================
+    // =====================================
+    // PUBLIC DEVICE COMMUNICATION METHODS =
+    // =====================================
 
-    private DeviceConnection connectToDevice(final DeviceRequest deviceRequest,
+    public DeviceConnection connectToDevice(final MessageMetadata messageMetadata,
             final ConnectionEventListener asduListener) throws ConnectionFailureException {
 
-        final String deviceIdentification = deviceRequest.getDeviceIdentification();
+        final String deviceIdentification = messageMetadata.getDeviceIdentification();
         final Iec60870Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
 
         final DeviceConnectionParameters deviceConnectionParameters = DeviceConnectionParameters.newBuilder()
-                .ipAddress(deviceRequest.getIpAddress()).deviceIdentification(deviceIdentification)
+                .ipAddress(messageMetadata.getIpAddress()).deviceIdentification(deviceIdentification)
                 .commonAddress(device.getCommonAddress()).port(device.getPort()).build();
 
         return this.iec60870DeviceConnectionService.connect(deviceConnectionParameters, asduListener);
@@ -90,26 +90,26 @@ public class Iec60870DeviceService {
     // PRIVATE HELPER METHODS =
     // ========================
 
-    private EmptyDeviceResponse createDefaultResponse(final DeviceRequest deviceRequest,
+    private EmptyDeviceResponse createDefaultResponse(final MessageMetadata messageMetadata,
             final DeviceMessageStatus deviceMessageStatus) {
-        return new EmptyDeviceResponse(deviceRequest.getOrganisationIdentification(),
-                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(),
-                deviceRequest.getMessagePriority(), deviceMessageStatus);
+        return new EmptyDeviceResponse(messageMetadata.getOrganisationIdentification(),
+                messageMetadata.getDeviceIdentification(), messageMetadata.getCorrelationUid(),
+                messageMetadata.getMessagePriority(), deviceMessageStatus);
     }
 
-    private void handleConnectionFailureException(final DeviceRequest deviceRequest,
+    private void handleConnectionFailureException(final MessageMetadata messageMetadata,
             final DeviceResponseHandler deviceResponseHandler,
             final ConnectionFailureException connectionFailureException) throws JMSException {
         LOGGER.error("Could not connect to device", connectionFailureException);
-        final EmptyDeviceResponse deviceResponse = this.createDefaultResponse(deviceRequest,
+        final EmptyDeviceResponse deviceResponse = this.createDefaultResponse(messageMetadata,
                 DeviceMessageStatus.FAILURE);
         deviceResponseHandler.handleConnectionFailure(connectionFailureException, deviceResponse);
     }
 
-    private void handleException(final DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler,
-            final Exception exception) {
+    private void handleException(final MessageMetadata messageMetadata,
+            final DeviceResponseHandler deviceResponseHandler, final Exception exception) {
         LOGGER.error("Unexpected exception", exception);
-        final EmptyDeviceResponse deviceResponse = this.createDefaultResponse(deviceRequest,
+        final EmptyDeviceResponse deviceResponse = this.createDefaultResponse(messageMetadata,
                 DeviceMessageStatus.FAILURE);
         deviceResponseHandler.handleException(exception, deviceResponse);
     }

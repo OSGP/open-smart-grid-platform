@@ -10,8 +10,6 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.application.config;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.DeviceRequestMessageListener;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.DeviceResponseMessageSender;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.Iec60870LogItemRequestMessageSender;
-import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.OsgpRequestMessageSender;
-import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.OsgpResponseMessageListener;
 import org.opensmartgridplatform.adapter.protocol.iec60870.services.DeviceMessageLoggingService;
 import org.opensmartgridplatform.shared.application.config.AbstractMessagingConfig;
 import org.opensmartgridplatform.shared.application.config.jms.JmsConfiguration;
@@ -20,7 +18,6 @@ import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -39,6 +36,11 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class MessagingConfig extends AbstractMessagingConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MessagingConfig.class);
+
+    @Bean
+    public MessageProcessorMap iec60870RequestMessageProcessorMap() {
+        return new BaseMessageProcessorMap("iec60870RequestMessageProcessorMap");
+    }
 
     // === JMS SETTINGS IEC60870 REQUESTS ===
     @Bean
@@ -68,12 +70,6 @@ public class MessagingConfig extends AbstractMessagingConfig {
     @Bean
     public int maxRedeliveriesForIec60870Requests(final JmsConfiguration iec60870RequestJmsConfiguration) {
         return iec60870RequestJmsConfiguration.getRedeliveryPolicy().getMaximumRedeliveries();
-    }
-
-    @Bean
-    @Qualifier("iec60870DeviceRequestMessageProcessorMap")
-    public MessageProcessorMap microgridsResponseMessageProcessorMap() {
-        return new BaseMessageProcessorMap("DeviceRequestMessageProcessorMap");
     }
 
     // === JMS SETTINGS: IEC60870 RESPONSES ===
@@ -110,42 +106,6 @@ public class MessagingConfig extends AbstractMessagingConfig {
     @Bean
     public Iec60870LogItemRequestMessageSender iec60870LogItemRequestMessageSender() {
         return new Iec60870LogItemRequestMessageSender();
-    }
-
-    // === OSGP REQUESTS ===
-
-    @Bean
-    public JmsConfiguration osgpRequestJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.osgp.requests");
-    }
-
-    @Bean
-    public JmsTemplate osgpRequestsJmsTemplate(final JmsConfiguration osgpRequestJmsConfiguration) {
-        return osgpRequestJmsConfiguration.getJmsTemplate();
-    }
-
-    @Bean
-    public OsgpRequestMessageSender osgpRequestMessageSender() {
-        return new OsgpRequestMessageSender();
-    }
-
-    // === OSGP RESPONSES ===
-
-    @Bean
-    public OsgpResponseMessageListener osgpResponseMessageListener() {
-        return new OsgpResponseMessageListener();
-    }
-
-    @Bean
-    public JmsConfiguration osgpResponseJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeReceiveConfiguration("jms.osgp.responses",
-                this.osgpResponseMessageListener());
-    }
-
-    @Bean
-    public DefaultMessageListenerContainer osgpResponsesMessageListenerContainer(
-            final JmsConfiguration osgpResponseJmsConfiguration) {
-        return osgpResponseJmsConfiguration.getMessageListenerContainer();
     }
 
     // === DEVICE MESSAGE LOGGING ===

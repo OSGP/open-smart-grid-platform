@@ -8,8 +8,8 @@
 package org.opensmartgridplatform.adapter.protocol.iec60870.device.responses;
 
 import org.opensmartgridplatform.adapter.protocol.iec60870.device.DeviceMessageStatus;
-import org.opensmartgridplatform.adapter.protocol.iec60870.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec60870.device.DeviceResponse;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 public class EmptyDeviceResponse extends DeviceResponse {
 
@@ -21,9 +21,9 @@ public class EmptyDeviceResponse extends DeviceResponse {
         this.status = status;
     }
 
-    public EmptyDeviceResponse(final DeviceRequest deviceRequest, final DeviceMessageStatus status) {
-        super(deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
-                deviceRequest.getCorrelationUid(), deviceRequest.getMessagePriority());
+    public EmptyDeviceResponse(final MessageMetadata messageMetadata, final DeviceMessageStatus status) {
+        super(messageMetadata.getOrganisationIdentification(), messageMetadata.getDeviceIdentification(),
+                messageMetadata.getCorrelationUid(), messageMetadata.getMessagePriority());
         this.status = status;
     }
 
