@@ -7,6 +7,11 @@
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.config;
 
+import org.opensmartgridplatform.adapter.ws.infra.specifications.JpaEventSpecifications;
+import org.opensmartgridplatform.domain.core.specifications.EventSpecifications;
+import org.opensmartgridplatform.shared.application.config.AbstractConfig;
+import org.opensmartgridplatform.shared.application.config.PagingSettings;
+import org.opensmartgridplatform.ws.smartmetering.config.SmartmeteringWebServiceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,18 +27,13 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
-import org.opensmartgridplatform.adapter.ws.infra.specifications.JpaEventSpecifications;
-import org.opensmartgridplatform.domain.core.specifications.EventSpecifications;
-import org.opensmartgridplatform.shared.application.config.AbstractConfig;
-import org.opensmartgridplatform.shared.application.config.PagingSettings;
-import org.opensmartgridplatform.ws.smartmetering.config.SmartmeteringWebServiceConfig;
-
 /**
  * An application context Java configuration class.
  */
 @Configuration
-@ComponentScan(basePackages = {"org.opensmartgridplatform.domain.core", "org.opensmartgridplatform.adapter.ws.smartmetering",
-        "org.opensmartgridplatform.logging.domain", "org.opensmartgridplatform.adapter.ws.shared.services"})
+@ComponentScan(basePackages = { "org.opensmartgridplatform.domain.core",
+        "org.opensmartgridplatform.adapter.ws.smartmetering", "org.opensmartgridplatform.logging.domain",
+        "org.opensmartgridplatform.adapter.ws.shared.services", "org.opensmartgridplatform.adapter.ws.mapping" })
 @EnableTransactionManagement()
 @ImportResource("classpath:applicationContext.xml")
 @Import({ PersistenceConfigWs.class, PersistenceConfigCore.class, MessagingConfig.class, WebServiceConfig.class,

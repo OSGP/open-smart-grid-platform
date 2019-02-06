@@ -16,11 +16,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ws.soap.client.SoapFaultClientException;
-
 import org.opensmartgridplatform.adapter.ws.schema.core.common.AsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.core.configurationmanagement.Configuration;
@@ -43,6 +38,10 @@ import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.common.support.ws.core.CoreConfigurationManagementClient;
 import org.opensmartgridplatform.cucumber.platform.glue.steps.ws.GenericResponseSteps;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -83,8 +82,8 @@ public class GetConfigurationSteps {
      *
      * @param expectedResponseData
      *            The table with the expected fields in the response.
-     * @apiNote The response will contain the correlation uid, so store that in the
-     *       current scenario context for later use.
+     * @apiNote The response will contain the correlation uid, so store that in
+     *          the current scenario context for later use.
      * @throws Throwable
      */
     @Then("^the get configuration async response contains$")
@@ -214,8 +213,7 @@ public class GetConfigurationSteps {
                 && configuration.getMeterType() != null) {
             MeterType meterType;
             final String sMeterType = getString(expectedResponseData, PlatformKeys.METER_TYPE);
-            if (!sMeterType.contains("_")
-                    && sMeterType.equals(MeterType.P_1.toString().replaceAll("_", ""))) {
+            if (!sMeterType.contains("_") && sMeterType.equals(MeterType.P_1.toString().replaceAll("_", ""))) {
                 final String[] sMeterTypeArray = sMeterType.split("");
                 meterType = MeterType.valueOf(sMeterTypeArray[0] + "_" + sMeterTypeArray[1]);
             } else {

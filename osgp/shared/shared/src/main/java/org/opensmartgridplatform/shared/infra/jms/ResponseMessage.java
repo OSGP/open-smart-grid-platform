@@ -21,6 +21,7 @@ public class ResponseMessage implements Serializable {
 
     protected static final boolean DEFAULT_BYPASS_RETRY = false;
 
+    private final String messageType;
     private final String correlationUid;
     private final String organisationIdentification;
     private final String deviceIdentification;
@@ -31,6 +32,7 @@ public class ResponseMessage implements Serializable {
     private final boolean bypassRetry;
 
     protected ResponseMessage(final Builder builder) {
+        this.messageType = builder.messageType;
         this.correlationUid = builder.correlationUid;
         this.organisationIdentification = builder.organisationIdentification;
         this.deviceIdentification = builder.deviceIdentification;
@@ -43,6 +45,7 @@ public class ResponseMessage implements Serializable {
 
     public static class Builder {
 
+        private String messageType = null;
         private String correlationUid = null;
         private String organisationIdentification = null;
         private String deviceIdentification = null;
@@ -51,6 +54,11 @@ public class ResponseMessage implements Serializable {
         private Serializable dataObject = null;
         private int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
         private boolean bypassRetry = DEFAULT_BYPASS_RETRY;
+
+        public Builder withMessageType(final String messageType) {
+            this.messageType = messageType;
+            return this;
+        }
 
         public Builder withIds(final CorrelationIds ids) {
             this.organisationIdentification = ids.getOrganisationIdentification();
@@ -100,6 +108,7 @@ public class ResponseMessage implements Serializable {
         }
 
         public Builder withDeviceMessageMetadata(final DeviceMessageMetadata deviceMessageMetadata) {
+            this.messageType = deviceMessageMetadata.getMessageType();
             this.correlationUid = deviceMessageMetadata.getCorrelationUid();
             this.organisationIdentification = deviceMessageMetadata.getOrganisationIdentification();
             this.deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
@@ -115,6 +124,10 @@ public class ResponseMessage implements Serializable {
 
     public static Builder newResponseMessageBuilder() {
         return new Builder();
+    }
+
+    public String getMessageType() {
+        return this.messageType;
     }
 
     public String getCorrelationUid() {

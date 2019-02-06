@@ -8,6 +8,8 @@
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.config;
 
 import org.flywaydb.core.Flyway;
+import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
+import org.opensmartgridplatform.shared.application.config.AbstractPersistenceConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
@@ -17,15 +19,11 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
-import org.opensmartgridplatform.adapter.ws.smartmetering.domain.repositories.ResponseUrlDataRepository;
-import org.opensmartgridplatform.shared.application.config.AbstractPersistenceConfig;
-
 /**
  * An application context Java configuration class.
  */
 @EnableJpaRepositories(transactionManagerRef = "transactionManager", entityManagerFactoryRef = "entityManagerFactory", basePackageClasses = {
-        ResponseUrlDataRepository.class, ResponseDataRepository.class })
+        ResponseDataRepository.class })
 @Configuration
 @EnableTransactionManagement()
 @PropertySource("classpath:osgp-adapter-ws-smartmetering.properties")

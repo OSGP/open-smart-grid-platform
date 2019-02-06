@@ -9,9 +9,15 @@ package org.opensmartgridplatform.adapter.ws.shared.services;
 
 import java.util.List;
 
+import org.apache.commons.lang3.EnumUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
+import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceLookupKey;
+import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
+import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
+import org.opensmartgridplatform.adapter.ws.schema.shared.notification.GenericNotification;
+import org.opensmartgridplatform.shared.exceptionhandling.CircuitBreakerOpenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +26,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 
-import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
-import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
-import org.opensmartgridplatform.shared.exceptionhandling.CircuitBreakerOpenException;
-
-public abstract class AbstractResendNotificationService {
+public abstract class AbstractResendNotificationService<T extends Enum<T>> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractResendNotificationService.class);
 
@@ -42,6 +44,24 @@ public abstract class AbstractResendNotificationService {
 
     @Autowired
     private int resendPageSize;
+
+    private final Class<T> notificationClass;
+
+    private String applicationName;
+
+    private NotificationService notificationServiceReference;
+
+    public AbstractResendNotificationService(final Class<T> notificationClass) {
+        this.notificationClass = notificationClass;
+    }
+
+    public void setNotificationService(final NotificationService notificationService) {
+        this.notificationServiceReference = notificationService;
+    }
+
+    public void setApplicationName(final String applicationName) {
+        this.applicationName = applicationName;
+    }
 
     public void execute() {
 
@@ -174,7 +194,23 @@ public abstract class AbstractResendNotificationService {
         return delay;
     }
 
-    public abstract void resendNotification(ResponseData responseData);
+    public void resendNotification(final ResponseData responseData) {
+
+        if (!EnumUtils.isValidEnum(this.notificationClass, responseData.getMessageType())) {
+            this.logUnknownNotificationTypeError(responseData.getCorrelationUid(), responseData.getMessageType(),
+                    this.notificationServiceReference.getClass().getName());
+            return;
+        }
+
+        final NotificationWebServiceLookupKey notificationWebServiceLookupKey = new NotificationWebServiceLookupKey(
+                responseData.getOrganisationIdentification(), this.applicationName);
+        final String notificationMessage = this.getNotificationMessage(responseData.getMessageType());
+        final GenericNotification genericNotification = new GenericNotification(notificationMessage,
+                responseData.getResultType().name(), responseData.getDeviceIdentification(),
+                responseData.getCorrelationUid(), responseData.getMessageType());
+
+        this.notificationServiceReference.sendNotification(notificationWebServiceLookupKey, genericNotification);
+    }
 
     public String getNotificationMessage(final String responseData) {
         return String.format("Response of type %s is available.", responseData);

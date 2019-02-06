@@ -12,15 +12,7 @@ import java.util.List;
 import org.hibernate.validator.method.MethodConstraintViolationException;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.ws.server.endpoint.annotation.Endpoint;
-import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
-import org.springframework.ws.server.endpoint.annotation.RequestPayload;
-import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
-
+import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.publiclighting.application.mapping.ScheduleManagementMapper;
@@ -31,6 +23,7 @@ import org.opensmartgridplatform.adapter.ws.schema.publiclighting.schedulemanage
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.schedulemanagement.SetScheduleAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.schedulemanagement.SetScheduleRequest;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.schedulemanagement.SetScheduleResponse;
+import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataService;
 import org.opensmartgridplatform.domain.core.exceptions.ValidationException;
 import org.opensmartgridplatform.domain.core.valueobjects.Schedule;
 import org.opensmartgridplatform.domain.core.valueobjects.ScheduleEntry;
@@ -39,8 +32,15 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.ws.server.endpoint.annotation.Endpoint;
+import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
+import org.springframework.ws.server.endpoint.annotation.RequestPayload;
+import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 //MethodConstraintViolationException is deprecated.
 //Will by replaced by equivalent functionality defined
@@ -54,6 +54,9 @@ public class PublicLightingScheduleManagementEndpoint {
 
     private final ScheduleManagementService scheduleManagementService;
     private final ScheduleManagementMapper scheduleManagementMapper;
+
+    @Autowired
+    private ResponseDataService responseDataService;
 
     /**
      * Constructor
@@ -129,10 +132,11 @@ public class PublicLightingScheduleManagementEndpoint {
         final SetScheduleResponse response = new SetScheduleResponse();
 
         try {
-            final ResponseMessage message = this.scheduleManagementService
-                    .dequeueSetLightScheduleResponse(request.getAsyncRequest().getCorrelationUid());
-            if (message != null) {
-                response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
+            final ResponseData responseData = this.responseDataService
+                    .dequeue(request.getAsyncRequest().getCorrelationUid(), COMPONENT_WS_PUBLIC_LIGHTING);
+            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+            if (responseData.getMessageData() instanceof String) {
+                response.setDescription((String) responseData.getMessageData());
             }
         } catch (final Exception e) {
             this.handleException(e);

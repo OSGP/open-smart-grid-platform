@@ -23,11 +23,6 @@ import javax.xml.datatype.DatatypeFactory;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Assert;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ws.soap.client.SoapFaultClientException;
-
 import org.opensmartgridplatform.adapter.ws.schema.tariffswitching.common.AsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.tariffswitching.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.tariffswitching.common.Page;
@@ -45,6 +40,10 @@ import org.opensmartgridplatform.cucumber.platform.glue.steps.ws.GenericResponse
 import org.opensmartgridplatform.cucumber.platform.publiclighting.PlatformPubliclightingDefaults;
 import org.opensmartgridplatform.cucumber.platform.publiclighting.PlatformPubliclightingKeys;
 import org.opensmartgridplatform.cucumber.platform.publiclighting.support.ws.tariffswitching.TariffSwitchingScheduleManagementClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -171,8 +170,8 @@ public class SetTariffScheduleSteps {
      *
      * @param expectedResponseData
      *            The table with the expected fields in the response.
-     * @apiNote The response will contain the correlation uid, so store that in the
-     *       current scenario context for later use.
+     * @apiNote The response will contain the correlation uid, so store that in
+     *          the current scenario context for later use.
      * @throws Throwable
      */
     @Then("^the set tariff schedule async response contains$")
@@ -226,7 +225,7 @@ public class SetTariffScheduleSteps {
         }
     }
 
-    @Then("^the platform buffers a set tariff schedule response message for device \"([^\"]*)\" contains soap fault$")
+    @Then("^the platform buffers a set tariff schedule response message for device \"([^\"]*)\" that contains a soap fault$")
     public void thePlatformBuffersASetTariffScheduleResponseMessageForDeviceContainsSoapFault(
             final String deviceIdentification, final Map<String, String> expectedResult) throws Throwable {
         final SetScheduleAsyncRequest request = new SetScheduleAsyncRequest();
@@ -239,7 +238,8 @@ public class SetTariffScheduleSteps {
         try {
             this.client.getSetSchedule(request);
         } catch (final SoapFaultClientException ex) {
-            Assert.assertEquals(getString(expectedResult, PlatformPubliclightingKeys.KEY_MESSAGE), ex.getMessage());
+            ScenarioContext.current().put(PlatformKeys.RESPONSE, ex);
+            GenericResponseSteps.verifySoapFault(expectedResult);
         }
     }
 }

@@ -9,11 +9,10 @@ package org.opensmartgridplatform.adapter.ws.smartmetering.application.services;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseUrlDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import org.opensmartgridplatform.adapter.ws.smartmetering.domain.repositories.ResponseUrlDataRepository;
 
 @Service
 @Transactional(value = "transactionManager")

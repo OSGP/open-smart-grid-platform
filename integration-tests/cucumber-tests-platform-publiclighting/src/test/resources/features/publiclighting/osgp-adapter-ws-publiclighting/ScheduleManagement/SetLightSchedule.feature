@@ -113,7 +113,7 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | TriggerType   |              |
       | TriggerWindow |              |
     # Note: The platform throws a TechnicalException when the status is 'FAILURE'.
-    And the platform buffers a set light schedule response message for device "TEST1024000000001" contains soap fault
+    And the platform buffers a set light schedule response message for device "TEST1024000000001" that contains a soap fault
       | Message | Device reports failure |
 
     Examples: 
@@ -148,7 +148,7 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | TriggerType   |              |
       | TriggerWindow |              |
     # Note: The platform throws a TechnicalException when the status is 'REJECTED'.
-    And the platform buffers a set light schedule response message for device "TEST1024000000001" contains soap fault
+    And the platform buffers a set light schedule response message for device "TEST1024000000001" that contains a soap fault
       | Message | Device reports rejected |
 
     Examples: 
@@ -179,7 +179,6 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | MONDAY      | SUNRISE      |              | LIGHT_TRIGGER | Validation Exception, violations: triggerWindow may not be null when actionTime is set to SUNRISE or SUNSET and triggerType is LIGHT_TRIGGER; |
       | MONDAY      | SUNSET       |              | LIGHT_TRIGGER | Validation Exception, violations: triggerWindow may not be null when actionTime is set to SUNRISE or SUNSET and triggerType is LIGHT_TRIGGER; |
 
-  # Note: Result is 'NOT_FOUND' because there isn't a record in the database with a CorrelationUID
   # Note: HasScheduled is set to 'false' because the response type is 'NOT_OK', but should be 'OK'
   @OslpMockServer
   Scenario Outline: Set light schedule with 50 schedules # Success
@@ -209,8 +208,9 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | TriggerType   | <TriggerType>   |
       | TriggerWindow | <TriggerWindow> |
       | ScheduledTime | <ScheduledTime> |
-    And the platform buffers a set light schedule response message for device "TEST1024000000001"
-      | Result | NOT_FOUND |
+    And the platform buffers a set light schedule response message for device "TEST1024000000001" that contains a soap fault
+      | FaultCode   | SOAP-ENV:Server            |
+      | FaultString | CorrelationUid is unknown. |
 
     Examples: 
       | Protocol    | WeekDay     | StartDay   | EndDay     | ScheduledTime | ActionTime   | Time         | TriggerWindow | LightValues | TriggerType   |

@@ -39,7 +39,6 @@ public class Database {
     @Autowired
     private TaskRepository taskRepository;
 
-    @Transactional
     private void insertDefaultData() {
         this.notificationWebServiceConfigurationRepository.save(this.notificationEndpointConfigurations());
     }
@@ -48,9 +47,12 @@ public class Database {
         final NotificationWebServiceConfigurationBuilder builder = new NotificationWebServiceConfigurationBuilder()
                 .withApplicationName("ZownStream")
                 .withMarshallerContextPath("org.opensmartgridplatform.adapter.ws.schema.microgrids.notification");
-        final NotificationWebServiceConfiguration testOrgConfig = builder.build();
+
+        final NotificationWebServiceConfiguration testOrgConfig = builder.withOrganisationIdentification("test-org")
+                .build();
         final NotificationWebServiceConfiguration noOrganisationConfig = builder
                 .withOrganisationIdentification("no-organisation").build();
+
         return Arrays.asList(testOrgConfig, noOrganisationConfig);
     }
 

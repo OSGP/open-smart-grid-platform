@@ -7,11 +7,10 @@
  */
 package org.opensmartgridplatform.cucumber.platform.publiclighting.glue.hooks;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
-import org.opensmartgridplatform.cucumber.platform.publiclighting.database.Database;
+import org.opensmartgridplatform.cucumber.platform.publiclighting.database.OslpDatabase;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
@@ -22,7 +21,7 @@ import cucumber.api.java.Before;
 public class ScenarioHooks extends GlueBase {
 
     @Autowired
-    private Database databaseSteps;
+    private OslpDatabase oslpDatabase;
 
     /**
      * Executed after each scenario.
@@ -48,7 +47,7 @@ public class ScenarioHooks extends GlueBase {
      */
     @Before(order = 1000)
     public void beforeScenario() {
-        this.databaseSteps.prepareDatabaseForScenario();
+        this.oslpDatabase.prepareDatabaseForScenario();
 
         // Make sure that the scenario context is clean before each test.
         ScenarioContext.context = null;
