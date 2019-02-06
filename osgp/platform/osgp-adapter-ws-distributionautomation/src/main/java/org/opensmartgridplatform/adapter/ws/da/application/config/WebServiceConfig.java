@@ -96,7 +96,7 @@ public class WebServiceConfig extends AbstractConfig {
 
     /**
      * Method for creating the Marshalling Payload Method Processor for
-     * Distribition Automation Generic
+     * Distribution Automation Generic
      *
      * @return MarshallingPayloadMethodProcessor
      */

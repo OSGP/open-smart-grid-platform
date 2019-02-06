@@ -21,7 +21,7 @@ import cucumber.api.java.Before;
 public class ScenarioHooks extends GlueBase {
 
     @Autowired
-    private OslpDatabase oslpDatabaseSteps;
+    private OslpDatabase oslpDatabase;
 
     /**
      * Executed after each scenario.
@@ -47,7 +47,7 @@ public class ScenarioHooks extends GlueBase {
      */
     @Before(order = 1000)
     public void beforeScenario() {
-        this.oslpDatabaseSteps.prepareDatabaseForScenario();
+        this.oslpDatabase.prepareDatabaseForScenario();
 
         // Make sure that the scenario context is clean before each test.
         ScenarioContext.context = null;
