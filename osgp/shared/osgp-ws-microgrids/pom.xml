@@ -13,7 +13,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-shared</artifactId>
-    <version>4.34.0-SNAPSHOT</version>
+    <version>4.35.0-SNAPSHOT</version>
     <relativePath>../parent-shared/pom.xml</relativePath>
   </parent>
 
@@ -35,7 +35,7 @@
               <bindingDirectory>src/main/resources/schemas</bindingDirectory>
               <bindingFiles>adhocmanagement.xjb</bindingFiles>
               <schemaDirectory>src/main/resources</schemaDirectory>
-              <schemaFiles>AdHocManagement.wsdl</schemaFiles>
+              <schemaFiles>MicrogridsAdHocManagement.wsdl</schemaFiles>
               <wsdl>true</wsdl>
               <xmlschema>false</xmlschema>
               <staleFile>${project.build.directory}/jaxb2/.schema-ad-hoc-management-stale-flag</staleFile>

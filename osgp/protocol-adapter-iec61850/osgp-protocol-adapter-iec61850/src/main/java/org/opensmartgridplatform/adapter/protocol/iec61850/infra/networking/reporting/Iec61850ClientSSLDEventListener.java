@@ -7,6 +7,9 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.reporting;
 
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,8 +26,15 @@ import org.openmuc.openiec61850.BdaVisibleString;
 import org.openmuc.openiec61850.FcModelNode;
 import org.openmuc.openiec61850.Report;
 import org.opensmartgridplatform.adapter.protocol.iec61850.application.services.DeviceManagementService;
+import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.EventType;
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
+import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.IED;
+import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.LogicalDevice;
+import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.LogicalNode;
+import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
+import org.opensmartgridplatform.adapter.protocol.iec61850.services.DeviceMessageLoggingService;
 import org.opensmartgridplatform.core.db.api.iec61850.entities.DeviceOutputSetting;
 import org.opensmartgridplatform.dto.valueobjects.EventNotificationDto;
 import org.opensmartgridplatform.dto.valueobjects.EventTypeDto;
@@ -35,12 +45,12 @@ public class Iec61850ClientSSLDEventListener extends Iec61850ClientBaseEventList
     /*
      * Node names of EvnRpn nodes that occur as members of the report dataset.
      */
-    private static final String EVENT_NODE_EVENT_TYPE = "evnType";
-    private static final String EVENT_NODE_SWITCH_NUMBER = "swNum";
-    private static final String EVENT_NODE_SWITCH_VALUE = "swVal";
-    private static final String EVENT_NODE_TRIGGER_TIME = "trgTime";
-    private static final String EVENT_NODE_TRIGGER_TYPE = "trgType";
-    private static final String EVENT_NODE_REMARK = "remark";
+    private static final String EVENT_NODE_EVENT_TYPE = SubDataAttribute.EVENT_TYPE.getDescription();
+    private static final String EVENT_NODE_SWITCH_NUMBER = SubDataAttribute.SWITCH_NUMBER.getDescription();
+    private static final String EVENT_NODE_SWITCH_VALUE = SubDataAttribute.SWITCH_VALUE.getDescription();
+    private static final String EVENT_NODE_TRIGGER_TIME = SubDataAttribute.TRIGGER_TIME.getDescription();
+    private static final String EVENT_NODE_TRIGGER_TYPE = SubDataAttribute.TRIGGER_TYPE.getDescription();
+    private static final String EVENT_NODE_REMARK = SubDataAttribute.REMARK.getDescription();
 
     private static final Map<Short, String> TRG_TYPE_DESCRIPTION_PER_CODE = new TreeMap<>();
 
@@ -54,12 +64,14 @@ public class Iec61850ClientSSLDEventListener extends Iec61850ClientBaseEventList
         TRG_TYPE_DESCRIPTION_PER_CODE.put((short) 4, "autonomous trigger");
     }
 
+    private final String organizationIdentification;
     private final List<EventNotificationDto> eventNotifications = new ArrayList<>();
     private final Map<Integer, Integer> externalIndexByInternalIndex = new TreeMap<>();
 
-    public Iec61850ClientSSLDEventListener(final String deviceIdentification,
+    public Iec61850ClientSSLDEventListener(final String organizationIdentification, final String deviceIdentification,
             final DeviceManagementService deviceManagementService) throws ProtocolAdapterException {
         super(deviceIdentification, deviceManagementService, Iec61850ClientSSLDEventListener.class);
+        this.organizationIdentification = organizationIdentification;
         this.externalIndexByInternalIndex
                 .putAll(this.buildExternalByInternalIndexMap(this.deviceManagementService, this.deviceIdentification));
     }
@@ -83,7 +95,6 @@ public class Iec61850ClientSSLDEventListener extends Iec61850ClientBaseEventList
 
     @Override
     public void newReport(final Report report) {
-
         final DateTime timeOfEntry = this.getTimeOfEntry(report);
 
         final String reportDescription = this.getReportDescription(report, timeOfEntry);
@@ -121,6 +132,8 @@ public class Iec61850ClientSSLDEventListener extends Iec61850ClientBaseEventList
                             report.getSqNum(), this.firstNewSqNum);
                 } else {
                     this.addEventNotificationForReportedData(member, timeOfEntry, reportDescription);
+
+                    this.logEventNotificationDeviceMessage(member);
                 }
             } catch (final Exception e) {
                 this.logger.error("Error adding event notification for member {} from {}", member.getReference(),
@@ -191,43 +204,64 @@ public class Iec61850ClientSSLDEventListener extends Iec61850ClientBaseEventList
 
         final StringBuilder sb = new StringBuilder();
 
+        final String triggerTypeNode = this.determineTriggerTypeNode(evnRpn);
+        if (isNotEmpty(triggerTypeNode)) {
+            sb.append(triggerTypeNode);
+        }
+
+        final String eventTypeNode = this.determineEventTypeNode(evnRpn);
+        if (isNotEmpty(eventTypeNode)) {
+            if (sb.length() > 0) {
+                sb.append("; ");
+            }
+            sb.append(eventTypeNode);
+        }
+
+        final String remarkNode = this.determineRemarkNode(evnRpn);
+        if (isNotEmpty(remarkNode)) {
+            if (sb.length() > 0) {
+                sb.append(' ');
+            }
+            sb.append(remarkNode);
+        }
+
+        return sb.toString();
+    }
+
+    private String determineTriggerTypeNode(final FcModelNode evnRpn) {
         final BdaInt8U trgTypeNode = (BdaInt8U) evnRpn.getChild(EVENT_NODE_TRIGGER_TYPE);
         if (trgTypeNode != null && trgTypeNode.getValue() > 0) {
             final short trgType = trgTypeNode.getValue();
             final String trigger = TRG_TYPE_DESCRIPTION_PER_CODE.get(trgType);
             if (trigger == null) {
-                sb.append("trgType=").append(trgType);
+                return "trgType=" + trgType;
             } else {
-                sb.append(trigger);
+                return trigger;
             }
         }
+        return EMPTY;
+    }
 
+    private String determineEventTypeNode(final FcModelNode evnRpn) {
         final BdaInt8U evnTypeNode = (BdaInt8U) evnRpn.getChild(EVENT_NODE_EVENT_TYPE);
         if (evnTypeNode != null && evnTypeNode.getValue() > 0) {
             final short evnType = evnTypeNode.getValue();
             final String event = EventType.forCode(evnType).getDescription();
             if (event.startsWith("FUNCTION_FIRMWARE")) {
-                if (sb.length() > 0) {
-                    sb.append("; ");
-                }
-                sb.append("functional firmware");
+                return "functional firmware";
             } else if (event.startsWith("SECURITY_FIRMWARE")) {
-                if (sb.length() > 0) {
-                    sb.append("; ");
-                }
-                sb.append("security firmware");
+                return "security firmware";
             }
         }
+        return EMPTY;
+    }
 
+    private String determineRemarkNode(final FcModelNode evnRpn) {
         final BdaVisibleString remarkNode = (BdaVisibleString) evnRpn.getChild(EVENT_NODE_REMARK);
         if (remarkNode != null && !EVENT_NODE_REMARK.equalsIgnoreCase(remarkNode.getStringValue())) {
-            if (sb.length() > 0) {
-                sb.append(' ');
-            }
-            sb.append('(').append(remarkNode.getStringValue()).append(')');
+            return "(" + remarkNode.getStringValue() + ")";
         }
-
-        return sb.toString();
+        return EMPTY;
     }
 
     private DateTime determineDateTime(final FcModelNode evnRpn, final DateTime timeOfEntry) {
@@ -268,7 +302,8 @@ public class Iec61850ClientSSLDEventListener extends Iec61850ClientBaseEventList
         final List<FcModelNode> dataSetMembers = report.getValues();
         this.logDataSetMembersDetails(report, dataSetMembers, sb);
 
-        this.logger.info(sb.append(System.lineSeparator()).toString());
+        final String logmessage = sb.append(System.lineSeparator()).toString();
+        this.logger.info(logmessage);
     }
 
     private void logDataSetMembersDetails(final Report report, final List<FcModelNode> dataSetMembers,
@@ -359,10 +394,54 @@ public class Iec61850ClientSSLDEventListener extends Iec61850ClientBaseEventList
         return sb.toString();
     }
 
+    private void logEventNotificationDeviceMessage(final FcModelNode evnRpn) {
+        final DeviceMessageLog deviceMessageLog = new DeviceMessageLog(IED.FLEX_OVL, LogicalDevice.LIGHTING,
+                "EventNotification");
+
+        final BdaInt8U evnTypeNode = (BdaInt8U) evnRpn.getChild(EVENT_NODE_EVENT_TYPE);
+        if (evnTypeNode != null) {
+            deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.EVENT_RPN,
+                    evnRpn.getFc(), SubDataAttribute.EVENT_TYPE, Short.toString(evnTypeNode.getValue()));
+        }
+
+        final BdaInt8U swNumNode = (BdaInt8U) evnRpn.getChild(EVENT_NODE_SWITCH_NUMBER);
+        if (swNumNode != null) {
+            deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.EVENT_RPN,
+                    evnRpn.getFc(), SubDataAttribute.SWITCH_NUMBER, Short.toString(swNumNode.getValue()));
+        }
+
+        final BdaInt8U trgTypeNode = (BdaInt8U) evnRpn.getChild(EVENT_NODE_TRIGGER_TYPE);
+        if (trgTypeNode != null) {
+            deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.EVENT_RPN,
+                    evnRpn.getFc(), SubDataAttribute.TRIGGER_TYPE, Short.toString(trgTypeNode.getValue()));
+        }
+
+        final BdaBoolean swValNode = (BdaBoolean) evnRpn.getChild(EVENT_NODE_SWITCH_VALUE);
+        if (swValNode != null) {
+            deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.EVENT_RPN,
+                    evnRpn.getFc(), SubDataAttribute.SWITCH_VALUE, swValNode.getValueString());
+        }
+
+        final BdaTimestamp trgTimeNode = (BdaTimestamp) evnRpn.getChild(EVENT_NODE_TRIGGER_TIME);
+        if (trgTimeNode != null) {
+            deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.EVENT_RPN,
+                    evnRpn.getFc(), SubDataAttribute.TRIGGER_TIME, trgTimeNode.getDate().toString());
+        }
+
+        final BdaVisibleString remarkNode = (BdaVisibleString) evnRpn.getChild(EVENT_NODE_REMARK);
+        if (remarkNode != null) {
+            deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.EVENT_RPN,
+                    evnRpn.getFc(), SubDataAttribute.REMARK, remarkNode.getStringValue());
+        }
+
+        DeviceMessageLoggingService.logMessage(deviceMessageLog, this.deviceIdentification,
+                this.organizationIdentification, true);
+    }
+
     @Override
     public void associationClosed(final IOException e) {
-        this.logger.info("associationClosed() for device: {}, {}", this.deviceIdentification,
-                e == null ? "no IOException" : "IOException: " + e.getMessage());
+        final String message = e == null ? "no IOException" : "IOException: " + e.getMessage();
+        this.logger.info("associationClosed() for device: {}, {}", this.deviceIdentification, message);
 
         synchronized (this.eventNotifications) {
             if (this.eventNotifications.isEmpty()) {

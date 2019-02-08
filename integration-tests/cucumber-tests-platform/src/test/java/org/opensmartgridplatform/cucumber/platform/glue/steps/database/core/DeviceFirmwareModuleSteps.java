@@ -93,8 +93,9 @@ public class DeviceFirmwareModuleSteps {
         }
         final String mbus = getNullOrNonEmptyString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_MBUS, null);
         final String sec = getNullOrNonEmptyString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_SEC, null);
+        final String mBusDriverActive = getNullOrNonEmptyString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_M_BUS_DRIVER_ACTIVE, null);
 
-        final FirmwareModuleData firmwareModuleData = new FirmwareModuleData(comm, func, ma, mbus, sec);
+        final FirmwareModuleData firmwareModuleData = new FirmwareModuleData(comm, func, ma, mbus, sec, mBusDriverActive);
         return firmwareModuleData.getVersionsByModule(this.firmwareModuleRepository, isForSmartMeters);
     }
 }

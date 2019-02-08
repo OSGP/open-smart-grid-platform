@@ -14,7 +14,7 @@
 
   <artifactId>parent-pa-iec61850</artifactId>
   <groupId>org.opensmartgridplatform</groupId>
-  <version>4.34.0-SNAPSHOT</version>
+  <version>4.35.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>parent-pa-iec61850</name>
   <!-- Description, Organization, Licenses, URL and Distribution Management elements are needed for the maven-jxr-plugin to generate a maven site -->
@@ -43,7 +43,7 @@
   <properties>
     <module.baseUri>${project.baseUri}/../</module.baseUri>
     <osgp.version>${project.version}</osgp.version>
-    <osgp.shared.version>4.34.0-SNAPSHOT</osgp.shared.version>
+    <osgp.shared.version>4.35.0-SNAPSHOT</osgp.shared.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <spring.version>4.3.18.RELEASE</spring.version>
@@ -70,7 +70,6 @@
     <pmd.version>4.3</pmd.version>
     <apache.activemq.version>5.15.7</apache.activemq.version>
     <commons.pool.version>1.6</commons.pool.version>
-    <jackson.jaxrs.version>2.8.6</jackson.jaxrs.version>
     <proton-jms.version>0.7</proton-jms.version>
     <logback.version>1.1.2</logback.version>
     <logback.ext.version>0.1.2</logback.ext.version>

@@ -28,6 +28,10 @@ public enum DataAttribute {
      */
     EVENT_BUFFER("EvnBuf"),
     /**
+     * Property of CSLC Node, Event Report.
+     */
+    EVENT_RPN("EvnRpn"),
+    /**
      * Property of CSLC Node, Functional firmware configuration.
      */
     FUNCTIONAL_FIRMWARE("FuncFwDw"),

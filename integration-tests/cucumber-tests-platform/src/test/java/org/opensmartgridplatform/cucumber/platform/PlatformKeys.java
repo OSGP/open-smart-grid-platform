@@ -59,6 +59,7 @@ public class PlatformKeys extends Keys {
     public static final String FIRMWARE_MODULE_VERSION_MA = "FirmwareModuleVersionMa";
     public static final String FIRMWARE_MODULE_VERSION_MBUS = "FirmwareModuleVersionMbus";
     public static final String FIRMWARE_MODULE_VERSION_SEC = "FirmwareModuleVersionSec";
+    public static final String FIRMWARE_MODULE_VERSION_M_BUS_DRIVER_ACTIVE = "FirmwareModuleVersionMbda";
     public static final String FIRMWARE_PUSH_TO_NEW_DEVICES = "FirmwarePushToNewDevices";
     public static final String FIRMWARE_VERSION = "FirmwareVersion";
     public static final String FROM_DATE = "FromDate";

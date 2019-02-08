@@ -15,7 +15,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsS
 import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceConfiguration;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
-import org.opensmartgridplatform.adapter.ws.smartmetering.domain.repositories.ResponseUrlDataRepository;
+import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseUrlDataRepository;
 import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.NotificationWebServiceConfigurationBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

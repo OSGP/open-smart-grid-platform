@@ -21,7 +21,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-pa-dlms</artifactId>
-    <version>4.34.0-SNAPSHOT</version>
+    <version>4.35.0-SNAPSHOT</version>
     <relativePath>../parent-pa-dlms/pom.xml</relativePath>
   </parent>
 
@@ -88,6 +88,12 @@
     <dependency>
       <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-dto</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opensmartgridplatform</groupId>
+      <artifactId>osgp-dto</artifactId>
+      <type>test-jar</type>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opensmartgridplatform</groupId>
@@ -271,6 +277,11 @@
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
       <version>9.4.1207.jre7</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

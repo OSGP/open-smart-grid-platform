@@ -33,6 +33,7 @@ public class DeviceConverter extends BidirectionalConverter<SmartMeteringDeviceD
         dlmsDevice.setHls5Active(source.isHLS5Active());
         dlmsDevice.setMbusIdentificationNumber(source.getMbusIdentificationNumber());
         dlmsDevice.setMbusManufacturerIdentification(source.getMbusManufacturerIdentification());
+        dlmsDevice.setProtocol("DSMR", source.getDSMRVersion());
 
         if (source.getMasterKey() != null) {
             dlmsDevice.addSecurityKey(new SecurityKey(dlmsDevice, SecurityKeyType.E_METER_MASTER,

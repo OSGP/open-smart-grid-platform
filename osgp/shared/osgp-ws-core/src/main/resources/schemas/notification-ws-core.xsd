@@ -40,7 +40,6 @@
 
   <xsd:simpleType name="NotificationType">
     <xsd:restriction base="xsd:string">
-      <xsd:enumeration value="DEVICE_AUTHORIZATION_UPDATED" />
       <xsd:enumeration value="DEVICE_UPDATED" />
     </xsd:restriction>
   </xsd:simpleType>

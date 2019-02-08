@@ -18,9 +18,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.IntFunction;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.rtu.RtuReadCommandFactory;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
@@ -59,6 +56,8 @@ import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.serv
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850WarningOtherCommand;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.MeasurementDto;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.MeasurementFilterDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractIec61850RtuReadCommandFactory
         implements RtuReadCommandFactory<MeasurementDto, MeasurementFilterDto> {
@@ -193,6 +192,8 @@ public abstract class AbstractIec61850RtuReadCommandFactory
                 case DEMAND_POWER:
                     break;
                 case EVENT_BUFFER:
+                    break;
+                case EVENT_RPN:
                     break;
                 case FREQUENCY:
                     READ_COMMAND_FACTORY_INDEXED_BY_ATTRIBUTE.put(dataAttribute,

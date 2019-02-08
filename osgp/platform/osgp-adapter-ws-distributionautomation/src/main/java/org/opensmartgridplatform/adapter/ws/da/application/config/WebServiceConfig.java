@@ -63,18 +63,24 @@ public class WebServiceConfig extends AbstractConfig {
     private static final String X509_RDN_ATTRIBUTE_ID = "cn";
     private static final String X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME = "CommonNameSet";
     private static final String SERVER = "SERVER";
+
     @Value("${web.service.notification.enabled}")
     private boolean webserviceNotificationEnabled;
+
     @Value("${web.service.notification.username:#{null}}")
     private String webserviceNotificationUsername;
+
     @Value("${web.service.notification.organisation:OSGP}")
     private String webserviceNotificationOrganisation;
+
+    @Value("${web.service.notification.application.name}")
+    private String webserviceNotificationApplicationName;
 
     // === DISTRIBUTION AUTOMATION MARSHALLERS ===
 
     /**
-     * Method for creating the Marshaller for Distribution Automation Generic (Ad
-     * Hoc Management, Device Management and Monitoring)
+     * Method for creating the Marshaller for Distribution Automation Generic
+     * (Ad Hoc Management, Device Management and Monitoring)
      *
      * @return Jaxb2Marshaller
      */
@@ -89,8 +95,8 @@ public class WebServiceConfig extends AbstractConfig {
     }
 
     /**
-     * Method for creating the Marshalling Payload Method Processor for Distribition
-     * Automation Generic
+     * Method for creating the Marshalling Payload Method Processor for
+     * Distribution Automation Generic
      *
      * @return MarshallingPayloadMethodProcessor
      */
@@ -115,7 +121,8 @@ public class WebServiceConfig extends AbstractConfig {
 
         final List<MethodArgumentResolver> methodArgumentResolvers = new ArrayList<>();
 
-        // Add Distribution Automation Marshalling Payload Method Processors to Method
+        // Add Distribution Automation Marshalling Payload Method Processors to
+        // Method
         // Argument Resolvers
         methodArgumentResolvers.add(this.distributionautomationGenericMarshallingPayloadMethodProcessor());
 
@@ -126,7 +133,8 @@ public class WebServiceConfig extends AbstractConfig {
 
         final List<MethodReturnValueHandler> methodReturnValueHandlers = new ArrayList<>();
 
-        // Add Distribution Automation Marshalling Payload Method Processors to Method
+        // Add Distribution Automation Marshalling Payload Method Processors to
+        // Method
         // Return Value Handlers
         methodReturnValueHandlers.add(this.distributionautomationGenericMarshallingPayloadMethodProcessor());
 
@@ -153,27 +161,18 @@ public class WebServiceConfig extends AbstractConfig {
 
     // === ENDPOINT INTERCEPTORS ===
 
-    /**
-     * @return
-     */
     @Bean
     public X509CertificateRdnAttributeValueEndpointInterceptor x509CertificateSubjectCnEndpointInterceptor() {
         return new X509CertificateRdnAttributeValueEndpointInterceptor(X509_RDN_ATTRIBUTE_ID,
                 X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME);
     }
 
-    /**
-     * @return
-     */
     @Bean
     public SoapHeaderEndpointInterceptor organisationIdentificationInterceptor() {
         return new SoapHeaderEndpointInterceptor(ORGANISATION_IDENTIFICATION_HEADER,
                 ORGANISATION_IDENTIFICATION_CONTEXT);
     }
 
-    /**
-     * @return
-     */
     @Bean
     public CertificateAndSoapHeaderAuthorizationEndpointInterceptor organisationIdentificationInCertificateCnEndpointInterceptor() {
         return new CertificateAndSoapHeaderAuthorizationEndpointInterceptor(
@@ -187,8 +186,8 @@ public class WebServiceConfig extends AbstractConfig {
     }
 
     @Bean
-    public NotificationService notificationService(final NotificationWebServiceTemplateFactory templateFactory,
-            final DistributionAutomationMapper mapper) {
+    public NotificationService distributionAutomationNotificationService(
+            final NotificationWebServiceTemplateFactory templateFactory, final DistributionAutomationMapper mapper) {
 
         if (!this.webserviceNotificationEnabled) {
             return new NotificationServiceBlackHole();
@@ -203,8 +202,8 @@ public class WebServiceConfig extends AbstractConfig {
 
         final ClientInterceptor addOsgpHeadersInterceptor = OrganisationIdentificationClientInterceptor.newBuilder()
                 .withOrganisationIdentification(this.webserviceNotificationOrganisation)
-                .withUserName(this.webserviceNotificationUsername).withApplicationName("DISTRIBUTION_AUTOMATION")
-                .build();
+                .withUserName(this.webserviceNotificationUsername)
+                .withApplicationName(this.webserviceNotificationApplicationName).build();
 
         return new NotificationWebServiceTemplateFactory(configRepository, this.messageFactory(),
                 Arrays.asList(addOsgpHeadersInterceptor));
