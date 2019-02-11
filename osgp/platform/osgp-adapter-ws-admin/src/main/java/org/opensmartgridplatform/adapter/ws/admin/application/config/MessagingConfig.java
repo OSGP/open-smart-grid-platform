@@ -8,12 +8,6 @@
 package org.opensmartgridplatform.adapter.ws.admin.application.config;
 
 import org.apache.activemq.RedeliveryPolicy;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
-import org.springframework.jms.core.JmsTemplate;
-
 import org.opensmartgridplatform.adapter.ws.admin.infra.jms.AdminRequestMessageSender;
 import org.opensmartgridplatform.adapter.ws.admin.infra.jms.AdminResponseMessageFinder;
 import org.opensmartgridplatform.adapter.ws.infra.jms.LoggingMessageSender;
@@ -22,11 +16,15 @@ import org.opensmartgridplatform.shared.application.config.jms.JmsConfiguration;
 import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationFactory;
 import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationNames;
 import org.opensmartgridplatform.shared.application.config.jms.JmsPropertyNames;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.jms.core.JmsTemplate;
 
 @Configuration
-@PropertySources({ @PropertySource("classpath:osgp-adapter-ws-admin.properties"),
-        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:${osgp/AdapterWsAdmin/config}", ignoreResourceNotFound = true), })
+@PropertySource("classpath:osgp-adapter-ws-admin.properties")
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/AdapterWsAdmin/config}", ignoreResourceNotFound = true)
 public class MessagingConfig extends AbstractMessagingConfig {
 
     public static final String PROPERTY_NAME_JMS_RECEIVE_TIMEOUT = "jms.admin.responses.receive.timeout";
@@ -39,12 +37,12 @@ public class MessagingConfig extends AbstractMessagingConfig {
         final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
         redeliveryPolicy.setInitialRedeliveryDelay(Long.parseLong(this.environment
                 .getRequiredProperty(JmsPropertyNames.PROPERTY_NAME_JMS_DEFAULT_INITIAL_REDELIVERY_DELAY)));
-        redeliveryPolicy.setMaximumRedeliveries(Integer.parseInt(this.environment
-                .getRequiredProperty(JmsPropertyNames.PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERIES)));
+        redeliveryPolicy.setMaximumRedeliveries(Integer.parseInt(
+                this.environment.getRequiredProperty(JmsPropertyNames.PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERIES)));
         redeliveryPolicy.setMaximumRedeliveryDelay(Long.parseLong(this.environment
                 .getRequiredProperty(JmsPropertyNames.PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERY_DELAY)));
-        redeliveryPolicy.setRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(JmsPropertyNames.PROPERTY_NAME_JMS_DEFAULT_REDELIVERY_DELAY)));
+        redeliveryPolicy.setRedeliveryDelay(Long.parseLong(
+                this.environment.getRequiredProperty(JmsPropertyNames.PROPERTY_NAME_JMS_DEFAULT_REDELIVERY_DELAY)));
         return redeliveryPolicy;
     }
 
@@ -57,7 +55,8 @@ public class MessagingConfig extends AbstractMessagingConfig {
     }
 
     @Bean(name = "wsAdminOutgoingRequestsJmsTemplate")
-    public JmsTemplate wsAdminOutgoingRequestsJmsTemplate(final JmsConfiguration wsAdminOutgoingRequestsJmsConfiguration) {
+    public JmsTemplate wsAdminOutgoingRequestsJmsTemplate(
+            final JmsConfiguration wsAdminOutgoingRequestsJmsConfiguration) {
         return wsAdminOutgoingRequestsJmsConfiguration.getJmsTemplate();
     }
 
@@ -77,8 +76,8 @@ public class MessagingConfig extends AbstractMessagingConfig {
     @Bean(name = "wsAdminIncomingResponsesJmsTemplate")
     public JmsTemplate wsAdminIncomingResponsesJmsTemplate(
             final JmsConfiguration wsAdminIncomingResponsesJmsConfiguration) {
-        final Long receiveTimeout = Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_RECEIVE_TIMEOUT));
+        final Long receiveTimeout = Long
+                .parseLong(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_RECEIVE_TIMEOUT));
 
         final JmsTemplate jmsTemplate = wsAdminIncomingResponsesJmsConfiguration.getJmsTemplate();
         jmsTemplate.setReceiveTimeout(receiveTimeout);

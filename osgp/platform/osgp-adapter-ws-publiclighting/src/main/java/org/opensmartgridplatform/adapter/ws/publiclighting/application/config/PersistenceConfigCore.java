@@ -7,7 +7,6 @@
  */
 package org.opensmartgridplatform.adapter.ws.publiclighting.application.config;
 
-import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
@@ -51,7 +50,8 @@ public class PersistenceConfigCore extends AbstractPersistenceConfig {
 
     private HikariDataSource dataSourceCore;
 
-    private DataSource getDataSourceCore() {
+    @Bean(destroyMethod = "close")
+    public DataSource getDataSourceCore() {
 
         if (this.dataSourceCore == null) {
             final DefaultConnectionPoolFactory.Builder builder = super.builder().withUsername(this.username)
@@ -76,13 +76,5 @@ public class PersistenceConfigCore extends AbstractPersistenceConfig {
 
         return super.entityManagerFactory("OSGP_WS_ADAPTER_PUBLICLIGHTING", this.getDataSourceCore(),
                 this.entitymanagerPackagesToScan);
-    }
-
-    @Override
-    @PreDestroy
-    public void destroyDataSource() {
-        if (this.dataSourceCore != null) {
-            this.dataSourceCore.close();
-        }
     }
 }

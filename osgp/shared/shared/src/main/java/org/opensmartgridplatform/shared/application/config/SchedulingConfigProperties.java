@@ -11,9 +11,10 @@ import org.quartz.Job;
 
 public class SchedulingConfigProperties {
 
-    private static final String DEFAULT_MAX_CONNECTIONS = "10";
+    private static final String DEFAULT_MAX_CONNECTIONS = "5";
 
     private final Class<? extends Job> jobClass;
+    private final String jobName;
     private final String threadCountKey;
     private final String cronExpressionKey;
     private final String jobStoreDbUrl;
@@ -24,6 +25,7 @@ public class SchedulingConfigProperties {
 
     private SchedulingConfigProperties(final Builder builder) {
         this.jobClass = builder.jobClass;
+        this.jobName = builder.jobName;
         this.threadCountKey = builder.threadCountKey;
         this.cronExpressionKey = builder.cronExpressionKey;
         this.jobStoreDbUrl = builder.jobStoreDbUrl;
@@ -36,6 +38,7 @@ public class SchedulingConfigProperties {
     public static class Builder {
 
         private Class<? extends Job> jobClass = null;
+        private String jobName = null;
         private String threadCountKey = null;
         private String cronExpressionKey = null;
         private String jobStoreDbUrl = null;
@@ -50,6 +53,11 @@ public class SchedulingConfigProperties {
 
         public Builder withJobClass(final Class<? extends Job> jobClass) {
             this.jobClass = jobClass;
+            return this;
+        }
+
+        public Builder withJobName(final String jobName) {
+            this.jobName = jobName;
             return this;
         }
 
@@ -95,6 +103,10 @@ public class SchedulingConfigProperties {
 
     public Class<? extends Job> getJobClass() {
         return this.jobClass;
+    }
+
+    public String getJobName() {
+        return this.jobName;
     }
 
     public String getThreadCountKey() {

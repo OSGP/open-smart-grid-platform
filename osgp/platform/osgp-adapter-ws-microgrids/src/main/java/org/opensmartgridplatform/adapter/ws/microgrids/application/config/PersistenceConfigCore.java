@@ -10,6 +10,8 @@ package org.opensmartgridplatform.adapter.ws.microgrids.application.config;
 import javax.sql.DataSource;
 
 import org.opensmartgridplatform.domain.core.repositories.RtuDeviceRepository;
+import org.opensmartgridplatform.shared.application.config.AbstractPersistenceConfig;
+import org.opensmartgridplatform.shared.infra.db.DefaultConnectionPoolFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,13 +20,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
-import org.opensmartgridplatform.shared.application.config.AbstractPersistenceConfig;
-import org.opensmartgridplatform.shared.infra.db.DefaultConnectionPoolFactory;
 import com.zaxxer.hikari.HikariDataSource;
 
 @EnableJpaRepositories(transactionManagerRef = "coreTransactionManager", entityManagerFactoryRef = "coreEntityManagerFactory", basePackageClasses = {
-        org.opensmartgridplatform.domain.core.repositories.DeviceRepository.class,
-        RtuDeviceRepository.class })
+        org.opensmartgridplatform.domain.core.repositories.DeviceRepository.class, RtuDeviceRepository.class })
 @Configuration
 @PropertySource("classpath:osgp-adapter-ws-microgrids.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
@@ -55,7 +54,8 @@ public class PersistenceConfigCore extends AbstractPersistenceConfig {
         // empty constructor
     }
 
-    private DataSource getDataSourceCore() {
+    @Bean(destroyMethod = "close")
+    public DataSource getDataSourceCore() {
 
         if (this.dataSourceCore == null) {
 

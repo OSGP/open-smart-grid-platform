@@ -7,7 +7,11 @@
  */
 package org.opensmartgridplatform.adapter.ws.da.application.config;
 
+import javax.sql.DataSource;
+
 import org.flywaydb.core.Flyway;
+import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
+import org.opensmartgridplatform.shared.application.config.AbstractPersistenceConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
@@ -15,9 +19,6 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-
-import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
-import org.opensmartgridplatform.shared.application.config.AbstractPersistenceConfig;
 
 @EnableJpaRepositories(transactionManagerRef = "transactionManager", entityManagerFactoryRef = "wsEntityManagerFactory", basePackageClasses = {
         ResponseDataRepository.class })
@@ -29,6 +30,11 @@ public class PersistenceConfigWs extends AbstractPersistenceConfig {
 
     public PersistenceConfigWs() {
         // Empty default constructor
+    }
+
+    @Bean(destroyMethod = "close")
+    public DataSource dataSource() {
+        return super.getDataSource();
     }
 
     @Override

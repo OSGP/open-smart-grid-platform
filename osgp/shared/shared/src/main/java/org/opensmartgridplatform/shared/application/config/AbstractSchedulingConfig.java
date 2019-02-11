@@ -20,17 +20,42 @@ import org.quartz.impl.jdbcjobstore.JobStoreTX;
 import org.quartz.impl.jdbcjobstore.PostgreSQLDelegate;
 import org.quartz.simpl.SimpleThreadPool;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.quartz.SpringBeanJobFactory;
+import org.springframework.util.StringUtils;
 
 /**
  * This class provides the basic components used for task scheduling.
  */
 public abstract class AbstractSchedulingConfig extends AbstractConfig {
 
+    protected static final String KEY_QUARTZ_SCHEDULER_THREAD_COUNT = "quartz.scheduler.thread.count";
+
+    @Value("${db.driver}")
+    protected String databaseDriver;
+
+    @Value("${db.password}")
+    protected String databasePassword;
+
+    @Value("${db.protocol}")
+    protected String databaseProtocol;
+
+    @Value("${db.host}")
+    protected String databaseHost;
+
+    @Value("${db.port}")
+    protected String databasePort;
+
+    @Value("${db.name}")
+    protected String databaseName;
+
+    @Value("${db.username}")
+    protected String databaseUsername;
+
     @Autowired
-    private ApplicationContext applicationContext;
+    protected ApplicationContext applicationContext;
 
     @Bean
     public SpringBeanJobFactory springBeanJobFactory() {
@@ -83,14 +108,18 @@ public abstract class AbstractSchedulingConfig extends AbstractConfig {
         final Properties properties = new Properties();
 
         // Default Properties
-        // properties.put("org.quartz.scheduler.instanceName",
-        // schedulingConfigProperties.getJobClass().getSimpleName());
+        if (StringUtils.isEmpty(schedulingConfigProperties.getJobName())) {
+            properties.put("org.quartz.scheduler.instanceName",
+                    schedulingConfigProperties.getJobClass().getSimpleName());
+        } else {
+            properties.put("org.quartz.scheduler.instanceName", schedulingConfigProperties.getJobName());
+        }
         properties.put("org.quartz.scheduler.instanceId", "AUTO");
         properties.put("org.quartz.scheduler.rmi.export", Boolean.FALSE.toString());
         properties.put("org.quartz.scheduler.rmi.proxy", Boolean.FALSE.toString());
         properties.put("org.quartz.scheduler.wrapJobExecutionInUserTransaction", Boolean.FALSE.toString());
         properties.put("org.quartz.scheduler.makeSchedulerThreadDaemon", Boolean.TRUE.toString());
-        properties.put("org.quartz.scheduler.interruptJobsOnShutdown", Boolean.TRUE.toString());
+        properties.put("org.quartz.scheduler.interruptJobsOnShutdown", Boolean.FALSE.toString());
 
         properties.put("org.quartz.threadPool.class", SimpleThreadPool.class.getName());
         properties.put("org.quartz.threadPool.threadCount",
@@ -133,5 +162,37 @@ public abstract class AbstractSchedulingConfig extends AbstractConfig {
     protected Trigger createJobTrigger(final JobDetail jobDetail, final String cronExpression) {
         return TriggerBuilder.newTrigger().forJob(jobDetail).withIdentity(jobDetail.getKey().getName() + "-Trigger")
                 .forJob(jobDetail).withSchedule(CronScheduleBuilder.cronSchedule(cronExpression)).build();
+    }
+
+    /**
+     * Convenience method for creating a job and trigger, then adding and
+     * scheduling the job using the trigger. This method uses
+     * {@link AbstractSchedulingConfig#createJobDetail(Class)} and
+     * {@link AbstractSchedulingConfig#createJobTrigger(JobDetail, String)}.
+     *
+     * @param quartzScheduler
+     *            An instance of {@link Scheduler}.
+     * @param jobClass
+     *            The class which defines the actions of the scheduled job.
+     * @param cronExpression
+     *            The input for the trigger, a Quartz CRON expression like
+     *            {@code 0 0/1 * * * ?} for example.
+     *
+     * @throws SchedulerException
+     *             In case adding or scheduling of the job fails.
+     */
+    protected void createAndScheduleJob(final Scheduler quartzScheduler, final Class<? extends Job> jobClass,
+            final String cronExpression) throws SchedulerException {
+        // Create job and trigger.
+        final JobDetail jobDetail = this.createJobDetail(jobClass);
+        final Trigger trigger = this.createJobTrigger(jobDetail, cronExpression);
+
+        // Add and schedule for trigger.
+        quartzScheduler.addJob(jobDetail, true);
+        quartzScheduler.scheduleJob(jobDetail, new HashSet<>(Arrays.asList(trigger)), true);
+    }
+
+    protected String getDatabaseUrl() {
+        return this.databaseProtocol + this.databaseHost + ":" + this.databasePort + "/" + this.databaseName;
     }
 }
