@@ -13,12 +13,14 @@ import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
+import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceLookupKey;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
+import org.opensmartgridplatform.adapter.ws.schema.shared.notification.GenericNotification;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification.NotificationType;
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
 import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataService;
-import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -27,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * Base class for MessageProcessor implementations. Each MessageProcessor
@@ -56,6 +59,8 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
     @Autowired
     private ResponseDataService responseDataService;
 
+    @Value("${web.service.notification.application.name}")
+    private String applicationName;
     /**
      * The message type that a message processor implementation can handle.
      */
@@ -90,11 +95,11 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
         String organisationIdentification = null;
         String deviceIdentification = null;
 
-        String notificationMessage;
-        NotificationType notificationType;
-        ResponseMessageResultType resultType;
-        String resultDescription;
-        Serializable dataObject;
+        final String notificationMessage;
+        final NotificationType notificationType;
+        final ResponseMessageResultType resultType;
+        final String resultDescription;
+        final Serializable dataObject;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -117,6 +122,8 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
             return;
         }
 
+        final NotificationWebServiceLookupKey webServiceLookupKey =
+                new NotificationWebServiceLookupKey(organisationIdentification, this.applicationName);
         try {
             LOGGER.info("Calling application service function to handle response: {} with correlationUid: {}",
                     messageType, correlationUid);
@@ -126,11 +133,11 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
             this.handleMessage(ids, messageType, resultType, resultDescription, dataObject);
 
             // Send notification indicating data is available.
-            this.notificationService.sendNotification(organisationIdentification, deviceIdentification,
-                    resultType.name(), correlationUid, notificationMessage, notificationType);
-
+            this.notificationService.sendNotification(webServiceLookupKey, new GenericNotification(notificationMessage, resultType.name(),
+                    deviceIdentification, correlationUid, String.valueOf(notificationType)));
         } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, notificationType);
+            this.handleError(e, webServiceLookupKey, correlationUid, deviceIdentification,
+                    notificationType);
         }
     }
 
@@ -138,7 +145,7 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
             final ResponseMessageResultType resultType, final String resultDescription, final Serializable dataObject) {
 
         final short numberOfNotificationsSent = 0;
-        Serializable meterResponseObject;
+        final Serializable meterResponseObject;
         if (dataObject == null) {
             meterResponseObject = resultDescription;
         } else {
@@ -153,24 +160,13 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
     /**
      * In case of an error, this function can be used to send a response containing
      * the exception to the web-service-adapter.
-     *
-     * @param e
-     *            The exception.
-     * @param correlationUid
-     *            The correlation UID.
-     * @param organisationIdentification
-     *            The organisation identification.
-     * @param deviceIdentification
-     *            The device identification.
-     * @param notificationType
-     *            The message type.
      */
-    protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
-            final String deviceIdentification, final NotificationType notificationType) {
+    protected void handleError(final Exception e, final NotificationWebServiceLookupKey webServiceLookupKey,
+            final String correlationUid, final String deviceIdentification, final NotificationType notificationType) {
 
         LOGGER.info("handeling error: {} for notification type: {} with correlationUid: {}", e.getMessage(),
                 notificationType, correlationUid, e);
-        this.notificationService.sendNotification(organisationIdentification, deviceIdentification, "NOT_OK",
-                correlationUid, e.getMessage(), notificationType);
+        this.notificationService.sendNotification(webServiceLookupKey, new GenericNotification(e.getMessage(),
+                "NOT_OK", deviceIdentification, correlationUid, String.valueOf(notificationType)));
     }
 }
