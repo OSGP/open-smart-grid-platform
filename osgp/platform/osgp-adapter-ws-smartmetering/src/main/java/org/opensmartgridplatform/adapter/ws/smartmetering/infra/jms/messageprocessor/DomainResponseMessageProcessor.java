@@ -13,9 +13,7 @@ import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceLookupKey;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
-import org.opensmartgridplatform.adapter.ws.schema.shared.notification.GenericNotification;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification.NotificationType;
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
 import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataService;
@@ -29,7 +27,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 
 /**
  * Base class for MessageProcessor implementations. Each MessageProcessor
@@ -59,8 +56,6 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
     @Autowired
     private ResponseDataService responseDataService;
 
-    @Value("${web.service.notification.application.name}")
-    private String applicationName;
     /**
      * The message type that a message processor implementation can handle.
      */
@@ -87,7 +82,7 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
     }
 
     @Override
-    public void processMessage(final ObjectMessage message) throws JMSException {
+    public void processMessage(final ObjectMessage message) {
         LOGGER.debug("Processing smart metering response message");
 
         String correlationUid = null;
@@ -122,8 +117,6 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
             return;
         }
 
-        final NotificationWebServiceLookupKey webServiceLookupKey =
-                new NotificationWebServiceLookupKey(organisationIdentification, this.applicationName);
         try {
             LOGGER.info("Calling application service function to handle response: {} with correlationUid: {}",
                     messageType, correlationUid);
@@ -133,11 +126,11 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
             this.handleMessage(ids, messageType, resultType, resultDescription, dataObject);
 
             // Send notification indicating data is available.
-            this.notificationService.sendNotification(webServiceLookupKey, new GenericNotification(notificationMessage, resultType.name(),
-                    deviceIdentification, correlationUid, String.valueOf(notificationType)));
+            this.notificationService.sendNotification(organisationIdentification, deviceIdentification,
+                    resultType.name(), correlationUid, notificationMessage, notificationType);
+
         } catch (final Exception e) {
-            this.handleError(e, webServiceLookupKey, correlationUid, deviceIdentification,
-                    notificationType);
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, notificationType);
         }
     }
 
@@ -161,12 +154,12 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
      * In case of an error, this function can be used to send a response containing
      * the exception to the web-service-adapter.
      */
-    protected void handleError(final Exception e, final NotificationWebServiceLookupKey webServiceLookupKey,
-            final String correlationUid, final String deviceIdentification, final NotificationType notificationType) {
+    protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
+            final String deviceIdentification, final NotificationType notificationType) {
 
         LOGGER.info("handeling error: {} for notification type: {} with correlationUid: {}", e.getMessage(),
                 notificationType, correlationUid, e);
-        this.notificationService.sendNotification(webServiceLookupKey, new GenericNotification(e.getMessage(),
-                "NOT_OK", deviceIdentification, correlationUid, String.valueOf(notificationType)));
+        this.notificationService.sendNotification(organisationIdentification, deviceIdentification, "NOT_OK",
+                correlationUid, e.getMessage(), notificationType);
     }
 }
