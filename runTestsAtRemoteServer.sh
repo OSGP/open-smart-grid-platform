@@ -44,6 +44,12 @@ CMD="scp -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${FOLDER}/${PROJECT}/target/
 echo "  [${CMD}]"
 ${CMD}
 
+echo "- Where are we?"
+CMD="hostname"
+echo "  [${CMD}]"
+CMD="pwd"
+echo "  [${CMD}]"
+
 echo "- Executing cucumber project ${PROJECT} remote on ${SERVER} ..."
 CMD="sudo ${XVFB} java -javaagent:/usr/share/tomcat/lib/jacocoagent.jar=destfile=target/code-coverage/jacoco-it.exec ${ADDITIONAL_PARAMETERS} -Dcucumber.options=\"--tags ~@Skip --strict ${ADDITIONAL_CUCUMBER_OPTIONS}\" -DskipITs=false -Dtimeout=30 -DskipITCoverage=false -jar cucumber-*-test-jar-with-dependencies.jar -report target/output; sudo chown -R ${USER}:${USER} /data/software/${PROJECT}/* > /var/log/osgp/logs/cucumber-tests-platform-smartmetering.log"
 echo "  [${CMD}]"
