@@ -14,7 +14,7 @@ public class SchedulingConfigProperties {
     private static final String DEFAULT_MAX_CONNECTIONS = "5";
 
     private final Class<? extends Job> jobClass;
-    private final String jobName;
+    private final String schedulerName;
     private final String threadCountKey;
     private final String cronExpressionKey;
     private final String jobStoreDbUrl;
@@ -25,7 +25,7 @@ public class SchedulingConfigProperties {
 
     private SchedulingConfigProperties(final Builder builder) {
         this.jobClass = builder.jobClass;
-        this.jobName = builder.jobName;
+        this.schedulerName = builder.schedulerName;
         this.threadCountKey = builder.threadCountKey;
         this.cronExpressionKey = builder.cronExpressionKey;
         this.jobStoreDbUrl = builder.jobStoreDbUrl;
@@ -38,7 +38,7 @@ public class SchedulingConfigProperties {
     public static class Builder {
 
         private Class<? extends Job> jobClass = null;
-        private String jobName = null;
+        private String schedulerName = null;
         private String threadCountKey = null;
         private String cronExpressionKey = null;
         private String jobStoreDbUrl = null;
@@ -56,8 +56,8 @@ public class SchedulingConfigProperties {
             return this;
         }
 
-        public Builder withJobName(final String jobName) {
-            this.jobName = jobName;
+        public Builder withSchedulerName(final String schedulerName) {
+            this.schedulerName = schedulerName;
             return this;
         }
 
@@ -105,8 +105,8 @@ public class SchedulingConfigProperties {
         return this.jobClass;
     }
 
-    public String getJobName() {
-        return this.jobName;
+    public String getSchedulerName() {
+        return this.schedulerName;
     }
 
     public String getThreadCountKey() {

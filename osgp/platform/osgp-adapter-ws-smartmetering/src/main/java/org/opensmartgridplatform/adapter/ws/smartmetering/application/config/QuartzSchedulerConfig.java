@@ -83,7 +83,7 @@ public class QuartzSchedulerConfig extends AbstractSchedulingConfig {
     @Bean
     public Scheduler quartzScheduler() throws SchedulerException {
         final SchedulingConfigProperties schedulingConfigProperties = SchedulingConfigProperties.newBuilder()
-                .withJobName(QUARTZ_SCHEDULER_NAME).withThreadCountKey(KEY_QUARTZ_SCHEDULER_THREAD_COUNT)
+                .withSchedulerName(QUARTZ_SCHEDULER_NAME).withThreadCountKey(KEY_QUARTZ_SCHEDULER_THREAD_COUNT)
                 .withJobStoreDbUrl(this.getDatabaseUrl()).withJobStoreDbUsername(this.databaseUsername)
                 .withJobStoreDbPassword(this.databasePassword).withJobStoreDbDriver(this.databaseDriver).build();
 
