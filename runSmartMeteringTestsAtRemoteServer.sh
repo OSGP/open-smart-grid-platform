@@ -14,6 +14,7 @@ USER=$4
 SSH_KEY_FILE=$5
 ADDITIONAL_PARAMETERS=$6
 
+#TODO (RvM): remove obsolete lines below
 # If a space is found in the identity file then create a shortcut as the -i parameter for ssh can't handle spaces.
 [ "${SSH_KEY_FILE}"!="" ] && [ "${SSH_KEY_FILE}"=~" " ] && echo "Creating link ${HOME}/.ssh/${5/ /} => ${HOME}/.ssh/${4} ..." && ln -sf "${HOME}/.ssh/${5}" "${HOME}/.ssh/${5/ /}"
 
