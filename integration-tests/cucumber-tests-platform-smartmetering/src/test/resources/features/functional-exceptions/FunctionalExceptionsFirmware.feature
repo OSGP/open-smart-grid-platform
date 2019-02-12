@@ -1,4 +1,4 @@
-@SmartMetering @Platform
+@SmartMetering @Platform @Skip
 Feature: SmartMetering functional exceptions regarding firmware
 
   Scenario: firmware upgrade with unknown firmware

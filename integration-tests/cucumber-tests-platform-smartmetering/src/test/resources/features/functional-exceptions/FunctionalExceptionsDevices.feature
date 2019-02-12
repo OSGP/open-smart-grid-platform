@@ -1,4 +1,4 @@
-@SmartMetering @Platform
+@SmartMetering @Platform @Skip
 Feature: SmartMetering functional exceptions regarding devices
 
   Scenario: Get administrative status on an unknown device

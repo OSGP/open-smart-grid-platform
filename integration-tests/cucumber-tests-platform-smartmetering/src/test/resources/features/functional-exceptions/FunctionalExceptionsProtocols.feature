@@ -1,3 +1,4 @@
+@Skip
 Feature: SmartMetering functional exceptions DSMR versions
 
   Scenario: Add a device with an unknown DSMR version
