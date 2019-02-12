@@ -44,14 +44,8 @@ CMD="scp -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${FOLDER}/${PROJECT}/target/
 echo "  [${CMD}]"
 ${CMD}
 
-echo "- Where are we?"
-CMD="hostname"
-echo "  [${CMD}]"
-CMD="pwd"
-echo "  [${CMD}]"
-
 echo "- Executing cucumber project ${PROJECT} remote on ${SERVER} ..."
-CMD="sudo ${XVFB} java -javaagent:/usr/share/tomcat/lib/jacocoagent.jar=destfile=target/code-coverage/jacoco-it.exec ${ADDITIONAL_PARAMETERS} -Dcucumber.options=\"--tags ~@Skip --strict ${ADDITIONAL_CUCUMBER_OPTIONS}\" -DskipITs=false -Dtimeout=30 -DskipITCoverage=false -jar cucumber-*-test-jar-with-dependencies.jar -report target/output; sudo chown -R ${USER}:${USER} /data/software/${PROJECT}/* > /var/log/osgp/logs/cucumber-tests-platform-smartmetering.log"
+CMD="sudo ${XVFB} java -javaagent:/usr/share/tomcat/lib/jacocoagent.jar=destfile=target/code-coverage/jacoco-it.exec ${ADDITIONAL_PARAMETERS} -Dcucumber.options=\"--tags ~@Skip --strict ${ADDITIONAL_CUCUMBER_OPTIONS}\" -DskipITs=false -Dtimeout=30 -DskipITCoverage=false -jar cucumber-*-test-jar-with-dependencies.jar -report target/output > /var/log/osgp/logs/cucumber-tests-platform-smartmetering.log; sudo chown -R ${USER}:${USER} /data/software/${PROJECT}/*"
 echo "  [${CMD}]"
 CMD="ssh -oStrictHostKeyChecking=no -oTCPKeepAlive=yes -oServerAliveInterval=50 ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"cd /data/software/${PROJECT} && ${CMD}\"\""
 ${CMD}
@@ -62,15 +56,9 @@ echo "  [${CMD}]"
 CMD="ssh -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"cd /data/software/${PROJECT} && ${CMD}\"\""
 ${CMD}
 
-echo "- Collecting test output from cucumber project ${PROJECT} on ${SERVER} ..."
+echo "- Collecting files from cucumber project ${PROJECT} on ${SERVER} ..."
 mkdir -p ${PROJECT}/target
-CMD="scp -oStrictHostKeyChecking=no ${SSH_KEY_FILE} -r ${USER}@${SERVER}:/data/software/${PROJECT}/target/* ${PROJECT}/target"
-echo "  [${CMD}]"
-${CMD}
-
-echo "- Collecting code-coverage output from cucumber project ${PROJECT} on ${SERVER} ..."
-mkdir -p ${PROJECT}/code-coverage
-CMD="scp -oStrictHostKeyChecking=no ${SSH_KEY_FILE} -r ${USER}@${SERVER}:/data/software/${PROJECT}/code-coverage/* ${PROJECT}/code-coverage"
+CMD="scp -oStrictHostKeyChecking=no ${SSH_KEY_FILE} -r ${USER}@${SERVER}:/data/software/${PROJECT}* ${PROJECT}"
 echo "  [${CMD}]"
 ${CMD}
 
