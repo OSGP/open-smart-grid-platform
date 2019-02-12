@@ -56,9 +56,15 @@ echo "  [${CMD}]"
 CMD="ssh -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"cd /data/software/${PROJECT} && ${CMD}\"\""
 ${CMD}
 
-echo "- Collecting files from cucumber project ${PROJECT} on ${SERVER} ..."
+echo "- Collecting test output from cucumber project ${PROJECT} on ${SERVER} ..."
 mkdir -p ${PROJECT}/target
-CMD="scp -oStrictHostKeyChecking=no ${SSH_KEY_FILE} -r ${USER}@${SERVER}:/data/software/${PROJECT}* ${PROJECT}"
+CMD="scp -oStrictHostKeyChecking=no ${SSH_KEY_FILE} -r ${USER}@${SERVER}:/data/software/${PROJECT}/target/* ${PROJECT}/target"
+echo "  [${CMD}]"
+${CMD}
+
+echo "- Collecting code-coverage output from cucumber project ${PROJECT} on ${SERVER} ..."
+mkdir -p ${PROJECT}/code-coverage
+CMD="scp -oStrictHostKeyChecking=no ${SSH_KEY_FILE} -r ${USER}@${SERVER}:/data/software/${PROJECT}/code-coverage/* ${PROJECT}/code-coverage"
 echo "  [${CMD}]"
 ${CMD}
 

@@ -1,12 +1,11 @@
 <configuration>
 
-  <appender name="STDOUT" class="ch.qos.logback.core.FileAppender">
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <!-- encoders are assigned the type
          ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
     <encoder>
       <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS}] [${HOSTNAME}] [%thread] %level %logger{36}@%method:%line - %msg%n</pattern>
     </encoder>
-    <file>cucumber-tests-platform-smartmetering.log</file>
   </appender>
 
   <logger name="org.springframework" level="ERROR" />

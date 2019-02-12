@@ -82,7 +82,7 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
     }
 
     @Override
-    public void processMessage(final ObjectMessage message) {
+    public void processMessage(final ObjectMessage message) throws JMSException {
         LOGGER.debug("Processing smart metering response message");
 
         String correlationUid = null;
@@ -153,6 +153,17 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
     /**
      * In case of an error, this function can be used to send a response containing
      * the exception to the web-service-adapter.
+     *
+     * @param e
+     *            The exception.
+     * @param correlationUid
+     *            The correlation UID.
+     * @param organisationIdentification
+     *            The organisation identification.
+     * @param deviceIdentification
+     *            The device identification.
+     * @param notificationType
+     *            The message type.
      */
     protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
             final String deviceIdentification, final NotificationType notificationType) {
