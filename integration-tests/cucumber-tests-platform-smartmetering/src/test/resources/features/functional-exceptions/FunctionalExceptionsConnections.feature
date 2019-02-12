@@ -1,4 +1,4 @@
-@SmartMetering @Platform @Skip
+@SmartMetering @Platform
 Feature: SmartMetering functional exceptions regarding connections
 
   @NightlyBuildOnly

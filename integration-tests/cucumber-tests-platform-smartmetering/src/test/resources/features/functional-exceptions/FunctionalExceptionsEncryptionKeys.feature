@@ -1,4 +1,4 @@
-@SmartMetering @Platform @Skip
+@SmartMetering @Platform
 Feature: SmartMetering functional exceptions regarding encryption keys
 
   Scenario: HLS5 connect with an invalid key
