@@ -15,6 +15,7 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
+import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.impl.jdbcjobstore.JobStoreTX;
 import org.quartz.impl.jdbcjobstore.PostgreSQLDelegate;
 import org.quartz.simpl.SimpleThreadPool;
@@ -22,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SpringBeanJobFactory;
 import org.springframework.util.StringUtils;
 
@@ -64,11 +64,6 @@ public abstract class AbstractSchedulingConfig extends AbstractConfig {
         return jobFactory;
     }
 
-    @Bean
-    public SchedulerFactoryBean schedulerFactory() {
-        return new SchedulerFactoryBean();
-    }
-
     /**
      * Construct the scheduler taskpool with specified job and trigger
      *
@@ -101,8 +96,9 @@ public abstract class AbstractSchedulingConfig extends AbstractConfig {
 
         final Properties properties = this.constructQuartzConfiguration(schedulingConfigProperties);
 
-        this.schedulerFactory().setQuartzProperties(properties);
-        final Scheduler scheduler = this.schedulerFactory().getScheduler();
+        final StdSchedulerFactory factory = new StdSchedulerFactory();
+        factory.initialize(properties);
+        final Scheduler scheduler = factory.getScheduler();
         scheduler.setJobFactory(this.springBeanJobFactory());
 
         return scheduler;
