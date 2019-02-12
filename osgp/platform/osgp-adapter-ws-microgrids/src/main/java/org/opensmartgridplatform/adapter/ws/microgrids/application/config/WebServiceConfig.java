@@ -74,6 +74,9 @@ public class WebServiceConfig extends AbstractConfig {
     @Value("${web.service.notification.organisation:OSGP}")
     private String webserviceNotificationOrganisation;
 
+    @Value("${web.service.notification.application.name}")
+    private String webserviceNotificationApplicationName;
+
     private static final String SERVER = "SERVER";
 
     // === MICROGRIDS MARSHALLERS ===
@@ -160,27 +163,18 @@ public class WebServiceConfig extends AbstractConfig {
 
     // === ENDPOINT INTERCEPTORS ===
 
-    /**
-     * @return
-     */
     @Bean
     public X509CertificateRdnAttributeValueEndpointInterceptor x509CertificateSubjectCnEndpointInterceptor() {
         return new X509CertificateRdnAttributeValueEndpointInterceptor(X509_RDN_ATTRIBUTE_ID,
                 X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME);
     }
 
-    /**
-     * @return
-     */
     @Bean
     public SoapHeaderEndpointInterceptor organisationIdentificationInterceptor() {
         return new SoapHeaderEndpointInterceptor(ORGANISATION_IDENTIFICATION_HEADER,
                 ORGANISATION_IDENTIFICATION_CONTEXT);
     }
 
-    /**
-     * @return
-     */
     @Bean
     public CertificateAndSoapHeaderAuthorizationEndpointInterceptor organisationIdentificationInCertificateCnEndpointInterceptor() {
         return new CertificateAndSoapHeaderAuthorizationEndpointInterceptor(
@@ -194,7 +188,8 @@ public class WebServiceConfig extends AbstractConfig {
     }
 
     @Bean
-    public NotificationService microgridsNotificationService(final NotificationWebServiceTemplateFactory templateFactory) {
+    public NotificationService microgridsNotificationService(
+            final NotificationWebServiceTemplateFactory templateFactory) {
         if (!this.webserviceNotificationEnabled) {
             return new NotificationServiceBlackHole();
         }
@@ -209,7 +204,8 @@ public class WebServiceConfig extends AbstractConfig {
 
         final ClientInterceptor addOsgpHeadersInterceptor = OrganisationIdentificationClientInterceptor.newBuilder()
                 .withOrganisationIdentification(this.webserviceNotificationOrganisation)
-                .withUserName(this.webserviceNotificationUsername).withApplicationName("ZownStream").build();
+                .withUserName(this.webserviceNotificationUsername)
+                .withApplicationName(this.webserviceNotificationApplicationName).build();
 
         return new NotificationWebServiceTemplateFactory(configRepository, this.messageFactory(),
                 Arrays.asList(addOsgpHeadersInterceptor));

@@ -669,6 +669,13 @@ public class OslpDeviceSteps {
                 protocol, requestParameters);
     }
 
+    @Given("^the device returns a get configuration status \"([^\"]*)\" over \"([^\"]*)\" using default values$")
+    public void theDeviceReturnsAGetConfigurationStatusWithResultOverOSLP(final String result, final String protocol)
+            throws UnknownHostException {
+        final Map<String, String> requestParameters = new HashMap<>();
+        this.theDeviceReturnsAGetConfigurationStatusWithResultOverOSLP(result, protocol, requestParameters);
+    }
+
     /**
      * Setup method to set the configuration status which should be returned by
      * the mock.
@@ -682,12 +689,13 @@ public class OslpDeviceSteps {
         // enumerations with the name MeterType, but not all of them has all
         // values the same. Some with underscore and some without.
         MeterType meterType;
-        final String sMeterType = getString(requestParameters, PlatformPubliclightingKeys.METER_TYPE);
+        final String sMeterType = getString(requestParameters, PlatformPubliclightingKeys.METER_TYPE, "");
         if (!sMeterType.contains("_") && sMeterType.equals(MeterType.P1_VALUE)) {
             final String[] sMeterTypeArray = sMeterType.split("");
             meterType = MeterType.valueOf(sMeterTypeArray[0] + "_" + sMeterTypeArray[1]);
         } else {
-            meterType = getEnum(requestParameters, PlatformPubliclightingKeys.METER_TYPE, MeterType.class);
+            meterType = getEnum(requestParameters, PlatformPubliclightingKeys.METER_TYPE, MeterType.class,
+                    PlatformPubliclightingDefaults.DEFAULT_OSLP_METER_TYPE);
         }
 
         final String osgpIpAddress = getString(requestParameters, PlatformPubliclightingKeys.OSGP_IP_ADDRESS);
@@ -699,19 +707,25 @@ public class OslpDeviceSteps {
         }
 
         this.oslpMockServer.mockGetConfigurationResponse(Enum.valueOf(Status.class, result),
-                getEnum(requestParameters, PlatformPubliclightingKeys.KEY_LIGHTTYPE, LightType.class),
+                getEnum(requestParameters, PlatformPubliclightingKeys.KEY_LIGHTTYPE, LightType.class,
+                        PlatformPubliclightingDefaults.DEFAULT_LIGHTTYPE),
                 getString(requestParameters, PlatformPubliclightingKeys.DC_LIGHTS,
                         PlatformPubliclightingDefaults.DC_LIGHTS),
-                getString(requestParameters, PlatformPubliclightingKeys.DC_MAP),
-                getString(requestParameters, PlatformPubliclightingKeys.RELAY_CONF),
-                getEnum(requestParameters, PlatformPubliclightingKeys.KEY_PREFERRED_LINKTYPE, LinkType.class),
+                getString(requestParameters, PlatformPubliclightingKeys.DC_MAP,
+                        PlatformPubliclightingDefaults.DEFAULT_DC_MAP),
+                getString(requestParameters, PlatformPubliclightingKeys.RELAY_CONF,
+                        PlatformPubliclightingDefaults.DEFAULT_RELAY_CONFIGURATION),
+                getEnum(requestParameters, PlatformPubliclightingKeys.KEY_PREFERRED_LINKTYPE, LinkType.class,
+                        PlatformPubliclightingDefaults.DEFAULT_PREFERRED_LINKTYPE),
                 meterType,
                 getInteger(requestParameters, PlatformPubliclightingKeys.SHORT_INTERVAL,
                         PlatformPubliclightingDefaults.SHORT_INTERVAL),
                 getInteger(requestParameters, PlatformPubliclightingKeys.LONG_INTERVAL,
                         PlatformPubliclightingDefaults.LONG_INTERVAL),
-                getEnum(requestParameters, PlatformPubliclightingKeys.INTERVAL_TYPE, LongTermIntervalType.class),
-                osgpIpAddressMock, getInteger(requestParameters, PlatformPubliclightingKeys.OSGP_PORT));
+                getEnum(requestParameters, PlatformPubliclightingKeys.INTERVAL_TYPE, LongTermIntervalType.class,
+                        PlatformPubliclightingDefaults.DEFAULT_INTERVAL_TYPE),
+                osgpIpAddressMock, getInteger(requestParameters, PlatformPubliclightingKeys.OSGP_PORT,
+                        PlatformPubliclightingDefaults.DEFAULT_OSLP_PORT));
     }
 
     /**

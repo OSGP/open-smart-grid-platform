@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Platform version: ${display.version} -->
+
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+  xmlns:notification="http://www.opensmartgridplatform.org/schemas/netmanagement/osgp-notification/public-lighting/2019/01"
+  xmlns:common="http://www.opensmartgridplatform.org/schemas/common/2014/10"
+  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns:tns="http://www.opensmartgridplatform.org/definitions/notification-v1.0"
+  targetNamespace="http://www.opensmartgridplatform.org/definitions/notification-v1.0">
+
+  <wsdl:types>
+    <xsd:schema
+      targetNamespace="http://www.opensmartgridplatform.org/definitions/notification/imports"
+      xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:import
+        namespace="http://www.opensmartgridplatform.org/schemas/netmanagement/osgp-notification/public-lighting/2019/01"
+        schemaLocation="schemas/pl-notification.xsd" />
+    </xsd:schema>
+  </wsdl:types>
+
+  <wsdl:message name="SendNotificationHeader">
+    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+    <wsdl:part element="common:UserName" name="UserName" />
+    <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+  </wsdl:message>
+  <wsdl:message name="SendNotificationRequest">
+    <wsdl:part element="notification:SendNotificationRequest" name="SendNotificationRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SendNotificationResponse">
+    <wsdl:part element="notification:SendNotificationResponse" name="SendNotificationResponse">
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:portType name="NotificationPort">
+    <wsdl:operation name="SendNotification">
+      <wsdl:input message="tns:SendNotificationRequest" name="SendNotificationRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:SendNotificationResponse" name="SendNotificationResponse">
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+
+  <wsdl:binding name="NotificationPortSoap11"
+    type="tns:NotificationPort">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="SendNotification">
+      <soap:operation soapAction="" />
+      <wsdl:input name="SendNotificationRequest">
+        <soap:header message="tns:SendNotificationHeader" part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:SendNotificationHeader" part="UserName" use="literal" />
+        <soap:header message="tns:SendNotificationHeader" part="ApplicationName" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SendNotificationResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+
+  <wsdl:service name="NotificationPortService">
+    <wsdl:port binding="tns:NotificationPortSoap11"
+      name="NotificationPortSoap11">
+      <soap:address
+        location="http://localhost:8080/context/soap/osgp/notificationService/" />
+    </wsdl:port>
+  </wsdl:service>
+
+</wsdl:definitions>

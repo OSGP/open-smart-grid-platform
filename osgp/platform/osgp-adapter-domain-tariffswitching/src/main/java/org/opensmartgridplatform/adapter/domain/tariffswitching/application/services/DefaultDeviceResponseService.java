@@ -7,18 +7,18 @@
  */
 package org.opensmartgridplatform.adapter.domain.tariffswitching.application.services;
 
+import org.opensmartgridplatform.adapter.domain.tariffswitching.infra.jms.ws.WebServiceResponseMessageSender;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
+import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
+import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import org.opensmartgridplatform.adapter.domain.tariffswitching.infra.jms.ws.WebServiceResponseMessageSender;
-import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
-import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
-import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 
 @Service(value = "domainTariffSwitchingDefaultDeviceResponseService")
 public class DefaultDeviceResponseService {
@@ -45,8 +45,15 @@ public class DefaultDeviceResponseService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withIds(ids)
-                .withResult(result).withOsgpException(osgpException).withMessagePriority(messagePriority).build();
+        final DeviceMessageMetadata metaData = DeviceMessageMetadata.newBuilder()
+                .withCorrelationUid(ids.getCorrelationUid()).withDeviceIdentification(ids.getDeviceIdentification())
+                .withOrganisationIdentification(ids.getOrganisationIdentification()).withMessageType(messageType)
+                .build();
+
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withDeviceMessageMetadata(metaData).withResult(result).withOsgpException(osgpException)
+                .withMessagePriority(messagePriority).build();
+
         this.webServiceResponseMessageSender.send(responseMessage);
     }
 }

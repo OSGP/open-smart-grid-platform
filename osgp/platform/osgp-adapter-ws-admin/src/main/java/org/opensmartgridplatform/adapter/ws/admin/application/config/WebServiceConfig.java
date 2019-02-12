@@ -13,6 +13,15 @@ import java.util.Properties;
 
 import javax.annotation.Resource;
 
+import org.opensmartgridplatform.adapter.ws.admin.application.exceptionhandling.DetailSoapFaultMappingExceptionResolver;
+import org.opensmartgridplatform.adapter.ws.admin.application.exceptionhandling.SoapFaultMapper;
+import org.opensmartgridplatform.adapter.ws.endpointinterceptors.AnnotationMethodArgumentResolver;
+import org.opensmartgridplatform.adapter.ws.endpointinterceptors.CertificateAndSoapHeaderAuthorizationEndpointInterceptor;
+import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
+import org.opensmartgridplatform.adapter.ws.endpointinterceptors.SoapHeaderEndpointInterceptor;
+import org.opensmartgridplatform.adapter.ws.endpointinterceptors.WebServiceMonitorInterceptor;
+import org.opensmartgridplatform.adapter.ws.endpointinterceptors.X509CertificateRdnAttributeValueEndpointInterceptor;
+import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -25,16 +34,6 @@ import org.springframework.ws.server.endpoint.adapter.DefaultMethodEndpointAdapt
 import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadMethodProcessor;
 import org.springframework.ws.server.endpoint.adapter.method.MethodArgumentResolver;
 import org.springframework.ws.server.endpoint.adapter.method.MethodReturnValueHandler;
-
-import org.opensmartgridplatform.adapter.ws.admin.application.exceptionhandling.DetailSoapFaultMappingExceptionResolver;
-import org.opensmartgridplatform.adapter.ws.admin.application.exceptionhandling.SoapFaultMapper;
-import org.opensmartgridplatform.adapter.ws.endpointinterceptors.AnnotationMethodArgumentResolver;
-import org.opensmartgridplatform.adapter.ws.endpointinterceptors.CertificateAndSoapHeaderAuthorizationEndpointInterceptor;
-import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
-import org.opensmartgridplatform.adapter.ws.endpointinterceptors.SoapHeaderEndpointInterceptor;
-import org.opensmartgridplatform.adapter.ws.endpointinterceptors.WebServiceMonitorInterceptor;
-import org.opensmartgridplatform.adapter.ws.endpointinterceptors.X509CertificateRdnAttributeValueEndpointInterceptor;
-import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 
 @Configuration
 @PropertySources({ @PropertySource("classpath:osgp-adapter-ws-admin.properties"),
@@ -80,7 +79,7 @@ public class WebServiceConfig extends AbstractConfig {
      */
     @Bean
     public MarshallingPayloadMethodProcessor deviceManagementMarshallingPayloadMethodProcessor() {
-        LOGGER.debug("Creating Device Management Marshallinngg Payload Method Processor Bean");
+        LOGGER.debug("Creating Device Management Marshalling Payload Method Processor Bean");
 
         return new MarshallingPayloadMethodProcessor(this.deviceManagementMarshaller(),
                 this.deviceManagementMarshaller());
