@@ -8,8 +8,8 @@
 package org.opensmartgridplatform.adapter.protocol.iec60870.services;
 
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceMessageLog;
-import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.Iec60870LogItemRequestMessage;
-import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.Iec60870LogItemRequestMessageSender;
+import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.LogItemRequestMessage;
+import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.LogItemRequestMessageSender;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,10 +21,10 @@ public class DeviceMessageLoggingService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceMessageLoggingService.class);
 
-    private static Iec60870LogItemRequestMessageSender iec60870LogItemRequestMessageSender;
+    private static LogItemRequestMessageSender iec60870LogItemRequestMessageSender;
 
     @Autowired
-    public DeviceMessageLoggingService(final Iec60870LogItemRequestMessageSender iec60870LogItemRequestMessageSender) {
+    public DeviceMessageLoggingService(final LogItemRequestMessageSender iec60870LogItemRequestMessageSender) {
         DeviceMessageLoggingService.iec60870LogItemRequestMessageSender = iec60870LogItemRequestMessageSender;
     }
 
@@ -35,7 +35,7 @@ public class DeviceMessageLoggingService {
         final String organisationIdentification = messageMetadata.getOrganisationIdentification();
         final String command = messageMetadata.getClass().getSimpleName();
 
-        final Iec60870LogItemRequestMessage iec60870LogItemRequestMessage = new Iec60870LogItemRequestMessage(
+        final LogItemRequestMessage iec60870LogItemRequestMessage = new LogItemRequestMessage(
                 deviceIdentification, organisationIdentification, incoming, valid, command + " - " + message, size);
 
         LOGGER.info("Sending iec60870LogItemRequestMessage for device: {}", deviceIdentification);
@@ -45,7 +45,7 @@ public class DeviceMessageLoggingService {
     public static void logMessage(final DeviceMessageLog deviceMessageLog, final String deviceIdentification,
             final String organisationIdentification, final boolean incoming) {
 
-        final Iec60870LogItemRequestMessage iec60870LogItemRequestMessage = new Iec60870LogItemRequestMessage(
+        final LogItemRequestMessage iec60870LogItemRequestMessage = new LogItemRequestMessage(
                 deviceIdentification, organisationIdentification, incoming, true, deviceMessageLog.getMessage(), 0);
 
         LOGGER.info("Sending iec60870LogItemRequestMessage for device: {}", deviceIdentification);

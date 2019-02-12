@@ -9,7 +9,7 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.application.config;
 
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.DeviceRequestMessageListener;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.DeviceResponseMessageSender;
-import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.Iec60870LogItemRequestMessageSender;
+import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.LogItemRequestMessageSender;
 import org.opensmartgridplatform.adapter.protocol.iec60870.services.DeviceMessageLoggingService;
 import org.opensmartgridplatform.shared.application.config.AbstractMessagingConfig;
 import org.opensmartgridplatform.shared.application.config.jms.JmsConfiguration;
@@ -59,6 +59,7 @@ public class MessagingConfig extends AbstractMessagingConfig {
             final JmsConfiguration iec60870RequestJmsConfiguration) {
         final DefaultMessageListenerContainer messageListenerContainer = iec60870RequestJmsConfiguration
                 .getMessageListenerContainer();
+
         // Setting ErrorHandler to prevent logging at WARN level
         // when JMSException is thrown: Execution of JMS message
         // listener failed, and no ErrorHandler has been set.
@@ -92,26 +93,24 @@ public class MessagingConfig extends AbstractMessagingConfig {
     // === JMS SETTINGS: IEC60870 LOG ITEM REQUESTS ===
 
     @Bean
-    public JmsConfiguration iec60870LogItemRequestJmsConfiguration(
-            final JmsConfigurationFactory jmsConfigurationFactory) {
+    public JmsConfiguration logItemRequestJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
         return jmsConfigurationFactory.initializeConfiguration("jms.iec60870.log.item.requests");
     }
 
     @Bean
-    public JmsTemplate iec60870LogItemRequestsJmsTemplate(
-            final JmsConfiguration iec60870LogItemRequestJmsConfiguration) {
-        return iec60870LogItemRequestJmsConfiguration.getJmsTemplate();
+    public JmsTemplate logItemRequestsJmsTemplate(final JmsConfiguration logItemRequestJmsConfiguration) {
+        return logItemRequestJmsConfiguration.getJmsTemplate();
     }
 
     @Bean
-    public Iec60870LogItemRequestMessageSender iec60870LogItemRequestMessageSender() {
-        return new Iec60870LogItemRequestMessageSender();
+    public LogItemRequestMessageSender logItemRequestMessageSender() {
+        return new LogItemRequestMessageSender();
     }
 
     // === DEVICE MESSAGE LOGGING ===
 
     @Bean
     public DeviceMessageLoggingService deviceMessageLoggingService() {
-        return new DeviceMessageLoggingService(this.iec60870LogItemRequestMessageSender());
+        return new DeviceMessageLoggingService(this.logItemRequestMessageSender());
     }
 }

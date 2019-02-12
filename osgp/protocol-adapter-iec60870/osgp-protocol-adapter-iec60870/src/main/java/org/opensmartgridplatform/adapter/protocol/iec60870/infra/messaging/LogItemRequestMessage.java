@@ -9,7 +9,7 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class Iec60870LogItemRequestMessage {
+public class LogItemRequestMessage {
 
     private static final int MAX_MESSAGE_LENGTH = 8000;
 
@@ -27,7 +27,7 @@ public class Iec60870LogItemRequestMessage {
 
     private int payloadMessageSerializedSize;
 
-    public Iec60870LogItemRequestMessage(final String deviceIdentification, final String organisationIdentification,
+    public LogItemRequestMessage(final String deviceIdentification, final String organisationIdentification,
             final boolean incoming, final boolean valid, final String message, final int payloadMessageSerializedSize) {
         this.deviceIdentification = deviceIdentification;
         this.organisationIdentification = organisationIdentification;

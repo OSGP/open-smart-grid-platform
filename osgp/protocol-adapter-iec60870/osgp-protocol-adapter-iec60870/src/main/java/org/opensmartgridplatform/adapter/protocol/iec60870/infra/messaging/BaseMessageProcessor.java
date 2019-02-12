@@ -7,15 +7,16 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
 import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
+import javax.jms.ObjectMessage;
 
-import org.opensmartgridplatform.adapter.protocol.iec60870.device.DeviceResponse;
-import org.opensmartgridplatform.adapter.protocol.iec60870.device.responses.EmptyDeviceResponse;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DomainInformation;
+import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.helper.DeviceConnection;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.helper.RequestMessageData;
-import org.opensmartgridplatform.adapter.protocol.iec60870.services.DeviceResponseService;
-import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.services.Iec60870DeviceService;
 import org.opensmartgridplatform.shared.exceptionhandling.ProtocolAdapterException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -46,16 +47,20 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
     private int maxRedeliveriesForIec60870Requests;
 
     @Autowired
-    private DeviceResponseMessageSender responseMessageSender;
-
-    @Autowired
-    private DeviceResponseService deviceResponseService;
+    private ResponseMessageSender responseMessageSender;
 
     @Autowired
     @Qualifier("iec60870RequestMessageProcessorMap")
     private MessageProcessorMap iec60870RequestMessageProcessorMap;
 
     private MessageType messageType;
+    private Class<? extends BaseResponseEventListener> responseEventListener;
+
+    @Autowired
+    private Iec60870DeviceService iec60870DeviceService;
+
+    @Autowired
+    private LogItemRequestMessageSender iec60870LogItemRequestMessageSender;
 
     /**
      * Each MessageProcessor should register its MessageType at construction.
@@ -64,8 +69,22 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
      *            The MessageType the MessageProcessor implementation can
      *            process.
      */
-    protected BaseMessageProcessor(final MessageType messageType) {
+    protected BaseMessageProcessor(final MessageType messageType,
+            final Class<? extends BaseResponseEventListener> responseEventListener) {
         this.messageType = messageType;
+        this.responseEventListener = responseEventListener;
+    }
+
+    protected ResponseMessageSender getResponseMessageSender() {
+        return this.responseMessageSender;
+    }
+
+    protected Iec60870DeviceService getIec60870DeviceService() {
+        return this.iec60870DeviceService;
+    }
+
+    protected LogItemRequestMessageSender getLogItemRequestMessageSender() {
+        return this.iec60870LogItemRequestMessageSender;
     }
 
     /**
@@ -77,55 +96,71 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
         this.iec60870RequestMessageProcessorMap.addMessageProcessor(this.messageType, this);
     }
 
+    @Override
+    public void processMessage(final ObjectMessage message) throws JMSException {
+        LOGGER.info("Processing get health status request message in new code...");
+
+        MessageMetadata messageMetadata = null;
+        try {
+            messageMetadata = MessageMetadata.fromMessage(message);
+
+            final BaseResponseEventListener eventListener = this.createEventListener(messageMetadata);
+            final DeviceConnection deviceConnection = this.iec60870DeviceService.connectToDevice(
+                    messageMetadata.getDeviceIdentification(), messageMetadata.getIpAddress(), eventListener);
+
+            this.process(messageMetadata, deviceConnection);
+        } catch (final ProtocolAdapterException e) {
+            this.handleError(messageMetadata, e);
+        } catch (final Exception e) {
+            LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
+            return;
+        }
+    }
+
+    /**
+     * Create a new instance of the event listener for this message processor.
+     *
+     * @param messageMetadata
+     *            MessageMetaData to pass to the new event listener.
+     * @return The created event listener.
+     */
+    private BaseResponseEventListener createEventListener(final MessageMetadata messageMetadata) {
+
+        Constructor<? extends BaseResponseEventListener> constructor;
+        try {
+            constructor = this.responseEventListener.getConstructor(MessageMetadata.class, ResponseMessageSender.class,
+                    LogItemRequestMessageSender.class);
+
+            return constructor.newInstance(messageMetadata, this.responseMessageSender,
+                    this.iec60870LogItemRequestMessageSender);
+
+        } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
+                | IllegalArgumentException | InvocationTargetException e) {
+
+            throw new IllegalStateException("Failed to create an instance for " + this.responseEventListener.getName(),
+                    e);
+        }
+
+    }
+
+    public abstract void process(final MessageMetadata messageMetadata, final DeviceConnection deviceConnection)
+            throws ProtocolAdapterException;
+
     protected void printDomainInfo(final RequestMessageData requestMessageData) {
         LOGGER.info("Calling DeviceService function: {} for domain: {} {}", requestMessageData.getMessageType(),
                 requestMessageData.getDomain(), requestMessageData.getDomainVersion());
     }
 
-    /**
-     * Handles {@link EmptyDeviceResponse} by default. MessageProcessor
-     * implementations can override this function to handle responses containing
-     * data.
-     */
-    public void handleDeviceResponse(final DeviceResponse deviceResponse,
-            final ResponseMessageSender responseMessageSender, final DomainInformation domainInformation,
-            final String messageType, final int retryCount) {
-
-        ResponseMessageResultType result = ResponseMessageResultType.OK;
-        OsgpException ex = null;
-
-        try {
-            final EmptyDeviceResponse response = (EmptyDeviceResponse) deviceResponse;
-            this.deviceResponseService.handleDeviceMessageStatus(response.getStatus());
-        } catch (final OsgpException e) {
-            LOGGER.error("Device Response Exception", e);
-            result = ResponseMessageResultType.NOT_OK;
-            ex = e;
-        }
-
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(
-                deviceResponse.getDeviceIdentification(), deviceResponse.getOrganisationIdentification(),
-                deviceResponse.getCorrelationUid(), messageType, deviceResponse.getMessagePriority());
-        final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage.Builder()
-                .domain(domainInformation.getDomain()).domainVersion(domainInformation.getDomainVersion())
-                .deviceMessageMetadata(deviceMessageMetadata).result(result).osgpException(ex).retryCount(retryCount)
-                .build();
-        responseMessageSender.send(protocolResponseMessage);
-    }
-
-    // TODO: retries werkend maken
-    // TODO: nakijken of de "expected error" direct een response moet sturen of
-    // dat die retries moet gebruiken.
-    protected void handleExpectedErrorRuud(final MessageMetadata messageMetadata, final ProtocolAdapterException e)
+    protected void handleError(final MessageMetadata messageMetadata, final ProtocolAdapterException e)
             throws JMSException {
-        LOGGER.error("Expected error while processing message - Ruud", e);
+        LOGGER.warn("Error while processing message", e);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(messageMetadata);
 
         final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage.Builder()
                 .domain(messageMetadata.getDomain()).domainVersion(messageMetadata.getDomainVersion())
                 .deviceMessageMetadata(deviceMessageMetadata).result(ResponseMessageResultType.NOT_OK).osgpException(e)
-                .retryCount(Integer.MAX_VALUE).build();
+                .retryCount(messageMetadata.getRetryCount()).build();
 
         if (this.hasRemainingRedeliveries(messageMetadata)) {
             this.redeliverMessage(messageMetadata, e);
@@ -152,7 +187,7 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
                 messageMetadata.getDeviceIdentification(), jmsxRedeliveryCount,
                 this.maxRedeliveriesForIec60870Requests);
         final JMSException jmsException = new JMSException(
-                e == null ? "checkForRedelivery() unknown error: OsgpException e is null" : e.getMessage());
+                e == null ? "redeliverMessage() unknown error: ProtocolAdapterException e is null" : e.getMessage());
         throw JmsUtils.convertJmsAccessException(jmsException);
 
     }

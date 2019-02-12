@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.processors;
+package org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -28,11 +28,14 @@ public abstract class BaseResponseEventListener implements ConnectionEventListen
 
     private final MessageMetadata messageMetadata;
     private final ResponseMessageSender responseMessageSender;
+    private final LogItemRequestMessageSender iec60870LogItemRequestMessageSender;
 
     public BaseResponseEventListener(final MessageMetadata messageMetadata,
-            final ResponseMessageSender responseMessageSender) {
+            final ResponseMessageSender responseMessageSender,
+            final LogItemRequestMessageSender iec60870LogItemRequestMessageSender) {
         this.messageMetadata = messageMetadata;
         this.responseMessageSender = responseMessageSender;
+        this.iec60870LogItemRequestMessageSender = iec60870LogItemRequestMessageSender;
     }
 
     @Override
@@ -55,6 +58,14 @@ public abstract class BaseResponseEventListener implements ConnectionEventListen
                 .retryCount(this.messageMetadata.getRetryCount()).dataObject(response).build();
 
         this.responseMessageSender.send(protocolResponseMessage);
+    }
+
+    public MessageMetadata getMessageMetadata() {
+        return this.messageMetadata;
+    }
+
+    public LogItemRequestMessageSender getLogItemRequestMessageSender() {
+        return this.iec60870LogItemRequestMessageSender;
     }
 
 }

@@ -53,6 +53,7 @@ public class MessageMetadata implements Serializable {
         this.scheduleTime = builder.scheduleTime;
         this.bypassRetry = builder.bypassRetry;
         this.retryCount = builder.retryCount;
+        this.jmsxDeliveryCount = builder.jmsxDeliveryCount;
     }
 
     public static final MessageMetadata fromMessage(final Message message) throws JMSException {

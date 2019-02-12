@@ -19,35 +19,35 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
-public class Iec60870LogItemRequestMessageSender {
+public class LogItemRequestMessageSender {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Iec60870LogItemRequestMessageSender.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LogItemRequestMessageSender.class);
 
     @Autowired
-    private JmsTemplate iec60870LogItemRequestsJmsTemplate;
+    private JmsTemplate logItemRequestsJmsTemplate;
 
-    public void send(final Iec60870LogItemRequestMessage iec60870LogItemRequestMessage) {
+    public void send(final LogItemRequestMessage logItemRequestMessage) {
 
-        LOGGER.debug("Sending Iec60870LogItemRequestMessage");
+        LOGGER.debug("Sending LogItemRequestMessage");
 
-        this.iec60870LogItemRequestsJmsTemplate.send(new MessageCreator() {
+        this.logItemRequestsJmsTemplate.send(new MessageCreator() {
             @Override
             public Message createMessage(final Session session) throws JMSException {
                 final ObjectMessage objectMessage = session.createObjectMessage();
                 objectMessage.setJMSType(Constants.IEC60870_LOG_ITEM_REQUEST);
                 objectMessage.setStringProperty(Constants.IS_INCOMING,
-                        iec60870LogItemRequestMessage.isIncoming().toString());
+                        logItemRequestMessage.isIncoming().toString());
                 objectMessage.setStringProperty(Constants.ENCODED_MESSAGE,
-                        iec60870LogItemRequestMessage.getEncodedMessage());
+                        logItemRequestMessage.getEncodedMessage());
                 objectMessage.setStringProperty(Constants.DECODED_MESSAGE,
-                        iec60870LogItemRequestMessage.getDecodedMessage());
+                        logItemRequestMessage.getDecodedMessage());
                 objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
-                        iec60870LogItemRequestMessage.getDeviceIdentification());
+                        logItemRequestMessage.getDeviceIdentification());
                 objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
-                        iec60870LogItemRequestMessage.getOrganisationIdentification());
-                objectMessage.setStringProperty(Constants.IS_VALID, iec60870LogItemRequestMessage.isValid().toString());
+                        logItemRequestMessage.getOrganisationIdentification());
+                objectMessage.setStringProperty(Constants.IS_VALID, logItemRequestMessage.isValid().toString());
                 objectMessage.setIntProperty(Constants.PAYLOAD_MESSAGE_SERIALIZED_SIZE,
-                        iec60870LogItemRequestMessage.getPayloadMessageSerializedSize());
+                        logItemRequestMessage.getPayloadMessageSerializedSize());
                 return objectMessage;
             }
         });
