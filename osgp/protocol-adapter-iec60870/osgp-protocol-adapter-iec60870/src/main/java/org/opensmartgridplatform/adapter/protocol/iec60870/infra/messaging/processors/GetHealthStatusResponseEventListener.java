@@ -7,8 +7,6 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.processors;
 
-import javax.jms.JMSException;
-
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.TypeId;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.BaseResponseEventListener;
@@ -70,13 +68,6 @@ public class GetHealthStatusResponseEventListener extends BaseResponseEventListe
                     this.getMessageMetadata().getOrganisationIdentification(), true, true,
                     this.responseMessagesRepresentation, 0);
 
-            try {
-                // this.getMessageMetadata().getRawJmsMessage().acknowledge();
-                this.getMessageMetadata().getJmsSession().rollback();
-            } catch (final JMSException e) {
-                // TODO Auto-generated catch final block
-                LOGGER.error("....", e);
-            }
             this.getLogItemRequestMessageSender().send(logItemRequestMessage);
         }
     }
