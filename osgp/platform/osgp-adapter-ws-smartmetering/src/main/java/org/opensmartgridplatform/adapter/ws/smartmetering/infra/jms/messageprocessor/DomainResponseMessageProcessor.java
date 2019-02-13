@@ -13,7 +13,9 @@ import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
+import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceLookupKey;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
+import org.opensmartgridplatform.adapter.ws.schema.shared.notification.GenericNotification;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification.NotificationType;
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
 import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataService;
@@ -42,6 +44,7 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
      * Logger for this class.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(DomainResponseMessageProcessor.class);
+    private static final String APPLICATION_NAME = "SMART_METERS";
 
     /**
      * The map of message processor instances.
@@ -126,8 +129,10 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
             this.handleMessage(ids, messageType, resultType, resultDescription, dataObject);
 
             // Send notification indicating data is available.
-            this.notificationService.sendNotification(organisationIdentification, deviceIdentification,
-                    resultType.name(), correlationUid, notificationMessage, notificationType);
+            this.notificationService.sendNotification(new NotificationWebServiceLookupKey(organisationIdentification,
+                    APPLICATION_NAME), new GenericNotification(notificationMessage, resultType.name(),
+                    deviceIdentification, correlationUid, String.valueOf(notificationType)));
+
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, notificationType);
