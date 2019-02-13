@@ -8,15 +8,14 @@
 package org.opensmartgridplatform.adapter.ws.endpointinterceptors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.opensmartgridplatform.domain.core.exceptions.EmptyApplicationNameSoapHeaderException;
+import org.opensmartgridplatform.domain.core.exceptions.EmptyOrganisationIdentificationSoapHeaderException;
+import org.opensmartgridplatform.domain.core.exceptions.EmptyUserNameSoapHeaderException;
 import org.springframework.util.Assert;
 import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.server.EndpointInterceptor;
 import org.springframework.ws.soap.SoapHeader;
 import org.springframework.ws.soap.SoapMessage;
-
-import org.opensmartgridplatform.domain.core.exceptions.EmptyApplicationNameSoapHeaderException;
-import org.opensmartgridplatform.domain.core.exceptions.EmptyOrganisationIdentificationSoapHeaderException;
-import org.opensmartgridplatform.domain.core.exceptions.EmptyUserNameSoapHeaderException;
 
 /**
  * Intercept a SOAP Header and put the contents in the MessageContext.
@@ -50,15 +49,15 @@ public class SoapHeaderEndpointInterceptor implements EndpointInterceptor {
 
         // Check if the values are empty, if so, throw exception.
         if (StringUtils.isEmpty(organisationIdentification)) {
-            throw new EmptyOrganisationIdentificationSoapHeaderException();
+            throw new EmptyOrganisationIdentificationSoapHeaderException(organisationIdentification);
         }
 
         if (StringUtils.isEmpty(userName)) {
-            throw new EmptyUserNameSoapHeaderException();
+            throw new EmptyUserNameSoapHeaderException(userName);
         }
 
         if (StringUtils.isEmpty(applicationName)) {
-            throw new EmptyApplicationNameSoapHeaderException();
+            throw new EmptyApplicationNameSoapHeaderException(applicationName);
         }
 
         // Finally, set the organisation identification into the message
