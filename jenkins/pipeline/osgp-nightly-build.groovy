@@ -45,6 +45,7 @@ pipeline {
             steps {
                 build job: 'Deploy an AWS System', parameters: [string(name: 'SERVERNAME', value: servername),
                                                                 string(name: 'PLAYBOOK', value: playbook),
+                                                                string(name: 'OSGP_APPLICATIONS_BRANCH', value: 'SLIM-1869_Fix'),
                                                                 string(name: 'BRANCH', value: branchReleaseRepo)]
             }
         }
