@@ -27,7 +27,7 @@ import org.springframework.scheduling.quartz.SpringBeanJobFactory;
 import org.springframework.util.StringUtils;
 
 /**
- * This class provides the basic components used for task scheduling.
+ * This class provides the basic configuration used for Quartz schedulers.
  */
 public abstract class AbstractSchedulingConfig extends AbstractConfig {
 
@@ -65,19 +65,25 @@ public abstract class AbstractSchedulingConfig extends AbstractConfig {
     }
 
     /**
-     * Construct the scheduler taskpool with specified job and trigger
+     * Construct the scheduler task-pool with specified job and trigger.
      *
      * @param schedulingConfigProperties
-     *            an object containing all the properties needed to configure
-     *            the Quartz scheduler instance
-     * @return the Quartz scheduler instance
+     *            Object containing all the properties needed to configure the
+     *            Quartz scheduler instance.
+     *
+     * @return The Quartz scheduler instance.
+     *
      * @throws SchedulerException
-     *             when issues occur in constructing schedules
+     *             When issues occur in constructing schedules.
+     *
+     * @deprecated Use
+     *             {@link AbstractSchedulingConfig#constructAndStartQuartzScheduler(SchedulingConfigProperties)}.
      */
+    @Deprecated
     protected Scheduler constructScheduler(final SchedulingConfigProperties schedulingConfigProperties)
             throws SchedulerException {
 
-        final Scheduler scheduler = this.constructBareScheduler(schedulingConfigProperties);
+        final Scheduler scheduler = this.constructAndStartQuartzScheduler(schedulingConfigProperties);
 
         final JobDetail jobDetail = this.createJobDetail(schedulingConfigProperties.getJobClass());
         scheduler.addJob(jobDetail, true);
@@ -86,12 +92,25 @@ public abstract class AbstractSchedulingConfig extends AbstractConfig {
                 this.environment.getRequiredProperty(schedulingConfigProperties.getCronExpressionKey()));
         scheduler.scheduleJob(jobDetail, new HashSet<>(Arrays.asList(trigger)), true);
 
-        scheduler.start();
-
         return scheduler;
     }
 
-    protected Scheduler constructBareScheduler(final SchedulingConfigProperties schedulingConfigProperties)
+    /**
+     * Construct and start the Quartz scheduler instance. Use
+     * {@link AbstractSchedulingConfig#createAndScheduleJob(Scheduler, Class, String)
+     * to add scheduled jobs to the Quartz scheduler.
+     *
+     * @param schedulingConfigProperties
+     *            an object containing all the properties needed to configure
+     *            the Quartz scheduler instance
+     *
+     * @return The Quartz scheduler instance.
+     *
+     * @throws SchedulerException
+     *             If construction of the scheduler or starting the scheduler
+     *             fails.
+     */
+    protected Scheduler constructAndStartQuartzScheduler(final SchedulingConfigProperties schedulingConfigProperties)
             throws SchedulerException {
 
         final Properties properties = this.constructQuartzConfiguration(schedulingConfigProperties);
@@ -100,6 +119,8 @@ public abstract class AbstractSchedulingConfig extends AbstractConfig {
         factory.initialize(properties);
         final Scheduler scheduler = factory.getScheduler();
         scheduler.setJobFactory(this.springBeanJobFactory());
+
+        scheduler.start();
 
         return scheduler;
     }
@@ -155,41 +176,15 @@ public abstract class AbstractSchedulingConfig extends AbstractConfig {
         return properties;
     }
 
-    protected JobDetail createJobDetail(final Class<? extends Job> jobClass) {
+    @Deprecated
+    private JobDetail createJobDetail(final Class<? extends Job> jobClass) {
         return JobBuilder.newJob().ofType(jobClass).storeDurably().withIdentity(jobClass.getSimpleName()).build();
     }
 
-    protected Trigger createJobTrigger(final JobDetail jobDetail, final String cronExpression) {
+    @Deprecated
+    private Trigger createJobTrigger(final JobDetail jobDetail, final String cronExpression) {
         return TriggerBuilder.newTrigger().forJob(jobDetail).withIdentity(jobDetail.getKey().getName() + "-Trigger")
                 .forJob(jobDetail).withSchedule(CronScheduleBuilder.cronSchedule(cronExpression)).build();
-    }
-
-    /**
-     * Convenience method for creating a job and trigger, then adding and
-     * scheduling the job using the trigger. This method uses
-     * {@link AbstractSchedulingConfig#createJobDetail(Class)} and
-     * {@link AbstractSchedulingConfig#createJobTrigger(JobDetail, String)}.
-     *
-     * @param quartzScheduler
-     *            An instance of {@link Scheduler}.
-     * @param jobClass
-     *            The class which defines the actions of the scheduled job.
-     * @param cronExpression
-     *            The input for the trigger, a Quartz CRON expression like
-     *            {@code 0 0/1 * * * ?} for example.
-     *
-     * @throws SchedulerException
-     *             In case adding or scheduling of the job fails.
-     */
-    protected void createAndScheduleJob(final Scheduler quartzScheduler, final Class<? extends Job> jobClass,
-            final String cronExpression) throws SchedulerException {
-        // Create job and trigger.
-        final JobDetail jobDetail = this.createJobDetail(jobClass);
-        final Trigger trigger = this.createJobTrigger(jobDetail, cronExpression);
-
-        // Add and schedule for trigger.
-        quartzScheduler.addJob(jobDetail, true);
-        quartzScheduler.scheduleJob(jobDetail, new HashSet<>(Arrays.asList(trigger)), true);
     }
 
     protected String getDatabaseUrl() {
