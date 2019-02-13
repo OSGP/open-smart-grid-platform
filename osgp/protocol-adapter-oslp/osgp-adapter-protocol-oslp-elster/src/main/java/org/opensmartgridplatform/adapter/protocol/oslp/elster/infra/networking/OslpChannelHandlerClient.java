@@ -16,16 +16,13 @@ import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
-import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.DeviceRegistrationService;
+import org.opensmartgridplatform.oslp.OslpEnvelope;
+import org.opensmartgridplatform.shared.exceptionhandling.NoDeviceResponseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.DeviceRegistrationService;
-import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.DeviceResponseMessageSender;
-import org.opensmartgridplatform.oslp.OslpEnvelope;
-import org.opensmartgridplatform.shared.exceptionhandling.NoDeviceResponseException;
 
 public class OslpChannelHandlerClient extends OslpChannelHandler {
 
@@ -62,11 +59,6 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
             this.callbackHandlers.remove(channelId);
         }
         super.channelDisconnected(ctx, e);
-    }
-
-    @Override
-    public void exceptionCaught(final ChannelHandlerContext ctx, final ExceptionEvent e) throws Exception {
-        super.exceptionCaught(ctx, e);
     }
 
     @Override
@@ -108,9 +100,6 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
         this.callbackHandlers.put(channelFuture.getChannel().getId(), new OslpCallbackHandler(responseHandler));
 
         channelFuture.addListener(new ChannelFutureListener() {
-
-            @Autowired
-            protected DeviceResponseMessageSender responseMessageSender;
 
             @Override
             public void operationComplete(final ChannelFuture future) throws Exception {

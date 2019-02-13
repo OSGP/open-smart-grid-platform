@@ -8,8 +8,11 @@
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.networking;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.Semaphore;
 
 import javax.annotation.Resource;
 
@@ -19,18 +22,19 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
-import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities.OslpDevice;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.repositories.OslpDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.OslpLogItemRequestMessage;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.OslpLogItemRequestMessageSender;
-import org.opensmartgridplatform.core.db.api.application.services.DeviceDataService;
 import org.opensmartgridplatform.oslp.Oslp;
 import org.opensmartgridplatform.oslp.OslpEnvelope;
+import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class OslpChannelHandler extends SimpleChannelHandler {
+
+    private static Semaphore availableConnections;
+    private static boolean limitConnections;
 
     private final Logger logger;
 
@@ -49,12 +53,16 @@ public abstract class OslpChannelHandler extends SimpleChannelHandler {
     @Autowired
     private OslpLogItemRequestMessageSender oslpLogItemRequestMessageSender;
 
-    @Autowired
-    private DeviceDataService deviceDataService;
-
     protected final ConcurrentMap<Integer, OslpCallbackHandler> callbackHandlers = new ConcurrentHashMap<>();
 
     protected OslpChannelHandler(final Logger logger) {
+        this.logger = logger;
+        OslpChannelHandler.limitConnections = false;
+    }
+
+    protected OslpChannelHandler(final Logger logger, final int maxConcurrentIncomingMessages) {
+        OslpChannelHandler.availableConnections = new Semaphore(maxConcurrentIncomingMessages);
+        OslpChannelHandler.limitConnections = true;
         this.logger = logger;
     }
 
@@ -66,8 +74,30 @@ public abstract class OslpChannelHandler extends SimpleChannelHandler {
         this.oslpSignature = signature;
     }
 
+    private void acquireConnection() throws InterruptedException {
+        if (OslpChannelHandler.limitConnections) {
+            final Instant acquireStart = Instant.now();
+            this.logger.info("Connection requested. Available connections: " + availableConnections.availablePermits());
+
+            availableConnections.acquire();
+
+            final Duration acquireDuration = Duration.between(acquireStart, Instant.now());
+            this.logger.info("Connection granted. Available connections: {}, acquireDuration (ms) {}",
+                    availableConnections.availablePermits(), acquireDuration.toMillis());
+        }
+    }
+
+    private void releaseConnection() {
+        if (OslpChannelHandler.limitConnections) {
+            this.logger.info("Connection released. Available connections: " + availableConnections.availablePermits());
+            availableConnections.release();
+        }
+    }
+
     @Override
     public void channelOpen(final ChannelHandlerContext ctx, final ChannelStateEvent e) throws Exception {
+        this.acquireConnection();
+
         this.logger.info("{} Channel opened", e.getChannel().getId());
         super.channelOpen(ctx, e);
     }
@@ -81,6 +111,8 @@ public abstract class OslpChannelHandler extends SimpleChannelHandler {
     @Override
     public void channelClosed(final ChannelHandlerContext ctx, final ChannelStateEvent e) throws Exception {
         this.logger.info("{} Channel closed", e.getChannel().getId());
+        this.releaseConnection();
+
         super.channelClosed(ctx, e);
     }
 
@@ -93,6 +125,7 @@ public abstract class OslpChannelHandler extends SimpleChannelHandler {
     @Override
     public void exceptionCaught(final ChannelHandlerContext ctx, final ExceptionEvent e) throws Exception {
         final int channelId = e.getChannel().getId();
+
         if (this.isConnectionReset(e.getCause())) {
             this.logger.info("{} Connection was (as expected) reset by the device.", channelId);
         } else {
