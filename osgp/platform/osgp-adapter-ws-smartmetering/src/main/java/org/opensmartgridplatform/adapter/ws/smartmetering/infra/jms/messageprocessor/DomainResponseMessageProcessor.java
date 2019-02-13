@@ -1,9 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.messageprocessor;
 
@@ -29,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * Base class for MessageProcessor implementations. Each MessageProcessor
@@ -36,7 +38,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
  * the MessageProcessor implementation can process should be passed in at
  * construction. The Singleton instance is added to the HashMap of
  * MessageProcessors after dependency injection has completed.
- *
  */
 public abstract class DomainResponseMessageProcessor implements MessageProcessor {
 
@@ -44,7 +45,6 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
      * Logger for this class.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(DomainResponseMessageProcessor.class);
-    private static final String APPLICATION_NAME = "SMART_METERS";
 
     /**
      * The map of message processor instances.
@@ -59,6 +59,9 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
     @Autowired
     private ResponseDataService responseDataService;
 
+    @Value("${web.service.notification.application.name}")
+    private String applicationName;
+
     /**
      * The message type that a message processor implementation can handle.
      */
@@ -68,7 +71,7 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
      * Construct a message processor instance by passing in the message type.
      *
      * @param messageType
-     *            The message type a message processor can handle.
+     *         The message type a message processor can handle.
      */
     protected DomainResponseMessageProcessor(final MessageType messageType) {
         this.messageType = messageType;
@@ -130,9 +133,8 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
 
             // Send notification indicating data is available.
             this.notificationService.sendNotification(new NotificationWebServiceLookupKey(organisationIdentification,
-                    APPLICATION_NAME), new GenericNotification(notificationMessage, resultType.name(),
+                    this.applicationName), new GenericNotification(notificationMessage, resultType.name(),
                     deviceIdentification, correlationUid, String.valueOf(notificationType)));
-
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, notificationType);
@@ -160,15 +162,15 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
      * the exception to the web-service-adapter.
      *
      * @param e
-     *            The exception.
+     *         The exception.
      * @param correlationUid
-     *            The correlation UID.
+     *         The correlation UID.
      * @param organisationIdentification
-     *            The organisation identification.
+     *         The organisation identification.
      * @param deviceIdentification
-     *            The device identification.
+     *         The device identification.
      * @param notificationType
-     *            The message type.
+     *         The message type.
      */
     protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
             final String deviceIdentification, final NotificationType notificationType) {
