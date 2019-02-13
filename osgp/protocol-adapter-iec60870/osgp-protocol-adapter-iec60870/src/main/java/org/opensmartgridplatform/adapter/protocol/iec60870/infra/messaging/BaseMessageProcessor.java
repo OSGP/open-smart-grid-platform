@@ -17,6 +17,7 @@ import javax.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.helper.DeviceConnection;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.helper.RequestMessageData;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.services.Iec60870DeviceService;
+import org.opensmartgridplatform.adapter.protocol.iec60870.services.DeviceMessageLoggingService;
 import org.opensmartgridplatform.shared.exceptionhandling.ProtocolAdapterException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -60,7 +61,7 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
     private Iec60870DeviceService iec60870DeviceService;
 
     @Autowired
-    private LogItemRequestMessageSender iec60870LogItemRequestMessageSender;
+    private DeviceMessageLoggingService deviceMessageLoggingService;
 
     /**
      * Each MessageProcessor should register its MessageType at construction.
@@ -83,8 +84,8 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
         return this.iec60870DeviceService;
     }
 
-    protected LogItemRequestMessageSender getLogItemRequestMessageSender() {
-        return this.iec60870LogItemRequestMessageSender;
+    protected DeviceMessageLoggingService getDeviceMessageLoggingService() {
+        return this.deviceMessageLoggingService;
     }
 
     /**
@@ -129,10 +130,10 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
         Constructor<? extends BaseResponseEventListener> constructor;
         try {
             constructor = this.responseEventListener.getConstructor(MessageMetadata.class, ResponseMessageSender.class,
-                    LogItemRequestMessageSender.class);
+                    DeviceMessageLoggingService.class);
 
             return constructor.newInstance(messageMetadata, this.responseMessageSender,
-                    this.iec60870LogItemRequestMessageSender);
+                    this.deviceMessageLoggingService);
 
         } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
                 | IllegalArgumentException | InvocationTargetException e) {

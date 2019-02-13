@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.Serializable;
 
 import org.openmuc.j60870.ConnectionEventListener;
+import org.opensmartgridplatform.adapter.protocol.iec60870.services.DeviceMessageLoggingService;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
@@ -28,14 +29,14 @@ public abstract class BaseResponseEventListener implements ConnectionEventListen
 
     private final MessageMetadata messageMetadata;
     private final ResponseMessageSender responseMessageSender;
-    private final LogItemRequestMessageSender iec60870LogItemRequestMessageSender;
+    private final DeviceMessageLoggingService deviceMessageLoggingService;
 
     public BaseResponseEventListener(final MessageMetadata messageMetadata,
             final ResponseMessageSender responseMessageSender,
-            final LogItemRequestMessageSender iec60870LogItemRequestMessageSender) {
+            final DeviceMessageLoggingService deviceMessageLoggingService) {
         this.messageMetadata = messageMetadata;
         this.responseMessageSender = responseMessageSender;
-        this.iec60870LogItemRequestMessageSender = iec60870LogItemRequestMessageSender;
+        this.deviceMessageLoggingService = deviceMessageLoggingService;
     }
 
     @Override
@@ -64,8 +65,8 @@ public abstract class BaseResponseEventListener implements ConnectionEventListen
         return this.messageMetadata;
     }
 
-    public LogItemRequestMessageSender getLogItemRequestMessageSender() {
-        return this.iec60870LogItemRequestMessageSender;
+    public DeviceMessageLoggingService getDeviceMessageLoggingService() {
+        return this.deviceMessageLoggingService;
     }
 
 }

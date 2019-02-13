@@ -30,26 +30,34 @@ public class LogItemRequestMessageSender {
 
         LOGGER.debug("Sending LogItemRequestMessage");
 
-        this.logItemRequestsJmsTemplate.send(new MessageCreator() {
-            @Override
-            public Message createMessage(final Session session) throws JMSException {
-                final ObjectMessage objectMessage = session.createObjectMessage();
-                objectMessage.setJMSType(Constants.IEC60870_LOG_ITEM_REQUEST);
-                objectMessage.setStringProperty(Constants.IS_INCOMING,
-                        logItemRequestMessage.isIncoming().toString());
-                objectMessage.setStringProperty(Constants.ENCODED_MESSAGE,
-                        logItemRequestMessage.getEncodedMessage());
-                objectMessage.setStringProperty(Constants.DECODED_MESSAGE,
-                        logItemRequestMessage.getDecodedMessage());
-                objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
-                        logItemRequestMessage.getDeviceIdentification());
-                objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
-                        logItemRequestMessage.getOrganisationIdentification());
-                objectMessage.setStringProperty(Constants.IS_VALID, logItemRequestMessage.isValid().toString());
-                objectMessage.setIntProperty(Constants.PAYLOAD_MESSAGE_SERIALIZED_SIZE,
-                        logItemRequestMessage.getPayloadMessageSerializedSize());
-                return objectMessage;
-            }
-        });
+        final LogItemMessageCreator messageCreator = new LogItemMessageCreator(logItemRequestMessage);
+        this.logItemRequestsJmsTemplate.send(messageCreator);
+
+    }
+
+    private class LogItemMessageCreator implements MessageCreator {
+
+        private final LogItemRequestMessage logItemRequestMessage;
+
+        public LogItemMessageCreator(final LogItemRequestMessage logItemRequestMessage) {
+            this.logItemRequestMessage = logItemRequestMessage;
+        }
+
+        @Override
+        public Message createMessage(final Session session) throws JMSException {
+            final ObjectMessage objectMessage = session.createObjectMessage();
+            objectMessage.setJMSType(Constants.IEC60870_LOG_ITEM_REQUEST);
+            objectMessage.setStringProperty(Constants.IS_INCOMING, this.logItemRequestMessage.isIncoming().toString());
+            objectMessage.setStringProperty(Constants.ENCODED_MESSAGE, this.logItemRequestMessage.getEncodedMessage());
+            objectMessage.setStringProperty(Constants.DECODED_MESSAGE, this.logItemRequestMessage.getDecodedMessage());
+            objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
+                    this.logItemRequestMessage.getDeviceIdentification());
+            objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
+                    this.logItemRequestMessage.getOrganisationIdentification());
+            objectMessage.setStringProperty(Constants.IS_VALID, this.logItemRequestMessage.isValid().toString());
+            objectMessage.setIntProperty(Constants.PAYLOAD_MESSAGE_SERIALIZED_SIZE,
+                    this.logItemRequestMessage.getPayloadMessageSerializedSize());
+            return objectMessage;
+        }
     }
 }

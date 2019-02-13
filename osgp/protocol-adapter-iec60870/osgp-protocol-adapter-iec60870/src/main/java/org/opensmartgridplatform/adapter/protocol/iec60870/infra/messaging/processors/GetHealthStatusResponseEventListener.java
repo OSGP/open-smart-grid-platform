@@ -10,8 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.proc
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.TypeId;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.BaseResponseEventListener;
-import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.LogItemRequestMessage;
-import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.LogItemRequestMessageSender;
+import org.opensmartgridplatform.adapter.protocol.iec60870.services.DeviceMessageLoggingService;
 import org.opensmartgridplatform.dto.da.GetHealthStatusResponseDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
@@ -34,8 +33,8 @@ public class GetHealthStatusResponseEventListener extends BaseResponseEventListe
 
     public GetHealthStatusResponseEventListener(final MessageMetadata messageMetadata,
             final ResponseMessageSender responseMessageSender,
-            final LogItemRequestMessageSender iec60870LogItemRequestMessageSender) {
-        super(messageMetadata, responseMessageSender, iec60870LogItemRequestMessageSender);
+            final DeviceMessageLoggingService deviceMessageLoggingService) {
+        super(messageMetadata, responseMessageSender, deviceMessageLoggingService);
     }
 
     @Override
@@ -63,12 +62,8 @@ public class GetHealthStatusResponseEventListener extends BaseResponseEventListe
         if (receivedAsdu.getTypeIdentification().equals(TypeId.M_ME_NB_1)) {
             // This is the last ASDU for the interrogation command, log
             // the message in the DB.
-            final LogItemRequestMessage logItemRequestMessage = new LogItemRequestMessage(
-                    this.getMessageMetadata().getDeviceIdentification(),
-                    this.getMessageMetadata().getOrganisationIdentification(), true, true,
+            this.getDeviceMessageLoggingService().logMessage(this.getMessageMetadata(), true, true,
                     this.responseMessagesRepresentation, 0);
-
-            this.getLogItemRequestMessageSender().send(logItemRequestMessage);
         }
     }
 

@@ -14,41 +14,39 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-@Service
 public class DeviceMessageLoggingService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceMessageLoggingService.class);
 
-    private static LogItemRequestMessageSender iec60870LogItemRequestMessageSender;
+    private static LogItemRequestMessageSender logItemRequestMessageSender;
 
     @Autowired
-    public DeviceMessageLoggingService(final LogItemRequestMessageSender iec60870LogItemRequestMessageSender) {
-        DeviceMessageLoggingService.iec60870LogItemRequestMessageSender = iec60870LogItemRequestMessageSender;
+    public DeviceMessageLoggingService(final LogItemRequestMessageSender logItemRequestMessageSender) {
+        DeviceMessageLoggingService.logItemRequestMessageSender = logItemRequestMessageSender;
     }
 
-    public static void logMessage(final MessageMetadata messageMetadata, final boolean incoming, final boolean valid,
+    public void logMessage(final MessageMetadata messageMetadata, final boolean incoming, final boolean valid,
             final String message, final int size) {
 
         final String deviceIdentification = messageMetadata.getDeviceIdentification();
         final String organisationIdentification = messageMetadata.getOrganisationIdentification();
         final String command = messageMetadata.getClass().getSimpleName();
 
-        final LogItemRequestMessage iec60870LogItemRequestMessage = new LogItemRequestMessage(
-                deviceIdentification, organisationIdentification, incoming, valid, command + " - " + message, size);
+        final LogItemRequestMessage logItemRequestMessage = new LogItemRequestMessage(deviceIdentification,
+                organisationIdentification, incoming, valid, command + " - " + message, size);
 
-        LOGGER.info("Sending iec60870LogItemRequestMessage for device: {}", deviceIdentification);
-        iec60870LogItemRequestMessageSender.send(iec60870LogItemRequestMessage);
+        LOGGER.info("Sending LogItemRequestMessage for device: {}", deviceIdentification);
+        logItemRequestMessageSender.send(logItemRequestMessage);
     }
 
-    public static void logMessage(final DeviceMessageLog deviceMessageLog, final String deviceIdentification,
+    public void logMessage(final DeviceMessageLog deviceMessageLog, final String deviceIdentification,
             final String organisationIdentification, final boolean incoming) {
 
-        final LogItemRequestMessage iec60870LogItemRequestMessage = new LogItemRequestMessage(
-                deviceIdentification, organisationIdentification, incoming, true, deviceMessageLog.getMessage(), 0);
+        final LogItemRequestMessage logItemRequestMessage = new LogItemRequestMessage(deviceIdentification,
+                organisationIdentification, incoming, true, deviceMessageLog.getMessage(), 0);
 
-        LOGGER.info("Sending iec60870LogItemRequestMessage for device: {}", deviceIdentification);
-        iec60870LogItemRequestMessageSender.send(iec60870LogItemRequestMessage);
+        LOGGER.info("Sending LogItemRequestMessage for device: {}", deviceIdentification);
+        logItemRequestMessageSender.send(logItemRequestMessage);
     }
 }

@@ -28,13 +28,14 @@ public class Iec60870ChannelHandlerServer extends Iec60870ChannelHandler {
     @Value("#{${test.device.ips}}")
     private Map<String, String> testDeviceIps;
 
-    public Iec60870ChannelHandlerServer() {
-        super(LOGGER);
-    }
-
     @Override
     public void messageReceived(final ChannelHandlerContext ctx, final MessageEvent e) throws Exception {
         LOGGER.info("Handle incoming message");
+    }
+
+    @Override
+    protected Logger getLogger() {
+        return Iec60870ChannelHandlerServer.LOGGER;
     }
 
 }

@@ -15,40 +15,36 @@ import org.slf4j.Logger;
 
 public abstract class Iec60870ChannelHandler extends SimpleChannelHandler {
 
-    private final Logger logger;
-
-    protected Iec60870ChannelHandler(final Logger logger) {
-        this.logger = logger;
-    }
+    protected abstract Logger getLogger();
 
     @Override
     public void channelOpen(final ChannelHandlerContext ctx, final ChannelStateEvent e) throws Exception {
-        this.logger.info("{} Channel opened", e.getChannel().getId());
+        this.getLogger().info("{} Channel opened", e.getChannel().getId());
         super.channelOpen(ctx, e);
     }
 
     @Override
     public void channelDisconnected(final ChannelHandlerContext ctx, final ChannelStateEvent e) throws Exception {
-        this.logger.info("{} Channel disconnected", e.getChannel().getId());
+        this.getLogger().info("{} Channel disconnected", e.getChannel().getId());
         super.channelDisconnected(ctx, e);
     }
 
     @Override
     public void channelClosed(final ChannelHandlerContext ctx, final ChannelStateEvent e) throws Exception {
-        this.logger.info("{} Channel closed", e.getChannel().getId());
+        this.getLogger().info("{} Channel closed", e.getChannel().getId());
         super.channelClosed(ctx, e);
     }
 
     @Override
     public void channelUnbound(final ChannelHandlerContext ctx, final ChannelStateEvent e) throws Exception {
-        this.logger.info("{} Channel unbound", e.getChannel().getId());
+        this.getLogger().info("{} Channel unbound", e.getChannel().getId());
         super.channelUnbound(ctx, e);
     }
 
     @Override
     public void exceptionCaught(final ChannelHandlerContext ctx, final ExceptionEvent e) throws Exception {
         final int channelId = e.getChannel().getId();
-        this.logger.warn("{} Unexpected exception from downstream. {}", channelId, e.getCause());
+        this.getLogger().warn("{} Unexpected exception from downstream. {}", channelId, e.getCause());
         e.getChannel().close();
     }
 }

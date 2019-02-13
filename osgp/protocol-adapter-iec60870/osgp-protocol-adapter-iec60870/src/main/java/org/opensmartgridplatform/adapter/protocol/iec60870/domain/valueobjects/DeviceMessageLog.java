@@ -16,17 +16,12 @@ public class DeviceMessageLog {
     private final String messageType;
     private final Map<String, String> readVariables = new HashMap<>();
 
-    public DeviceMessageLog(
-            /* final IED ied, final LogicalDevice logicalDevice, */ final String messageType) {
-        // this.ied = ied;
-        // this.logicalDevice = logicalDevice;
+    public DeviceMessageLog(final String messageType) {
         this.messageType = messageType;
 
     }
 
     public String getMessage() {
-        // String result = "LogicalDevice: " + this.ied.getDescription() +
-        // this.logicalDevice.getDescription();
         String result = " messageType: " + this.messageType + " {\n";
 
         for (final Entry<String, String> entry : this.readVariables.entrySet()) {

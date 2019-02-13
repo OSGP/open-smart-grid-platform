@@ -12,7 +12,6 @@ import java.io.IOException;
 import org.openmuc.j60870.CauseOfTransmission;
 import org.openmuc.j60870.IeQualifierOfInterrogation;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.BaseMessageProcessor;
-import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.LogItemRequestMessage;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.helper.DeviceConnection;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.ProtocolAdapterException;
@@ -46,11 +45,11 @@ public class GetHealthStatusRequestMessageProcessor extends BaseMessageProcessor
             deviceConnection.getConnection().interrogation(commonAddress, CauseOfTransmission.ACTIVATION,
                     new IeQualifierOfInterrogation(ieQualifierOfInterrogationValue));
 
-            final String interrogationMessage = "Interrogation [CommonAddress: " + commonAddress + ", CauseOfTransmission: "
-                    + CauseOfTransmission.ACTIVATION + ", IeQualifierOfInterrogation: "
+            final String interrogationMessage = "Interrogation [CommonAddress: " + commonAddress
+                    + ", CauseOfTransmission: " + CauseOfTransmission.ACTIVATION + ", IeQualifierOfInterrogation: "
                     + ieQualifierOfInterrogationValue + "]";
 
-            this.logMessage(interrogationMessage, messageMetadata);
+            this.getDeviceMessageLoggingService().logMessage(messageMetadata, false, true, interrogationMessage, 0);
 
         } catch (final IOException | RuntimeException e) {
             LOGGER.warn(
@@ -58,14 +57,6 @@ public class GetHealthStatusRequestMessageProcessor extends BaseMessageProcessor
                     e);
             throw new ProtocolAdapterException(ComponentType.PROTOCOL_IEC60870, e.getMessage());
         }
-    }
-
-    private void logMessage(final String message, final MessageMetadata messageMetadata) {
-        final LogItemRequestMessage logItemRequestMessage = new LogItemRequestMessage(
-                messageMetadata.getDeviceIdentification(), messageMetadata.getOrganisationIdentification(), false, true,
-                message, 0);
-
-        this.getLogItemRequestMessageSender().send(logItemRequestMessage);
     }
 
 }
