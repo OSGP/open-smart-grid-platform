@@ -11,18 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
-import org.springframework.oxm.jaxb.Jaxb2Marshaller;
-import org.springframework.ws.server.endpoint.adapter.DefaultMethodEndpointAdapter;
-import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadMethodProcessor;
-import org.springframework.ws.server.endpoint.adapter.method.MethodArgumentResolver;
-import org.springframework.ws.server.endpoint.adapter.method.MethodReturnValueHandler;
-
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.AnnotationMethodArgumentResolver;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.CertificateAndSoapHeaderAuthorizationEndpointInterceptor;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
@@ -34,11 +22,21 @@ import org.opensmartgridplatform.adapter.ws.endpointinterceptors.X509Certificate
 import org.opensmartgridplatform.adapter.ws.publiclighting.application.exceptionhandling.DetailSoapFaultMappingExceptionResolver;
 import org.opensmartgridplatform.adapter.ws.publiclighting.application.exceptionhandling.SoapFaultMapper;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+import org.springframework.ws.server.endpoint.adapter.DefaultMethodEndpointAdapter;
+import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadMethodProcessor;
+import org.springframework.ws.server.endpoint.adapter.method.MethodArgumentResolver;
+import org.springframework.ws.server.endpoint.adapter.method.MethodReturnValueHandler;
 
 @Configuration
-@PropertySources({ @PropertySource("classpath:osgp-adapter-ws-publiclighting.properties"),
-        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:${osgp/AdapterWsPublicLighting/config}", ignoreResourceNotFound = true), })
+@PropertySource("classpath:osgp-adapter-ws-publiclighting.properties")
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/AdapterWsPublicLighting/config}", ignoreResourceNotFound = true)
 public class WebServiceConfig extends AbstractConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceConfig.class);

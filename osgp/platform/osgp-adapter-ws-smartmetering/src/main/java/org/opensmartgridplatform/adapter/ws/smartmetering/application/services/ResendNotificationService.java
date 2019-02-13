@@ -7,36 +7,33 @@
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.services;
 
-import org.apache.commons.lang3.EnumUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import javax.annotation.PostConstruct;
 
-import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification.NotificationType;
 import org.opensmartgridplatform.adapter.ws.shared.services.AbstractResendNotificationService;
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service(value = "resendNotificationServiceSmartmetering")
 @Transactional(value = "transactionManager")
-public class ResendNotificationService extends AbstractResendNotificationService {
+public class ResendNotificationService extends AbstractResendNotificationService<NotificationType> {
 
     @Autowired
-    private NotificationService notificationService;
+    private NotificationService smartMeteringNotificationService;
 
-    @Override
-    public void resendNotification(final ResponseData responseData) {
+    @Value("${web.service.notification.application.name}")
+    private String webserviceNotificationApplicationName;
 
-        if (!EnumUtils.isValidEnum(NotificationType.class, responseData.getMessageType())) {
-            this.logUnknownNotificationTypeError(responseData.getCorrelationUid(), responseData.getMessageType(),
-                    this.notificationService.getClass().getName());
-            return;
-        }
+    public ResendNotificationService() {
+        super(NotificationType.class);
+    }
 
-        final NotificationType notificationType = NotificationType.valueOf(responseData.getMessageType());
-        this.notificationService.sendNotification(responseData.getOrganisationIdentification(),
-                responseData.getDeviceIdentification(), responseData.getResultType().name(),
-                responseData.getCorrelationUid(), this.getNotificationMessage(responseData.getMessageType()),
-                notificationType);
+    @PostConstruct
+    public void initialize() {
+        this.setNotificationService(this.smartMeteringNotificationService);
+        this.setApplicationName(this.webserviceNotificationApplicationName);
     }
 }
