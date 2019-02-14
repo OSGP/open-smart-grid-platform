@@ -98,8 +98,8 @@ public abstract class AbstractSchedulingConfig extends AbstractConfig {
 
     /**
      * Construct and start the Quartz scheduler instance. Use
-     * {@link AbstractSchedulingConfig#createAndScheduleJob(Scheduler, Class, String)
-     * to add scheduled jobs to the Quartz scheduler.
+     * {@link OsgpScheduler#createAndScheduleJob(Scheduler, Class, String) to
+     * add scheduled jobs to the Quartz scheduler.
      *
      * @param schedulingConfigProperties
      *            an object containing all the properties needed to configure
