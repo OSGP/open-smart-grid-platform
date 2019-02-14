@@ -15,11 +15,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
@@ -30,6 +25,10 @@ import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup;
 import org.opensmartgridplatform.domain.core.valueobjects.PlatformFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.PlatformFunctionGroup;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class SecurityService {
@@ -52,8 +51,8 @@ public class SecurityService {
                         PlatformFunction.GET_FIRMWARE, PlatformFunction.CREATE_FIRMWARE,
                         PlatformFunction.REMOVE_FIRMWARE, PlatformFunction.CHANGE_FIRMWARE });
 
-        platformMapping.put(PlatformFunctionGroup.USER,
-                new PlatformFunction[] { PlatformFunction.GET_ORGANISATIONS, PlatformFunction.FIND_DEVICES });
+        platformMapping.put(PlatformFunctionGroup.USER, new PlatformFunction[] { PlatformFunction.GET_ORGANISATIONS,
+                PlatformFunction.FIND_DEVICES, PlatformFunction.GET_MANUFACTURERS });
     }
 
     @Autowired
