@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Properties;
 
+import org.opensmartgridplatform.shared.application.scheduling.OsgpScheduler;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.Job;
 import org.quartz.JobBuilder;
@@ -176,11 +177,37 @@ public abstract class AbstractSchedulingConfig extends AbstractConfig {
         return properties;
     }
 
+    /**
+     * Create a {@link JobDetail} instance using a class which defines the
+     * actions for a scheduled job.
+     *
+     * @param jobClass
+     *            The class which defines the actions for a scheduled job.
+     *
+     * @return A {@link JobDetail} instance.
+     *
+     * @deprecated Use {@link OsgpScheduler#createJobDetail(Class)}.
+     */
     @Deprecated
     private JobDetail createJobDetail(final Class<? extends Job> jobClass) {
         return JobBuilder.newJob().ofType(jobClass).storeDurably().withIdentity(jobClass.getSimpleName()).build();
     }
 
+    /**
+     * Create a {@link Trigger} instance using a {@link JobDetail} instance and
+     * a CRON-expression.
+     *
+     * @param jobDetail
+     *            A {@link JobDetail} instance, possibly created using
+     *            {@link AbstractSchedulingConfig#createJobDetail(Class)}.
+     * @param cronExpression
+     *            A CRON-expression.
+     *
+     * @return A {@link Trigger} instance.
+     *
+     * @deprecated Use
+     *             {@link OsgpScheduler#createJobTrigger(JobDetail, String)}.
+     */
     @Deprecated
     private Trigger createJobTrigger(final JobDetail jobDetail, final String cronExpression) {
         return TriggerBuilder.newTrigger().forJob(jobDetail).withIdentity(jobDetail.getKey().getName() + "-Trigger")
