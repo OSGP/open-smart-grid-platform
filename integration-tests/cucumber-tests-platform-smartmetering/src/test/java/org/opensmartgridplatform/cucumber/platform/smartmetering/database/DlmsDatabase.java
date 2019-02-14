@@ -16,6 +16,7 @@ import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServi
 import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseUrlDataRepository;
+import org.opensmartgridplatform.adapter.ws.smartmetering.application.ApplicationConstants;
 import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.NotificationWebServiceConfigurationBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -52,7 +53,7 @@ public class DlmsDatabase {
 
     private List<NotificationWebServiceConfiguration> notificationEndpointConfigurations() {
         final NotificationWebServiceConfigurationBuilder builder = new NotificationWebServiceConfigurationBuilder()
-                .withApplicationName("SMART_METERS")
+                .withApplicationName(ApplicationConstants.APPLICATION_NAME)
                 .withMarshallerContextPath("org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification")
                 .withTargetUri("http://localhost:8843/notifications").withoutCircuitBreakerConfig();
         final NotificationWebServiceConfiguration testOrgConfig = builder.build();

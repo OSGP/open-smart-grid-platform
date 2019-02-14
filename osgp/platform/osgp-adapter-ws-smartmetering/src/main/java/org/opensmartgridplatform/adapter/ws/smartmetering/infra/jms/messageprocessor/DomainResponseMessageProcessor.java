@@ -20,6 +20,7 @@ import org.opensmartgridplatform.adapter.ws.schema.shared.notification.GenericNo
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification.NotificationType;
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
 import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataService;
+import org.opensmartgridplatform.adapter.ws.smartmetering.application.ApplicationConstants;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
@@ -30,7 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 
 /**
  * Base class for MessageProcessor implementations. Each MessageProcessor
@@ -40,7 +40,6 @@ import org.springframework.beans.factory.annotation.Value;
  * MessageProcessors after dependency injection has completed.
  */
 public abstract class DomainResponseMessageProcessor implements MessageProcessor {
-
     /**
      * Logger for this class.
      */
@@ -59,8 +58,6 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
     @Autowired
     private ResponseDataService responseDataService;
 
-    @Value("${web.service.notification.application.name}")
-    private String applicationName;
 
     /**
      * The message type that a message processor implementation can handle.
@@ -133,7 +130,7 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
 
             // Send notification indicating data is available.
             this.notificationService.sendNotification(new NotificationWebServiceLookupKey(organisationIdentification,
-                    this.applicationName), new GenericNotification(notificationMessage, resultType.name(),
+                    ApplicationConstants.APPLICATION_NAME), new GenericNotification(notificationMessage, resultType.name(),
                     deviceIdentification, correlationUid, String.valueOf(notificationType)));
 
         } catch (final Exception e) {
