@@ -9,6 +9,7 @@ package org.opensmartgridplatform.adapter.ws.shared.services;
 
 import java.util.Objects;
 
+import ma.glasnost.orika.MapperFacade;
 import org.opensmartgridplatform.adapter.ws.clients.NotificationWebServiceTemplateFactory;
 import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceLookupKey;
 import org.opensmartgridplatform.adapter.ws.schema.shared.notification.GenericNotification;
@@ -16,8 +17,6 @@ import org.opensmartgridplatform.adapter.ws.schema.shared.notification.GenericSe
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ws.client.core.WebServiceTemplate;
-
-import ma.glasnost.orika.MapperFacade;
 
 /**
  * Notification service that sends notifications to endpoints with database
@@ -45,6 +44,8 @@ public class DefaultNotificationService<T> implements NotificationService {
     private final Class<T> sendNotificationRequestType;
     private final MapperFacade mapper;
 
+    private final String applicationName;
+
     /**
      * Notification service class that will send notifications to a web service
      * for which configuration is stored in the database.
@@ -61,19 +62,26 @@ public class DefaultNotificationService<T> implements NotificationService {
      * @see GenericSendNotificationRequest
      */
     public DefaultNotificationService(final NotificationWebServiceTemplateFactory templateFactory,
-            final Class<T> sendNotificationRequestType, final MapperFacade mapper) {
+            final Class<T> sendNotificationRequestType, final MapperFacade mapper, final String applicationName) {
 
         this.templateFactory = Objects.requireNonNull(templateFactory, "templateFactory must not be null");
         this.sendNotificationRequestType = Objects.requireNonNull(sendNotificationRequestType,
                 "sendNotificationRequestType must not be null");
         this.mapper = Objects.requireNonNull(mapper, "mapper must not be null");
+        this.applicationName = applicationName;
+    }
+
+    public DefaultNotificationService(final NotificationWebServiceTemplateFactory templateFactory,
+            final Class<T> sendNotificationRequestType, final MapperFacade mapper) {
+        this(templateFactory, sendNotificationRequestType, mapper, "");
     }
 
     @Override
     public void sendNotification(final String organisationIdentification, final String deviceIdentification,
             final String result, final String correlationUid, final String message, final Object notificationType) {
 
-        this.sendNotification(new NotificationWebServiceLookupKey(organisationIdentification), new GenericNotification(
+        this.sendNotification(new NotificationWebServiceLookupKey(organisationIdentification, this.applicationName),
+                new GenericNotification(
                 message, result, deviceIdentification, correlationUid, String.valueOf(notificationType)));
     }
 

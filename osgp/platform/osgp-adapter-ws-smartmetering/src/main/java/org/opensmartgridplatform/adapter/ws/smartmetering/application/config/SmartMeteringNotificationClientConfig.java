@@ -53,7 +53,7 @@ public class SmartMeteringNotificationClientConfig extends AbstractConfig {
         }
         final Class<SendNotificationRequest> notificationRequestType = SendNotificationRequest.class;
         return new CorrelationUidTargetedNotificationService<>(templateFactory, notificationRequestType, mapper,
-                responseUrlService);
+                responseUrlService, ApplicationConstants.APPLICATION_NAME);
     }
 
     @Bean
