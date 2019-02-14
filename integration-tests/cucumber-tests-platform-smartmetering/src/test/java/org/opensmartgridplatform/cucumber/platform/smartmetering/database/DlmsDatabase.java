@@ -52,7 +52,7 @@ public class DlmsDatabase {
 
     private List<NotificationWebServiceConfiguration> notificationEndpointConfigurations() {
         final NotificationWebServiceConfigurationBuilder builder = new NotificationWebServiceConfigurationBuilder()
-                .withApplicationName("")
+                .withApplicationName("SMART_METERS")
                 .withMarshallerContextPath("org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification")
                 .withTargetUri("http://localhost:8843/notifications").withoutCircuitBreakerConfig();
         final NotificationWebServiceConfiguration testOrgConfig = builder.build();

@@ -7,7 +7,7 @@
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.config;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 import org.opensmartgridplatform.adapter.ws.clients.NotificationWebServiceTemplateFactory;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
@@ -41,7 +41,7 @@ public class SmartMeteringNotificationClientConfig extends AbstractConfig {
     @Value("${web.service.notification.organisation:OSGP}")
     private String webserviceNotificationOrganisation;
 
-    @Value("${web.service.notification.application.name}")
+    @Value("SMART_METERS")
     private String webserviceNotificationApplicationName;
 
     @Bean
@@ -67,7 +67,7 @@ public class SmartMeteringNotificationClientConfig extends AbstractConfig {
                 .withApplicationName(this.webserviceNotificationApplicationName).build();
 
         return new NotificationWebServiceTemplateFactory(configRepository, this.messageFactory(),
-                Arrays.asList(addOsgpHeadersInterceptor));
+                Collections.singletonList(addOsgpHeadersInterceptor));
     }
 
     @Bean
