@@ -131,6 +131,9 @@ public class OsgpScheduler {
      */
     public void createAndScheduleJob(final Class<? extends Job> jobClass, final String cronExpression)
             throws SchedulerException {
+
+        LOGGER.info("Scheduling job: {} using Quartz cron expression: {}", jobClass.getSimpleName(), cronExpression);
+
         // Create job and trigger.
         final JobDetail jobDetail = this.createJobDetail(jobClass);
         final Trigger trigger = this.createJobTrigger(jobDetail, cronExpression);
