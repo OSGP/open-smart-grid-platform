@@ -51,7 +51,7 @@ public class OsgpScheduler {
     }
 
     /**
-     * Shutdown the Quartz is shutdown and delete the data.
+     * Shutdown the Quartz {@link Scheduler} and delete the data.
      *
      * @throws SchedulerException
      *             If the Quartz {@link Scheduler} can't shutdown or the data

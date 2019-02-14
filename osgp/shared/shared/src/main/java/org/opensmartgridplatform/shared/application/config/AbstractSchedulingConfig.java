@@ -55,7 +55,7 @@ public abstract class AbstractSchedulingConfig extends AbstractConfig {
     protected String databaseUsername;
 
     @Autowired
-    protected ApplicationContext applicationContext;
+    private ApplicationContext applicationContext;
 
     @Bean
     public SpringBeanJobFactory springBeanJobFactory() {

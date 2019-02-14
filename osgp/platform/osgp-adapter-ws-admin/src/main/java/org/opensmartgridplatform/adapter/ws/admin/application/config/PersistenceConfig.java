@@ -26,9 +26,8 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 @PropertySource(value = "file:${osgp/AdapterWsAdmin/config}", ignoreResourceNotFound = true)
 public class PersistenceConfig extends AbstractPersistenceConfig {
 
-    @Override
     @Bean(destroyMethod = "close")
-    public DataSource getDataSource() {
+    public DataSource dataSource() {
         return super.getDataSource();
     }
 
