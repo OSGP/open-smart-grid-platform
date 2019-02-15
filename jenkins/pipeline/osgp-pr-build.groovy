@@ -123,6 +123,7 @@ pipeline {
                 build job: 'Deploy an AWS System', parameters: [
                         string(name: 'SERVERNAME', value: servername),
                         string(name: 'PLAYBOOK', value: playbook),
+                        string(name: 'OSGP_APPLICATIONS_BRANCH', value: 'SLIM-1869_Build_troubleshooting'),
                         booleanParam(name: 'INSTALL_FROM_LOCAL_DIR', value: true),
                         string(name: 'ARTIFACT_DIRECTORY', value: "/data/software/artifacts"),
                         string(name: 'OSGP_VERSION', value: POMVERSION),
