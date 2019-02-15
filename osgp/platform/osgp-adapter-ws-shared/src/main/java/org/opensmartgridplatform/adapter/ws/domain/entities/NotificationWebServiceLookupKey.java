@@ -7,13 +7,19 @@
  */
 package org.opensmartgridplatform.adapter.ws.domain.entities;
 
+import static org.opensmartgridplatform.shared.utils.StacktraceUtils.currentStacktrace;
+
 import java.io.Serializable;
 import java.util.Objects;
 
 import javax.persistence.Embeddable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Embeddable
 public final class NotificationWebServiceLookupKey implements Serializable {
+    private static final Logger LOGGER = LoggerFactory.getLogger(NotificationWebServiceLookupKey.class);
 
     private static final long serialVersionUID = -6367887742782273500L;
 
@@ -35,6 +41,9 @@ public final class NotificationWebServiceLookupKey implements Serializable {
         this.organisationIdentification = Objects.requireNonNull(organisationIdentification,
                 "organisationIdentification must not be null");
         this.applicationName = Objects.requireNonNull(applicationName, "applicationName must not be null");
+        if (applicationName.isEmpty()) {
+            LOGGER.warn("Empty applicationnam created with stacktrace: \n{}", currentStacktrace());
+        }
     }
 
     public String getOrganisationIdentification() {
