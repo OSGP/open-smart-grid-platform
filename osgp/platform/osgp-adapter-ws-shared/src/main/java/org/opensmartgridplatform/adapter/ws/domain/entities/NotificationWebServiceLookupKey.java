@@ -31,7 +31,6 @@ public final class NotificationWebServiceLookupKey implements Serializable {
          * Public no-argument constructor, required for JPA composite primary
          * key class.
          */
-        LOGGER.warn("ApplicationName created with stacktrace: \n{}", currentStacktrace());
     }
 
     public NotificationWebServiceLookupKey(final String organisationIdentification) {
@@ -42,6 +41,7 @@ public final class NotificationWebServiceLookupKey implements Serializable {
         this.organisationIdentification = Objects.requireNonNull(organisationIdentification,
                 "organisationIdentification must not be null");
         this.applicationName = Objects.requireNonNull(applicationName, "applicationName must not be null");
+        // TODO (RvM): remove lines below
         if (applicationName.isEmpty()) {
             LOGGER.warn("Empty applicationName created with stacktrace: \n{}", currentStacktrace());
         }

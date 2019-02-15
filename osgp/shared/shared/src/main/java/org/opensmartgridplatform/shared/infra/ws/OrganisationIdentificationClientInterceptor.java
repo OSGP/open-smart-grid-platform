@@ -5,8 +5,6 @@ package org.opensmartgridplatform.shared.infra.ws;
 
 import javax.xml.namespace.QName;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.ws.client.support.interceptor.ClientInterceptorAdapter;
 import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.soap.SoapHeader;
@@ -19,7 +17,6 @@ public class OrganisationIdentificationClientInterceptor extends ClientIntercept
     private static final String USER_NAME_HEADER = "UserName";
     private static final String APPLICATION_NAME_HEADER = "ApplicationName";
     private static final String NAMESPACE = "http://www.opensmartgridplatform.org/schemas/common";
-    private static final Logger LOGGER = LoggerFactory.getLogger(OrganisationIdentificationClientInterceptor.class);
 
     private final String organisationIdentification;
     private final String userName;
@@ -95,11 +92,6 @@ public class OrganisationIdentificationClientInterceptor extends ClientIntercept
 
     @Override
     public boolean handleRequest(final MessageContext messageContext) {
-        // TODO (RvM): remove logging:
-        LOGGER.info("Adding SOAP headers: {}={}, {}={}, {}={}", this.organisationIdentificationHeaderName,
-                this.organisationIdentification, this.userNameHeaderName, this.userName,
-                this.applicationNameHeaderName, this.applicationName);
-
         final SoapMessage soapMessage = (SoapMessage) messageContext.getRequest();
         final SoapHeader soapHeader = soapMessage.getSoapHeader();
 
