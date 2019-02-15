@@ -39,7 +39,6 @@ public final class NotificationWebServiceLookupKey implements Serializable {
     }
 
     public NotificationWebServiceLookupKey(final String organisationIdentification, final String applicationName) {
-        LOGGER.warn("ApplicationName created with stacktrace: \n{}", currentStacktrace());
         this.organisationIdentification = Objects.requireNonNull(organisationIdentification,
                 "organisationIdentification must not be null");
         this.applicationName = Objects.requireNonNull(applicationName, "applicationName must not be null");
