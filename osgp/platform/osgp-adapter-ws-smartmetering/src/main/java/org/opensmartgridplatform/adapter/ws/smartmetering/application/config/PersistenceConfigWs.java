@@ -7,6 +7,8 @@
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.config;
 
+import javax.sql.DataSource;
+
 import org.flywaydb.core.Flyway;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
 import org.opensmartgridplatform.shared.application.config.AbstractPersistenceConfig;
@@ -35,6 +37,11 @@ public class PersistenceConfigWs extends AbstractPersistenceConfig {
         // Empty default constructor
     }
 
+    @Bean(destroyMethod = "close")
+    public DataSource dataSource() {
+        return super.getDataSource();
+    }
+
     @Override
     @Bean(name = "transactionManager")
     public JpaTransactionManager transactionManager() {
@@ -50,7 +57,6 @@ public class PersistenceConfigWs extends AbstractPersistenceConfig {
     @Bean
     @DependsOn("flyway")
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-
         return super.entityManagerFactory("OSGP_ADAPTER_WS_SMARTMETERING");
     }
 }

@@ -30,7 +30,7 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 @Configuration
 @ComponentScan(basePackages = { "org.opensmartgridplatform.domain.core",
         "org.opensmartgridplatform.adapter.ws.publiclighting", "org.opensmartgridplatform.adapter.ws.shared.services",
-        "org.opensmartgridplatform.adapter.ws.mapping" })
+        "org.opensmartgridplatform.adapter.ws.mapping", "org.opensmartgridplatform.shared.application.config" })
 @EnableTransactionManagement()
 @ImportResource("classpath:applicationContext.xml")
 @Import({ MessagingConfig.class, PersistenceConfigCore.class, WebServiceConfig.class,
