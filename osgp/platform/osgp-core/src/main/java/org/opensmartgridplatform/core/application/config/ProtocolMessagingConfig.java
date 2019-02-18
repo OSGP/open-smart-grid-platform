@@ -9,10 +9,12 @@ package org.opensmartgridplatform.core.application.config;
 
 import java.util.Arrays;
 
+import javax.net.ssl.SSLException;
+
+import org.apache.activemq.ActiveMQSslConnectionFactory;
 import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.broker.region.policy.RedeliveryPolicyMap;
 import org.apache.activemq.pool.PooledConnectionFactory;
-import org.apache.activemq.spring.ActiveMQConnectionFactory;
 import org.opensmartgridplatform.core.infra.jms.JmsTemplateSettings;
 import org.opensmartgridplatform.core.infra.jms.protocol.ProtocolRequestMessageJmsTemplateFactory;
 import org.opensmartgridplatform.core.infra.jms.protocol.ProtocolResponseMessageListenerContainerFactory;
@@ -21,12 +23,14 @@ import org.opensmartgridplatform.core.infra.jms.protocol.in.ProtocolResponseMess
 import org.opensmartgridplatform.domain.core.repositories.DomainInfoRepository;
 import org.opensmartgridplatform.domain.core.repositories.ProtocolInfoRepository;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
+import org.opensmartgridplatform.shared.application.config.jms.JmsBrokerSslSettings;
 import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -74,6 +78,19 @@ public class ProtocolMessagingConfig extends AbstractConfig {
 
     private static final String PROPERTY_NAME_MAX_RETRY_COUNT = "max.retry.count";
 
+    // JMS Settings: SSL settings for the protocol requests and responses
+    @Value("${jms.protocol.activemq.broker.client.key.store:/etc/ssl/certs/activemq-osgp-client.ks}")
+    private String clientKeyStore;
+
+    @Value("${jms.protocol.activemq.broker.client.key.store.pwd:1234}")
+    private String clientKeyStorePwd;
+
+    @Value("${jms.protocol.activemq.broker.client.trust.store:/etc/ssl/certs/trust.jks}")
+    private String trustKeyStore;
+
+    @Value("${jms.protocol.activemq.broker.client.trust.store.pwd:123456}")
+    private String trustKeyStorePwd;
+
     private static final int DEFAULT_MESSAGE_GROUP_CACHE_SIZE = 1024;
 
     @Autowired
@@ -106,7 +123,7 @@ public class ProtocolMessagingConfig extends AbstractConfig {
     }
 
     @Bean(destroyMethod = "stop")
-    public PooledConnectionFactory protocolPooledConnectionFactory() {
+    public PooledConnectionFactory protocolPooledConnectionFactory() throws SSLException {
         LOGGER.debug("Creating bean: pooledConnectionFactory");
 
         final PooledConnectionFactory pooledConnectionFactory = new PooledConnectionFactory();
@@ -115,10 +132,11 @@ public class ProtocolMessagingConfig extends AbstractConfig {
     }
 
     @Bean
-    public ActiveMQConnectionFactory protocolConnectionFactory() {
+    public ActiveMQSslConnectionFactory protocolConnectionFactory() throws SSLException {
         LOGGER.debug("Creating bean: connectionFactory");
 
-        final ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory();
+        final ActiveMQSslConnectionFactory activeMQConnectionFactory = new ActiveMQSslConnectionFactory();
+
         activeMQConnectionFactory.setRedeliveryPolicyMap(this.protocolRedeliveryPolicyMap());
         activeMQConnectionFactory
                 .setBrokerURL(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_ACTIVEMQ_BROKER_URL));
@@ -132,6 +150,10 @@ public class ProtocolMessagingConfig extends AbstractConfig {
             activeMQConnectionFactory.setTrustedPackages(Arrays.asList(
                     this.environment.getRequiredProperty(PROPERTY_NAME_JMS_ACTIVEMQ_TRUSTED_PACKAGES).split(",")));
         }
+
+        final JmsBrokerSslSettings jmsBrokerSslSettings = new JmsBrokerSslSettings(this.clientKeyStore,
+                this.clientKeyStorePwd, this.trustKeyStore, this.trustKeyStorePwd);
+        jmsBrokerSslSettings.applyToFactory(activeMQConnectionFactory);
 
         return activeMQConnectionFactory;
     }
@@ -171,7 +193,7 @@ public class ProtocolMessagingConfig extends AbstractConfig {
     // beans used for sending protocol request messages
 
     @Bean
-    public ProtocolRequestMessageJmsTemplateFactory protocolRequestsJmsTemplate() {
+    public ProtocolRequestMessageJmsTemplateFactory protocolRequestsJmsTemplate() throws SSLException {
         final JmsTemplateSettings jmsTemplateSettings = new JmsTemplateSettings(
                 Boolean.parseBoolean(this.environment
                         .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_PROTOCOL_REQUESTS_EXPLICIT_QOS_ENABLED)),
@@ -188,7 +210,8 @@ public class ProtocolMessagingConfig extends AbstractConfig {
     // beans used for receiving protocol response messages
 
     @Bean
-    public ProtocolResponseMessageListenerContainerFactory protocolResponseMessageListenerContainer() {
+    public ProtocolResponseMessageListenerContainerFactory protocolResponseMessageListenerContainer()
+            throws SSLException {
         final ProtocolResponseMessageListenerContainerFactory messageListenerContainer = new ProtocolResponseMessageListenerContainerFactory(
                 this.protocolInfoRepository.findAll());
         messageListenerContainer.setConnectionFactory(this.protocolPooledConnectionFactory());
@@ -205,7 +228,8 @@ public class ProtocolMessagingConfig extends AbstractConfig {
 
     @Bean
     public ProtocolRequestMessageListenerContainerFactory protocolRequestMessageListenerContainer(
-            @Qualifier("osgpCoreIncomingProtocolRequestMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
+            @Qualifier("osgpCoreIncomingProtocolRequestMessageProcessorMap") final MessageProcessorMap messageProcessorMap)
+            throws SSLException {
         final ProtocolRequestMessageListenerContainerFactory messageListenerContainer = new ProtocolRequestMessageListenerContainerFactory(
                 this.protocolInfoRepository.findAll(), this.domainInfoRepository.findAll(), messageProcessorMap);
         messageListenerContainer.setConnectionFactory(this.protocolPooledConnectionFactory());
@@ -221,7 +245,7 @@ public class ProtocolMessagingConfig extends AbstractConfig {
     // beans used for sending protocol response messages
 
     @Bean
-    public ProtocolResponseMessageJmsTemplateFactory protocolResponseJmsTemplateFactory() {
+    public ProtocolResponseMessageJmsTemplateFactory protocolResponseJmsTemplateFactory() throws SSLException {
         final JmsTemplateSettings jmsTemplateSettings = new JmsTemplateSettings(
                 Boolean.parseBoolean(this.environment
                         .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_PROTOCOL_RESPONSES_EXPLICIT_QOS_ENABLED)),

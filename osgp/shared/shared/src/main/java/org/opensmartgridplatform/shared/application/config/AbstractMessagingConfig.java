@@ -9,12 +9,17 @@ package org.opensmartgridplatform.shared.application.config;
 
 import java.util.Arrays;
 
+import javax.net.ssl.SSLException;
+
 import org.apache.activemq.ActiveMQPrefetchPolicy;
+import org.apache.activemq.ActiveMQSslConnectionFactory;
 import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.broker.region.policy.RedeliveryPolicyMap;
 import org.apache.activemq.pool.PooledConnectionFactory;
-import org.apache.activemq.spring.ActiveMQConnectionFactory;
+import org.opensmartgridplatform.shared.application.config.jms.JmsBrokerSslSettings;
 import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 
@@ -22,6 +27,8 @@ import org.springframework.context.annotation.Bean;
  * This class provides the basic components used for JMS messaging.
  */
 public abstract class AbstractMessagingConfig extends AbstractConfig {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractMessagingConfig.class);
 
     @Value("${jms.activemq.broker.url:tcp://localhost:61616}")
     private String activeMqBroker;
@@ -59,6 +66,18 @@ public abstract class AbstractMessagingConfig extends AbstractConfig {
     @Value("${jms.activemq.trusted.packages:org.opensmartgridplatform,org.joda.time,java.util}")
     private String trustedPackages;
 
+    @Value("${jms.activemq.broker.client.key.store:/etc/ssl/certs/activemq-osgp-client.ks}")
+    private String clientKeyStore;
+
+    @Value("${jms.activemq.broker.client.key.store.pwd:1234}")
+    private String clientKeyStorePwd;
+
+    @Value("${jms.activemq.broker.client.trust.store:/etc/ssl/certs/trust.jks}")
+    private String trustKeyStore;
+
+    @Value("${jms.activemq.broker.client.trust.store.pwd:123456}")
+    private String trustKeyStorePwd;
+
     protected String getActiveMQBroker() {
         return this.activeMqBroker;
     }
@@ -82,7 +101,7 @@ public abstract class AbstractMessagingConfig extends AbstractConfig {
     }
 
     @Bean(destroyMethod = "stop")
-    protected PooledConnectionFactory pooledConnectionFactory() {
+    protected PooledConnectionFactory pooledConnectionFactory() throws SSLException {
         final PooledConnectionFactory pooledConnectionFactory = new PooledConnectionFactory();
         pooledConnectionFactory.setConnectionFactory(this.connectionFactory());
         pooledConnectionFactory.setMaxConnections(this.getConnectionPoolSize());
@@ -97,11 +116,12 @@ public abstract class AbstractMessagingConfig extends AbstractConfig {
         return pooledConnectionFactory;
     }
 
-    protected ActiveMQConnectionFactory connectionFactory() {
+    protected ActiveMQSslConnectionFactory connectionFactory() throws SSLException {
         final ActiveMQPrefetchPolicy activeMQPrefetchPolicy = new ActiveMQPrefetchPolicy();
         activeMQPrefetchPolicy.setQueuePrefetch(this.getQueuePrefetch());
 
-        final ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory();
+        final ActiveMQSslConnectionFactory activeMQConnectionFactory = new ActiveMQSslConnectionFactory();
+
         activeMQConnectionFactory.setRedeliveryPolicyMap(this.redeliveryPolicyMap());
         activeMQConnectionFactory.setBrokerURL(this.getActiveMQBroker());
         activeMQConnectionFactory.setNonBlockingRedelivery(true);
@@ -111,6 +131,10 @@ public abstract class AbstractMessagingConfig extends AbstractConfig {
         if (!this.trustAllPackages) {
             activeMQConnectionFactory.setTrustedPackages(Arrays.asList(this.trustedPackages.split(",")));
         }
+
+        final JmsBrokerSslSettings jmsBrokerSslSettings = new JmsBrokerSslSettings(this.clientKeyStore,
+                this.clientKeyStorePwd, this.trustKeyStore, this.trustKeyStorePwd);
+        jmsBrokerSslSettings.applyToFactory(activeMQConnectionFactory);
 
         return activeMQConnectionFactory;
     }

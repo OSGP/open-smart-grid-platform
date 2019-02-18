@@ -9,10 +9,12 @@ package org.opensmartgridplatform.core.application.config;
 
 import java.util.Arrays;
 
+import javax.net.ssl.SSLException;
+
+import org.apache.activemq.ActiveMQSslConnectionFactory;
 import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.broker.region.policy.RedeliveryPolicyMap;
 import org.apache.activemq.pool.PooledConnectionFactory;
-import org.apache.activemq.spring.ActiveMQConnectionFactory;
 import org.opensmartgridplatform.core.infra.jms.JmsTemplateSettings;
 import org.opensmartgridplatform.core.infra.jms.domain.DomainRequestMessageListenerContainerFactory;
 import org.opensmartgridplatform.core.infra.jms.domain.DomainResponseMessageJmsTemplateFactory;
@@ -21,9 +23,11 @@ import org.opensmartgridplatform.core.infra.jms.domain.in.DomainResponseMessageL
 import org.opensmartgridplatform.domain.core.repositories.DomainInfoRepository;
 import org.opensmartgridplatform.domain.core.repositories.ProtocolInfoRepository;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
+import org.opensmartgridplatform.shared.application.config.jms.JmsBrokerSslSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -69,6 +73,19 @@ public class DomainMessagingConfig extends AbstractConfig {
 
     private static final String PROPERTY_NAME_NETMANAGEMENT_ORGANISATION = "netmanagement.organisation";
 
+    // JMS Settings: SSL settings for the domain requests and responses
+    @Value("${jms.domain.activemq.broker.client.key.store:/etc/ssl/certs/activemq-osgp-client.ks}")
+    private String clientKeyStore;
+
+    @Value("${jms.domain.activemq.broker.client.key.store.pwd:1234}")
+    private String clientKeyStorePwd;
+
+    @Value("${jms.domain.activemq.broker.client.trust.store:/etc/ssl/certs/trust.jks}")
+    private String trustKeyStore;
+
+    @Value("${jms.domain.activemq.broker.client.trust.store.pwd:123456}")
+    private String trustKeyStorePwd;
+
     @Autowired
     private DomainInfoRepository domainInfoRepository;
 
@@ -78,7 +95,7 @@ public class DomainMessagingConfig extends AbstractConfig {
     private static final Logger LOGGER = LoggerFactory.getLogger(DomainMessagingConfig.class);
 
     @Bean(destroyMethod = "stop")
-    public PooledConnectionFactory domainPooledConnectionFactory() {
+    public PooledConnectionFactory domainPooledConnectionFactory() throws SSLException {
         LOGGER.debug("Creating bean: pooledConnectionFactory");
 
         final PooledConnectionFactory pooledConnectionFactory = new PooledConnectionFactory();
@@ -87,10 +104,10 @@ public class DomainMessagingConfig extends AbstractConfig {
     }
 
     @Bean
-    public ActiveMQConnectionFactory domainConnectionFactory() {
+    public ActiveMQSslConnectionFactory domainConnectionFactory() throws SSLException {
         LOGGER.debug("Creating bean: connectionFactory");
 
-        final ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory();
+        final ActiveMQSslConnectionFactory activeMQConnectionFactory = new ActiveMQSslConnectionFactory();
         activeMQConnectionFactory.setRedeliveryPolicyMap(this.domainRedeliveryPolicyMap());
         activeMQConnectionFactory
                 .setBrokerURL(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_ACTIVEMQ_BROKER_URL));
@@ -104,6 +121,11 @@ public class DomainMessagingConfig extends AbstractConfig {
             activeMQConnectionFactory.setTrustedPackages(Arrays.asList(
                     this.environment.getRequiredProperty(PROPERTY_NAME_JMS_ACTIVEMQ_TRUSTED_PACKAGES).split(",")));
         }
+
+        final JmsBrokerSslSettings jmsBrokerSslSettings = new JmsBrokerSslSettings(this.clientKeyStore,
+                this.clientKeyStorePwd, this.trustKeyStore, this.trustKeyStorePwd);
+        jmsBrokerSslSettings.applyToFactory(activeMQConnectionFactory);
+
         return activeMQConnectionFactory;
     }
 
@@ -142,7 +164,7 @@ public class DomainMessagingConfig extends AbstractConfig {
     // beans used for sending domain response messages
 
     @Bean
-    public DomainResponseMessageJmsTemplateFactory domainResponseJmsTemplateFactory() {
+    public DomainResponseMessageJmsTemplateFactory domainResponseJmsTemplateFactory() throws SSLException {
         LOGGER.debug("Creating bean: domainResponseJmsTemplateFactory");
 
         final JmsTemplateSettings jmsTemplateSettings = new JmsTemplateSettings(
@@ -160,7 +182,8 @@ public class DomainMessagingConfig extends AbstractConfig {
     // beans used for receiving domain request messages
 
     @Bean
-    public DomainRequestMessageListenerContainerFactory domainRequestMessageListenerContainerFactory() {
+    public DomainRequestMessageListenerContainerFactory domainRequestMessageListenerContainerFactory()
+            throws SSLException {
         LOGGER.debug("Creating bean: domainResponseMessageListenerContainerFactory");
 
         final DomainRequestMessageListenerContainerFactory messageListenerContainer = new DomainRequestMessageListenerContainerFactory(
@@ -178,7 +201,7 @@ public class DomainMessagingConfig extends AbstractConfig {
     // beans used for sending incoming domain request messages
 
     @Bean
-    public DomainRequestMessageJmsTemplateFactory domainRequestMessageJmsTemplateFactory() {
+    public DomainRequestMessageJmsTemplateFactory domainRequestMessageJmsTemplateFactory() throws SSLException {
         final JmsTemplateSettings jmsTemplateSettings = new JmsTemplateSettings(
                 Boolean.parseBoolean(this.environment
                         .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_DOMAIN_REQUESTS_EXPLICIT_QOS_ENABLED)),
@@ -195,7 +218,7 @@ public class DomainMessagingConfig extends AbstractConfig {
     // beans used for receiving incoming domain response messages
 
     @Bean
-    public DomainResponseMessageListenerContainerFactory domainResponseMessageListenerContainer() {
+    public DomainResponseMessageListenerContainerFactory domainResponseMessageListenerContainer() throws SSLException {
         final DomainResponseMessageListenerContainerFactory messageListenerContainer = new DomainResponseMessageListenerContainerFactory(
                 this.domainInfoRepository.findAll(), this.protocolInfoRepository.findAll());
         messageListenerContainer.setConnectionFactory(this.domainPooledConnectionFactory());
