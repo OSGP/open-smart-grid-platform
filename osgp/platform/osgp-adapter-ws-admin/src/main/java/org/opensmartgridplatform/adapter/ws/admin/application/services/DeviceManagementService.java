@@ -272,12 +272,9 @@ public class DeviceManagementService {
 
         this.isAllowed(ownerOrganisation, device, DeviceFunction.SET_DEVICE_AUTHORIZATION);
 
-        // Never remove the OWNER authorization for the net management
-        // organization.
-        if (this.netManagementOrganisation.equals(organisationIdentification)
-                && DeviceFunctionGroup.OWNER.equals(group)) {
-            LOGGER.info("Not removing DeviceFunctionGroup.OWNER for net management organisation: {}",
-                    this.netManagementOrganisation);
+        // Never remove the OWNER authorization
+        if (ownerOrganisation.equals(organisation) && DeviceFunctionGroup.OWNER.equals(group)) {
+            LOGGER.info("Not removing DeviceFunctionGroup.OWNER for organisation: {}", organisation);
             return;
         }
 
