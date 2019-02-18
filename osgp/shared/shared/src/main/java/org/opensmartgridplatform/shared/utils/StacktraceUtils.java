@@ -13,6 +13,10 @@ import java.util.stream.Stream;
 
 /** Convenience methods dealing with stacktraces. */
 public class StacktraceUtils {
+    private StacktraceUtils() {
+        throw new UnsupportedOperationException("Not instantiable.");
+    }
+
     public static String currentStacktrace() {
         return Stream.of(new Throwable().getStackTrace()).skip(1).map(StackTraceElement::toString).collect(Collectors.joining("\n  at "));
     }

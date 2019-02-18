@@ -88,7 +88,7 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
         LOGGER.debug("Processing smart metering response message");
 
         String correlationUid = null;
-        String messageType = null;
+        String actualMessageType = null;
         String organisationIdentification = null;
         String deviceIdentification = null;
 
@@ -100,20 +100,20 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
 
         try {
             correlationUid = message.getJMSCorrelationID();
-            messageType = message.getJMSType();
+            actualMessageType = message.getJMSType();
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
             resultType = ResponseMessageResultType.valueOf(message.getStringProperty(Constants.RESULT));
             resultDescription = message.getStringProperty(Constants.DESCRIPTION);
 
             notificationMessage = message.getStringProperty(Constants.DESCRIPTION);
-            notificationType = NotificationType.valueOf(messageType);
+            notificationType = NotificationType.valueOf(actualMessageType);
 
             dataObject = message.getObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
-            LOGGER.debug("messageType: {}", messageType);
+            LOGGER.debug("messageType: {}", actualMessageType);
             LOGGER.debug("organisationIdentification: {}", organisationIdentification);
             LOGGER.debug("deviceIdentification: {}", deviceIdentification);
             return;
@@ -121,11 +121,11 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
 
         try {
             LOGGER.info("Calling application service function to handle response: {} with correlationUid: {}",
-                    messageType, correlationUid);
+                    actualMessageType, correlationUid);
 
             final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification,
                     correlationUid);
-            this.handleMessage(ids, messageType, resultType, resultDescription, dataObject);
+            this.handleMessage(ids, actualMessageType, resultType, resultDescription, dataObject);
 
             // Send notification indicating data is available.
             this.notificationService.sendNotification(new NotificationWebServiceLookupKey(organisationIdentification,

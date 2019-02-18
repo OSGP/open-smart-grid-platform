@@ -10,6 +10,9 @@ package org.opensmartgridplatform.adapter.ws.smartmetering.application;
 
 /** A single place for shared constants. */
 public class ApplicationConstants {
+    private ApplicationConstants() {
+        throw new UnsupportedOperationException("Not instantiable.");
+    }
 
     public static final String APPLICATION_NAME = "SMART_METERS";
 }
