@@ -33,6 +33,10 @@ public class RtuDevice extends Device {
         this.lastCommunicationTime = new Date();
     }
 
+    public void messageReceived(final Date date) {
+        this.lastCommunicationTime = date;
+    }
+
     public Date getLastCommunicationTime() {
         return this.lastCommunicationTime;
     }
