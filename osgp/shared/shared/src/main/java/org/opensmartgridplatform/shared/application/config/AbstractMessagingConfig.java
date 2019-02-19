@@ -18,8 +18,6 @@ import org.apache.activemq.broker.region.policy.RedeliveryPolicyMap;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.opensmartgridplatform.shared.application.config.jms.JmsBrokerSslSettings;
 import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 
@@ -28,9 +26,7 @@ import org.springframework.context.annotation.Bean;
  */
 public abstract class AbstractMessagingConfig extends AbstractConfig {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractMessagingConfig.class);
-
-    @Value("${jms.activemq.broker.url:tcp://localhost:61616}")
+    @Value("${jms.activemq.broker.url:ssl://localhost:61617}")
     private String activeMqBroker;
 
     @Value("${jms.activemq.connection.pool.size:10}")
