@@ -5,7 +5,8 @@ def servername = stream + '-at-' + env.BUILD_NUMBER
 def playbook = stream + '-at.yml'
 
 // Choose the branch to use for SmartSocietyServices/release repository. Default value is 'master'.
-def branchReleaseRepo = 'master'
+// TODO (RvM): revert to 'master'.
+def branchReleaseRepo = 'SLIM-1869_Make_it_easier_to_simulate_dlms_devices'
 
 pipeline {
     agent any
@@ -55,8 +56,7 @@ pipeline {
                 sh "./runTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-common centos \"OSGP Development.pem\""
                 sh "./runPubliclightingTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-publiclighting centos \"OSGP Development.pem\""
                 sh "./runMicrogridsTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-microgrids centos \"OSGP Development.pem\""
-                // Smart metering test have been disabled due to dlms simulator problems caused by SLIM-1869.                
-                //sh "./runSmartMeteringTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-smartmetering centos \"OSGP Development.pem\""
+                sh "./runSmartMeteringTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-smartmetering centos \"OSGP Development.pem\""
             }
         }
 

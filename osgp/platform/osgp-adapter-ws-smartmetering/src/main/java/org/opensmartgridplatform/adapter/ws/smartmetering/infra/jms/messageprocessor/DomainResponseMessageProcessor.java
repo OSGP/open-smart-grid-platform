@@ -1,7 +1,8 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -13,12 +14,15 @@ import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
+import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceLookupKey;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
+import org.opensmartgridplatform.adapter.ws.schema.shared.notification.GenericNotification;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification.NotificationType;
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
 import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataService;
-import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
+import org.opensmartgridplatform.adapter.ws.smartmetering.application.ApplicationConstants;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -34,10 +38,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
  * the MessageProcessor implementation can process should be passed in at
  * construction. The Singleton instance is added to the HashMap of
  * MessageProcessors after dependency injection has completed.
- *
  */
 public abstract class DomainResponseMessageProcessor implements MessageProcessor {
-
     /**
      * Logger for this class.
      */
@@ -82,36 +84,36 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
     }
 
     @Override
-    public void processMessage(final ObjectMessage message) throws JMSException {
+    public void processMessage(final ObjectMessage message) {
         LOGGER.debug("Processing smart metering response message");
 
         String correlationUid = null;
-        String messageType = null;
+        String actualMessageType = null;
         String organisationIdentification = null;
         String deviceIdentification = null;
 
-        String notificationMessage;
-        NotificationType notificationType;
-        ResponseMessageResultType resultType;
-        String resultDescription;
-        Serializable dataObject;
+        final String notificationMessage;
+        final NotificationType notificationType;
+        final ResponseMessageResultType resultType;
+        final String resultDescription;
+        final Serializable dataObject;
 
         try {
             correlationUid = message.getJMSCorrelationID();
-            messageType = message.getJMSType();
+            actualMessageType = message.getJMSType();
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
             resultType = ResponseMessageResultType.valueOf(message.getStringProperty(Constants.RESULT));
             resultDescription = message.getStringProperty(Constants.DESCRIPTION);
 
             notificationMessage = message.getStringProperty(Constants.DESCRIPTION);
-            notificationType = NotificationType.valueOf(messageType);
+            notificationType = NotificationType.valueOf(actualMessageType);
 
             dataObject = message.getObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
-            LOGGER.debug("messageType: {}", messageType);
+            LOGGER.debug("messageType: {}", actualMessageType);
             LOGGER.debug("organisationIdentification: {}", organisationIdentification);
             LOGGER.debug("deviceIdentification: {}", deviceIdentification);
             return;
@@ -119,15 +121,16 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
 
         try {
             LOGGER.info("Calling application service function to handle response: {} with correlationUid: {}",
-                    messageType, correlationUid);
+                    actualMessageType, correlationUid);
 
             final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification,
                     correlationUid);
-            this.handleMessage(ids, messageType, resultType, resultDescription, dataObject);
+            this.handleMessage(ids, actualMessageType, resultType, resultDescription, dataObject);
 
             // Send notification indicating data is available.
-            this.notificationService.sendNotification(organisationIdentification, deviceIdentification,
-                    resultType.name(), correlationUid, notificationMessage, notificationType);
+            this.notificationService.sendNotification(new NotificationWebServiceLookupKey(organisationIdentification,
+                    ApplicationConstants.APPLICATION_NAME), new GenericNotification(notificationMessage, resultType.name(),
+                    deviceIdentification, correlationUid, String.valueOf(notificationType)));
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, notificationType);
@@ -138,7 +141,7 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
             final ResponseMessageResultType resultType, final String resultDescription, final Serializable dataObject) {
 
         final short numberOfNotificationsSent = 0;
-        Serializable meterResponseObject;
+        final Serializable meterResponseObject;
         if (dataObject == null) {
             meterResponseObject = resultDescription;
         } else {
