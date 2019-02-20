@@ -51,8 +51,10 @@ public class SecurityService {
                         PlatformFunction.GET_FIRMWARE, PlatformFunction.CREATE_FIRMWARE,
                         PlatformFunction.REMOVE_FIRMWARE, PlatformFunction.CHANGE_FIRMWARE });
 
-        platformMapping.put(PlatformFunctionGroup.USER, new PlatformFunction[] { PlatformFunction.GET_ORGANISATIONS,
-                PlatformFunction.FIND_DEVICES, PlatformFunction.GET_MANUFACTURERS });
+        platformMapping.put(PlatformFunctionGroup.USER,
+                new PlatformFunction[] { PlatformFunction.GET_ORGANISATIONS, PlatformFunction.FIND_DEVICES,
+                        PlatformFunction.GET_MANUFACTURERS, PlatformFunction.GET_DEVICE_MODELS,
+                        PlatformFunction.GET_FIRMWARE, PlatformFunction.GET_MESSAGES });
     }
 
     @Autowired
