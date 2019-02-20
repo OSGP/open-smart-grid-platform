@@ -184,6 +184,7 @@ public class PlatformKeys extends Keys {
     public static final String KEY_PAGE = "Page";
     public static final String KEY_PAGE_SIZE = "PageSize";
     public static final String KEY_PERIOD_TYPE = "PeriodType";
+    public static final String KEY_PLATFORM_FUNCTION = "PlatformFunction";
     public static final String KEY_PLATFORM_FUNCTION_GROUP = "PlatformFunctionGroup";
     public static final String KEY_POSTCODE = "containerPostalCode";
     public static final String KEY_PREFERRED_LINKTYPE = "PreferredLinkType";
