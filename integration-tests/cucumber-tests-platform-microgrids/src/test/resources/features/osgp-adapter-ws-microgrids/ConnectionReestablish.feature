@@ -5,8 +5,9 @@ Feature: Microgrids Re-establish Connection
 
   Scenario: Connection lost and reestablished
     Given an rtu iec61850 device
-      | DeviceIdentification | RTU-PAMPUS |
-      | Port                 |      62102 |
+      | DeviceIdentification  | RTU-PAMPUS |
+      | Port                  |      62102 |
+      | LastCommunicationTime | yesterday  |
     When the OSGP connection is lost with the RTU device
     Then I should receive a notification
     And the get data response should be returned

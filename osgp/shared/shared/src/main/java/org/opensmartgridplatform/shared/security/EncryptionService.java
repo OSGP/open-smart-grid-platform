@@ -25,14 +25,13 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
-import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
-import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 
 /**
  * Encryption service class that offers encrypt and decrypt methods to encrypt
@@ -100,6 +99,13 @@ public class EncryptionService {
 
             throw new FunctionalException(FunctionalExceptionType.READING_KEY_EXCEPTION, ComponentType.SHARED, e);
         }
+    }
+
+    /* package private */
+    EncryptionService withSecretKeyAt(final String keyPath) throws FunctionalException {
+        this.keyPath = keyPath;
+        this.initEncryption();
+        return this;
     }
 
     /**
@@ -180,7 +186,7 @@ public class EncryptionService {
             final Cipher cipher = Cipher.getInstance(ALGORITHM, PROVIDER);
             cipher.init(Cipher.ENCRYPT_MODE, this.key, new IvParameterSpec(IVBYTES));
             return cipher.doFinal(inputData);
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException
+        } catch (final NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException
                 | BadPaddingException | NoSuchProviderException | InvalidAlgorithmParameterException e) {
             LOGGER.error("Unexpected exception during encryption", e);
 
