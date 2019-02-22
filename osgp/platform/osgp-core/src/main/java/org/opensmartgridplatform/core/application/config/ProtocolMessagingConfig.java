@@ -79,16 +79,16 @@ public class ProtocolMessagingConfig extends AbstractConfig {
     private static final String PROPERTY_NAME_MAX_RETRY_COUNT = "max.retry.count";
 
     // JMS Settings: SSL settings for the protocol requests and responses
-    @Value("${jms.protocol.activemq.broker.client.key.store:/etc/ssl/certs/activemq-osgp-client.ks}")
+    @Value("${jms.protocol.activemq.broker.client.key.store:/etc/osp/activemq/client.ks}")
     private String clientKeyStore;
 
-    @Value("${jms.protocol.activemq.broker.client.key.store.pwd:1234}")
+    @Value("${jms.protocol.activemq.broker.client.key.store.pwd:password}")
     private String clientKeyStorePwd;
 
-    @Value("${jms.protocol.activemq.broker.client.trust.store:/etc/ssl/certs/trust.jks}")
+    @Value("${jms.protocol.activemq.broker.client.trust.store:/etc/osp/activemq/client.ts}")
     private String trustKeyStore;
 
-    @Value("${jms.protocol.activemq.broker.client.trust.store.pwd:123456}")
+    @Value("${jms.protocol.activemq.broker.client.trust.store.pwd:password}")
     private String trustKeyStorePwd;
 
     private static final int DEFAULT_MESSAGE_GROUP_CACHE_SIZE = 1024;

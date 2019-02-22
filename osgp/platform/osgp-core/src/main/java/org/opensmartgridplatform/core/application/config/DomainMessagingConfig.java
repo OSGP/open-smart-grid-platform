@@ -74,16 +74,16 @@ public class DomainMessagingConfig extends AbstractConfig {
     private static final String PROPERTY_NAME_NETMANAGEMENT_ORGANISATION = "netmanagement.organisation";
 
     // JMS Settings: SSL settings for the domain requests and responses
-    @Value("${jms.domain.activemq.broker.client.key.store:/etc/ssl/certs/activemq-osgp-client.ks}")
+    @Value("${jms.domain.activemq.broker.client.key.store:/etc/osp/activemq/client.ks}")
     private String clientKeyStore;
 
-    @Value("${jms.domain.activemq.broker.client.key.store.pwd:1234}")
+    @Value("${jms.domain.activemq.broker.client.key.store.pwd:password}")
     private String clientKeyStorePwd;
 
-    @Value("${jms.domain.activemq.broker.client.trust.store:/etc/ssl/certs/trust.jks}")
+    @Value("${jms.domain.activemq.broker.client.trust.store:/etc/osp/activemq/client.ts}")
     private String trustKeyStore;
 
-    @Value("${jms.domain.activemq.broker.client.trust.store.pwd:123456}")
+    @Value("${jms.domain.activemq.broker.client.trust.store.pwd:password}")
     private String trustKeyStorePwd;
 
     @Autowired

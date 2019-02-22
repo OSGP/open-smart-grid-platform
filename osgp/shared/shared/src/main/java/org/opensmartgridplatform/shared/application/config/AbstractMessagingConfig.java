@@ -62,16 +62,16 @@ public abstract class AbstractMessagingConfig extends AbstractConfig {
     @Value("${jms.activemq.trusted.packages:org.opensmartgridplatform,org.joda.time,java.util}")
     private String trustedPackages;
 
-    @Value("${jms.activemq.broker.client.key.store:/etc/ssl/certs/activemq-osgp-client.ks}")
+    @Value("${jms.activemq.broker.client.key.store:/etc/osp/activemq/client.ks}")
     private String clientKeyStore;
 
-    @Value("${jms.activemq.broker.client.key.store.pwd:1234}")
+    @Value("${jms.activemq.broker.client.key.store.pwd:password}")
     private String clientKeyStorePwd;
 
-    @Value("${jms.activemq.broker.client.trust.store:/etc/ssl/certs/trust.jks}")
+    @Value("${jms.activemq.broker.client.trust.store:/etc/osp/activemq/client.ts}")
     private String trustKeyStore;
 
-    @Value("${jms.activemq.broker.client.trust.store.pwd:123456}")
+    @Value("${jms.activemq.broker.client.trust.store.pwd:password}")
     private String trustKeyStorePwd;
 
     protected String getActiveMQBroker() {
