@@ -43,9 +43,11 @@ public class JmsBrokerSslSettings {
         try {
             if (factory.getBrokerURL().contains("ssl://")) {
                 // SSL configuration.
-                LOGGER.info("Using SSL for ActiveMQ broker, set KeyStore and TrustStore");
+                LOGGER.info("Using SSL for ActiveMQ broker {}, set KeyStore and TrustStore", factory.getBrokerURL());
+                LOGGER.info("Keystore: {}", this.clientKeyStore);
                 factory.setKeyStore(this.clientKeyStore);
                 factory.setKeyStorePassword(this.clientKeyStorePwd);
+                LOGGER.info("Truststore: {}", this.trustKeyStore);
                 factory.setTrustStore(this.trustKeyStore);
                 factory.setTrustStorePassword(this.trustKeyStorePwd);
             } else {
