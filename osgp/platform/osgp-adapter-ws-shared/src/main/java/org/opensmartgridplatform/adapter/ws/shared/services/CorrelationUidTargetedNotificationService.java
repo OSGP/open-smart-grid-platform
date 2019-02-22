@@ -10,8 +10,6 @@ package org.opensmartgridplatform.adapter.ws.shared.services;
 import org.opensmartgridplatform.adapter.ws.clients.NotificationWebServiceTemplateFactory;
 import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceLookupKey;
 import org.opensmartgridplatform.adapter.ws.schema.shared.notification.GenericNotification;
-import org.opensmartgridplatform.adapter.ws.shared.services.DefaultNotificationService;
-import org.opensmartgridplatform.adapter.ws.shared.services.ResponseUrlService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,9 +27,9 @@ public class CorrelationUidTargetedNotificationService<T> extends DefaultNotific
 
     public CorrelationUidTargetedNotificationService(final NotificationWebServiceTemplateFactory templateFactory,
             final Class<T> sendNotificationRequestType, final MapperFacade mapper,
-            final ResponseUrlService responseUrlService) {
+            final ResponseUrlService responseUrlService, final String applicationName) {
 
-        super(templateFactory, sendNotificationRequestType, mapper);
+        super(templateFactory, sendNotificationRequestType, mapper, applicationName);
         this.responseUrlService = responseUrlService;
     }
 

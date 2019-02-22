@@ -231,7 +231,7 @@ public class PlatformKeys extends Keys {
     public static final String KEY_VERSION = "Version";
     public static final String KEY_RESPONSE_URL = "ResponseUrl";
 
-    public static final String LAST_COMMUNICATION_TIME = "LastCommunicationTime";
+    public static final String KEY_LAST_COMMUNICATION_TIME = "LastCommunicationTime";
     public static final String LOGIN_ATTEMPT_COUNT = "LoginAttemptCount";
     public static final String LONG_INTERVAL = "LongInterval";
     public static final String MANUFACTURER_CODE = "ManufacturerCode";

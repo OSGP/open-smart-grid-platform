@@ -7,7 +7,6 @@
  */
 package org.opensmartgridplatform.adapter.ws.tariffswitching.application.config;
 
-import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
@@ -51,7 +50,8 @@ public class PersistenceConfigCore extends AbstractPersistenceConfig {
 
     private HikariDataSource dataSourceCore;
 
-    private DataSource getDataSourceCore() {
+    @Bean(destroyMethod = "close")
+    public DataSource getDataSourceCore() {
 
         if (this.dataSourceCore == null) {
 
@@ -77,13 +77,5 @@ public class PersistenceConfigCore extends AbstractPersistenceConfig {
 
         return super.entityManagerFactory("OSGP_WS_ADAPTER_TARIFFSWITCHING", this.getDataSourceCore(),
                 this.entitymanagerPackagesToScan);
-    }
-
-    @Override
-    @PreDestroy
-    public void destroyDataSource() {
-        if (this.dataSourceCore != null) {
-            this.dataSourceCore.close();
-        }
     }
 }

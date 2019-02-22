@@ -12,19 +12,6 @@ import javax.annotation.Resource;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeZone;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.ImportResource;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
-import org.springframework.core.env.Environment;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
-import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
-
 import org.opensmartgridplatform.adapter.ws.infra.specifications.JpaDeviceSpecifications;
 import org.opensmartgridplatform.adapter.ws.infra.specifications.JpaEventSpecifications;
 import org.opensmartgridplatform.adapter.ws.shared.db.application.config.WritablePersistenceConfig;
@@ -35,19 +22,30 @@ import org.opensmartgridplatform.logging.domain.config.ReadOnlyLoggingConfig;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.application.config.PagingSettings;
 import org.opensmartgridplatform.ws.core.config.CoreWebServiceConfig;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.ImportResource;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
 /**
  * An application context Java configuration class.
  */
 @Configuration
-@ComponentScan(basePackages = {"org.opensmartgridplatform.domain.core", "org.opensmartgridplatform.adapter.ws.core",
-        "org.opensmartgridplatform.domain.logging"})
+@ComponentScan(basePackages = { "org.opensmartgridplatform.domain.core", "org.opensmartgridplatform.adapter.ws.core",
+        "org.opensmartgridplatform.domain.logging" })
 @ImportResource("classpath:applicationContext.xml")
 @Import({ PersistenceConfig.class, WritablePersistenceConfig.class, ReadOnlyLoggingConfig.class, WebServiceConfig.class,
         CoreWebServiceConfig.class })
-@PropertySources({ @PropertySource("classpath:osgp-adapter-ws-core.properties"),
-        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:${osgp/AdapterWsCore/config}", ignoreResourceNotFound = true), })
+@PropertySource("classpath:osgp-adapter-ws-core.properties")
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/AdapterWsCore/config}", ignoreResourceNotFound = true)
 public class ApplicationContext extends AbstractConfig {
 
     private static final String PROPERTY_NAME_DEFAULT_PROTOCOL = "default.protocol";

@@ -59,6 +59,7 @@
     <hibernate.validator.version>4.3.1.Final</hibernate.validator.version>
     <flyway.version>4.1.2</flyway.version>
     <junit.version>4.11</junit.version>
+    <assertj.version>3.11.1</assertj.version>
     <joda.version>2.4</joda.version>
     <slf4j.version>1.7.7</slf4j.version>
     <apache.commons.lang.version>3.3.2</apache.commons.lang.version>
@@ -358,6 +359,12 @@
         <version>${junit.version}</version>
         <scope>test</scope>
       </dependency>
+      <dependency>
+        <groupId>org.assertj</groupId>
+        <artifactId>assertj-core</artifactId>
+        <version>${assertj.version}</version>
+        <scope>test</scope>
+      </dependency>
 
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -503,7 +510,6 @@
         <version>${maven.project.info.reports.plugin.version}</version>
         <configuration>
           <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
-          <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
         </configuration>
       </plugin>
       <plugin>

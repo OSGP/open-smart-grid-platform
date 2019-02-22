@@ -7,9 +7,11 @@
  */
 package org.opensmartgridplatform.adapter.ws.core.application.config;
 
-import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 
+import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
+import org.opensmartgridplatform.shared.application.config.AbstractPersistenceConfig;
+import org.opensmartgridplatform.shared.infra.db.DefaultConnectionPoolFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,9 +20,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
-import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
-import org.opensmartgridplatform.shared.application.config.AbstractPersistenceConfig;
-import org.opensmartgridplatform.shared.infra.db.DefaultConnectionPoolFactory;
 import com.zaxxer.hikari.HikariDataSource;
 
 @EnableJpaRepositories(basePackageClasses = { DeviceRepository.class })
@@ -47,7 +46,8 @@ public class PersistenceConfig extends AbstractPersistenceConfig {
 
     private HikariDataSource dataSourceCore;
 
-    private DataSource getDataSourceCore() {
+    @Bean(destroyMethod = "close")
+    public DataSource getDataSourceCore() {
 
         if (this.dataSourceCore == null) {
 
@@ -71,13 +71,5 @@ public class PersistenceConfig extends AbstractPersistenceConfig {
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         return super.entityManagerFactory("OSGP_WS_ADAPTER_CORE", this.getDataSourceCore());
-    }
-
-    @Override
-    @PreDestroy
-    public void destroyDataSource() {
-        if (this.dataSourceCore != null) {
-            this.dataSourceCore.close();
-        }
     }
 }
