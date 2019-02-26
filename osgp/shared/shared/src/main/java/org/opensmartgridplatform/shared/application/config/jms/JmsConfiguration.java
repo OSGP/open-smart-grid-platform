@@ -14,7 +14,7 @@ import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
 public class JmsConfiguration {
 
-    ActiveMQDestination queue;
+    private ActiveMQDestination queue;
 
     private JmsTemplate jmsTemplate;
 
