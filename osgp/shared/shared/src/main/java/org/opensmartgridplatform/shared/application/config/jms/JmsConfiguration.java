@@ -8,15 +8,27 @@
 package org.opensmartgridplatform.shared.application.config.jms;
 
 import org.apache.activemq.RedeliveryPolicy;
+import org.apache.activemq.command.ActiveMQDestination;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
 public class JmsConfiguration {
+
+    ActiveMQDestination queue;
+
     private JmsTemplate jmsTemplate;
 
     private RedeliveryPolicy redeliveryPolicy;
 
     private DefaultMessageListenerContainer messageListenerContainer;
+
+    public ActiveMQDestination getQueue() {
+        return this.queue;
+    }
+
+    public void setQueue(final ActiveMQDestination queue) {
+        this.queue = queue;
+    }
 
     public JmsTemplate getJmsTemplate() {
         return this.jmsTemplate;
