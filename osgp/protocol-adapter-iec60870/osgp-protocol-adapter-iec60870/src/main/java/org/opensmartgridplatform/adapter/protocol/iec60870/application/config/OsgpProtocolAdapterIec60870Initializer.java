@@ -23,9 +23,6 @@ public class OsgpProtocolAdapterIec60870Initializer extends AbstractApplicationI
         super(ApplicationContext.class, "java:comp/env/osgp/AdapterProtocolIec60870/log-config");
     }
 
-    /**
-     *
-     */
     @Override
     public void onStartup(final ServletContext servletContext) throws ServletException {
         this.startUp(servletContext);

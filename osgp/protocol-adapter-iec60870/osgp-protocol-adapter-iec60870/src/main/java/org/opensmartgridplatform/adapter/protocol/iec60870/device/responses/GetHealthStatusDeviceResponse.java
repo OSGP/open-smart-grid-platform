@@ -17,8 +17,7 @@ public class GetHealthStatusDeviceResponse extends DeviceResponse {
 
     public GetHealthStatusDeviceResponse(final MessageMetadata messageMetadata,
             final GetHealthStatusResponseDto deviceHealthStatus) {
-        super(messageMetadata.getOrganisationIdentification(), messageMetadata.getDeviceIdentification(),
-                messageMetadata.getCorrelationUid(), messageMetadata.getMessagePriority());
+        super(messageMetadata);
         this.deviceHealthStatus = deviceHealthStatus;
     }
 

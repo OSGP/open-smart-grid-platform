@@ -15,15 +15,8 @@ public class EmptyDeviceResponse extends DeviceResponse {
 
     private final DeviceMessageStatus status;
 
-    public EmptyDeviceResponse(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final int messagePriority, final DeviceMessageStatus status) {
-        super(organisationIdentification, deviceIdentification, correlationUid, messagePriority);
-        this.status = status;
-    }
-
     public EmptyDeviceResponse(final MessageMetadata messageMetadata, final DeviceMessageStatus status) {
-        super(messageMetadata.getOrganisationIdentification(), messageMetadata.getDeviceIdentification(),
-                messageMetadata.getCorrelationUid(), messageMetadata.getMessagePriority());
+        super(messageMetadata);
         this.status = status;
     }
 

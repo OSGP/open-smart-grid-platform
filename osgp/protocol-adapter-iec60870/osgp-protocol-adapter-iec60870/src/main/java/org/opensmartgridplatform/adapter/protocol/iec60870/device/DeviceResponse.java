@@ -7,34 +7,29 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.device;
 
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+
 public class DeviceResponse {
 
-    private final String organisationIdentification;
-    private final String deviceIdentification;
-    private final String correlationUid;
-    private final int messagePriority;
+    private final MessageMetadata messageMetadata;
 
-    public DeviceResponse(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final int messagePriority) {
-        this.organisationIdentification = organisationIdentification;
-        this.deviceIdentification = deviceIdentification;
-        this.correlationUid = correlationUid;
-        this.messagePriority = messagePriority;
+    public DeviceResponse(final MessageMetadata messageMetadata) {
+        this.messageMetadata = messageMetadata;
     }
 
     public String getOrganisationIdentification() {
-        return this.organisationIdentification;
+        return this.messageMetadata.getOrganisationIdentification();
     }
 
     public String getDeviceIdentification() {
-        return this.deviceIdentification;
+        return this.messageMetadata.getDeviceIdentification();
     }
 
     public String getCorrelationUid() {
-        return this.correlationUid;
+        return this.messageMetadata.getCorrelationUid();
     }
 
     public int getMessagePriority() {
-        return this.messagePriority;
+        return this.messageMetadata.getMessagePriority();
     }
 }

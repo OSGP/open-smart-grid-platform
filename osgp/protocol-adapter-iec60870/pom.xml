@@ -92,9 +92,6 @@
     <module>../shared/osgp-dto</module>
 
     <!-- Protocol Adapter IEC60870 -->
-<!--    <module>osgp-iec60870</module> -->
-<!--    <module>osgp-core-db-api-iec61850</module> -->
     <module>osgp-protocol-adapter-iec60870</module>
-<!--    <module>protocol-simulator-iec61850</module> -->
   </modules>
 </project>

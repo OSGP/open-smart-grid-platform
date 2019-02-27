@@ -104,12 +104,6 @@
         <version>${osgp.shared.version}</version>
       </dependency>
 
-      <dependency>
-        <groupId>org.opensmartgridplatform</groupId>
-        <artifactId>osgp-iec60870</artifactId>
-        <version>${osgp.version}</version>
-      </dependency>
-
       <!-- Guava for Joiner class -->
       <dependency>
         <groupId>com.google.guava</groupId>
