@@ -20,16 +20,18 @@
 
   <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <file>/var/log/osp/logs/osgp-logging.log</file>
-    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      <!-- daily rollover -->
-      <fileNamePattern>/var/log/osp/logs/osgp-logging.%d{yyyy-MM-dd}.log</fileNamePattern>
-
-      <!-- keep X days' worth of history -->
-      <maxHistory>10</maxHistory>
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <!-- rollover daily -->
+      <fileNamePattern>${LOG_FULLNAME}.%d{yyyy-MM-dd mm}.%i.log</fileNamePattern>
+      <!-- each file should be at most 100MB, keep 60 days worth of history, but at most 20GB -->
+      <maxFileSize>2KB</maxFileSize>
+      <maxHistory>60</maxHistory>
+      <totalSizeCap>20GB</totalSizeCap>
     </rollingPolicy>
-
-    <encoder>
-      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS}] [${HOSTNAME}] [%thread] %level %logger{36}@%method:%line - %msg%n</pattern>
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <Pattern>
+        %d{yyyy-MM-dd HH:mm:ss.SSS}] [${HOSTNAME}] [%thread] %level %logger{36}@%method:%line - %msg%n
+      </Pattern>
     </encoder>
   </appender>
 
