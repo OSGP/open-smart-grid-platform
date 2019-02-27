@@ -14,7 +14,7 @@
 
   <artifactId>parent-integration-tests</artifactId>
   <groupId>org.opensmartgridplatform</groupId>
-  <version>4.34.2-SNAPSHOT</version>
+  <version>4.34.2</version>
   <packaging>pom</packaging>
   <name>parent-integration-tests</name>
   <!-- Description, Organization, Licences, URL and Distribution Management 
