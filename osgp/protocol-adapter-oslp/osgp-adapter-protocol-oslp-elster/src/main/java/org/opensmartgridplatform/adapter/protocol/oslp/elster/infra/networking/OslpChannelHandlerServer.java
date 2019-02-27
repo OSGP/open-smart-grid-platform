@@ -20,11 +20,6 @@ import org.jboss.netty.channel.MessageEvent;
 import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.DeviceManagementService;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.DeviceRegistrationService;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.oslp.OslpDeviceSettingsService;
@@ -39,6 +34,10 @@ import org.opensmartgridplatform.oslp.Oslp.LocationInfo;
 import org.opensmartgridplatform.oslp.Oslp.Message;
 import org.opensmartgridplatform.oslp.OslpEnvelope;
 import org.opensmartgridplatform.oslp.SignedOslpEnvelopeDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 public class OslpChannelHandlerServer extends OslpChannelHandler {
 
@@ -86,6 +85,10 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
 
     public OslpChannelHandlerServer() {
         super(LOGGER);
+    }
+
+    public OslpChannelHandlerServer(final int maxConcurrentIncomingMessages) {
+        super(LOGGER, maxConcurrentIncomingMessages);
     }
 
     private Channel findChannel(final Integer channelId) {
