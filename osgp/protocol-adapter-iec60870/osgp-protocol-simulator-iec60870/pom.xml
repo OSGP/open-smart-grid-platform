@@ -114,7 +114,7 @@
           <archive>
             <manifest>
               <addClasspath>true</addClasspath>
-              <mainClass>org.opensmartgridplatform.simulator.protocol.iec61850.SimulatorApplication</mainClass>
+              <mainClass>org.opensmartgridplatform.simulator.protocol.iec60870.Iec60870SimulatorApplication</mainClass>
             </manifest>
           </archive>
         </configuration>
@@ -128,7 +128,7 @@
           </descriptorRefs>
           <archive>
             <manifest>
-              <mainClass>org.opensmartgridplatform.simulator.protocol.iec61850.SimulatorApplication</mainClass>
+              <mainClass>org.opensmartgridplatform.simulator.protocol.iec60870.Iec60870SimulatorApplication</mainClass>
             </manifest>
           </archive>
         </configuration>

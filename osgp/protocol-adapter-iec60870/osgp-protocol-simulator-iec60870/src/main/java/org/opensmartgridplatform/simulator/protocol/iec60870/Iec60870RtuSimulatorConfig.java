@@ -25,7 +25,7 @@ public class Iec60870RtuSimulatorConfig {
     @Value("${iec60870.simulator.connection.timeout}")
     private int connectionTimeout;
 
-    @Bean
+    @Bean(destroyMethod = "stop")
     public Iec60870RtuSimulator iec60870RtuSimulator() {
         LOGGER.debug("Creating IEC60870 RTU Simulator Bean.");
         final Iec60870RtuSimulator simulator = new Iec60870RtuSimulator(this.iec60870ServerEventListener());
