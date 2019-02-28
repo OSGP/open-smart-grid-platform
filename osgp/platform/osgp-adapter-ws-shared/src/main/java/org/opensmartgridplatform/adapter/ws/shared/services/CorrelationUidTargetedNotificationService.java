@@ -7,7 +7,6 @@
  */
 package org.opensmartgridplatform.adapter.ws.shared.services;
 
-import ma.glasnost.orika.MapperFacade;
 import org.opensmartgridplatform.adapter.ws.clients.NotificationWebServiceTemplateFactory;
 import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceLookupKey;
 import org.opensmartgridplatform.adapter.ws.schema.shared.notification.GenericNotification;
@@ -16,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import ma.glasnost.orika.MapperFacade;
+
 @Transactional(value = "transactionManager")
 @Validated
 public class CorrelationUidTargetedNotificationService<T> extends DefaultNotificationService<T> {
@@ -23,14 +24,6 @@ public class CorrelationUidTargetedNotificationService<T> extends DefaultNotific
     private static final Logger LOGGER = LoggerFactory.getLogger(CorrelationUidTargetedNotificationService.class);
 
     private final ResponseUrlService responseUrlService;
-
-    public CorrelationUidTargetedNotificationService(final NotificationWebServiceTemplateFactory templateFactory,
-            final Class<T> sendNotificationRequestType, final MapperFacade mapper,
-            final ResponseUrlService responseUrlService) {
-
-        super(templateFactory, sendNotificationRequestType, mapper);
-        this.responseUrlService = responseUrlService;
-    }
 
     public CorrelationUidTargetedNotificationService(final NotificationWebServiceTemplateFactory templateFactory,
             final Class<T> sendNotificationRequestType, final MapperFacade mapper,

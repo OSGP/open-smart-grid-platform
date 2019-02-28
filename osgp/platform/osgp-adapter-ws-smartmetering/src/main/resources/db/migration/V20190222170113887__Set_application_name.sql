@@ -1,0 +1,1 @@
+UPDATE notification_web_service_configuration SET application_name = 'SMART_METERS';

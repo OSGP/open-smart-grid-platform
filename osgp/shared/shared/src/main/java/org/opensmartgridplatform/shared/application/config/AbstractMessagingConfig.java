@@ -14,6 +14,7 @@ import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.broker.region.policy.RedeliveryPolicyMap;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.apache.activemq.spring.ActiveMQConnectionFactory;
+import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -58,6 +59,12 @@ public abstract class AbstractMessagingConfig extends AbstractConfig {
 
     @Value("${jms.activemq.trusted.packages:org.opensmartgridplatform,org.joda.time,java.util}")
     private String trustedPackages;
+
+    @Value("${jms.activemq.broker.username}")
+    private String userName;
+
+    @Value("${jms.activemq.broker.password}")
+    private String password;
 
     protected String getActiveMQBroker() {
         return this.activeMqBroker;
@@ -110,6 +117,11 @@ public abstract class AbstractMessagingConfig extends AbstractConfig {
         activeMQConnectionFactory.setTrustAllPackages(this.trustAllPackages);
         if (!this.trustAllPackages) {
             activeMQConnectionFactory.setTrustedPackages(Arrays.asList(this.trustedPackages.split(",")));
+        }
+        // Add optional user name/password configuration.
+        if (!StringUtils.isEmpty(this.userName) && !StringUtils.isEmpty(this.password)) {
+            activeMQConnectionFactory.setUserName(this.userName);
+            activeMQConnectionFactory.setPassword(this.password);
         }
 
         return activeMQConnectionFactory;

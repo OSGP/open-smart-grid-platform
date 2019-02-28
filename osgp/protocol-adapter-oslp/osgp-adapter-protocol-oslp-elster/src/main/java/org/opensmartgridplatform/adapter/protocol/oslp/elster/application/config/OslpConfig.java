@@ -23,6 +23,13 @@ import org.jboss.netty.handler.logging.LoggingHandler;
 import org.jboss.netty.logging.InternalLogLevel;
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.jboss.netty.logging.Slf4JLoggerFactory;
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.networking.OslpChannelHandlerClient;
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.networking.OslpChannelHandlerServer;
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.networking.OslpSecurityHandler;
+import org.opensmartgridplatform.oslp.OslpDecoder;
+import org.opensmartgridplatform.oslp.OslpEncoder;
+import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -31,14 +38,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-
-import org.opensmartgridplatform.adapter.protocol.oslp.elster.exceptions.ProtocolAdapterException;
-import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.networking.OslpChannelHandlerClient;
-import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.networking.OslpChannelHandlerServer;
-import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.networking.OslpSecurityHandler;
-import org.opensmartgridplatform.oslp.OslpDecoder;
-import org.opensmartgridplatform.oslp.OslpEncoder;
-import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 
 /**
  * An application context Java configuration class. The usage of Java
@@ -51,6 +50,9 @@ import org.opensmartgridplatform.shared.application.config.AbstractConfig;
         @PropertySource(value = "file:{osgp/AdapterProtocolOslpElster/config}", ignoreResourceNotFound = true), })
 public class OslpConfig extends AbstractConfig {
     private static final String PROPERTY_NAME_OSLP_TIMEOUT_CONNECT = "oslp.timeout.connect";
+    private static final String PROPERTY_NAME_OSLP_CONCURRENT_CLIENT_CONNECTIONS_LIMIT_ACTIVE = "oslp.concurrent.client.connections.limit.active";
+    private static final String PROPERTY_NAME_OSLP_CONCURRENT_CLIENT_CONNECTIONS_MAXIMUM = "oslp.concurrent.client.connections.maximum";
+
     private static final String PROPERTY_NAME_OSLP_PORT_CLIENT = "oslp.port.client";
     private static final String PROPERTY_NAME_OSLP_PORT_CLIENTLOCAL = "oslp.port.clientlocal";
 
@@ -186,12 +188,24 @@ public class OslpConfig extends AbstractConfig {
 
     @Bean
     public OslpChannelHandlerServer oslpChannelHandlerServer() {
-        return new OslpChannelHandlerServer();
+        return this.oslpConcurrentClientConnectionsLimitActive()
+                ? new OslpChannelHandlerServer(this.oslpConcurrentClientConnectionsMaximum())
+                : new OslpChannelHandlerServer();
     }
 
     @Bean
     public OslpChannelHandlerClient oslpChannelHandlerClient() {
         return new OslpChannelHandlerClient();
+    }
+
+    private boolean oslpConcurrentClientConnectionsLimitActive() {
+        return Boolean.parseBoolean(
+                this.environment.getRequiredProperty(PROPERTY_NAME_OSLP_CONCURRENT_CLIENT_CONNECTIONS_LIMIT_ACTIVE));
+    }
+
+    private int oslpConcurrentClientConnectionsMaximum() {
+        return Integer.parseInt(
+                this.environment.getRequiredProperty(PROPERTY_NAME_OSLP_CONCURRENT_CLIENT_CONNECTIONS_MAXIMUM));
     }
 
     // === Sequence number config ===

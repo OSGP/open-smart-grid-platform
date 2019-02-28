@@ -41,7 +41,7 @@ public class PublicLightingNotificationClientConfig extends AbstractConfig {
     @Value("${web.service.notification.organisation:OSGP}")
     private String webserviceNotificationOrganisation;
 
-    @Value("${web.service.notification.application.name}")
+    @Value("${web.service.notification.application.name:OSGP}")
     private String webserviceNotificationApplicationName;
 
     @Bean
@@ -54,7 +54,7 @@ public class PublicLightingNotificationClientConfig extends AbstractConfig {
         }
         final Class<SendNotificationRequest> notificationRequestType = SendNotificationRequest.class;
         return new CorrelationUidTargetedNotificationService<>(templateFactory, notificationRequestType, mapper,
-                responseUrlService);
+                responseUrlService, this.webserviceNotificationApplicationName);
     }
 
     @Bean

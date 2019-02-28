@@ -119,6 +119,10 @@
     <module>osgp/protocol-adapter-dlms/osgp-protocol-adapter-dlms</module>
     <module>osgp/protocol-adapter-dlms/osgp-jasper-interface</module>
 
+    <!-- protocol-adapter-iec60870 -->
+    <module>osgp/protocol-adapter-iec60870/parent-pa-iec60870</module>
+    <module>osgp/protocol-adapter-iec60870/osgp-protocol-adapter-iec60870</module>
+
     <!-- platform -->
     <module>osgp/platform/parent-platform</module>
     <module>osgp/platform/osgp-domain-core</module>

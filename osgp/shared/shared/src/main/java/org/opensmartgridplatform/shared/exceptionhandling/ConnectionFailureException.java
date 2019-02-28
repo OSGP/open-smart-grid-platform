@@ -10,7 +10,7 @@ package org.opensmartgridplatform.shared.exceptionhandling;
 /**
  * Exception used when the adapter can't connect to a device
  */
-public class ConnectionFailureException extends OsgpException {
+public class ConnectionFailureException extends ProtocolAdapterException {
 
     /**
      * Serial Version UID.
