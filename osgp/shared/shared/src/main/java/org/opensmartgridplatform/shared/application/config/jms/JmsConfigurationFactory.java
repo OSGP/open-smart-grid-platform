@@ -15,14 +15,13 @@ import org.apache.activemq.broker.region.policy.RedeliveryPolicyMap;
 import org.apache.activemq.command.ActiveMQDestination;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.activemq.pool.PooledConnectionFactory;
+import org.opensmartgridplatform.shared.infra.jms.OsgpJmsTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.jms.listener.SessionAwareMessageListener;
-
-import org.opensmartgridplatform.shared.infra.jms.OsgpJmsTemplate;
 
 /**
  * Factory object for creating and initializing JMS configuration objects with
@@ -46,13 +45,14 @@ public class JmsConfigurationFactory {
     private final RedeliveryPolicyMap redeliveryPolicyMap;
 
     /**
+     * Construct a JmsConfigurationFactory instance.
      *
      * @param environment
      *            Environment to retrieve the properties from.
      * @param pooledConnectionFactory
      *            Created objects will be linked to this connection factory.
      * @param redeliveryPolicyMap
-     *            Created redelivery policy will be added to this map.
+     *            Created re-delivery policy will be added to this map.
      */
     public JmsConfigurationFactory(final Environment environment, final PooledConnectionFactory pooledConnectionFactory,
             final RedeliveryPolicyMap redeliveryPolicyMap) {
@@ -66,6 +66,7 @@ public class JmsConfigurationFactory {
      *
      * @param propertyPrefix
      *            Prefix for all properties.
+     * 
      * @return JmsConfiguration containing created objects.
      */
     public JmsConfiguration initializeConfiguration(final String propertyPrefix) {
@@ -78,7 +79,23 @@ public class JmsConfigurationFactory {
      * @param propertyPrefix
      *            Prefix for all properties.
      * @param messageListener
+     *            The {@link SessionAwareMessageListener} to put on the queue.
+     * 
+     * @return JmsConfiguration containing created objects.
+     */
+    public JmsConfiguration initializeConfiguration(final String propertyPrefix,
+            final SessionAwareMessageListener<Message> messageListener) {
+        return new JmsConfigurationCreator<>(propertyPrefix, messageListener).create();
+    }
+
+    /**
+     * Initialize configuration for JmsTemplate and MessageListenerContainer.
+     *
+     * @param propertyPrefix
+     *            Prefix for all properties.
+     * @param messageListener
      *            The {@link MessageListener} to put on the queue.
+     * 
      * @return JmsConfiguration containing created objects.
      */
     public JmsConfiguration initializeConfiguration(final String propertyPrefix,
@@ -93,6 +110,7 @@ public class JmsConfigurationFactory {
      *            Prefix for all properties.
      * @param messageListener
      *            The {@link SessionAwareMessageListener} to put on the queue.
+     * 
      * @return JmsConfiguration containing created objects.
      */
     public JmsConfiguration initializeReceiveConfiguration(final String propertyPrefix,
@@ -107,6 +125,7 @@ public class JmsConfigurationFactory {
      *            Prefix for all properties.
      * @param messageListener
      *            The {@link MessageListener} to put on the queue.
+     * 
      * @return JmsConfiguration containing created objects.
      */
     public JmsConfiguration initializeReceiveConfiguration(final String propertyPrefix,
@@ -124,6 +143,7 @@ public class JmsConfigurationFactory {
      * @param replyToQueue
      *            {@link ActiveMQDestination} instance where reply messages
      *            should be sent.
+     * 
      * @return JmsConfiguration containing created objects.
      */
     public JmsConfiguration initializeReceiveConfiguration(final String propertyPrefix,
@@ -178,16 +198,17 @@ public class JmsConfigurationFactory {
          */
         public JmsConfiguration createReceiveConfiguration() {
             final JmsConfiguration configuration = new JmsConfiguration();
+            configuration.setQueue(this.destinationQueue);
             configuration.setRedeliveryPolicy(this.redeliveryPolicy());
             if (this.messageListener != null) {
                 configuration.setMessageListenerContainer(this.messageListenerContainer());
             }
             return configuration;
-
         }
 
         public JmsConfiguration create() {
             final JmsConfiguration configuration = new JmsConfiguration();
+            configuration.setQueue(this.destinationQueue);
             configuration.setJmsTemplate(this.jmsTemplate());
             configuration.setRedeliveryPolicy(this.redeliveryPolicy());
             if (this.messageListener != null) {
