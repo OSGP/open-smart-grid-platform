@@ -1,4 +1,4 @@
-@SmartMetering @Platform @NightlyBuildOnly
+@SmartMetering @Platform @NightlyBuildOnly @Housekeeping
 Feature: SmartMetering Housekeeping - Response Url Data Cleanup Job
   As a grid operator
   I want to clean up the response url data
