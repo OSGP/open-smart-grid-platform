@@ -23,7 +23,7 @@
     <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
       <fileNamePattern>${LOG_FULLNAME}.%d{yyyy-MM-dd mm}.%i.log</fileNamePattern>
       <maxFileSize>100MB</maxFileSize>
-      <maxHistory>60</maxHistory>
+      <maxHistory>10</maxHistory>
       <totalSizeCap>20GB</totalSizeCap>
     </rollingPolicy>
     <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
