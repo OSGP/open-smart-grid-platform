@@ -122,6 +122,7 @@
     <!-- protocol-adapter-iec60870 -->
     <module>osgp/protocol-adapter-iec60870/parent-pa-iec60870</module>
     <module>osgp/protocol-adapter-iec60870/osgp-protocol-adapter-iec60870</module>
+    <module>osgp/protocol-adapter-iec60870/osgp-protocol-simulator-iec60870</module>
 
     <!-- platform -->
     <module>osgp/platform/parent-platform</module>

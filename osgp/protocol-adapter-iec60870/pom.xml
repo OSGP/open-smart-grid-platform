@@ -93,5 +93,8 @@
 
     <!-- Protocol Adapter IEC60870 -->
     <module>osgp-protocol-adapter-iec60870</module>
+
+    <!-- Simulator IEC60870 -->
+    <module>osgp-protocol-simulator-iec60870</module>
   </modules>
 </project>
