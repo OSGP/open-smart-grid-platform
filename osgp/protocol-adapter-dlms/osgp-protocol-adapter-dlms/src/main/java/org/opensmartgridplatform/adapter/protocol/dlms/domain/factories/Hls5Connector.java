@@ -22,16 +22,15 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class Hls5Connector extends SecureDlmsConnector {
 
@@ -45,8 +44,8 @@ public class Hls5Connector extends SecureDlmsConnector {
     private SecurityKeyService securityKeyService;
 
     public Hls5Connector(final RecoverKeyProcessInitiator recoverKeyProcessInitiator, final int responseTimeout,
-            final int logicalDeviceAddress, final int clientAccessPoint) {
-        super(responseTimeout, logicalDeviceAddress, clientAccessPoint);
+            final int logicalDeviceAddress, final DlmsDeviceAssociation deviceAssociation) {
+        super(responseTimeout, logicalDeviceAddress, deviceAssociation);
         this.recoverKeyProcessInitiator = recoverKeyProcessInitiator;
     }
 
@@ -112,7 +111,7 @@ public class Hls5Connector extends SecureDlmsConnector {
                 .setGlobalUnicastEncryptionKey(dlmsEncryptionKey)
                 .setEncryptionMechanism(EncryptionMechanism.AES_GCM_128).build();
 
-        tcpConnectionBuilder.setSecuritySuite(securitySuite).setClientId(this.clientAccessPoint);
+        tcpConnectionBuilder.setSecuritySuite(securitySuite).setClientId(this.clientId);
     }
 
     private void configureIvData(final TcpConnectionBuilder tcpConnectionBuilder, final DlmsDevice device) {
@@ -129,7 +128,7 @@ public class Hls5Connector extends SecureDlmsConnector {
          * builder the library is enabled to meet the IV requirements of DLMS
          * HLS5 communication.
          */
-        String manufacturerId;
+        final String manufacturerId;
         if (StringUtils.isEmpty(device.getManufacturerId())) {
             LOGGER.warn("Device {} does not have its manufacturer ID stored in the database. "
                     + "Using a default value which makes the system title (part of the IV in HLS 5) less unique.",

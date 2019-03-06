@@ -17,12 +17,11 @@ import org.openmuc.jdlms.settings.client.ReferencingMethod;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Lls0Connector extends DlmsConnector {
 
@@ -32,16 +31,13 @@ public class Lls0Connector extends DlmsConnector {
 
     protected final int logicalDeviceAddress;
 
-    protected final int clientAccessPoint;
+    protected final int clientId;
 
-    public Lls0Connector(final int responseTimeout, final int logicalDeviceAddress) {
-        this(responseTimeout, logicalDeviceAddress, DlmsConnector.DLMS_PUBLIC_CLIENT_ID);
-    }
-
-    public Lls0Connector(final int responseTimeout, final int logicalDeviceAddress, final int clientAccessPoint) {
+    public Lls0Connector(final int responseTimeout, final int logicalDeviceAddress,
+            final DlmsDeviceAssociation deviceAssociation) {
         this.responseTimeout = responseTimeout;
         this.logicalDeviceAddress = logicalDeviceAddress;
-        this.clientAccessPoint = clientAccessPoint;
+        this.clientId = deviceAssociation.getClientId();
     }
 
     @Override
@@ -53,12 +49,12 @@ public class Lls0Connector extends DlmsConnector {
         this.checkIpAddress(device);
 
         // Setup connection to device
-        TcpConnectionBuilder tcpConnectionBuilder;
+        final TcpConnectionBuilder tcpConnectionBuilder;
         try {
 
             tcpConnectionBuilder = new TcpConnectionBuilder(InetAddress.getByName(device.getIpAddress()))
                     .setResponseTimeout(this.responseTimeout).setLogicalDeviceId(this.logicalDeviceAddress)
-                    .setClientId(this.clientAccessPoint)
+                    .setClientId(this.clientId)
                     .setReferencingMethod(device.isUseSn() ? ReferencingMethod.SHORT : ReferencingMethod.LOGICAL);
 
             if (device.isUseHdlc()) {

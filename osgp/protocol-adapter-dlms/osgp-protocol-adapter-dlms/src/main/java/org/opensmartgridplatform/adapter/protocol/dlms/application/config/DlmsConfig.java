@@ -1,9 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.config;
 
@@ -28,13 +29,14 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Doma
 import org.opensmartgridplatform.adapter.protocol.dlms.application.threads.RecoverKeyProcess;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.threads.RecoverKeyProcessInitiator;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnector;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsDeviceAssociation;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.Hls5Connector;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.Lls0Connector;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.Lls1Connector;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
-import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.networking.DlmsChannelHandlerServer;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.networking.DlmsPushNotificationDecoder;
+import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,8 +46,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-
-import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 
 /**
  * An application context Java configuration class. The usage of Java
@@ -80,7 +80,7 @@ public class DlmsConfig extends AbstractConfig {
 
         bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
             @Override
-            public ChannelPipeline getPipeline() throws ProtocolAdapterException {
+            public ChannelPipeline getPipeline() {
                 final ChannelPipeline pipeline = DlmsConfig.this
                         .createChannelPipeline(DlmsConfig.this.dlmsChannelHandlerServer());
 
@@ -132,26 +132,23 @@ public class DlmsConfig extends AbstractConfig {
     @Autowired
     public Hls5Connector hls5Connector(final RecoverKeyProcessInitiator recoverKeyProcessInitiator,
             @Value("${jdlms.response_timeout}") final int responseTimeout,
-            @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress,
-            @Value("${jdlms.client_access_point}") final int clientAccessPoint) {
-        return new Hls5Connector(recoverKeyProcessInitiator, responseTimeout, logicalDeviceAddress, clientAccessPoint);
+            @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress) {
+        return new Hls5Connector(recoverKeyProcessInitiator, responseTimeout, logicalDeviceAddress,
+                DlmsDeviceAssociation.MANAGEMENT_CLIENT);
     }
 
     @Bean
     @Autowired
     public Lls1Connector lls1Connector(@Value("${jdlms.lls1.response.timeout}") final int responseTimeout,
-            @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress,
-            @Value("${jdlms.lls1.client.access.point}") final int clientAccessPoint) {
-        LOGGER.info("responseTimeout: {}, logicalDeviceAddress: {}, clientAccessPoint: {}", responseTimeout,
-                logicalDeviceAddress, clientAccessPoint);
-        return new Lls1Connector(responseTimeout, logicalDeviceAddress, clientAccessPoint);
+            @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress) {
+        return new Lls1Connector(responseTimeout, logicalDeviceAddress, DlmsDeviceAssociation.MANAGEMENT_CLIENT);
     }
 
     @Bean
     @Autowired
     public DlmsConnector lls0Connector(@Value("${jdlms.response_timeout}") final int responseTimeout,
             @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress) {
-        return new Lls0Connector(responseTimeout, logicalDeviceAddress);
+        return new Lls0Connector(responseTimeout, logicalDeviceAddress, DlmsDeviceAssociation.PUBLIC_CLIENT);
     }
 
     @Bean
@@ -160,10 +157,9 @@ public class DlmsConfig extends AbstractConfig {
     public RecoverKeyProcess recoverKeyProcess(final DomainHelperService domainHelperService,
             final DlmsDeviceRepository dlmsDeviceRepository,
             @Value("${jdlms.response_timeout}") final int responseTimeout,
-            @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress,
-            @Value("${jdlms.client_access_point}") final int clientAccessPoint) {
+            @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress) {
         return new RecoverKeyProcess(domainHelperService, dlmsDeviceRepository, responseTimeout, logicalDeviceAddress,
-                clientAccessPoint);
+                DlmsDeviceAssociation.MANAGEMENT_CLIENT);
     }
 
     @Bean
