@@ -16,7 +16,6 @@ import org.apache.activemq.ActiveMQSslConnectionFactory;
 import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.broker.region.policy.RedeliveryPolicyMap;
 import org.apache.activemq.pool.PooledConnectionFactory;
-import org.apache.activemq.spring.ActiveMQConnectionFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.shared.application.config.jms.JmsBrokerSslSettings;
 import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationFactory;
