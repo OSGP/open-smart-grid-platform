@@ -139,7 +139,7 @@ public class Hls5Connector extends SecureDlmsConnector {
         }
         tcpConnectionBuilder.setSystemTitle(manufacturerId, device.getDeviceId());
         tcpConnectionBuilder.setFrameCounter(
-                device.getValidSecurityKey(SecurityKeyType.E_METER_ENCRYPTION).getInvocationCounter() + 1);
+                device.getValidSecurityKey(SecurityKeyType.E_METER_ENCRYPTION).getInvocationCounter());
     }
 
     private void validateKeys(final byte[] encryptionKey, final byte[] authenticationKey)
