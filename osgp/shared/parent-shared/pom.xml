@@ -74,8 +74,8 @@
     <commons.pool.version>1.6</commons.pool.version>
     <proton-jms.version>0.7</proton-jms.version>
     <cxf.version>3.0.1</cxf.version>
-    <logback.version>1.1.2</logback.version>
-    <logback.ext.version>0.1.2</logback.ext.version>
+    <logback.version>1.2.3</logback.version>
+    <logback.ext.version>0.1.4</logback.ext.version>
     <apache.commons.schema>2.0.3</apache.commons.schema>
     <maven.compiler.plugin.version>3.6.0</maven.compiler.plugin.version>
     <license.maven.plugin>2.11</license.maven.plugin>
