@@ -9,7 +9,7 @@ package org.opensmartgridplatform.simulator.protocol.iec60870.server;
 
 import org.openmuc.j60870.TypeId;
 
-public class Iec60870ASduHandlerNotFoundException extends RuntimeException {
+public class Iec60870ASduHandlerNotFoundException extends Exception {
 
     private static final long serialVersionUID = 1L;
     private final TypeId typeId;

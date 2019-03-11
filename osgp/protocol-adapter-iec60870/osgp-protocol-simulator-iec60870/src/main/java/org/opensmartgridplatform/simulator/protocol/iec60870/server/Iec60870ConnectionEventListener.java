@@ -17,6 +17,12 @@ import org.openmuc.j60870.TypeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ *
+ * Class implementing the {@link ConnectionEventListener} interface for
+ * receiving incoming ASdus and connection closed events.
+ *
+ */
 public class Iec60870ConnectionEventListener implements ConnectionEventListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec60870ConnectionEventListener.class);

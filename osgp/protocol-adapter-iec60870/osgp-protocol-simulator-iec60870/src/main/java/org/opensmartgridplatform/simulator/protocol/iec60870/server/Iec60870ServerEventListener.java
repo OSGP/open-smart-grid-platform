@@ -15,6 +15,12 @@ import org.openmuc.j60870.ServerEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ *
+ * Class implementing the {@link ServerEventListener} interface for incoming
+ * connection attempts.
+ *
+ */
 public class Iec60870ServerEventListener implements ServerEventListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec60870ServerEventListener.class);

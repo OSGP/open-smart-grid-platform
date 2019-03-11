@@ -15,6 +15,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+/**
+ *
+ * Registry of ASdu handlers, used to look up the corresponding handler for a
+ * specific ASdu type. Each ASdu handler should register itself to this
+ * registry.
+ *
+ */
 @Component
 public class Iec60870ASduHandlerRegistry {
 
@@ -22,7 +29,7 @@ public class Iec60870ASduHandlerRegistry {
 
     private Map<TypeId, Iec60870ASduHandler> handlers = new HashMap<>();
 
-    public Iec60870ASduHandler getHandler(final TypeId typeId) {
+    public Iec60870ASduHandler getHandler(final TypeId typeId) throws Iec60870ASduHandlerNotFoundException {
         if (!this.handlers.containsKey(typeId)) {
             LOGGER.error("No ASdu handler found for type Id {}", typeId);
             throw new Iec60870ASduHandlerNotFoundException(typeId);

@@ -8,8 +8,8 @@
 package org.opensmartgridplatform.simulator.protocol.iec60870;
 
 import org.opensmartgridplatform.simulator.protocol.iec60870.server.Iec60870ASduHandlerRegistry;
-import org.opensmartgridplatform.simulator.protocol.iec60870.server.Iec60870RtuSimulator;
 import org.opensmartgridplatform.simulator.protocol.iec60870.server.Iec60870ServerEventListener;
+import org.opensmartgridplatform.simulator.protocol.iec60870.server.Iec60870Simulator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +22,9 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource(value = "classpath:application.properties", ignoreResourceNotFound = false)
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/SimulatorProtocolIec60870/config}", ignoreResourceNotFound = true)
-public class Iec60870RtuSimulatorConfig {
+public class Iec60870SimulatorConfig {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Iec60870RtuSimulatorConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Iec60870SimulatorConfig.class);
 
     @Autowired
     private Iec60870ASduHandlerRegistry iec60870ASduHandlerRegistry;
@@ -33,11 +33,11 @@ public class Iec60870RtuSimulatorConfig {
     private int connectionTimeout;
 
     @Bean(destroyMethod = "stop")
-    public Iec60870RtuSimulator iec60870RtuSimulator() {
-        LOGGER.debug("Creating IEC60870 RTU Simulator Bean.");
-        final Iec60870RtuSimulator simulator = new Iec60870RtuSimulator(this.iec60870ServerEventListener());
+    public Iec60870Simulator iec60870Simulator() {
+        LOGGER.debug("Creating IEC60870 Simulator Bean.");
+        final Iec60870Simulator simulator = new Iec60870Simulator(this.iec60870ServerEventListener());
 
-        LOGGER.debug("Starting IEC60870 RTU Simulator.");
+        LOGGER.debug("Starting IEC60870 Simulator.");
         simulator.start();
 
         return simulator;
