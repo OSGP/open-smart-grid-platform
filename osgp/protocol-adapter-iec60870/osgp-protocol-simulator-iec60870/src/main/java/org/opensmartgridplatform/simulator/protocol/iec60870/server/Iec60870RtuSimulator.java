@@ -1,3 +1,10 @@
+/**
+ * Copyright 2019 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.simulator.protocol.iec60870.server;
 
 import java.io.IOException;
@@ -23,14 +30,16 @@ public class Iec60870RtuSimulator {
         try {
             LOGGER.info("Starting IEC60870 Server.");
             this.server.start(this.iec60870ServerEventListener);
+            LOGGER.info("Started IEC60870 Server.");
         } catch (final IOException e) {
-            LOGGER.error("Exception occurred while starting IEC60870 server: {}.", e.getMessage());
+            LOGGER.error("Exception occurred while starting IEC60870 server.", e);
         }
     }
 
     public void stop() {
         LOGGER.info("Stopping IEC60870 Server.");
         this.server.stop();
+        LOGGER.info("Stopped IEC60870 Server.");
     }
 
 }

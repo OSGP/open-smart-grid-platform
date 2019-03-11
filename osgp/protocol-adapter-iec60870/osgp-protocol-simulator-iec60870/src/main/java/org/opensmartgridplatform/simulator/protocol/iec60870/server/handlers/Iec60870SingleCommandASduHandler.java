@@ -1,3 +1,10 @@
+/**
+ * Copyright 2019 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.simulator.protocol.iec60870.server.handlers;
 
 import java.io.IOException;
@@ -16,12 +23,13 @@ public class Iec60870SingleCommandASduHandler extends Iec60870ASduHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec60870SingleCommandASduHandler.class);
 
     public Iec60870SingleCommandASduHandler() {
-        super(LOGGER, TypeId.C_SC_NA_1);
+        super(TypeId.C_SC_NA_1);
     }
 
     @Override
-    public void accept(final Connection connection, final ASdu aSdu) throws IOException {
-        throw new RuntimeException("Not implemented yet");
+    public void handleASdu(final Connection connection, final ASdu aSdu) throws IOException {
+        LOGGER.info("Received single command. Not implemented yet.");
+        throw new UnsupportedOperationException();
     }
 
 }

@@ -1,3 +1,10 @@
+/**
+ * Copyright 2019 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.simulator.protocol.iec60870.server;
 
 import java.io.IOException;
@@ -12,13 +19,14 @@ public class Iec60870ServerEventListener implements ServerEventListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec60870ServerEventListener.class);
 
-    private Iec60870ASduHandlerMap iec60870ASduHandlerMap;
-    private int connectionIdCounter = 1;
-    private int connectionTimeout;
+    private final Iec60870ASduHandlerRegistry iec60870ASduHandlerRegistry;
+    private final int connectionTimeout;
 
-    public Iec60870ServerEventListener(final Iec60870ASduHandlerMap iec60870ASduHandlerMap,
+    private int connectionIdCounter = 1;
+
+    public Iec60870ServerEventListener(final Iec60870ASduHandlerRegistry iec60870ASduHandlerRegistry,
             final int connectionTimeout) {
-        this.iec60870ASduHandlerMap = iec60870ASduHandlerMap;
+        this.iec60870ASduHandlerRegistry = iec60870ASduHandlerRegistry;
         this.connectionTimeout = connectionTimeout;
     }
 
@@ -30,11 +38,10 @@ public class Iec60870ServerEventListener implements ServerEventListener {
         try {
             LOGGER.info("Waiting for StartDT on connection ({}) for {} ms.", connectionId, this.connectionTimeout);
             connection.waitForStartDT(
-                    new Iec60870ConnectionEventListener(connection, connectionId, this.iec60870ASduHandlerMap),
+                    new Iec60870ConnectionEventListener(connection, connectionId, this.iec60870ASduHandlerRegistry),
                     this.connectionTimeout);
         } catch (final IOException | TimeoutException e) {
-            LOGGER.error("Exception occurred while connection ({}) was waiting for StartDT: {}.", connectionId,
-                    e.getMessage());
+            LOGGER.error("Exception occurred while connection ({}) was waiting for StartDT.", connectionId, e);
             return;
         }
 

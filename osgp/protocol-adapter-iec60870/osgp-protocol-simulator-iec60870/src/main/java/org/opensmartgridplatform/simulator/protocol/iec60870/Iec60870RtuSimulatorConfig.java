@@ -1,6 +1,13 @@
+/**
+ * Copyright 2019 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.simulator.protocol.iec60870;
 
-import org.opensmartgridplatform.simulator.protocol.iec60870.server.Iec60870ASduHandlerMap;
+import org.opensmartgridplatform.simulator.protocol.iec60870.server.Iec60870ASduHandlerRegistry;
 import org.opensmartgridplatform.simulator.protocol.iec60870.server.Iec60870RtuSimulator;
 import org.opensmartgridplatform.simulator.protocol.iec60870.server.Iec60870ServerEventListener;
 import org.slf4j.Logger;
@@ -20,7 +27,7 @@ public class Iec60870RtuSimulatorConfig {
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec60870RtuSimulatorConfig.class);
 
     @Autowired
-    public Iec60870ASduHandlerMap iec60870ASduHandlerMap;
+    private Iec60870ASduHandlerRegistry iec60870ASduHandlerRegistry;
 
     @Value("${iec60870.simulator.connection.timeout}")
     private int connectionTimeout;
@@ -38,6 +45,6 @@ public class Iec60870RtuSimulatorConfig {
 
     @Bean
     public Iec60870ServerEventListener iec60870ServerEventListener() {
-        return new Iec60870ServerEventListener(this.iec60870ASduHandlerMap, this.connectionTimeout);
+        return new Iec60870ServerEventListener(this.iec60870ASduHandlerRegistry, this.connectionTimeout);
     }
 }

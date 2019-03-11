@@ -1,3 +1,10 @@
+/**
+ * Copyright 2019 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.simulator.protocol.iec60870.server.handlers;
 
 import java.io.IOException;
@@ -19,14 +26,14 @@ public class Iec60870InterrogationCommandASduHandler extends Iec60870ASduHandler
     private static final TypeId TYPE_ID = TypeId.C_IC_NA_1;
 
     @Autowired
-    Iec60870ASduFactory iec60870aSduFactory;
+    private Iec60870ASduFactory iec60870aSduFactory;
 
     public Iec60870InterrogationCommandASduHandler() {
-        super(LOGGER, TYPE_ID);
+        super(TYPE_ID);
     }
 
     @Override
-    public void accept(final Connection connection, final ASdu aSdu) throws IOException {
+    public void handleASdu(final Connection connection, final ASdu aSdu) throws IOException {
         LOGGER.info("Received interrogation command. Sending confirmation.");
         connection.sendConfirmation(aSdu);
 

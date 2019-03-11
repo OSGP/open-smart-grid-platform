@@ -1,3 +1,10 @@
+/**
+ * Copyright 2019 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.simulator.protocol.iec60870.server;
 
 import java.io.IOException;
@@ -8,23 +15,23 @@ import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.Connection;
 import org.openmuc.j60870.TypeId;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class Iec60870ASduHandler {
 
-    private final Logger logger;
+    private static final Logger LOGGER = LoggerFactory.getLogger(Iec60870ASduHandler.class);
 
     @Autowired
-    protected Iec60870ASduHandlerMap iec60870ASduHandlerMap;
+    private Iec60870ASduHandlerRegistry iec60870ASduHandlerRegistry;
 
     private TypeId typeId;
 
-    public Iec60870ASduHandler(final Logger Logger, final TypeId typeId) {
-        this.logger = Logger;
+    public Iec60870ASduHandler(final TypeId typeId) {
         this.typeId = typeId;
     }
 
-    public abstract void accept(Connection t, ASdu u) throws IOException;
+    public abstract void handleASdu(Connection t, ASdu u) throws IOException;
 
     public TypeId getTypeId() {
         return this.typeId;
@@ -32,7 +39,7 @@ public abstract class Iec60870ASduHandler {
 
     @PostConstruct
     protected void register() {
-        this.logger.info("Registering ASdu Handler {}", this.getClass().getSimpleName());
-        this.iec60870ASduHandlerMap.registerHandler(this.typeId, this);
+        LOGGER.info("Registering ASdu Handler {}", this.getClass().getSimpleName());
+        this.iec60870ASduHandlerRegistry.registerHandler(this.typeId, this);
     }
 }
