@@ -22,14 +22,9 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.BufferedDateTimeValidationException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AmrProfileStatusCodeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AmrProfileStatusCodeFlagDto;
@@ -40,6 +35,10 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterRea
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsGasRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsGasResponseItemDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component()
 public class GetPeriodicMeterReadsGasCommandExecutor extends
@@ -312,7 +311,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
     }
 
     @Override
-    public PeriodicMeterReadGasResponseDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public PeriodicMeterReadGasResponseDto execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final PeriodicMeterReadsRequestDto periodicMeterReadsQuery) throws ProtocolAdapterException {
 
         final PeriodTypeDto periodType;
@@ -455,8 +454,8 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
         final AmrProfileStatusCodeDto amrProfileStatusCode = this
                 .readAmrProfileStatusCode(bufferedObjects.get(BUFFER_INDEX_AMR_STATUS));
 
-        DataObject gasValue;
-        DataObject gasCaptureTime;
+        final DataObject gasValue;
+        final DataObject gasCaptureTime;
         if (isSelectiveAccessSupported) {
             gasValue = bufferedObjects.get(INDEX_DAILY_SELECTIVE_ACCESS_MBUS_VALUE_MAP.get(channel.getChannelNumber()));
             gasCaptureTime = bufferedObjects
@@ -488,8 +487,8 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
             final List<DataObject> bufferedObjects, final DateTime bufferedDateTime, final ChannelDto channel,
             final boolean isSelectiveAccessSupported, final List<GetResult> results) throws ProtocolAdapterException {
 
-        DataObject gasValue;
-        DataObject gasCaptureTime;
+        final DataObject gasValue;
+        final DataObject gasCaptureTime;
         if (isSelectiveAccessSupported) {
             gasValue = bufferedObjects
                     .get(INDEX_MONTHLY_SELECTIVE_ACCESS_MBUS_VALUE_MAP.get(channel.getChannelNumber()));
@@ -557,7 +556,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
             throw new ProtocolAdapterException(String.format("periodtype %s not supported", periodType));
         }
         profileBuffer.add(this.getScalerUnit(channel));
-        return profileBuffer.toArray(new AttributeAddress[profileBuffer.size()]);
+        return profileBuffer.toArray(new AttributeAddress[0]);
     }
 
     private AttributeAddress getScalerUnit(final ChannelDto channel) throws ProtocolAdapterException {
@@ -584,8 +583,6 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
             final PeriodTypeDto periodType, final DateTime beginDateTime, final DateTime endDateTime,
             final boolean isSelectingValuesSupported) {
 
-        final int accessSelector = ACCESS_SELECTOR_RANGE_DESCRIPTOR;
-
         /*
          * Define the clock object {8,0-0:1.0.0.255,2,0} to be used as restricting
          * object in a range descriptor with a from value and to value to determine
@@ -604,7 +601,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
         final DataObject accessParameter = DataObject
                 .newStructureData(Arrays.asList(clockDefinition, fromValue, toValue, selectedValues));
 
-        return new SelectiveAccessDescription(accessSelector, accessParameter);
+        return new SelectiveAccessDescription(ACCESS_SELECTOR_RANGE_DESCRIPTOR, accessParameter);
     }
 
     private void addSelectedValues(final ChannelDto channel, final PeriodTypeDto periodType,

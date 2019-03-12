@@ -11,7 +11,7 @@ import java.util.List;
 
 import org.openmuc.jdlms.GetResult;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +35,7 @@ public class CoupleMbusDeviceByChannelCommandExecutor
     }
 
     @Override
-    public CoupleMbusDeviceByChannelResponseDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public CoupleMbusDeviceByChannelResponseDto execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final CoupleMbusDeviceByChannelRequestDataDto requestDto) throws ProtocolAdapterException {
 
         LOGGER.info("Retrieving values for mbus channel {} on device {}", requestDto.getChannel(),

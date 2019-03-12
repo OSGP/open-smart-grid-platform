@@ -26,7 +26,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Doma
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.FirmwareService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsLogItemRequestMessageSender;
@@ -69,7 +69,7 @@ public class UpdateFirmwareRequestMessageProcessorTest {
     private DlmsConnectionFactory dlmsConnectionFactory;
 
     @Mock
-    private DlmsConnectionHolder dlmsConnectionHolderMock;
+    private DlmsConnectionManager dlmsConnectionManagerMock;
 
     @Mock
     private DlmsMessageListener messageListenerMock;
@@ -86,8 +86,8 @@ public class UpdateFirmwareRequestMessageProcessorTest {
 
         when(this.domainHelperService.findDlmsDevice(any(MessageMetadata.class))).thenReturn(this.dlmsDeviceMock);
         when(this.dlmsConnectionFactory.getConnection(this.dlmsDeviceMock, null))
-                .thenReturn(this.dlmsConnectionHolderMock);
-        when(this.dlmsConnectionHolderMock.getDlmsMessageListener()).thenReturn(this.messageListenerMock);
+                .thenReturn(this.dlmsConnectionManagerMock);
+        when(this.dlmsConnectionManagerMock.getDlmsMessageListener()).thenReturn(this.messageListenerMock);
     }
 
     @Test
@@ -131,7 +131,7 @@ public class UpdateFirmwareRequestMessageProcessorTest {
         this.processor.processMessage(message);
 
         // Assert
-        verify(this.configurationService, times(1)).updateFirmware(this.dlmsConnectionHolderMock, this.dlmsDeviceMock,
+        verify(this.configurationService, times(1)).updateFirmware(this.dlmsConnectionManagerMock, this.dlmsDeviceMock,
                 firmwareIdentification);
     }
 
@@ -146,7 +146,7 @@ public class UpdateFirmwareRequestMessageProcessorTest {
         this.processor.processMessage(message);
 
         // Assert
-        verify(this.firmwareService, times(0)).updateFirmware(this.dlmsConnectionHolderMock, this.dlmsDeviceMock,
+        verify(this.firmwareService, times(0)).updateFirmware(this.dlmsConnectionManagerMock, this.dlmsDeviceMock,
                 firmwareIdentification);
     }
 }

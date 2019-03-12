@@ -16,13 +16,8 @@ import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AccessRightDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AccessSelectorListDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
@@ -37,6 +32,10 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetAssociationLn
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MethodAccessDescriptorDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MethodAccessItemDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MethodAccessModeTypeDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
 public class GetAssociationLnObjectsCommandExecutor extends AbstractCommandExecutor<Void, AssociationLnListTypeDto> {
@@ -84,7 +83,7 @@ public class GetAssociationLnObjectsCommandExecutor extends AbstractCommandExecu
     }
 
     @Override
-    public AssociationLnListTypeDto execute(final DlmsConnectionHolder conn, final DlmsDevice device, final Void object)
+    public AssociationLnListTypeDto execute(final DlmsConnectionManager conn, final DlmsDevice device, final Void object)
             throws ProtocolAdapterException {
 
         final AttributeAddress attributeAddress = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
@@ -156,9 +155,9 @@ public class GetAssociationLnObjectsCommandExecutor extends AbstractCommandExecu
         for (final DataObject attributeAccessItemRaw : attributeAccessDescriptor) {
             final List<DataObject> attributeAccessItem = attributeAccessItemRaw.getValue();
 
-            AccessSelectorListDto asl;
+            final AccessSelectorListDto asl;
             if (attributeAccessItem.get(ACCESS_RIGHTS_ATTRIBUTE_ACCESS_ACCESS_SELECTORS_INDEX).isNull()) {
-                asl = new AccessSelectorListDto(Collections.<Integer> emptyList());
+                asl = new AccessSelectorListDto(Collections.emptyList());
             } else {
                 final List<DataObject> accessSelectorsObjects = attributeAccessItem
                         .get(ACCESS_RIGHTS_ATTRIBUTE_ACCESS_ACCESS_SELECTORS_INDEX).getValue();

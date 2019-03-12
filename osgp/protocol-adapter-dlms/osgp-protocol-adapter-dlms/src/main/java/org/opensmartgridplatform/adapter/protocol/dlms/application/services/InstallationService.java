@@ -14,7 +14,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.CoupleMbu
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.DeCoupleMBusDeviceCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,18 +105,18 @@ public class InstallationService {
         smartMeteringDevice.setMbusDefaultKey(reEncryptedMbusDefaultKey);
     }
 
-    public MbusChannelElementsResponseDto coupleMbusDevice(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public MbusChannelElementsResponseDto coupleMbusDevice(final DlmsConnectionManager conn, final DlmsDevice device,
             final MbusChannelElementsDto mbusChannelElements) throws ProtocolAdapterException {
         return this.coupleMBusDeviceCommandExecutor.execute(conn, device, mbusChannelElements);
     }
 
-    public CoupleMbusDeviceByChannelResponseDto coupleMbusDeviceByChannel(final DlmsConnectionHolder conn,
+    public CoupleMbusDeviceByChannelResponseDto coupleMbusDeviceByChannel(final DlmsConnectionManager conn,
             final DlmsDevice device, final CoupleMbusDeviceByChannelRequestDataDto requestDto)
             throws ProtocolAdapterException {
         return this.coupleMbusDeviceByChannelCommandExecutor.execute(conn, device, requestDto);
     }
 
-    public DeCoupleMbusDeviceResponseDto deCoupleMbusDevice(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public DeCoupleMbusDeviceResponseDto deCoupleMbusDevice(final DlmsConnectionManager conn, final DlmsDevice device,
             final DeCoupleMbusDeviceDto deCoupleMbusDeviceDto) throws ProtocolAdapterException {
         return this.deCoupleMBusDeviceCommandExecutor.execute(conn, device, deCoupleMbusDeviceDto);
     }

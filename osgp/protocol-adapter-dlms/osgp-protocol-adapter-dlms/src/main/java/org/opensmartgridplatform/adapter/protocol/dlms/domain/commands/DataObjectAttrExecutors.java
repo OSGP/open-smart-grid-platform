@@ -15,7 +15,7 @@ import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.SetParameter;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -53,12 +53,12 @@ public class DataObjectAttrExecutors {
 
     /**
      * @param conn
-     *            : the {@link DlmsConnectionHolder} with the active connection
+     *            : the {@link DlmsConnectionManager} with the active connection
      *            to send the {@link SetParameter} to.
      * @throws ProtocolAdapterException
      *             when one or more of the set commands fail
      */
-    public void execute(final DlmsConnectionHolder conn) throws ProtocolAdapterException {
+    public void execute(final DlmsConnectionManager conn) throws ProtocolAdapterException {
 
         try {
             for (final DataObjectAttrExecutor dataObjectAttrExecutor : this.dataObjectAttrExecutorList) {

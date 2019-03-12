@@ -15,7 +15,7 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -60,7 +60,7 @@ public class ClearAlarmRegisterCommandExecutor
     }
 
     @Override
-    public AccessResultCode execute(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public AccessResultCode execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final ClearAlarmRegisterRequestDto clearAlarmRegisterRequestDto) throws ProtocolAdapterException {
 
         LOGGER.info("Clear alarm register by request for class id: {}, obis code: {}, attribute id: {}", CLASS_ID,

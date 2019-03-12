@@ -18,7 +18,7 @@ import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.interfaceclass.InterfaceClass;
 import org.openmuc.jdlms.interfaceclass.attribute.ClockAttribute;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +64,7 @@ public class SetClockConfigurationCommandExecutor
     }
 
     @Override
-    public Void execute(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public Void execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final SetClockConfigurationRequestDto object) throws ProtocolAdapterException {
 
         this.dlmsLogWrite(conn, ATTRIBUTE_TIME_ZONE);
@@ -90,7 +90,7 @@ public class SetClockConfigurationCommandExecutor
         return null;
     }
 
-    private void writeAttribute(final DlmsConnectionHolder conn, final SetParameter parameter,
+    private void writeAttribute(final DlmsConnectionManager conn, final SetParameter parameter,
             final String attributeName) throws ProtocolAdapterException {
         try {
             final AccessResultCode result = conn.getConnection().set(parameter);
@@ -104,7 +104,7 @@ public class SetClockConfigurationCommandExecutor
         }
     }
 
-    private void dlmsLogWrite(final DlmsConnectionHolder conn, final AttributeAddress attribute) {
+    private void dlmsLogWrite(final DlmsConnectionManager conn, final AttributeAddress attribute) {
         conn.getDlmsMessageListener().setDescription("SetClockConfiguration, preparing to write attribute: "
                 + JdlmsObjectToStringUtil.describeAttributes(attribute));
     }

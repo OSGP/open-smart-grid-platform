@@ -15,7 +15,7 @@ import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -62,12 +62,12 @@ public class ReadAlarmRegisterCommandExecutor extends
     }
 
     @Override
-    public AlarmRegisterResponseDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public AlarmRegisterResponseDto execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final ReadAlarmRegisterRequestDto object) throws ProtocolAdapterException {
         return new AlarmRegisterResponseDto(this.retrieveAlarmRegister(conn));
     }
 
-    private Set<AlarmTypeDto> retrieveAlarmRegister(final DlmsConnectionHolder conn) throws ProtocolAdapterException {
+    private Set<AlarmTypeDto> retrieveAlarmRegister(final DlmsConnectionManager conn) throws ProtocolAdapterException {
 
         final AttributeAddress alarmRegisterValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 

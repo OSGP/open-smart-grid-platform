@@ -16,7 +16,7 @@ import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.interfaceclass.InterfaceClass;
 import org.openmuc.jdlms.interfaceclass.attribute.MbusClientAttribute;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.valueobjects.EncryptionKeyStatusType;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -49,7 +49,7 @@ public class GetMbusEncryptionKeyStatusCommandExecutor
     }
 
     @Override
-    public GetMbusEncryptionKeyStatusResponseDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public GetMbusEncryptionKeyStatusResponseDto execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final GetMbusEncryptionKeyStatusRequestDto request) throws ProtocolAdapterException {
 
         final EncryptionKeyStatusTypeDto encryptionKeyStatusType = this
@@ -59,7 +59,7 @@ public class GetMbusEncryptionKeyStatusCommandExecutor
     }
 
     public EncryptionKeyStatusTypeDto getEncryptionKeyStatusTypeDto(final short channel,
-            final DlmsConnectionHolder conn) throws ProtocolAdapterException {
+            final DlmsConnectionManager conn) throws ProtocolAdapterException {
 
         final ObisCode obisCode = OBIS_CODES.get(channel);
 

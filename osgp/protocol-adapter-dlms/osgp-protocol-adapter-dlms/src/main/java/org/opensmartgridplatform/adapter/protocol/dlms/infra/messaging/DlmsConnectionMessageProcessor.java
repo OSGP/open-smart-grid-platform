@@ -15,7 +15,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Secu
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.RetryableException;
@@ -53,7 +53,7 @@ public abstract class DlmsConnectionMessageProcessor {
     @Autowired
     private RetryHeaderFactory retryHeaderFactory;
 
-    protected DlmsConnectionHolder createConnectionForDevice(final DlmsDevice device,
+    protected DlmsConnectionManager createConnectionForDevice(final DlmsDevice device,
             final MessageMetadata messageMetadata) throws OsgpException {
 
         final InvocationCountingDlmsMessageListener dlmsMessageListener = this
@@ -77,7 +77,7 @@ public abstract class DlmsConnectionMessageProcessor {
         return dlmsMessageListener;
     }
 
-    protected void doConnectionPostProcessing(final DlmsDevice device, final DlmsConnectionHolder conn) {
+    protected void doConnectionPostProcessing(final DlmsDevice device, final DlmsConnectionManager conn) {
         if (conn == null) {
             /*
              * No connection (possible and perfectly valid if an operation was handled that
@@ -94,7 +94,7 @@ public abstract class DlmsConnectionMessageProcessor {
         }
     }
 
-    protected void closeDlmsConnection(final DlmsDevice device, final DlmsConnectionHolder conn) {
+    protected void closeDlmsConnection(final DlmsDevice device, final DlmsConnectionManager conn) {
         LOGGER.info("Closing connection with {}", device.getDeviceIdentification());
         final DlmsMessageListener dlmsMessageListener = conn.getDlmsMessageListener();
         dlmsMessageListener.setDescription("Close connection");
@@ -105,7 +105,7 @@ public abstract class DlmsConnectionMessageProcessor {
         }
     }
 
-    protected void updateInvocationCounterForEncryptionKey(final DlmsDevice device, final DlmsConnectionHolder conn) {
+    protected void updateInvocationCounterForEncryptionKey(final DlmsDevice device, final DlmsConnectionManager conn) {
 
         if (!(conn.getDlmsMessageListener() instanceof InvocationCountingDlmsMessageListener)) {
             LOGGER.error(

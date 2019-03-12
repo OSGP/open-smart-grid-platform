@@ -107,6 +107,12 @@ public class DlmsDevice extends AbstractEntity {
     @Transient
     private String ipAddress;
 
+    // Starting value of the invocation counter for current connection (for Hls5 connection only).
+    // For a Hls5 connection this value is initialized by reading the invocation counter from the device using the
+    // public client.
+    @Transient
+    private Integer invocationCounter;
+
     public DlmsDevice() {
         // Default constructor
     }
@@ -328,11 +334,11 @@ public class DlmsDevice extends AbstractEntity {
     }
 
     public String getProtocol() {
-        return protocol;
+        return this.protocol;
     }
 
     public String getProtocolVersion() {
-        return protocolVersion;
+        return this.protocolVersion;
     }
 
     public DlmsDevice setProtocol(final String protocol, final String protocolVersion) {
@@ -355,6 +361,18 @@ public class DlmsDevice extends AbstractEntity {
 
     public void setIpAddress(final String ipAddress) {
         this.ipAddress = ipAddress;
+    }
+
+    /**
+     * The starting value of the invocation counter for a new Hls5 connection.
+     * This property is transient, and only set just prior to creating a new Hls5 connection.
+     */
+    public Integer getInvocationCounter() {
+        return this.invocationCounter;
+    }
+
+    public void setInvocationCounter(final Integer invocationCounter) {
+        this.invocationCounter = invocationCounter;
     }
 
     /**

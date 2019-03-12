@@ -17,7 +17,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.GetPeriod
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.GetProfileGenericDataCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.ReadAlarmRegisterCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,7 +55,7 @@ public class MonitoringService {
 
     // === REQUEST PERIODIC METER DATA ===
 
-    public Serializable requestPeriodicMeterReads(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public Serializable requestPeriodicMeterReads(final DlmsConnectionManager conn, final DlmsDevice device,
             final PeriodicMeterReadsRequestDto periodicMeterReadsQuery) throws ProtocolAdapterException {
 
         Serializable response;
@@ -69,7 +69,7 @@ public class MonitoringService {
 
     }
 
-    public Serializable requestActualMeterReads(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public Serializable requestActualMeterReads(final DlmsConnectionManager conn, final DlmsDevice device,
             final ActualMeterReadsQueryDto actualMeterReadsRequest) throws ProtocolAdapterException {
 
         Serializable response;
@@ -82,19 +82,19 @@ public class MonitoringService {
         return response;
     }
 
-    public AlarmRegisterResponseDto requestReadAlarmRegister(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public AlarmRegisterResponseDto requestReadAlarmRegister(final DlmsConnectionManager conn, final DlmsDevice device,
             final ReadAlarmRegisterRequestDto readAlarmRegisterRequest) throws ProtocolAdapterException {
 
         return this.readAlarmRegisterCommandExecutor.execute(conn, device, readAlarmRegisterRequest);
     }
 
-    public Serializable requestProfileGenericData(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public Serializable requestProfileGenericData(final DlmsConnectionManager conn, final DlmsDevice device,
             final ProfileGenericDataRequestDto profileGenericDataRequest) throws ProtocolAdapterException {
 
         return this.getProfileGenericDataCommandExecutor.execute(conn, device, profileGenericDataRequest);
     }
 
-    public void setClearAlarmRegister(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public void setClearAlarmRegister(final DlmsConnectionManager conn, final DlmsDevice device,
             final ClearAlarmRegisterRequestDto clearAlarmRegisterRequestDto) throws ProtocolAdapterException {
 
         this.clearAlarmRegisterCommandExecutor.execute(conn, device, clearAlarmRegisterRequestDto);

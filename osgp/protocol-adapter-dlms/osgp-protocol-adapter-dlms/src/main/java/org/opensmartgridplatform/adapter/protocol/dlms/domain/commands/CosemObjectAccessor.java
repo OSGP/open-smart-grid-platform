@@ -18,7 +18,7 @@ import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
@@ -29,11 +29,11 @@ class CosemObjectAccessor {
     private static final String EXCEPTION_MSG_NO_METHOD_RESULT = "No MethodResult received.";
     private static final String EXCEPTION_MSG_NO_GET_RESULT = "No GetResult received while retrieving attribute %s, classId %s, obisCode %s.";
 
-    private final DlmsConnectionHolder connector;
+    private final DlmsConnectionManager connector;
     private final ObisCode obisCode;
     private final int classId;
 
-    public CosemObjectAccessor(final DlmsConnectionHolder connector, final ObisCode obisCode, final int classId) {
+    public CosemObjectAccessor(final DlmsConnectionManager connector, final ObisCode obisCode, final int classId) {
         this.connector = connector;
         this.obisCode = obisCode;
         this.classId = classId;

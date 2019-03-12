@@ -15,7 +15,7 @@ import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
@@ -76,7 +76,7 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
         LOGGER.debug("Processing {} request message", this.messageType);
 
         MessageMetadata messageMetadata = null;
-        DlmsConnectionHolder conn = null;
+        DlmsConnectionManager conn = null;
         DlmsDevice device = null;
 
         try {
@@ -95,7 +95,7 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
             LOGGER.info("{} called for device: {} for organisation: {}", message.getJMSType(),
                     messageMetadata.getDeviceIdentification(), messageMetadata.getOrganisationIdentification());
 
-            Serializable response;
+            final Serializable response;
             if (this.usesDeviceConnection()) {
                 conn = this.createConnectionForDevice(device, messageMetadata);
                 response = this.handleMessage(conn, device, message.getObject());
@@ -137,9 +137,8 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
      * @param requestObject
      *            Request data object.
      * @return A serializable object to be put on the response queue.
-     * @throws OsgpException
      */
-    protected Serializable handleMessage(final DlmsConnectionHolder conn, final DlmsDevice device,
+    protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException {
         throw new UnsupportedOperationException(
                 "handleMessage(DlmsConnection, DlmsDevice, Serializable) should be overriden by a subclass, or usesDeviceConnection should return false.");

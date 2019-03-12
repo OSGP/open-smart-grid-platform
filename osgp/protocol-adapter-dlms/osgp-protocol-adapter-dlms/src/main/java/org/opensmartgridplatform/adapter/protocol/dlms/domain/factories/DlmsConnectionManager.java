@@ -14,12 +14,16 @@ import org.openmuc.jdlms.RawMessageData;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
-
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class DlmsConnectionHolder implements AutoCloseable {
-
+/**
+ * Object that manages and exposes a single DLMS connection.
+ */
+public class DlmsConnectionManager implements AutoCloseable {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DlmsConnectionManager.class);
     private static final DlmsMessageListener DO_NOTHING_LISTENER = new DlmsMessageListener() {
 
         @Override
@@ -45,7 +49,7 @@ public class DlmsConnectionHolder implements AutoCloseable {
 
     private DlmsConnection dlmsConnection;
 
-    public DlmsConnectionHolder(final DlmsConnector connector, final DlmsDevice device,
+    public DlmsConnectionManager(final DlmsConnector connector, final DlmsDevice device,
             final DlmsMessageListener dlmsMessageListener, final DomainHelperService domainHelperService) {
         this.connector = connector;
         this.device = device;
@@ -139,8 +143,12 @@ public class DlmsConnectionHolder implements AutoCloseable {
      * message will be sent to the device.
      */
     @Override
-    public void close() throws Exception {
-        this.dlmsConnection.close();
+    public void close() {
+        try {
+            this.dlmsConnection.close();
+        } catch (final IOException e) {
+            LOGGER.warn("Failure while trying to close a DLMS connection", e);
+        }
         this.dlmsConnection = null;
     }
 }

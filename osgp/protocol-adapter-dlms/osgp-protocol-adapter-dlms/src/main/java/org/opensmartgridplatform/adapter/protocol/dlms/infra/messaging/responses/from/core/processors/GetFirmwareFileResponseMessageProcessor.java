@@ -14,7 +14,7 @@ import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.FirmwareService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.responses.from.core.OsgpResponseMessageProcessor;
 import org.opensmartgridplatform.dto.valueobjects.DeviceFunctionDto;
@@ -46,7 +46,7 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
         LOGGER.debug("Processing {} response message", this.messageType.name());
         MessageMetadata messageMetadata = null;
 
-        DlmsConnectionHolder conn = null;
+        DlmsConnectionManager conn = null;
         DlmsDevice device = null;
 
         try {
@@ -82,7 +82,7 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
     }
 
     @Override
-    protected Serializable handleMessage(final DlmsConnectionHolder conn, final DlmsDevice device,
+    protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
             final Serializable response) throws OsgpException {
 
         if (!(response instanceof ResponseMessage)) {

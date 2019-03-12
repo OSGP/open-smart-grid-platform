@@ -13,7 +13,7 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +52,7 @@ public class SetPushSetupAlarmCommandExecutor extends SetPushSetupCommandExecuto
     }
 
     @Override
-    public AccessResultCode execute(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public AccessResultCode execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final PushSetupAlarmDto pushSetupAlarm) throws ProtocolAdapterException {
 
         final SetParameter setParameterSendDestinationAndMethod = this.getSetParameter(pushSetupAlarm);

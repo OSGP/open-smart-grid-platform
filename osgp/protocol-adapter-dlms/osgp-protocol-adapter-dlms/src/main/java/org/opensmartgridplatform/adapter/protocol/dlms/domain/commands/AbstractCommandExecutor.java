@@ -17,16 +17,15 @@ import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class AbstractCommandExecutor<T, R> implements CommandExecutor<T, R> {
 
@@ -65,7 +64,7 @@ public abstract class AbstractCommandExecutor<T, R> implements CommandExecutor<T
     }
 
     @Override
-    public ActionResponseDto executeBundleAction(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public ActionResponseDto executeBundleAction(final DlmsConnectionManager conn, final DlmsDevice device,
             final ActionRequestDto actionRequestDto) throws OsgpException {
 
         if (this.bundleExecutorMapKey == null) {
@@ -107,7 +106,7 @@ public abstract class AbstractCommandExecutor<T, R> implements CommandExecutor<T
     @Override
     public ActionResponseDto asBundleResponse(final R executionResult) throws ProtocolAdapterException {
         try {
-            return ActionResponseDto.class.cast(executionResult);
+            return (ActionResponseDto) executionResult;
         } catch (final ClassCastException e) {
             throw new ProtocolAdapterException(
                     "Translation from CommandExecutor result to bundle ActionResponseDto for "
@@ -147,11 +146,10 @@ public abstract class AbstractCommandExecutor<T, R> implements CommandExecutor<T
      * @param getParameter
      *            for attribute to retrieve result data from
      * @return dataObject
-     * @throws ProtocolAdapterException
      */
-    public DataObject getValidatedResultData(final DlmsConnectionHolder conn, final AttributeAddress getParameter)
+    public DataObject getValidatedResultData(final DlmsConnectionManager conn, final AttributeAddress getParameter)
             throws ProtocolAdapterException {
-        GetResult getResult;
+        final GetResult getResult;
         try {
             getResult = conn.getConnection().get(getParameter);
         } catch (final IOException e) {

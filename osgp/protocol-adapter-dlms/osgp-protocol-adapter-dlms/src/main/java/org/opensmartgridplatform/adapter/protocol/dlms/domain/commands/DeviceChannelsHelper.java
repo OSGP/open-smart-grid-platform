@@ -20,7 +20,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.Iden
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.ManufacturerId;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.FindMatchingChannelHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +55,7 @@ public class DeviceChannelsHelper {
     @Autowired
     private DlmsHelperService dlmsHelperService;
 
-    public List<ChannelElementValuesDto> findCandidateChannelsForDevice(final DlmsConnectionHolder conn,
+    public List<ChannelElementValuesDto> findCandidateChannelsForDevice(final DlmsConnectionManager conn,
             final DlmsDevice device, final MbusChannelElementsDto requestDto) throws ProtocolAdapterException {
 
         final List<ChannelElementValuesDto> channelElementValuesList = new ArrayList<>();
@@ -82,7 +82,7 @@ public class DeviceChannelsHelper {
         return channelElementValuesList;
     }
 
-    protected List<GetResult> getMBusClientAttributeValues(final DlmsConnectionHolder conn, final DlmsDevice device,
+    protected List<GetResult> getMBusClientAttributeValues(final DlmsConnectionManager conn, final DlmsDevice device,
             final short channel) throws ProtocolAdapterException {
         final AttributeAddress[] attrAddresses = this.makeAttributeAddresses(channel);
         conn.getDlmsMessageListener().setDescription("DeviceChannelsHelper, retrieve M-Bus client setup attributes: "
@@ -146,7 +146,7 @@ public class DeviceChannelsHelper {
         return attrAddresses;
     }
 
-    protected ChannelElementValuesDto writeUpdatedMbus(final DlmsConnectionHolder conn,
+    protected ChannelElementValuesDto writeUpdatedMbus(final DlmsConnectionManager conn,
             final MbusChannelElementsDto requestDto, final short channel) throws ProtocolAdapterException {
 
         final DataObjectAttrExecutors dataObjectExecutors = new DataObjectAttrExecutors("CoupleMBusDevice")

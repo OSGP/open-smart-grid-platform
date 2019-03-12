@@ -19,17 +19,17 @@ import java.util.LinkedList;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.FirmwareService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsLogItemRequestMessageSender;
@@ -44,6 +44,7 @@ import org.opensmartgridplatform.shared.infra.jms.ObjectMessageBuilder;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 
+@RunWith(MockitoJUnitRunner.class)
 public class GetFirmwareFileResponseMessageProcessorTest {
 
     @Mock
@@ -71,18 +72,13 @@ public class GetFirmwareFileResponseMessageProcessorTest {
     private FirmwareService firmwareService;
 
     @Mock
-    private DlmsConnectionHolder dlmsConnectionHolderMock;
+    private DlmsConnectionManager dlmsConnectionManagerMock;
 
     @Mock
     private DlmsDevice dlmsDeviceMock;
 
     @InjectMocks
     private GetFirmwareFileResponseMessageProcessor getFirmwareFileResponseMessageProcessor;
-
-    @Before
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Test
     public void processMessageShouldSendOkResponseMessageContainingFirmwareVersions()
@@ -100,10 +96,10 @@ public class GetFirmwareFileResponseMessageProcessorTest {
 
         when(this.domainHelperService.findDlmsDevice(any(MessageMetadata.class))).thenReturn(this.dlmsDeviceMock);
         when(this.dlmsConnectionFactory.getConnection(this.dlmsDeviceMock, null))
-                .thenReturn(this.dlmsConnectionHolderMock);
-        when(this.dlmsConnectionHolderMock.getDlmsMessageListener()).thenReturn(this.dlmsMessageListenerMock);
+                .thenReturn(this.dlmsConnectionManagerMock);
+        when(this.dlmsConnectionManagerMock.getDlmsMessageListener()).thenReturn(this.dlmsMessageListenerMock);
         when(this.dlmsDeviceMock.isInDebugMode()).thenReturn(false);
-        when(this.firmwareService.updateFirmware(this.dlmsConnectionHolderMock, this.dlmsDeviceMock, firmwareFileDto))
+        when(this.firmwareService.updateFirmware(this.dlmsConnectionManagerMock, this.dlmsDeviceMock, firmwareFileDto))
                 .thenReturn(updateFirmwareResponseDto);
 
         // act
@@ -124,11 +120,11 @@ public class GetFirmwareFileResponseMessageProcessorTest {
         final ResponseMessage responseMessage = this.setupResponseMessage(firmwareFileDto);
 
         // act
-        this.getFirmwareFileResponseMessageProcessor.handleMessage(this.dlmsConnectionHolderMock, this.dlmsDeviceMock,
+        this.getFirmwareFileResponseMessageProcessor.handleMessage(this.dlmsConnectionManagerMock, this.dlmsDeviceMock,
                 responseMessage);
 
         // assert
-        verify(this.firmwareService, times(1)).updateFirmware(this.dlmsConnectionHolderMock, this.dlmsDeviceMock,
+        verify(this.firmwareService, times(1)).updateFirmware(this.dlmsConnectionManagerMock, this.dlmsDeviceMock,
                 firmwareFileDto);
     }
 

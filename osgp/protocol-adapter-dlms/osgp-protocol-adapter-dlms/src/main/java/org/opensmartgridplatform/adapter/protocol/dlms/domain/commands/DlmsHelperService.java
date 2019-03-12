@@ -36,14 +36,10 @@ import org.openmuc.jdlms.datatypes.CosemTime;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.BufferedDateTimeValidationException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClockStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
@@ -60,6 +56,9 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 @Service(value = "dlmsHelperService")
 public class DlmsHelperService {
@@ -88,10 +87,8 @@ public class DlmsHelperService {
      *
      * @return a result from trying to retrieve the value for the attribute
      *         identified by {@code attributeAddress}.
-     * @throws ConnectionException
-     * @throws FunctionalException
      */
-    public DataObject getAttributeValue(final DlmsConnectionHolder conn, final AttributeAddress attributeAddress)
+    public DataObject getAttributeValue(final DlmsConnectionManager conn, final AttributeAddress attributeAddress)
             throws FunctionalException {
         Objects.requireNonNull(conn, "conn must not be null");
         Objects.requireNonNull(attributeAddress, "attributeAddress must not be null");
@@ -119,10 +116,8 @@ public class DlmsHelperService {
     /**
      * get results from the meter and check if the number of results equals the
      * number of attribute addresses provided.
-     *
-     * @throws ProtocolAdapterException
      */
-    public List<GetResult> getAndCheck(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public List<GetResult> getAndCheck(final DlmsConnectionManager conn, final DlmsDevice device,
             final String description, final AttributeAddress... params) throws ProtocolAdapterException {
         final List<GetResult> getResults = this.getWithList(conn, device, params);
         this.checkResultList(getResults, params.length, description);
@@ -160,7 +155,7 @@ public class DlmsHelperService {
         }
     }
 
-    public List<GetResult> getWithList(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public List<GetResult> getWithList(final DlmsConnectionManager conn, final DlmsDevice device,
             final AttributeAddress... params) throws ProtocolAdapterException {
         try {
             if (device.isWithListSupported()) {
@@ -185,7 +180,6 @@ public class DlmsHelperService {
      *
      * @return the meter value with dlms unit or null when
      *         {@link #readLong(GetResult, String)} is null
-     * @throws ProtocolAdapterException
      */
     public DlmsMeterValueDto getScaledMeterValue(final GetResult value, final GetResult scalerUnit,
             final String description) throws ProtocolAdapterException {
@@ -231,11 +225,9 @@ public class DlmsHelperService {
      * Workaround method mimicking a Get-Request with-list for devices that do
      * not support the actual functionality from DLMS.
      *
-     * @throws IOException
-     *
-     * @see #getWithList(DlmsConnectionHolder, DlmsDevice, AttributeAddress...)
+     * @see #getWithList(DlmsConnectionManager, DlmsDevice, AttributeAddress...)
      */
-    private List<GetResult> getWithListWorkaround(final DlmsConnectionHolder conn, final AttributeAddress... params)
+    private List<GetResult> getWithListWorkaround(final DlmsConnectionManager conn, final AttributeAddress... params)
             throws IOException {
         final List<GetResult> getResultList = new ArrayList<>();
         for (final AttributeAddress param : params) {
@@ -677,14 +669,14 @@ public class DlmsHelperService {
             if (obj instanceof DataObject) {
                 builder.append(this.getDebugInfo((DataObject) obj));
             } else {
-                builder.append(String.valueOf(obj));
+                builder.append(obj);
             }
             builder.append(System.lineSeparator());
         }
     }
 
     private static String getDataType(final DataObject dataObject) {
-        String dataType;
+        final String dataType;
         if (dataObject.isBitString()) {
             dataType = "BitString";
         } else if (dataObject.isBoolean()) {

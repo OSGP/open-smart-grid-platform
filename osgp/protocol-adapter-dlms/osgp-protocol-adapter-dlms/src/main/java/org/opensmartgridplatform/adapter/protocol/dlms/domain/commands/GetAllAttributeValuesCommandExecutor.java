@@ -16,7 +16,7 @@ import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -68,7 +68,7 @@ public class GetAllAttributeValuesCommandExecutor extends AbstractCommandExecuto
     }
 
     @Override
-    public String execute(final DlmsConnectionHolder conn, final DlmsDevice device, final DataObject object)
+    public String execute(final DlmsConnectionManager conn, final DlmsDevice device, final DataObject object)
             throws OsgpException {
 
         final AttributeAddress attributeAddress = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
@@ -109,7 +109,7 @@ public class GetAllAttributeValuesCommandExecutor extends AbstractCommandExecuto
         }
     }
 
-    private String createOutput(final DlmsConnectionHolder conn, final List<ClassIdObisAttr> allObisCodes)
+    private String createOutput(final DlmsConnectionManager conn, final List<ClassIdObisAttr> allObisCodes)
             throws ProtocolAdapterException, IOException {
 
         final StringBuilder output = new StringBuilder();
@@ -123,7 +123,7 @@ public class GetAllAttributeValuesCommandExecutor extends AbstractCommandExecuto
         return output.toString();
     }
 
-    private String getAllDataFromObisCode(final DlmsConnectionHolder conn, final ClassIdObisAttr obisAttr)
+    private String getAllDataFromObisCode(final DlmsConnectionManager conn, final ClassIdObisAttr obisAttr)
             throws ProtocolAdapterException, IOException {
 
         final StringBuilder output = new StringBuilder();
@@ -137,7 +137,7 @@ public class GetAllAttributeValuesCommandExecutor extends AbstractCommandExecuto
         return output.toString();
     }
 
-    private String getAllDataFromAttribute(final DlmsConnectionHolder conn, final int classNumber,
+    private String getAllDataFromAttribute(final DlmsConnectionManager conn, final int classNumber,
             final DataObject obisCode, final int attributeValue) throws ProtocolAdapterException, IOException {
 
         if (!obisCode.isByteArray()) {

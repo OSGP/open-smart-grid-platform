@@ -14,7 +14,7 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,7 +101,7 @@ public class GetActualMeterReadsCommandExecutor extends
     }
 
     @Override
-    public MeterReadsResponseDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public MeterReadsResponseDto execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final ActualMeterReadsQueryDto actualMeterReadsQuery) throws ProtocolAdapterException {
 
         if (actualMeterReadsQuery != null && actualMeterReadsQuery.isMbusQuery()) {

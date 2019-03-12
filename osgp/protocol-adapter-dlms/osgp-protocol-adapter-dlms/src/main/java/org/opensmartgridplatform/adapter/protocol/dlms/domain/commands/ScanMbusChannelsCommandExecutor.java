@@ -19,7 +19,7 @@ import org.openmuc.jdlms.interfaceclass.attribute.MbusClientAttribute;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.IdentificationNumber;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.ManufacturerId;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,7 +102,7 @@ public class ScanMbusChannelsCommandExecutor extends AbstractCommandExecutor<Voi
     }
 
     @Override
-    public ScanMbusChannelsResponseDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public ScanMbusChannelsResponseDto execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final Void mbusAttributesDto) throws OsgpException {
 
         LOGGER.debug("retrieving mbus info on e-meter");

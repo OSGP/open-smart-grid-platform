@@ -8,7 +8,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
@@ -17,7 +17,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDt
 public class SetActivityCalendarBundleCommandExecutorStub extends AbstractCommandExecutorStub {
 
     @Override
-    public ActionResponseDto executeBundleAction(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public ActionResponseDto executeBundleAction(final DlmsConnectionManager conn, final DlmsDevice device,
             final ActionRequestDto object) throws ProtocolAdapterException {
         return this.doExecute(conn, device, object);
     }
