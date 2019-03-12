@@ -37,16 +37,17 @@ public class SecurityKey extends AbstractEntity {
      * or not successfully been set on the meter. When set on the meter this
      * value should immediately be updated.
      */
-    @Column(nullable = true)
+    @Column()
     private Date validFrom;
 
-    @Column(nullable = true)
+    @Column()
     private Date validTo;
 
     @Column(name = "security_key")
     private String key;
 
-    @Column(nullable = true)
+    // TODO (RvM): remove this, the invocation counter belongs to device, not to a key.
+    @Column()
     private Integer invocationCounter;
 
     public SecurityKey() {

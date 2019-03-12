@@ -28,7 +28,6 @@ import org.jboss.netty.logging.Slf4JLoggerFactory;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.threads.RecoverKeyProcess;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.threads.RecoverKeyProcessInitiator;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnector;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsDeviceAssociation;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.Hls5Connector;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.Lls0Connector;
@@ -146,7 +145,7 @@ public class DlmsConfig extends AbstractConfig {
 
     @Bean
     @Autowired
-    public DlmsConnector lls0Connector(@Value("${jdlms.response_timeout}") final int responseTimeout,
+    public Lls0Connector lls0Connector(@Value("${jdlms.response_timeout}") final int responseTimeout,
             @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress) {
         return new Lls0Connector(responseTimeout, logicalDeviceAddress, DlmsDeviceAssociation.PUBLIC_CLIENT);
     }

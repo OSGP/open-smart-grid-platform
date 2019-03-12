@@ -15,10 +15,12 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
- * Object that manages an invocation counter.
+ * Object that manages invocation counters.
  */
+@Component
 public class InvocationCounterManager {
     private static final AttributeAddress ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE = new AttributeAddress(1,
             new ObisCode(new byte[] { 0, 0, 43, 1, 0, -1 }), 2);
@@ -32,15 +34,31 @@ public class InvocationCounterManager {
         this.dlmsHelper = dlmsHelper;
     }
 
+    /**
+     * Updates the device instance with the invocation counter value on the actual device.
+     */
     public void initializeInvocationCounter(final DlmsDevice device) throws OsgpException {
-        try (final DlmsConnectionManager connectionManager = this.connectionFactory.getConnection(device, null)) {
+        if (this.invocationCounterIsStoredOnDevice(device)) {
+            this.initializeWithInvocationCounterStoredOnDevice(device);
+        } else {
+            // Value of invocation counter is ignored on these devices.
+            device.setInvocationCounter(0);
+        }
+    }
+
+    private void initializeWithInvocationCounterStoredOnDevice(final DlmsDevice device) throws OsgpException {
+        try (final DlmsConnectionManager connectionManager = this.connectionFactory
+                .getPublicClientConnection(device, null)) {
             device.setInvocationCounter(this.getInvocationCounter(connectionManager));
         }
+    }
 
+    private boolean invocationCounterIsStoredOnDevice(final DlmsDevice device) {
+        return "SMR".equals(device.getProtocol());
     }
 
     private int getInvocationCounter(final DlmsConnectionManager connectionManager) throws FunctionalException {
-        return (int) this.dlmsHelper
-                .getAttributeValue(connectionManager, ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE).getValue();
+        return ((Number) this.dlmsHelper.getAttributeValue(connectionManager, ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE)
+                .getValue()).intValue();
     }
 }

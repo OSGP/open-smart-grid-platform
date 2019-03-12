@@ -13,6 +13,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.refEq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
@@ -25,6 +26,7 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.DlmsHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDeviceBuilder;
 
 @RunWith(MockitoJUnitRunner.class)
 public class InvocationCounterManagerTest {
@@ -45,11 +47,11 @@ public class InvocationCounterManagerTest {
     }
 
     @Test
-    public void initializesInvocationCounter() throws Exception {
-        final DlmsDevice device = new DlmsDevice();
+    public void initializesInvocationCounterForSmrDevice() throws Exception {
+        final DlmsDevice device = new DlmsDeviceBuilder().withProtocol("SMR").build();
 
         final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
-        when(this.connectionFactory.getConnection(device, null)).thenReturn(connectionManager);
+        when(this.connectionFactory.getPublicClientConnection(device, null)).thenReturn(connectionManager);
 
         final DataObject dataObject = DataObject.newInteger32Data(123);
         when(this.dlmsHelperService.getAttributeValue(eq(connectionManager),
@@ -59,7 +61,16 @@ public class InvocationCounterManagerTest {
         this.manager.initializeInvocationCounter(device);
 
         assertThat(device.getInvocationCounter()).isEqualTo(dataObject.getValue());
-
         verify(connectionManager).close();
+    }
+
+    @Test
+    public void initializesInvocationCounterForNonSmrDevice() throws Exception {
+        final DlmsDevice device = new DlmsDeviceBuilder().withProtocol("DSMR").build();
+
+        this.manager.initializeInvocationCounter(device);
+
+        assertThat(device.getInvocationCounter()).isEqualTo(0);
+        verifyZeroInteractions(this.connectionFactory);
     }
 }

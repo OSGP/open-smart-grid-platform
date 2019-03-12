@@ -10,6 +10,8 @@ package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.response
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -19,6 +21,7 @@ import java.util.LinkedList;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -28,11 +31,10 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.FirmwareService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDeviceBuilder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
-import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
-import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsLogItemRequestMessageSender;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.RetryHeaderFactory;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareFileDto;
@@ -46,21 +48,14 @@ import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GetFirmwareFileResponseMessageProcessorTest {
+    @Mock
+    protected DlmsConnectionHelper connectionHelper;
 
     @Mock
     protected DeviceResponseMessageSender responseMessageSender;
 
     @Mock
-    protected DlmsLogItemRequestMessageSender dlmsLogItemRequestMessageSender;
-
-    @Mock
-    protected OsgpExceptionConverter osgpExceptionConverter;
-
-    @Mock
     protected DomainHelperService domainHelperService;
-
-    @Mock
-    protected DlmsConnectionFactory dlmsConnectionFactory;
 
     @Mock
     protected DlmsMessageListener dlmsMessageListenerMock;
@@ -74,11 +69,15 @@ public class GetFirmwareFileResponseMessageProcessorTest {
     @Mock
     private DlmsConnectionManager dlmsConnectionManagerMock;
 
-    @Mock
     private DlmsDevice dlmsDeviceMock;
 
     @InjectMocks
     private GetFirmwareFileResponseMessageProcessor getFirmwareFileResponseMessageProcessor;
+
+    @Before
+    public void setUp() {
+        this.dlmsDeviceMock = new DlmsDeviceBuilder().withHls5Active(true).build();
+    }
 
     @Test
     public void processMessageShouldSendOkResponseMessageContainingFirmwareVersions()
@@ -95,10 +94,9 @@ public class GetFirmwareFileResponseMessageProcessorTest {
                 .forClass(ResponseMessage.class);
 
         when(this.domainHelperService.findDlmsDevice(any(MessageMetadata.class))).thenReturn(this.dlmsDeviceMock);
-        when(this.dlmsConnectionFactory.getConnection(this.dlmsDeviceMock, null))
-                .thenReturn(this.dlmsConnectionManagerMock);
         when(this.dlmsConnectionManagerMock.getDlmsMessageListener()).thenReturn(this.dlmsMessageListenerMock);
-        when(this.dlmsDeviceMock.isInDebugMode()).thenReturn(false);
+        when(this.connectionHelper.createConnectionForDevice(same(this.dlmsDeviceMock), isA(DlmsMessageListener.class)))
+                .thenReturn(this.dlmsConnectionManagerMock);
         when(this.firmwareService.updateFirmware(this.dlmsConnectionManagerMock, this.dlmsDeviceMock, firmwareFileDto))
                 .thenReturn(updateFirmwareResponseDto);
 
@@ -112,7 +110,7 @@ public class GetFirmwareFileResponseMessageProcessorTest {
         assertThat(responseMessageArgumentCaptor.getValue().getResult(), is(ResponseMessageResultType.OK));
     }
 
-    // @Test
+    @Test
     public void handleMessageShouldCallUpdateFirmware()
             throws OsgpException {
         // arrange

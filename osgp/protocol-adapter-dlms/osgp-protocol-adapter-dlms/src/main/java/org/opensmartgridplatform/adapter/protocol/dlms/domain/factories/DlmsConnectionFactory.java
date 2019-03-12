@@ -18,15 +18,14 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionTyp
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+/**
+ * Factory that returns open DLMS connections.
+ */
 @Component
 public class DlmsConnectionFactory {
-
-    /**
-     * Logger for this class.
-     */
     private static final Logger LOGGER = LoggerFactory.getLogger(DlmsConnectionFactory.class);
 
     private final Hls5Connector hls5Connector;
@@ -34,10 +33,9 @@ public class DlmsConnectionFactory {
     private final Lls0Connector lls0Connector;
     private final DomainHelperService domainHelperService;
 
-    public DlmsConnectionFactory(@Qualifier("hls5Connector") final Hls5Connector hls5Connector,
-            @Qualifier("lls1Connector") final Lls1Connector lls1Connector,
-            @Qualifier("lls0Connector") final Lls0Connector lls0Connector,
-            final DomainHelperService domainHelperService) {
+    @Autowired
+    public DlmsConnectionFactory(final Hls5Connector hls5Connector, final Lls1Connector lls1Connector,
+            final Lls0Connector lls0Connector, final DomainHelperService domainHelperService) {
         this.hls5Connector = hls5Connector;
         this.lls1Connector = lls1Connector;
         this.lls0Connector = lls0Connector;
@@ -66,7 +64,7 @@ public class DlmsConnectionFactory {
      */
     public DlmsConnectionManager getConnection(final DlmsDevice device, final DlmsMessageListener dlmsMessageListener)
             throws OsgpException {
-        return this.newConnectionForSecurityLevel(device, dlmsMessageListener, SecurityLevel.forDevice(device));
+        return this.newConnectionWithSecurityLevel(device, dlmsMessageListener, SecurityLevel.forDevice(device));
     }
 
     /**
@@ -91,10 +89,10 @@ public class DlmsConnectionFactory {
      */
     public DlmsConnectionManager getPublicClientConnection(final DlmsDevice device,
             final DlmsMessageListener dlmsMessageListener) throws OsgpException {
-        return this.newConnectionForSecurityLevel(device, dlmsMessageListener, SecurityLevel.LLS0);
+        return this.newConnectionWithSecurityLevel(device, dlmsMessageListener, SecurityLevel.LLS0);
     }
 
-    private DlmsConnectionManager newConnectionForSecurityLevel(final DlmsDevice device,
+    private DlmsConnectionManager newConnectionWithSecurityLevel(final DlmsDevice device,
             final DlmsMessageListener dlmsMessageListener, final SecurityLevel securityLevel) throws OsgpException {
         final DlmsConnectionManager connectionManager = new DlmsConnectionManager(this.connectorFor(securityLevel),
                 device, dlmsMessageListener, this.domainHelperService);
