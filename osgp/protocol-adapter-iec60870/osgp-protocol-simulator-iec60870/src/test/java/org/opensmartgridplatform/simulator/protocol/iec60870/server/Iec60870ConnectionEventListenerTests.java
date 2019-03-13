@@ -28,20 +28,20 @@ import org.opensmartgridplatform.simulator.protocol.iec60870.server.handlers.Iec
 public class Iec60870ConnectionEventListenerTests {
 
     @Mock
-    Iec60870ASduHandlerRegistry iec60870ASduHandlerRegistry;
+    private Iec60870ASduHandlerRegistry iec60870ASduHandlerRegistry;
 
     @Mock
-    Iec60870InterrogationCommandASduHandler interrogationCommandHandler;
+    private Iec60870InterrogationCommandASduHandler interrogationCommandHandler;
 
     @Mock
-    Iec60870SingleCommandASduHandler singleCommandHandler;
+    private Iec60870SingleCommandASduHandler singleCommandHandler;
 
     @Mock
-    Connection connection;
+    private Connection connection;
 
-    Iec60870ASduFactory iec60870aSduFactory = new Iec60870ASduFactory();
+    private Iec60870ASduFactory iec60870aSduFactory = new Iec60870ASduFactory();
 
-    Iec60870ConnectionEventListener iec60870ConnectionEventListener;
+    private Iec60870ConnectionEventListener iec60870ConnectionEventListener;
 
     @BeforeEach
     public void setup() throws IOException {

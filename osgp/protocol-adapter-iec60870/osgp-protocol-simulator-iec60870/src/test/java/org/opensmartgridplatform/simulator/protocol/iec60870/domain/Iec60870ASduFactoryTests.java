@@ -21,7 +21,7 @@ import org.openmuc.j60870.TypeId;
 
 public class Iec60870ASduFactoryTests {
 
-    Iec60870ASduFactory iec60870ASduFactory = new Iec60870ASduFactory();
+    private Iec60870ASduFactory iec60870ASduFactory = new Iec60870ASduFactory();
 
     @Test
     public void shouldCreateInterrogationCommand() {

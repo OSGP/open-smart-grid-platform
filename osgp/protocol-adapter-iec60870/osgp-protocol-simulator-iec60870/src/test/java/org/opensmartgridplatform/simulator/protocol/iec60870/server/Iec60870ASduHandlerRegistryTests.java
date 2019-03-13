@@ -24,16 +24,16 @@ public class Iec60870ASduHandlerRegistryTests {
     // Mock the RTU Simulator to prevent the simulator from starting, which
     // might cause 'address already in use' exceptions while running tests
     @MockBean
-    Iec60870Simulator iec60870RtuSimulator;
+    private Iec60870Simulator iec60870RtuSimulator;
 
     @Autowired
-    Iec60870ASduHandlerRegistry iec60870aSduHandlerRegistry;
+    private Iec60870ASduHandlerRegistry iec60870aSduHandlerRegistry;
 
     @Autowired
-    Iec60870InterrogationCommandASduHandler iec60870InterrogationCommandASduHandler;
+    private Iec60870InterrogationCommandASduHandler iec60870InterrogationCommandASduHandler;
 
     @Autowired
-    Iec60870SingleCommandASduHandler iec60870SingleCommandASduHandler;
+    private Iec60870SingleCommandASduHandler iec60870SingleCommandASduHandler;
 
     @Test
     public void registryShouldThrowExceptionWhenHandlerIsNotFound() {
