@@ -16,19 +16,16 @@ import javax.validation.constraints.Size;
 import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.ws.tariffswitching.infra.jms.TariffSwitchingRequestMessage;
 import org.opensmartgridplatform.adapter.ws.tariffswitching.infra.jms.TariffSwitchingRequestMessageSender;
-import org.opensmartgridplatform.adapter.ws.tariffswitching.infra.jms.TariffSwitchingResponseMessageFinder;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
 import org.opensmartgridplatform.domain.core.services.CorrelationIdProviderService;
-import org.opensmartgridplatform.shared.validation.Identification;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.Schedule;
 import org.opensmartgridplatform.domain.core.valueobjects.ScheduleEntry;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
-import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.opensmartgridplatform.shared.validation.Identification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,9 +47,6 @@ public class ScheduleManagementService {
 
     @Autowired
     private TariffSwitchingRequestMessageSender tariffSwitchingRequestMessageSender;
-
-    @Autowired
-    private TariffSwitchingResponseMessageFinder tariffSwitchingResponseMessageFinder;
 
     /**
      * Constructor
@@ -90,11 +84,6 @@ public class ScheduleManagementService {
         this.tariffSwitchingRequestMessageSender.send(message);
 
         return correlationUid;
-    }
-
-    public ResponseMessage dequeueSetTariffScheduleResponse(final String correlationUid) throws OsgpException {
-
-        return this.tariffSwitchingResponseMessageFinder.findMessage(correlationUid);
     }
 
 }
