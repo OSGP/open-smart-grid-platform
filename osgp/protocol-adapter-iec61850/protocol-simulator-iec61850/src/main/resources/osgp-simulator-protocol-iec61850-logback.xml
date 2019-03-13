@@ -9,7 +9,7 @@
   <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <file>/var/log/osp/logs/osgp-simulator-protocol-iec61850.log</file>
     <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-      <fileNamePattern>/var/log/osp/logs/osgp-simulator-protocol-iec61850.%d{yyyy-MM-dd}.log</fileNamePattern>
+      <fileNamePattern>/var/log/osp/logs/osgp-simulator-protocol-iec61850.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
       <maxFileSize>100MB</maxFileSize>
       <maxHistory>10</maxHistory>
       <totalSizeCap>20GB</totalSizeCap>
