@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.ws;
+package org.opensmartgridplatform.cucumber.platform.microgrids.glue.steps.database.ws;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -15,9 +15,6 @@ import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
 import org.opensmartgridplatform.cucumber.core.DateTimeHelper;
@@ -25,22 +22,24 @@ import org.opensmartgridplatform.cucumber.core.RetryableAssert;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.glue.steps.database.core.BaseDeviceSteps;
+import org.opensmartgridplatform.cucumber.platform.glue.steps.database.ws.ResponseDataBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
-public class ResponseDataSteps extends BaseDeviceSteps {
+public class MicrogridsResponseDataSteps extends BaseDeviceSteps {
 
     @Autowired
     private ResponseDataRepository responseDataRespository;
 
     @Given("^a response data record$")
-    @Transactional("txMgrRespData")
+    @Transactional("txMgrWsMicrogrids")
     public ResponseData aResponseDataRecord(final Map<String, String> settings) throws Throwable {
 
-        final ResponseData responseData = this.responseDataRespository
-                .save(new ResponseDataBuilder().fromSettings(settings).build());
-
+        ResponseData responseData = new ResponseDataBuilder().fromSettings(settings).build();
+        responseData = this.responseDataRespository.save(responseData);
         ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, responseData.getCorrelationUid());
 
         // set correct creation time for testing after inserting in the database
@@ -76,8 +75,11 @@ public class ResponseDataSteps extends BaseDeviceSteps {
                 .parseShort(settings.get(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SENT));
         final String expectedMessageType = settings.get(PlatformKeys.KEY_MESSAGE_TYPE);
 
-        RetryableAssert.assertWithRetries(() -> ResponseDataSteps.this.assertResponseDataHasNotificationsAndMessageType(
-                correlationUid, expectedNumberOfNotificationsSent, expectedMessageType), 3, 200, TimeUnit.MILLISECONDS);
+        RetryableAssert
+                .assertWithRetries(
+                        () -> MicrogridsResponseDataSteps.this.assertResponseDataHasNotificationsAndMessageType(
+                                correlationUid, expectedNumberOfNotificationsSent, expectedMessageType),
+                        3, 200, TimeUnit.MILLISECONDS);
     }
 
     private void assertResponseDataHasNotificationsAndMessageType(final String correlationUid,
@@ -88,6 +90,5 @@ public class ResponseDataSteps extends BaseDeviceSteps {
         assertEquals(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SENT, expectedNumberOfNotificationsSent,
                 responseData.getNumberOfNotificationsSent());
         assertEquals(PlatformKeys.KEY_MESSAGE_TYPE, expectedMessageType, responseData.getMessageType());
-
     }
 }

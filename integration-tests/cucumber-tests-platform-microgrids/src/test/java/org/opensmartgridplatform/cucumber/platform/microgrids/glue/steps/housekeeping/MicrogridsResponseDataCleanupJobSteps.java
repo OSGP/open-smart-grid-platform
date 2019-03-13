@@ -11,21 +11,18 @@ import static org.junit.Assert.fail;
 
 import java.util.concurrent.TimeUnit;
 
+import org.opensmartgridplatform.cucumber.core.RetryableAssert;
+import org.opensmartgridplatform.cucumber.platform.microgrids.glue.steps.database.ws.MicrogridsResponseDataSteps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-
-import org.opensmartgridplatform.cucumber.core.RetryableAssert;
-import org.opensmartgridplatform.cucumber.platform.microgrids.glue.steps.database.ws.ResponseDataSteps;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class ResponseDataCleanupJobSteps {
-
-    private static final TimeUnit TIME_UNIT_RESPONSE_CLEANUP_DELAY = TimeUnit.MILLISECONDS;
+public class MicrogridsResponseDataCleanupJobSteps {
 
     @Autowired
-    private ResponseDataSteps responseDataSteps;
+    private MicrogridsResponseDataSteps responseDataSteps;
 
     @Value("${iec61850.rtu.response.cleanup.wait.delay:1000}")
     private long delay;
@@ -54,10 +51,10 @@ public class ResponseDataCleanupJobSteps {
         try {
             RetryableAssert.assertWithRetries(
                     () -> this.responseDataSteps.theResponseDataRecordShouldBeDeleted(correlationUid), retries, delay,
-                    TIME_UNIT_RESPONSE_CLEANUP_DELAY);
+                    TimeUnit.MILLISECONDS);
         } catch (final AssertionError e) {
             fail("Cleanup job should have removed response data with correlation uid " + correlationUid + " within "
-                    + RetryableAssert.describeMaxDuration(retries, delay, TIME_UNIT_RESPONSE_CLEANUP_DELAY));
+                    + RetryableAssert.describeMaxDuration(retries, delay, TimeUnit.MILLISECONDS));
         }
     }
 
@@ -67,7 +64,7 @@ public class ResponseDataCleanupJobSteps {
         try {
             RetryableAssert.assertDelayedWithRetries(
                     () -> this.responseDataSteps.theResponseDataRecordShouldNotBeDeleted(correlationUid), 0,
-                    retries * delay, TIME_UNIT_RESPONSE_CLEANUP_DELAY);
+                    retries * delay, TimeUnit.MILLISECONDS);
         } catch (final AssertionError e) {
             fail("Cleanup job should not have removed response data with correlation uid " + correlationUid + ".");
         }
