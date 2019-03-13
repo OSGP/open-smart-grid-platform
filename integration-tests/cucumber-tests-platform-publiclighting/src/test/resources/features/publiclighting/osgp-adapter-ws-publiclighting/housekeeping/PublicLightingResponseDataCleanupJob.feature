@@ -1,5 +1,4 @@
-#@PublicLighting @Platform @NightlyBuildOnly @Housekeeping
-@PublicLighting @Platform @Housekeeping
+@PublicLighting @Platform @NightlyBuildOnly @Housekeeping
 Feature: PublicLighting Housekeeping - Response Data Cleanup Job
   As open smart grid platform
   I want to clean up the response data
