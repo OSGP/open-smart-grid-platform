@@ -9,6 +9,7 @@ package org.opensmartgridplatform.domain.core.services;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.UUID;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -17,10 +18,13 @@ import org.springframework.stereotype.Service;
 @Primary
 public class CorrelationIdProviderTimestampService implements CorrelationIdProviderService {
 
+    private static final String SEPARATOR = "|||";
+
     @Override
     public String getCorrelationId(final String organisationIdentification, final String deviceIdentification) {
 
-        return organisationIdentification + "|||" + deviceIdentification + "|||" + this.getCurrentDateString();
+        return organisationIdentification + SEPARATOR + deviceIdentification + SEPARATOR + this.getCurrentDateString()
+                + SEPARATOR + UUID.randomUUID();
     }
 
     private String getCurrentDateString() {
