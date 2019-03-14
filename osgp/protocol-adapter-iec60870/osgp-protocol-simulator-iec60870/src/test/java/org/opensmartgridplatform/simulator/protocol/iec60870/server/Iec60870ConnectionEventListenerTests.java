@@ -7,14 +7,15 @@
  */
 package org.opensmartgridplatform.simulator.protocol.iec60870.server;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -24,7 +25,9 @@ import org.openmuc.j60870.TypeId;
 import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870ASduFactory;
 import org.opensmartgridplatform.simulator.protocol.iec60870.server.handlers.Iec60870InterrogationCommandASduHandler;
 import org.opensmartgridplatform.simulator.protocol.iec60870.server.handlers.Iec60870SingleCommandASduHandler;
+import org.springframework.test.context.junit4.SpringRunner;
 
+@RunWith(SpringRunner.class)
 public class Iec60870ConnectionEventListenerTests {
 
     @Mock
@@ -43,7 +46,7 @@ public class Iec60870ConnectionEventListenerTests {
 
     private Iec60870ConnectionEventListener iec60870ConnectionEventListener;
 
-    @BeforeEach
+    @Before
     public void setup() throws IOException {
         MockitoAnnotations.initMocks(this);
         this.iec60870ConnectionEventListener = new Iec60870ConnectionEventListener(this.connection, 1,

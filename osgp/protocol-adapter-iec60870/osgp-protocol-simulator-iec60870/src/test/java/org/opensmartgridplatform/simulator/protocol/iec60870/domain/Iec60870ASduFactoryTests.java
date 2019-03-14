@@ -9,7 +9,8 @@ package org.opensmartgridplatform.simulator.protocol.iec60870.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.CauseOfTransmission;
 import org.openmuc.j60870.IeQualifierOfInterrogation;
@@ -18,7 +19,9 @@ import org.openmuc.j60870.IeScaledValue;
 import org.openmuc.j60870.InformationElement;
 import org.openmuc.j60870.InformationObject;
 import org.openmuc.j60870.TypeId;
+import org.springframework.test.context.junit4.SpringRunner;
 
+@RunWith(SpringRunner.class)
 public class Iec60870ASduFactoryTests {
 
     private Iec60870ASduFactory iec60870ASduFactory = new Iec60870ASduFactory();
