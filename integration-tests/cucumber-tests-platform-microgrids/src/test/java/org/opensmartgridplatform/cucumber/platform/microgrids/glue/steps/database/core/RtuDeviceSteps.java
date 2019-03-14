@@ -31,10 +31,10 @@ import cucumber.api.java.en.Given;
 public class RtuDeviceSteps extends BaseDeviceSteps {
 
     @Autowired
-    private RtuDeviceRepository rtuDeviceRespository;
+    private RtuDeviceRepository rtuDeviceRepository;
 
     @Autowired
-    private DeviceRepository deviceRespository;
+    private DeviceRepository deviceRepository;
 
     @Given("^an rtu device$")
     @Transactional("txMgrCoreMicrogrids")
@@ -43,12 +43,12 @@ public class RtuDeviceSteps extends BaseDeviceSteps {
         final String deviceIdentification = getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION);
         final RtuDevice rtuDevice = new RtuDevice(deviceIdentification);
         rtuDevice.messageReceived(this.getLastCommunicationTime(settings).toDate());
-        return this.rtuDeviceRespository.save(rtuDevice);
+        return this.rtuDeviceRepository.save(rtuDevice);
     }
 
     @Transactional("txMgrCore")
     public Device updateRtuDevice(final Map<String, String> settings) throws Throwable {
-        return this.updateDevice(this.deviceRespository
+        return this.updateDevice(this.deviceRepository
                 .findByDeviceIdentification(getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION)), settings);
     }
 

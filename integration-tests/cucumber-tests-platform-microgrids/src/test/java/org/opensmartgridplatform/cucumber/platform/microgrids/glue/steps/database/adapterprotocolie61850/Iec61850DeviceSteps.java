@@ -50,7 +50,7 @@ public class Iec61850DeviceSteps extends GlueBase {
             });
 
     @Autowired
-    private Iec61850DeviceRepository iec61850DeviceRespository;
+    private Iec61850DeviceRepository iec61850DeviceRepository;
 
     @Autowired
     private Iec61850MockServerConfig iec61850MockServerConfig;
@@ -99,6 +99,6 @@ public class Iec61850DeviceSteps extends GlueBase {
         iec61850Device.setUseCombinedLoad(getBoolean(settings, PlatformMicrogridsKeys.USE_COMBINED_LOAD,
                 PlatformMicrogridsDefaults.USE_COMBINED_LOAD));
 
-        this.iec61850DeviceRespository.save(iec61850Device);
+        this.iec61850DeviceRepository.save(iec61850Device);
     }
 }

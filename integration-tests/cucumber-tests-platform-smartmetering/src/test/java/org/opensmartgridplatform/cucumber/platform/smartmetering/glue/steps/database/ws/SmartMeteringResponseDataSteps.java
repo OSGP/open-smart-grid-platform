@@ -32,13 +32,13 @@ import cucumber.api.java.en.Then;
 public class SmartMeteringResponseDataSteps extends BaseDeviceSteps {
 
     @Autowired
-    private ResponseDataRepository responseDataRespository;
+    private ResponseDataRepository responseDataRepository;
 
     @Given("^a response data record$")
     @Transactional("txMgrRespData")
     public ResponseData aResponseDataRecord(final Map<String, String> settings) throws Throwable {
 
-        final ResponseData responseData = this.responseDataRespository
+        final ResponseData responseData = this.responseDataRepository
                 .save(new ResponseDataBuilder().fromSettings(settings).build());
 
         ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, responseData.getCorrelationUid());
@@ -49,7 +49,7 @@ public class SmartMeteringResponseDataSteps extends BaseDeviceSteps {
             final Field fld = responseData.getClass().getSuperclass().getDeclaredField("creationTime");
             fld.setAccessible(true);
             fld.set(responseData, DateTimeHelper.getDateTime(settings.get(PlatformKeys.KEY_CREATION_TIME)).toDate());
-            this.responseDataRespository.saveAndFlush(responseData);
+            this.responseDataRepository.saveAndFlush(responseData);
         }
 
         return responseData;
@@ -57,14 +57,14 @@ public class SmartMeteringResponseDataSteps extends BaseDeviceSteps {
 
     @Then("^the response data record with correlation uid \\\"(.*)\\\" should be deleted$")
     public void theResponseDataRecordShouldBeDeleted(final String correlationUid) {
-        final ResponseData responseData = this.responseDataRespository.findByCorrelationUid(correlationUid);
+        final ResponseData responseData = this.responseDataRepository.findByCorrelationUid(correlationUid);
 
         assertNull("Response data should be deleted", responseData);
     }
 
     @Then("^the response data record with correlation uid \\\"(.*)\\\" should not be deleted$")
     public void theResponseDataRecordShouldNotBeDeleted(final String correlationUid) {
-        final ResponseData responseData = this.responseDataRespository.findByCorrelationUid(correlationUid);
+        final ResponseData responseData = this.responseDataRepository.findByCorrelationUid(correlationUid);
 
         assertNotNull("Response data should not be deleted", responseData);
     }
@@ -85,7 +85,7 @@ public class SmartMeteringResponseDataSteps extends BaseDeviceSteps {
     private void assertResponseDataHasNotificationsAndMessageType(final String correlationUid,
             final Short expectedNumberOfNotificationsSent, final String expectedMessageType) {
 
-        final ResponseData responseData = this.responseDataRespository.findByCorrelationUid(correlationUid);
+        final ResponseData responseData = this.responseDataRepository.findByCorrelationUid(correlationUid);
 
         assertEquals(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SENT, expectedNumberOfNotificationsSent,
                 responseData.getNumberOfNotificationsSent());
