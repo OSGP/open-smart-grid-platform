@@ -375,6 +375,10 @@ public class DlmsDevice extends AbstractEntity {
         this.invocationCounter = invocationCounter;
     }
 
+    public void incrementInvocationCounter(final int amount) {
+        this.invocationCounter += amount;
+    }
+
     /**
      * Get the valid security key of the given type. This can be only one or
      * none. If none is found, null is returned.

@@ -46,10 +46,6 @@ public class SecurityKey extends AbstractEntity {
     @Column(name = "security_key")
     private String key;
 
-    // TODO (RvM): remove this, the invocation counter belongs to device, not to a key.
-    @Column()
-    private Integer invocationCounter;
-
     public SecurityKey() {
         // Default constructor
     }
@@ -117,23 +113,10 @@ public class SecurityKey extends AbstractEntity {
         return this.key;
     }
 
-    public int getInvocationCounter() {
-        return this.invocationCounter == null ? 0 : this.invocationCounter;
-    }
-
-    public void setInvocationCounter(final Integer invocationCounter) {
-        this.invocationCounter = invocationCounter;
-    }
-
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("SecurityKey[type=");
-        sb.append(this.securityKeyType).append(", validFrom=").append(this.validFrom).append(", validTo=")
-                .append(this.validTo).append(", key=").append(this.key);
-        if (this.invocationCounter != null) {
-            sb.append(", ic=").append(this.invocationCounter);
-        }
-        return sb.append(']').toString();
+        return "SecurityKey[type=" + this.securityKeyType + ", validFrom=" + this.validFrom + ", validTo="
+                + this.validTo + ", key=" + this.key + ']';
     }
 
 }

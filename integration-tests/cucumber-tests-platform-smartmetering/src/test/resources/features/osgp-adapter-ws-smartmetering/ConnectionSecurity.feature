@@ -21,6 +21,7 @@ Feature: SmartMetering Connection security
     Then the actual meter reads result should be returned
       | DeviceIdentification | TEST1025000000001 |
 
+#    TODO (RvM): fix test:
   Scenario: Communicate with HLS5 encryption
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
@@ -34,6 +35,7 @@ Feature: SmartMetering Connection security
       | DeviceIdentification | TEST1024000000001 |
     And the invocation counter for the encryption key of "TEST1024000000001" should be greater than 0
 
+#    TODO (RvM): fix test:
   Scenario: Invocation counter with HLS5 encryption should be incremented after communication
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |

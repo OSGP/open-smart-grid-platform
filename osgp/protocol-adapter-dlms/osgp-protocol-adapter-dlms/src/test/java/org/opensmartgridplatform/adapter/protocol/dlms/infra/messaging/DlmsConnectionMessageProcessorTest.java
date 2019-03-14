@@ -51,5 +51,34 @@ public class DlmsConnectionMessageProcessorTest {
 
         assertThat(result).isSameAs(connectionManager);
     }
+
+    @Test
+    public void updatesInvocationCounterWithSuitedListener() {
+        final DlmsDevice device = new DlmsDeviceBuilder().withInvocationCounter(111).build();
+        final InvocationCountingDlmsMessageListener listener = mock(InvocationCountingDlmsMessageListener.class);
+        final DlmsConnectionManager connectionManager = this.connectionManagerWithListener(listener);
+
+        final int numberOfSentMessages = 22;
+        when(listener.getNumberOfSentMessages()).thenReturn(numberOfSentMessages);
+
+        this.processor.updateInvocationCounterForDevice(device, connectionManager);
+
+        assertThat(device.getInvocationCounter()).isEqualTo(111 + 22);
+    }
+
+    private DlmsConnectionManager connectionManagerWithListener(final DlmsMessageListener listener) {
+        return new DlmsConnectionManager(null, null, listener, null);
+    }
+
+    @Test
+    public void doesNotUpdateInvocationCounterWithUnsuitedListener() {
+        final DlmsDevice device = new DlmsDeviceBuilder().withInvocationCounter(111).build();
+        final DlmsMessageListener listener = mock(DlmsMessageListener.class);
+        final DlmsConnectionManager connectionManager = this.connectionManagerWithListener(listener);
+
+        this.processor.updateInvocationCounterForDevice(device, connectionManager);
+
+        assertThat(device.getInvocationCounter()).isEqualTo(111);
+    }
 }
 

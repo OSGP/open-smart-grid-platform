@@ -22,6 +22,7 @@ public class DlmsDeviceBuilder {
     private DefaultValue<Boolean> hls4Active = notSet();
     private DefaultValue<Boolean> hls5Active = notSet();
     private DefaultValue<String> protocol = notSet();
+    private DefaultValue<Integer> invocationCounter = notSet();
 
     public DlmsDevice build() {
         counter += 1;
@@ -31,6 +32,7 @@ public class DlmsDeviceBuilder {
         device.setHls4Active(this.hls4Active.orElse(false));
         device.setHls5Active(this.hls5Active.orElse(false));
         device.setProtocol(this.protocol.orElse("protocol" + counter), "protocolVersion" + counter);
+        device.setInvocationCounter(this.invocationCounter.orElse(100 + counter));
         return device;
     }
 
@@ -56,6 +58,11 @@ public class DlmsDeviceBuilder {
 
     public DlmsDeviceBuilder withProtocol(final String protocol) {
         this.protocol = setTo(protocol);
+        return this;
+    }
+
+    public DlmsDeviceBuilder withInvocationCounter(final int invocationCounter) {
+        this.invocationCounter = setTo(invocationCounter);
         return this;
     }
 }

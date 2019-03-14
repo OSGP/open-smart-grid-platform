@@ -14,7 +14,6 @@ import javax.jms.JMSException;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecurityKeyService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
@@ -89,7 +88,7 @@ public abstract class DlmsConnectionMessageProcessor {
         this.closeDlmsConnection(device, conn);
 
         if (device.isHls5Active()) {
-            this.updateInvocationCounterForEncryptionKey(device, conn);
+            this.updateInvocationCounterForDevice(device, conn);
         }
     }
 
@@ -104,10 +103,10 @@ public abstract class DlmsConnectionMessageProcessor {
         }
     }
 
-    protected void updateInvocationCounterForEncryptionKey(final DlmsDevice device, final DlmsConnectionManager conn) {
+    protected void updateInvocationCounterForDevice(final DlmsDevice device, final DlmsConnectionManager conn) {
 
         if (!(conn.getDlmsMessageListener() instanceof InvocationCountingDlmsMessageListener)) {
-            LOGGER.error("updateInvocationCounterForEncryptionKey should only be called for devices with HLS 5 "
+            LOGGER.error("updateInvocationCounterForDevice should only be called for devices with HLS 5 "
                             + "communication with an InvocationCountingDlmsMessageListener - device: {}, hls5: {}, "
                             + "listener: {}", device.getDeviceIdentification(), device.isHls5Active(),
                     conn.getDlmsMessageListener() == null ? "null" : conn.getDlmsMessageListener().getClass()
@@ -118,9 +117,7 @@ public abstract class DlmsConnectionMessageProcessor {
         final InvocationCountingDlmsMessageListener dlmsMessageListener = (InvocationCountingDlmsMessageListener) conn
                 .getDlmsMessageListener();
         final int numberOfSentMessages = dlmsMessageListener.getNumberOfSentMessages();
-        this.securityKeyService
-                .incrementInvocationCounter(device.getDeviceIdentification(), SecurityKeyType.E_METER_ENCRYPTION,
-                        numberOfSentMessages);
+        device.incrementInvocationCounter(numberOfSentMessages);
     }
 
     /**
