@@ -96,10 +96,10 @@ public class DlmsDevice extends AbstractEntity {
     @Column(length = 3)
     private String mbusManufacturerIdentification;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
     private String protocol;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
     private String protocolVersion;
 
     // -- This comes from: Core Device.
@@ -107,10 +107,10 @@ public class DlmsDevice extends AbstractEntity {
     @Transient
     private String ipAddress;
 
-    // Starting value of the invocation counter for current connection (for Hls5 connection only).
-    // For a Hls5 connection this value is initialized by reading the invocation counter from the device using the
-    // public client.
-    @Transient
+    // Starting value of the invocation counter for next connection (for Hls5 connection only).
+    // This value is initialized by reading the invocation counter from the device using the public client.
+    // After each session with the device it is incremented with the number of invocations in the session.
+    @Column
     private Integer invocationCounter;
 
     public DlmsDevice() {
