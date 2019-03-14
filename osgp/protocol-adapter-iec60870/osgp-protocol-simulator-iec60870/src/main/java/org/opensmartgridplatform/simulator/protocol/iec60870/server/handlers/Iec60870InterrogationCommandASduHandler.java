@@ -34,10 +34,11 @@ public class Iec60870InterrogationCommandASduHandler extends Iec60870ASduHandler
 
     @Override
     public void handleASdu(final Connection connection, final ASdu aSdu) throws IOException {
-        LOGGER.info("Received interrogation command. Sending confirmation.");
+        LOGGER.info("Received interrogation command. Sending confirmation for ASdu: {}", aSdu);
         connection.sendConfirmation(aSdu);
 
-        LOGGER.info("Processing interrogation command. Sending scaled measured values.");
-        connection.send(this.iec60870aSduFactory.createInterrogationCommandResponseASdu());
+        final ASdu responseASdu = this.iec60870aSduFactory.createInterrogationCommandResponseASdu();
+        LOGGER.info("Processing interrogation command. Sending response ASdu: {}.", responseASdu);
+        connection.send(responseASdu);
     }
 }
