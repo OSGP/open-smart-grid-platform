@@ -17,11 +17,6 @@ import java.util.Map;
 import javax.naming.OperationNotSupportedException;
 
 import org.junit.Assert;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ws.soap.client.SoapFaultClientException;
-
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.ChangeOrganisationRequest;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.CreateOrganisationRequest;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.FindDevicesWhichHaveNoOwnerRequest;
@@ -54,6 +49,7 @@ import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.Remov
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.RemoveFirmwareRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.RemoveManufacturerRequest;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
+import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonDefaults;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonKeys;
 import org.opensmartgridplatform.cucumber.platform.common.support.ws.admin.AdminDeviceManagementClient;
@@ -61,6 +57,10 @@ import org.opensmartgridplatform.cucumber.platform.common.support.ws.core.CoreDe
 import org.opensmartgridplatform.cucumber.platform.common.support.ws.core.CoreFirmwareManagementClient;
 import org.opensmartgridplatform.domain.core.valueobjects.PlatformFunction;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -87,8 +87,9 @@ public class AuthorizePlatformFunctionsSteps {
     @When("receiving a platform function request")
     public void receivingADeviceFunctionRequest(final Map<String, String> requestParameters)
             throws OperationNotSupportedException, WebServiceSecurityException, GeneralSecurityException, IOException {
-        this.platformFunction = getEnum(requestParameters, PlatformCommonKeys.KEY_PLATFORM_FUNCTION_GROUP,
-                PlatformFunction.class);
+        this.platformFunction = getEnum(requestParameters, PlatformKeys.KEY_PLATFORM_FUNCTION, PlatformFunction.class);
+
+        LOGGER.info("Checking authorization for platform function {}.", this.platformFunction);
 
         try {
             switch (this.platformFunction) {
@@ -184,8 +185,6 @@ public class AuthorizePlatformFunctionsSteps {
             Assert.assertTrue(!(response instanceof SoapFaultClientException));
         } else {
             Assert.assertNotNull(this.throwable);
-
-            Assert.assertNull(this.throwable.getMessage());
         }
     }
 
