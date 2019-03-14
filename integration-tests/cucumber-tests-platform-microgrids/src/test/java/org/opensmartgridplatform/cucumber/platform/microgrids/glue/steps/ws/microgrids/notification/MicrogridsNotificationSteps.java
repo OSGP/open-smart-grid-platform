@@ -12,23 +12,22 @@ import static org.junit.Assert.fail;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.opensmartgridplatform.adapter.ws.schema.microgrids.notification.Notification;
 import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.microgrids.support.ws.microgrids.NotificationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class NotificationSteps extends GlueBase {
+public class MicrogridsNotificationSteps extends GlueBase {
 
-    private static final int MAX_WAIT_FOR_NOTIFICATION = 65000;
+    private static final int MAX_WAIT_FOR_NOTIFICATION = 65_000;
     /*
      * Unknown notification means a notification for a correlation UID that has
      * not been captured earlier on. This might be because it is a device
@@ -36,9 +35,9 @@ public class NotificationSteps extends GlueBase {
      * application code instead of test code as happens when re-establishing an
      * RTU connection.
      */
-    private static final int MAX_WAIT_FOR_UNKNOWN_NOTIFICATION = 200000;
+    private static final int MAX_WAIT_FOR_UNKNOWN_NOTIFICATION = 200_000;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(NotificationSteps.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MicrogridsNotificationSteps.class);
 
     @Autowired
     private NotificationService notificationService;

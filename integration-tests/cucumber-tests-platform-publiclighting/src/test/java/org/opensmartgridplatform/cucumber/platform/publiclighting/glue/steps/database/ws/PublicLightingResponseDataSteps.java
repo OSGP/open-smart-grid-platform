@@ -15,6 +15,7 @@ import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.junit.Assert;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
 import org.opensmartgridplatform.cucumber.core.DateTimeHelper;
@@ -74,6 +75,7 @@ public class PublicLightingResponseDataSteps {
             }
         } catch (final Exception e) {
             LOGGER.error("Exception", e);
+            Assert.fail("Failed to create response data record.");
         }
 
         return responseData;

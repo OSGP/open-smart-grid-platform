@@ -134,8 +134,8 @@ public abstract class AbstractResendNotificationService<T extends Enum<T>> {
             this.resendNotification(responseData);
         } finally {
             /*
-             * Check if the response data records is still exists. If so, update
-             * the number of notifications sent, otherwise do nothing.
+             * Check if the response data record still exists. If so, update the
+             * number of notifications sent, otherwise do nothing.
              */
             if (this.responseDataRepository.findOne(responseData.getId()) != null) {
                 responseData.setNumberOfNotificationsSent((short) (responseData.getNumberOfNotificationsSent() + 1));

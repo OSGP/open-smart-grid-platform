@@ -12,27 +12,25 @@ import static org.junit.Assert.fail;
 
 import java.util.concurrent.TimeUnit;
 
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification.Notification;
+import org.opensmartgridplatform.cucumber.core.ScenarioContext;
+import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.notification.NotificationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification.Notification;
-import org.opensmartgridplatform.cucumber.core.ScenarioContext;
-import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
-import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.notifications.ResendNotificationJobSteps;
-import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.notification.NotificationService;
-
 import cucumber.api.java.en.Then;
 
-public class NotificationSteps {
+public class SmartMeteringNotificationSteps {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ResendNotificationJobSteps.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SmartMeteringNotificationSteps.class);
 
     /*
      * Allow a little more time than the period for the job trigger to re-send
      * notifications.
      */
-    private static final int MAX_WAIT_FOR_NOTIFICATION = 65000;
+    private static final int MAX_WAIT_FOR_NOTIFICATION = 65_000;
 
     @Autowired
     private NotificationService notificationService;

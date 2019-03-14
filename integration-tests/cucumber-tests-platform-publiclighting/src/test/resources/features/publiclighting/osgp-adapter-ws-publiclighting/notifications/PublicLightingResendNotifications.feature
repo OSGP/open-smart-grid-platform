@@ -12,7 +12,7 @@ Feature: PublicLighting Notifications - Resend notifications
       | CorrelationUid            | test-org\|\|\|TEST1024000000001\|\|\|20170101000000000 |
       | NumberOfNotificationsSent |                                                      0 |
     #When step is not implemented yet
-    #When OSGP checks for which response data a notification has to be resend
+    #When OSGP checks for which response data a notification has to be resent
     Then a notification is sent
       | CorrelationUid | test-org\|\|\|TEST1024000000001\|\|\|20170101000000000 |
     And the public lighting response data has values
@@ -28,7 +28,7 @@ Feature: PublicLighting Notifications - Resend notifications
       | CorrelationUid            | test-org\|\|\|TEST1024000000001\|\|\|20170201000000000 |
       | NumberOfNotificationsSent |                                                      0 |
     #When step is not implemented yet
-    #When OSGP checks for which response data a notification has to be resend
+    #When OSGP checks for which response data a notification has to be resent
     Then no notification is sent
       | CorrelationUid | test-org\|\|\|TEST1024000000001\|\|\|20170201000000000 |
     And the public lighting response data has values
@@ -45,7 +45,7 @@ Feature: PublicLighting Notifications - Resend notifications
       | CorrelationUid            | test-org\|\|\|TEST1024000000001\|\|\|20170301000000000 |
       | NumberOfNotificationsSent |                                                      3 |
     #When step is not implemented yet
-    #When OSGP checks for which response data a notification has to be resend
+    #When OSGP checks for which response data a notification has to be resent
     Then no notification is sent
       | CorrelationUid | test-org\|\|\|TEST1024000000001\|\|\|20170301000000000 |
     And the public lighting response data has values

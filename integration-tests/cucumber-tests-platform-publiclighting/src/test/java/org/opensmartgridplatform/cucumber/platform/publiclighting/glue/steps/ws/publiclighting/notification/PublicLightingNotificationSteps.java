@@ -26,7 +26,7 @@ import cucumber.api.java.en.Then;
 
 public class PublicLightingNotificationSteps extends GlueBase {
 
-    private static final int MAX_WAIT_FOR_NOTIFICATION = 65000;
+    private static final int MAX_WAIT_FOR_NOTIFICATION = 65_000;
     /*
      * Unknown notification means a notification for a correlation UID that has
      * not been captured earlier on. This might be because it is a device
@@ -34,7 +34,7 @@ public class PublicLightingNotificationSteps extends GlueBase {
      * application code instead of test code as happens when re-establishing an
      * RTU connection.
      */
-    private static final int MAX_WAIT_FOR_UNKNOWN_NOTIFICATION = 200000;
+    private static final int MAX_WAIT_FOR_UNKNOWN_NOTIFICATION = 200_000;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PublicLightingNotificationSteps.class);
 

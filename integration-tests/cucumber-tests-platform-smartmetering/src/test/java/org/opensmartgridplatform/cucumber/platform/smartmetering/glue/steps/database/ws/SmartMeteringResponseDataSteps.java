@@ -15,6 +15,7 @@ import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.junit.Assert;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
 import org.opensmartgridplatform.cucumber.core.DateTimeHelper;
@@ -23,6 +24,8 @@ import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.glue.steps.database.core.BaseDeviceSteps;
 import org.opensmartgridplatform.cucumber.platform.glue.steps.database.ws.ResponseDataBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,25 +34,34 @@ import cucumber.api.java.en.Then;
 
 public class SmartMeteringResponseDataSteps extends BaseDeviceSteps {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(SmartMeteringResponseDataSteps.class);
+
     @Autowired
     private ResponseDataRepository responseDataRepository;
 
     @Given("^a response data record$")
     @Transactional("txMgrRespData")
-    public ResponseData aResponseDataRecord(final Map<String, String> settings) throws Throwable {
+    public ResponseData aResponseDataRecord(final Map<String, String> settings) {
 
         final ResponseData responseData = this.responseDataRepository
                 .save(new ResponseDataBuilder().fromSettings(settings).build());
 
         ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, responseData.getCorrelationUid());
 
-        // set correct creation time for testing after inserting in the database
-        // (as it will be overridden on first save)
-        if (settings.containsKey(PlatformKeys.KEY_CREATION_TIME)) {
-            final Field fld = responseData.getClass().getSuperclass().getDeclaredField("creationTime");
-            fld.setAccessible(true);
-            fld.set(responseData, DateTimeHelper.getDateTime(settings.get(PlatformKeys.KEY_CREATION_TIME)).toDate());
-            this.responseDataRepository.saveAndFlush(responseData);
+        try {
+            // set correct creation time for testing after inserting in the
+            // database
+            // (as it will be overridden on first save)
+            if (settings.containsKey(PlatformKeys.KEY_CREATION_TIME)) {
+                final Field fld = responseData.getClass().getSuperclass().getDeclaredField("creationTime");
+                fld.setAccessible(true);
+                fld.set(responseData,
+                        DateTimeHelper.getDateTime(settings.get(PlatformKeys.KEY_CREATION_TIME)).toDate());
+                this.responseDataRepository.saveAndFlush(responseData);
+            }
+        } catch (final Exception e) {
+            LOGGER.error("Exception", e);
+            Assert.fail("Failed to create response data record.");
         }
 
         return responseData;
@@ -70,7 +82,7 @@ public class SmartMeteringResponseDataSteps extends BaseDeviceSteps {
     }
 
     @Then("^the response data has values$")
-    public void theResponseDataHasValues(final Map<String, String> settings) throws Throwable {
+    public void theResponseDataHasValues(final Map<String, String> settings) {
         final String correlationUid = settings.get(PlatformKeys.KEY_CORRELATION_UID);
         final short expectedNumberOfNotificationsSent = Short
                 .parseShort(settings.get(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SENT));
