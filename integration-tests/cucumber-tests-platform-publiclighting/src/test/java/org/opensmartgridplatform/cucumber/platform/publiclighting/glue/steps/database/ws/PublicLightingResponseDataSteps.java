@@ -57,9 +57,9 @@ public class PublicLightingResponseDataSteps {
     // }
 
     private ResponseData createResponseDataRecord(final Map<String, String> settings,
-            final ResponseDataRepository responseDataRespository) {
+            final ResponseDataRepository responseDataRepository) {
         ResponseData responseData = new ResponseDataBuilder().fromSettings(settings).build();
-        responseData = responseDataRespository.save(responseData);
+        responseData = responseDataRepository.save(responseData);
         ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, responseData.getCorrelationUid());
 
         try {
@@ -71,7 +71,7 @@ public class PublicLightingResponseDataSteps {
                 fld.setAccessible(true);
                 fld.set(responseData,
                         DateTimeHelper.getDateTime(settings.get(PlatformKeys.KEY_CREATION_TIME)).toDate());
-                responseDataRespository.saveAndFlush(responseData);
+                responseDataRepository.saveAndFlush(responseData);
             }
         } catch (final Exception e) {
             LOGGER.error("Exception", e);
