@@ -36,7 +36,7 @@ public class DlmsConnectionHelper {
      */
     public DlmsConnectionManager createConnectionForDevice(final DlmsDevice device,
             final DlmsMessageListener messageListener) throws OsgpException {
-        if (device.isHls5Active()) {
+        if (device.isHls5Active() && !device.isInvocationCounterInitialized()) {
             this.invocationCounterManager.initializeInvocationCounter(device);
         }
 

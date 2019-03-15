@@ -12,6 +12,7 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.DlmsHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,11 +28,14 @@ public class InvocationCounterManager {
 
     private final DlmsConnectionFactory connectionFactory;
     private final DlmsHelperService dlmsHelper;
+    private final DlmsDeviceRepository deviceRepository;
 
     @Autowired
-    public InvocationCounterManager(final DlmsConnectionFactory connectionFactory, final DlmsHelperService dlmsHelper) {
+    public InvocationCounterManager(final DlmsConnectionFactory connectionFactory, final DlmsHelperService dlmsHelper,
+            final DlmsDeviceRepository deviceRepository) {
         this.connectionFactory = connectionFactory;
         this.dlmsHelper = dlmsHelper;
+        this.deviceRepository = deviceRepository;
     }
 
     /**
@@ -44,6 +48,7 @@ public class InvocationCounterManager {
             // Value of invocation counter is ignored on these devices.
             device.setInvocationCounter(0);
         }
+        this.deviceRepository.save(device);
     }
 
     private void initializeWithInvocationCounterStoredOnDevice(final DlmsDevice device) throws OsgpException {
@@ -58,7 +63,8 @@ public class InvocationCounterManager {
     }
 
     private int getInvocationCounter(final DlmsConnectionManager connectionManager) throws FunctionalException {
-        return ((Number) this.dlmsHelper.getAttributeValue(connectionManager, ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE)
-                .getValue()).intValue();
+        return ((Number) this.dlmsHelper
+                .getAttributeValue(connectionManager, ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE).getValue())
+                .intValue();
     }
 }

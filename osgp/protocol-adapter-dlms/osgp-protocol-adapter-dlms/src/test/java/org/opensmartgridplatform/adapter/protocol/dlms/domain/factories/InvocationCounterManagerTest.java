@@ -27,6 +27,7 @@ import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.DlmsHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDeviceBuilder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class InvocationCounterManagerTest {
@@ -41,9 +42,13 @@ public class InvocationCounterManagerTest {
     @Mock
     private DlmsHelperService dlmsHelperService;
 
+    @Mock
+    private DlmsDeviceRepository deviceRepository;
+
     @Before
     public void setUp() {
-        this.manager = new InvocationCounterManager(this.connectionFactory, this.dlmsHelperService);
+        this.manager = new InvocationCounterManager(this.connectionFactory, this.dlmsHelperService,
+                this.deviceRepository);
     }
 
     @Test
@@ -54,13 +59,14 @@ public class InvocationCounterManagerTest {
         when(this.connectionFactory.getPublicClientConnection(device, null)).thenReturn(connectionManager);
 
         final DataObject dataObject = DataObject.newInteger32Data(123);
-        when(this.dlmsHelperService.getAttributeValue(eq(connectionManager),
-                refEq(ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE)))
+        when(this.dlmsHelperService
+                .getAttributeValue(eq(connectionManager), refEq(ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE)))
                 .thenReturn(dataObject);
 
         this.manager.initializeInvocationCounter(device);
 
         assertThat(device.getInvocationCounter()).isEqualTo(dataObject.getValue());
+        verify(this.deviceRepository).save(device);
         verify(connectionManager).close();
     }
 
@@ -71,6 +77,7 @@ public class InvocationCounterManagerTest {
         this.manager.initializeInvocationCounter(device);
 
         assertThat(device.getInvocationCounter()).isEqualTo(0);
+        verify(this.deviceRepository).save(device);
         verifyZeroInteractions(this.connectionFactory);
     }
 }

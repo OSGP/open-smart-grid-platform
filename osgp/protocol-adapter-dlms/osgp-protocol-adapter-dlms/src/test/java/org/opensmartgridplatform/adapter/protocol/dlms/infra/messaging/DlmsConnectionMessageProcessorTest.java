@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
@@ -21,6 +22,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDeviceBuilder;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -30,12 +32,16 @@ public class DlmsConnectionMessageProcessorTest {
     @Mock
     private DlmsConnectionHelper connectionHelper;
 
+    @Mock
+    private DlmsDeviceRepository deviceRepository;
+
     private DlmsMessageListener messageListener;
 
     @Before
     public void setUp() {
         this.messageListener = new InvocationCountingDlmsMessageListener();
-        this.processor = new DlmsConnectionMessageProcessorImpl(this.connectionHelper, this.messageListener);
+        this.processor = new DlmsConnectionMessageProcessorImpl(this.connectionHelper, this.messageListener,
+                this.deviceRepository);
     }
 
     @Test
@@ -64,6 +70,8 @@ public class DlmsConnectionMessageProcessorTest {
         this.processor.updateInvocationCounterForDevice(device, connectionManager);
 
         assertThat(device.getInvocationCounter()).isEqualTo(111 + 22);
+
+        verify(this.deviceRepository).save(device);
     }
 
     private DlmsConnectionManager connectionManagerWithListener(final DlmsMessageListener listener) {

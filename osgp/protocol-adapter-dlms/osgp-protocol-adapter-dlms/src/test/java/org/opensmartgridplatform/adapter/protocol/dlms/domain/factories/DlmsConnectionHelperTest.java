@@ -3,6 +3,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
@@ -45,8 +46,8 @@ public class DlmsConnectionHelperTest {
     }
 
     @Test
-    public void createsConnectionForDeviceWithInvcationCounter() throws Exception {
-        final DlmsDevice device = new DlmsDeviceBuilder().withHls5Active(true).build();
+    public void createsConnectionForDeviceWithInvocationCounterUninitialized() throws Exception {
+        final DlmsDevice device = new DlmsDeviceBuilder().withHls5Active(true).withInvocationCounter(null).build();
         final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 
         final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
@@ -59,5 +60,20 @@ public class DlmsConnectionHelperTest {
         final InOrder inOrder = inOrder(this.invocationCounterManager, this.connectionFactory);
         inOrder.verify(this.invocationCounterManager).initializeInvocationCounter(device);
         inOrder.verify(this.connectionFactory).getConnection(device, listener);
+    }
+
+    @Test
+    public void createsConnectionForDeviceWithInvocationCounterInitialized() throws Exception {
+        final DlmsDevice device = new DlmsDeviceBuilder().withHls5Active(true).withInvocationCounter(123).build();
+        final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
+
+        final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
+        when(this.connectionFactory.getConnection(device, listener)).thenReturn(connectionManager);
+
+        final DlmsConnectionManager result = this.helper.createConnectionForDevice(device, listener);
+
+        assertThat(result).isSameAs(connectionManager);
+
+        verifyZeroInteractions(this.invocationCounterManager);
     }
 }

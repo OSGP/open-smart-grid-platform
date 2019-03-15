@@ -365,10 +365,13 @@ public class DlmsDevice extends AbstractEntity {
 
     /**
      * The starting value of the invocation counter for a new Hls5 connection.
-     * This property is transient, and only set just prior to creating a new Hls5 connection.
      */
-    public Integer getInvocationCounter() {
+    public int getInvocationCounter() {
         return this.invocationCounter;
+    }
+
+    public boolean isInvocationCounterInitialized() {
+        return this.invocationCounter != null;
     }
 
     public void setInvocationCounter(final Integer invocationCounter) {

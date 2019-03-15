@@ -12,10 +12,10 @@ import java.io.Serializable;
 
 import javax.jms.JMSException;
 
-import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecurityKeyService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.RetryableException;
@@ -44,13 +44,13 @@ public abstract class DlmsConnectionMessageProcessor {
     protected DlmsLogItemRequestMessageSender dlmsLogItemRequestMessageSender;
 
     @Autowired
-    private SecurityKeyService securityKeyService;
-
-    @Autowired
     protected OsgpExceptionConverter osgpExceptionConverter;
 
     @Autowired
     private RetryHeaderFactory retryHeaderFactory;
+
+    @Autowired
+    protected DlmsDeviceRepository deviceRepository;
 
     protected DlmsConnectionManager createConnectionForDevice(final DlmsDevice device,
             final MessageMetadata messageMetadata) throws OsgpException {
@@ -104,7 +104,6 @@ public abstract class DlmsConnectionMessageProcessor {
     }
 
     protected void updateInvocationCounterForDevice(final DlmsDevice device, final DlmsConnectionManager conn) {
-
         if (!(conn.getDlmsMessageListener() instanceof InvocationCountingDlmsMessageListener)) {
             LOGGER.error("updateInvocationCounterForDevice should only be called for devices with HLS 5 "
                             + "communication with an InvocationCountingDlmsMessageListener - device: {}, hls5: {}, "
@@ -118,6 +117,7 @@ public abstract class DlmsConnectionMessageProcessor {
                 .getDlmsMessageListener();
         final int numberOfSentMessages = dlmsMessageListener.getNumberOfSentMessages();
         device.incrementInvocationCounter(numberOfSentMessages);
+        this.deviceRepository.save(device);
     }
 
     /**

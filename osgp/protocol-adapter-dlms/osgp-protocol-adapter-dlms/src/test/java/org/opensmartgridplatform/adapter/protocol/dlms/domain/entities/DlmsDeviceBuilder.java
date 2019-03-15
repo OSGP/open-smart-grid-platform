@@ -61,7 +61,7 @@ public class DlmsDeviceBuilder {
         return this;
     }
 
-    public DlmsDeviceBuilder withInvocationCounter(final int invocationCounter) {
+    public DlmsDeviceBuilder withInvocationCounter(final Integer invocationCounter) {
         this.invocationCounter = setTo(invocationCounter);
         return this;
     }
