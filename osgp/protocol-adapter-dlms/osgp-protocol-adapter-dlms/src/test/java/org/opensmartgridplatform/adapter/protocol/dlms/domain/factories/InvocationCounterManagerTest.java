@@ -80,4 +80,14 @@ public class InvocationCounterManagerTest {
         verify(this.deviceRepository).save(device);
         verifyZeroInteractions(this.connectionFactory);
     }
+
+    @Test
+    public void resetsInvocationCounter() {
+        final DlmsDevice device = new DlmsDeviceBuilder().withInvocationCounter(123).build();
+
+        this.manager.resetInvocationCounter(device);
+
+        assertThat(device.isInvocationCounterInitialized()).isFalse();
+        verify(this.deviceRepository).save(device);
+    }
 }

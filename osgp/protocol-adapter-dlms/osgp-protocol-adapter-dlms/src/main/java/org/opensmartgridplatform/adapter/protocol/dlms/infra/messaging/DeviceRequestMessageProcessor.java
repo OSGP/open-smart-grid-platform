@@ -119,11 +119,6 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
         }
     }
 
-    protected boolean getBooleanPropertyValue(final ObjectMessage message, final String propertyName)
-            throws JMSException {
-        return message.propertyExists(propertyName) && message.getBooleanProperty(propertyName);
-    }
-
     /**
      * Implementation of this method should call a service that can handle the
      * requestObject and return a response object to be put on the response queue.

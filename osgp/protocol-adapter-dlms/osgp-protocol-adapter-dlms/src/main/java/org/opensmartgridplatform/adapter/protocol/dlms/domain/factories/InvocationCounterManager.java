@@ -15,14 +15,17 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * Object that manages invocation counters.
+ * Object that manages initializing and resetting the value of the invocationCounter property of a device.
  */
 @Component
 public class InvocationCounterManager {
+    private static final Logger LOGGER = LoggerFactory.getLogger(InvocationCounterManager.class);
     private static final AttributeAddress ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE = new AttributeAddress(1,
             new ObisCode(new byte[] { 0, 0, 43, 1, 0, -1 }), 2);
 
@@ -55,6 +58,10 @@ public class InvocationCounterManager {
         try (final DlmsConnectionManager connectionManager = this.connectionFactory
                 .getPublicClientConnection(device, null)) {
             device.setInvocationCounter(this.getInvocationCounter(connectionManager));
+            LOGGER.info(
+                    "Property invocationCounter of device {} initialized to the value of the invocation counter "
+                            + "stored on the device: {}", device.getDeviceIdentification(),
+                    device.getInvocationCounter());
         }
     }
 
@@ -66,5 +73,10 @@ public class InvocationCounterManager {
         return ((Number) this.dlmsHelper
                 .getAttributeValue(connectionManager, ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE).getValue())
                 .intValue();
+    }
+
+    public void resetInvocationCounter(final DlmsDevice device) {
+        device.setInvocationCounter(null);
+        this.deviceRepository.save(device);
     }
 }
