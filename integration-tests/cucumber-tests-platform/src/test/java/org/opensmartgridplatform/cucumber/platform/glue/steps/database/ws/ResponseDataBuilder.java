@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.ws;
+package org.opensmartgridplatform.cucumber.platform.glue.steps.database.ws;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -18,9 +18,9 @@ import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 public class ResponseDataBuilder {
 
     private String organisationIdentification = "test-org";
-    private String deviceIdentification = "TEST1024000000001";
-    private String correlationUid = "test-org|||TEST1024000000001|||20170101000000000";
-    private String messageType = "REQUEST_ACTUAL_METER_DATA";
+    private String deviceIdentification = "test-rtu";
+    private String correlationUid = "test-org|||test-rtu|||20170101000000000";
+    private String messageType = "GET_DATA";
     private Serializable messageData = null;
     private ResponseMessageResultType resultType = ResponseMessageResultType.OK;
     private Short numberOfNotificationsSent = 0;

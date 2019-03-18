@@ -1,34 +1,32 @@
 /**
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2019 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.cucumber.platform.microgrids.glue.steps.ws.microgrids.notification;
+package org.opensmartgridplatform.cucumber.platform.publiclighting.glue.steps.ws.publiclighting.notification;
 
 import static org.junit.Assert.fail;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import org.opensmartgridplatform.adapter.ws.schema.microgrids.notification.Notification;
+import org.opensmartgridplatform.adapter.ws.schema.publiclighting.notification.Notification;
 import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
-import org.opensmartgridplatform.cucumber.platform.microgrids.support.ws.microgrids.NotificationService;
+import org.opensmartgridplatform.cucumber.platform.publiclighting.support.ws.publiclighting.PublicLightingNotificationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
 
-public class NotificationSteps extends GlueBase {
+public class PublicLightingNotificationSteps extends GlueBase {
 
-    private static final int MAX_WAIT_FOR_NOTIFICATION = 65000;
+    private static final int MAX_WAIT_FOR_NOTIFICATION = 65_000;
     /*
      * Unknown notification means a notification for a correlation UID that has
      * not been captured earlier on. This might be because it is a device
@@ -36,20 +34,15 @@ public class NotificationSteps extends GlueBase {
      * application code instead of test code as happens when re-establishing an
      * RTU connection.
      */
-    private static final int MAX_WAIT_FOR_UNKNOWN_NOTIFICATION = 200000;
+    private static final int MAX_WAIT_FOR_UNKNOWN_NOTIFICATION = 200_000;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(NotificationSteps.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PublicLightingNotificationSteps.class);
 
     @Autowired
-    private NotificationService notificationService;
-
-    @When("^the OSGP connection is lost with the RTU device$")
-    public void theOSGPConnectionIsLostWithTheRTUDevice() throws Throwable {
-
-    }
+    private PublicLightingNotificationService notificationService;
 
     @Then("^I should receive a notification$")
-    public void iShouldReceiveANotification() throws Throwable {
+    public void iShouldReceiveANotification() {
         LOGGER.info("Waiting for a notification for at most {} milliseconds.", MAX_WAIT_FOR_UNKNOWN_NOTIFICATION);
 
         final Notification notification = this.notificationService.getNotification(MAX_WAIT_FOR_UNKNOWN_NOTIFICATION,
@@ -90,19 +83,19 @@ public class NotificationSteps extends GlueBase {
     }
 
     @Then("^a notification is sent$")
-    public void aNotificationIsSent(final Map<String, String> settings) throws Throwable {
+    public void aNotificationIsSent(final Map<String, String> settings) {
         final String correlationUid = settings.get(PlatformKeys.KEY_CORRELATION_UID);
         this.waitForNotification(MAX_WAIT_FOR_NOTIFICATION, correlationUid, true);
     }
 
     @Then("^no notification is sent$")
-    public void noNotificationIsSent(final Map<String, String> settings) throws Throwable {
+    public void noNotificationIsSent(final Map<String, String> settings) {
         final String correlationUid = settings.get(PlatformKeys.KEY_CORRELATION_UID);
         this.waitForNotification(MAX_WAIT_FOR_NOTIFICATION, correlationUid, false);
     }
 
     private void waitForNotification(final int maxTimeOut, final String correlationUid,
-            final boolean expectCorrelationUid) throws Throwable {
+            final boolean expectCorrelationUid) {
 
         LOGGER.info(
                 "Waiting to make sure {} notification is received for correlation UID {} for at most {} milliseconds.",
@@ -114,6 +107,7 @@ public class NotificationSteps extends GlueBase {
         final boolean gotExpectedNotification = expectCorrelationUid && notification != null;
         final boolean didNotGetUnexpectedNotification = !expectCorrelationUid && notification == null;
         if (gotExpectedNotification || didNotGetUnexpectedNotification) {
+            LOGGER.info("Successfully received notification for correlation UID: {}", correlationUid);
             return;
         }
 

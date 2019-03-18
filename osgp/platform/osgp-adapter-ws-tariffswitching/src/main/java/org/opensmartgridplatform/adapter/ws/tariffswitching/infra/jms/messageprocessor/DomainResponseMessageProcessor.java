@@ -115,7 +115,6 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
 
             this.notificationService.sendNotification(organisationIdentification, deviceIdentification,
                     resultType.name(), correlationUid, resultDescription, notificationType);
-
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, notificationType);
         }

@@ -29,11 +29,11 @@ import cucumber.api.java.en.Then;
 public class ResponseUrlDataSteps {
 
     @Autowired
-    private ResponseUrlDataRepository responseUrlDataRespository;
+    private ResponseUrlDataRepository responseUrlDataRepository;
 
     @Given("^a response url data record$")
     public void aResponseUrlDataRecord(final Map<String, String> settings) throws Throwable {
-        final ResponseUrlData responseUrlData = this.responseUrlDataRespository
+        final ResponseUrlData responseUrlData = this.responseUrlDataRepository
                 .save(new ResponseUrlDataBuilder().fromSettings(settings).build());
 
         ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, responseUrlData.getCorrelationUid());
@@ -44,7 +44,7 @@ public class ResponseUrlDataSteps {
             final Field fld = responseUrlData.getClass().getSuperclass().getDeclaredField("creationTime");
             fld.setAccessible(true);
             fld.set(responseUrlData, DateTimeHelper.getDateTime(settings.get(PlatformKeys.KEY_CREATION_TIME)).toDate());
-            this.responseUrlDataRespository.saveAndFlush(responseUrlData);
+            this.responseUrlDataRepository.saveAndFlush(responseUrlData);
         }
 
     }
@@ -62,7 +62,7 @@ public class ResponseUrlDataSteps {
 
     private void assertResponseUrlData(final String correlationUid, final String expectedResponseUrl) {
 
-        final ResponseUrlData responseUrlData = this.responseUrlDataRespository
+        final ResponseUrlData responseUrlData = this.responseUrlDataRepository
                 .findSingleResultByCorrelationUid(correlationUid);
 
         assertEquals(PlatformKeys.KEY_RESPONSE_URL, expectedResponseUrl, responseUrlData.getResponseUrl());
@@ -71,7 +71,7 @@ public class ResponseUrlDataSteps {
 
     @Then("^the response url data record with correlation uid \\\"(.*)\\\" should be deleted$")
     public void theResponseUrlDataRecordShouldBeDeleted(final String correlationUid) {
-        final ResponseUrlData responseUrlData = this.responseUrlDataRespository
+        final ResponseUrlData responseUrlData = this.responseUrlDataRepository
                 .findSingleResultByCorrelationUid(correlationUid);
 
         assertNull("Response url data should be deleted", responseUrlData);
@@ -79,7 +79,7 @@ public class ResponseUrlDataSteps {
 
     @Then("^the response url data record with correlation uid \\\"(.*)\\\" should not be deleted$")
     public void theResponseUrlDataRecordShouldNotBeDeleted(final String correlationUid) {
-        final ResponseUrlData responseUrlData = this.responseUrlDataRespository
+        final ResponseUrlData responseUrlData = this.responseUrlDataRepository
                 .findSingleResultByCorrelationUid(correlationUid);
 
         assertNotNull("Response url data should not be deleted", responseUrlData);

@@ -12,18 +12,15 @@ import javax.validation.Valid;
 import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.ws.publiclighting.infra.jms.PublicLightingRequestMessage;
 import org.opensmartgridplatform.adapter.ws.publiclighting.infra.jms.PublicLightingRequestMessageSender;
-import org.opensmartgridplatform.adapter.ws.publiclighting.infra.jms.PublicLightingResponseMessageFinder;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
 import org.opensmartgridplatform.domain.core.services.CorrelationIdProviderService;
-import org.opensmartgridplatform.shared.validation.Identification;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.Schedule;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
-import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.opensmartgridplatform.shared.validation.Identification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,9 +42,6 @@ public class ScheduleManagementService {
 
     @Autowired
     private PublicLightingRequestMessageSender publicLightingRequestMessageSender;
-
-    @Autowired
-    private PublicLightingResponseMessageFinder publicLightingResponseMessageFinder;
 
     /**
      * Constructor
@@ -82,11 +76,6 @@ public class ScheduleManagementService {
         this.publicLightingRequestMessageSender.send(message);
 
         return correlationUid;
-    }
-
-    public ResponseMessage dequeueSetLightScheduleResponse(final String correlationUid) throws OsgpException {
-
-        return this.publicLightingResponseMessageFinder.findMessage(correlationUid);
     }
 
 }

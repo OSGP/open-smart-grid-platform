@@ -7,12 +7,6 @@
  */
 package org.opensmartgridplatform.adapter.ws.shared.services;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
@@ -21,9 +15,15 @@ import org.opensmartgridplatform.shared.exceptionhandling.CorrelationUidMismatch
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.UnknownCorrelationUidException;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(value = "transactionManager")
+@Transactional(value = "transactionManager", propagation = Propagation.REQUIRES_NEW)
 public class ResponseDataService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ResponseDataService.class);
