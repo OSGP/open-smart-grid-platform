@@ -17,6 +17,7 @@ import javax.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.SilentException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsConnectionMessageProcessor;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
@@ -99,7 +100,9 @@ public abstract class OsgpResponseMessageProcessor extends DlmsConnectionMessage
             this.logJmsException(LOGGER, exception, messageMetadata);
         } catch (final Exception exception) {
             // Return original request + exception
-            LOGGER.error("Unexpected exception during {}", this.messageType.name(), exception);
+            if (!(exception instanceof SilentException)) {
+                LOGGER.error("Unexpected exception during {}", this.messageType.name(), exception);
+            }
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, exception,
                     this.responseMessageSender, message.getObject());

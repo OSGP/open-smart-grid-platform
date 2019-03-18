@@ -16,6 +16,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Firm
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.SilentException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.responses.from.core.OsgpResponseMessageProcessor;
 import org.opensmartgridplatform.dto.valueobjects.DeviceFunctionDto;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareFileDto;
@@ -60,7 +61,7 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
             LOGGER.info("{} called for device: {} for organisation: {}", message.getJMSType(),
                     messageMetadata.getDeviceIdentification(), messageMetadata.getOrganisationIdentification());
 
-            Serializable response;
+            final Serializable response;
             conn = this.createConnectionForDevice(device, messageMetadata);
             response = this.handleMessage(conn, device, message.getObject());
 
@@ -72,7 +73,9 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
             this.logJmsException(LOGGER, exception, messageMetadata);
         } catch (final Exception exception) {
             // Return original request + exception
-            LOGGER.error("Unexpected exception during {}", this.messageType.name(), exception);
+            if (!(exception instanceof SilentException)) {
+                LOGGER.error("Unexpected exception during {}", this.messageType.name(), exception);
+            }
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, exception,
                     this.responseMessageSender, message.getObject());
