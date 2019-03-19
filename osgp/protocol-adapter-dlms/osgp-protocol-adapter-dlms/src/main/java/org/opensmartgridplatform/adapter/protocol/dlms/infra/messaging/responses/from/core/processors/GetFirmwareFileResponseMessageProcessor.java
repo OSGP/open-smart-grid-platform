@@ -42,6 +42,7 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
         super(MessageType.GET_FIRMWARE_FILE);
     }
 
+    @SuppressWarnings("squid:S1193") // SilentException cannot be caught since it does not extend Exception.
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
         LOGGER.debug("Processing {} response message", this.messageType.name());

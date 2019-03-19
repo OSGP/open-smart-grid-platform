@@ -75,6 +75,7 @@ public abstract class OsgpResponseMessageProcessor extends DlmsConnectionMessage
         this.osgpResponseMessageProcessorMap.addMessageProcessor(this.messageType, this);
     }
 
+    @SuppressWarnings("squid:S1193") // SilentException cannot be caught since it does not extend Exception.
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
         LOGGER.debug("Processing {} request message", this.messageType);

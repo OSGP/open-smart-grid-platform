@@ -25,6 +25,7 @@ public class EncryptionTool {
         this.encryptionService = new EncryptionService().withSecretKeyAt(secretKeyPath);
     }
 
+    @SuppressWarnings("squid:S106") // It's ok to write to System.out for a command-line tool.
     public static void main(final String... args) throws Exception {
         if (args.length < 2) {
             System.out.println("Usage: java " + EncryptionTool.class.getCanonicalName() + " <path to secret key>"
@@ -32,6 +33,7 @@ public class EncryptionTool {
             return;
         }
         final EncryptionTool encryptionTool = new EncryptionTool(args[0]);
+        System.out.println("===== Results: =====");
         for (int i = 1; i < args.length; i++) {
             System.out.printf("source: %s encrypted: %s%n", args[i], encryptionTool.encrypt(args[i]));
         }

@@ -314,23 +314,23 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
     public PeriodicMeterReadGasResponseDto execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final PeriodicMeterReadsRequestDto periodicMeterReadsQuery) throws ProtocolAdapterException {
 
-        final PeriodTypeDto periodType;
-        final DateTime beginDateTime;
-        final DateTime endDateTime;
+        final PeriodTypeDto queryPeriodType;
+        final DateTime queryBeginDateTime;
+        final DateTime queryEndDateTime;
         if (periodicMeterReadsQuery != null) {
-            periodType = periodicMeterReadsQuery.getPeriodType();
-            beginDateTime = new DateTime(periodicMeterReadsQuery.getBeginDate());
-            endDateTime = new DateTime(periodicMeterReadsQuery.getEndDate());
+            queryPeriodType = periodicMeterReadsQuery.getPeriodType();
+            queryBeginDateTime = new DateTime(periodicMeterReadsQuery.getBeginDate());
+            queryEndDateTime = new DateTime(periodicMeterReadsQuery.getEndDate());
         } else {
             throw new IllegalArgumentException(
                     "PeriodicMeterReadsQuery should contain PeriodType, BeginDate and EndDate.");
         }
 
-        final AttributeAddress[] profileBufferAndScalerUnit = this.getProfileBufferAndScalerUnit(periodType,
-                periodicMeterReadsQuery.getChannel(), beginDateTime, endDateTime, device.isSelectiveAccessSupported());
+        final AttributeAddress[] profileBufferAndScalerUnit = this.getProfileBufferAndScalerUnit(queryPeriodType,
+                periodicMeterReadsQuery.getChannel(), queryBeginDateTime, queryEndDateTime, device.isSelectiveAccessSupported());
 
         LOGGER.debug("Retrieving current billing period and profiles for gas for period type: {}, from: {}, to: {}",
-                periodType, beginDateTime, endDateTime);
+                queryPeriodType, queryBeginDateTime, queryEndDateTime);
 
         /*
          * workaround for a problem when using with_list and retrieving a profile
@@ -341,11 +341,11 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
 
             conn.getDlmsMessageListener()
                     .setDescription("GetPeriodicMeterReadsGas for channel " + periodicMeterReadsQuery.getChannel()
-                            + ", " + periodType + " from " + beginDateTime + " until " + endDateTime
+                            + ", " + queryPeriodType + " from " + queryBeginDateTime + " until " + queryEndDateTime
                             + ", retrieve attribute: " + JdlmsObjectToStringUtil.describeAttributes(address));
 
             getResultList.addAll(this.dlmsHelperService.getAndCheck(conn, device, "retrieve periodic meter reads for "
-                    + periodType + ", channel " + periodicMeterReadsQuery.getChannel(), address));
+                    + queryPeriodType + ", channel " + periodicMeterReadsQuery.getChannel(), address));
         }
 
         final DataObject resultData = this.dlmsHelperService.readDataObject(getResultList.get(0),
@@ -357,8 +357,8 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
             final List<DataObject> bufferedObjectValue = bufferedObject.getValue();
 
             final GetPeriodicMeterReadsGasCommandExecutor getPeriodicMeterReadsGasCommandExecutor = GetPeriodicMeterReadsGasCommandExecutor
-                    .newBuilder().withPeriodType(periodType).withBeginDateTime(beginDateTime)
-                    .withEndDateTime(endDateTime).withBufferedObjects(bufferedObjectValue)
+                    .newBuilder().withPeriodType(queryPeriodType).withBeginDateTime(queryBeginDateTime)
+                    .withEndDateTime(queryEndDateTime).withBufferedObjects(bufferedObjectValue)
                     .withChannel(periodicMeterReadsQuery.getChannel())
                     .withIsSelectiveAccessSupported(device.isSelectiveAccessSupported()).withResults(getResultList)
                     .build();
@@ -369,7 +369,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
             }
         }
 
-        return new PeriodicMeterReadGasResponseDto(periodType, periodicMeterReads);
+        return new PeriodicMeterReadGasResponseDto(queryPeriodType, periodicMeterReads);
     }
 
     private PeriodicMeterReadsGasResponseItemDto getNextPeriodicMeterReads(

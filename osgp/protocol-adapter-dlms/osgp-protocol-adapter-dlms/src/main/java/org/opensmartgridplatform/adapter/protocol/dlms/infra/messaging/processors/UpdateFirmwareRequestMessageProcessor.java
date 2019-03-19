@@ -86,6 +86,7 @@ public class UpdateFirmwareRequestMessageProcessor extends DeviceRequestMessageP
         return this.configurationService.updateFirmware(conn, device, firmwareIdentification);
     }
 
+    @SuppressWarnings("squid:S1193") // SilentException cannot be caught since it does not extend Exception.
     private void processUpdateFirmwareRequest(final MessageMetadata messageMetadata,
             final String firmwareIdentification) {
 
