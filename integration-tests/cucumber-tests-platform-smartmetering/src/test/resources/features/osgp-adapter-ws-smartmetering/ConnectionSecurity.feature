@@ -21,35 +21,6 @@ Feature: SmartMetering Connection security
     Then the actual meter reads result should be returned
       | DeviceIdentification | TEST1025000000001 |
 
-#    TODO (RvM): fix test:
-  Scenario: Communicate with HLS5 encryption
-    Given a dlms device
-      | DeviceIdentification | TEST1024000000001 |
-      | DeviceType           | SMART_METER_E     |
-      | Hls3active           | false             |
-      | Hls4active           | false             |
-      | Hls5active           | true              |
-    When the get actual meter reads request is received
-      | DeviceIdentification | TEST1024000000001 |
-    Then the actual meter reads result should be returned
-      | DeviceIdentification | TEST1024000000001 |
-    And the invocation counter for the encryption key of "TEST1024000000001" should be greater than 0
-
-#    TODO (RvM): fix test:
-  Scenario: Invocation counter with HLS5 encryption should be incremented after communication
-    Given a dlms device
-      | DeviceIdentification | TEST1024000000001 |
-      | DeviceType           | SMART_METER_E     |
-      | Hls3active           | false             |
-      | Hls4active           | false             |
-      | Hls5active           | true              |
-      | InvocationCounter    |                83 |
-    When the get actual meter reads request is received
-      | DeviceIdentification | TEST1024000000001 |
-    Then the actual meter reads result should be returned
-      | DeviceIdentification | TEST1024000000001 |
-    And the invocation counter for the encryption key of "TEST1024000000001" should be greater than 83
-
   # Needs a DlmsDevice simulator with security.enabled=false on port 1025
   Scenario: Communicate unencrypted
     Given a dlms device

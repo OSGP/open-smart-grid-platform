@@ -8,8 +8,10 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.entities;
 
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DefaultValue.notSet;
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DefaultValue.setTo;
+import static org.opensmartgridplatform.shared.test.DefaultValue.notSet;
+import static org.opensmartgridplatform.shared.test.DefaultValue.setTo;
+
+import org.opensmartgridplatform.shared.test.DefaultValue;
 
 /**
  * Creates new instances, for testing purposes only.

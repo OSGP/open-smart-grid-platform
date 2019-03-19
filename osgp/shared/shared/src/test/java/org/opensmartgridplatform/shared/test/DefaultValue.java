@@ -1,13 +1,12 @@
 /**
  * Copyright 2018 Smart Society Services B.V.
  */
-package org.opensmartgridplatform.adapter.protocol.dlms.domain.entities;
+package org.opensmartgridplatform.shared.test;
 
 /**
  * Default value that is either set or not set, for use by builder classes
  * (which usually generate values on the fly when no default is set).
  */
-// TODO (RvM): move this to place where tests in all modules can access it.
 public class DefaultValue<T> {
     private enum Status {SET, NOT_SET}
 

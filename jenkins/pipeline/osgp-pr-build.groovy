@@ -5,8 +5,7 @@ def servername = stream + '-at-pr-' + env.BUILD_NUMBER
 def playbook = stream + '-at.yml'
 
 // Choose the branch to use for SmartSocietyServices/release repository. Default value is 'master'.
-// TODO (RvM): change back to 'master'.
-def branchReleaseRepo = 'Change_to_dlms-device-simulator-standalone_artifact_without_classifier'
+def branchReleaseRepo = 'master'
 
 pipeline {
     agent {

@@ -25,6 +25,10 @@
     <relativePath>../parent-shared/pom.xml</relativePath>
   </parent>
 
+  <properties>
+    <maven.jar.plugin.version>3.0.2</maven.jar.plugin.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.springframework</groupId>
@@ -200,4 +204,21 @@
       <artifactId>micrometer-registry-prometheus</artifactId>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>${maven.jar.plugin.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>
