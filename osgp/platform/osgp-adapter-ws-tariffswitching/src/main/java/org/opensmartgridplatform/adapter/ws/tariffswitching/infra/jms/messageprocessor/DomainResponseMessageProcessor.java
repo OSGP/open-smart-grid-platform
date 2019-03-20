@@ -126,7 +126,7 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
         final short numberOfNotificationsSent = 0;
         Serializable deviceResponseObject;
 
-        if (ResponseMessageResultType.OK.equals(resultType)) {
+        if (ResponseMessageResultType.OK == resultType) {
             deviceResponseObject = dataObject;
         } else {
             deviceResponseObject = resultDescription;
