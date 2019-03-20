@@ -114,7 +114,7 @@ Feature: TariffSwitchingScheduleManagement Set Tariff Schedule
       | FaultString  | VALIDATION_ERROR                                                                               |
       | InnerMessage | Validation Exception, violations: startDay may not be null when weekDay is set to ABSOLUTEDAY; |
 
-  Scenario Outline: Set tariff schedule with for inactive/unregistered device (device lifecycle state)
+  Scenario Outline: Set tariff schedule for inactive/unregistered device (device lifecycle state)
     Given an ssld device
       | DeviceIdentification  | TEST1024000000001       |
       | DeviceLifecycleStatus | <DeviceLifecycleStatus> |
@@ -139,7 +139,7 @@ Feature: TariffSwitchingScheduleManagement Set Tariff Schedule
       | UNDER_TEST            |
       | DESTROYED             |
 
-  Scenario: Set tariff schedule with for inactive/unregistered device (is activated false)
+  Scenario: Set tariff schedule for inactive/unregistered device (is activated false)
     Given an ssld device
       | DeviceIdentification | TEST1024000000001 |
       | Activated            | false             |
@@ -155,7 +155,7 @@ Feature: TariffSwitchingScheduleManagement Set Tariff Schedule
       | FaultString  | INACTIVE_DEVICE                                        |
       | InnerMessage | Device TEST1024000000001 is not active in the platform |
 
-  Scenario: Set tariff schedule with for unregistered device (public key missing)
+  Scenario: Set tariff schedule for unregistered device (public key missing)
     Given an ssld device
       | DeviceIdentification | TEST1024000000001 |
       | PublicKeyPresent     | false             |
