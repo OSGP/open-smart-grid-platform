@@ -13,7 +13,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.GetFirmwareVersionsCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.UpdateFirmwareCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.FirmwareFileCachingRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -42,13 +42,13 @@ public class FirmwareService {
     @Autowired
     private UpdateFirmwareCommandExecutor updateFirmwareCommandExecutor;
 
-    public List<FirmwareVersionDto> getFirmwareVersions(final DlmsConnectionHolder conn, final DlmsDevice device)
+    public List<FirmwareVersionDto> getFirmwareVersions(final DlmsConnectionManager conn, final DlmsDevice device)
             throws ProtocolAdapterException {
 
         return this.getFirmwareVersionsCommandExecutor.execute(conn, device, null);
     }
 
-    public UpdateFirmwareResponseDto updateFirmware(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public UpdateFirmwareResponseDto updateFirmware(final DlmsConnectionManager conn, final DlmsDevice device,
             final String firmwareIdentification) throws OsgpException {
         LOGGER.info("Updating firmware of device {} to firmware with identification {}", device,
                 firmwareIdentification);
@@ -56,7 +56,7 @@ public class FirmwareService {
         return this.executeFirmwareUpdate(conn, device, firmwareIdentification);
     }
 
-    public UpdateFirmwareResponseDto updateFirmware(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public UpdateFirmwareResponseDto updateFirmware(final DlmsConnectionManager conn, final DlmsDevice device,
             final FirmwareFileDto firmwareFileDto) throws OsgpException {
         LOGGER.info("Updating firmware of device {} to firmware with identification {} using included firmware file",
                 device, firmwareFileDto.getFirmwareIdentification());
@@ -73,7 +73,7 @@ public class FirmwareService {
         return this.firmwareRepository.isAvailable(firmwareIdentification);
     }
 
-    private UpdateFirmwareResponseDto executeFirmwareUpdate(final DlmsConnectionHolder conn, final DlmsDevice device,
+    private UpdateFirmwareResponseDto executeFirmwareUpdate(final DlmsConnectionManager conn, final DlmsDevice device,
             final String firmwareIdentification) throws OsgpException {
         if (this.firmwareRepository.isAvailable(firmwareIdentification)) {
             return this.updateFirmwareCommandExecutor.execute(conn, device, firmwareIdentification);

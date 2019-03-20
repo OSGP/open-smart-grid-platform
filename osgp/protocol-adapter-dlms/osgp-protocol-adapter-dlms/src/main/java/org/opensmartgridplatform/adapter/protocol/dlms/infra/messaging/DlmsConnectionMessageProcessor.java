@@ -1,9 +1,10 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging;
 
@@ -11,24 +12,22 @@ import java.io.Serializable;
 
 import javax.jms.JMSException;
 
-import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecurityKeyService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHelper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.RetryableException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.opensmartgridplatform.shared.infra.jms.RetryHeader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Abstract base class for message processors dealing with optional
@@ -39,13 +38,10 @@ public abstract class DlmsConnectionMessageProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(DlmsConnectionMessageProcessor.class);
 
     @Autowired
-    protected DlmsConnectionFactory dlmsConnectionFactory;
+    protected DlmsConnectionHelper connectionHelper;
 
     @Autowired
     protected DlmsLogItemRequestMessageSender dlmsLogItemRequestMessageSender;
-
-    @Autowired
-    private SecurityKeyService securityKeyService;
 
     @Autowired
     protected OsgpExceptionConverter osgpExceptionConverter;
@@ -53,15 +49,17 @@ public abstract class DlmsConnectionMessageProcessor {
     @Autowired
     private RetryHeaderFactory retryHeaderFactory;
 
-    protected DlmsConnectionHolder createConnectionForDevice(final DlmsDevice device,
-            final MessageMetadata messageMetadata) throws OsgpException {
+    @Autowired
+    protected DlmsDeviceRepository deviceRepository;
 
-        final InvocationCountingDlmsMessageListener dlmsMessageListener = this
+    protected DlmsConnectionManager createConnectionForDevice(final DlmsDevice device,
+            final MessageMetadata messageMetadata) throws OsgpException {
+        final DlmsMessageListener dlmsMessageListener = this
                 .createMessageListenerForDeviceConnection(device, messageMetadata);
-        return this.dlmsConnectionFactory.getConnection(device, dlmsMessageListener);
+        return this.connectionHelper.createConnectionForDevice(device, dlmsMessageListener);
     }
 
-    protected InvocationCountingDlmsMessageListener createMessageListenerForDeviceConnection(final DlmsDevice device,
+    protected DlmsMessageListener createMessageListenerForDeviceConnection(final DlmsDevice device,
             final MessageMetadata messageMetadata) {
         final InvocationCountingDlmsMessageListener dlmsMessageListener;
         if (device.isInDebugMode()) {
@@ -77,7 +75,7 @@ public abstract class DlmsConnectionMessageProcessor {
         return dlmsMessageListener;
     }
 
-    protected void doConnectionPostProcessing(final DlmsDevice device, final DlmsConnectionHolder conn) {
+    protected void doConnectionPostProcessing(final DlmsDevice device, final DlmsConnectionManager conn) {
         if (conn == null) {
             /*
              * No connection (possible and perfectly valid if an operation was handled that
@@ -90,11 +88,11 @@ public abstract class DlmsConnectionMessageProcessor {
         this.closeDlmsConnection(device, conn);
 
         if (device.isHls5Active()) {
-            this.updateInvocationCounterForEncryptionKey(device, conn);
+            this.updateInvocationCounterForDevice(device, conn);
         }
     }
 
-    protected void closeDlmsConnection(final DlmsDevice device, final DlmsConnectionHolder conn) {
+    protected void closeDlmsConnection(final DlmsDevice device, final DlmsConnectionManager conn) {
         LOGGER.info("Closing connection with {}", device.getDeviceIdentification());
         final DlmsMessageListener dlmsMessageListener = conn.getDlmsMessageListener();
         dlmsMessageListener.setDescription("Close connection");
@@ -105,31 +103,30 @@ public abstract class DlmsConnectionMessageProcessor {
         }
     }
 
-    protected void updateInvocationCounterForEncryptionKey(final DlmsDevice device, final DlmsConnectionHolder conn) {
-
+    protected void updateInvocationCounterForDevice(final DlmsDevice device, final DlmsConnectionManager conn) {
         if (!(conn.getDlmsMessageListener() instanceof InvocationCountingDlmsMessageListener)) {
-            LOGGER.error(
-                    "updateInvocationCounterForEncryptionKey should only be called for devices with HLS 5 communication with an InvocationCountingDlmsMessageListener - device: {}, hls5: {}, listener: {}",
-                    device.getDeviceIdentification(), device.isHls5Active(),
-                    conn.getDlmsMessageListener() == null ? "null"
-                            : conn.getDlmsMessageListener().getClass().getName());
+            LOGGER.error("updateInvocationCounterForDevice should only be called for devices with HLS 5 "
+                            + "communication with an InvocationCountingDlmsMessageListener - device: {}, hls5: {}, "
+                            + "listener: {}", device.getDeviceIdentification(), device.isHls5Active(),
+                    conn.getDlmsMessageListener() == null ? "null" : conn.getDlmsMessageListener().getClass()
+                            .getName());
             return;
         }
 
         final InvocationCountingDlmsMessageListener dlmsMessageListener = (InvocationCountingDlmsMessageListener) conn
                 .getDlmsMessageListener();
         final int numberOfSentMessages = dlmsMessageListener.getNumberOfSentMessages();
-        this.securityKeyService.incrementInvocationCounter(device.getDeviceIdentification(),
-                SecurityKeyType.E_METER_ENCRYPTION, numberOfSentMessages);
+        device.incrementInvocationCounter(numberOfSentMessages);
+        this.deviceRepository.save(device);
     }
 
     /**
      * @param logger
-     *            the logger from the calling subClass
+     *         the logger from the calling subClass
      * @param exception
-     *            the exception to be logged
+     *         the exception to be logged
      * @param messageMetadata
-     *            a DlmsDeviceMessageMetadata containing debug info to be logged
+     *         a DlmsDeviceMessageMetadata containing debug info to be logged
      */
     protected void logJmsException(final Logger logger, final JMSException exception,
             final MessageMetadata messageMetadata) {
@@ -160,7 +157,7 @@ public abstract class DlmsConnectionMessageProcessor {
             osgpException = this.osgpExceptionConverter.ensureOsgpOrTechnicalException(exception);
         }
 
-        RetryHeader retryHeader;
+        final RetryHeader retryHeader;
         if ((result == ResponseMessageResultType.NOT_OK) && (exception instanceof RetryableException)) {
             retryHeader = this.retryHeaderFactory.createRetryHeader(messageMetadata.getRetryCount());
         } else {

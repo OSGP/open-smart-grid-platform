@@ -11,7 +11,7 @@ import java.io.Serializable;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.InstallationService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestDataDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
@@ -30,7 +30,7 @@ public class CoupleMbusDeviceByChannelRequestMessageProcessor extends DeviceRequ
     }
 
     @Override
-    protected Serializable handleMessage(final DlmsConnectionHolder conn, final DlmsDevice device,
+    protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException {
 
         this.assertRequestObjectType(CoupleMbusDeviceByChannelRequestDataDto.class, requestObject);

@@ -24,9 +24,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
-
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareModuleType;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
@@ -49,21 +48,21 @@ public class GetFirmwareVersionsCommandExecutorTest {
     @Mock
     private DlmsHelperService helperService;
 
-    private DlmsConnectionHolder connectionHolder;
+    private DlmsConnectionManager connectionHolder;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         this.executor = new GetFirmwareVersionsCommandExecutor(this.helperService);
-        this.connectionHolder = new DlmsConnectionHolder(null, null, this.listener, null);
+        this.connectionHolder = new DlmsConnectionManager(null, null, this.listener, null);
     }
 
     @Test
     public void returns3FirmwareVersionsForDsmr422Device() throws Exception {
-        DlmsDevice device = new DlmsDevice();
+        final DlmsDevice device = new DlmsDevice();
 
-        GetResult getResult1 = new GetResultBuilder().build();
-        GetResult getResult2 = new GetResultBuilder().build();
-        GetResult getResult3 = new GetResultBuilder().build();
+        final GetResult getResult1 = new GetResultBuilder().build();
+        final GetResult getResult2 = new GetResultBuilder().build();
+        final GetResult getResult3 = new GetResultBuilder().build();
 
         when(this.helperService.getAndCheck(same(this.connectionHolder),
                 same(device),
@@ -79,7 +78,7 @@ public class GetFirmwareVersionsCommandExecutorTest {
         when(this.helperService.readString(getResult3.getResultData(), FirmwareModuleType.COMMUNICATION.getDescription()))
                 .thenReturn("string3");
 
-        List<FirmwareVersionDto> result = executor.execute(connectionHolder, device, null);
+        final List<FirmwareVersionDto> result = this.executor.execute(this.connectionHolder, device, null);
 
         Assertions.assertThat(result).usingRecursiveFieldByFieldElementComparator().containsExactly(
                 new FirmwareVersionDto(FirmwareModuleType.ACTIVE_FIRMWARE, "string1"),
@@ -89,12 +88,12 @@ public class GetFirmwareVersionsCommandExecutorTest {
 
     @Test
     public void returns4FirmwareVersionsForSmr51Device() throws Exception {
-        DlmsDevice device = new DlmsDevice().setProtocol("SMR", "5.1");
+        final DlmsDevice device = new DlmsDevice().setProtocol("SMR", "5.1");
 
-        GetResult getResult1 = new GetResultBuilder().build();
-        GetResult getResult2 = new GetResultBuilder().build();
-        GetResult getResult3 = new GetResultBuilder().build();
-        GetResult getResult4 = new GetResultBuilder().build();
+        final GetResult getResult1 = new GetResultBuilder().build();
+        final GetResult getResult2 = new GetResultBuilder().build();
+        final GetResult getResult3 = new GetResultBuilder().build();
+        final GetResult getResult4 = new GetResultBuilder().build();
 
         when(this.helperService.getAndCheck(same(this.connectionHolder),
                 same(device),
@@ -113,7 +112,7 @@ public class GetFirmwareVersionsCommandExecutorTest {
         when(this.helperService.readString(getResult4.getResultData(), FirmwareModuleType.M_BUS_DRIVER_ACTIVE.getDescription()))
                 .thenReturn("string4");
 
-        List<FirmwareVersionDto> result = executor.execute(connectionHolder, device, null);
+        final List<FirmwareVersionDto> result = this.executor.execute(this.connectionHolder, device, null);
 
         Assertions.assertThat(result).usingRecursiveFieldByFieldElementComparator().containsExactly(
                 new FirmwareVersionDto(FirmwareModuleType.ACTIVE_FIRMWARE, "string1"),

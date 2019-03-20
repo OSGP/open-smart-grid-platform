@@ -11,7 +11,7 @@ import java.io.Serializable;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ConfigurationService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -32,7 +32,7 @@ public class GetAdministrativeStatusRequestMessageProcessor extends DeviceReques
     }
 
     @Override
-    protected Serializable handleMessage(final DlmsConnectionHolder conn, final DlmsDevice device,
+    protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException {
 
         return this.configurationService.requestGetAdministrativeStatus(conn, device);

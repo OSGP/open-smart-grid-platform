@@ -8,7 +8,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -42,7 +42,7 @@ public class GetConfigurationObjectCommandExecutor extends AbstractCommandExecut
     }
 
     @Override
-    public ConfigurationObjectDto execute(final DlmsConnectionHolder conn, final DlmsDevice device, final Void object)
+    public ConfigurationObjectDto execute(final DlmsConnectionManager conn, final DlmsDevice device, final Void object)
             throws ProtocolAdapterException {
 
         return this.getConfigurationObjectHelper.getConfigurationObjectDto(conn);

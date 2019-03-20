@@ -8,9 +8,8 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
@@ -26,19 +25,17 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
  */
 public interface CommandExecutor<T, R> {
 
-    R execute(DlmsConnectionHolder conn, DlmsDevice device, T object) throws OsgpException;
+    R execute(DlmsConnectionManager conn, DlmsDevice device, T object) throws OsgpException;
 
     /**
      * If a CommandExecutor gets called from an action that is part of a bundle,
      * the result should always be returned as an object that is assignable to
      * ActionResponseDto from an input that is an ActionRequestDto.
      *
-     * @throws OsgpException
-     *
      * @see #fromBundleRequestInput(ActionRequestDto)
      * @see #asBundleResponse(Object)
      */
-    ActionResponseDto executeBundleAction(DlmsConnectionHolder conn, DlmsDevice device,
+    ActionResponseDto executeBundleAction(DlmsConnectionManager conn, DlmsDevice device,
             ActionRequestDto actionRequestDto) throws OsgpException;
 
     T fromBundleRequestInput(ActionRequestDto bundleInput) throws ProtocolAdapterException;

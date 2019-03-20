@@ -22,6 +22,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
+import org.junit.Test;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
@@ -53,9 +56,6 @@ import org.opensmartgridplatform.domain.core.repositories.SmartMeterRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
 
 /**
  * DLMS device specific steps.
@@ -94,7 +94,7 @@ public class DlmsDeviceSteps {
     private DeviceFirmwareModuleSteps deviceFirmwareModuleSteps;
 
     @Given("^a dlms device$")
-    public void aDlmsDevice(final Map<String, String> inputSettings) throws Throwable {
+    public void aDlmsDevice(final Map<String, String> inputSettings) {
 
         final Device device = this.createDeviceInCoreDatabase(inputSettings);
         this.setScenarioContextForDevice(inputSettings, device);
@@ -105,7 +105,7 @@ public class DlmsDeviceSteps {
     }
 
     @Given("^all mbus channels are occupied for E-meter \"([^\"]*)\"$")
-    public void allMbusChannelsAreOccupiedForEMeter(final String eMeter) throws Throwable {
+    public void allMbusChannelsAreOccupiedForEMeter(final String eMeter) {
         /**
          * A smart meter has 4 M-Bus channels available, so make sure that for
          * each channel an M-Bus device is created
@@ -144,7 +144,7 @@ public class DlmsDeviceSteps {
     }
 
     @Then("^the smart meter is registered in the core database$")
-    public void theSmartMeterIsRegisteredInTheCoreDatabase(final Map<String, String> settings) throws Throwable {
+    public void theSmartMeterIsRegisteredInTheCoreDatabase(final Map<String, String> settings) {
         final SmartMeter smartMeter = this.smartMeterRepository
                 .findByDeviceIdentification(settings.get(PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION));
 
@@ -161,7 +161,7 @@ public class DlmsDeviceSteps {
     }
 
     @Then("^the dlms device with identification \"([^\"]*)\" does not exist$")
-    public void theDlmsDeviceWithIdentificationDoesNotExist(final String deviceIdentification) throws Throwable {
+    public void theDlmsDeviceWithIdentificationDoesNotExist(final String deviceIdentification) {
 
         final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
         assertNull("DLMS device with identification " + deviceIdentification + " in protocol database", dlmsDevice);
@@ -171,7 +171,7 @@ public class DlmsDeviceSteps {
     }
 
     @Then("^the new keys are stored in the osgp_adapter_protocol_dlms database security_key table$")
-    public void theNewKeysAreStoredInTheOsgpAdapterProtocolDlmsDatabaseSecurityKeyTable() throws Throwable {
+    public void theNewKeysAreStoredInTheOsgpAdapterProtocolDlmsDatabaseSecurityKeyTable() {
         final String keyDeviceIdentification = PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION;
         final String deviceIdentification = (String) ScenarioContext.current().get(keyDeviceIdentification);
         assertNotNull("Device identification must be in the scenario context for key " + keyDeviceIdentification,
@@ -210,8 +210,12 @@ public class DlmsDeviceSteps {
         assertTrue("Number of encryption keys > 1", numberOfEncryptionKeys > 1);
     }
 
+    @Test
+    public void name() {
+    }
+
     @Then("^the keys are not changed in the osgp_adapter_protocol_dlms database security_key table$")
-    public void theKeysAreNotChangedInTheOsgpAdapterProtocolDlmsDatabaseSecurityKeyTable() throws Throwable {
+    public void theKeysAreNotChangedInTheOsgpAdapterProtocolDlmsDatabaseSecurityKeyTable() {
         final String keyDeviceIdentification = PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION;
         final String deviceIdentification = (String) ScenarioContext.current().get(keyDeviceIdentification);
         assertNotNull("Device identification must be in the scenario context for key " + keyDeviceIdentification,
@@ -252,7 +256,7 @@ public class DlmsDeviceSteps {
     }
 
     @Then("^the stored keys are not equal to the received keys$")
-    public void theStoredKeysAreNotEqualToTheReceivedKeys() throws Throwable {
+    public void theStoredKeysAreNotEqualToTheReceivedKeys() {
         final String keyDeviceIdentification = PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION;
         final String deviceIdentification = (String) ScenarioContext.current().get(keyDeviceIdentification);
         assertNotNull("Device identification must be in the scenario context for key " + keyDeviceIdentification,
@@ -283,7 +287,7 @@ public class DlmsDeviceSteps {
     }
 
     @Then("^the stored M-Bus Default key is not equal to the received key$")
-    public void theStoredMbusDefaultKeysIsNotEqualToTheReceivedKey() throws Throwable {
+    public void theStoredMbusDefaultKeysIsNotEqualToTheReceivedKey() {
         final String keyDeviceIdentification = PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION;
         final String deviceIdentification = (String) ScenarioContext.current().get(keyDeviceIdentification);
         assertNotNull("Device identification must be in the scenario context for key " + keyDeviceIdentification,
@@ -301,7 +305,7 @@ public class DlmsDeviceSteps {
     }
 
     @Then("^a valid m-bus user key is stored$")
-    public void aValidMbusUserKeyIsStored(final Map<String, String> settings) throws Throwable {
+    public void aValidMbusUserKeyIsStored(final Map<String, String> settings) {
         final String keyDeviceIdentification = PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION;
         final String deviceIdentification = settings.get(keyDeviceIdentification);
         assertNotNull("The M-Bus device identification must be in the step data for key " + keyDeviceIdentification,
@@ -343,12 +347,12 @@ public class DlmsDeviceSteps {
 
     @Then("^the invocation counter for the encryption key of \"([^\"]*)\" should be greater than (\\d++)$")
     public void theInvocationCounterForTheEncryptionKeyOfShouldBeGreaterThan(final String deviceIdentification,
-            final Integer invocationCounterLowerBound) throws Throwable {
+            final Integer invocationCounterLowerBound) {
 
         final DlmsDevice dlmsDevice = this.findExistingDlmsDevice(deviceIdentification);
         final SecurityKey encryptionKey = this.findExistingSecurityKey(dlmsDevice, SecurityKeyType.E_METER_ENCRYPTION,
                 "Encryption key");
-        final Integer invocationCounter = encryptionKey.getInvocationCounter();
+        final Integer invocationCounter = dlmsDevice.getInvocationCounter();
 
         assertNotNull("The invocation counter for the encryption key of DLMS device with identification "
                 + dlmsDevice.getDeviceIdentification() + " must not be null", invocationCounter);

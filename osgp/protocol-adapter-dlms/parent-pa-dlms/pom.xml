@@ -140,6 +140,12 @@
       </dependency>
       <dependency>
         <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>shared</artifactId>
+        <version>${osgp.shared.version}</version>
+        <type>test-jar</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>jasper-interface</artifactId>
         <version>${osgp.jasper-interface.version}</version>
       </dependency>

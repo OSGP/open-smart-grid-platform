@@ -26,13 +26,8 @@ import org.openmuc.jdlms.interfaceclass.attribute.ExtendedRegisterAttribute;
 import org.openmuc.jdlms.interfaceclass.attribute.ProfileGenericAttribute;
 import org.openmuc.jdlms.interfaceclass.attribute.RegisterAttribute;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CaptureObjectDefinitionDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CaptureObjectDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
@@ -44,6 +39,10 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryValueDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileGenericDataRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileGenericDataResponseDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component()
 public class GetProfileGenericDataCommandExecutor
@@ -72,7 +71,7 @@ public class GetProfileGenericDataCommandExecutor
     }
 
     @Override
-    public ProfileGenericDataResponseDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public ProfileGenericDataResponseDto execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final ProfileGenericDataRequestDataDto profileGenericDataRequestDataDto) throws ProtocolAdapterException {
 
         final ObisCodeValuesDto obisCodeValues = profileGenericDataRequestDataDto.getObisCode();
@@ -92,7 +91,7 @@ public class GetProfileGenericDataCommandExecutor
                 device.isSelectiveAccessSupported(), bufferList);
     }
 
-    private List<GetResult> retrieveCaptureObjects(final DlmsConnectionHolder conn, final DlmsDevice device,
+    private List<GetResult> retrieveCaptureObjects(final DlmsConnectionManager conn, final DlmsDevice device,
             final ObisCode obisCode) throws ProtocolAdapterException {
         final AttributeAddress captureObjectsAttributeAddress = new AttributeAddress(
                 InterfaceClass.PROFILE_GENERIC.id(), obisCode, ProfileGenericAttribute.CAPTURE_OBJECTS.attributeId());
@@ -101,7 +100,7 @@ public class GetProfileGenericDataCommandExecutor
                 captureObjectsAttributeAddress);
     }
 
-    private List<GetResult> retrieveBuffer(final DlmsConnectionHolder conn, final DlmsDevice device,
+    private List<GetResult> retrieveBuffer(final DlmsConnectionManager conn, final DlmsDevice device,
             final ObisCode obisCode, final DateTime beginDateTime, final DateTime endDateTime,
             final List<CaptureObjectDefinitionDto> selectedValues) throws ProtocolAdapterException {
         final SelectiveAccessDescription access = this.getSelectiveAccessDescription(beginDateTime, endDateTime,
@@ -221,8 +220,6 @@ public class GetProfileGenericDataCommandExecutor
             final DateTime endDateTime, final List<CaptureObjectDefinitionDto> captureObjectDefinitions,
             final boolean isSelectingValuesSupported) {
 
-        final int accessSelector = ACCESS_SELECTOR_RANGE_DESCRIPTOR;
-
         /*
          * Define the clock object {8,0-0:1.0.0.255,2,0} to be used as
          * restricting object in a range descriptor with a from value and to
@@ -243,7 +240,7 @@ public class GetProfileGenericDataCommandExecutor
         final DataObject accessParameter = DataObject
                 .newStructureData(Arrays.asList(clockDefinition, fromValue, toValue, selectedValues));
 
-        return new SelectiveAccessDescription(accessSelector, accessParameter);
+        return new SelectiveAccessDescription(ACCESS_SELECTOR_RANGE_DESCRIPTOR, accessParameter);
     }
 
     private DataObject makeSelectedValues(final List<CaptureObjectDefinitionDto> captureObjectDefinitions,
@@ -353,7 +350,7 @@ public class GetProfileGenericDataCommandExecutor
         }
     }
 
-    private List<ScalerUnitInfo> retrieveScalerUnits(final DlmsConnectionHolder conn, final DlmsDevice device,
+    private List<ScalerUnitInfo> retrieveScalerUnits(final DlmsConnectionManager conn, final DlmsDevice device,
             final List<GetResult> captureObjects) throws ProtocolAdapterException {
 
         final List<ScalerUnitInfo> result = new ArrayList<>();

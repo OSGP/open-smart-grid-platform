@@ -18,7 +18,7 @@ import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.interfaceclass.InterfaceClass;
 import org.openmuc.jdlms.interfaceclass.attribute.ClockAttribute;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +62,7 @@ public class SynchronizeTimeCommandExecutor
     }
 
     @Override
-    public AccessResultCode execute(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public AccessResultCode execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final SynchronizeTimeRequestDto synchronizeTimeRequestDto) throws ProtocolAdapterException {
         final DateTime dt = DateTime.now();
         final DataObject time = this.dlmsHelperService.asDataObject(dt, synchronizeTimeRequestDto.getDeviation(),

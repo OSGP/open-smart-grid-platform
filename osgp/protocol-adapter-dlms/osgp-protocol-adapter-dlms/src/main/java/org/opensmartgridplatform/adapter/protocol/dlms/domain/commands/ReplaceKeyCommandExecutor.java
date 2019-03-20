@@ -16,20 +16,19 @@ import org.openmuc.jdlms.SecurityUtils.KeyId;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecurityKeyService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeysRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Some code may look odd, specifically in the execute() method. The reason is
@@ -90,7 +89,7 @@ public class ReplaceKeyCommandExecutor
     }
 
     @Override
-    public ActionResponseDto executeBundleAction(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public ActionResponseDto executeBundleAction(final DlmsConnectionManager conn, final DlmsDevice device,
             final ActionRequestDto actionRequestDto) throws OsgpException {
 
         this.checkActionRequestType(actionRequestDto);
@@ -102,7 +101,7 @@ public class ReplaceKeyCommandExecutor
             setKeysRequestDto = this.reEncryptKeys((SetKeysRequestDto) actionRequestDto);
         }
 
-        DlmsDevice devicePostSave = this.execute(conn, device,
+        final DlmsDevice devicePostSave = this.execute(conn, device,
                 ReplaceKeyCommandExecutor.wrap(setKeysRequestDto.getAuthenticationKey(), KeyId.AUTHENTICATION_KEY,
                         SecurityKeyType.E_METER_AUTHENTICATION));
 
@@ -123,7 +122,7 @@ public class ReplaceKeyCommandExecutor
     }
 
     @Override
-    public DlmsDevice execute(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public DlmsDevice execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final ReplaceKeyCommandExecutor.KeyWrapper keyWrapper) throws OsgpException {
 
         final DlmsDevice devicePostSave = this.securityKeyService.storeNewKey(device, keyWrapper.getBytes(),
@@ -141,9 +140,8 @@ public class ReplaceKeyCommandExecutor
      *            Device instance
      * @param keyWrapper
      *            Key data
-     * @throws ProtocolAdapterException
      */
-    private void sendToDevice(final DlmsConnectionHolder conn, final DlmsDevice device,
+    private void sendToDevice(final DlmsConnectionManager conn, final DlmsDevice device,
             final ReplaceKeyCommandExecutor.KeyWrapper keyWrapper) throws ProtocolAdapterException {
 
         try {

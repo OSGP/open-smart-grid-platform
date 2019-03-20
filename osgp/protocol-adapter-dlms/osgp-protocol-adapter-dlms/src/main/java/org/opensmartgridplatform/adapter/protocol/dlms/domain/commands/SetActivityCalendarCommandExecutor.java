@@ -17,13 +17,8 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.mapping.ConfigurationMapper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActivityCalendarDataDto;
@@ -31,6 +26,10 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActivityCalendar
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DayProfileDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SeasonProfileDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.WeekProfileDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component()
 public class SetActivityCalendarCommandExecutor extends AbstractCommandExecutor<ActivityCalendarDto, AccessResultCode> {
@@ -76,7 +75,7 @@ public class SetActivityCalendarCommandExecutor extends AbstractCommandExecutor<
     }
 
     @Override
-    public AccessResultCode execute(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public AccessResultCode execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final ActivityCalendarDto activityCalendar) throws ProtocolAdapterException {
         LOGGER.debug("SetActivityCalendarCommandExecutor.execute {} called", activityCalendar.getCalendarName());
 
@@ -107,9 +106,9 @@ public class SetActivityCalendarCommandExecutor extends AbstractCommandExecutor<
 
         } catch (final ProtocolAdapterException e) {
 
-            String message = "";
+            final StringBuilder message = new StringBuilder();
             for (final DataObjectAttrExecutor executor : dataObjectExecutors.getDataObjectAttrExecutorList()) {
-                message += executor.createRequestAndResultCodeInfo();
+                message.append(executor.createRequestAndResultCodeInfo());
             }
             throw new ProtocolAdapterException(e.getMessage() + message, e);
         }

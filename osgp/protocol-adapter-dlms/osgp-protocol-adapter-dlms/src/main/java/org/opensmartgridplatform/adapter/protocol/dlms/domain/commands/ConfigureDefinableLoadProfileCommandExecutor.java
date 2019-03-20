@@ -21,7 +21,7 @@ import org.openmuc.jdlms.interfaceclass.InterfaceClass;
 import org.openmuc.jdlms.interfaceclass.attribute.ClockAttribute;
 import org.openmuc.jdlms.interfaceclass.attribute.ProfileGenericAttribute;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,7 +72,7 @@ public class ConfigureDefinableLoadProfileCommandExecutor
     }
 
     @Override
-    public Void execute(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public Void execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final DefinableLoadProfileConfigurationDto definableLoadProfileConfiguration)
             throws ProtocolAdapterException {
 
@@ -87,7 +87,7 @@ public class ConfigureDefinableLoadProfileCommandExecutor
         return null;
     }
 
-    private void writeCaptureObjects(final DlmsConnectionHolder conn,
+    private void writeCaptureObjects(final DlmsConnectionManager conn,
             final List<CaptureObjectDefinitionDto> captureObjects) throws ProtocolAdapterException {
 
         this.dlmsLogWrite(conn, ATTRIBUTE_CAPTURE_OBJECTS, ATTRIBUTE_NAME_CAPTURE_OBJECTS);
@@ -119,7 +119,7 @@ public class ConfigureDefinableLoadProfileCommandExecutor
                 && ATTRIBUTE_INDEX_CLOCK_TIME == captureObject.getAttributeIndex();
     }
 
-    private void writeCapturePeriod(final DlmsConnectionHolder conn, final long capturePeriod)
+    private void writeCapturePeriod(final DlmsConnectionManager conn, final long capturePeriod)
             throws ProtocolAdapterException {
 
         this.dlmsLogWrite(conn, ATTRIBUTE_CAPTURE_PERIOD, ATTRIBUTE_NAME_CAPTURE_PERIOD);
@@ -128,7 +128,7 @@ public class ConfigureDefinableLoadProfileCommandExecutor
                 ATTRIBUTE_NAME_CAPTURE_PERIOD);
     }
 
-    private void writeAttribute(final DlmsConnectionHolder conn, final SetParameter parameter,
+    private void writeAttribute(final DlmsConnectionManager conn, final SetParameter parameter,
             final String attributeName) throws ProtocolAdapterException {
         try {
             final AccessResultCode result = conn.getConnection().set(parameter);
@@ -142,7 +142,7 @@ public class ConfigureDefinableLoadProfileCommandExecutor
         }
     }
 
-    private void dlmsLogWrite(final DlmsConnectionHolder conn, final AttributeAddress attribute,
+    private void dlmsLogWrite(final DlmsConnectionManager conn, final AttributeAddress attribute,
             final String attributeName) {
         conn.getDlmsMessageListener().setDescription("Writing definable load profile attribute '" + attributeName
                 + "': " + JdlmsObjectToStringUtil.describeAttributes(attribute));

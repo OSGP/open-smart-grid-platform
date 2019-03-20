@@ -18,7 +18,7 @@ import org.openmuc.jdlms.datatypes.BitString;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.interfaceclass.InterfaceClass;
 import org.openmuc.jdlms.interfaceclass.attribute.DataAttribute;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -50,7 +50,7 @@ public class GetConfigurationObjectHelper {
     @Autowired
     private DlmsHelperService dlmsHelperService;
 
-    public ConfigurationObjectDto getConfigurationObjectDto(final DlmsConnectionHolder conn)
+    public ConfigurationObjectDto getConfigurationObjectDto(final DlmsConnectionManager conn)
             throws ProtocolAdapterException {
 
         try {
@@ -60,7 +60,7 @@ public class GetConfigurationObjectHelper {
         }
     }
 
-    private ConfigurationObjectDto retrieveConfigurationObject(final DlmsConnectionHolder conn)
+    private ConfigurationObjectDto retrieveConfigurationObject(final DlmsConnectionManager conn)
             throws IOException, ProtocolAdapterException {
 
         final AttributeAddress configurationObjectValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);

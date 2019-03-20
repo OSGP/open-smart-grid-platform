@@ -13,7 +13,7 @@ import java.util.List;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.CommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.CommandExecutorMap;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -40,7 +40,7 @@ public class BundleService {
     @Autowired
     private CommandExecutorMap bundleCommandExecutorMap;
 
-    public BundleMessagesRequestDto callExecutors(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public BundleMessagesRequestDto callExecutors(final DlmsConnectionManager conn, final DlmsDevice device,
             final BundleMessagesRequestDto bundleMessagesRequest) {
 
         final List<ActionDto> actionList = bundleMessagesRequest.getActionList();

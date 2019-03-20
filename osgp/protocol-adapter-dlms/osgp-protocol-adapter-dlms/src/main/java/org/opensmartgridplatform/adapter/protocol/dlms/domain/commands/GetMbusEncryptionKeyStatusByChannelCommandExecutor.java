@@ -8,7 +8,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -37,7 +37,7 @@ public class GetMbusEncryptionKeyStatusByChannelCommandExecutor extends
     }
 
     @Override
-    public GetMbusEncryptionKeyStatusByChannelResponseDto execute(final DlmsConnectionHolder conn,
+    public GetMbusEncryptionKeyStatusByChannelResponseDto execute(final DlmsConnectionManager conn,
             final DlmsDevice device, final GetMbusEncryptionKeyStatusByChannelRequestDataDto request)
             throws OsgpException {
 

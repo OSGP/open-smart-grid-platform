@@ -11,7 +11,7 @@ import org.openmuc.jdlms.MethodResultCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.BundleService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ConfigurationService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -55,7 +55,7 @@ public class SetMbusUserKeyByChannelCommandExecutor extends AbstractCommandExecu
     }
 
     @Override
-    public ActionResponseDto executeBundleAction(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public ActionResponseDto executeBundleAction(final DlmsConnectionManager conn, final DlmsDevice device,
             final ActionRequestDto actionRequestDto) throws OsgpException {
 
         this.checkActionRequestType(actionRequestDto);
@@ -73,7 +73,7 @@ public class SetMbusUserKeyByChannelCommandExecutor extends AbstractCommandExecu
     }
 
     @Override
-    public MethodResultCode execute(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public MethodResultCode execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final GMeterInfoDto gMeterInfo) throws ProtocolAdapterException, FunctionalException {
         return this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, gMeterInfo);
     }

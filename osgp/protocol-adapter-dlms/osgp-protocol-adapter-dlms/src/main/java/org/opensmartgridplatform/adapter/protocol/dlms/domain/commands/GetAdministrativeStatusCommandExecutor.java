@@ -12,7 +12,7 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.mapping.ConfigurationMapper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +57,7 @@ public class GetAdministrativeStatusCommandExecutor extends AbstractCommandExecu
     }
 
     @Override
-    public AdministrativeStatusTypeDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public AdministrativeStatusTypeDto execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final Void useless) throws ProtocolAdapterException {
 
         final AttributeAddress getParameter = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);

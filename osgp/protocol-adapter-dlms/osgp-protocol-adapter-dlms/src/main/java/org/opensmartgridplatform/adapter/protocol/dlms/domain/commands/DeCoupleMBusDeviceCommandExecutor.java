@@ -14,14 +14,13 @@ import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.interfaceclass.InterfaceClass;
 import org.openmuc.jdlms.interfaceclass.attribute.MbusClientAttribute;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceResponseDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceResponseDto;
 
 @Component
 public class DeCoupleMBusDeviceCommandExecutor
@@ -45,7 +44,7 @@ public class DeCoupleMBusDeviceCommandExecutor
     }
 
     @Override
-    public DeCoupleMbusDeviceResponseDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public DeCoupleMbusDeviceResponseDto execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final DeCoupleMbusDeviceDto decoupleMbusDto) throws ProtocolAdapterException {
 
         LOGGER.debug("DeCouple mbus device from gateway device");
@@ -75,7 +74,7 @@ public class DeCoupleMBusDeviceCommandExecutor
         return new ObisCode(String.format(OBIS_CODE_TEMPLATE, decoupleMbusDto.getChannel()));
     }
 
-    private DeCoupleMbusDeviceResponseDto writeUpdatedMbus(final DlmsConnectionHolder conn,
+    private DeCoupleMbusDeviceResponseDto writeUpdatedMbus(final DlmsConnectionManager conn,
             final DeCoupleMbusDeviceDto deCoupleMbusDeviceDto) throws ProtocolAdapterException {
 
         final DataObjectAttrExecutors dataObjectExecutors = new DataObjectAttrExecutors("DeCoupleMBusDevice")
@@ -115,7 +114,7 @@ public class DeCoupleMBusDeviceCommandExecutor
 
         private final int methodId;
 
-        private Method(final int methodId) {
+        Method(final int methodId) {
             this.methodId = methodId;
         }
 

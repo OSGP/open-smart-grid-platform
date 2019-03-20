@@ -20,7 +20,7 @@ import org.openmuc.jdlms.interfaceclass.method.MBusClientMethod;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecurityKeyService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -70,7 +70,7 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor
     }
 
     @Override
-    public MethodResultCode execute(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public MethodResultCode execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final GMeterInfoDto gMeterInfo) throws ProtocolAdapterException {
         try {
             LOGGER.debug("SetEncryptionKeyExchangeOnGMeterCommandExecutor.execute called");

@@ -1,9 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
@@ -19,19 +20,17 @@ import org.openmuc.jdlms.TcpConnectionBuilder;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecurityKeyService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.threads.RecoverKeyProcessInitiator;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class Hls5Connector extends SecureDlmsConnector {
 
@@ -45,8 +44,8 @@ public class Hls5Connector extends SecureDlmsConnector {
     private SecurityKeyService securityKeyService;
 
     public Hls5Connector(final RecoverKeyProcessInitiator recoverKeyProcessInitiator, final int responseTimeout,
-            final int logicalDeviceAddress, final int clientAccessPoint) {
-        super(responseTimeout, logicalDeviceAddress, clientAccessPoint);
+            final int logicalDeviceAddress, final DlmsDeviceAssociation deviceAssociation) {
+        super(responseTimeout, logicalDeviceAddress, deviceAssociation);
         this.recoverKeyProcessInitiator = recoverKeyProcessInitiator;
     }
 
@@ -70,18 +69,17 @@ public class Hls5Connector extends SecureDlmsConnector {
                 // Queue key recovery process.
                 this.recoverKeyProcessInitiator.initiate(device.getDeviceIdentification(), device.getIpAddress());
             }
-            final String msg = String.format("Error creating connection for device %s with Ip address:%s Port:%d UseHdlc:%b UseSn:%b Message:%s",
-                    device.getDeviceIdentification(),
-                    device.getIpAddress(),
-                    device.getPort(),
-                    device.isUseHdlc(),
-                    device.isUseSn(),
-                    e.getMessage());
+            final String msg = String
+                    .format("Error creating connection for device %s with Ip address:%s Port:%d UseHdlc:%b UseSn:%b "
+                                    + "Message:%s", device.getDeviceIdentification(), device.getIpAddress(),
+                            device.getPort(),
+                            device.isUseHdlc(), device.isUseSn(), e.getMessage());
             LOGGER.error(msg);
             throw new ConnectionException(msg, e);
         } catch (final EncrypterException e) {
             LOGGER.error("decryption on security keys went wrong for device: {}", device.getDeviceIdentification(), e);
-            throw new FunctionalException(FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT, ComponentType.PROTOCOL_DLMS, e);
+            throw new FunctionalException(FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT, ComponentType.PROTOCOL_DLMS,
+                    e);
         }
     }
 
@@ -112,7 +110,7 @@ public class Hls5Connector extends SecureDlmsConnector {
                 .setGlobalUnicastEncryptionKey(dlmsEncryptionKey)
                 .setEncryptionMechanism(EncryptionMechanism.AES_GCM_128).build();
 
-        tcpConnectionBuilder.setSecuritySuite(securitySuite).setClientId(this.clientAccessPoint);
+        tcpConnectionBuilder.setSecuritySuite(securitySuite).setClientId(this.clientId);
     }
 
     private void configureIvData(final TcpConnectionBuilder tcpConnectionBuilder, final DlmsDevice device) {
@@ -129,36 +127,41 @@ public class Hls5Connector extends SecureDlmsConnector {
          * builder the library is enabled to meet the IV requirements of DLMS
          * HLS5 communication.
          */
-        String manufacturerId;
+        final String manufacturerId;
         if (StringUtils.isEmpty(device.getManufacturerId())) {
             LOGGER.warn("Device {} does not have its manufacturer ID stored in the database. "
-                    + "Using a default value which makes the system title (part of the IV in HLS 5) less unique.",
+                            + "Using a default value which makes the system title (part of the IV in HLS 5) less " +
+                            "unique.",
                     device.getDeviceIdentification());
             manufacturerId = "   ";
         } else {
             manufacturerId = device.getManufacturerId();
         }
         tcpConnectionBuilder.setSystemTitle(manufacturerId, device.getDeviceId());
-        tcpConnectionBuilder.setFrameCounter(
-                device.getValidSecurityKey(SecurityKeyType.E_METER_ENCRYPTION).getInvocationCounter() + 1);
+        tcpConnectionBuilder.setFrameCounter(device.getInvocationCounter());
+        LOGGER.debug("Framecounter for device {} set to {}", device.getDeviceIdentification(),
+                device.getInvocationCounter());
     }
 
-    private void validateKeys(final byte[] encryptionKey, final byte[] authenticationKey)
-            throws FunctionalException {
+    private void validateKeys(final byte[] encryptionKey, final byte[] authenticationKey) throws FunctionalException {
         if (this.checkEmptyKey(encryptionKey)) {
-            this.throwFunctionalException("The encryption key is empty", FunctionalExceptionType.INVALID_DLMS_KEY_ENCRYPTION);
+            this.throwFunctionalException("The encryption key is empty",
+                    FunctionalExceptionType.INVALID_DLMS_KEY_ENCRYPTION);
         }
 
         if (this.checkEmptyKey(authenticationKey)) {
-            this.throwFunctionalException("The authentication key is empty", FunctionalExceptionType.INVALID_DLMS_KEY_ENCRYPTION);
+            this.throwFunctionalException("The authentication key is empty",
+                    FunctionalExceptionType.INVALID_DLMS_KEY_ENCRYPTION);
         }
 
         if (this.checkLenghtKey(encryptionKey)) {
-            this.throwFunctionalException("The encryption key has an invalid length", FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT);
+            this.throwFunctionalException("The encryption key has an invalid length",
+                    FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT);
         }
 
         if (this.checkLenghtKey(authenticationKey)) {
-            this.throwFunctionalException("The authentication key has an invalid length", FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT);
+            this.throwFunctionalException("The authentication key has an invalid length",
+                    FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT);
         }
     }
 
@@ -170,7 +173,8 @@ public class Hls5Connector extends SecureDlmsConnector {
         return key.length * 8 != AES_GMC_128;
     }
 
-    private void throwFunctionalException(final String msg, final FunctionalExceptionType type) throws FunctionalException {
+    private void throwFunctionalException(final String msg, final FunctionalExceptionType type)
+            throws FunctionalException {
         LOGGER.error(msg);
         throw new FunctionalException(type, ComponentType.PROTOCOL_DLMS);
     }

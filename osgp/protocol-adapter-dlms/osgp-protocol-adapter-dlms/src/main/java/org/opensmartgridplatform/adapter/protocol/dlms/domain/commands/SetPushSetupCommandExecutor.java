@@ -19,7 +19,7 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
@@ -74,7 +74,7 @@ public abstract class SetPushSetupCommandExecutor<T, R> extends AbstractCommandE
     }
 
     protected AccessResultCode getAccessResultSetSendDestinationAndMethod(final String pushSetup,
-            final DlmsConnectionHolder conn, final ObisCode obisCode, final SetParameter setParameter) {
+            final DlmsConnectionManager conn, final ObisCode obisCode, final SetParameter setParameter) {
 
         conn.getDlmsMessageListener()
                 .setDescription(pushSetup + " configure send destination and method, set attribute: "

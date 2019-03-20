@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareModuleType;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
@@ -74,7 +74,7 @@ public class GetFirmwareVersionsCommandExecutor extends AbstractCommandExecutor<
     }
 
     @Override
-    public List<FirmwareVersionDto> execute(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public List<FirmwareVersionDto> execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final Void useless) throws ProtocolAdapterException {
         if (isAnSmr51Device(device)) {
             return getFirmwareVersions(conn, device, FOR_SMR_5_1);
@@ -86,7 +86,7 @@ public class GetFirmwareVersionsCommandExecutor extends AbstractCommandExecutor<
         return "SMR".equals(device.getProtocol()) && "5.1".equals(device.getProtocolVersion());
     }
 
-    private List<FirmwareVersionDto> getFirmwareVersions(final DlmsConnectionHolder conn, final DlmsDevice device,
+    private List<FirmwareVersionDto> getFirmwareVersions(final DlmsConnectionManager conn, final DlmsDevice device,
             final AttributeAddress[] attributes) throws ProtocolAdapterException {
         conn.getDlmsMessageListener().setDescription("GetFirmwareVersions, retrieve attributes: "
                 + JdlmsObjectToStringUtil.describeAttributes(attributes));

@@ -15,7 +15,8 @@ import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.SilentException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
@@ -71,12 +72,13 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
         this.dlmsRequestMessageProcessorMap.addMessageProcessor(this.messageType, this);
     }
 
+    @SuppressWarnings("squid:S1193") // SilentException cannot be caught since it does not extend Exception.
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
         LOGGER.debug("Processing {} request message", this.messageType);
 
         MessageMetadata messageMetadata = null;
-        DlmsConnectionHolder conn = null;
+        DlmsConnectionManager conn = null;
         DlmsDevice device = null;
 
         try {
@@ -95,7 +97,7 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
             LOGGER.info("{} called for device: {} for organisation: {}", message.getJMSType(),
                     messageMetadata.getDeviceIdentification(), messageMetadata.getOrganisationIdentification());
 
-            Serializable response;
+            final Serializable response;
             if (this.usesDeviceConnection()) {
                 conn = this.createConnectionForDevice(device, messageMetadata);
                 response = this.handleMessage(conn, device, message.getObject());
@@ -110,18 +112,15 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
             this.logJmsException(LOGGER, exception, messageMetadata);
         } catch (final Exception exception) {
             // Return original request + exception
-            LOGGER.error("Unexpected exception during {}", this.messageType.name(), exception);
+            if (!(exception instanceof SilentException)) {
+                LOGGER.error("Unexpected exception during {}", this.messageType.name(), exception);
+            }
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, exception,
                     this.responseMessageSender, message.getObject());
         } finally {
             this.doConnectionPostProcessing(device, conn);
         }
-    }
-
-    protected boolean getBooleanPropertyValue(final ObjectMessage message, final String propertyName)
-            throws JMSException {
-        return message.propertyExists(propertyName) && message.getBooleanProperty(propertyName);
     }
 
     /**
@@ -137,9 +136,8 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
      * @param requestObject
      *            Request data object.
      * @return A serializable object to be put on the response queue.
-     * @throws OsgpException
      */
-    protected Serializable handleMessage(final DlmsConnectionHolder conn, final DlmsDevice device,
+    protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException {
         throw new UnsupportedOperationException(
                 "handleMessage(DlmsConnection, DlmsDevice, Serializable) should be overriden by a subclass, or usesDeviceConnection should return false.");
