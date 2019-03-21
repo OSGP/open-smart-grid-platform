@@ -11,7 +11,7 @@ import java.util.List;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.FindMatchingChannelHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +36,7 @@ public class CoupleMBusDeviceCommandExecutor
     }
 
     @Override
-    public MbusChannelElementsResponseDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public MbusChannelElementsResponseDto execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final MbusChannelElementsDto requestDto) throws ProtocolAdapterException {
 
         LOGGER.debug("retrieving mbus info on e-meter");

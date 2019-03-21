@@ -1,9 +1,10 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
@@ -18,16 +19,15 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Secu
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class Lls1Connector extends SecureDlmsConnector {
 
@@ -36,8 +36,9 @@ public class Lls1Connector extends SecureDlmsConnector {
     @Autowired
     private SecurityKeyService securityKeyService;
 
-    public Lls1Connector(final int responseTimeout, final int logicalDeviceAddress, final int clientAccessPoint) {
-        super(responseTimeout, logicalDeviceAddress, clientAccessPoint);
+    public Lls1Connector(final int responseTimeout, final int logicalDeviceAddress,
+            final DlmsDeviceAssociation deviceAssociation) {
+        super(responseTimeout, logicalDeviceAddress, deviceAssociation);
     }
 
     @Override
@@ -85,7 +86,7 @@ public class Lls1Connector extends SecureDlmsConnector {
         final SecuritySuite securitySuite = SecuritySuite.builder()
                 .setAuthenticationMechanism(AuthenticationMechanism.LOW).setPassword(password).build();
 
-        tcpConnectionBuilder.setSecuritySuite(securitySuite).setClientId(this.clientAccessPoint);
+        tcpConnectionBuilder.setSecuritySuite(securitySuite).setClientId(this.clientId);
     }
 
 }

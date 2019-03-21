@@ -14,9 +14,7 @@ import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
-
 import org.opensmartgridplatform.cucumber.platform.core.builders.CucumberBuilder;
-import org.opensmartgridplatform.cucumber.platform.helpers.SettingsHelper;
 import org.opensmartgridplatform.cucumber.platform.helpers.UtcDateHelper;
 import org.opensmartgridplatform.cucumber.platform.inputparsers.DateInputParser;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
@@ -31,7 +29,6 @@ public class SecurityKeyBuilder implements CucumberBuilder<SecurityKey> {
     private Date validTo = PlatformSmartmeteringDefaults.VALID_TO;
     private Long version = PlatformSmartmeteringDefaults.VERSION;
     private String key = PlatformSmartmeteringDefaults.SECURITY_KEY_A_DB;
-    private Integer invocationCounter = null;
 
     private DlmsDevice dlmsDevice;
 
@@ -57,11 +54,6 @@ public class SecurityKeyBuilder implements CucumberBuilder<SecurityKey> {
 
     public SecurityKeyBuilder setKey(final String key) {
         this.key = key;
-        return this;
-    }
-
-    public SecurityKeyBuilder setInvocationCounter(final Integer invocationCounter) {
-        this.invocationCounter = invocationCounter;
         return this;
     }
 
@@ -112,11 +104,6 @@ public class SecurityKeyBuilder implements CucumberBuilder<SecurityKey> {
             this.setKey(inputSettings.get(PlatformSmartmeteringKeys.PASSWORD));
         }
 
-        if (SecurityKeyType.E_METER_ENCRYPTION == this.securityKeyType) {
-            this.setInvocationCounter(
-                    SettingsHelper.getIntegerValue(inputSettings, PlatformSmartmeteringKeys.INVOCATION_COUNTER));
-        }
-
         return this;
     }
 
@@ -126,7 +113,6 @@ public class SecurityKeyBuilder implements CucumberBuilder<SecurityKey> {
                 this.validTo);
 
         securityKey.setVersion(this.version);
-        securityKey.setInvocationCounter(this.invocationCounter);
 
         return securityKey;
     }

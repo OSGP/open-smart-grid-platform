@@ -11,7 +11,7 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +42,7 @@ AbstractCommandExecutor<SpecificAttributeValueRequestDto, String> {
     }
 
     @Override
-    public String execute(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public String execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final SpecificAttributeValueRequestDto requestData) throws FunctionalException {
 
         final ObisCodeValuesDto obisCodeValues = requestData.getObisCode();

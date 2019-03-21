@@ -37,17 +37,14 @@ public class SecurityKey extends AbstractEntity {
      * or not successfully been set on the meter. When set on the meter this
      * value should immediately be updated.
      */
-    @Column(nullable = true)
+    @Column()
     private Date validFrom;
 
-    @Column(nullable = true)
+    @Column()
     private Date validTo;
 
     @Column(name = "security_key")
     private String key;
-
-    @Column(nullable = true)
-    private Integer invocationCounter;
 
     public SecurityKey() {
         // Default constructor
@@ -116,23 +113,10 @@ public class SecurityKey extends AbstractEntity {
         return this.key;
     }
 
-    public int getInvocationCounter() {
-        return this.invocationCounter == null ? 0 : this.invocationCounter;
-    }
-
-    public void setInvocationCounter(final Integer invocationCounter) {
-        this.invocationCounter = invocationCounter;
-    }
-
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("SecurityKey[type=");
-        sb.append(this.securityKeyType).append(", validFrom=").append(this.validFrom).append(", validTo=")
-                .append(this.validTo).append(", key=").append(this.key);
-        if (this.invocationCounter != null) {
-            sb.append(", ic=").append(this.invocationCounter);
-        }
-        return sb.append(']').toString();
+        return "SecurityKey[type=" + this.securityKeyType + ", validFrom=" + this.validFrom + ", validTo="
+                + this.validTo + ", key=" + this.key + ']';
     }
 
 }

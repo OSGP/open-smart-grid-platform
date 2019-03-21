@@ -13,7 +13,7 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +44,7 @@ public class GetPushSetupSmsCommandExecutor extends GetPushSetupCommandExecutor<
     private DlmsHelperService dlmsHelperService;
 
     @Override
-    public PushSetupSmsDto execute(final DlmsConnectionHolder conn, final DlmsDevice device, final Void useless)
+    public PushSetupSmsDto execute(final DlmsConnectionManager conn, final DlmsDevice device, final Void useless)
             throws ProtocolAdapterException {
 
         conn.getDlmsMessageListener().setDescription("GetPushSetupSms, retrieve attributes: "

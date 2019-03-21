@@ -17,7 +17,7 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +61,7 @@ public class SetSpecialDaysCommandExecutor extends AbstractCommandExecutor<List<
     }
 
     @Override
-    public AccessResultCode execute(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public AccessResultCode execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final List<SpecialDayDto> specialDays) throws ProtocolAdapterException {
 
         final StringBuilder specialDayData = new StringBuilder();

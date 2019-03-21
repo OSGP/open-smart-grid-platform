@@ -19,14 +19,9 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.BufferedDateTimeValidationException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AmrProfileStatusCodeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AmrProfileStatusCodeFlagDto;
@@ -37,6 +32,10 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterRea
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseItemDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component()
 public class GetPeriodicMeterReadsCommandExecutor extends
@@ -102,7 +101,7 @@ public class GetPeriodicMeterReadsCommandExecutor extends
     }
 
     @Override
-    public PeriodicMeterReadsResponseDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public PeriodicMeterReadsResponseDto execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final PeriodicMeterReadsRequestDto periodicMeterReadsRequest) throws ProtocolAdapterException {
 
         final PeriodTypeDto periodType = periodicMeterReadsRequest.getPeriodType();
@@ -286,7 +285,7 @@ public class GetPeriodicMeterReadsCommandExecutor extends
             throw new ProtocolAdapterException(String.format("periodtype %s not supported", periodType));
         }
         profileBuffer.addAll(this.getScalerUnit(periodType));
-        return profileBuffer.toArray(new AttributeAddress[profileBuffer.size()]);
+        return profileBuffer.toArray(new AttributeAddress[0]);
     }
 
     private List<AttributeAddress> getScalerUnit(final PeriodTypeDto periodType) throws ProtocolAdapterException {
@@ -326,8 +325,6 @@ public class GetPeriodicMeterReadsCommandExecutor extends
     private SelectiveAccessDescription getSelectiveAccessDescription(final PeriodTypeDto periodType,
             final DateTime beginDateTime, final DateTime endDateTime, final boolean isSelectingValuesSupported) {
 
-        final int accessSelector = ACCESS_SELECTOR_RANGE_DESCRIPTOR;
-
         /*
          * Define the clock object {8,0-0:1.0.0.255,2,0} to be used as
          * restricting object in a range descriptor with a from value and to
@@ -352,7 +349,7 @@ public class GetPeriodicMeterReadsCommandExecutor extends
         final DataObject accessParameter = DataObject.newStructureData(Arrays.asList(clockDefinition, fromValue,
                 toValue, selectedValues));
 
-        return new SelectiveAccessDescription(accessSelector, accessParameter);
+        return new SelectiveAccessDescription(ACCESS_SELECTOR_RANGE_DESCRIPTOR, accessParameter);
     }
 
     private void addSelectedValues(final PeriodTypeDto periodType, final List<DataObject> objectDefinitions) {

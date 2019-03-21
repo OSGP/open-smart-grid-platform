@@ -14,8 +14,9 @@ import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.FirmwareService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.SilentException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.responses.from.core.OsgpResponseMessageProcessor;
 import org.opensmartgridplatform.dto.valueobjects.DeviceFunctionDto;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareFileDto;
@@ -41,12 +42,13 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
         super(MessageType.GET_FIRMWARE_FILE);
     }
 
+    @SuppressWarnings("squid:S1193") // SilentException cannot be caught since it does not extend Exception.
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
         LOGGER.debug("Processing {} response message", this.messageType.name());
         MessageMetadata messageMetadata = null;
 
-        DlmsConnectionHolder conn = null;
+        DlmsConnectionManager conn = null;
         DlmsDevice device = null;
 
         try {
@@ -60,7 +62,7 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
             LOGGER.info("{} called for device: {} for organisation: {}", message.getJMSType(),
                     messageMetadata.getDeviceIdentification(), messageMetadata.getOrganisationIdentification());
 
-            Serializable response;
+            final Serializable response;
             conn = this.createConnectionForDevice(device, messageMetadata);
             response = this.handleMessage(conn, device, message.getObject());
 
@@ -72,7 +74,9 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
             this.logJmsException(LOGGER, exception, messageMetadata);
         } catch (final Exception exception) {
             // Return original request + exception
-            LOGGER.error("Unexpected exception during {}", this.messageType.name(), exception);
+            if (!(exception instanceof SilentException)) {
+                LOGGER.error("Unexpected exception during {}", this.messageType.name(), exception);
+            }
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, exception,
                     this.responseMessageSender, message.getObject());
@@ -82,7 +86,7 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
     }
 
     @Override
-    protected Serializable handleMessage(final DlmsConnectionHolder conn, final DlmsDevice device,
+    protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
             final Serializable response) throws OsgpException {
 
         if (!(response instanceof ResponseMessage)) {

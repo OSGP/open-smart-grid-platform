@@ -12,7 +12,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.FirmwareFileCachingRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ImageTransferException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -83,7 +83,7 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
     }
 
     @Override
-    public UpdateFirmwareResponseDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public UpdateFirmwareResponseDto execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final String firmwareIdentification) throws OsgpException {
         final ImageTransfer transfer = new ImageTransfer(conn, this.imageTransferProperties, firmwareIdentification,
                 this.getImageData(firmwareIdentification));
@@ -124,7 +124,7 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
         }
     }
 
-    private List<FirmwareVersionDto> activate(final DlmsConnectionHolder conn, final DlmsDevice device,
+    private List<FirmwareVersionDto> activate(final DlmsConnectionManager conn, final DlmsDevice device,
             final ImageTransfer transfer) throws OsgpException {
         if (transfer.imageIsVerified() && transfer.imageToActivateOk()) {
             transfer.activateImage();

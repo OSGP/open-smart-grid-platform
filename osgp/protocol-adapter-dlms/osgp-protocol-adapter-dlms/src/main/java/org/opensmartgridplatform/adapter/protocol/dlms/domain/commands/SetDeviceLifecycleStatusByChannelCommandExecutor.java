@@ -8,7 +8,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -37,7 +37,7 @@ public class SetDeviceLifecycleStatusByChannelCommandExecutor extends
     }
 
     @Override
-    public SetDeviceLifecycleStatusByChannelResponseDto execute(final DlmsConnectionHolder conn,
+    public SetDeviceLifecycleStatusByChannelResponseDto execute(final DlmsConnectionManager conn,
             final DlmsDevice gatewayDevice, final SetDeviceLifecycleStatusByChannelRequestDataDto request)
             throws OsgpException {
 

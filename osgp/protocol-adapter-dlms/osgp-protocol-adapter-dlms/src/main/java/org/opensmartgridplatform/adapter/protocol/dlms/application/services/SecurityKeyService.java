@@ -28,18 +28,17 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityK
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.security.EncryptionService;
 import org.opensmartgridplatform.shared.security.RsaEncryptionService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * SecurityKeyService offers a single point of entry for all code that needs to
@@ -98,7 +97,7 @@ public class SecurityKeyService {
         return this.aesEncrypt(key, keyType);
     }
 
-    private final byte[] rsaDecrypt(final byte[] externallyEncryptedKey, final SecurityKeyType keyType)
+    private byte[] rsaDecrypt(final byte[] externallyEncryptedKey, final SecurityKeyType keyType)
             throws FunctionalException {
         try {
             return this.rsaEncryptionService.decrypt(externallyEncryptedKey);
@@ -111,7 +110,7 @@ public class SecurityKeyService {
         }
     }
 
-    private final byte[] aesEncrypt(final byte[] key, final SecurityKeyType keyType) throws FunctionalException {
+    private byte[] aesEncrypt(final byte[] key, final SecurityKeyType keyType) throws FunctionalException {
         try {
             return this.encryptionService.encrypt(key);
         } catch (final Exception e) {
@@ -470,7 +469,7 @@ public class SecurityKeyService {
 
             return cipher.doFinal(mbusUserKey);
 
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
+        } catch (final NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
                 | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
             final String message = "Error encrypting M-Bus User key with M-Bus Default key for transfer.";
             LOGGER.error(message, e);
@@ -478,32 +477,4 @@ public class SecurityKeyService {
         }
     }
 
-    /**
-     * Increments the invocation counter for the {@link SecurityKey} of the
-     * given {@code keyType} with the device with the given
-     * {@code deviceIdentification} based on a number of sent messages with a
-     * DLMS client.
-     */
-    public void incrementInvocationCounter(final String deviceIdentification, final SecurityKeyType keyType,
-            final int numberOfSentMessages) {
-
-        final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
-        if (dlmsDevice == null) {
-            LOGGER.error("No DlmsDevice found for identification {} - unable to update invocation counter for {} key.",
-                    deviceIdentification, keyType);
-            return;
-        }
-
-        final SecurityKey securityKey = dlmsDevice.getValidSecurityKey(keyType);
-        if (securityKey == null) {
-            LOGGER.error("No valid {} key found with device {} - unable to update invocation counter.", keyType,
-                    deviceIdentification);
-            return;
-        }
-
-        final int newInvocationCounter = securityKey.getInvocationCounter() + numberOfSentMessages;
-        securityKey.setInvocationCounter(newInvocationCounter);
-
-        this.dlmsDeviceRepository.save(dlmsDevice);
-    }
 }

@@ -1,9 +1,10 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
@@ -18,20 +19,20 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityK
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.InvocationCountingDlmsMessageListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class SecureDlmsConnector extends Lls0Connector {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SecureDlmsConnector.class);
 
-    public SecureDlmsConnector(final int responseTimeout, final int logicalDeviceAddress, final int clientAccessPoint) {
-        super(responseTimeout, logicalDeviceAddress, clientAccessPoint);
+    public SecureDlmsConnector(final int responseTimeout, final int logicalDeviceAddress,
+            final DlmsDeviceAssociation deviceAssociation) {
+        super(responseTimeout, logicalDeviceAddress, deviceAssociation);
     }
 
     /**
@@ -41,7 +42,6 @@ public abstract class SecureDlmsConnector extends Lls0Connector {
      *            The device to connect with.
      * @param tcpConnectionBuilder
      *            The connection builder instance.
-     * @throws OsgpException
      */
     protected abstract void setSecurity(final DlmsDevice device, final TcpConnectionBuilder tcpConnectionBuilder)
             throws OsgpException;
@@ -69,8 +69,8 @@ public abstract class SecureDlmsConnector extends Lls0Connector {
         final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(
                 InetAddress.getByName(device.getIpAddress())).setResponseTimeout(this.responseTimeout)
                 .setLogicalDeviceId(this.logicalDeviceAddress);
-        tcpConnectionBuilder.setClientId(this.clientAccessPoint)
-        .setReferencingMethod(device.isUseSn() ? ReferencingMethod.SHORT : ReferencingMethod.LOGICAL);
+        tcpConnectionBuilder.setClientId(this.clientId)
+                .setReferencingMethod(device.isUseSn() ? ReferencingMethod.SHORT : ReferencingMethod.LOGICAL);
 
         if (device.isUseHdlc()) {
             tcpConnectionBuilder.useHdlc();
@@ -101,11 +101,13 @@ public abstract class SecureDlmsConnector extends Lls0Connector {
             throws FunctionalException {
         final SecurityKey securityKey = device.getValidSecurityKey(securityKeyType);
         if (securityKey == null) {
-            final String errorMessage = String.format("There is no valid key for device %s of type %s",
-                    device.getDeviceIdentification(), securityKeyType.name());
+            final String errorMessage = String
+                    .format("There is no valid key for device %s of type %s", device.getDeviceIdentification(),
+                            securityKeyType.name());
             LOGGER.error(errorMessage);
 
-            throw new FunctionalException(FunctionalExceptionType.INVALID_DLMS_KEY_ENCRYPTION, ComponentType.PROTOCOL_DLMS);
+            throw new FunctionalException(FunctionalExceptionType.INVALID_DLMS_KEY_ENCRYPTION,
+                    ComponentType.PROTOCOL_DLMS);
         }
 
         return securityKey;

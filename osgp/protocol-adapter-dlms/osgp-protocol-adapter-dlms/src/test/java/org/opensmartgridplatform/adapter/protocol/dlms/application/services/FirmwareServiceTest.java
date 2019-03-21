@@ -13,21 +13,21 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.GetFirmwareVersionsCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.UpdateFirmwareCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.FirmwareFileCachingRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-
 import org.opensmartgridplatform.dto.valueobjects.FirmwareFileDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 
+@RunWith(MockitoJUnitRunner.class)
 public class FirmwareServiceTest {
 
     @Mock
@@ -40,7 +40,7 @@ public class FirmwareServiceTest {
     private UpdateFirmwareCommandExecutor updateFirmwareCommandExecutor;
 
     @Mock
-    private DlmsConnectionHolder dlmsConnectionHolderMock;
+    private DlmsConnectionManager dlmsConnectionManagerMock;
 
     @Mock
     private DlmsDevice dlmsDeviceMock;
@@ -48,21 +48,16 @@ public class FirmwareServiceTest {
     @InjectMocks
     private FirmwareService firmwareService;
 
-    @Before
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-    }
-
     @Test
     public void getFirmwareVersionsShouldCallExecutor() throws ProtocolAdapterException {
         // Arrange
         // Nothing to do
 
         // Act
-        this.firmwareService.getFirmwareVersions(this.dlmsConnectionHolderMock, this.dlmsDeviceMock);
+        this.firmwareService.getFirmwareVersions(this.dlmsConnectionManagerMock, this.dlmsDeviceMock);
 
         // Assert
-        verify(this.getFirmwareVersionsCommandExecutor, times(1)).execute(this.dlmsConnectionHolderMock,
+        verify(this.getFirmwareVersionsCommandExecutor, times(1)).execute(this.dlmsConnectionManagerMock,
                 this.dlmsDeviceMock, null);
     }
 
@@ -75,10 +70,10 @@ public class FirmwareServiceTest {
         when(this.firmwareFileCachingRepository.retrieve(firmwareIdentification)).thenReturn(firmwareFile);
 
         // Act
-        this.firmwareService.updateFirmware(this.dlmsConnectionHolderMock, this.dlmsDeviceMock, firmwareIdentification);
+        this.firmwareService.updateFirmware(this.dlmsConnectionManagerMock, this.dlmsDeviceMock, firmwareIdentification);
 
         // Assert
-        verify(this.updateFirmwareCommandExecutor, times(1)).execute(this.dlmsConnectionHolderMock, this.dlmsDeviceMock,
+        verify(this.updateFirmwareCommandExecutor, times(1)).execute(this.dlmsConnectionManagerMock, this.dlmsDeviceMock,
                 firmwareIdentification);
     }
 
@@ -89,7 +84,7 @@ public class FirmwareServiceTest {
         when(this.firmwareFileCachingRepository.retrieve(firmwareIdentification)).thenReturn(null);
 
         // Act
-        this.firmwareService.updateFirmware(this.dlmsConnectionHolderMock, this.dlmsDeviceMock, firmwareIdentification);
+        this.firmwareService.updateFirmware(this.dlmsConnectionManagerMock, this.dlmsDeviceMock, firmwareIdentification);
 
         // Assert
         // Nothing to do, as exception will be thrown;
@@ -103,14 +98,14 @@ public class FirmwareServiceTest {
 
         // Act
         try {
-            this.firmwareService.updateFirmware(this.dlmsConnectionHolderMock, this.dlmsDeviceMock,
+            this.firmwareService.updateFirmware(this.dlmsConnectionManagerMock, this.dlmsDeviceMock,
                     firmwareIdentification);
         } catch (final ProtocolAdapterException e) {
             e.printStackTrace();
         }
 
         // Assert
-        verify(this.updateFirmwareCommandExecutor, never()).execute(this.dlmsConnectionHolderMock, this.dlmsDeviceMock,
+        verify(this.updateFirmwareCommandExecutor, never()).execute(this.dlmsConnectionManagerMock, this.dlmsDeviceMock,
                 firmwareIdentification);
     }
 
@@ -124,11 +119,11 @@ public class FirmwareServiceTest {
         when(this.firmwareFileCachingRepository.retrieve(firmwareIdentification)).thenReturn(firmwareFile);
 
         // Act
-        this.firmwareService.updateFirmware(this.dlmsConnectionHolderMock, this.dlmsDeviceMock, firmwareFileDto);
+        this.firmwareService.updateFirmware(this.dlmsConnectionManagerMock, this.dlmsDeviceMock, firmwareFileDto);
 
         // Assert
         verify(this.firmwareFileCachingRepository, times(1)).store(firmwareIdentification, firmwareFile);
-        verify(this.updateFirmwareCommandExecutor, times(1)).execute(this.dlmsConnectionHolderMock, this.dlmsDeviceMock,
+        verify(this.updateFirmwareCommandExecutor, times(1)).execute(this.dlmsConnectionManagerMock, this.dlmsDeviceMock,
                 firmwareIdentification);
     }
 

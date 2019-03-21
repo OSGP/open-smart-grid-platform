@@ -23,13 +23,12 @@ import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ImageTransferException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 
 class ImageTransfer {
     private static final Logger LOGGER = LoggerFactory.getLogger(ImageTransfer.class);
@@ -56,12 +55,12 @@ class ImageTransfer {
     private final ImageTranferProperties properties;
     private final String imageIdentifier;
     private final byte[] imageData;
-    private final DlmsConnectionHolder connector;
+    private final DlmsConnectionManager connector;
     private final CosemObjectAccessor imageTransferCosem;
     private int imageBlockSize;
     private boolean imageBlockSizeReadFlag;
 
-    public ImageTransfer(final DlmsConnectionHolder connector, final ImageTranferProperties properties,
+    public ImageTransfer(final DlmsConnectionManager connector, final ImageTranferProperties properties,
             final String imageIdentifier, final byte[] imageData) {
         this.properties = properties;
         this.imageIdentifier = imageIdentifier;
@@ -85,7 +84,6 @@ class ImageTransfer {
      * Check image transfer enabled value of the COSEM server.
      *
      * @return image transfer enabled
-     * @throws ProtocolAdapterException
      */
     public boolean imageTransferEnabled() throws ProtocolAdapterException {
         this.connector.getDlmsMessageListener()
@@ -115,8 +113,6 @@ class ImageTransfer {
      * Initiates Image transfer.After a successful initiation, the value of the
      * image_transfer_status attribute is (1) Image transfer initiated and the
      * COSEM server is prepared to accept ImageBlocks.
-     *
-     * @throws ProtocolAdapterException
      */
     public void initiateImageTransfer() throws ProtocolAdapterException {
         final List<DataObject> params = new ArrayList<>();
@@ -140,8 +136,6 @@ class ImageTransfer {
      * ImageBlocks are accepted only by those COSEM servers, in which the Image
      * transfer process has been successfully initiated. Other servers silently
      * discard any ImageBlocks received.
-     *
-     * @throws OsgpException
      */
     public void transferImageBlocks() throws OsgpException {
         if (!this.shouldTransferImage()) {
@@ -160,8 +154,6 @@ class ImageTransfer {
      * complete, it transfers the ImageBlocks not (yet) transferred. This is an
      * iterative process, continued until the whole Image is successfully
      * transferred.
-     *
-     * @throws ProtocolAdapterException
      */
     public void transferMissingImageBlocks() throws ProtocolAdapterException {
         int blockNumber;
@@ -174,8 +166,6 @@ class ImageTransfer {
     /**
      * The Image is verified. This is done by invoking the image_verify method
      * by the client and testing the image transfer status.
-     *
-     * @throws OsgpException
      */
     public void verifyImage() throws OsgpException {
         final DataObject parameter = DataObject.newInteger8Data((byte) 0);
@@ -209,7 +199,6 @@ class ImageTransfer {
      * generated as a result of the Image verification.
      *
      * @return OK to activate image
-     * @throws ProtocolAdapterException
      */
     public boolean imageToActivateOk() throws ProtocolAdapterException {
         this.connector.getDlmsMessageListener()
@@ -272,8 +261,6 @@ class ImageTransfer {
 
     /**
      * The image is activated.
-     *
-     * @throws OsgpException
      */
     public void activateImage() throws OsgpException {
         final DataObject parameter = DataObject.newInteger8Data((byte) 0);
@@ -299,10 +286,10 @@ class ImageTransfer {
                 ImageTransferStatus.NOT_INITIATED, this.properties.getInitiationStatusCheckInterval(),
                 this.properties.getInitiationStatusCheckTimeout()));
 
-        int status;
+        final int status;
         try {
             status = newStatus.get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (final InterruptedException | ExecutionException e) {
             throw new ProtocolAdapterException("", e);
         }
 
@@ -316,10 +303,10 @@ class ImageTransfer {
                 ImageTransferStatus.VERIFICATION_INITIATED, this.properties.getVerificationStatusCheckInterval(),
                 this.properties.getVerificationStatusCheckTimeout()));
 
-        int status;
+        final int status;
         try {
             status = newStatus.get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (final InterruptedException | ExecutionException e) {
             throw new ProtocolAdapterException("", e);
         }
 
@@ -333,10 +320,10 @@ class ImageTransfer {
                 ImageTransferStatus.ACTIVATION_INITIATED, this.properties.getActivationStatusCheckInterval(),
                 this.properties.getActivationStatusCheckTimeout(), true));
 
-        int status;
+        final int status;
         try {
             status = newStatus.get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (final InterruptedException | ExecutionException e) {
             throw new ProtocolAdapterException(EXCEPTION_MSG_WAITING_FOR_IMAGE_ACTIVATION, e);
         }
 
@@ -610,7 +597,7 @@ class ImageTransfer {
 
         private final int value;
 
-        private ImageTransferStatus(final int imageTransferStatus) {
+        ImageTransferStatus(final int imageTransferStatus) {
             this.value = imageTransferStatus;
         }
 
@@ -634,7 +621,7 @@ class ImageTransfer {
 
         private final int attributeId;
 
-        private Attribute(final int attributeId) {
+        Attribute(final int attributeId) {
             this.attributeId = attributeId;
         }
 
@@ -656,7 +643,7 @@ class ImageTransfer {
 
         private final int methodId;
 
-        private Method(final int methodId) {
+        Method(final int methodId) {
             this.methodId = methodId;
         }
 

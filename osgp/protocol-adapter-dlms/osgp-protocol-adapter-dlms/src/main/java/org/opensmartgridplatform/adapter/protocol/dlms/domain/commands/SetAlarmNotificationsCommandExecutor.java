@@ -19,7 +19,7 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -70,7 +70,7 @@ public class SetAlarmNotificationsCommandExecutor
     }
 
     @Override
-    public AccessResultCode execute(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public AccessResultCode execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final AlarmNotificationsDto alarmNotifications) throws ProtocolAdapterException {
 
         try {
@@ -94,7 +94,7 @@ public class SetAlarmNotificationsCommandExecutor
         }
     }
 
-    private AlarmNotificationsDto retrieveCurrentAlarmNotifications(final DlmsConnectionHolder conn)
+    private AlarmNotificationsDto retrieveCurrentAlarmNotifications(final DlmsConnectionManager conn)
             throws IOException, ProtocolAdapterException {
 
         final AttributeAddress alarmFilterValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
@@ -115,7 +115,7 @@ public class SetAlarmNotificationsCommandExecutor
         return this.alarmNotifications(getResult.getResultData());
     }
 
-    private AccessResultCode writeUpdatedAlarmNotifications(final DlmsConnectionHolder conn,
+    private AccessResultCode writeUpdatedAlarmNotifications(final DlmsConnectionManager conn,
             final long alarmFilterLongValue) throws IOException {
 
         final AttributeAddress alarmFilterValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);

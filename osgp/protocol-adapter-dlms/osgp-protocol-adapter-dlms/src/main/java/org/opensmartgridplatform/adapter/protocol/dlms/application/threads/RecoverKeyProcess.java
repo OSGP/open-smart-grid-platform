@@ -20,16 +20,16 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Doma
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsDeviceAssociation;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.RecoverKeyException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RecoverKeyProcess implements Runnable {
 
@@ -43,7 +43,7 @@ public class RecoverKeyProcess implements Runnable {
 
     private final int logicalDeviceAddress;
 
-    private final int clientAccessPoint;
+    private final int clientId;
 
     private String deviceIdentification;
 
@@ -53,12 +53,12 @@ public class RecoverKeyProcess implements Runnable {
 
     public RecoverKeyProcess(final DomainHelperService domainHelperService,
             final DlmsDeviceRepository dlmsDeviceRepository, final int responseTimeout, final int logicalDeviceAddress,
-            final int clientAccessPoint) {
+            final DlmsDeviceAssociation deviceAssociation) {
         this.domainHelperService = domainHelperService;
         this.dlmsDeviceRepository = dlmsDeviceRepository;
         this.responseTimeout = responseTimeout;
         this.logicalDeviceAddress = logicalDeviceAddress;
-        this.clientAccessPoint = clientAccessPoint;
+        this.clientId = deviceAssociation.getClientId();
     }
 
     public void setDeviceIdentification(final String deviceIdentification) {
@@ -138,7 +138,6 @@ public class RecoverKeyProcess implements Runnable {
      * @throws IOException
      *             When there are problems in connecting to or communicating
      *             with the device.
-     * @throws FunctionalException
      */
     private DlmsConnection createConnection() throws IOException, FunctionalException {
         final byte[] authenticationKey = Hex
@@ -153,7 +152,7 @@ public class RecoverKeyProcess implements Runnable {
         final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(
                 InetAddress.getByName(this.device.getIpAddress())).setSecuritySuite(securitySuite)
                         .setResponseTimeout(this.responseTimeout).setLogicalDeviceId(this.logicalDeviceAddress)
-                        .setClientId(this.clientAccessPoint);
+                        .setClientId(this.clientId);
 
         final Integer challengeLength = this.device.getChallengeLength();
 

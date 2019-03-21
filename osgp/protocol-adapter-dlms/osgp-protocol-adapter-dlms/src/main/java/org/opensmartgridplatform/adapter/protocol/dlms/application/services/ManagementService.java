@@ -13,7 +13,7 @@ import java.util.List;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.RetrieveEventsCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.SetDeviceLifecycleStatusByChannelCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -47,7 +47,7 @@ public class ManagementService {
 
     // === FIND EVENTS ===
 
-    public EventMessageDataResponseDto findEvents(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public EventMessageDataResponseDto findEvents(final DlmsConnectionManager conn, final DlmsDevice device,
             final FindEventsRequestList findEventsQueryMessageDataContainer) throws ProtocolAdapterException {
 
         final List<EventDto> events = new ArrayList<>();
@@ -91,7 +91,7 @@ public class ManagementService {
     }
 
     public SetDeviceLifecycleStatusByChannelResponseDto setDeviceLifecycleStatusByChannel(
-            final DlmsConnectionHolder conn, final DlmsDevice device,
+            final DlmsConnectionManager conn, final DlmsDevice device,
             final SetDeviceLifecycleStatusByChannelRequestDataDto setDeviceLifecycleStatusByChannelRequest)
             throws OsgpException {
 

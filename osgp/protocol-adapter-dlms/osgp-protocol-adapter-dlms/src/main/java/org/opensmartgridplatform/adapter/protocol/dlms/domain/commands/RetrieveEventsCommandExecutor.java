@@ -22,19 +22,18 @@ import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.mapping.DataObjectToEventListConverter;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventLogCategoryDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventMessageDataResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FindEventsRequestDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component()
 public class RetrieveEventsCommandExecutor extends AbstractCommandExecutor<FindEventsRequestDto, List<EventDto>> {
@@ -77,7 +76,7 @@ public class RetrieveEventsCommandExecutor extends AbstractCommandExecutor<FindE
     }
 
     @Override
-    public List<EventDto> execute(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public List<EventDto> execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final FindEventsRequestDto findEventsQuery) throws ProtocolAdapterException {
 
         final SelectiveAccessDescription selectiveAccessDescription = this.getSelectiveAccessDescription(
@@ -92,7 +91,7 @@ public class RetrieveEventsCommandExecutor extends AbstractCommandExecutor<FindE
                         + findEventsQuery.getFrom() + " until " + findEventsQuery.getUntil() + ", retrieve attribute: "
                         + JdlmsObjectToStringUtil.describeAttributes(eventLogBuffer));
 
-        GetResult getResult;
+        final GetResult getResult;
         try {
             getResult = conn.getConnection().get(eventLogBuffer);
         } catch (final IOException e) {
@@ -118,8 +117,6 @@ public class RetrieveEventsCommandExecutor extends AbstractCommandExecutor<FindE
     private SelectiveAccessDescription getSelectiveAccessDescription(final DateTime beginDateTime,
             final DateTime endDateTime) {
 
-        final int accessSelector = ACCESS_SELECTOR_RANGE_DESCRIPTOR;
-
         /*
          * Define the clock object {8,0-0:1.0.0.255,2,0} to be used as
          * restricting object in a range descriptor with a from value and to
@@ -137,12 +134,12 @@ public class RetrieveEventsCommandExecutor extends AbstractCommandExecutor<FindE
          * Retrieve all captured objects by setting selectedValues to an empty
          * array.
          */
-        final DataObject selectedValues = DataObject.newArrayData(Collections.<DataObject> emptyList());
+        final DataObject selectedValues = DataObject.newArrayData(Collections.emptyList());
 
         final DataObject accessParameter = DataObject.newStructureData(Arrays.asList(clockDefinition, fromValue,
                 toValue, selectedValues));
 
-        return new SelectiveAccessDescription(accessSelector, accessParameter);
+        return new SelectiveAccessDescription(ACCESS_SELECTOR_RANGE_DESCRIPTOR, accessParameter);
     }
 
 }
