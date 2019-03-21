@@ -102,8 +102,8 @@ public class CommonGetFirmwareRequestMessageProcessor extends DeviceRequestMessa
             @Override
             public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                 CommonGetFirmwareRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(deviceResponse, t,
-                        null, CommonGetFirmwareRequestMessageProcessor.this.responseMessageSender, deviceResponse,
-                        domain, domainVersion, messageType, isScheduled, retryCount);
+                        null, CommonGetFirmwareRequestMessageProcessor.this.responseMessageSender, domain,
+                        domainVersion, messageType, isScheduled, retryCount);
             }
         };
 

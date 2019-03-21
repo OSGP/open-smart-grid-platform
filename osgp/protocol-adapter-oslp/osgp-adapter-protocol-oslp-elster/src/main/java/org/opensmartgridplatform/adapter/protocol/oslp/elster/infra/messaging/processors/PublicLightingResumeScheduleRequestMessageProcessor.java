@@ -67,7 +67,7 @@ public class PublicLightingResumeScheduleRequestMessageProcessor extends DeviceR
                     DeviceRequest.newBuilder().messageMetaData(messageMetadata), resumeScheduleMessageDataContainer);
 
             this.deviceService.resumeSchedule(deviceRequest);
-        } catch (final Exception e) {
+        } catch (final RuntimeException e) {
             this.handleError(e, messageMetadata);
         }
     }
@@ -121,8 +121,8 @@ public class PublicLightingResumeScheduleRequestMessageProcessor extends DeviceR
             public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                 PublicLightingResumeScheduleRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(
                         deviceResponse, t, dto,
-                        PublicLightingResumeScheduleRequestMessageProcessor.this.responseMessageSender, deviceResponse,
-                        domain, domainVersion, messageType, isScheduled, retryCount);
+                        PublicLightingResumeScheduleRequestMessageProcessor.this.responseMessageSender, domain,
+                        domainVersion, messageType, isScheduled, retryCount);
             }
         };
     }

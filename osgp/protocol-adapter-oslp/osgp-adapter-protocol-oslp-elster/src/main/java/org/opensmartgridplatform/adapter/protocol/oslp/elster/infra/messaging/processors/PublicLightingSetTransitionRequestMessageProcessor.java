@@ -66,7 +66,7 @@ public class PublicLightingSetTransitionRequestMessageProcessor extends DeviceRe
                     DeviceRequest.newBuilder().messageMetaData(messageMetadata), transitionMessageDataContainer);
 
             this.deviceService.setTransition(deviceRequest);
-        } catch (final Exception e) {
+        } catch (final RuntimeException e) {
             this.handleError(e, messageMetadata);
         }
     }
@@ -100,8 +100,8 @@ public class PublicLightingSetTransitionRequestMessageProcessor extends DeviceRe
             public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                 PublicLightingSetTransitionRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(
                         deviceResponse, t, unsignedOslpEnvelopeDto.getExtraData(),
-                        PublicLightingSetTransitionRequestMessageProcessor.this.responseMessageSender, deviceResponse,
-                        domain, domainVersion, messageType, isScheduled, retryCount);
+                        PublicLightingSetTransitionRequestMessageProcessor.this.responseMessageSender, domain,
+                        domainVersion, messageType, isScheduled, retryCount);
             }
 
         };

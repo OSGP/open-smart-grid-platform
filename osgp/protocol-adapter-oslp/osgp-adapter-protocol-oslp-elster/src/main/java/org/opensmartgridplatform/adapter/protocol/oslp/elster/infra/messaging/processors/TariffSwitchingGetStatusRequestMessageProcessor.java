@@ -101,8 +101,8 @@ public class TariffSwitchingGetStatusRequestMessageProcessor extends DeviceReque
             @Override
             public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                 TariffSwitchingGetStatusRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(deviceResponse,
-                        t, null, TariffSwitchingGetStatusRequestMessageProcessor.this.responseMessageSender,
-                        deviceResponse, domain, domainVersion, messageType, isScheduled, retryCount);
+                        t, null, TariffSwitchingGetStatusRequestMessageProcessor.this.responseMessageSender, domain,
+                        domainVersion, messageType, isScheduled, retryCount);
             }
 
         };

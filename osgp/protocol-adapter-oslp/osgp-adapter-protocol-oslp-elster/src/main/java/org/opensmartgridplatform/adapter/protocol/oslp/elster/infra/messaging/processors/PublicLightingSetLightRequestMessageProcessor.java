@@ -73,7 +73,7 @@ public class PublicLightingSetLightRequestMessageProcessor extends DeviceRequest
                     DeviceRequest.newBuilder().messageMetaData(messageMetadata), lightValueMessageDataContainer);
 
             this.deviceService.setLight(deviceRequest);
-        } catch (final Exception e) {
+        } catch (final RuntimeException e) {
             this.handleError(e, messageMetadata);
         }
     }
@@ -115,8 +115,8 @@ public class PublicLightingSetLightRequestMessageProcessor extends DeviceRequest
             public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                 PublicLightingSetLightRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(deviceResponse,
                         t, unsignedOslpEnvelopeDto.getExtraData(),
-                        PublicLightingSetLightRequestMessageProcessor.this.responseMessageSender, deviceResponse,
-                        domain, domainVersion, messageType, isScheduled, retryCount);
+                        PublicLightingSetLightRequestMessageProcessor.this.responseMessageSender, domain, domainVersion,
+                        messageType, isScheduled, retryCount);
             }
         };
 

@@ -79,7 +79,7 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends D
                     powerUsageHistoryMessageDataContainerDto);
 
             this.deviceService.getPowerUsageHistory(deviceRequest);
-        } catch (final Exception e) {
+        } catch (final RuntimeException e) {
             this.handleError(e, messageMetadata);
         }
     }
@@ -114,8 +114,8 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends D
             public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                 PublicLightingGetPowerUsageHistoryRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(
                         deviceResponse, t, null,
-                        PublicLightingGetPowerUsageHistoryRequestMessageProcessor.this.responseMessageSender,
-                        deviceResponse, domain, domainVersion, messageType, isScheduled, retryCount);
+                        PublicLightingGetPowerUsageHistoryRequestMessageProcessor.this.responseMessageSender, domain,
+                        domainVersion, messageType, isScheduled, retryCount);
             }
         };
 

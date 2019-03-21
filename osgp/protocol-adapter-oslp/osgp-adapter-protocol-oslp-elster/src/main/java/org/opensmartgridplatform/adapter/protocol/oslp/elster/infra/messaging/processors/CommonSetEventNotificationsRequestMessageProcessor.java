@@ -66,7 +66,7 @@ public class CommonSetEventNotificationsRequestMessageProcessor extends DeviceRe
                     DeviceRequest.newBuilder().messageMetaData(messageMetadata), eventNotificationMessageDataContainer);
 
             this.deviceService.setEventNotifications(deviceRequest);
-        } catch (final Exception e) {
+        } catch (final RuntimeException e) {
             this.handleError(e, messageMetadata);
         }
     }
@@ -100,8 +100,8 @@ public class CommonSetEventNotificationsRequestMessageProcessor extends DeviceRe
             public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                 CommonSetEventNotificationsRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(
                         deviceResponse, t, unsignedOslpEnvelopeDto.getExtraData(),
-                        CommonSetEventNotificationsRequestMessageProcessor.this.responseMessageSender, deviceResponse,
-                        domain, domainVersion, messageType, isScheduled, retryCount);
+                        CommonSetEventNotificationsRequestMessageProcessor.this.responseMessageSender, domain,
+                        domainVersion, messageType, isScheduled, retryCount);
             }
         };
 

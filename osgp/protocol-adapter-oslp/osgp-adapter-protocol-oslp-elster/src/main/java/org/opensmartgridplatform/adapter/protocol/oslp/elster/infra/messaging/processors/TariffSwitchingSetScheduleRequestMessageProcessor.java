@@ -72,7 +72,7 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor extends DeviceReq
                     RelayTypeDto.TARIFF);
 
             this.deviceService.setSchedule(deviceRequest);
-        } catch (final Exception e) {
+        } catch (final RuntimeException e) {
             this.handleError(e, messageMetadata);
         }
     }
@@ -108,8 +108,8 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor extends DeviceReq
             public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                 TariffSwitchingSetScheduleRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(
                         deviceResponse, t, unsignedOslpEnvelopeDto.getExtraData(),
-                        TariffSwitchingSetScheduleRequestMessageProcessor.this.responseMessageSender, deviceResponse,
-                        domain, domainVersion, messageType, isScheduled, retryCount);
+                        TariffSwitchingSetScheduleRequestMessageProcessor.this.responseMessageSender, domain,
+                        domainVersion, messageType, isScheduled, retryCount);
             }
 
         };

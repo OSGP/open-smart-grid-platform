@@ -89,8 +89,8 @@ public class CommonStartDeviceTestRequestMessageProcessor extends DeviceRequestM
             @Override
             public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                 CommonStartDeviceTestRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(deviceResponse, t,
-                        null, CommonStartDeviceTestRequestMessageProcessor.this.responseMessageSender, deviceResponse,
-                        domain, domainVersion, messageType, isScheduled, retryCount);
+                        null, CommonStartDeviceTestRequestMessageProcessor.this.responseMessageSender, domain,
+                        domainVersion, messageType, isScheduled, retryCount);
             }
         };
 

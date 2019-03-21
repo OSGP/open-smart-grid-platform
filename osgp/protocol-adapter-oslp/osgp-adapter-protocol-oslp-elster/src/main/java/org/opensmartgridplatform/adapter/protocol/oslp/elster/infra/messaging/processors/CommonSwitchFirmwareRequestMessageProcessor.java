@@ -93,8 +93,8 @@ public class CommonSwitchFirmwareRequestMessageProcessor extends DeviceRequestMe
             @Override
             public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                 CommonSwitchFirmwareRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(deviceResponse, t,
-                        null, CommonSwitchFirmwareRequestMessageProcessor.this.responseMessageSender, deviceResponse,
-                        domain, domainVersion, messageType, isScheduled, retryCount);
+                        null, CommonSwitchFirmwareRequestMessageProcessor.this.responseMessageSender, domain,
+                        domainVersion, messageType, isScheduled, retryCount);
             }
 
         };

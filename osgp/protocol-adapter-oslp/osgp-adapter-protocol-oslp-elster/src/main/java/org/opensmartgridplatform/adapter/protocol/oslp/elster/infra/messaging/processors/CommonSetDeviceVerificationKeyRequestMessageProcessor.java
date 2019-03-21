@@ -95,8 +95,8 @@ public class CommonSetDeviceVerificationKeyRequestMessageProcessor extends Devic
             public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                 CommonSetDeviceVerificationKeyRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(
                         deviceResponse, t, null,
-                        CommonSetDeviceVerificationKeyRequestMessageProcessor.this.responseMessageSender,
-                        deviceResponse, domain, domainVersion, messageType, isScheduled, retryCount);
+                        CommonSetDeviceVerificationKeyRequestMessageProcessor.this.responseMessageSender, domain,
+                        domainVersion, messageType, isScheduled, retryCount);
             }
 
         };

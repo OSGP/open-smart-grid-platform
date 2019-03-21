@@ -79,7 +79,7 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
                     RelayTypeDto.LIGHT);
 
             this.deviceService.setSchedule(deviceRequest);
-        } catch (final Exception e) {
+        } catch (final RuntimeException e) {
             this.handleError(e, messageMetadata);
         }
     }
@@ -117,8 +117,8 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
             public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                 PublicLightingSetScheduleRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(
                         deviceResponse, t, unsignedOslpEnvelopeDto.getExtraData(),
-                        PublicLightingSetScheduleRequestMessageProcessor.this.responseMessageSender, deviceResponse,
-                        domain, domainVersion, messageType, isScheduled, retryCount);
+                        PublicLightingSetScheduleRequestMessageProcessor.this.responseMessageSender, domain,
+                        domainVersion, messageType, isScheduled, retryCount);
             }
         };
 

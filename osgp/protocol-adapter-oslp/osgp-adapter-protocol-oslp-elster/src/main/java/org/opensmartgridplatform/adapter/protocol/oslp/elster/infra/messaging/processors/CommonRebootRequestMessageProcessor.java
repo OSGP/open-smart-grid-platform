@@ -89,8 +89,8 @@ public class CommonRebootRequestMessageProcessor extends DeviceRequestMessagePro
             @Override
             public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                 CommonRebootRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(deviceResponse, t, null,
-                        CommonRebootRequestMessageProcessor.this.responseMessageSender, deviceResponse, domain,
-                        domainVersion, messageType, isScheduled, retryCount);
+                        CommonRebootRequestMessageProcessor.this.responseMessageSender, domain, domainVersion,
+                        messageType, isScheduled, retryCount);
             }
         };
 

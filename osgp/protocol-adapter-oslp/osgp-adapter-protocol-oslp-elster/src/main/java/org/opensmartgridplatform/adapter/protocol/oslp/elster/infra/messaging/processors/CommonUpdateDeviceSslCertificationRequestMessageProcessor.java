@@ -67,7 +67,7 @@ public class CommonUpdateDeviceSslCertificationRequestMessageProcessor extends D
 
             this.deviceService.updateDeviceSslCertification(deviceRequest);
 
-        } catch (final Exception e) {
+        } catch (final RuntimeException e) {
             this.handleError(e, messageMetadata);
         }
     }
@@ -101,8 +101,8 @@ public class CommonUpdateDeviceSslCertificationRequestMessageProcessor extends D
             public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                 CommonUpdateDeviceSslCertificationRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(
                         deviceResponse, t, null,
-                        CommonUpdateDeviceSslCertificationRequestMessageProcessor.this.responseMessageSender,
-                        deviceResponse, domain, domainVersion, messageType, isScheduled, retryCount);
+                        CommonUpdateDeviceSslCertificationRequestMessageProcessor.this.responseMessageSender, domain,
+                        domainVersion, messageType, isScheduled, retryCount);
             }
 
         };
