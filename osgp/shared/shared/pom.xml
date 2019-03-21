@@ -26,7 +26,7 @@
   </parent>
 
   <properties>
-    <maven.jar.plugin.version>3.0.2</maven.jar.plugin.version>
+    <maven.jar.plugin.version>3.1.1</maven.jar.plugin.version>
   </properties>
 
   <dependencies>
@@ -182,8 +182,13 @@
 
     <!-- Junit -->
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
       <scope>test</scope>
     </dependency>
 

@@ -13,7 +13,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.type.TextType;
 import org.hibernate.usertype.UserType;
 import org.slf4j.Logger;
@@ -37,7 +37,7 @@ public class InetAddressUserType extends ImmutableUserType {
     }
 
     @Override
-    public Object nullSafeGet(final ResultSet rs, final String[] names, final SessionImplementor session,
+    public Object nullSafeGet(final ResultSet rs, final String[] names, final SharedSessionContractImplementor session,
             final Object owner) throws SQLException {
         try {
             final String value = (String) TextType.INSTANCE.nullSafeGet(rs, names, session, owner);
@@ -54,7 +54,7 @@ public class InetAddressUserType extends ImmutableUserType {
 
     @Override
     public void nullSafeSet(final PreparedStatement st, final Object value, final int index,
-            final SessionImplementor session) throws SQLException {
+            final SharedSessionContractImplementor session) throws SQLException {
         if (value != null) {
             final InetAddress address = (InetAddress) value;
             TextType.INSTANCE.nullSafeSet(st, address.getHostAddress(), index, session);

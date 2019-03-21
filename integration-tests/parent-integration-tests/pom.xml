@@ -49,61 +49,61 @@
     <osgp.version>${project.version}</osgp.version>
     <osgp.dlms.version>${project.version}</osgp.dlms.version>
     <osgp.iec61850.simulator.version>${project.version}</osgp.iec61850.simulator.version>
-    <spring.version>4.3.18.RELEASE</spring.version>
-    <spring.ws.version>2.4.0.RELEASE</spring.ws.version>
-    <spring.data.version>1.11.16.RELEASE</spring.data.version>
-    <spring.data.key.version>1.2.16.RELEASE</spring.data.key.version>
-    <spring.data.commons.version>1.13.16.RELEASE</spring.data.commons.version>
-    <spring.security.version>4.2.4.RELEASE</spring.security.version>
-    <servlet.version>3.0.1</servlet.version>
+    <spring.version>5.1.5.RELEASE</spring.version>
+    <spring.ws.version>3.0.7.RELEASE</spring.ws.version>
+    <spring.data.version>2.1.5.RELEASE</spring.data.version>
+    <spring.data.key.version>2.1.5.RELEASE</spring.data.key.version>
+    <spring.data.commons.version>1.4.1.RELEASE</spring.data.commons.version>
+    <spring.security.version>5.1.4.RELEASE</spring.security.version>
+    <servlet.version>4.0.1</servlet.version>
     <servlet.jstl.version>1.2</servlet.jstl.version>
     <protobuf.version>2.4.1</protobuf.version>
-    <postgresql.version>9.3-1102-jdbc41</postgresql.version>
-    <hibernate.version>4.2.16.Final</hibernate.version>
-    <hibernate.validator.version>4.3.1.Final</hibernate.validator.version>
-    <hibernate.jpa.version>1.0.1.Final</hibernate.jpa.version>
-    <hikari.version>2.6.0</hikari.version>
-    <junit.version>4.12</junit.version>
-    <joda.version>2.4</joda.version>
-    <bonecp.version>0.8.0.RELEASE</bonecp.version>
-    <slf4j.version>1.7.7</slf4j.version>
-    <apache.commons.lang.version>3.3.2</apache.commons.lang.version>
-    <apache.httpcomponents.version>4.3.6</apache.httpcomponents.version>
-    <apache.httpcomponents.httpcore.version>4.4.6</apache.httpcomponents.httpcore.version>
+    <postgresql.version>42.2.5</postgresql.version>
+    <hibernate.version>5.4.1.Final</hibernate.version>
+    <hibernate.validator.version>6.0.15.Final</hibernate.validator.version>
+    <hibernate.jpa.version>1.0.2.Final</hibernate.jpa.version>
+    <hikari.version>3.3.1</hikari.version>
+    <junit.version>5.4.1</junit.version>
+    <joda.version>2.10.1</joda.version>
+<!--     <bonecp.version>0.8.0.RELEASE</bonecp.version> -->
+    <slf4j.version>1.7.26</slf4j.version>
+    <apache.commons.lang.version>3.8.1</apache.commons.lang.version>
+    <apache.httpcomponents.version>4.5.7</apache.httpcomponents.version>
+    <apache.httpcomponents.httpcore.version>4.4.11</apache.httpcomponents.httpcore.version>
     <jackson.version>2.9.8</jackson.version>
-    <commons.codec.version>1.9</commons.codec.version>
-    <orika.version>1.5.1</orika.version>
-    <netty.version>3.9.4.Final</netty.version>
-    <givwenzen.version>1.0.2</givwenzen.version>
-    <checkstyle.version>2.12.1</checkstyle.version>
-    <pmd.version>3.8</pmd.version>
-    <findbug.version>3.0.0</findbug.version>
-    <apache.activemq.version>5.15.7</apache.activemq.version>
-    <commons.pool.version>1.6</commons.pool.version>
-    <proton-jms.version>0.7</proton-jms.version>
-    <cxf.version>3.0.1</cxf.version>
+    <commons.codec.version>1.12</commons.codec.version>
+    <orika.version>1.5.4</orika.version>
+    <netty.version>4.1.34.Final</netty.version>
+    <givwenzen.version>1.0.6.1</givwenzen.version>
+    <checkstyle.version>8.18</checkstyle.version>
+    <pmd.version>4.3</pmd.version>
+    <findbug.version>3.0.5</findbug.version>
+    <apache.activemq.version>5.15.8</apache.activemq.version>
+    <commons.pool.version>2.6.1</commons.pool.version>
+<!--     <proton-jms.version>0.12.2</proton-jms.version> -->
+    <cxf.version>3.3.1</cxf.version>
     <logback.version>1.2.3</logback.version>
-    <logback.ext.version>0.1.4</logback.ext.version>
-    <SunriseSunsetCalculator.version>1.1</SunriseSunsetCalculator.version>
-    <mockito.version>1.9.5</mockito.version>
-    <apache.commons.schema>2.0.3</apache.commons.schema>
-    <jxr.version>2.5</jxr.version>
+    <logback.ext.version>0.1.5</logback.ext.version>
+    <SunriseSunsetCalculator.version>1.2</SunriseSunsetCalculator.version>
+    <mockito.version>1.10.19</mockito.version>
+    <apache.commons.schema>2.2.4</apache.commons.schema>
+    <jxr.version>3.0.0</jxr.version>
     <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
     <maven.site.plugin>3.7.1</maven.site.plugin>
-    <maven.compiler.plugin.version>3.6.0</maven.compiler.plugin.version>
-    <license.maven.plugin>2.11</license.maven.plugin>
-    <cucumber.version>1.2.5</cucumber.version>
-    <maven.jar.plugin.version>3.0.2</maven.jar.plugin.version>
-    <maven.surefire.plugin.version>2.19.1</maven.surefire.plugin.version>
-    <maven.failsafe.plugin.version>2.19.1</maven.failsafe.plugin.version>
-    <jgoodies.version>1.0.5</jgoodies.version>
-    <jacoco.version>0.7.9</jacoco.version>
-    <selenium.java.version>3.4.0</selenium.java.version>
+    <maven.compiler.plugin.version>3.8.0</maven.compiler.plugin.version>
+    <license.maven.plugin>3.0</license.maven.plugin>
+    <cucumber.version>4.2.6</cucumber.version>
+    <maven.jar.plugin.version>3.1.1</maven.jar.plugin.version>
+    <maven.surefire.plugin.version>2.22.1</maven.surefire.plugin.version>
+    <maven.failsafe.plugin.version>2.22.1</maven.failsafe.plugin.version>
+<!--     <jgoodies.version>1.2.1</jgoodies.version> -->
+    <jacoco.version>0.8.3</jacoco.version>
+    <selenium.java.version>3.141.59</selenium.java.version>
     <sun.httpserver.version>20070405</sun.httpserver.version>
-    <maven.javadoc.version>2.10.4</maven.javadoc.version>
-    <ant.junit.version>1.10.1</ant.junit.version>
+    <maven.javadoc.version>3.1.0</maven.javadoc.version>
+<!--     <ant.junit.version>1.10.5</ant.junit.version> -->
     <args4j.version>2.33</args4j.version>
-    <maven.assembly.plugin.version>3.0.0</maven.assembly.plugin.version>
+    <maven.assembly.plugin.version>3.1.1</maven.assembly.plugin.version>
 
     <!-- Default always skip integration tests, to ensure all developer data 
       is retained -->
@@ -440,11 +440,11 @@
 
       <dependency>
         <groupId>org.hibernate.javax.persistence</groupId>
-        <artifactId>hibernate-jpa-2.0-api</artifactId>
+        <artifactId>hibernate-jpa-2.1-api</artifactId>
         <version>${hibernate.jpa.version}</version>
       </dependency>
 
-      <!-- Servlet API 3.0 -->
+      <!-- Servlet API -->
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>javax.servlet-api</artifactId>
@@ -477,7 +477,6 @@
         <version>${args4j.version}</version>
       </dependency>
 
-
       <!-- PostgreSQL -->
       <dependency>
         <groupId>org.postgresql</groupId>
@@ -505,11 +504,11 @@
       </dependency>
 
       <!-- BoneCP (Connection pooling) -->
-      <dependency>
+<!--       <dependency>
         <groupId>com.jolbox</groupId>
         <artifactId>bonecp</artifactId>
         <version>${bonecp.version}</version>
-      </dependency>
+      </dependency> -->
 
       <!-- Jackson (JSON) -->
       <dependency>
@@ -609,8 +608,8 @@
       </dependency>
 
       <dependency>
-        <groupId>commons-pool</groupId>
-        <artifactId>commons-pool</artifactId>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-pool2</artifactId>
         <version>${commons.pool.version}</version>
       </dependency>
 
@@ -627,11 +626,11 @@
         <artifactId>junit</artifactId>
         <version>${junit.version}</version>
       </dependency>
-      <dependency>
+<!--       <dependency>
         <groupId>org.apache.ant</groupId>
         <artifactId>ant-junit</artifactId>
         <version>${ant.junit.version}</version>
-      </dependency>
+      </dependency> -->
 
       <dependency>
         <groupId>org.mockito</groupId>
@@ -721,11 +720,11 @@
         <scope>test</scope>
       </dependency>
 
-      <dependency>
+<!--       <dependency>
         <groupId>jgoodies</groupId>
         <artifactId>forms</artifactId>
         <version>${jgoodies.version}</version>
-      </dependency>
+      </dependency> -->
       <dependency>
         <groupId>com.sun.net.httpserver</groupId>
         <artifactId>http</artifactId>
