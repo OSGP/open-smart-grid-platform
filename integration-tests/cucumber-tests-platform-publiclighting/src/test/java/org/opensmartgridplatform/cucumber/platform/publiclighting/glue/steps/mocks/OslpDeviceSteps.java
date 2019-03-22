@@ -870,6 +870,21 @@ public class OslpDeviceSteps {
     }
 
     /**
+     * Setup method which combines get configuration, set configuration and set
+     * schedule mock responses. The protocol adapter component for OSLP executes
+     * these 3 steps when a light schedule is pushed to a device. In case of
+     * FAILURE response, the protocol adapter will only validate the last of the
+     * 3 steps.
+     */
+    @Given("^the device returns the responses for setting a light schedule with result \"([^\"]*)\" over \"([^\"]*)\"$")
+    public void theDeviceReturnsTheResponsesForSettingLightScheduleWithResultOverProtocol(final String result,
+            final String protocol) throws UnknownHostException {
+        this.theDeviceReturnsAGetConfigurationStatusWithResultOverOSLP(result, protocol);
+        this.theDeviceReturnsASetConfigurationStatusWithStatusOverOSLP(result, protocol);
+        this.theDeviceReturnsASetLightScheduleResponseOverOSLP(result, protocol);
+    }
+
+    /**
      * Setup method to set a reboot which should be returned by the mock.
      */
     @Given("^the device returns a set reboot response \"([^\"]*)\" over \"([^\"]*)\"$")
