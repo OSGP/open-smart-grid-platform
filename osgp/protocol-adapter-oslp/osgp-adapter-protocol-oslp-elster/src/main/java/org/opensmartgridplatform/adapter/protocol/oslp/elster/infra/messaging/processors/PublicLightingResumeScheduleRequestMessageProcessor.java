@@ -120,9 +120,7 @@ public class PublicLightingResumeScheduleRequestMessageProcessor extends DeviceR
             @Override
             public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                 PublicLightingResumeScheduleRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(
-                        deviceResponse, t, dto,
-                        PublicLightingResumeScheduleRequestMessageProcessor.this.responseMessageSender, domain,
-                        domainVersion, messageType, isScheduled, retryCount);
+                        deviceResponse, t, domain, domainVersion, messageType, isScheduled, retryCount);
             }
         };
     }

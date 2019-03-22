@@ -99,9 +99,7 @@ public class CommonSetEventNotificationsRequestMessageProcessor extends DeviceRe
             @Override
             public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                 CommonSetEventNotificationsRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(
-                        deviceResponse, t, unsignedOslpEnvelopeDto.getExtraData(),
-                        CommonSetEventNotificationsRequestMessageProcessor.this.responseMessageSender, domain,
-                        domainVersion, messageType, isScheduled, retryCount);
+                        deviceResponse, t, domain, domainVersion, messageType, isScheduled, retryCount);
             }
         };
 

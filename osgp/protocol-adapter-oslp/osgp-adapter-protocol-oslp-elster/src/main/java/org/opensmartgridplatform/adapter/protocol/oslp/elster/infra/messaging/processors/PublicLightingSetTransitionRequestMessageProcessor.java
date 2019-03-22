@@ -99,9 +99,7 @@ public class PublicLightingSetTransitionRequestMessageProcessor extends DeviceRe
             @Override
             public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                 PublicLightingSetTransitionRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(
-                        deviceResponse, t, unsignedOslpEnvelopeDto.getExtraData(),
-                        PublicLightingSetTransitionRequestMessageProcessor.this.responseMessageSender, domain,
-                        domainVersion, messageType, isScheduled, retryCount);
+                        deviceResponse, t, domain, domainVersion, messageType, isScheduled, retryCount);
             }
 
         };

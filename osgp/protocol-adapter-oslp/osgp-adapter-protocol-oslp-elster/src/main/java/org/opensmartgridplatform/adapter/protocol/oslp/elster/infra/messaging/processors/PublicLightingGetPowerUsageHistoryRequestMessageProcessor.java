@@ -113,9 +113,7 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends D
             @Override
             public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                 PublicLightingGetPowerUsageHistoryRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(
-                        deviceResponse, t, null,
-                        PublicLightingGetPowerUsageHistoryRequestMessageProcessor.this.responseMessageSender, domain,
-                        domainVersion, messageType, isScheduled, retryCount);
+                        deviceResponse, t, domain, domainVersion, messageType, isScheduled, retryCount);
             }
         };
 

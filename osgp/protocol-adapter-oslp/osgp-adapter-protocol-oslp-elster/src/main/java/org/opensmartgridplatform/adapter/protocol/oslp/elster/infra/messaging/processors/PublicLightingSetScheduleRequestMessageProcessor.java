@@ -116,9 +116,7 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
             @Override
             public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                 PublicLightingSetScheduleRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(
-                        deviceResponse, t, unsignedOslpEnvelopeDto.getExtraData(),
-                        PublicLightingSetScheduleRequestMessageProcessor.this.responseMessageSender, domain,
-                        domainVersion, messageType, isScheduled, retryCount);
+                        deviceResponse, t, domain, domainVersion, messageType, isScheduled, retryCount);
             }
         };
 

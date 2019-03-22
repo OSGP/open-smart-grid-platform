@@ -98,9 +98,7 @@ public class CommonSetConfigurationRequestMessageProcessor extends DeviceRequest
             @Override
             public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                 CommonSetConfigurationRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(deviceResponse,
-                        t, unsignedOslpEnvelopeDto.getExtraData(),
-                        CommonSetConfigurationRequestMessageProcessor.this.responseMessageSender, domain, domainVersion,
-                        messageType, isScheduled, retryCount);
+                        t, domain, domainVersion, messageType, isScheduled, retryCount);
             }
         };
 

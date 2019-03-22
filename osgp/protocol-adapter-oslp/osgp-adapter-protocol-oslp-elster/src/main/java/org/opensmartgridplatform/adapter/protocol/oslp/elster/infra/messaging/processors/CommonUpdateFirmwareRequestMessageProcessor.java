@@ -115,8 +115,7 @@ public class CommonUpdateFirmwareRequestMessageProcessor extends DeviceRequestMe
             @Override
             public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                 CommonUpdateFirmwareRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(deviceResponse, t,
-                        null, CommonUpdateFirmwareRequestMessageProcessor.this.responseMessageSender, domain,
-                        domainVersion, messageType, isScheduled, retryCount);
+                        domain, domainVersion, messageType, isScheduled, retryCount);
             }
         };
 

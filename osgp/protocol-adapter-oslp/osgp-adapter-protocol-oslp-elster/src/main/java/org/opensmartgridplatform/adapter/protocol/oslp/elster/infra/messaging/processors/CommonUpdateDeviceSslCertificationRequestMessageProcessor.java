@@ -100,9 +100,7 @@ public class CommonUpdateDeviceSslCertificationRequestMessageProcessor extends D
             @Override
             public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                 CommonUpdateDeviceSslCertificationRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(
-                        deviceResponse, t, null,
-                        CommonUpdateDeviceSslCertificationRequestMessageProcessor.this.responseMessageSender, domain,
-                        domainVersion, messageType, isScheduled, retryCount);
+                        deviceResponse, t, domain, domainVersion, messageType, isScheduled, retryCount);
             }
 
         };

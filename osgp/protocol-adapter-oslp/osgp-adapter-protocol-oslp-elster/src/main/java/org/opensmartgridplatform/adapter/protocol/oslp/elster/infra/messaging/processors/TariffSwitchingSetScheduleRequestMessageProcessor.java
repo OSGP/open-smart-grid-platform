@@ -107,9 +107,7 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor extends DeviceReq
             @Override
             public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                 TariffSwitchingSetScheduleRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(
-                        deviceResponse, t, unsignedOslpEnvelopeDto.getExtraData(),
-                        TariffSwitchingSetScheduleRequestMessageProcessor.this.responseMessageSender, domain,
-                        domainVersion, messageType, isScheduled, retryCount);
+                        deviceResponse, t, domain, domainVersion, messageType, isScheduled, retryCount);
             }
 
         };

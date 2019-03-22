@@ -8,7 +8,6 @@
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging;
 
 import java.io.IOException;
-import java.io.Serializable;
 
 import javax.annotation.PostConstruct;
 
@@ -169,7 +168,6 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
     }
 
     public void handleUnableToConnectDeviceResponse(final DeviceResponse deviceResponse, final Throwable t,
-            final Serializable messageData, final DeviceResponseMessageSender responseMessageSender,
             final String domain, final String domainVersion, final String messageType, final boolean isScheduled,
             final int retryCount) {
 
@@ -183,7 +181,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
                 deviceResponse.getCorrelationUid(), messageType, deviceResponse.getMessagePriority());
         final ProtocolResponseMessage responseMessage = ProtocolResponseMessage.newBuilder().domain(domain)
                 .domainVersion(domainVersion).deviceMessageMetadata(deviceMessageMetadata).result(result)
-                .osgpException(ex).dataObject(messageData).scheduled(isScheduled).retryCount(retryCount).build();
+                .osgpException(ex).scheduled(isScheduled).retryCount(retryCount).build();
 
         this.responseMessageSender.send(responseMessage);
     }
