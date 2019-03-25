@@ -63,7 +63,7 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
     }
 
     @Override
-    public void messageReceived(final ChannelHandlerContext ctx, final MessageEvent e) throws ProtocolAdapterException {
+    public void messageReceived(final ChannelHandlerContext ctx, final MessageEvent e) {
 
         final OslpEnvelope message = (OslpEnvelope) e.getMessage();
         final Integer channelId = e.getChannel().getId();
@@ -75,12 +75,22 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
                 // Check the sequence number
                 final Integer sequenceNumber = SequenceNumberUtils
                         .convertByteArrayToInteger(message.getSequenceNumber());
-                this.deviceRegistrationService.checkSequenceNumber(message.getDeviceId(), sequenceNumber);
 
-                final OslpCallbackHandler callbackHandler = this.callbackHandlers.get(channelId);
+                final OslpResponseHandler oslpResponseHandler = this.callbackHandlers.get(channelId)
+                        .getDeviceResponseHandler();
+
+                try {
+                    this.deviceRegistrationService.checkSequenceNumber(message.getDeviceId(), sequenceNumber);
+                    oslpResponseHandler.handleResponse(message);
+                } catch (final ProtocolAdapterException exc) {
+                    // Users should not be able to see errors about sequence
+                    // numbers, replace the exception by a generic exception.
+                    LOGGER.error("An error occurred while checking the sequence number", exc);
+                    oslpResponseHandler.handleException(new NoDeviceResponseException());
+                }
+
                 this.callbackHandlers.remove(channelId);
                 e.getChannel().close();
-                callbackHandler.getDeviceResponseHandler().handleResponse(message);
 
             } else {
                 LOGGER.warn("{} Received OSLP Request, which is not expected: {}", channelId,

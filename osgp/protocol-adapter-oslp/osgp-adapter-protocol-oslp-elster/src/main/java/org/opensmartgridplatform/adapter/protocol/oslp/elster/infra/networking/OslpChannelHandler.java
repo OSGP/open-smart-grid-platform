@@ -28,7 +28,6 @@ import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.Os
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.OslpLogItemRequestMessageSender;
 import org.opensmartgridplatform.oslp.Oslp;
 import org.opensmartgridplatform.oslp.OslpEnvelope;
-import org.opensmartgridplatform.shared.exceptionhandling.NoDeviceResponseException;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -124,17 +123,14 @@ public abstract class OslpChannelHandler extends SimpleChannelHandler {
     }
 
     @Override
-    public void exceptionCaught(final ChannelHandlerContext ctx, final ExceptionEvent e) throws Exception {
+    public void exceptionCaught(final ChannelHandlerContext ctx, final ExceptionEvent e) {
         final int channelId = e.getChannel().getId();
 
         if (this.isConnectionReset(e.getCause())) {
             this.logger.info("{} Connection was (as expected) reset by the device.", channelId);
         } else {
             this.logger.warn("{} Unexpected exception from downstream. {}", channelId, e.getCause());
-            // Hide the specific error (for instance an incorrect sequence
-            // number) by handling a general exception.
-            this.callbackHandlers.get(channelId).getDeviceResponseHandler()
-                    .handleException(new NoDeviceResponseException());
+            this.callbackHandlers.get(channelId).getDeviceResponseHandler().handleException(e.getCause());
             this.callbackHandlers.remove(channelId);
         }
         e.getChannel().close();
