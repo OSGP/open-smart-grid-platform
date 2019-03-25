@@ -131,7 +131,7 @@ public class PublicLightingSetLightRequestMessageProcessor extends DeviceRequest
 
         final DeviceResponseHandler resumeScheduleDeviceResponseHandler = this.publicLightingResumeScheduleRequestMessageProcessor
                 .createResumeScheduleDeviceResponseHandler(domain, domainVersion, MessageType.RESUME_SCHEDULE.name(),
-                        retryCount, resumeScheduleMessageDataContainer, isScheduled);
+                        retryCount, isScheduled);
 
         final ResumeScheduleDeviceRequest resumeScheduleDeviceRequest = new ResumeScheduleDeviceRequest(DeviceRequest
                 .newBuilder().organisationIdentification(organisationIdentification)

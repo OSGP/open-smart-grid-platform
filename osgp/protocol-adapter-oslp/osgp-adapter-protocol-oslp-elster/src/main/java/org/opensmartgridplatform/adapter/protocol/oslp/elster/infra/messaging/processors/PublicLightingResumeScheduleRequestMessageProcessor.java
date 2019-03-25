@@ -8,7 +8,6 @@
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.processors;
 
 import java.io.IOException;
-import java.io.Serializable;
 
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
@@ -89,7 +88,7 @@ public class PublicLightingResumeScheduleRequestMessageProcessor extends DeviceR
         final boolean isScheduled = unsignedOslpEnvelopeDto.isScheduled();
 
         final DeviceResponseHandler deviceResponseHandler = this.createResumeScheduleDeviceResponseHandler(domain,
-                domainVersion, messageType, retryCount, unsignedOslpEnvelopeDto.getExtraData(), isScheduled);
+                domainVersion, messageType, retryCount, isScheduled);
 
         final ResumeScheduleMessageDataContainerDto resumeScheduleMessageDataContainer = (ResumeScheduleMessageDataContainerDto) unsignedOslpEnvelopeDto
                 .getExtraData();
@@ -105,8 +104,7 @@ public class PublicLightingResumeScheduleRequestMessageProcessor extends DeviceR
     }
 
     protected DeviceResponseHandler createResumeScheduleDeviceResponseHandler(final String domain,
-            final String domainVersion, final String messageType, final int retryCount, final Serializable dto,
-            final boolean isScheduled) {
+            final String domainVersion, final String messageType, final int retryCount, final boolean isScheduled) {
 
         return new DeviceResponseHandler() {
 

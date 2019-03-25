@@ -171,6 +171,8 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
             final String domain, final String domainVersion, final String messageType, final boolean isScheduled,
             final int retryCount) {
 
+        LOGGER.error("Error while connecting to or communicating with device", t);
+
         final ResponseMessageResultType result = ResponseMessageResultType.NOT_OK;
         // Set the exception to a class known by all OSGP components
         final TechnicalException ex = new TechnicalException(ComponentType.PROTOCOL_OSLP,

@@ -18,6 +18,7 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.DeviceRegistrationService;
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.oslp.OslpEnvelope;
 import org.opensmartgridplatform.shared.exceptionhandling.NoDeviceResponseException;
 import org.slf4j.Logger;
@@ -62,7 +63,7 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
     }
 
     @Override
-    public void messageReceived(final ChannelHandlerContext ctx, final MessageEvent e) throws Exception {
+    public void messageReceived(final ChannelHandlerContext ctx, final MessageEvent e) throws ProtocolAdapterException {
 
         final OslpEnvelope message = (OslpEnvelope) e.getMessage();
         final Integer channelId = e.getChannel().getId();
@@ -91,7 +92,7 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
     }
 
     public void send(final InetSocketAddress address, final OslpEnvelope request,
-            final OslpResponseHandler responseHandler, final String deviceIdentification) throws IOException {
+            final OslpResponseHandler responseHandler, final String deviceIdentification) {
         LOGGER.info("Sending OSLP request: {}", request.getPayloadMessage());
 
         // Open connection and send message.
@@ -102,7 +103,7 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
         channelFuture.addListener(new ChannelFutureListener() {
 
             @Override
-            public void operationComplete(final ChannelFuture future) throws Exception {
+            public void operationComplete(final ChannelFuture future) throws IOException {
 
                 if (future.isSuccess()) {
                     OslpChannelHandlerClient.this.write(future, address, request);
