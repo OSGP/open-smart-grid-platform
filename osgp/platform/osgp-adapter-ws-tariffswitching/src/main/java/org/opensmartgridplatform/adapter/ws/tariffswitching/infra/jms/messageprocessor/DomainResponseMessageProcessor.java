@@ -116,7 +116,7 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
             this.notificationService.sendNotification(organisationIdentification, deviceIdentification,
                     resultType.name(), correlationUid, resultDescription, notificationType);
         } catch (final RuntimeException e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, notificationType);
+            this.handleError(e, correlationUid, notificationType);
         }
     }
 
@@ -138,7 +138,6 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
     }
 
     protected void handleError(final RuntimeException e, final String correlationUid,
-            final String organisationIdentification, final String deviceIdentification,
             final NotificationType notificationType) {
 
         LOGGER.warn("Error '{}' occurred while trying to send notification type: {} with correlationUid: {}",
