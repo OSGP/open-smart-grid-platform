@@ -75,7 +75,7 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
     }
 
     @Override
-    public void processMessage(final ObjectMessage message) throws JMSException {
+    public void processMessage(final ObjectMessage message) {
         LOGGER.debug("Processing smart metering response message");
 
         String correlationUid = null;
@@ -115,7 +115,7 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
 
             this.notificationService.sendNotification(organisationIdentification, deviceIdentification,
                     resultType.name(), correlationUid, resultDescription, notificationType);
-        } catch (final Exception e) {
+        } catch (final RuntimeException e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, notificationType);
         }
     }
@@ -137,12 +137,11 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
         this.responseDataService.enqueue(responseData);
     }
 
-    protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
-            final String deviceIdentification, final NotificationType notificationType) {
+    protected void handleError(final RuntimeException e, final String correlationUid,
+            final String organisationIdentification, final String deviceIdentification,
+            final NotificationType notificationType) {
 
-        LOGGER.info("handeling error: {} for notification type: {} with correlationUid: {}", e.getMessage(),
-                notificationType, correlationUid, e);
-        this.notificationService.sendNotification(organisationIdentification, deviceIdentification, "NOT_OK",
-                correlationUid, e.getMessage(), notificationType);
+        LOGGER.warn("Error '{}' occurred while trying to send notification type: {} with correlationUid: {}",
+                e.getMessage(), notificationType, correlationUid, e);
     }
 }
