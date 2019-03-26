@@ -174,6 +174,23 @@ public class DlmsHelperService {
         return DataObjectDefinitions.getClockDefinition();
     }
 
+    public DataObject getAccessSelectionTimeRangeParameter(final DateTime beginDateTime, final DateTime endDateTime,
+            final DataObject selectedValues) {
+
+        /*
+         * Define the clock object {8,0-0:1.0.0.255,2,0} to be used as
+         * restricting object in a range descriptor with a from value and to
+         * value to determine which elements from the buffered array should be
+         * retrieved.
+         */
+        final DataObject clockDefinition = this.getClockDefinition();
+
+        final DataObject fromValue = this.asDataObject(beginDateTime);
+        final DataObject toValue = this.asDataObject(endDateTime);
+
+        return DataObject.newStructureData(Arrays.asList(clockDefinition, fromValue, toValue, selectedValues));
+    }
+
     /**
      * create a dlms meter value, apply the scaler and determine the unit on the
      * meter.
