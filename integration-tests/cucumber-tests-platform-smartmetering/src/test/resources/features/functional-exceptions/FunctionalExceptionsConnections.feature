@@ -40,6 +40,7 @@ Feature: SmartMetering functional exceptions regarding connections
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
+      | Hls5active           | true              |
       | ChallengeLength      |                65 |
     When the get administrative status request generating an error is received
       | DeviceIdentification | TEST1024000000001 |
