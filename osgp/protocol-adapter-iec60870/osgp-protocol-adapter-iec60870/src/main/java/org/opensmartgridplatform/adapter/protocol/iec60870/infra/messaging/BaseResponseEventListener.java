@@ -12,7 +12,7 @@ import java.io.Serializable;
 
 import org.openmuc.j60870.ConnectionEventListener;
 import org.opensmartgridplatform.adapter.protocol.iec60870.services.DeviceMessageLoggingService;
-import org.opensmartgridplatform.shared.domain.services.CorrelationProviderIdServiceV2;
+import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
@@ -31,12 +31,12 @@ public abstract class BaseResponseEventListener implements ConnectionEventListen
     private final MessageMetadata messageMetadata;
     private final ResponseMessageSender responseMessageSender;
     private final DeviceMessageLoggingService deviceMessageLoggingService;
-    private final CorrelationProviderIdServiceV2 correlationIdProviderService;
+    private final CorrelationIdProviderService correlationIdProviderService;
 
     public BaseResponseEventListener(final MessageMetadata messageMetadata,
             final ResponseMessageSender responseMessageSender,
             final DeviceMessageLoggingService deviceMessageLoggingService,
-            final CorrelationProviderIdServiceV2 correlationIdProviderService) {
+            final CorrelationIdProviderService correlationIdProviderService) {
         this.messageMetadata = messageMetadata;
         this.responseMessageSender = responseMessageSender;
         this.deviceMessageLoggingService = deviceMessageLoggingService;

@@ -38,7 +38,8 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
  * An application context Java configuration class.
  */
 @Configuration
-@ComponentScan(basePackages = { "org.opensmartgridplatform.domain.core", "org.opensmartgridplatform.adapter.ws.core",
+@ComponentScan(basePackages = { "org.opensmartgridplatform.shared.domain.services",
+        "org.opensmartgridplatform.domain.core", "org.opensmartgridplatform.adapter.ws.core",
         "org.opensmartgridplatform.domain.logging" })
 @ImportResource("classpath:applicationContext.xml")
 @Import({ PersistenceConfig.class, WritablePersistenceConfig.class, ReadOnlyLoggingConfig.class, WebServiceConfig.class,

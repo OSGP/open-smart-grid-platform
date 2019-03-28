@@ -68,6 +68,13 @@ public class DeviceMessageMetadata {
                         ? message.getBooleanProperty(Constants.BYPASS_RETRY) : false));
     }
 
+    public DeviceMessageMetadata(final ProtocolResponseMessage message) {
+        this(DeviceMessageMetadata.newBuilder().withDeviceIdentification(message.getDeviceIdentification())
+                .withOrganisationIdentification(message.getOrganisationIdentification())
+                .withCorrelationUid(message.getCorrelationUid()).withMessageType(message.getMessageType())
+                .withMessagePriority(message.getMessagePriority()));
+    }
+
     private DeviceMessageMetadata(final Builder builder) {
         this.deviceIdentification = builder.deviceIdentification;
         this.organisationIdentification = builder.organisationIdentification;

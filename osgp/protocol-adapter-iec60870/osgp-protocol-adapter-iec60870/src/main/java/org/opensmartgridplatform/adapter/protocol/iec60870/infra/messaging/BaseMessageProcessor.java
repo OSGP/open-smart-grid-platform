@@ -17,7 +17,7 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.help
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.helper.RequestMessageData;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.services.Iec60870DeviceService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.services.DeviceMessageLoggingService;
-import org.opensmartgridplatform.shared.domain.services.CorrelationProviderIdServiceV2;
+import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.shared.exceptionhandling.ProtocolAdapterException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -61,7 +61,7 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
     private Iec60870DeviceService iec60870DeviceService;
 
     @Autowired
-    private CorrelationProviderIdServiceV2 correlationIdProviderService;
+    private CorrelationIdProviderService correlationIdProviderService;
 
     @Autowired
     private DeviceMessageLoggingService deviceMessageLoggingService;
@@ -133,7 +133,7 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
         Constructor<? extends BaseResponseEventListener> constructor;
         try {
             constructor = this.responseEventListener.getConstructor(MessageMetadata.class, ResponseMessageSender.class,
-                    DeviceMessageLoggingService.class, CorrelationProviderIdServiceV2.class);
+                    DeviceMessageLoggingService.class, CorrelationIdProviderService.class);
 
             return constructor.newInstance(messageMetadata, this.responseMessageSender,
                     this.deviceMessageLoggingService, this.correlationIdProviderService);

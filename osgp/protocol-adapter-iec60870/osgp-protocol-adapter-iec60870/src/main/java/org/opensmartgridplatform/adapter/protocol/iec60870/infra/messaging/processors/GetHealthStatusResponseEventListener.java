@@ -12,7 +12,7 @@ import org.openmuc.j60870.TypeId;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.BaseResponseEventListener;
 import org.opensmartgridplatform.adapter.protocol.iec60870.services.DeviceMessageLoggingService;
 import org.opensmartgridplatform.dto.da.GetHealthStatusResponseDto;
-import org.opensmartgridplatform.shared.domain.services.CorrelationProviderIdServiceV2;
+import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
 import org.slf4j.Logger;
@@ -35,7 +35,7 @@ public class GetHealthStatusResponseEventListener extends BaseResponseEventListe
     public GetHealthStatusResponseEventListener(final MessageMetadata messageMetadata,
             final ResponseMessageSender responseMessageSender,
             final DeviceMessageLoggingService deviceMessageLoggingService,
-            final CorrelationProviderIdServiceV2 correlationIdProviderService) {
+            final CorrelationIdProviderService correlationIdProviderService) {
         super(messageMetadata, responseMessageSender, deviceMessageLoggingService, correlationIdProviderService);
     }
 

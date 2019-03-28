@@ -31,10 +31,10 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
  * An application context Java configuration class.
  */
 @Configuration
-@ComponentScan(basePackages = { "org.opensmartgridplatform.domain.core",
-        "org.opensmartgridplatform.adapter.ws.smartmetering", "org.opensmartgridplatform.logging.domain",
-        "org.opensmartgridplatform.adapter.ws.shared.services", "org.opensmartgridplatform.adapter.ws.mapping",
-        "org.opensmartgridplatform.shared.application.config" })
+@ComponentScan(basePackages = { "org.opensmartgridplatform.shared.domain.services",
+        "org.opensmartgridplatform.domain.core", "org.opensmartgridplatform.adapter.ws.smartmetering",
+        "org.opensmartgridplatform.logging.domain", "org.opensmartgridplatform.adapter.ws.shared.services",
+        "org.opensmartgridplatform.adapter.ws.mapping", "org.opensmartgridplatform.shared.application.config" })
 @EnableTransactionManagement()
 @ImportResource("classpath:applicationContext.xml")
 @Import({ PersistenceConfigWs.class, PersistenceConfigCore.class, MessagingConfig.class, WebServiceConfig.class,
