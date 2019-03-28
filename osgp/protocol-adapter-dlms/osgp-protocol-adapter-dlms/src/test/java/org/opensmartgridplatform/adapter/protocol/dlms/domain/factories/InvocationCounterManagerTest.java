@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Fail.fail;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.refEq;
 import static org.mockito.Mockito.mock;
@@ -28,6 +29,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.DlmsHelpe
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDeviceBuilder;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.DeviceSessionTerminatedAfterReadingInvocationCounterException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class InvocationCounterManagerTest {
@@ -63,7 +65,12 @@ public class InvocationCounterManagerTest {
                 .getAttributeValue(eq(connectionManager), refEq(ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE)))
                 .thenReturn(dataObject);
 
-        this.manager.initializeInvocationCounter(device);
+        try {
+            this.manager.initializeInvocationCounter(device);
+            fail("Should throw exception");
+        } catch (final DeviceSessionTerminatedAfterReadingInvocationCounterException e) {
+            // expected
+        }
 
         assertThat(device.getInvocationCounter()).isEqualTo(dataObject.getValue());
         verify(this.deviceRepository).save(device);

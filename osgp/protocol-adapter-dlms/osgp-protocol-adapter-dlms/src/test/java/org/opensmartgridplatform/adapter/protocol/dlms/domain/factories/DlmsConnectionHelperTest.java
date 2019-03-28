@@ -24,7 +24,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDeviceBuilder;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
-import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.DeviceSessionTerminatedAfterReadingInvocationCounterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.InvocationCountingDlmsMessageListener;
 
@@ -64,12 +63,7 @@ public class DlmsConnectionHelperTest {
         final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
         when(this.connectionFactory.getConnection(device, listener)).thenReturn(connectionManager);
 
-        try {
-            this.helper.createConnectionForDevice(device, listener);
-            fail("Should throw exception");
-        } catch (final DeviceSessionTerminatedAfterReadingInvocationCounterException e) {
-            // expected
-        }
+        this.helper.createConnectionForDevice(device, listener);
 
         verify(this.invocationCounterManager).initializeInvocationCounter(device);
     }
