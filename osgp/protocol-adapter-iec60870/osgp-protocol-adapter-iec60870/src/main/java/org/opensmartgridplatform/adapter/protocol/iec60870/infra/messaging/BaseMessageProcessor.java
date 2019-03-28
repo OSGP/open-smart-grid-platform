@@ -101,7 +101,7 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
     }
 
     @Override
-    public void processMessage(final ObjectMessage message) throws JMSException {
+    public void processMessage(final ObjectMessage message) {
         LOGGER.info("Processing get health status request message in new code...");
 
         MessageMetadata messageMetadata = null;
@@ -153,8 +153,7 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
                 requestMessageData.getDomain(), requestMessageData.getDomainVersion());
     }
 
-    protected void handleError(final MessageMetadata messageMetadata, final ProtocolAdapterException e)
-            throws JMSException {
+    protected void handleError(final MessageMetadata messageMetadata, final ProtocolAdapterException e) {
         LOGGER.warn("Error while processing message", e);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(messageMetadata);
