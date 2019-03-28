@@ -382,6 +382,10 @@ public class DlmsDevice extends AbstractEntity {
         this.invocationCounter += amount;
     }
 
+    public boolean isInvocationCounterStoredOnDevice() {
+        return "SMR".equals(this.protocol);
+    }
+
     /**
      * Get the valid security key of the given type. This can be only one or
      * none. If none is found, null is returned.

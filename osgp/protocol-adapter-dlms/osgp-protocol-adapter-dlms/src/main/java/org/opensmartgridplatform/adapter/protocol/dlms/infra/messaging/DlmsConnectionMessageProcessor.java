@@ -87,7 +87,7 @@ public abstract class DlmsConnectionMessageProcessor {
 
         this.closeDlmsConnection(device, conn);
 
-        if (device.isHls5Active()) {
+        if (device.isInvocationCounterStoredOnDevice()) {
             this.updateInvocationCounterForDevice(device, conn);
         }
     }
@@ -103,7 +103,7 @@ public abstract class DlmsConnectionMessageProcessor {
         }
     }
 
-    protected void updateInvocationCounterForDevice(final DlmsDevice device, final DlmsConnectionManager conn) {
+    private void updateInvocationCounterForDevice(final DlmsDevice device, final DlmsConnectionManager conn) {
         if (!(conn.getDlmsMessageListener() instanceof InvocationCountingDlmsMessageListener)) {
             LOGGER.error("updateInvocationCounterForDevice should only be called for devices with HLS 5 "
                             + "communication with an InvocationCountingDlmsMessageListener - device: {}, hls5: {}, "

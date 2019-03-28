@@ -46,7 +46,7 @@ public class InvocationCounterManager {
      * Updates the device instance with the invocation counter value on the actual device.
      */
     public void initializeInvocationCounter(final DlmsDevice device) throws OsgpException {
-        if (this.invocationCounterIsStoredOnDevice(device)) {
+        if (device.isInvocationCounterStoredOnDevice()) {
             this.initializeWithInvocationCounterStoredOnDevice(device);
             this.deviceRepository.save(device);
 
@@ -68,10 +68,6 @@ public class InvocationCounterManager {
             LOGGER.info("Property invocationCounter of device {} initialized to the value of the invocation counter "
                     + "stored on the device: {}", device.getDeviceIdentification(), device.getInvocationCounter());
         }
-    }
-
-    private boolean invocationCounterIsStoredOnDevice(final DlmsDevice device) {
-        return "SMR".equals(device.getProtocol());
     }
 
     @SuppressWarnings("squid:S1905") // Casting to Number is necessary here.
