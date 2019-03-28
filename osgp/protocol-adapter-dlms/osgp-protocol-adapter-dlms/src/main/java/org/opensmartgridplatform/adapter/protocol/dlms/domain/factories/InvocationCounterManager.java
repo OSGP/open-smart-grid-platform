@@ -58,7 +58,6 @@ public class InvocationCounterManager {
         } else {
             // Value of invocation counter is ignored on these devices.
             device.setInvocationCounter(0);
-            this.deviceRepository.save(device);
         }
     }
 
