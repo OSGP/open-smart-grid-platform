@@ -14,7 +14,6 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.refEq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
@@ -54,8 +53,8 @@ public class InvocationCounterManagerTest {
     }
 
     @Test
-    public void initializesInvocationCounterForSmrDevice() throws Exception {
-        final DlmsDevice device = new DlmsDeviceBuilder().withProtocol("SMR").build();
+    public void initializesInvocationCounterForDevice() throws Exception {
+        final DlmsDevice device = new DlmsDeviceBuilder().build();
 
         final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
         when(this.connectionFactory.getPublicClientConnection(device, null)).thenReturn(connectionManager);
@@ -75,16 +74,6 @@ public class InvocationCounterManagerTest {
         assertThat(device.getInvocationCounter()).isEqualTo(dataObject.getValue());
         verify(this.deviceRepository).save(device);
         verify(connectionManager).close();
-    }
-
-    @Test
-    public void initializesInvocationCounterForNonSmrDevice() throws Exception {
-        final DlmsDevice device = new DlmsDeviceBuilder().withProtocol("DSMR").build();
-
-        this.manager.initializeInvocationCounter(device);
-
-        assertThat(device.getInvocationCounter()).isEqualTo(0);
-        verifyZeroInteractions(this.connectionFactory);
     }
 
     @Test

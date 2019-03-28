@@ -41,14 +41,14 @@ public class DlmsConnectionHelper {
      */
     public DlmsConnectionManager createConnectionForDevice(final DlmsDevice device,
             final DlmsMessageListener messageListener) throws OsgpException {
-        if (device.isHls5Active() && !device.isInvocationCounterInitialized()) {
+        if (device.needsInvocationCounter() && !device.isInvocationCounterInitialized()) {
             this.invocationCounterManager.initializeInvocationCounter(device);
         }
 
         try {
             return this.connectionFactory.getConnection(device, messageListener);
         } catch (final ConnectionException e) {
-            if (this.indicatesInvocationCounterOutOfSync(e)) {
+            if (device.needsInvocationCounter() && this.indicatesInvocationCounterOutOfSync(e)) {
                 this.resetInvocationCounter(device);
             }
             // Retrow exception, for two reasons:
