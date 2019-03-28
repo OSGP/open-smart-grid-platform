@@ -67,7 +67,7 @@ public abstract class DlmsConnectionMessageProcessor {
                     this.dlmsLogItemRequestMessageSender);
             dlmsMessageListener.setMessageMetadata(messageMetadata);
             dlmsMessageListener.setDescription("Create connection");
-        } else if (device.isHls5Active()) {
+        } else if (device.needsInvocationCounter()) {
             dlmsMessageListener = new InvocationCountingDlmsMessageListener();
         } else {
             dlmsMessageListener = null;
@@ -87,7 +87,7 @@ public abstract class DlmsConnectionMessageProcessor {
 
         this.closeDlmsConnection(device, conn);
 
-        if (device.isInvocationCounterStoredOnDevice()) {
+        if (device.needsInvocationCounter()) {
             this.updateInvocationCounterForDevice(device, conn);
         }
     }

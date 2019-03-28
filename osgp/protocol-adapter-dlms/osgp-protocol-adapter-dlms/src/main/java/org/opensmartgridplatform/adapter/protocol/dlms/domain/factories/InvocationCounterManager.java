@@ -44,21 +44,17 @@ public class InvocationCounterManager {
 
     /**
      * Updates the device instance with the invocation counter value on the actual device.
+     * Should only be called for a device that actually has an invocation counter stored on the device itself.
      */
     public void initializeInvocationCounter(final DlmsDevice device) throws OsgpException {
-        if (device.isInvocationCounterStoredOnDevice()) {
-            this.initializeWithInvocationCounterStoredOnDevice(device);
-            this.deviceRepository.save(device);
+        this.initializeWithInvocationCounterStoredOnDevice(device);
+        this.deviceRepository.save(device);
 
-            // At this point proceeding to create a new connection will fail due to a current limitation in the OpenMUC
-            // jDLMS library, therefore don't even try but throw a very specific exception signalling the problem.
-            // The exception will cause a retry header to be set so the operation will be retried, but the exception
-            // itself will not be logged.
-            throw new DeviceSessionTerminatedAfterReadingInvocationCounterException(device.getDeviceIdentification());
-        } else {
-            // Value of invocation counter is ignored on these devices.
-            device.setInvocationCounter(0);
-        }
+        // At this point proceeding to create a new connection will fail due to a current limitation in the OpenMUC
+        // jDLMS library, therefore don't even try but throw a very specific exception signalling the problem.
+        // The exception will cause a retry header to be set so the operation will be retried, but the exception
+        // itself will not be logged.
+        throw new DeviceSessionTerminatedAfterReadingInvocationCounterException(device.getDeviceIdentification());
     }
 
     private void initializeWithInvocationCounterStoredOnDevice(final DlmsDevice device) throws OsgpException {

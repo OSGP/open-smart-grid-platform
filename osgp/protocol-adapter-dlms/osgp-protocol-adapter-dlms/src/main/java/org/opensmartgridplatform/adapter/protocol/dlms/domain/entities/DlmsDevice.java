@@ -382,8 +382,8 @@ public class DlmsDevice extends AbstractEntity {
         this.invocationCounter += amount;
     }
 
-    public boolean isInvocationCounterStoredOnDevice() {
-        return "SMR".equals(this.protocol);
+    public boolean needsInvocationCounter() {
+        return this.hls5Active && "SMR".equals(this.protocol);
     }
 
     /**
