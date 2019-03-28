@@ -9,9 +9,6 @@ package org.opensmartgridplatform.webdemoapp.application.config;
 
 import java.util.TimeZone;
 
-//import javax.naming.Context;
-//import javax.naming.InitialContext;
-//import javax.naming.NamingException;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
@@ -32,10 +29,7 @@ public class WebDemoInitializer implements WebApplicationInitializer {
 
     @Override
     public void onStartup(final ServletContext servletContext) throws ServletException {
-        // try {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-
-        // final Context initialContext = new InitialContext();
 
         final AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
         rootContext.register(ApplicationContext.class);
@@ -46,8 +40,5 @@ public class WebDemoInitializer implements WebApplicationInitializer {
         dispatcher.addMapping(DISPATCHER_SERVLET_MAPPING);
 
         servletContext.addListener(new ContextLoaderListener(rootContext));
-        // } catch (final NamingException e) {
-        // throw new ServletException("naming exception", e);
-        // }
     }
 }
