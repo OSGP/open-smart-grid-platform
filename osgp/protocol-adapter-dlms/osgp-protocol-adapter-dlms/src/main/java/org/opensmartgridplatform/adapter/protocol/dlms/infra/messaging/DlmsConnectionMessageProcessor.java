@@ -103,7 +103,8 @@ public abstract class DlmsConnectionMessageProcessor {
         }
     }
 
-    private void updateInvocationCounterForDevice(final DlmsDevice device, final DlmsConnectionManager conn) {
+    /* package private */
+    void updateInvocationCounterForDevice(final DlmsDevice device, final DlmsConnectionManager conn) {
         if (!(conn.getDlmsMessageListener() instanceof InvocationCountingDlmsMessageListener)) {
             LOGGER.error("updateInvocationCounterForDevice should only be called for devices with HLS 5 "
                             + "communication with an InvocationCountingDlmsMessageListener - device: {}, hls5: {}, "
