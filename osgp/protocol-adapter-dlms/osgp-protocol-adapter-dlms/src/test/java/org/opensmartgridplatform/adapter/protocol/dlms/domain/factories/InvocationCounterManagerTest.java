@@ -84,7 +84,6 @@ public class InvocationCounterManagerTest {
         this.manager.initializeInvocationCounter(device);
 
         assertThat(device.getInvocationCounter()).isEqualTo(0);
-        verify(this.deviceRepository).save(device);
         verifyZeroInteractions(this.connectionFactory);
     }
 
