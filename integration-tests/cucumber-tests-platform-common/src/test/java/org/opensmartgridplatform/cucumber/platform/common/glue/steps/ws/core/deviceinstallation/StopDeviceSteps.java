@@ -13,29 +13,27 @@ import static org.opensmartgridplatform.cucumber.platform.core.CorrelationUidHel
 import java.util.Map;
 
 import org.junit.Assert;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ws.soap.client.SoapFaultClientException;
-
 import org.opensmartgridplatform.adapter.ws.schema.core.common.AsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.StopDeviceTestAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.StopDeviceTestAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.StopDeviceTestRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.StopDeviceTestResponse;
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.common.support.ws.core.CoreDeviceInstallationClient;
 import org.opensmartgridplatform.cucumber.platform.glue.steps.ws.GenericResponseSteps;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class StopDeviceSteps extends GlueBase {
+public class StopDeviceSteps {
 
     @Autowired
     private CoreDeviceInstallationClient client;

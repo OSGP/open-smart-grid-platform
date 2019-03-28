@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -33,7 +32,7 @@ import cucumber.api.java.en.Then;
 /**
  * Class with all the organization steps
  */
-public class OrganizationSteps extends GlueBase {
+public class OrganizationSteps {
 
     @Autowired
     private OrganisationRepository organisationRepository;
@@ -172,7 +171,8 @@ public class OrganizationSteps extends GlueBase {
     @Then("^the organization with organization identification \"([^\"]*)\" should be disabled$")
     public void theOrganizationWithOrganizationIdentificationShouldBeDisabled(final String organizationIdentification)
             throws Throwable {
-        final Organisation entity = this.organisationRepository.findByOrganisationIdentification(organizationIdentification);
+        final Organisation entity = this.organisationRepository
+                .findByOrganisationIdentification(organizationIdentification);
 
         // Note: 'entity' could be 'null'
         Assert.assertTrue(!entity.isEnabled());
@@ -184,7 +184,8 @@ public class OrganizationSteps extends GlueBase {
     @Then("^the organization with organization identification \"([^\"]*)\" should be enabled")
     public void theOrganizationWithOrganizationIdentificationShouldBeEnabled(final String organizationIdentification)
             throws Throwable {
-        final Organisation entity = this.organisationRepository.findByOrganisationIdentification(organizationIdentification);
+        final Organisation entity = this.organisationRepository
+                .findByOrganisationIdentification(organizationIdentification);
 
         Assert.assertTrue(entity.isEnabled());
     }

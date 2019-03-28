@@ -24,14 +24,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
-public class DeviceSimulatorSteps extends GlueBase {
+public class DeviceSimulatorSteps {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceSimulatorSteps.class);
 

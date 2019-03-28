@@ -17,7 +17,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.junit.Assert;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities.OslpDevice;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.repositories.OslpDeviceRepository;
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -30,7 +29,7 @@ import cucumber.api.java.en.Then;
 /**
  * OSLP device specific steps.
  */
-public class OslpDeviceSteps extends GlueBase {
+public class OslpDeviceSteps {
 
     public static final String DEFAULT_DEVICE_UID = "dGVzdDEyMzQ1Njc4";
     private static final String DEVICE_PUBLIC_KEY = "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEFhUImXFJdqmputquVAc2CPdnn9Ju"

@@ -23,7 +23,6 @@ import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateD
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceCdmaSettingsAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceCdmaSettingsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceCdmaSettingsResponse;
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
@@ -40,7 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class UpdateDeviceCdmaSettingsSteps extends GlueBase {
+public class UpdateDeviceCdmaSettingsSteps {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UpdateDeviceCdmaSettingsSteps.class);
 

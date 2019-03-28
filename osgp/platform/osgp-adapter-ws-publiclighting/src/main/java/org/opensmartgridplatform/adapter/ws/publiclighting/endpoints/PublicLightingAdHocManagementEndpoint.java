@@ -10,7 +10,8 @@ package org.opensmartgridplatform.adapter.ws.publiclighting.endpoints;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.validator.method.MethodConstraintViolationException;
+import javax.validation.ConstraintViolationException;
+
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,10 +64,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
-//MethodConstraintViolationException is deprecated.
-//Will by replaced by equivalent functionality defined
-//by the Bean Validation 1.1 API as of Hibernate Validator 5.
-@SuppressWarnings("deprecation")
 @Endpoint
 public class PublicLightingAdHocManagementEndpoint {
 
@@ -105,7 +102,7 @@ public class PublicLightingAdHocManagementEndpoint {
             devicePage.getDevices().addAll(this.adHocManagementMapper.mapAsList(page.getContent(),
                     org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.Device.class));
             response.setDevicePage(devicePage);
-        } catch (final MethodConstraintViolationException e) {
+        } catch (final ConstraintViolationException e) {
             LOGGER.error(EXCEPTION_OCCURRED, e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_WS_PUBLIC_LIGHTING,
                     new ValidationException(e.getConstraintViolations()));
@@ -143,7 +140,7 @@ public class PublicLightingAdHocManagementEndpoint {
             asyncResponse.setDeviceId(request.getDeviceIdentification());
 
             response.setAsyncResponse(asyncResponse);
-        } catch (final MethodConstraintViolationException e) {
+        } catch (final ConstraintViolationException e) {
             LOGGER.error(EXCEPTION_OCCURRED, e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_WS_PUBLIC_LIGHTING,
                     new ValidationException(e.getConstraintViolations()));
@@ -263,7 +260,7 @@ public class PublicLightingAdHocManagementEndpoint {
             asyncResponse.setCorrelationUid(correlationUid);
             asyncResponse.setDeviceId(request.getDeviceIdentification());
             response.setAsyncResponse(asyncResponse);
-        } catch (final MethodConstraintViolationException e) {
+        } catch (final ConstraintViolationException e) {
             LOGGER.error(EXCEPTION_OCCURRED, e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_WS_PUBLIC_LIGHTING,
                     new ValidationException(e.getConstraintViolations()));

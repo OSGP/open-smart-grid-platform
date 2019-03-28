@@ -14,16 +14,14 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStri
 import java.util.Map;
 
 import org.junit.Assert;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ws.soap.client.SoapFaultClientException;
-
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.Device;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.FindDevicesWhichHaveNoOwnerRequest;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.FindDevicesWhichHaveNoOwnerResponse;
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonKeys;
 import org.opensmartgridplatform.cucumber.platform.common.support.ws.admin.AdminDeviceManagementClient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -31,7 +29,7 @@ import cucumber.api.java.en.When;
 /**
  * Class with all the remove organization requests steps
  */
-public class FindDevicesWithoutOwner extends GlueBase {
+public class FindDevicesWithoutOwner {
 
     @Autowired
     private AdminDeviceManagementClient client;

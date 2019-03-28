@@ -14,13 +14,10 @@ import static org.junit.Assert.assertNotNull;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import javax.xml.datatype.XMLGregorianCalendar;
-
-import org.springframework.beans.factory.annotation.Autowired;
 
 import org.opensmartgridplatform.adapter.ws.schema.microgrids.adhocmanagement.GetDataAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.microgrids.adhocmanagement.GetDataAsyncResponse;
@@ -29,18 +26,18 @@ import org.opensmartgridplatform.adapter.ws.schema.microgrids.adhocmanagement.Ge
 import org.opensmartgridplatform.adapter.ws.schema.microgrids.adhocmanagement.GetDataSystemIdentifier;
 import org.opensmartgridplatform.adapter.ws.schema.microgrids.adhocmanagement.Measurement;
 import org.opensmartgridplatform.adapter.ws.schema.microgrids.adhocmanagement.Profile;
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.helpers.SettingsHelper;
 import org.opensmartgridplatform.cucumber.platform.microgrids.support.ws.microgrids.adhocmanagement.AdHocManagementClient;
 import org.opensmartgridplatform.cucumber.platform.microgrids.support.ws.microgrids.adhocmanagement.GetDataRequestBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import cucumber.api.PendingException;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class GetDataSteps extends GlueBase {
+public class GetDataSteps {
 
     /**
      * Delta value for which two measurement values are considered equal if

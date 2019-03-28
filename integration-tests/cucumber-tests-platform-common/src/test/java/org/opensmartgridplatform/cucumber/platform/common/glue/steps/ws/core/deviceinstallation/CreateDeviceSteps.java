@@ -22,7 +22,6 @@ import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.Devic
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.DeviceModel;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.UpdateDeviceRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.UpdateDeviceResponse;
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonDefaults;
@@ -38,7 +37,7 @@ import cucumber.api.java.en.When;
 /**
  * Class with all the create organization requests steps
  */
-public class CreateDeviceSteps extends GlueBase {
+public class CreateDeviceSteps {
 
     @Autowired
     private CoreDeviceInstallationClient client;

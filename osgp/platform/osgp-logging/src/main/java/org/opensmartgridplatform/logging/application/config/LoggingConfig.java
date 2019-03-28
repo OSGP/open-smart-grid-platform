@@ -14,28 +14,27 @@ import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationVersion;
-import org.hibernate.ejb.HibernatePersistence;
+import org.hibernate.jpa.HibernatePersistenceProvider;
+import org.opensmartgridplatform.logging.domain.repositories.WebServiceMonitorLogRepository;
+import org.opensmartgridplatform.shared.application.config.AbstractConfig;
+import org.opensmartgridplatform.shared.infra.db.DefaultConnectionPoolFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
-import org.opensmartgridplatform.logging.domain.repositories.WebServiceMonitorLogRepository;
-import org.opensmartgridplatform.shared.application.config.AbstractConfig;
-import org.opensmartgridplatform.shared.infra.db.DefaultConnectionPoolFactory;
 import com.zaxxer.hikari.HikariDataSource;
 
 @EnableJpaRepositories(basePackageClasses = { WebServiceMonitorLogRepository.class })
 @Configuration
-@PropertySources({ @PropertySource("classpath:osgp-logging.properties"),
-    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-    @PropertySource(value = "file:${osgp/Logging/config}", ignoreResourceNotFound = true), })
+@PropertySource("classpath:osgp-logging.properties")
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/Logging/config}", ignoreResourceNotFound = true)
 public class LoggingConfig extends AbstractConfig {
 
     private static final String PROPERTY_NAME_DATABASE_USERNAME = "db.username";
@@ -55,7 +54,7 @@ public class LoggingConfig extends AbstractConfig {
 
     private static final String PROPERTY_NAME_HIBERNATE_DIALECT = "hibernate.dialect";
     private static final String PROPERTY_NAME_HIBERNATE_FORMAT_SQL = "hibernate.format_sql";
-    private static final String PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY = "hibernate.ejb.naming_strategy";
+    private static final String PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY = "hibernate.physical_naming_strategy";
     private static final String PROPERTY_NAME_HIBERNATE_SHOW_SQL = "hibernate.show_sql";
 
     private static final String PROPERTY_NAME_FLYWAY_INITIAL_VERSION = "flyway.initial.version";
@@ -86,14 +85,14 @@ public class LoggingConfig extends AbstractConfig {
                     .parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_PORT));
             final String databaseName = this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_NAME);
 
-            final int minPoolSize = Integer.parseInt(this.environment
-                    .getRequiredProperty(PROPERTY_NAME_DATABASE_MIN_POOL_SIZE));
-            final int maxPoolSize = Integer.parseInt(this.environment
-                    .getRequiredProperty(PROPERTY_NAME_DATABASE_MAX_POOL_SIZE));
-            final boolean isAutoCommit = Boolean.parseBoolean(this.environment
-                    .getRequiredProperty(PROPERTY_NAME_DATABASE_AUTO_COMMIT));
-            final int idleTimeout = Integer.parseInt(this.environment
-                    .getRequiredProperty(PROPERTY_NAME_DATABASE_IDLE_TIMEOUT));
+            final int minPoolSize = Integer
+                    .parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_MIN_POOL_SIZE));
+            final int maxPoolSize = Integer
+                    .parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_MAX_POOL_SIZE));
+            final boolean isAutoCommit = Boolean
+                    .parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_AUTO_COMMIT));
+            final int idleTimeout = Integer
+                    .parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_IDLE_TIMEOUT));
 
             final DefaultConnectionPoolFactory.Builder builder = new DefaultConnectionPoolFactory.Builder()
                     .withUsername(username).withPassword(password).withDriverClassName(driverClassName)
@@ -163,9 +162,9 @@ public class LoggingConfig extends AbstractConfig {
 
         entityManagerFactoryBean.setPersistenceUnitName("OSGP_LOGGING");
         entityManagerFactoryBean.setDataSource(this.getDataSource());
-        entityManagerFactoryBean.setPackagesToScan(this.environment
-                .getRequiredProperty(PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN));
-        entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistence.class);
+        entityManagerFactoryBean
+                .setPackagesToScan(this.environment.getRequiredProperty(PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN));
+        entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistenceProvider.class);
 
         final Properties jpaProperties = new Properties();
         jpaProperties.put(PROPERTY_NAME_HIBERNATE_DIALECT,

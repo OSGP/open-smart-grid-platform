@@ -14,7 +14,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 
-import org.hibernate.ejb.HibernatePersistence;
+import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemPagingRepository;
 import org.opensmartgridplatform.shared.application.config.AbstractCustomConfig;
 import org.opensmartgridplatform.shared.infra.db.DefaultConnectionPoolFactory;
@@ -52,7 +52,7 @@ public class ReadOnlyLoggingConfig extends AbstractCustomConfig {
 
     private static final String PROPERTY_NAME_HIBERNATE_DIALECT = "hibernate.dialect";
     private static final String PROPERTY_NAME_HIBERNATE_FORMAT_SQL = "hibernate.format_sql";
-    private static final String PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY = "hibernate.ejb.naming_strategy";
+    private static final String PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY = "hibernate.physical_naming_strategy";
     private static final String PROPERTY_NAME_HIBERNATE_SHOW_SQL = "hibernate.show_sql";
 
     private static final String PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN = "entitymanager.packages.to.scan.domain_logging";
@@ -150,7 +150,7 @@ public class ReadOnlyLoggingConfig extends AbstractCustomConfig {
         entityManagerFactoryBean.setDataSource(this.getReadableDataSource());
         entityManagerFactoryBean
                 .setPackagesToScan(ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN));
-        entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistence.class);
+        entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistenceProvider.class);
 
         final Properties jpaProperties = new Properties();
         jpaProperties.put(PROPERTY_NAME_HIBERNATE_DIALECT,

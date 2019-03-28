@@ -14,8 +14,6 @@ import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
@@ -25,7 +23,6 @@ import javax.persistence.Version;
  * Abstract base class for entities.
  */
 @MappedSuperclass
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class AbstractEntity implements Serializable {
 
     // === FIELDS [START] ===
@@ -60,28 +57,28 @@ public abstract class AbstractEntity implements Serializable {
     /**
      * @return the id
      */
-    public final Long getId() {
+    public Long getId() {
         return this.id;
     }
 
     /**
      * @return the creation time
      */
-    public final Date getCreationTime() {
+    public Date getCreationTime() {
         return (Date) this.creationTime.clone();
     }
 
     /**
      * @return the modification time
      */
-    public final Date getModificationTime() {
+    public Date getModificationTime() {
         return (Date) this.modificationTime.clone();
     }
 
     /**
      * @return the version
      */
-    public final Long getVersion() {
+    public Long getVersion() {
         return this.version;
     }
 

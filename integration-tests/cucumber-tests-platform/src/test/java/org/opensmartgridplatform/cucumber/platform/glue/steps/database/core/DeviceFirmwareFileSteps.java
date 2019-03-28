@@ -15,9 +15,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -26,10 +23,11 @@ import org.opensmartgridplatform.domain.core.entities.FirmwareFile;
 import org.opensmartgridplatform.domain.core.repositories.DeviceFirmwareFileRepository;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.FirmwareFileRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import cucumber.api.java.en.Given;
 
-public class DeviceFirmwareFileSteps extends GlueBase {
+public class DeviceFirmwareFileSteps {
 
     @Autowired
     private DeviceFirmwareFileRepository deviceFirmwareFileRepository;

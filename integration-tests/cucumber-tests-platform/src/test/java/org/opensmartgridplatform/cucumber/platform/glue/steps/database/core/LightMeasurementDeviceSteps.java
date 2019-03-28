@@ -14,13 +14,12 @@ import java.util.GregorianCalendar;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-
 import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
 import org.opensmartgridplatform.domain.core.entities.LightMeasurementDevice;
 import org.opensmartgridplatform.domain.core.entities.ProtocolInfo;
 import org.opensmartgridplatform.domain.core.repositories.LightMeasurementDeviceRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import cucumber.api.java.en.Given;
 
@@ -41,9 +40,9 @@ public class LightMeasurementDeviceSteps extends BaseDeviceSteps {
      */
     public void createLightMeasurementDevices() {
         final LightMeasurementDevice lmd01 = this.createLightMeasurementDevice("LMD-01", "N-01", "#c9eec9", (short) 1);
+
         // Set the last communication time to 2017-08-01 at 13:00 UTC
         final Date lastCommunicationTimeLmd01 = new GregorianCalendar(2017, Calendar.AUGUST, 1, 13, 0).getTime();
-
         lmd01.setLastCommunicationTime(lastCommunicationTimeLmd01);
         this.lightMeasurementDeviceRepository.save(lmd01);
 
@@ -80,6 +79,6 @@ public class LightMeasurementDeviceSteps extends BaseDeviceSteps {
         // the device authorization.
         this.setDefaultDeviceAuthorizationForDevice(lightMeasurementDevice);
 
-        return lightMeasurementDevice;
+        return this.lightMeasurementDeviceRepository.findByDeviceIdentification(deviceIdentification);
     }
 }

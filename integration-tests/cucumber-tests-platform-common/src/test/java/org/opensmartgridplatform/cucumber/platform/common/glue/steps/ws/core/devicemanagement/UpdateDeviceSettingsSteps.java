@@ -20,7 +20,6 @@ import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.DeviceM
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Manufacturer;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceResponse;
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -34,7 +33,7 @@ import org.springframework.ws.soap.client.SoapFaultClientException;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class UpdateDeviceSettingsSteps extends GlueBase {
+public class UpdateDeviceSettingsSteps {
 
     @Autowired
     private CoreDeviceManagementClient client;

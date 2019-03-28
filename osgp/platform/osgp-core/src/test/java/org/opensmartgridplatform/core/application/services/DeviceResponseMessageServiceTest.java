@@ -5,7 +5,6 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-
 package org.opensmartgridplatform.core.application.services;
 
 import static org.junit.Assert.assertEquals;

@@ -17,8 +17,6 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.jpa.domain.Specification;
-
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
 import org.opensmartgridplatform.domain.core.entities.DeviceCurrentFirmwareModuleVersion;
@@ -29,12 +27,16 @@ import org.opensmartgridplatform.domain.core.exceptions.ArgumentNullOrEmptyExcep
 import org.opensmartgridplatform.domain.core.specifications.DeviceSpecifications;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleFilterType;
+import org.springframework.data.jpa.domain.Specification;
 
 public class JpaDeviceSpecifications implements DeviceSpecifications {
 
     @Override
     public Specification<Device> hasTechnicalInstallationDate() throws ArgumentNullOrEmptyException {
         return new Specification<Device>() {
+
+            private static final long serialVersionUID = 1L;
+
             @Override
             public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
                     final CriteriaBuilder cb) {
@@ -51,6 +53,9 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
         }
 
         return new Specification<Device>() {
+
+            private static final long serialVersionUID = 1L;
+
             @Override
             public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
                     final CriteriaBuilder cb) {
@@ -73,6 +78,9 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
         }
 
         return new Specification<Device>() {
+
+            private static final long serialVersionUID = 1L;
+
             @Override
             public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
                     final CriteriaBuilder cb) {
@@ -93,6 +101,9 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
         }
 
         return new Specification<Device>() {
+
+            private static final long serialVersionUID = 1L;
+
             @Override
             public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
                     final CriteriaBuilder cb) {
@@ -109,6 +120,9 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
         }
 
         return new Specification<Device>() {
+
+            private static final long serialVersionUID = 1L;
+
             @Override
             public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
                     final CriteriaBuilder cb) {
@@ -125,6 +139,9 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
         }
 
         return new Specification<Device>() {
+
+            private static final long serialVersionUID = 1L;
+
             @Override
             public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
                     final CriteriaBuilder cb) {
@@ -141,6 +158,9 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
         }
 
         return new Specification<Device>() {
+
+            private static final long serialVersionUID = 1L;
+
             @Override
             public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
                     final CriteriaBuilder cb) {
@@ -157,6 +177,9 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
         }
 
         return new Specification<Device>() {
+
+            private static final long serialVersionUID = 1L;
+
             @Override
             public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
                     final CriteriaBuilder cb) {
@@ -173,6 +196,9 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
         }
 
         return new Specification<Device>() {
+
+            private static final long serialVersionUID = 1L;
+
             @Override
             public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
                     final CriteriaBuilder cb) {
@@ -190,6 +216,8 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
         }
 
         return new Specification<Device>() {
+
+            private static final long serialVersionUID = 1L;
 
             @Override
             public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
@@ -214,6 +242,9 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
         }
 
         return new Specification<Device>() {
+
+            private static final long serialVersionUID = 1L;
+
             @Override
             public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
                     final CriteriaBuilder cb) {
@@ -230,6 +261,9 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
         }
 
         return new Specification<Device>() {
+
+            private static final long serialVersionUID = 1L;
+
             @Override
             public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
                     final CriteriaBuilder cb) {
@@ -246,6 +280,9 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
         }
 
         return new Specification<Device>() {
+
+            private static final long serialVersionUID = 1L;
+
             @Override
             public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
                     final CriteriaBuilder cb) {
@@ -269,6 +306,9 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
         }
 
         return new Specification<Device>() {
+
+            private static final long serialVersionUID = 1L;
+
             @Override
             public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
                     final CriteriaBuilder cb) {
@@ -285,6 +325,9 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
         }
 
         return new Specification<Device>() {
+
+            private static final long serialVersionUID = 1L;
+
             @Override
             public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
                     final CriteriaBuilder cb) {
@@ -301,6 +344,9 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
         }
 
         return new Specification<Device>() {
+
+            private static final long serialVersionUID = 1L;
+
             @Override
             public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
                     final CriteriaBuilder cb) {
@@ -326,6 +372,9 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
         }
 
         return new Specification<Device>() {
+
+            private static final long serialVersionUID = 1L;
+
             @Override
             public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
                     final CriteriaBuilder cb) {
@@ -354,6 +403,9 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
         }
 
         return new Specification<Device>() {
+
+            private static final long serialVersionUID = 1L;
+
             @Override
             public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
                     final CriteriaBuilder cb) {
@@ -371,6 +423,9 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
         }
 
         return new Specification<Device>() {
+
+            private static final long serialVersionUID = 1L;
+
             @Override
             public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
                     final CriteriaBuilder cb) {

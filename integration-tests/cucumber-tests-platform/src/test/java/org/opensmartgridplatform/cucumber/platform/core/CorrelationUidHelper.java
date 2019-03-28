@@ -1,10 +1,10 @@
 package org.opensmartgridplatform.cucumber.platform.core;
 
-import org.springframework.util.Assert;
-
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 public class CorrelationUidHelper {
 
@@ -19,12 +19,16 @@ public class CorrelationUidHelper {
      */
     public static void saveCorrelationUidInScenarioContext(final String correlationUid,
             String organizationIdentification) throws Throwable {
-        if (organizationIdentification == null || organizationIdentification.isEmpty()) {
+        if (StringUtils.isEmpty(organizationIdentification)) {
             organizationIdentification = PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION;
         }
 
+        final String message = String.format(
+                "Correlation UID [%s] is expected to start with organisation identification [%s].", correlationUid,
+                organizationIdentification);
+
         // Validate the correlation-id starts with correct organization
-        Assert.isTrue(correlationUid.startsWith(organizationIdentification));
+        Assert.isTrue(correlationUid.startsWith(organizationIdentification), message);
         ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, correlationUid);
     }
 

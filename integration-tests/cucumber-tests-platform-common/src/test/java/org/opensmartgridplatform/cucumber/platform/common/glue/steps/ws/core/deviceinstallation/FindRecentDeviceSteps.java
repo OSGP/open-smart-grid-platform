@@ -11,23 +11,21 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ws.soap.client.SoapFaultClientException;
-
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.Device;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.FindRecentDevicesRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.FindRecentDevicesResponse;
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonKeys;
 import org.opensmartgridplatform.cucumber.platform.common.support.ws.core.CoreDeviceInstallationClient;
 import org.opensmartgridplatform.cucumber.platform.glue.steps.ws.GenericResponseSteps;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class FindRecentDeviceSteps extends GlueBase {
+public class FindRecentDeviceSteps {
 
     @Autowired
     private CoreDeviceInstallationClient client;

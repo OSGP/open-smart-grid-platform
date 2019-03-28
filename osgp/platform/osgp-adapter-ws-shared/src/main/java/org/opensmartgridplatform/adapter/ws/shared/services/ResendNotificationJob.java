@@ -20,6 +20,7 @@ public class ResendNotificationJob implements Job {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ResendNotificationJob.class);
 
+    @SuppressWarnings("rawtypes")
     @Autowired
     private AbstractResendNotificationService resendNotificationService;
 

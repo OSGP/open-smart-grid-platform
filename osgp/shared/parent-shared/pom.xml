@@ -47,6 +47,7 @@
   <properties>
     <module.baseUri>${project.baseUri}/../</module.baseUri>
     <osgp.version>4.35.0-SNAPSHOT</osgp.version>
+    <java.version>1.8</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <spring.version>5.1.5.RELEASE</spring.version>
@@ -58,7 +59,7 @@
     <hibernate.version>5.4.1.Final</hibernate.version>
     <hibernate.validator.version>6.0.15.Final</hibernate.validator.version>
     <flyway.version>5.0.3</flyway.version>
-    <junit.version>5.4.1</junit.version>
+    <junit.version>4.12</junit.version>
     <assertj.version>3.12.2</assertj.version>
     <joda.version>2.10.1</joda.version>
     <slf4j.version>1.7.26</slf4j.version>
@@ -78,6 +79,7 @@
     <logback.ext.version>0.1.5</logback.ext.version>
     <apache.commons.schema>2.2.4</apache.commons.schema>
     <maven.compiler.plugin.version>3.8.0</maven.compiler.plugin.version>
+    <maven.jar.plugin.version>3.1.1</maven.jar.plugin.version>
     <license.maven.plugin>3.0</license.maven.plugin>
     <quartz.version>2.3.0</quartz.version>
     <hikaricp.version>3.3.1</hikaricp.version>
@@ -235,7 +237,7 @@
 
       <!-- Hibernate validator -->
       <dependency>
-        <groupId>org.hibernate</groupId>
+        <groupId>org.hibernate.validator</groupId>
         <artifactId>hibernate-validator</artifactId>
         <version>${hibernate.validator.version}</version>
       </dependency>
@@ -354,14 +356,8 @@
 
       <!-- Testing dependencies -->
       <dependency>
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter-api</artifactId>
-        <version>${junit.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter-engine</artifactId>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
         <version>${junit.version}</version>
         <scope>test</scope>
       </dependency>
@@ -501,8 +497,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
           <fork>true</fork>
-          <source>1.8</source>
-          <target>1.8</target>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
         </configuration>
       </plugin>
     </plugins>

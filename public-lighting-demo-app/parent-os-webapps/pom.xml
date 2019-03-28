@@ -48,6 +48,7 @@
     <module.baseUri>${project.baseUri}/../</module.baseUri>
     <osgp.version>${project.version}</osgp.version>
     <osgp.shared.version>4.35.0-SNAPSHOT</osgp.shared.version>
+    <java.version>1.8</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <spring.version>5.1.5.RELEASE</spring.version>
@@ -59,12 +60,14 @@
     <apache.commons.lang.version>3.8.1</apache.commons.lang.version>
     <apache.httpcomponents.version>4.5.7</apache.httpcomponents.version>
     <orika.version>1.5.4</orika.version>
-    <!-- <netty.version>4.1.34.Final</netty.version> -->
     <jxr.version>3.0.0</jxr.version>
     <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
     <maven.site.plugin>3.7.1</maven.site.plugin>
     <jackson.jaxrs.version>2.9.8</jackson.jaxrs.version>
     <maven.compiler.plugin.version>3.8.0</maven.compiler.plugin.version>
+    <maven.war.plugin.version>3.2.2</maven.war.plugin.version>
+    <maven.exec.plugin.version>1.6.0</maven.exec.plugin.version>
+    <maven.eclipse.plugin.version>2.10</maven.eclipse.plugin.version>
     <license.maven.plugin>3.0</license.maven.plugin>
     <maven.javadoc.version>3.1.0</maven.javadoc.version>
   </properties>
@@ -245,8 +248,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
           <fork>true</fork>
-          <source>1.8</source>
-          <target>1.8</target>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
         </configuration>
       </plugin>
       <plugin>

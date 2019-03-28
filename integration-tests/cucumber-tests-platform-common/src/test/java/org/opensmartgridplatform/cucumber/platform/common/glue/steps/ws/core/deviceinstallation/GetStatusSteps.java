@@ -15,12 +15,10 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.junit.Assert;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ws.soap.client.SoapFaultClientException;
-
 import org.opensmartgridplatform.adapter.ws.schema.core.common.AsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.DeviceStatus;
+import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.EventNotificationType;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.GetStatusAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.GetStatusAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.GetStatusRequest;
@@ -28,18 +26,18 @@ import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.GetSt
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.LightType;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.LightValue;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.LinkType;
-import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.EventNotificationType;
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.common.support.ws.core.CoreDeviceInstallationClient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class GetStatusSteps extends GlueBase {
+public class GetStatusSteps {
 
     @Autowired
     private CoreDeviceInstallationClient client;
@@ -107,8 +105,9 @@ public class GetStatusSteps extends GlueBase {
                     deviceStatus.getEventNotifications().size());
             for (final String eventNotification : getString(expectedResult, PlatformKeys.KEY_EVENTNOTIFICATIONS,
                     PlatformDefaults.DEFAULT_EVENTNOTIFICATIONS).split(PlatformKeys.SEPARATOR_COMMA)) {
-                Assert.assertTrue(deviceStatus.getEventNotifications()
-                        .contains(Enum.valueOf(EventNotificationType.class, eventNotification)));
+                final EventNotificationType eventNotificationType = Enum.valueOf(EventNotificationType.class,
+                        eventNotification);
+                Assert.assertTrue(deviceStatus.getEventNotifications().contains(eventNotificationType));
             }
         }
 

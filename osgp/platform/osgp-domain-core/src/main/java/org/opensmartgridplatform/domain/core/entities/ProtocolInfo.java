@@ -117,6 +117,7 @@ public class ProtocolInfo extends AbstractEntity {
         return this.parallelRequestsAllowed;
     }
 
+    @SuppressWarnings("unused")
     private static class Builder {
         private String protocol;
         private String protocolVersion;

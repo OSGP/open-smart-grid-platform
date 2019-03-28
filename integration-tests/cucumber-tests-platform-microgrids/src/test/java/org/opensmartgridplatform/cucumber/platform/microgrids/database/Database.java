@@ -40,7 +40,7 @@ public class Database {
     private TaskRepository taskRepository;
 
     private void insertDefaultData() {
-        this.notificationWebServiceConfigurationRepository.save(this.notificationEndpointConfigurations());
+        this.notificationWebServiceConfigurationRepository.saveAll(this.notificationEndpointConfigurations());
     }
 
     private List<NotificationWebServiceConfiguration> notificationEndpointConfigurations() {

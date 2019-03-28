@@ -55,7 +55,7 @@ public class EventNotificationHelperService {
     }
 
     public Ssld findSsld(final Long id) throws UnknownEntityException {
-        final Ssld ssld = this.ssldRepository.findOne(id);
+        final Ssld ssld = this.ssldRepository.findById(id).get();
         if (ssld == null) {
             throw new UnknownEntityException(Ssld.class, Long.toString(id));
         }

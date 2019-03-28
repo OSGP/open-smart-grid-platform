@@ -9,11 +9,9 @@ package org.opensmartgridplatform.cucumber.platform.glue.steps.ws;
 
 import java.util.Map;
 
-import org.opensmartgridplatform.cucumber.core.GlueBase;
-
 import cucumber.api.java.en.Then;
 
-public class FaultSteps extends GlueBase {
+public class FaultSteps {
 
     @Then("^a SOAP fault should have been returned$")
     public void aSoapFaultShouldHaveBeenReturned(final Map<String, String> responseParameters) throws Throwable {

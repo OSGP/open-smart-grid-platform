@@ -7,8 +7,8 @@
  */
 package org.opensmartgridplatform.cucumber.platform.glue.steps.ws;
 
-import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 import static org.junit.Assert.assertEquals;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -19,18 +19,16 @@ import java.util.regex.Pattern;
 
 import javax.xml.namespace.QName;
 
-import org.springframework.ws.soap.client.SoapFaultClientException;
-
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.support.ws.FaultDetailElement;
 import org.opensmartgridplatform.cucumber.platform.support.ws.SoapFaultHelper;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
 /**
  * Class with generic web service response steps.
  */
-public abstract class GenericResponseSteps extends GlueBase {
+public abstract class GenericResponseSteps {
 
     private static String faultCode;
     private static String faultString;

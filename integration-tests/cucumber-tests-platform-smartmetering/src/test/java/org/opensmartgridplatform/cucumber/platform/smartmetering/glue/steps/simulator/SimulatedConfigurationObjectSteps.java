@@ -15,15 +15,13 @@ import java.util.Map;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.interfaceclass.InterfaceClass;
 import org.openmuc.jdlms.interfaceclass.attribute.DataAttribute;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.ConfigurationFlag;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.ConfigurationFlags;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.ConfigurationObject;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GprsOperationModeType;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.ConfigurationObjectFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -33,8 +31,6 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
 public class SimulatedConfigurationObjectSteps {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SimulatedConfigurationObjectSteps.class);
 
     private static final int CLASS_ID = InterfaceClass.DATA.id();
     private static final ObisCode OBIS_CODE = new ObisCode(0, 1, 94, 31, 3, 255);

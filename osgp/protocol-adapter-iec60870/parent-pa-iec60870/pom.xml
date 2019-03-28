@@ -44,35 +44,33 @@
     <module.baseUri>${project.baseUri}/../</module.baseUri>
     <osgp.version>${project.version}</osgp.version>
     <osgp.shared.version>4.35.0-SNAPSHOT</osgp.shared.version>
+    <java.version>1.8</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <spring.version>4.3.18.RELEASE</spring.version>
-    <spring.ws.version>2.4.0.RELEASE</spring.ws.version>
-    <spring.data.version>1.11.6.RELEASE</spring.data.version>
-    <spring.data.key.version>1.2.16.RELEASE</spring.data.key.version>
-    <servlet.version>3.0.1</servlet.version>
-    <hibernate.version>4.2.16.Final</hibernate.version>
-    <hibernate.validator.version>4.3.1.Final</hibernate.validator.version>
-    <junit.version>4.11</junit.version>
-    <flyway.version>4.1.2</flyway.version>
-    <slf4j.version>1.7.7</slf4j.version>
-    <apache.commons.lang.version>3.3.2</apache.commons.lang.version>
-    <apache.httpcomponents.version>4.3.6</apache.httpcomponents.version>
-    <orika.version>1.5.1</orika.version>
+    <spring.version>5.1.5.RELEASE</spring.version>
+    <spring.ws.version>3.0.7.RELEASE</spring.ws.version>
+    <spring.data.version>2.1.5.RELEASE</spring.data.version>
+    <spring.data.key.version>2.1.5.RELEASE</spring.data.key.version>
+    <servlet.version>4.0.1</servlet.version>
+    <hibernate.version>5.4.1.Final</hibernate.version>
+    <junit.version>4.12</junit.version>
+    <flyway.version>5.0.3</flyway.version>
+    <slf4j.version>1.7.26</slf4j.version>
+    <apache.commons.lang.version>3.8.1</apache.commons.lang.version>
+    <apache.httpcomponents.version>4.5.7</apache.httpcomponents.version>
+    <orika.version>1.5.4</orika.version>
     <netty.version>3.9.4.Final</netty.version> 
     <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
     <maven.site.plugin>3.7.1</maven.site.plugin>
     <pmd.version>4.3</pmd.version>
-    <apache.activemq.version>5.15.7</apache.activemq.version>
-    <commons.pool.version>1.6</commons.pool.version>
-    <proton-jms.version>0.7</proton-jms.version>
-    <logback.version>1.1.2</logback.version>
-    <logback.ext.version>0.1.2</logback.ext.version>
-    <apache.commons.schema>2.0.3</apache.commons.schema>
+    <apache.activemq.version>5.15.8</apache.activemq.version>
+    <logback.version>1.2.3</logback.version>
+    <logback.ext.version>0.1.5</logback.ext.version>
     <maven.compiler.plugin.version>3.2</maven.compiler.plugin.version>
-    <guava.version>18.0</guava.version>
-    <license.maven.plugin>2.11</license.maven.plugin>
-    <hikaricp.version>2.4.0</hikaricp.version>
+    <maven.war.plugin.version>3.2.2</maven.war.plugin.version>
+    <guava.version>27.1-jre</guava.version>
+    <license.maven.plugin>3.0</license.maven.plugin>
+    <hikaricp.version>3.3.1</hikaricp.version>
     <openmuc.j60870.version>1.2.1</openmuc.j60870.version>
   </properties>
 
@@ -419,8 +417,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
           <fork>true</fork>
-          <source>1.8</source>
-          <target>1.8</target>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
         </configuration>
       </plugin>
     </plugins>

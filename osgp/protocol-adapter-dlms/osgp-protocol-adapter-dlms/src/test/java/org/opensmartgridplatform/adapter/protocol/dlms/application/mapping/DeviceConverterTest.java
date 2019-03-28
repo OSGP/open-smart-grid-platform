@@ -7,15 +7,9 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.mapping;
 
-import java.util.Date;
-
 import org.apache.commons.codec.binary.Hex;
 import org.assertj.core.api.Assertions;
-import org.joda.time.DateTimeUtils;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
@@ -23,16 +17,17 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SmartMeteringDev
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SmartMeteringDeviceDtoBuilder;
 
 public class DeviceConverterTest {
-    private DeviceConverter converter = new DeviceConverter();
+    private final DeviceConverter converter = new DeviceConverter();
 
     @Test
     public void convertsSmartMeteringDtoToDlmsDevice() {
         final SmartMeteringDeviceDto dto = new SmartMeteringDeviceDtoBuilder().build();
-        final DlmsDevice result = converter.convertTo(dto, null, null);
+        final DlmsDevice result = this.converter.convertTo(dto, null, null);
 
-        final DlmsDevice expected = converted(dto);
+        final DlmsDevice expected = this.converted(dto);
 
-        Assertions.assertThat(result).isEqualToIgnoringGivenFields(expected, "creationTime", "modificationTime", "version");
+        Assertions.assertThat(result).isEqualToIgnoringGivenFields(expected, "creationTime", "modificationTime",
+                "version");
         Assertions.assertThat(result.getSecurityKeys())
                 .usingElementComparatorIgnoringFields("creationTime", "modificationTime", "version")
                 .isEqualTo(expected.getSecurityKeys());

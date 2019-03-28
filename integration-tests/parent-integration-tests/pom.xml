@@ -42,6 +42,7 @@
   </distributionManagement>
 
   <properties>
+    <java.version>1.8</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
@@ -53,7 +54,7 @@
     <spring.ws.version>3.0.7.RELEASE</spring.ws.version>
     <spring.data.version>2.1.5.RELEASE</spring.data.version>
     <spring.data.key.version>2.1.5.RELEASE</spring.data.key.version>
-    <spring.data.commons.version>1.4.1.RELEASE</spring.data.commons.version>
+    <spring.data.commons.version>2.1.5.RELEASE</spring.data.commons.version>
     <spring.security.version>5.1.4.RELEASE</spring.security.version>
     <servlet.version>4.0.1</servlet.version>
     <servlet.jstl.version>1.2</servlet.jstl.version>
@@ -63,9 +64,9 @@
     <hibernate.validator.version>6.0.15.Final</hibernate.validator.version>
     <hibernate.jpa.version>1.0.2.Final</hibernate.jpa.version>
     <hikari.version>3.3.1</hikari.version>
-    <junit.version>5.4.1</junit.version>
+    <junit.version>4.12</junit.version>
+    <ant.junit.version>1.10.5</ant.junit.version>
     <joda.version>2.10.1</joda.version>
-<!--     <bonecp.version>0.8.0.RELEASE</bonecp.version> -->
     <slf4j.version>1.7.26</slf4j.version>
     <apache.commons.lang.version>3.8.1</apache.commons.lang.version>
     <apache.httpcomponents.version>4.5.7</apache.httpcomponents.version>
@@ -73,14 +74,13 @@
     <jackson.version>2.9.8</jackson.version>
     <commons.codec.version>1.12</commons.codec.version>
     <orika.version>1.5.4</orika.version>
-    <netty.version>4.1.34.Final</netty.version>
+    <netty.version>3.10.6.Final</netty.version>
     <givwenzen.version>1.0.6.1</givwenzen.version>
     <checkstyle.version>8.18</checkstyle.version>
     <pmd.version>4.3</pmd.version>
     <findbug.version>3.0.5</findbug.version>
     <apache.activemq.version>5.15.8</apache.activemq.version>
     <commons.pool.version>2.6.1</commons.pool.version>
-<!--     <proton-jms.version>0.12.2</proton-jms.version> -->
     <cxf.version>3.3.1</cxf.version>
     <logback.version>1.2.3</logback.version>
     <logback.ext.version>0.1.5</logback.ext.version>
@@ -96,12 +96,10 @@
     <maven.jar.plugin.version>3.1.1</maven.jar.plugin.version>
     <maven.surefire.plugin.version>2.22.1</maven.surefire.plugin.version>
     <maven.failsafe.plugin.version>2.22.1</maven.failsafe.plugin.version>
-<!--     <jgoodies.version>1.2.1</jgoodies.version> -->
     <jacoco.version>0.8.3</jacoco.version>
     <selenium.java.version>3.141.59</selenium.java.version>
     <sun.httpserver.version>20070405</sun.httpserver.version>
     <maven.javadoc.version>3.1.0</maven.javadoc.version>
-<!--     <ant.junit.version>1.10.5</ant.junit.version> -->
     <args4j.version>2.33</args4j.version>
     <maven.assembly.plugin.version>3.1.1</maven.assembly.plugin.version>
 
@@ -498,17 +496,10 @@
 
       <!-- Hibernate validator -->
       <dependency>
-        <groupId>org.hibernate</groupId>
+        <groupId>org.hibernate.validator</groupId>
         <artifactId>hibernate-validator</artifactId>
         <version>${hibernate.validator.version}</version>
       </dependency>
-
-      <!-- BoneCP (Connection pooling) -->
-<!--       <dependency>
-        <groupId>com.jolbox</groupId>
-        <artifactId>bonecp</artifactId>
-        <version>${bonecp.version}</version>
-      </dependency> -->
 
       <!-- Jackson (JSON) -->
       <dependency>
@@ -626,11 +617,12 @@
         <artifactId>junit</artifactId>
         <version>${junit.version}</version>
       </dependency>
-<!--       <dependency>
+
+      <dependency>
         <groupId>org.apache.ant</groupId>
         <artifactId>ant-junit</artifactId>
         <version>${ant.junit.version}</version>
-      </dependency> -->
+      </dependency>
 
       <dependency>
         <groupId>org.mockito</groupId>
@@ -698,33 +690,28 @@
       </dependency>
       <!-- Cucumber Framework -->
       <dependency>
-        <groupId>info.cukes</groupId>
+        <groupId>io.cucumber</groupId>
         <artifactId>cucumber-junit</artifactId>
         <version>${cucumber.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>info.cukes</groupId>
+        <groupId>io.cucumber</groupId>
         <artifactId>cucumber-java</artifactId>
         <version>${cucumber.version}</version>
       </dependency>
       <dependency>
-        <groupId>info.cukes</groupId>
+        <groupId>io.cucumber</groupId>
         <artifactId>cucumber-core</artifactId>
         <version>${cucumber.version}</version>
       </dependency>
       <dependency>
-        <groupId>info.cukes</groupId>
+        <groupId>io.cucumber</groupId>
         <artifactId>cucumber-spring</artifactId>
         <version>${cucumber.version}</version>
         <scope>test</scope>
       </dependency>
 
-<!--       <dependency>
-        <groupId>jgoodies</groupId>
-        <artifactId>forms</artifactId>
-        <version>${jgoodies.version}</version>
-      </dependency> -->
       <dependency>
         <groupId>com.sun.net.httpserver</groupId>
         <artifactId>http</artifactId>
@@ -839,8 +826,8 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
           <configuration>
-            <source>1.8</source>
-            <target>1.8</target>
+            <source>${java.version}</source>
+            <target>${java.version}</target>
             <encoding>${project.build.sourceEncoding}</encoding>
           </configuration>
           <version>${maven.compiler.plugin.version}</version>

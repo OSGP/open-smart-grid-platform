@@ -28,7 +28,7 @@
     <display.version>${project.version}-${BUILD_TAG}</display.version>
   </properties>
 
-  <build>
+<!--   <build>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -44,7 +44,7 @@
         </configuration>
       </plugin>
     </plugins>
-  </build>
+  </build> -->
 
   <dependencies>
     <!-- Alliander -->
@@ -117,7 +117,7 @@
 
     <!-- Hibernate validator -->
     <dependency>
-      <groupId>org.hibernate</groupId>
+      <groupId>org.hibernate.validator</groupId>
       <artifactId>hibernate-validator</artifactId>
     </dependency>
 

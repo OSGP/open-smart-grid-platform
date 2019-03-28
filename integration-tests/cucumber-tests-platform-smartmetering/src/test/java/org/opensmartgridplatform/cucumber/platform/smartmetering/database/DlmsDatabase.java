@@ -48,7 +48,7 @@ public class DlmsDatabase {
      * specific tests. For example: A default dlms gateway device.
      */
     private void insertDefaultData() {
-        this.notificationWebServiceConfigurationRepository.save(this.notificationEndpointConfigurations());
+        this.notificationWebServiceConfigurationRepository.saveAll(this.notificationEndpointConfigurations());
     }
 
     private List<NotificationWebServiceConfiguration> notificationEndpointConfigurations() {

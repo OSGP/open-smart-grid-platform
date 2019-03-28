@@ -23,13 +23,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 import org.springframework.ws.soap.SoapVersion;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
-import org.springframework.ws.soap.security.wss4j.Wss4jSecurityInterceptor;
+import org.springframework.ws.soap.security.wss4j2.Wss4jSecurityInterceptor;
 
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 
@@ -37,11 +36,9 @@ import org.opensmartgridplatform.shared.application.config.AbstractConfig;
  * An application context Java configuration class for Jasper Wireless settings.
  */
 @Configuration
-@PropertySources({ 
-    @PropertySource("classpath:jasper-interface.properties"),
-    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-    @PropertySource(value = "file:${osgp/JasperInterface/config}", ignoreResourceNotFound = true),
-})
+@PropertySource("classpath:jasper-interface.properties")
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/JasperInterface/config}", ignoreResourceNotFound = true)
 @ComponentScan(basePackages = {"org.opensmartgridplatform.adapter.protocol.jasper"})
 public class JasperWirelessConfig extends AbstractConfig {
 

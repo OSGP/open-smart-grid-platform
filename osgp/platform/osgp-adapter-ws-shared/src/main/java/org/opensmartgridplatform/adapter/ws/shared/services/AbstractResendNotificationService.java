@@ -137,7 +137,7 @@ public abstract class AbstractResendNotificationService<T extends Enum<T>> {
              * Check if the response data record still exists. If so, update the
              * number of notifications sent, otherwise do nothing.
              */
-            if (this.responseDataRepository.findOne(responseData.getId()) != null) {
+            if (this.responseDataRepository.findById(responseData.getId()).isPresent()) {
                 responseData.setNumberOfNotificationsSent((short) (responseData.getNumberOfNotificationsSent() + 1));
                 this.responseDataRepository.save(responseData);
             }
@@ -230,7 +230,7 @@ public abstract class AbstractResendNotificationService<T extends Enum<T>> {
      */
     private List<ResponseData> getResponseDataForNotifying(final short notificationsResent,
             final DateTime createdBefore) {
-        final Pageable pageable = new PageRequest(0, this.resendPageSize, new Sort(Direction.ASC, "creationTime"));
+        final Pageable pageable = PageRequest.of(0, this.resendPageSize, new Sort(Direction.ASC, "creationTime"));
 
         return this.responseDataRepository.findByNumberOfNotificationsSentAndCreationTimeBefore(notificationsResent,
                 createdBefore.toDate(), pageable);

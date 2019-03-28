@@ -9,7 +9,8 @@ package org.opensmartgridplatform.adapter.ws.core.endpoints;
 
 import java.util.List;
 
-import org.hibernate.validator.method.MethodConstraintViolationException;
+import javax.validation.ConstraintViolationException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,10 +58,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
-// MethodConstraintViolationException is deprecated.
-// Will by replaced by equivalent functionality defined
-// by the Bean Validation 1.1 API as of Hibernate Validator 5.
-@SuppressWarnings("deprecation")
 @Endpoint
 public class DeviceInstallationEndpoint {
 
@@ -157,7 +154,7 @@ public class DeviceInstallationEndpoint {
 
             this.deviceInstallationService.addDevice(organisationIdentification, device,
                     ownerOrganisationIdentification);
-        } catch (final MethodConstraintViolationException e) {
+        } catch (final ConstraintViolationException e) {
             LOGGER.error(EXCEPTION_WHILE_ADDING_DEVICE, e.getMessage(), request.getDevice().getDeviceIdentification(),
                     organisationIdentification, e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
@@ -183,7 +180,7 @@ public class DeviceInstallationEndpoint {
 
             this.deviceInstallationService.updateDevice(organisationIdentification, device);
 
-        } catch (final MethodConstraintViolationException e) {
+        } catch (final ConstraintViolationException e) {
             LOGGER.error("Exception update Device: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
@@ -218,7 +215,7 @@ public class DeviceInstallationEndpoint {
                     .findRecentDevices(organisationIdentification);
             response.getDevices().addAll(this.deviceInstallationMapper.mapAsList(recentDevices,
                     org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.Device.class));
-        } catch (final MethodConstraintViolationException e) {
+        } catch (final ConstraintViolationException e) {
             LOGGER.error("Exception find recent device: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
@@ -253,7 +250,7 @@ public class DeviceInstallationEndpoint {
             asyncResponse.setDeviceId(request.getDeviceIdentification());
             response.setAsyncResponse(asyncResponse);
 
-        } catch (final MethodConstraintViolationException e) {
+        } catch (final ConstraintViolationException e) {
             LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
@@ -311,7 +308,7 @@ public class DeviceInstallationEndpoint {
             asyncResponse.setDeviceId(request.getDeviceIdentification());
             response.setAsyncResponse(asyncResponse);
 
-        } catch (final MethodConstraintViolationException e) {
+        } catch (final ConstraintViolationException e) {
             LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));

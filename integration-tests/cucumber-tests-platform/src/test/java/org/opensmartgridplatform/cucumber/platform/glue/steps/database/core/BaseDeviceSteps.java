@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -44,7 +43,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public abstract class BaseDeviceSteps extends GlueBase {
+public abstract class BaseDeviceSteps {
 
     @Autowired
     private CoreDeviceConfiguration configuration;

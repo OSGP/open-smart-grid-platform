@@ -45,6 +45,7 @@
     <module.baseUri>${project.baseUri}/../</module.baseUri>
     <osgp.version>${project.version}</osgp.version>
     <shared.version>4.35.0-SNAPSHOT</shared.version>
+    <java.version>1.8</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <spring.version>5.1.5.RELEASE</spring.version>
@@ -55,7 +56,10 @@
     <servlet.jstl.version>1.2</servlet.jstl.version>
     <hibernate.version>5.4.1.Final</hibernate.version>
     <hibernate.validator.version>6.0.15.Final</hibernate.validator.version>
-    <junit.version>5.4.1</junit.version>
+    <javax.validation.api.version>2.0.1.Final</javax.validation.api.version>
+    <javax.el.api.version>3.0.0</javax.el.api.version>
+    <javax.el.version>3.0.0</javax.el.version>
+    <junit.version>4.12</junit.version>
     <assertj.version>3.12.2</assertj.version>
     <mockito.version>1.10.19</mockito.version>
     <joda.version>2.10.1</joda.version>
@@ -69,13 +73,14 @@
     <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
     <maven.site.plugin>3.7.1</maven.site.plugin>
     <apache.activemq.version>5.15.8</apache.activemq.version>
-<!--     <commons.pool.version>2.6.1</commons.pool.version> -->
-<!--     <proton-jms.version>0.7</proton-jms.version> -->
+    <commons.pool.version>2.6.1</commons.pool.version>
     <logback.version>1.2.3</logback.version>
     <logback.ext.version>0.1.5</logback.ext.version>
     <SunriseSunsetCalculator.version>1.2</SunriseSunsetCalculator.version>
     <apache.commons.schema>2.2.4</apache.commons.schema>
     <maven.compiler.plugin.version>3.8.0</maven.compiler.plugin.version>
+    <maven.jar.plugin.version>3.1.1</maven.jar.plugin.version>
+    <maven.war.plugin.version>3.2.2</maven.war.plugin.version>
     <license.maven.plugin>3.0</license.maven.plugin>
     <hikaricp.version>3.3.1</hikaricp.version>
   </properties>
@@ -432,9 +437,31 @@
 
       <!-- Hibernate validator -->
       <dependency>
-        <groupId>org.hibernate</groupId>
+        <groupId>org.hibernate.validator</groupId>
         <artifactId>hibernate-validator</artifactId>
         <version>${hibernate.validator.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hibernate.validator</groupId>
+        <artifactId>hibernate-validator-annotation-processor</artifactId>
+        <version>${hibernate.validator.version}</version>
+      </dependency>
+
+      <!-- Bean validation 2.0 / JSR 380 -->
+      <dependency>
+        <groupId>javax.validation</groupId>
+        <artifactId>validation-api</artifactId>
+        <version>${javax.validation.api.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.el</groupId>
+        <artifactId>javax.el-api</artifactId>
+        <version>${javax.el.api.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.glassfish.web</groupId>
+        <artifactId>javax.el</artifactId>
+        <version>${javax.el.version}</version>
       </dependency>
 
       <!-- Flyway (DB Migration) -->
@@ -520,8 +547,8 @@
       </dependency>
 
       <dependency>
-        <groupId>commons-pool</groupId>
-        <artifactId>commons-pool</artifactId>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-pool2</artifactId>
         <version>${commons.pool.version}</version>
       </dependency>
 
@@ -661,8 +688,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
           <fork>true</fork>
-          <source>1.8</source>
-          <target>1.8</target>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
         </configuration>
       </plugin>
     </plugins>

@@ -8,22 +8,20 @@
 package org.opensmartgridplatform.logging.application.config;
 
 import org.apache.activemq.RedeliveryPolicy;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
-import org.springframework.jms.listener.DefaultMessageListenerContainer;
-
 import org.opensmartgridplatform.logging.infra.jms.ProtocolLogItemRequestMessageListener;
 import org.opensmartgridplatform.shared.application.config.AbstractMessagingConfig;
 import org.opensmartgridplatform.shared.application.config.jms.JmsConfiguration;
 import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationFactory;
 import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationNames;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
 @Configuration
-@PropertySources({ @PropertySource("classpath:osgp-logging.properties"),
-        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:${osgp/Logging/config}", ignoreResourceNotFound = true), })
+@PropertySource("classpath:osgp-logging.properties")
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/Logging/config}", ignoreResourceNotFound = true)
 public class ProtocolMessagingConfig extends AbstractMessagingConfig {
 
     private static final String PROPERTY_NAME_JMS_DEFAULT_INITIAL_REDELIVERY_DELAY = "jms.protocol.default.initial.redelivery.delay";
@@ -40,18 +38,18 @@ public class ProtocolMessagingConfig extends AbstractMessagingConfig {
     public RedeliveryPolicy defaultRedeliveryPolicy() {
         final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
 
-        redeliveryPolicy.setInitialRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_INITIAL_REDELIVERY_DELAY)));
-        redeliveryPolicy.setMaximumRedeliveries(Integer.parseInt(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERIES)));
-        redeliveryPolicy.setMaximumRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERY_DELAY)));
-        redeliveryPolicy.setRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_REDELIVERY_DELAY)));
-        redeliveryPolicy.setBackOffMultiplier(Double.parseDouble(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_BACK_OFF_MULTIPLIER)));
-        redeliveryPolicy.setUseExponentialBackOff(Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_USE_EXPONENTIAL_BACK_OFF)));
+        redeliveryPolicy.setInitialRedeliveryDelay(Long
+                .parseLong(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_INITIAL_REDELIVERY_DELAY)));
+        redeliveryPolicy.setMaximumRedeliveries(
+                Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERIES)));
+        redeliveryPolicy.setMaximumRedeliveryDelay(Long
+                .parseLong(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERY_DELAY)));
+        redeliveryPolicy.setRedeliveryDelay(
+                Long.parseLong(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_REDELIVERY_DELAY)));
+        redeliveryPolicy.setBackOffMultiplier(Double
+                .parseDouble(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_BACK_OFF_MULTIPLIER)));
+        redeliveryPolicy.setUseExponentialBackOff(Boolean.parseBoolean(
+                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_USE_EXPONENTIAL_BACK_OFF)));
 
         return redeliveryPolicy;
     }

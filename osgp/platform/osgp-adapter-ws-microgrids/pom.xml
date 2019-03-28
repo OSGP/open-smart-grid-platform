@@ -135,7 +135,7 @@
 
     <!-- Hibernate validator -->
     <dependency>
-      <groupId>org.hibernate</groupId>
+      <groupId>org.hibernate.validator</groupId>
       <artifactId>hibernate-validator</artifactId>
     </dependency>
 
@@ -212,7 +212,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
-        <version>2.4</version>
+        <version>${maven.war.plugin.version}</version>
         <configuration>
           <attachClasses>true</attachClasses>
           <failOnMissingWebXml>false</failOnMissingWebXml>

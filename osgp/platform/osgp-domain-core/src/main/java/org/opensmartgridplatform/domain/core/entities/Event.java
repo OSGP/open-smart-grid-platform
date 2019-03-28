@@ -27,7 +27,7 @@ public class Event extends AbstractEntity {
     private static final long serialVersionUID = 5987663923796632312L;
 
     @ManyToOne()
-    @JoinColumn()
+    @JoinColumn(name = "device")
     private Device device;
 
     @Column(nullable = false)

@@ -189,6 +189,10 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         return this.sequenceNumber;
     }
 
+    public Integer getSequenceNumberMaximum() {
+        return this.sequenceNumberMaximum;
+    }
+
     /**
      * Get an OutOfSequenceEvent for given device id. The OutOfSequenceEvent
      * instance will be removed from the list, before the instance is returned.
@@ -248,7 +252,8 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
                             .withSignature(this.oslpSignature).withProvider(this.oslpSignatureProvider)
                             .withPrimaryKey(this.privateKey).withDeviceId(deviceId);
 
-                    // Pass the incremented sequence number to the handleRequest()
+                    // Pass the incremented sequence number to the
+                    // handleRequest()
                     // function for checking.
                     responseBuilder.withPayloadMessage(this.handleRequest(message));
                     // Add the new sequence number to the OslpEnvelope
@@ -259,7 +264,8 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
                     LOGGER.debug("sending OSLP response with sequence number: {}",
                             this.convertByteArrayToInteger(response.getSequenceNumber()));
 
-                    // wait for the response to actually be written. This improves
+                    // wait for the response to actually be written. This
+                    // improves
                     // stability of the tests
                     final ChannelFuture future = e.getChannel().write(response);
                     future.await();
@@ -335,7 +341,7 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
     }
 
     // Note: This method is for other classes which are executing this method
-    // WITH a sequencenumber
+    // WITH a sequence number
     public Oslp.Message handleRequest(final OslpEnvelope message, final int sequenceNumber)
             throws DeviceSimulatorException, IOException, ParseException {
         return this.handleRequest(message);

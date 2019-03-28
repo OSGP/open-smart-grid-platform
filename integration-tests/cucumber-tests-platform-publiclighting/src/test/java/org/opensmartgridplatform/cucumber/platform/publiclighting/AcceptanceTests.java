@@ -16,12 +16,12 @@ import cucumber.api.SnippetType;
 import cucumber.api.junit.Cucumber;
 
 @RunWith(Cucumber.class)
-@CucumberOptions(features = { "classpath:features/publiclighting" }, tags = { "~@Skip", "~@NightlyBuildOnly" }, glue = {
-        "classpath:org.opensmartgridplatform.cucumber.platform.glue",
-        "classpath:org.opensmartgridplatform.cucumber.platform.common.glue",
-        "classpath:org.opensmartgridplatform.cucumber.platform.publiclighting.glue" }, plugin = { "pretty",
-                "html:target/output/Cucumber-report", "html:target/output/Cucumber-html-report.html",
-                "json:target/output/cucumber.json" }, snippets = SnippetType.CAMELCASE, dryRun = false)
+@CucumberOptions(features = { "classpath:features/publiclighting" }, tags = { "not @Skip",
+        "not @NightlyBuildOnly" }, glue = { "classpath:org.opensmartgridplatform.cucumber.platform.glue",
+                "classpath:org.opensmartgridplatform.cucumber.platform.common.glue",
+                "classpath:org.opensmartgridplatform.cucumber.platform.publiclighting.glue" }, plugin = { "pretty",
+                        "html:target/output/Cucumber-report", "html:target/output/Cucumber-html-report.html",
+                        "json:target/output/cucumber.json" }, snippets = SnippetType.CAMELCASE, dryRun = false)
 public class AcceptanceTests {
 
 }

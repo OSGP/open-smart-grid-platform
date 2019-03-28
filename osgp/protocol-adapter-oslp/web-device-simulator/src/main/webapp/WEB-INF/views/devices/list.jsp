@@ -185,7 +185,7 @@ body {
 
                 <!-- paging control -->
                 <div>
-                    <ul id="paginationControl" class="pagination offset2" data="${numberOfPages}">
+                    <ul id="paginationControl" class="pagination offset2">
                         <c:choose>
                             <c:when test="${pageNumber == 1 || numberOfPages == 0}">
                                 <li class="disabled"><a>&lt;&lt;</a></li>
@@ -435,7 +435,7 @@ body {
             if (!currentPage) {
                 currentPage = 1;
             }
-            var totalPages = $('ul.pagination').attr('data');
+            var totalPages = $('#numberOfPages').val();
             var pageNumber;
             if (linkText == '<<') {
                 pageNumber = 1;
@@ -478,5 +478,6 @@ body {
     <input type="hidden" id="devicesSortDirection" name="devicesSortDirection" />
     <input type="hidden" id="filterDevicesPerPage" name="devicesPerPage" />
     <input type="hidden" id="filterPageNumber" name="pageNumber" value="${pageCurrent}" />
+    <input type="hidden" id="numberOfPages" name="numberOfPages" value="${numberOfPages}" />
 </body>
 </html>

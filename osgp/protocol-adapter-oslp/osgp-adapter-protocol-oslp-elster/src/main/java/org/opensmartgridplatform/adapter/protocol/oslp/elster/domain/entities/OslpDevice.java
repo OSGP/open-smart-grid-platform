@@ -16,7 +16,6 @@ import javax.persistence.Transient;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
-
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
 
 @Entity
@@ -40,8 +39,6 @@ public class OslpDevice extends AbstractEntity {
     @Column(unique = true, nullable = true)
     private String deviceUid;
 
-    // @Identification This annotiation is present in osgp-domain-core
-    // validation package. Therefore it has been disabled for now.
     @Column(unique = true, nullable = false, length = 40)
     private String deviceIdentification;
 
@@ -60,7 +57,7 @@ public class OslpDevice extends AbstractEntity {
     private final SecureRandom random = new SecureRandom();
 
     @Transient
-    private Integer sequenceNumberMaximum = 65535;
+    private final Integer sequenceNumberMaximum = 65535;
 
     @Column(nullable = true, length = 255)
     private String publicKey;

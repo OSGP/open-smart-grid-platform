@@ -46,41 +46,46 @@
     <osgp.dlms.version>4.35.0-SNAPSHOT</osgp.dlms.version>
     <osgp.shared.version>4.35.0-SNAPSHOT</osgp.shared.version>
     <osgp.jasper-interface.version>4.35.0-SNAPSHOT</osgp.jasper-interface.version>
+    <java.version>1.8</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <spring.version>4.3.18.RELEASE</spring.version>
-    <spring.data.version>1.11.6.RELEASE</spring.data.version>
-    <spring.wscore.version>2.4.0.RELEASE</spring.wscore.version>
-    <spring.wssecurity.version>2.4.0.RELEASE</spring.wssecurity.version>
-    <spring.wssupport.version>2.4.0.RELEASE</spring.wssupport.version>
-    <spring.ws.version>2.4.0.RELEASE</spring.ws.version>
-    <assertj.version>3.9.1</assertj.version>
+    <spring.version>5.1.5.RELEASE</spring.version>
+    <spring.data.version>2.1.5.RELEASE</spring.data.version>
+    <spring.wscore.version>3.0.7.RELEASE</spring.wscore.version>
+    <spring.wssecurity.version>3.0.7.RELEASE</spring.wssecurity.version>
+    <spring.wssupport.version>3.0.7.RELEASE</spring.wssupport.version>
+    <spring.ws.version>3.0.7.RELEASE</spring.ws.version>
+    <assertj.version>3.12.2</assertj.version>
     <xmlunit.version>1.6</xmlunit.version>
     <mockito.version>1.10.19</mockito.version>
     <apache.wss4j.version>1.6.19</apache.wss4j.version>
-    <servlet.version>3.0.1</servlet.version>
+    <servlet.version>4.0.1</servlet.version>
     <servlet.jstl.version>1.2</servlet.jstl.version>
-    <hibernate.version>4.2.16.Final</hibernate.version>
+    <hibernate.version>5.4.1.Final</hibernate.version>
+    <postgresql.version>42.2.5</postgresql.version>
     <junit.version>4.12</junit.version>
-    <joda.version>2.4</joda.version>
-    <flyway.version>4.1.2</flyway.version>
-    <slf4j.version>1.7.7</slf4j.version>
-    <apache.commons.lang.version>3.3.2</apache.commons.lang.version>
-    <orika.version>1.5.1</orika.version>
-    <jxr.version>2.5</jxr.version>
+    <joda.version>2.10.1</joda.version>
+    <flyway.version>5.0.3</flyway.version>
+    <slf4j.version>1.7.26</slf4j.version>
+    <apache.commons.lang.version>3.8.1</apache.commons.lang.version>
+    <orika.version>1.5.4</orika.version>
+    <jxr.version>3.0.0</jxr.version>
     <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
     <maven.site.plugin>3.7.1</maven.site.plugin>
-    <apache.activemq.version>5.15.7</apache.activemq.version>
-    <commons.pool.version>1.6</commons.pool.version>
+    <apache.activemq.version>5.15.8</apache.activemq.version>
+    <commons.pool.version>2.6.1</commons.pool.version>
+    <apache.httpcomponents.version>4.5.7</apache.httpcomponents.version>
     <logback.version>1.2.3</logback.version>
-    <logback.ext.version>0.1.4</logback.ext.version>
-    <mockito.version>1.9.5</mockito.version>
-    <apache.commons.schema>2.0.3</apache.commons.schema>
-    <maven.compiler.plugin.version>3.2</maven.compiler.plugin.version>
-    <netty.version>3.9.4.Final</netty.version>
+    <logback.ext.version>0.1.5</logback.ext.version>
+    <apache.commons.schema>2.2.4</apache.commons.schema>
+    <maven.compiler.plugin.version>3.8.0</maven.compiler.plugin.version>
+    <maven.war.plugin.version>3.2.2</maven.war.plugin.version>
+    <maven.surefire.plugin.version>2.22.1</maven.surefire.plugin.version>
+    <maven.failsafe.plugin.version>2.22.1</maven.failsafe.plugin.version>
+    <netty.version>3.10.6.Final</netty.version>
     <openmuc.jdlms.version>1.6.0</openmuc.jdlms.version>
     <javax.inject.version>1</javax.inject.version>
-    <license.maven.plugin>2.11</license.maven.plugin>
+    <license.maven.plugin>3.0</license.maven.plugin>
   </properties>
 
   <repositories>
@@ -243,7 +248,6 @@
         <version>${apache.wss4j.version}</version>
       </dependency>
 
-
       <!-- Servlet API 3.0 -->
       <dependency>
         <groupId>javax.servlet</groupId>
@@ -352,8 +356,8 @@
       </dependency>
 
       <dependency>
-        <groupId>commons-pool</groupId>
-        <artifactId>commons-pool</artifactId>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-pool2</artifactId>
         <version>${commons.pool.version}</version>
       </dependency>
 
@@ -362,6 +366,12 @@
         <groupId>ma.glasnost.orika</groupId>
         <artifactId>orika-core</artifactId>
         <version>${orika.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient</artifactId>
+        <version>${apache.httpcomponents.version}</version>
       </dependency>
 
       <!-- Testing dependencies -->
@@ -375,6 +385,14 @@
         <groupId>org.assertj</groupId>
         <artifactId>assertj-core</artifactId>
         <version>${assertj.version}</version>
+        <scope>test</scope>
+      </dependency>
+
+      <!-- PostgreSQL -->
+      <dependency>
+        <groupId>org.postgresql</groupId>
+        <artifactId>postgresql</artifactId>
+        <version>${postgresql.version}</version>
         <scope>test</scope>
       </dependency>
 
@@ -506,8 +524,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
           <fork>true</fork>
-          <source>1.8</source>
-          <target>1.8</target>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
         </configuration>
       </plugin>
     </plugins>

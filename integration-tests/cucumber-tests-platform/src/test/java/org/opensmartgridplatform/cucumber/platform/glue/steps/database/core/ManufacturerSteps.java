@@ -13,14 +13,12 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStri
 import java.util.Map;
 
 import org.junit.Assert;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.core.builders.ManufacturerBuilder;
 import org.opensmartgridplatform.domain.core.entities.Manufacturer;
 import org.opensmartgridplatform.domain.core.repositories.ManufacturerRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -28,7 +26,7 @@ import cucumber.api.java.en.Then;
 /**
  * The manufacturer related steps.
  */
-public class ManufacturerSteps extends GlueBase {
+public class ManufacturerSteps {
 
     @Autowired
     private ManufacturerRepository manufacturerRepository;

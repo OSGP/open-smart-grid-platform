@@ -10,13 +10,6 @@ package org.opensmartgridplatform.core.application.tasks;
 import java.sql.Timestamp;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.core.application.config.SchedulingConfig;
 import org.opensmartgridplatform.core.application.services.DeviceRequestMessageService;
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -27,6 +20,12 @@ import org.opensmartgridplatform.domain.core.valueobjects.ScheduledTaskStatusTyp
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolRequestMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Component;
 
 @Component
 public class ScheduledTaskScheduler implements Runnable {
@@ -89,7 +88,7 @@ public class ScheduledTaskScheduler implements Runnable {
         final Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
         // configurable page size for scheduled tasks
-        final Pageable pageable = new PageRequest(0, this.schedulingConfig.scheduledTaskPageSize());
+        final Pageable pageable = PageRequest.of(0, this.schedulingConfig.scheduledTaskPageSize());
 
         return this.scheduledTaskRepository.findByStatusAndScheduledTimeLessThan(type, timestamp, pageable);
     }

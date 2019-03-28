@@ -31,12 +31,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 
 @Configuration
-@PropertySources({ @PropertySource("classpath:osgp-core.properties"),
-        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:${osgp/Core/config}", ignoreResourceNotFound = true), })
+@PropertySource("classpath:osgp-core.properties")
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/Core/config}", ignoreResourceNotFound = true)
 public class DomainMessagingConfig extends AbstractConfig {
 
     // JMS Settings

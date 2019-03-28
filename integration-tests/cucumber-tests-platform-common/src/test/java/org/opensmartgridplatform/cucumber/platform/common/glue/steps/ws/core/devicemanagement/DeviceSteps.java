@@ -17,11 +17,10 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.junit.Assert;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.LightMeasurementDevice;
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.inputparsers.XmlGregorianCalendarInputParser;
 
-public class DeviceSteps extends GlueBase {
+public class DeviceSteps {
 
     public static void checkDevice(final Map<String, String> expectedDevice, final Device actualDevice) {
         if (expectedDevice.containsKey(PlatformKeys.KEY_DEVICE_IDENTIFICATION)) {

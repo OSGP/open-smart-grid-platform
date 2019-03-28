@@ -30,9 +30,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 
-import org.hibernate.annotations.Sort;
-import org.hibernate.annotations.SortType;
-
+import org.hibernate.annotations.SortNatural;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleData;
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
 
@@ -58,11 +56,11 @@ public class FirmwareFile extends AbstractEntity {
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
     @JoinTable(name = "device_model_firmware_file", joinColumns = @JoinColumn(name = "firmware_file_id"), inverseJoinColumns = @JoinColumn(name = "device_model_id"))
     @OrderBy("modelCode")
-    @Sort(type = SortType.NATURAL)
-    private SortedSet<DeviceModel> deviceModels = new TreeSet<>();
+    @SortNatural
+    private final SortedSet<DeviceModel> deviceModels = new TreeSet<>();
 
     @OneToMany(mappedBy = "firmwareFile", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private Set<FirmwareFileFirmwareModule> firmwareModules = new HashSet<>();
+    private final Set<FirmwareFileFirmwareModule> firmwareModules = new HashSet<>();
 
     @Column()
     private String filename;

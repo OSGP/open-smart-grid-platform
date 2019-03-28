@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
-import org.springframework.ws.soap.security.wss4j.Wss4jSecurityInterceptor;
+import org.springframework.ws.soap.security.wss4j2.Wss4jSecurityInterceptor;
 
 import com.jasperwireless.api.ws.service.GetSMSDetailsRequest;
 import com.jasperwireless.api.ws.service.GetSMSDetailsResponse;
@@ -58,8 +58,8 @@ public class JasperWirelessSmsClient {
         // override default uri
         this.webServiceTemplate.setDefaultUri(this.jasperWirelessAccess.getUri());
 
-        return (SendSMSResponse) this.webServiceTemplate.marshalSendAndReceive(sendSMSRequest, new SoapActionCallback(
-                "http://api.jasperwireless.com/ws/service/sms/SendSMS"));
+        return (SendSMSResponse) this.webServiceTemplate.marshalSendAndReceive(sendSMSRequest,
+                new SoapActionCallback("http://api.jasperwireless.com/ws/service/sms/SendSMS"));
     }
 
     public GetSMSDetailsResponse getSMSDetails(final Long smsMessageId, final String iccid) {

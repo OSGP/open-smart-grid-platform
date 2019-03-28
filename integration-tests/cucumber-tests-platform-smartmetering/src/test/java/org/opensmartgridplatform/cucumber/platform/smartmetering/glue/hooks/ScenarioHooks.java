@@ -10,10 +10,6 @@ package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.hooks;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -22,6 +18,8 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.database.DlmsDa
 import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.simulator.DeviceSimulatorSteps;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration.ReplaceKeysSteps;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ServiceEndpoint;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
@@ -29,7 +27,7 @@ import cucumber.api.java.Before;
 /**
  * Class with all the scenario hooks when each scenario runs.
  */
-public class ScenarioHooks extends GlueBase {
+public class ScenarioHooks {
 
     @Value("${alarm.notifications.host}")
     private String alarmNotificationsHost;
@@ -98,6 +96,7 @@ public class ScenarioHooks extends GlueBase {
 
     private Map<String, String> initSettings() {
         return new HashMap<String, String>() {
+            private static final long serialVersionUID = 1L;
             {
                 this.put(PlatformKeys.KEY_DEVICE_IDENTIFICATION,
                         PlatformDefaults.DEFAULT_SMART_METER_DEVICE_IDENTIFICATION);

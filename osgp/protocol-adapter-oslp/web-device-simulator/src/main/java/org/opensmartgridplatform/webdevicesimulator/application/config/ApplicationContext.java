@@ -20,7 +20,7 @@ import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationVersion;
-import org.hibernate.ejb.HibernatePersistence;
+import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.ChannelFactory;
@@ -30,6 +30,14 @@ import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.SimpleChannelHandler;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
+import org.opensmartgridplatform.oslp.OslpDecoder;
+import org.opensmartgridplatform.oslp.OslpEncoder;
+import org.opensmartgridplatform.shared.security.CertificateHelper;
+import org.opensmartgridplatform.webdevicesimulator.domain.repositories.DeviceRepository;
+import org.opensmartgridplatform.webdevicesimulator.service.OslpChannelHandler;
+import org.opensmartgridplatform.webdevicesimulator.service.OslpSecurityHandler;
+import org.opensmartgridplatform.webdevicesimulator.service.RegisterDevice;
+import org.opensmartgridplatform.webdevicesimulator.service.SwitchingServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
@@ -39,23 +47,17 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
-import org.opensmartgridplatform.oslp.OslpDecoder;
-import org.opensmartgridplatform.oslp.OslpEncoder;
-import org.opensmartgridplatform.shared.security.CertificateHelper;
-import org.opensmartgridplatform.webdevicesimulator.service.OslpChannelHandler;
-import org.opensmartgridplatform.webdevicesimulator.service.OslpSecurityHandler;
-import org.opensmartgridplatform.webdevicesimulator.service.RegisterDevice;
-import org.opensmartgridplatform.webdevicesimulator.service.SwitchingServices;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -68,11 +70,14 @@ import com.zaxxer.hikari.HikariDataSource;
  * </ul>
  */
 @Configuration
-@ComponentScan(basePackages = {"org.opensmartgridplatform.webdevicesimulator"})
+@ComponentScan(basePackages = { "org.opensmartgridplatform.webdevicesimulator" })
+@EnableJpaRepositories(entityManagerFactoryRef = "entityManagerFactory", basePackageClasses = {
+        DeviceRepository.class })
+@EnableTransactionManagement
 @EnableWebMvc
 @ImportResource("classpath:applicationContext.xml")
-@PropertySources({ @PropertySource("classpath:web-device-simulator.properties"),
-        @PropertySource(value = "file:${osgp/WebDeviceSimulator/config}", ignoreResourceNotFound = true), })
+@PropertySource("classpath:web-device-simulator.properties")
+@PropertySource(value = "file:${osgp/WebDeviceSimulator/config}", ignoreResourceNotFound = true)
 public class ApplicationContext {
 
     private static final String VIEW_RESOLVER_PREFIX = "/WEB-INF/views/";
@@ -88,7 +93,7 @@ public class ApplicationContext {
 
     private static final String PROPERTY_NAME_HIBERNATE_DIALECT = "hibernate.dialect";
     private static final String PROPERTY_NAME_HIBERNATE_FORMAT_SQL = "hibernate.format_sql";
-    private static final String PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY = "hibernate.ejb.naming_strategy";
+    private static final String PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY = "hibernate.physical_naming_strategy";
     private static final String PROPERTY_NAME_HIBERNATE_SHOW_SQL = "hibernate.show_sql";
 
     private static final String PROPERTY_NAME_FLYWAY_INITIAL_VERSION = "flyway.initial.version";
@@ -210,7 +215,7 @@ public class ApplicationContext {
         entityManagerFactoryBean.setDataSource(this.getDataSource());
         entityManagerFactoryBean
                 .setPackagesToScan(this.environment.getRequiredProperty(PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN));
-        entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistence.class);
+        entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistenceProvider.class);
 
         final Properties jpaProperties = new Properties();
         jpaProperties.put(PROPERTY_NAME_HIBERNATE_DIALECT,

@@ -8,6 +8,7 @@
 package org.opensmartgridplatform.domain.core.repositories;
 
 import java.net.InetAddress;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -28,6 +29,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 @Transactional
 public interface DeviceRepository extends JpaRepository<Device, Long>, JpaSpecificationExecutor<Device> {
+
+    List<Device> findByIdIn(Collection<Long> ids);
 
     Device findByDeviceIdentification(String deviceIdentification);
 

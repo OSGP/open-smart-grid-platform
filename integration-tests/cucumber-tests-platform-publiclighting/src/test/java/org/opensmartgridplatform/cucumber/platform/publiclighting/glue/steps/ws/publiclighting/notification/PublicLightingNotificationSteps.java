@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.notification.Notification;
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -24,7 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import cucumber.api.java.en.Then;
 
-public class PublicLightingNotificationSteps extends GlueBase {
+public class PublicLightingNotificationSteps {
 
     private static final int MAX_WAIT_FOR_NOTIFICATION = 65_000;
     /*

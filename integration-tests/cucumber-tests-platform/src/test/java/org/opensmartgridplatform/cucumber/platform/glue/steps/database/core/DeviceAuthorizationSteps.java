@@ -15,7 +15,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -32,7 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
-public class DeviceAuthorizationSteps extends GlueBase {
+public class DeviceAuthorizationSteps {
 
     @Autowired
     private DeviceAuthorizationRepository deviceAuthorizationRepository;

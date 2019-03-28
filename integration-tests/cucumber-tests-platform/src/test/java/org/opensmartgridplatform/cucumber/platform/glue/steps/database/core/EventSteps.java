@@ -19,7 +19,6 @@ import java.util.Map;
 
 import org.joda.time.DateTime;
 import org.junit.Assert;
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -36,7 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
-public class EventSteps extends GlueBase {
+public class EventSteps {
 
     @Autowired
     private DeviceRepository deviceRepository;

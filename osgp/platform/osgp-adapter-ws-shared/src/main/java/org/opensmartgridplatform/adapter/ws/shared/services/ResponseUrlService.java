@@ -7,9 +7,8 @@
  */
 package org.opensmartgridplatform.adapter.ws.shared.services;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-
-import org.hibernate.validator.constraints.NotEmpty;
 
 public interface ResponseUrlService {
 

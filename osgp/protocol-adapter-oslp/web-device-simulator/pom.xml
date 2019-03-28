@@ -161,6 +161,12 @@
       <artifactId>commons-codec</artifactId>
     </dependency>
 
+    <!-- Netty -->
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty</artifactId>
+    </dependency>
+
     <!-- OSGP -->
     <dependency>
       <groupId>org.opensmartgridplatform</groupId>
@@ -176,7 +182,7 @@
     <plugins>
       <plugin>
         <artifactId>maven-eclipse-plugin</artifactId>
-        <version>2.9</version>
+        <version>${maven.eclipse.plugin}</version>
         <configuration>
           <additionalProjectnatures>
             <projectnature>org.springframework.ide.eclipse.core.springnature</projectnature>
@@ -202,7 +208,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
-        <version>1.2.1</version>
+        <version>${maven.exec.plugin}</version>
         <configuration>
           <mainClass>org.test.int1.Main</mainClass>
         </configuration>
@@ -210,7 +216,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
-        <version>2.4</version>
+        <version>${maven.war.plugin.version}</version>
         <configuration>
           <failOnMissingWebXml>false</failOnMissingWebXml>
           <nonFilteredFileExtensions>

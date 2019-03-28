@@ -46,7 +46,7 @@ class DeviceFirmwareConverter extends
             final MappingContext mappingContext) {
         final Device device = this.deviceRepository.findByDeviceIdentification(source.getDeviceIdentification());
         final FirmwareFile firmwareFile = this.firmwareFileRepository
-                .findOne(Long.valueOf(source.getFirmware().getId()));
+                .findById(Long.valueOf(source.getFirmware().getId())).get();
 
         return new DeviceFirmwareFile(device, firmwareFile,
                 source.getInstallationDate().toGregorianCalendar().getTime(), source.getInstalledBy());

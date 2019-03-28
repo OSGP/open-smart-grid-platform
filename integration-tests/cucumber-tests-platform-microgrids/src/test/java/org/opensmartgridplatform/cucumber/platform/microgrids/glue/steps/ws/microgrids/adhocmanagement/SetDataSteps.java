@@ -14,40 +14,40 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.opensmartgridplatform.adapter.ws.schema.microgrids.adhocmanagement.SetDataAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.microgrids.adhocmanagement.SetDataAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.microgrids.adhocmanagement.SetDataRequest;
 import org.opensmartgridplatform.adapter.ws.schema.microgrids.adhocmanagement.SetDataResponse;
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.helpers.SettingsHelper;
 import org.opensmartgridplatform.cucumber.platform.microgrids.support.ws.microgrids.adhocmanagement.AdHocManagementClient;
 import org.opensmartgridplatform.cucumber.platform.microgrids.support.ws.microgrids.adhocmanagement.SetDataRequestBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class SetDataSteps extends GlueBase {
+public class SetDataSteps {
 
     @Autowired
     private AdHocManagementClient client;
 
     @When("^a set data request is received$")
     public void aSetDataRequestIsReceived(final Map<String, String> requestParameters) throws Throwable {
-        final String organizationIdentification = (String) ScenarioContext.current()
-                .get(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION, PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
+        final String organizationIdentification = (String) ScenarioContext.current().get(
+                PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION, PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
         ScenarioContext.current().put(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION, organizationIdentification);
-        final String userName = (String) ScenarioContext.current().get(PlatformKeys.KEY_USER_NAME, PlatformDefaults.DEFAULT_USER_NAME);
+        final String userName = (String) ScenarioContext.current().get(PlatformKeys.KEY_USER_NAME,
+                PlatformDefaults.DEFAULT_USER_NAME);
         ScenarioContext.current().put(PlatformKeys.KEY_USER_NAME, userName);
 
         final SetDataRequest setDataRequest = SetDataRequestBuilder.fromParameterMap(requestParameters);
         final SetDataAsyncResponse response = this.client.setDataAsync(setDataRequest);
 
-        ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, response.getAsyncResponse().getCorrelationUid());
+        ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID,
+                response.getAsyncResponse().getCorrelationUid());
     }
 
     @Then("^the set data response should be returned$")

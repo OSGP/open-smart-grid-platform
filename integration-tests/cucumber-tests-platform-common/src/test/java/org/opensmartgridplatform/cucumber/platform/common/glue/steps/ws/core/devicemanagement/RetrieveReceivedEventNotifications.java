@@ -26,7 +26,6 @@ import java.util.Map;
 import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindEventsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindEventsResponse;
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
@@ -48,7 +47,7 @@ import cucumber.api.java.en.When;
 /**
  * Class with all the create organization requests steps
  */
-public class RetrieveReceivedEventNotifications extends GlueBase {
+public class RetrieveReceivedEventNotifications {
 
     @Autowired
     private DeviceRepository deviceRepository;

@@ -19,15 +19,12 @@ import org.opensmartgridplatform.domain.core.entities.RelayStatus;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
 import org.opensmartgridplatform.domain.core.repositories.SsldRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
 class SsldConverter extends BidirectionalConverter<Ssld, Device> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SsldConverter.class);
     private final DeviceConverterHelper<Ssld> helper = new DeviceConverterHelper<>(Ssld.class);
 
     private final SsldRepository ssldRepository;

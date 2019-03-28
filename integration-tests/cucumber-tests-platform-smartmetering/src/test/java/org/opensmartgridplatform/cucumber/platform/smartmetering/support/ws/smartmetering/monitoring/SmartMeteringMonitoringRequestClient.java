@@ -26,6 +26,7 @@ public class SmartMeteringMonitoringRequestClient<T extends AsyncResponse, V> ex
                 this.getUserName());
     }
 
+    @SuppressWarnings("unchecked")
     public T doRequest(final V request) throws WebServiceSecurityException {
         return (T) this.getTemplate().marshalSendAndReceive(request);
     }

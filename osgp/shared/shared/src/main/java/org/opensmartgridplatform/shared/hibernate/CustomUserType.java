@@ -8,8 +8,8 @@
 package org.opensmartgridplatform.shared.hibernate;
 
 import java.io.Serializable;
+import java.util.Objects;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.type.SerializationException;
 import org.hibernate.usertype.UserType;
 
@@ -26,12 +26,12 @@ public abstract class CustomUserType implements UserType {
     @SuppressWarnings("all")
     @Override
     public boolean equals(final Object x, final Object y) {
-        return ObjectUtils.equals(x, y);
+        return Objects.equals(x, y);
     }
 
     @Override
     public int hashCode(final Object x) {
-        return ObjectUtils.hashCode(x);
+        return Objects.hash(x);
     }
 
     @Override

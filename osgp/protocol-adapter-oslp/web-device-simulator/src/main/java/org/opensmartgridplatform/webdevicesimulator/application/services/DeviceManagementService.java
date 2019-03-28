@@ -59,8 +59,8 @@ public class DeviceManagementService {
 
     public Page<Device> findPageOfDevices(final String deviceIdentification, final int pageNumber, final int pageSize,
             final String sortDirection) {
-        final PageRequest request = new PageRequest(pageNumber, pageSize,
-                Sort.Direction.fromStringOrNull(sortDirection), "id");
+        final PageRequest request = PageRequest.of(pageNumber, pageSize, Sort.Direction.fromString(sortDirection),
+                "id");
 
         if (!StringUtils.isEmpty(deviceIdentification)) {
             return this.deviceRepository.findByDeviceIdentification(deviceIdentification, request);
@@ -70,7 +70,7 @@ public class DeviceManagementService {
     }
 
     public Device findDevice(final Long id) {
-        return this.deviceRepository.findOne(id);
+        return this.deviceRepository.getOne(id);
     }
 
     public Device findDevice(final String deviceUid) {

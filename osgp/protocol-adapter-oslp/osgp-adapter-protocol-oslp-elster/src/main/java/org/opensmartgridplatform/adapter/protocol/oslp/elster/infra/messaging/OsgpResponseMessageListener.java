@@ -12,16 +12,15 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.exceptions.ProtocolAdapterException;
-import org.opensmartgridplatform.dto.valueobjects.DeviceFunctionDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.opensmartgridplatform.shared.infra.jms.UnknownMessageTypeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OsgpResponseMessageListener implements MessageListener {
 
@@ -39,12 +38,12 @@ public class OsgpResponseMessageListener implements MessageListener {
             final String result = responseMessage == null ? null : responseMessage.getResult().toString();
             final OsgpException osgpException = responseMessage == null ? null : responseMessage.getOsgpException();
 
-            switch (DeviceFunctionDto.valueOf(messageType)) {
+            switch (MessageType.valueOf(messageType)) {
             case REGISTER_DEVICE:
                 if (ResponseMessageResultType.valueOf(result).equals(ResponseMessageResultType.NOT_OK)) {
-                    throw new ProtocolAdapterException(String.format(
-                            "Response for device: %s for MessageType: %s is: %s, error: %s", deviceIdentifcation,
-                            messageType, result, osgpException));
+                    throw new ProtocolAdapterException(
+                            String.format("Response for device: %s for MessageType: %s is: %s, error: %s",
+                                    deviceIdentifcation, messageType, result, osgpException));
                 }
                 break;
 

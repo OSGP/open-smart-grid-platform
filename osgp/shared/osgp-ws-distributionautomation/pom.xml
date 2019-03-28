@@ -17,7 +17,6 @@
     <relativePath>../parent-shared/pom.xml</relativePath>
   </parent>
 
-<!--   <groupId>org.opensmartgridplatform</groupId> -->
   <artifactId>osgp-ws-distributionautomation</artifactId>
 
   <build>

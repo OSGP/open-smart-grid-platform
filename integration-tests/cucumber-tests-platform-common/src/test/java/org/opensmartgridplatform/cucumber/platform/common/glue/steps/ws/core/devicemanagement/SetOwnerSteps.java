@@ -13,11 +13,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.SetOwnerRequest;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.SetOwnerResponse;
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
@@ -26,11 +23,12 @@ import org.opensmartgridplatform.cucumber.platform.common.support.ws.admin.Admin
 import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
 import org.opensmartgridplatform.domain.core.repositories.DeviceAuthorizationRepository;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class SetOwnerSteps extends GlueBase {
+public class SetOwnerSteps {
 
     @Autowired
     private DeviceAuthorizationRepository deviceAuthorizationRepo;

@@ -9,11 +9,11 @@ package org.opensmartgridplatform.webdevicesimulator.application.config;
 
 import javax.annotation.Resource;
 
+import org.opensmartgridplatform.webdevicesimulator.application.tasks.AutonomousDeviceReboot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -23,12 +23,10 @@ import org.springframework.scheduling.config.CronTask;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.scheduling.support.CronTrigger;
 
-import org.opensmartgridplatform.webdevicesimulator.application.tasks.AutonomousDeviceReboot;
-
 @Configuration
 @EnableScheduling
-@PropertySources({ @PropertySource("classpath:web-device-simulator.properties"),
-        @PropertySource(value = "file:${osgp/WebDeviceSimulator/config}", ignoreResourceNotFound = true), })
+@PropertySource("classpath:web-device-simulator.properties")
+@PropertySource(value = "file:${osgp/WebDeviceSimulator/config}", ignoreResourceNotFound = true)
 public class AutonomousDeviceRebootConfig implements SchedulingConfigurer {
 
     private static final String PROPERTY_NAME_AUTONOMOUS_TASKS_DEVICE_REBOOT_CRON_EXPRESSION = "autonomous.tasks.device.reboot.cron.expression";

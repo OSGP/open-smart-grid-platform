@@ -33,6 +33,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
+        <version>${maven.jar.plugin.version}</version>
         <executions>
           <execution>
             <goals>
@@ -42,7 +43,7 @@
         </executions>
       </plugin>
 
-      <plugin>
+<!--       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
         <version>2.4</version>
@@ -62,7 +63,7 @@
             </resource>
           </webResources>
         </configuration>
-      </plugin>
+      </plugin>-->
     </plugins>
   </build>
 
@@ -141,7 +142,7 @@
 
     <!-- Hibernate validator -->
     <dependency>
-      <groupId>org.hibernate</groupId>
+      <groupId>org.hibernate.validator</groupId>
       <artifactId>hibernate-validator</artifactId>
     </dependency>
 

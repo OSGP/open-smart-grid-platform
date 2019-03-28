@@ -22,7 +22,6 @@ import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.DeviceI
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindDevicesRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindDevicesResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FirmwareModuleFilterType;
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonKeys;
@@ -33,7 +32,7 @@ import org.springframework.ws.soap.client.SoapFaultClientException;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class FindDeviceSteps extends GlueBase {
+public class FindDeviceSteps {
 
     @Autowired
     private CoreDeviceManagementClient client;

@@ -1,3 +1,10 @@
+/**
+ * Copyright 2018 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.core.infra.jms.protocol;
 
 import static org.junit.Assert.assertTrue;
@@ -8,8 +15,6 @@ import java.util.UUID;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -17,8 +22,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { ProtocolRequestMessageSenderTestConfig.class })
 public class ProtocolRequestMessageSenderTest {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProtocolRequestMessageSenderTest.class);
 
     @Autowired
     private ProtocolRequestMessageSender messageSender;

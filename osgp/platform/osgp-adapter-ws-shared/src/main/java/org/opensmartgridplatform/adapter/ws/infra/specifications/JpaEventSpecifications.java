@@ -17,8 +17,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
-import org.springframework.data.jpa.domain.Specification;
-
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
 import org.opensmartgridplatform.domain.core.entities.Event;
@@ -27,6 +25,7 @@ import org.opensmartgridplatform.domain.core.exceptions.ArgumentNullOrEmptyExcep
 import org.opensmartgridplatform.domain.core.specifications.EventSpecifications;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup;
 import org.opensmartgridplatform.domain.core.valueobjects.EventType;
+import org.springframework.data.jpa.domain.Specification;
 
 public class JpaEventSpecifications implements EventSpecifications {
 
@@ -40,6 +39,9 @@ public class JpaEventSpecifications implements EventSpecifications {
         }
 
         return new Specification<Event>() {
+
+            private static final long serialVersionUID = 1L;
+
             @Override
             public Predicate toPredicate(final Root<Event> eventRoot, final CriteriaQuery<?> query,
                     final CriteriaBuilder cb) {
@@ -55,6 +57,9 @@ public class JpaEventSpecifications implements EventSpecifications {
             throw new ArgumentNullOrEmptyException("dateUntil");
         }
         return new Specification<Event>() {
+
+            private static final long serialVersionUID = 1L;
+
             @Override
             public Predicate toPredicate(final Root<Event> eventRoot, final CriteriaQuery<?> query,
                     final CriteriaBuilder cb) {
@@ -69,6 +74,9 @@ public class JpaEventSpecifications implements EventSpecifications {
             throw new ArgumentNullOrEmptyException(DEVICE);
         }
         return new Specification<Event>() {
+
+            private static final long serialVersionUID = 1L;
+
             @Override
             public Predicate toPredicate(final Root<Event> eventRoot, final CriteriaQuery<?> query,
                     final CriteriaBuilder cb) {
@@ -85,6 +93,9 @@ public class JpaEventSpecifications implements EventSpecifications {
         }
 
         return new Specification<Event>() {
+
+            private static final long serialVersionUID = 1L;
+
             @Override
             public Predicate toPredicate(final Root<Event> eventRoot, final CriteriaQuery<?> query,
                     final CriteriaBuilder cb) {
@@ -92,8 +103,7 @@ public class JpaEventSpecifications implements EventSpecifications {
                 final Subquery<Long> subquery = query.subquery(Long.class);
                 final Root<DeviceAuthorization> deviceAuthorizationRoot = subquery.from(DeviceAuthorization.class);
                 subquery.select(deviceAuthorizationRoot.get(DEVICE).get("id").as(Long.class));
-                subquery.where(cb.and(
-                        cb.equal(deviceAuthorizationRoot.get("organisation"), organisation.getId()),
+                subquery.where(cb.and(cb.equal(deviceAuthorizationRoot.get("organisation"), organisation.getId()),
                         cb.or(cb.equal(deviceAuthorizationRoot.get("functionGroup"),
                                 DeviceFunctionGroup.OWNER.ordinal()),
                                 cb.equal(deviceAuthorizationRoot.get("functionGroup"),
@@ -111,6 +121,9 @@ public class JpaEventSpecifications implements EventSpecifications {
         }
 
         return new Specification<Event>() {
+
+            private static final long serialVersionUID = 1L;
+
             @Override
             public Predicate toPredicate(final Root<Event> eventRoot, final CriteriaQuery<?> query,
                     final CriteriaBuilder cb) {

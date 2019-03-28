@@ -13,7 +13,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemPagingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,7 +21,7 @@ import org.springframework.data.domain.Pageable;
 
 import cucumber.api.java.en.Then;
 
-public class DeviceLogItemSteps extends GlueBase {
+public class DeviceLogItemSteps {
 
     @Autowired
     private DeviceLogItemPagingRepository deviceLogItemRepository;
@@ -31,7 +30,7 @@ public class DeviceLogItemSteps extends GlueBase {
     public void theGetAdministrativeStatusCommunicationForDeviceShouldBeInTheDeviceLogItemTable(
             final String deviceIdentification) throws Throwable {
 
-        final Pageable pageable = new PageRequest(0, Integer.MAX_VALUE);
+        final Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE);
         final Page<org.opensmartgridplatform.logging.domain.entities.DeviceLogItem> page = this.deviceLogItemRepository
                 .findByDeviceIdentification(deviceIdentification, pageable);
 
@@ -49,7 +48,7 @@ public class DeviceLogItemSteps extends GlueBase {
     public void theGetAdministrativeStatusCommunicationForDeviceShouldNotBeInTheDeviceLogItemTable(
             final String deviceIdentification) throws Throwable {
 
-        final Pageable pageable = new PageRequest(0, Integer.MAX_VALUE);
+        final Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE);
         final Page<org.opensmartgridplatform.logging.domain.entities.DeviceLogItem> page = this.deviceLogItemRepository
                 .findByDeviceIdentification(deviceIdentification, pageable);
 

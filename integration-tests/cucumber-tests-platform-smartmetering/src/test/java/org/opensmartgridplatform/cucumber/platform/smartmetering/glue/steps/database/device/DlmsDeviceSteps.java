@@ -22,8 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
 import org.junit.Test;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKey;
@@ -56,6 +54,9 @@ import org.opensmartgridplatform.domain.core.repositories.SmartMeterRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
 
 /**
  * DLMS device specific steps.
@@ -350,8 +351,7 @@ public class DlmsDeviceSteps {
             final Integer invocationCounterLowerBound) {
 
         final DlmsDevice dlmsDevice = this.findExistingDlmsDevice(deviceIdentification);
-        final SecurityKey encryptionKey = this.findExistingSecurityKey(dlmsDevice, SecurityKeyType.E_METER_ENCRYPTION,
-                "Encryption key");
+        this.findExistingSecurityKey(dlmsDevice, SecurityKeyType.E_METER_ENCRYPTION, "Encryption key");
         final Integer invocationCounter = dlmsDevice.getInvocationCounter();
 
         assertNotNull("The invocation counter for the encryption key of DLMS device with identification "
@@ -499,7 +499,7 @@ public class DlmsDeviceSteps {
         final String modelCode = inputSettings.get(PlatformSmartmeteringKeys.DEVICE_MODEL_CODE);
         if (manufacturerCode != null && modelCode != null) {
             final Manufacturer manufacturer = this.manufacturerRepository.findByCode(manufacturerCode);
-            return this.deviceModelRepository.findByManufacturerAndModelCode(manufacturer,modelCode);
+            return this.deviceModelRepository.findByManufacturerAndModelCode(manufacturer, modelCode);
         }
 
         return null;

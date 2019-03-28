@@ -682,6 +682,7 @@ public class OslpDeviceSteps {
      *
      * @throws UnknownHostException
      */
+    @SuppressWarnings("unlikely-arg-type")
     @Given("^the device returns a get configuration status \"([^\"]*)\" over \"([^\"]*)\"$")
     public void theDeviceReturnsAGetConfigurationStatusWithResultOverOSLP(final String result, final String protocol,
             final Map<String, String> requestParameters) throws UnknownHostException {

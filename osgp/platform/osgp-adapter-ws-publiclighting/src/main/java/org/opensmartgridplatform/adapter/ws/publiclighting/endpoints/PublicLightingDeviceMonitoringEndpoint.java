@@ -7,7 +7,8 @@
  */
 package org.opensmartgridplatform.adapter.ws.publiclighting.endpoints;
 
-import org.hibernate.validator.method.MethodConstraintViolationException;
+import javax.validation.ConstraintViolationException;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
@@ -40,11 +41,10 @@ import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
-@SuppressWarnings("deprecation")
 @Endpoint
-public class DeviceMonitoringEndpoint {
+public class PublicLightingDeviceMonitoringEndpoint {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceMonitoringEndpoint.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PublicLightingDeviceMonitoringEndpoint.class);
     private static final String NAMESPACE = "http://www.opensmartgridplatform.org/schemas/publiclighting/devicemonitoring/2014/10";
     private static final ComponentType COMPONENT_WS_PUBLIC_LIGHTING = ComponentType.WS_PUBLIC_LIGHTING;
 
@@ -52,7 +52,7 @@ public class DeviceMonitoringEndpoint {
     private final DeviceMonitoringMapper deviceMonitoringMapper;
 
     @Autowired
-    public DeviceMonitoringEndpoint(
+    public PublicLightingDeviceMonitoringEndpoint(
             @Qualifier(value = "wsPublicLightingDeviceMonitoringService") final DeviceMonitoringService deviceMonitoringService,
             @Qualifier(value = "publicLightingDeviceMonitoringMapper") final DeviceMonitoringMapper deviceMonitoringMapper) {
         this.deviceMonitoringService = deviceMonitoringService;
@@ -96,7 +96,7 @@ public class DeviceMonitoringEndpoint {
             asyncResponse.setCorrelationUid(correlationUid);
             asyncResponse.setDeviceId(request.getDeviceIdentification());
             response.setAsyncResponse(asyncResponse);
-        } catch (final MethodConstraintViolationException e) {
+        } catch (final ConstraintViolationException e) {
             LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_PUBLIC_LIGHTING,
                     new ValidationException(e.getConstraintViolations()));

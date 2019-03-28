@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
+<!-- <beans xmlns="http://www.springframework.org/schema/beans"
   xmlns:jpa="http://www.springframework.org/schema/data/jpa"
   xmlns:mvc="http://www.springframework.org/schema/mvc"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -11,7 +11,17 @@
     http://www.springframework.org/schema/mvc
     http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
     http://www.springframework.org/schema/tool
-    http://www.springframework.org/schema/tool/spring-tool-3.2.xsd">
+    http://www.springframework.org/schema/tool/spring-tool-3.2.xsd"> -->
+
+<beans xmlns="http://www.springframework.org/schema/beans" 
+  xmlns:mvc="http://www.springframework.org/schema/mvc"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
   <!--
     Configures the location of static resources such as css files.
     Requires Spring Framework 3.0 or higher.
@@ -28,5 +38,5 @@
   <!--
     Configures Spring Data JPA and sets the base package of my DAOs.
   -->
-  <jpa:repositories base-package="org.opensmartgridplatform.webdevicesimulator.domain.repositories"/>
+  <!-- <jpa:repositories base-package="org.opensmartgridplatform.webdevicesimulator.domain.repositories"/> -->
 </beans>

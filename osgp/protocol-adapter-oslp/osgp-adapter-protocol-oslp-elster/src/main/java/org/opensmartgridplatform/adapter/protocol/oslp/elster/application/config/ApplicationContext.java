@@ -12,29 +12,28 @@ import org.jboss.netty.logging.Slf4JLoggerFactory;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeZone;
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.FirmwareLocation;
+import org.opensmartgridplatform.core.db.api.application.config.OsgpCoreDbApiPersistenceConfig;
+import org.opensmartgridplatform.shared.application.config.AbstractConfig;
+import org.opensmartgridplatform.shared.application.config.PagingSettings;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-
-import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.FirmwareLocation;
-import org.opensmartgridplatform.core.db.api.application.config.OsgpCoreDbApiPersistenceConfig;
-import org.opensmartgridplatform.shared.application.config.AbstractConfig;
-import org.opensmartgridplatform.shared.application.config.PagingSettings;
 
 /**
  * An application context Java configuration class.
  */
 @Configuration
-@ComponentScan(basePackages = {"org.opensmartgridplatform.adapter.protocol.oslp.elster", "org.opensmartgridplatform.core.db.api"})
+@ComponentScan(basePackages = { "org.opensmartgridplatform.adapter.protocol.oslp.elster",
+        "org.opensmartgridplatform.core.db.api" })
 @EnableTransactionManagement()
 @Import({ MessagingConfig.class, OslpConfig.class, OslpPersistenceConfig.class, OsgpCoreDbApiPersistenceConfig.class })
-@PropertySources({ @PropertySource("classpath:osgp-adapter-protocol-oslp-elster.properties"),
-        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:${osgp/AdapterProtocolOslpElster/config}", ignoreResourceNotFound = true), })
+@PropertySource("classpath:osgp-adapter-protocol-oslp-elster.properties")
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/AdapterProtocolOslpElster/config}", ignoreResourceNotFound = true)
 public class ApplicationContext extends AbstractConfig {
 
     private static final String PROPERTY_NAME_FIRMWARE_DOMAIN = "firmware.domain";

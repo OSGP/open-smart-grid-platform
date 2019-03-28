@@ -9,11 +9,10 @@ package org.opensmartgridplatform.domain.core.repositories;
 
 import java.util.List;
 
+import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-
-import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 
 @Repository
 public interface SmartMeterRepository extends JpaRepository<SmartMeter, Long> {
