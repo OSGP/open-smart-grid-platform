@@ -94,9 +94,7 @@ public class CommonSwitchConfigurationRequestMessageProcessor extends DeviceRequ
             @Override
             public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                 CommonSwitchConfigurationRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(
-                        deviceResponse, t, null,
-                        CommonSwitchConfigurationRequestMessageProcessor.this.responseMessageSender, deviceResponse,
-                        domain, domainVersion, messageType, isScheduled, retryCount);
+                        deviceResponse, t, domain, domainVersion, messageType, isScheduled, retryCount);
             }
 
         };

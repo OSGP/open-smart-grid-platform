@@ -123,7 +123,7 @@ public abstract class OslpChannelHandler extends SimpleChannelHandler {
     }
 
     @Override
-    public void exceptionCaught(final ChannelHandlerContext ctx, final ExceptionEvent e) throws Exception {
+    public void exceptionCaught(final ChannelHandlerContext ctx, final ExceptionEvent e) {
         final int channelId = e.getChannel().getId();
 
         if (this.isConnectionReset(e.getCause())) {
@@ -131,6 +131,7 @@ public abstract class OslpChannelHandler extends SimpleChannelHandler {
         } else {
             this.logger.warn("{} Unexpected exception from downstream. {}", channelId, e.getCause());
             this.callbackHandlers.get(channelId).getDeviceResponseHandler().handleException(e.getCause());
+            this.callbackHandlers.remove(channelId);
         }
         e.getChannel().close();
     }

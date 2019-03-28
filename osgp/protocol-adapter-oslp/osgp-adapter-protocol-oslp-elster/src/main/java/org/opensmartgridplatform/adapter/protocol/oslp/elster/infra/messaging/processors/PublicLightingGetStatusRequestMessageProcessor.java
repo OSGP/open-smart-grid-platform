@@ -101,8 +101,7 @@ public class PublicLightingGetStatusRequestMessageProcessor extends DeviceReques
             @Override
             public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                 PublicLightingGetStatusRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(deviceResponse,
-                        t, null, PublicLightingGetStatusRequestMessageProcessor.this.responseMessageSender,
-                        deviceResponse, domain, domainVersion, messageType, isScheduled, retryCount);
+                        t, domain, domainVersion, messageType, isScheduled, retryCount);
             }
 
         };

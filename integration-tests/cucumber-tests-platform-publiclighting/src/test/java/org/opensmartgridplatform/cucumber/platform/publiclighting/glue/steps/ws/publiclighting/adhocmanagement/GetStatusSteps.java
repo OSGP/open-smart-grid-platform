@@ -13,17 +13,10 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 import static org.opensmartgridplatform.cucumber.platform.core.CorrelationUidHelper.saveCorrelationUidInScenarioContext;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.Map;
 import java.util.Objects;
 
 import org.junit.Assert;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ws.soap.client.SoapFaultClientException;
-
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.DeviceStatus;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.EventNotificationType;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusAsyncRequest;
@@ -43,6 +36,10 @@ import org.opensmartgridplatform.cucumber.platform.publiclighting.PlatformPublic
 import org.opensmartgridplatform.cucumber.platform.publiclighting.support.ws.publiclighting.PublicLightingAdHocManagementClient;
 import org.opensmartgridplatform.cucumber.platform.publiclighting.support.ws.tariffswitching.TariffSwitchingAdHocManagementClient;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -66,10 +63,11 @@ public class GetStatusSteps {
      *
      * @param requestParameters
      *            The table with the request parameters.
-     * @throws Throwable
+     * @throws WebServiceSecurityException
      */
     @When("^receiving a get status request$")
-    public void receivingAGetStatusRequest(final Map<String, String> requestParameters) throws Throwable {
+    public void receivingAGetStatusRequest(final Map<String, String> requestParameters)
+            throws WebServiceSecurityException {
 
         final GetStatusRequest request = new GetStatusRequest();
         request.setDeviceIdentification(
@@ -85,7 +83,8 @@ public class GetStatusSteps {
     }
 
     @When("^receiving a get tariff status request$")
-    public void receivingAGetTariffStatusRequest(final Map<String, String> requestParameters) throws Throwable {
+    public void receivingAGetTariffStatusRequest(final Map<String, String> requestParameters)
+            throws WebServiceSecurityException {
 
         final org.opensmartgridplatform.adapter.ws.schema.tariffswitching.adhocmanagement.GetStatusRequest request = new org.opensmartgridplatform.adapter.ws.schema.tariffswitching.adhocmanagement.GetStatusRequest();
         request.setDeviceIdentification(
@@ -102,7 +101,7 @@ public class GetStatusSteps {
 
     @When("^receiving a get status request by an unknown organization$")
     public void receivingAGetStatusRequestByAnUnknownOrganization(final Map<String, String> requestParameters)
-            throws Throwable {
+            throws WebServiceSecurityException {
         // Force the request being send to the platform as a given organization.
         ScenarioContext.current().put(PlatformPubliclightingKeys.KEY_ORGANIZATION_IDENTIFICATION,
                 "unknown-organization");
@@ -112,7 +111,7 @@ public class GetStatusSteps {
 
     @When("^receiving a get tariff status request by an unknown organization$")
     public void receivingAGetTariffStatusRequestByAnUnknownOrganization(final Map<String, String> requestParameters)
-            throws Throwable {
+            throws WebServiceSecurityException {
         // Force the request being sent to the platform as a given organization.
         ScenarioContext.current().put(PlatformPubliclightingKeys.KEY_ORGANIZATION_IDENTIFICATION,
                 "unknown-organization");
@@ -125,12 +124,11 @@ public class GetStatusSteps {
      *
      * @param expectedResponseData
      *            The table with the expected fields in the response.
-     * @apiNote The response will contain the correlation uid, so store that in the
-     *       current scenario context for later use.
-     * @throws Throwable
+     * @apiNote The response will contain the correlation uid, so store that in
+     *          the current scenario context for later use.
      */
     @Then("^the get status async response contains$")
-    public void theGetStatusAsyncResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
+    public void theGetStatusAsyncResponseContains(final Map<String, String> expectedResponseData) {
 
         final GetStatusAsyncResponse asyncResponse = (GetStatusAsyncResponse) ScenarioContext.current()
                 .get(PlatformPubliclightingKeys.RESPONSE);
@@ -150,8 +148,7 @@ public class GetStatusSteps {
     }
 
     @Then("^the get tariff status async response contains$")
-    public void theGetTariffStatusAsyncResponseContains(final Map<String, String> expectedResponseData)
-            throws Throwable {
+    public void theGetTariffStatusAsyncResponseContains(final Map<String, String> expectedResponseData) {
 
         final org.opensmartgridplatform.adapter.ws.schema.tariffswitching.adhocmanagement.GetStatusAsyncResponse asyncResponse = (org.opensmartgridplatform.adapter.ws.schema.tariffswitching.adhocmanagement.GetStatusAsyncResponse) ScenarioContext
                 .current().get(PlatformPubliclightingKeys.RESPONSE);
@@ -177,7 +174,7 @@ public class GetStatusSteps {
 
     @Then("^the platform buffers a get status response message for device \"([^\"]*)\"$")
     public void thePlatformBuffersAGetStatusResponseMessageForDevice(final String deviceIdentification,
-            final Map<String, String> expectedResult) throws Throwable {
+            final Map<String, String> expectedResult) {
         final GetStatusAsyncRequest request = this.getGetStatusAsyncRequest(deviceIdentification);
         final GetStatusResponse response = Wait.untilAndReturn(() -> {
             final GetStatusResponse retval = this.publicLightingClient.getGetStatusResponse(request);
@@ -246,7 +243,7 @@ public class GetStatusSteps {
 
     @Then("^the platform buffers a get tariff status response message for device \"([^\"]*)\"$")
     public void thePlatformBuffersAGetTariffStatusResponseMessageForDevice(final String deviceIdentification,
-            final Map<String, String> expectedResult) throws Throwable {
+            final Map<String, String> expectedResult) {
         final org.opensmartgridplatform.adapter.ws.schema.tariffswitching.adhocmanagement.GetStatusAsyncRequest request = this
                 .getGetTariffStatusAsyncRequest(deviceIdentification);
         final org.opensmartgridplatform.adapter.ws.schema.tariffswitching.adhocmanagement.GetStatusResponse response = Wait
@@ -269,7 +266,7 @@ public class GetStatusSteps {
     @Then("^the platform buffers a get status response message for device \"([^\"]*)\" which contains soap fault$")
     public void thePlatformBuffersAGetStatusResponseMessageForDeviceWhichContainsSoapFault(
             final String deviceIdentification, final Map<String, String> expectedResult)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException {
         try {
             this.publicLightingClient.getGetStatusResponse(this.getGetStatusAsyncRequest(deviceIdentification));
         } catch (final SoapFaultClientException sfce) {

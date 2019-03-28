@@ -82,7 +82,7 @@ public class CommonUpdateFirmwareRequestMessageProcessor extends DeviceRequestMe
                     this.firmwareLocation.getFullPath(firmwareIdentification));
 
             this.deviceService.updateFirmware(deviceRequest);
-        } catch (final Exception e) {
+        } catch (final RuntimeException e) {
             this.handleError(e, messageMetadata);
         }
     }
@@ -115,7 +115,6 @@ public class CommonUpdateFirmwareRequestMessageProcessor extends DeviceRequestMe
             @Override
             public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                 CommonUpdateFirmwareRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(deviceResponse, t,
-                        null, CommonUpdateFirmwareRequestMessageProcessor.this.responseMessageSender, deviceResponse,
                         domain, domainVersion, messageType, isScheduled, retryCount);
             }
         };

@@ -99,9 +99,8 @@ public class CommonGetStatusRequestMessageProcessor extends DeviceRequestMessage
 
             @Override
             public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
-                CommonGetStatusRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(deviceResponse, t, null,
-                        CommonGetStatusRequestMessageProcessor.this.responseMessageSender, deviceResponse, domain,
-                        domainVersion, messageType, isScheduled, retryCount);
+                CommonGetStatusRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(deviceResponse, t,
+                        domain, domainVersion, messageType, isScheduled, retryCount);
             }
 
         };
