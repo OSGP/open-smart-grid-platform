@@ -9,19 +9,23 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands;
 
 import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.same;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.openmuc.jdlms.AttributeAddress;
@@ -29,6 +33,7 @@ import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodTypeDto;
@@ -54,6 +59,8 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
 
     private DlmsConnectionHolder connectionHolder;
 
+    @Captor ArgumentCaptor<Boolean> isSelectingValuesSupportedCaptor;
+
     @Before
     public void setUp() {
         this.executor = new GetPeriodicMeterReadsCommandExecutor(this.helperService,
@@ -64,39 +71,28 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
     @Test
     public void testUsingIsSelectingValuesSupportedInExecute() throws Exception {
 
-        // DSMR 4.2.2 supports selecting values in a buffer.
-        this.assertIsSelectingValuesSupported("DSMR", "4.2.2", true);
-
-        // SMR 5.0 doesn't support selecting values in a buffer.
-        this.assertIsSelectingValuesSupported("SMR", "5.0", false);
-
-        // SMR 5.1 doesn't support selecting values in a buffer.
-        this.assertIsSelectingValuesSupported("SMR", "5.1", false);
-
-        // For other protocols it is assumed that they support selecting values in a buffer.
-        this.assertIsSelectingValuesSupported("other", "5.0", true);
+        for (final Protocol protocol : Protocol.values()) {
+            this.assertIsSelectingValuesSupported(protocol.getName(), protocol.getVersion(), protocol.isSelectValuesInSelectiveAccessSupported() );
+        }
     }
 
     private void assertIsSelectingValuesSupported(final String protocolName, final String protocolVersion,
-            final Boolean isSelectingValuesSupported) throws Exception {
+            final boolean isSelectingValuesSupported) throws Exception {
 
         // Create device with request protocol version
         final DlmsDevice device = new DlmsDevice();
         device.setProtocol(protocolName, protocolVersion);
 
-        // Setup mock
+        // Setup mocks
         final GetResult getResult1 = new GetResultBuilder().build();
         final GetResult getResult2 = new GetResultBuilder().build();
         final DataObject resultData = DataObject.newArrayData(new ArrayList<>());
+        final AttributeAddress[] attributeAddresses = new AttributeAddress[]{ CLOCK };
 
         when(this.helperService.getAndCheck(same(this.connectionHolder), same(device), any(), any())).thenReturn(asList(getResult1, getResult2));
         when(this.helperService.readDataObject(any(), any())).thenReturn(resultData);
-
-        // Setup captor to capture the selected values
-        final AttributeAddress[] attributeAddresses = new AttributeAddress[]{ CLOCK };
-        final ArgumentCaptor<Boolean> isSelectingValuesSupportedCaptor = ArgumentCaptor.forClass(Boolean.class);
         when(this.attributeAddressHelperService.getProfileBufferAndScalerUnitForPeriodicMeterReads(any(), any(),
-                any(), isSelectingValuesSupportedCaptor.capture())).thenReturn(attributeAddresses);
+                any(), anyBoolean())).thenReturn(attributeAddresses);
 
         // Execute request
         final Date timeFrom = new GregorianCalendar(2019, 1, 1).getTime();
@@ -105,7 +101,12 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
         this.executor.execute(this.connectionHolder, device, request);
 
         // Check if command executor uses right setting
-        Assertions.assertThat(isSelectingValuesSupportedCaptor.getValue()).isEqualTo(isSelectingValuesSupported);
+        verify(this.attributeAddressHelperService).getProfileBufferAndScalerUnitForPeriodicMeterReads(any(), any(),
+                any(), this.isSelectingValuesSupportedCaptor.capture());
+        assertThat(this.isSelectingValuesSupportedCaptor.getValue()).isEqualTo(isSelectingValuesSupported);
+
+        // Reset mock
+        reset(this.attributeAddressHelperService);
     }
 }
 

@@ -22,7 +22,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodTypeDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-@Service(value = "attributeAddressHelperService")
+@Service
 public class AttributeAddressHelperService {
 
     private static final int CLASS_ID_PROFILE_GENERIC = 7;
@@ -56,31 +56,32 @@ public class AttributeAddressHelperService {
     }
 
     public AttributeAddress[] getProfileBufferAndScalerUnitForPeriodicMeterReads(final PeriodTypeDto periodType,
-            final DateTime beginDateTime, final DateTime endDateTime, final boolean isSelectingValuesSupported)
+            final DateTime from, final DateTime to, final boolean isSelectingValuesSupported)
             throws ProtocolAdapterException {
 
-        final SelectiveAccessDescription access = this.getSelectiveAccessDescription(periodType, beginDateTime,
-                endDateTime, isSelectingValuesSupported);
-
         final List<AttributeAddress> profileBuffer = new ArrayList<>();
+
+        profileBuffer.add(this.getProfileBuffer(periodType, from, to, isSelectingValuesSupported));
+        profileBuffer.addAll(this.getScalerUnit(periodType));
+
+        return profileBuffer.toArray(new AttributeAddress[0]);
+    }
+
+    private AttributeAddress getProfileBuffer(final PeriodTypeDto periodType, final DateTime from, final DateTime to,
+            final boolean isSelectingValuesSupported) throws ProtocolAdapterException {
+        final SelectiveAccessDescription access = this.getSelectiveAccessDescription(periodType, from, to,
+                isSelectingValuesSupported);
+
         switch (periodType) {
         case INTERVAL:
-            profileBuffer.add(new AttributeAddress(CLASS_ID_PROFILE_GENERIC, OBIS_CODE_INTERVAL_BILLING,
-                    ATTRIBUTE_ID_BUFFER, access));
-            break;
+            return new AttributeAddress(CLASS_ID_PROFILE_GENERIC, OBIS_CODE_INTERVAL_BILLING, ATTRIBUTE_ID_BUFFER, access);
         case DAILY:
-            profileBuffer.add(new AttributeAddress(CLASS_ID_PROFILE_GENERIC, OBIS_CODE_DAILY_BILLING,
-                    ATTRIBUTE_ID_BUFFER, access));
-            break;
+            return new AttributeAddress(CLASS_ID_PROFILE_GENERIC, OBIS_CODE_DAILY_BILLING, ATTRIBUTE_ID_BUFFER, access);
         case MONTHLY:
-            profileBuffer.add(new AttributeAddress(CLASS_ID_PROFILE_GENERIC, OBIS_CODE_MONTHLY_BILLING,
-                    ATTRIBUTE_ID_BUFFER, access));
-            break;
+            return new AttributeAddress(CLASS_ID_PROFILE_GENERIC, OBIS_CODE_MONTHLY_BILLING, ATTRIBUTE_ID_BUFFER, access);
         default:
             throw new ProtocolAdapterException(String.format("periodtype %s not supported", periodType));
         }
-        profileBuffer.addAll(this.getScalerUnit(periodType));
-        return profileBuffer.toArray(new AttributeAddress[profileBuffer.size()]);
     }
 
     private List<AttributeAddress> getScalerUnit(final PeriodTypeDto periodType) throws ProtocolAdapterException {
@@ -118,7 +119,7 @@ public class AttributeAddressHelperService {
     }
 
     private SelectiveAccessDescription getSelectiveAccessDescription(final PeriodTypeDto periodType,
-            final DateTime beginDateTime, final DateTime endDateTime, final boolean isSelectingValuesSupported) {
+            final DateTime from, final DateTime to, final boolean isSelectingValuesSupported) {
         /*
          * List of object definitions to determine which of the capture objects
          * to retrieve from the buffer.
@@ -129,8 +130,8 @@ public class AttributeAddressHelperService {
         }
         final DataObject selectedValues = DataObject.newArrayData(objectDefinitions);
 
-        final DataObject accessParameter = this.dlmsHelperService.getAccessSelectionTimeRangeParameter(beginDateTime,
-                endDateTime, selectedValues);
+        final DataObject accessParameter = this.dlmsHelperService.getAccessSelectionTimeRangeParameter(from, to,
+                selectedValues);
 
         return new SelectiveAccessDescription(ACCESS_SELECTOR_RANGE_DESCRIPTOR, accessParameter);
     }

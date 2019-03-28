@@ -24,6 +24,14 @@ public enum Protocol {
         this.selectValuesInSelectiveAccessSupported = selectValuesInSelectiveAccessSupported;
     }
 
+    public String getName() {
+        return this.name;
+    }
+
+    public String getVersion() {
+        return this.version;
+    }
+
     public boolean isSelectValuesInSelectiveAccessSupported() {
         return this.selectValuesInSelectiveAccessSupported;
     }
@@ -35,6 +43,8 @@ public enum Protocol {
             }
         }
 
+        // If no defined protocol matches, then don't throw exception, but return OTHER_PROTOCOL as default.
+        // This is preferred because the adapter is a general DLMS adapter.
         return OTHER_PROTOCOL;
     }
 }

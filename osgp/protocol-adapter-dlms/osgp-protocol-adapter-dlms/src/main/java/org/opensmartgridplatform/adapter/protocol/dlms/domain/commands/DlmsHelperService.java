@@ -174,7 +174,7 @@ public class DlmsHelperService {
         return DataObjectDefinitions.getClockDefinition();
     }
 
-    public DataObject getAccessSelectionTimeRangeParameter(final DateTime beginDateTime, final DateTime endDateTime,
+    public DataObject getAccessSelectionTimeRangeParameter(final DateTime from, final DateTime to,
             final DataObject selectedValues) {
 
         /*
@@ -185,8 +185,8 @@ public class DlmsHelperService {
          */
         final DataObject clockDefinition = this.getClockDefinition();
 
-        final DataObject fromValue = this.asDataObject(beginDateTime);
-        final DataObject toValue = this.asDataObject(endDateTime);
+        final DataObject fromValue = this.asDataObject(from);
+        final DataObject toValue = this.asDataObject(to);
 
         return DataObject.newStructureData(Arrays.asList(clockDefinition, fromValue, toValue, selectedValues));
     }
