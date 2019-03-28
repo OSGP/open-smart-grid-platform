@@ -107,11 +107,12 @@ public class DlmsDevice extends AbstractEntity {
     @Transient
     private String ipAddress;
 
-    // Starting value of the invocation counter for next connection (for Hls5 connection only).
+    // Starting value of the invocation counter for next connection, for SMR device with Hls5 connection only (for
+    // other devices the invocation counter value is never updated).
     // This value is initialized by reading the invocation counter from the device using the public client.
     // After each session with the device it is incremented with the number of invocations in the session.
     @Column
-    private Integer invocationCounter;
+    private Integer invocationCounter = 0;
 
     public DlmsDevice() {
         // Default constructor
