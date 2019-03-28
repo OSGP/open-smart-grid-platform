@@ -10,7 +10,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
-import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.DeviceSessionTerminatedAfterReadingInvocationCounterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.slf4j.Logger;
@@ -44,12 +43,6 @@ public class DlmsConnectionHelper {
             final DlmsMessageListener messageListener) throws OsgpException {
         if (device.isHls5Active() && !device.isInvocationCounterInitialized()) {
             this.invocationCounterManager.initializeInvocationCounter(device);
-
-            // Proceeding to create a new connection will fail due to a current limitation in the OpenMUC jDLMS
-            // library, therefore don't even try but throw a very specific exception signalling the problem.
-            // The exception will cause a retry header to be set so the operation will be retried, but the exception
-            // itself will not be logged.
-            throw new DeviceSessionTerminatedAfterReadingInvocationCounterException(device.getDeviceIdentification());
         }
 
         try {

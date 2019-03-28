@@ -13,6 +13,7 @@ import org.openmuc.jdlms.ObisCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.DlmsHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.DeviceSessionTerminatedAfterReadingInvocationCounterException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.slf4j.Logger;
@@ -47,21 +48,26 @@ public class InvocationCounterManager {
     public void initializeInvocationCounter(final DlmsDevice device) throws OsgpException {
         if (this.invocationCounterIsStoredOnDevice(device)) {
             this.initializeWithInvocationCounterStoredOnDevice(device);
+            this.deviceRepository.save(device);
+
+            // At this point proceeding to create a new connection will fail due to a current limitation in the OpenMUC
+            // jDLMS library, therefore don't even try but throw a very specific exception signalling the problem.
+            // The exception will cause a retry header to be set so the operation will be retried, but the exception
+            // itself will not be logged.
+            throw new DeviceSessionTerminatedAfterReadingInvocationCounterException(device.getDeviceIdentification());
         } else {
             // Value of invocation counter is ignored on these devices.
             device.setInvocationCounter(0);
+            this.deviceRepository.save(device);
         }
-        this.deviceRepository.save(device);
     }
 
     private void initializeWithInvocationCounterStoredOnDevice(final DlmsDevice device) throws OsgpException {
         try (final DlmsConnectionManager connectionManager = this.connectionFactory
                 .getPublicClientConnection(device, null)) {
             device.setInvocationCounter(this.getInvocationCounter(connectionManager));
-            LOGGER.info(
-                    "Property invocationCounter of device {} initialized to the value of the invocation counter "
-                            + "stored on the device: {}", device.getDeviceIdentification(),
-                    device.getInvocationCounter());
+            LOGGER.info("Property invocationCounter of device {} initialized to the value of the invocation counter "
+                    + "stored on the device: {}", device.getDeviceIdentification(), device.getInvocationCounter());
         }
     }
 
