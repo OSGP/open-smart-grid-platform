@@ -34,7 +34,7 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
@@ -57,7 +57,7 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
     @Mock
     private AmrProfileStatusCodeHelperService amrProfileStatusCodeHelperService;
 
-    private DlmsConnectionHolder connectionHolder;
+    private DlmsConnectionManager connectionManager;
 
     @Captor ArgumentCaptor<Boolean> isSelectingValuesSupportedCaptor;
 
@@ -65,7 +65,7 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
     public void setUp() {
         this.executor = new GetPeriodicMeterReadsCommandExecutor(this.helperService,
                 this.amrProfileStatusCodeHelperService, this.attributeAddressHelperService);
-        this.connectionHolder = new DlmsConnectionHolder(null, null, this.listener, null);
+        this.connectionManager = new DlmsConnectionManager(null, null, this.listener, null);
     }
 
     @Test
@@ -89,7 +89,7 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
         final DataObject resultData = DataObject.newArrayData(new ArrayList<>());
         final AttributeAddress[] attributeAddresses = new AttributeAddress[]{ CLOCK };
 
-        when(this.helperService.getAndCheck(same(this.connectionHolder), same(device), any(), any())).thenReturn(asList(getResult1, getResult2));
+        when(this.helperService.getAndCheck(same(this.connectionManager), same(device), any(), any())).thenReturn(asList(getResult1, getResult2));
         when(this.helperService.readDataObject(any(), any())).thenReturn(resultData);
         when(this.attributeAddressHelperService.getProfileBufferAndScalerUnitForPeriodicMeterReads(any(), any(),
                 any(), anyBoolean())).thenReturn(attributeAddresses);
@@ -98,7 +98,7 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
         final Date timeFrom = new GregorianCalendar(2019, 1, 1).getTime();
         final Date timeTo = new GregorianCalendar(2019, 1, 5).getTime();
         final PeriodicMeterReadsRequestDto request = new PeriodicMeterReadsRequestDto(PeriodTypeDto.DAILY, timeFrom, timeTo);
-        this.executor.execute(this.connectionHolder, device, request);
+        this.executor.execute(this.connectionManager, device, request);
 
         // Check if command executor uses right setting
         verify(this.attributeAddressHelperService).getProfileBufferAndScalerUnitForPeriodicMeterReads(any(), any(),
