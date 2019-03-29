@@ -1,5 +1,7 @@
 # Needs a DlmsDevice simulator with e650 profile on port 1026
-@SmartMetering @Platform @SN @Skip
+@SmartMetering @Platform @SN
+# This test is broken, needs fixing later when support for L+G E650 devices is needed:
+@Skip
 Feature: SmartMetering short names - Dedicated event logs
 
   Scenario Outline: Get dedicated event log capture objects from L+G E650
