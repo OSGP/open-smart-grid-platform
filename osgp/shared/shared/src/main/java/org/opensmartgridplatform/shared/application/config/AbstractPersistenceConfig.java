@@ -139,10 +139,10 @@ public abstract class AbstractPersistenceConfig extends AbstractConfig {
         flyway.setBaselineDescription(this.flywayInitialDescription);
         flyway.setBaselineOnMigrate(this.flywayInitOnMigrate);
         flyway.setOutOfOrder(true);
+        flyway.setTable("schema_version");
 
         flyway.setDataSource(dataSource);
         return flyway;
-
     }
 
     protected LocalContainerEntityManagerFactoryBean entityManagerFactory(final String persistenceUnitName) {

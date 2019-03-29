@@ -195,6 +195,7 @@ public class ApplicationContext {
         flyway.setBaselineDescription(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INITIAL_DESCRIPTION));
         flyway.setBaselineOnMigrate(
                 Boolean.parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INIT_ON_MIGRATE)));
+        flyway.setTable("schema_version");
 
         flyway.setDataSource(this.getDataSource());
 
