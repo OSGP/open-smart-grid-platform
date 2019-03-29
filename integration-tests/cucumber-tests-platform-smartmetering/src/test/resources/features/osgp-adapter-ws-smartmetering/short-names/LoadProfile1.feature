@@ -1,5 +1,5 @@
 # Needs a DlmsDevice simulator with e650 profile on port 1026
-@SmartMetering @Platform @SN
+@SmartMetering @Platform @SN @Skip
 Feature: SmartMetering short names - Load profile 1
 
   Scenario: Get load profile1 capture objects from L+G E650

@@ -1,5 +1,5 @@
 # Needs a DlmsDevice simulator with e650 profile on port 1026
-@SmartMetering @Platform @SN
+@SmartMetering @Platform @SN @Skip
 Feature: SmartMetering short names - Event Log
 
   Scenario: Get event log capture objects from L+G E650
