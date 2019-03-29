@@ -54,4 +54,8 @@ public class PeriodicMeterReadsConstants {
     static final AttributeAddress ATTRIBUTE_DAILY_OR_MONTHLY_EXPORT_RATE_2_SCALER_UNIT =
             new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_MONTHLY_DAILY_EXPORT_RATE_2,
             ATTRIBUTE_ID_SCALER_UNIT);
+
+    private PeriodicMeterReadsConstants() {
+        throw new IllegalStateException("Utility class");
+    }
 }
