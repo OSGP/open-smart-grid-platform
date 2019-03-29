@@ -29,14 +29,6 @@ pipeline {
 
     stages {
 
-        // The pr job will clone the git repository, but nothing more. So gitmodules are not downloaded. Therefore we
-        // need to trigger this manually
-        stage ('Update Submodules') {
-            steps {
-                sh "git submodule update --remote --init"
-            }
-        }
-
         stage ('Set GitHub Status') {
             steps {
                 step([$class: 'GitHubSetCommitStatusBuilder',
