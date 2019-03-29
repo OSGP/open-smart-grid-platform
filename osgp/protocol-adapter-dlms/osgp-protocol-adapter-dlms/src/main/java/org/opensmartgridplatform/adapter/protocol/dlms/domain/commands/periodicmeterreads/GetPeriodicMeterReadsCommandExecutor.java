@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands;
+package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +15,10 @@ import org.joda.time.DateTime;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractPeriodicMeterReadsCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AmrProfileStatusCodeHelperService;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.DlmsHelperService;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.JdlmsObjectToStringUtil;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
@@ -56,17 +60,17 @@ public class GetPeriodicMeterReadsCommandExecutor extends
     private static final int BUFFER_INDEX_A_NEG = 3;
 
     private final DlmsHelperService dlmsHelperService;
-    private final AttributeAddressHelperService attributeAddressHelperService;
+    private final AttributeAddressService attributeAddressService;
     private final AmrProfileStatusCodeHelperService amrProfileStatusCodeHelperService;
 
     @Autowired
     public GetPeriodicMeterReadsCommandExecutor(final DlmsHelperService dlmsHelperService,
             final AmrProfileStatusCodeHelperService amrProfileStatusCodeHelperService,
-            final AttributeAddressHelperService attributeAddressHelperService) {
+            final AttributeAddressService attributeAddressService) {
         super(PeriodicMeterReadsRequestDataDto.class);
         this.dlmsHelperService = dlmsHelperService;
         this.amrProfileStatusCodeHelperService = amrProfileStatusCodeHelperService;
-        this.attributeAddressHelperService = attributeAddressHelperService;
+        this.attributeAddressService = attributeAddressService;
     }
 
     @Override
@@ -89,7 +93,7 @@ public class GetPeriodicMeterReadsCommandExecutor extends
         final DateTime endDateTime = new DateTime(periodicMeterReadsRequest.getEndDate());
         final Protocol protocol = Protocol.withNameAndVersion(device.getProtocol(), device.getProtocolVersion());
 
-        final AttributeAddress[] profileBufferAndScalerUnit = this.attributeAddressHelperService.getProfileBufferAndScalerUnitForPeriodicMeterReads(periodType,
+        final AttributeAddress[] profileBufferAndScalerUnit = this.attributeAddressService.getProfileBufferAndScalerUnitForPeriodicMeterReads(periodType,
                         beginDateTime, endDateTime, protocol.isSelectValuesInSelectiveAccessSupported());
 
         LOGGER.debug("Retrieving current billing period and profiles for period type: {}, from: {}, to: {}",

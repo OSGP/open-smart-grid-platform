@@ -6,7 +6,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands;
+package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,6 +32,9 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AmrProfileStatusCodeHelperService;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.DlmsHelperService;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.GetResultBuilder;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
@@ -52,7 +55,7 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
     private DlmsHelperService helperService;
 
     @Mock
-    private AttributeAddressHelperService attributeAddressHelperService;
+    private AttributeAddressService attributeAddressService;
 
     @Mock
     private AmrProfileStatusCodeHelperService amrProfileStatusCodeHelperService;
@@ -64,7 +67,7 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
     @Before
     public void setUp() {
         this.executor = new GetPeriodicMeterReadsCommandExecutor(this.helperService,
-                this.amrProfileStatusCodeHelperService, this.attributeAddressHelperService);
+                this.amrProfileStatusCodeHelperService, this.attributeAddressService);
         this.connectionManager = new DlmsConnectionManager(null, null, this.listener, null);
     }
 
@@ -91,7 +94,7 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
 
         when(this.helperService.getAndCheck(same(this.connectionManager), same(device), any(), any())).thenReturn(asList(getResult1, getResult2));
         when(this.helperService.readDataObject(any(), any())).thenReturn(resultData);
-        when(this.attributeAddressHelperService.getProfileBufferAndScalerUnitForPeriodicMeterReads(any(), any(),
+        when(this.attributeAddressService.getProfileBufferAndScalerUnitForPeriodicMeterReads(any(), any(),
                 any(), anyBoolean())).thenReturn(attributeAddresses);
 
         // Execute request
@@ -101,12 +104,12 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
         this.executor.execute(this.connectionManager, device, request);
 
         // Check if command executor uses right setting
-        verify(this.attributeAddressHelperService).getProfileBufferAndScalerUnitForPeriodicMeterReads(any(), any(),
+        verify(this.attributeAddressService).getProfileBufferAndScalerUnitForPeriodicMeterReads(any(), any(),
                 any(), this.isSelectingValuesSupportedCaptor.capture());
         assertThat(this.isSelectingValuesSupportedCaptor.getValue()).isEqualTo(isSelectingValuesSupported);
 
         // Reset mock
-        reset(this.attributeAddressHelperService);
+        reset(this.attributeAddressService);
     }
 }
 

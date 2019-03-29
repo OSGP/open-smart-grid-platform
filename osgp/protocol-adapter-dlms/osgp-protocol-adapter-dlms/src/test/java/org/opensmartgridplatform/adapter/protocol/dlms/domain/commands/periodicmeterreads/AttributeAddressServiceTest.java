@@ -6,13 +6,17 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands;
+package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.PeriodicMeterReadsConstants.OBIS_CODE_MONTHLY_DAILY_EXPORT_RATE_1;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.PeriodicMeterReadsConstants.OBIS_CODE_MONTHLY_DAILY_EXPORT_RATE_2;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.PeriodicMeterReadsConstants.OBIS_CODE_MONTHLY_DAILY_IMPORT_RATE_1;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.PeriodicMeterReadsConstants.OBIS_CODE_MONTHLY_DAILY_IMPORT_RATE_2;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,28 +32,30 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.DataObjectDefinitions;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.DlmsHelperService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodTypeDto;
 
 @RunWith(MockitoJUnitRunner.class)
-public class AttributeAddressHelperServiceTest {
+public class AttributeAddressServiceTest {
     private static final AttributeAddress CLOCK = new AttributeAddress(8, new ObisCode(0, 0, 1, 0, 0, 255), 2);
     private static final AttributeAddress AMR_PROFILE_STATUS = new AttributeAddress(1, new ObisCode(0, 0, 96, 10, 2, 255), 2);
-    private static final AttributeAddress ACTIVE_ENERGY_IMPORT_RATE_1 = new AttributeAddress(3, new ObisCode(1, 0, 1, 8, 1, 255), 2);
-    private static final AttributeAddress ACTIVE_ENERGY_IMPORT_RATE_2 = new AttributeAddress(3, new ObisCode(1, 0, 1, 8, 2, 255), 2);
-    private static final AttributeAddress ACTIVE_ENERGY_EXPORT_RATE_1 = new AttributeAddress(3, new ObisCode(1, 0, 2, 8, 1, 255), 2);
-    private static final AttributeAddress ACTIVE_ENERGY_EXPORT_RATE_2 = new AttributeAddress(3, new ObisCode(1, 0, 2, 8, 2, 255), 2);
+    private static final AttributeAddress ACTIVE_ENERGY_IMPORT_RATE_1 = new AttributeAddress(3, OBIS_CODE_MONTHLY_DAILY_IMPORT_RATE_1, 2);
+    private static final AttributeAddress ACTIVE_ENERGY_IMPORT_RATE_2 = new AttributeAddress(3, OBIS_CODE_MONTHLY_DAILY_IMPORT_RATE_2, 2);
+    private static final AttributeAddress ACTIVE_ENERGY_EXPORT_RATE_1 = new AttributeAddress(3, OBIS_CODE_MONTHLY_DAILY_EXPORT_RATE_1, 2);
+    private static final AttributeAddress ACTIVE_ENERGY_EXPORT_RATE_2 = new AttributeAddress(3, OBIS_CODE_MONTHLY_DAILY_EXPORT_RATE_2, 2);
 
     @Mock
     private DlmsHelperService helperService;
 
-    private AttributeAddressHelperService service;
+    private AttributeAddressService service;
 
     @Captor
     ArgumentCaptor<DataObject> dataObjectSelectedValuesCaptor;
 
     @Before
     public void setUp() {
-        this.service = new AttributeAddressHelperService(this.helperService);
+        this.service = new AttributeAddressService(this.helperService);
     }
 
     @Test

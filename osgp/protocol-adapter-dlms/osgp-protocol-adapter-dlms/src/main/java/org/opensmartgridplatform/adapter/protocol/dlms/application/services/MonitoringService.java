@@ -12,22 +12,21 @@ import java.io.Serializable;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.ClearAlarmRegisterCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.GetActualMeterReadsCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.GetActualMeterReadsGasCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsGasCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.GetProfileGenericDataCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.ReadAlarmRegisterCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.GetPeriodicMeterReadsCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.GetPeriodicMeterReadsGasCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualMeterReadsQueryDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmRegisterResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClearAlarmRegisterRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileGenericDataRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ReadAlarmRegisterRequestDto;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service(value = "dlmsDeviceMonitoringService")
 public class MonitoringService {
@@ -58,7 +57,7 @@ public class MonitoringService {
     public Serializable requestPeriodicMeterReads(final DlmsConnectionManager conn, final DlmsDevice device,
             final PeriodicMeterReadsRequestDto periodicMeterReadsQuery) throws ProtocolAdapterException {
 
-        Serializable response;
+        final Serializable response;
         if (periodicMeterReadsQuery.isMbusQuery()) {
             response = this.getPeriodicMeterReadsGasCommandExecutor.execute(conn, device, periodicMeterReadsQuery);
         } else {
@@ -72,7 +71,7 @@ public class MonitoringService {
     public Serializable requestActualMeterReads(final DlmsConnectionManager conn, final DlmsDevice device,
             final ActualMeterReadsQueryDto actualMeterReadsRequest) throws ProtocolAdapterException {
 
-        Serializable response;
+        final Serializable response;
         if (actualMeterReadsRequest.isMbusQuery()) {
             response = this.actualMeterReadsGasCommandExecutor.execute(conn, device, actualMeterReadsRequest);
         } else {

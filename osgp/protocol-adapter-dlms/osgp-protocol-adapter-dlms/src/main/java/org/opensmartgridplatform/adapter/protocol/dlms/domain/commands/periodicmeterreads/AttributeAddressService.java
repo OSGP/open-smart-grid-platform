@@ -6,7 +6,26 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands;
+package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads;
+
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.PeriodicMeterReadsConstants.ACCESS_SELECTOR_RANGE_DESCRIPTOR;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.PeriodicMeterReadsConstants.ATTRIBUTE_DAILY_OR_MONTHLY_EXPORT_RATE_1_SCALER_UNIT;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.PeriodicMeterReadsConstants.ATTRIBUTE_DAILY_OR_MONTHLY_EXPORT_RATE_2_SCALER_UNIT;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.PeriodicMeterReadsConstants.ATTRIBUTE_DAILY_OR_MONTHLY_IMPORT_RATE_1_SCALER_UNIT;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.PeriodicMeterReadsConstants.ATTRIBUTE_DAILY_OR_MONTHLY_IMPORT_RATE_2_SCALER_UNIT;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.PeriodicMeterReadsConstants.ATTRIBUTE_ID_BUFFER;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.PeriodicMeterReadsConstants.ATTRIBUTE_ID_VALUE;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.PeriodicMeterReadsConstants.ATTRIBUTE_INTERVAL_EXPORT_SCALER_UNIT;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.PeriodicMeterReadsConstants.ATTRIBUTE_INTERVAL_IMPORT_SCALER_UNIT;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.PeriodicMeterReadsConstants.CLASS_ID_PROFILE_GENERIC;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.PeriodicMeterReadsConstants.CLASS_ID_REGISTER;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.PeriodicMeterReadsConstants.OBIS_BYTES_ACTIVE_ENERGY_EXPORT_RATE_1;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.PeriodicMeterReadsConstants.OBIS_BYTES_ACTIVE_ENERGY_EXPORT_RATE_2;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.PeriodicMeterReadsConstants.OBIS_BYTES_ACTIVE_ENERGY_IMPORT_RATE_1;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.PeriodicMeterReadsConstants.OBIS_BYTES_ACTIVE_ENERGY_IMPORT_RATE_2;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.PeriodicMeterReadsConstants.OBIS_CODE_DAILY_BILLING;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.PeriodicMeterReadsConstants.OBIS_CODE_INTERVAL_BILLING;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.PeriodicMeterReadsConstants.OBIS_CODE_MONTHLY_BILLING;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,44 +33,21 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.DlmsHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodTypeDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AttributeAddressHelperService {
-
-    private static final int CLASS_ID_PROFILE_GENERIC = 7;
-    private static final ObisCode OBIS_CODE_INTERVAL_BILLING = new ObisCode("1.0.99.1.0.255");
-    private static final ObisCode OBIS_CODE_DAILY_BILLING = new ObisCode("1.0.99.2.0.255");
-    private static final ObisCode OBIS_CODE_MONTHLY_BILLING = new ObisCode("0.0.98.1.0.255");
-    private static final byte ATTRIBUTE_ID_BUFFER = 2;
-    private static final byte ATTRIBUTE_ID_SCALER_UNIT = 3;
-    private static final ObisCode OBIS_CODE_INTERVAL_IMPORT_SCALER_UNIT = new ObisCode("1.0.1.8.0.255");
-    private static final ObisCode OBIS_CODE_INTERVAL_EXPORT_SCALER_UNIT = new ObisCode("1.0.2.8.0.255");
-    private static final ObisCode OBIS_CODE_MONTHLY_DAILY_IMPORT_RATE_1_SCALER_UNIT = new ObisCode("1.0.1.8.1.255");
-    private static final ObisCode OBIS_CODE_MONTHLY_DAILY_IMPORT_RATE_2_SCALER_UNIT = new ObisCode("1.0.1.8.2.255");
-    private static final ObisCode OBIS_CODE_MONTHLY_DAILY_EXPORT_RATE_1_SCALER_UNIT = new ObisCode("1.0.2.8.1.255");
-    private static final ObisCode OBIS_CODE_MONTHLY_DAILY_EXPORT_RATE_2_SCALER_UNIT = new ObisCode("1.0.2.8.2.255");
-
-    private static final int CLASS_ID_REGISTER = 3;
-
-    private static final byte[] OBIS_BYTES_ACTIVE_ENERGY_IMPORT_RATE_1 = new byte[] { 1, 0, 1, 8, 1, (byte) 255 };
-    private static final byte[] OBIS_BYTES_ACTIVE_ENERGY_IMPORT_RATE_2 = new byte[] { 1, 0, 1, 8, 2, (byte) 255 };
-    private static final byte[] OBIS_BYTES_ACTIVE_ENERGY_EXPORT_RATE_1 = new byte[] { 1, 0, 2, 8, 1, (byte) 255 };
-    private static final byte[] OBIS_BYTES_ACTIVE_ENERGY_EXPORT_RATE_2 = new byte[] { 1, 0, 2, 8, 2, (byte) 255 };
-    private static final byte ATTRIBUTE_ID_VALUE = 2;
-
-    private static final int ACCESS_SELECTOR_RANGE_DESCRIPTOR = 1;
+public class AttributeAddressService {
 
     private final DlmsHelperService dlmsHelperService;
 
     @Autowired
-    public AttributeAddressHelperService(final DlmsHelperService dlmsHelperService) {
+    public AttributeAddressService(final DlmsHelperService dlmsHelperService) {
         this.dlmsHelperService = dlmsHelperService;
     }
 
@@ -90,7 +86,7 @@ public class AttributeAddressHelperService {
             return this.createScalerUnitForInterval();
         case DAILY:
         case MONTHLY:
-            return this.createScalerUnitForMonth();
+            return this.createScalerUnitForDailyOrMonthly();
         default:
             throw new ProtocolAdapterException(String.format("periodtype %s not supported", periodType));
         }
@@ -98,23 +94,17 @@ public class AttributeAddressHelperService {
 
     private List<AttributeAddress> createScalerUnitForInterval() {
         final List<AttributeAddress> scalerUnit = new ArrayList<>();
-        scalerUnit.add(new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_INTERVAL_IMPORT_SCALER_UNIT,
-                ATTRIBUTE_ID_SCALER_UNIT));
-        scalerUnit.add(new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_INTERVAL_EXPORT_SCALER_UNIT,
-                ATTRIBUTE_ID_SCALER_UNIT));
+        scalerUnit.add(ATTRIBUTE_INTERVAL_IMPORT_SCALER_UNIT);
+        scalerUnit.add(ATTRIBUTE_INTERVAL_EXPORT_SCALER_UNIT);
         return scalerUnit;
     }
 
-    private List<AttributeAddress> createScalerUnitForMonth() {
+    private List<AttributeAddress> createScalerUnitForDailyOrMonthly() {
         final List<AttributeAddress> scalerUnit = new ArrayList<>();
-        scalerUnit.add(new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_MONTHLY_DAILY_IMPORT_RATE_1_SCALER_UNIT,
-                ATTRIBUTE_ID_SCALER_UNIT));
-        scalerUnit.add(new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_MONTHLY_DAILY_IMPORT_RATE_2_SCALER_UNIT,
-                ATTRIBUTE_ID_SCALER_UNIT));
-        scalerUnit.add(new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_MONTHLY_DAILY_EXPORT_RATE_1_SCALER_UNIT,
-                ATTRIBUTE_ID_SCALER_UNIT));
-        scalerUnit.add(new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_MONTHLY_DAILY_EXPORT_RATE_2_SCALER_UNIT,
-                ATTRIBUTE_ID_SCALER_UNIT));
+        scalerUnit.add(ATTRIBUTE_DAILY_OR_MONTHLY_IMPORT_RATE_1_SCALER_UNIT);
+        scalerUnit.add(ATTRIBUTE_DAILY_OR_MONTHLY_IMPORT_RATE_2_SCALER_UNIT);
+        scalerUnit.add(ATTRIBUTE_DAILY_OR_MONTHLY_EXPORT_RATE_1_SCALER_UNIT);
+        scalerUnit.add(ATTRIBUTE_DAILY_OR_MONTHLY_EXPORT_RATE_2_SCALER_UNIT);
         return scalerUnit;
     }
 
