@@ -11,15 +11,6 @@ import java.util.List;
 
 import javax.validation.ConstraintViolationException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.ws.server.endpoint.annotation.Endpoint;
-import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
-import org.springframework.ws.server.endpoint.annotation.RequestPayload;
-import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
-
 import org.opensmartgridplatform.adapter.ws.core.application.mapping.DeviceInstallationMapper;
 import org.opensmartgridplatform.adapter.ws.core.application.services.DeviceInstallationService;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
@@ -57,6 +48,14 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.ws.server.endpoint.annotation.Endpoint;
+import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
+import org.springframework.ws.server.endpoint.annotation.RequestPayload;
+import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 @Endpoint
 public class DeviceInstallationEndpoint {
@@ -125,13 +124,10 @@ public class DeviceInstallationEndpoint {
                     .dequeueGetStatusResponse(request.getAsyncRequest().getCorrelationUid());
             if (message != null) {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
-
-                if (message.getDataObject() != null) {
-                    final DeviceStatus deviceStatus = (DeviceStatus) message.getDataObject();
-                    if (deviceStatus != null) {
-                        response.setDeviceStatus(this.deviceInstallationMapper.map(deviceStatus,
-                                org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.DeviceStatus.class));
-                    }
+                final DeviceStatus deviceStatus = (DeviceStatus) message.getDataObject();
+                if (deviceStatus != null) {
+                    response.setDeviceStatus(this.deviceInstallationMapper.map(deviceStatus,
+                            org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.DeviceStatus.class));
                 }
             }
         } catch (final Exception e) {

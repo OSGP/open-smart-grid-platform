@@ -31,6 +31,9 @@ import org.springframework.data.jpa.domain.Specification;
 
 public class JpaDeviceSpecifications implements DeviceSpecifications {
 
+    private static final String DEVICE = "device";
+    private static final String ORGANISATION = "organisation";
+
     @Override
     public Specification<Device> hasTechnicalInstallationDate() throws ArgumentNullOrEmptyException {
         return new Specification<Device>() {
@@ -49,7 +52,7 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
     @Override
     public Specification<Device> forOrganisation(final Organisation organisation) throws ArgumentNullOrEmptyException {
         if (organisation == null) {
-            throw new ArgumentNullOrEmptyException("organisation");
+            throw new ArgumentNullOrEmptyException(ORGANISATION);
         }
 
         return new Specification<Device>() {
@@ -62,8 +65,8 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
 
                 final Subquery<Long> subquery = query.subquery(Long.class);
                 final Root<DeviceAuthorization> deviceAuthorizationRoot = subquery.from(DeviceAuthorization.class);
-                subquery.select(deviceAuthorizationRoot.get("device").get("id").as(Long.class));
-                subquery.where(cb.equal(deviceAuthorizationRoot.get("organisation"), organisation.getId()));
+                subquery.select(deviceAuthorizationRoot.get(DEVICE).get("id").as(Long.class));
+                subquery.where(cb.equal(deviceAuthorizationRoot.get(ORGANISATION), organisation.getId()));
 
                 return cb.in(deviceRoot.get("id")).value(subquery);
             }
@@ -225,7 +228,7 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
                 final Subquery<Long> subquery = query.subquery(Long.class);
                 final Root<DeviceAuthorization> deviceAuthorizationRoot = subquery.from(DeviceAuthorization.class);
                 subquery.select(cb.countDistinct(deviceAuthorizationRoot));
-                subquery.where(cb.equal(deviceAuthorizationRoot.get("device"), deviceRoot.<Long> get("id")));
+                subquery.where(cb.equal(deviceAuthorizationRoot.get(DEVICE), deviceRoot.<Long> get("id")));
                 if (isManagedExternally) {
                     return cb.greaterThan(subquery, Long.valueOf(1));
                 } else {
@@ -289,9 +292,9 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
 
                 final Subquery<Long> subquery = query.subquery(Long.class);
                 final Root<DeviceAuthorization> deviceAuthorizationRoot = subquery.from(DeviceAuthorization.class);
-                subquery.select(deviceAuthorizationRoot.get("device").get("id").as(Long.class));
+                subquery.select(deviceAuthorizationRoot.get(DEVICE).get("id").as(Long.class));
                 subquery.where(cb.and(
-                        cb.like(cb.upper(deviceAuthorizationRoot.get("organisation").<String> get("name")),
+                        cb.like(cb.upper(deviceAuthorizationRoot.get(ORGANISATION).<String> get("name")),
                                 organisation.toUpperCase()),
                         cb.equal(deviceAuthorizationRoot.get("functionGroup"), DeviceFunctionGroup.OWNER.ordinal())));
                 return cb.in(deviceRoot.get("id")).value(subquery);

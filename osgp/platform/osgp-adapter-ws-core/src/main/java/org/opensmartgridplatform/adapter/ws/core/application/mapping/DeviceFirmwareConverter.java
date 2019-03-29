@@ -8,12 +8,10 @@
 package org.opensmartgridplatform.adapter.ws.core.application.mapping;
 
 import java.util.GregorianCalendar;
+import java.util.Objects;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.DeviceFirmware;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.Firmware;
@@ -22,6 +20,8 @@ import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceFirmwareFile;
 import org.opensmartgridplatform.domain.core.entities.FirmwareFile;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
@@ -32,8 +32,8 @@ class DeviceFirmwareConverter extends
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceFirmwareConverter.class);
 
-    private DeviceRepository deviceRepository;
-    private WritableFirmwareFileRepository firmwareFileRepository;
+    private final DeviceRepository deviceRepository;
+    private final WritableFirmwareFileRepository firmwareFileRepository;
 
     public DeviceFirmwareConverter(final DeviceRepository deviceRepository,
             final WritableFirmwareFileRepository firmwareFileRepository) {
@@ -74,5 +74,26 @@ class DeviceFirmwareConverter extends
         destination.setInstalledBy(source.getInstalledBy());
         destination.setActive(true);
         return destination;
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode() + Objects.hashCode(this.deviceRepository)
+                + Objects.hashCode(this.firmwareFileRepository);
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
+        }
+
+        if (!(obj instanceof DeviceFirmwareConverter)) {
+            return false;
+        }
+
+        final DeviceFirmwareConverter that = ((DeviceFirmwareConverter) obj);
+        return super.equals(obj) && Objects.equals(this.deviceRepository, that.deviceRepository)
+                && Objects.equals(this.firmwareFileRepository, that.firmwareFileRepository);
     }
 }

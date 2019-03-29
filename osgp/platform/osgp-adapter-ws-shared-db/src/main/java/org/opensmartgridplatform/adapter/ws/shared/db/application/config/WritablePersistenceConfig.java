@@ -126,7 +126,7 @@ public class WritablePersistenceConfig extends AbstractCustomConfig {
         try {
             transactionManager.setEntityManagerFactory(this.writableEntityManagerFactory().getObject());
             transactionManager.setTransactionSynchronization(JpaTransactionManager.SYNCHRONIZATION_ALWAYS);
-        } catch (final ClassNotFoundException e) {
+        } catch (final Exception e) {
             final String msg = "Error in creating transaction manager bean";
             LOGGER.error(msg, e);
             throw new SharedDbException(msg, e);
@@ -143,7 +143,7 @@ public class WritablePersistenceConfig extends AbstractCustomConfig {
      *             when class not found
      */
     @Bean
-    public LocalContainerEntityManagerFactoryBean writableEntityManagerFactory() throws ClassNotFoundException {
+    public LocalContainerEntityManagerFactoryBean writableEntityManagerFactory() {
         final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 
         entityManagerFactoryBean.setPersistenceUnitName("OSGP_CORE_DB_API");
