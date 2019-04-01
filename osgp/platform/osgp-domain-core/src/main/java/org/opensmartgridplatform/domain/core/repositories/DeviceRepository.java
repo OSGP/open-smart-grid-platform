@@ -63,7 +63,8 @@ public interface DeviceRepository extends JpaRepository<Device, Long>, JpaSpecif
     List<Device> findRecentDevices(Organisation organisation, Date fromDate);
 
     /*
-     * We need these native queries below because these entities dont have an Id
+     * We need these native queries below because these entities don't have an
+     * Id.
      */
     @Modifying
     @Query(value = "delete from device_output_setting", nativeQuery = true)

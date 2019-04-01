@@ -120,7 +120,7 @@ public class LoggingConfig extends AbstractConfig {
         try {
             transactionManager.setEntityManagerFactory(this.entityManagerFactory().getObject());
             transactionManager.setTransactionSynchronization(JpaTransactionManager.SYNCHRONIZATION_ALWAYS);
-        } catch (final ClassNotFoundException e) {
+        } catch (final Exception e) {
             final String msg = "Error in creating transaction manager bean";
             LOGGER.error(msg, e);
             throw e;
@@ -153,12 +153,10 @@ public class LoggingConfig extends AbstractConfig {
      * Method for creating the Entity Manager Factory Bean.
      *
      * @return LocalContainerEntityManagerFactoryBean
-     * @throws ClassNotFoundException
-     *             when class not found
      */
     @Bean
     @DependsOn("loggingFlyway")
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory() throws ClassNotFoundException {
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 
         entityManagerFactoryBean.setPersistenceUnitName("OSGP_LOGGING");

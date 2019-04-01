@@ -31,6 +31,8 @@ public class OslpDevice extends AbstractEntity {
      */
     public static final String SSLD_TYPE = "SSLD";
 
+    private static final Integer SEQUENCE_NUMBER_MAXIMUM = 65535;
+
     /**
      * Serial Version UID.
      */
@@ -55,9 +57,6 @@ public class OslpDevice extends AbstractEntity {
 
     @Transient
     private final SecureRandom random = new SecureRandom();
-
-    @Transient
-    private final Integer sequenceNumberMaximum = 65535;
 
     @Column(nullable = true, length = 255)
     private String publicKey;
@@ -133,7 +132,7 @@ public class OslpDevice extends AbstractEntity {
         // Save secure device random.
         this.randomDevice = randomDevice;
         // Generate secure platform random.
-        this.randomPlatform = this.random.nextInt(this.sequenceNumberMaximum + 1);
+        this.randomPlatform = this.random.nextInt(SEQUENCE_NUMBER_MAXIMUM + 1);
     }
 
     public void updatePublicKey(final String publicKey) {

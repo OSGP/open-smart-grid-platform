@@ -14,6 +14,7 @@ import javax.sql.DataSource;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationVersion;
 import org.hibernate.jpa.HibernatePersistenceProvider;
+import org.opensmartgridplatform.shared.exceptionhandling.DeprecatedPropertyException;
 import org.opensmartgridplatform.shared.infra.db.DefaultConnectionPoolFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -198,7 +199,7 @@ public abstract class AbstractPersistenceConfig extends AbstractConfig {
                 PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY, HibernateNamingStrategy.class.getName());
 
         LOGGER.error(message);
-        throw new RuntimeException(message);
+        throw new DeprecatedPropertyException(message);
     }
 
     protected void destroyDataSource() {

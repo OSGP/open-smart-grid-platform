@@ -126,7 +126,7 @@ public class ReadOnlyLoggingConfig extends AbstractCustomConfig {
         try {
             transactionManager.setEntityManagerFactory(this.readableEntityManagerFactory().getObject());
             transactionManager.setTransactionSynchronization(JpaTransactionManager.SYNCHRONIZATION_ALWAYS);
-        } catch (final ClassNotFoundException e) {
+        } catch (final Exception e) {
             final String msg = "Error in creating transaction manager bean";
             LOGGER.error(msg, e);
             throw e;
@@ -139,11 +139,9 @@ public class ReadOnlyLoggingConfig extends AbstractCustomConfig {
      * Method for creating the Entity Manager Factory Bean.
      *
      * @return LocalContainerEntityManagerFactoryBean
-     * @throws ClassNotFoundException
-     *             when class not found
      */
     @Bean
-    public LocalContainerEntityManagerFactoryBean readableEntityManagerFactory() throws ClassNotFoundException {
+    public LocalContainerEntityManagerFactoryBean readableEntityManagerFactory() {
         final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 
         entityManagerFactoryBean.setPersistenceUnitName("OSGP_DOMAIN_LOGGING");

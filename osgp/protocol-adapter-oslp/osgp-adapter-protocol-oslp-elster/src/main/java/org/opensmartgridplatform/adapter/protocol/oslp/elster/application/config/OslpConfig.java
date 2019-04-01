@@ -126,7 +126,7 @@ public class OslpConfig extends AbstractConfig {
         return bootstrap;
     }
 
-    private ChannelPipeline createChannelPipeline(final ChannelHandler handler) throws ProtocolAdapterException {
+    private ChannelPipeline createChannelPipeline(final ChannelHandler handler) {
         final ChannelPipeline pipeline = Channels.pipeline();
 
         pipeline.addLast("loggingHandler", new LoggingHandler(InternalLogLevel.INFO, false));
@@ -146,7 +146,7 @@ public class OslpConfig extends AbstractConfig {
     }
 
     @Bean
-    public OslpDecoder oslpDecoder() throws ProtocolAdapterException {
+    public OslpDecoder oslpDecoder() {
         return new OslpDecoder(this.oslpSignature(), this.oslpSignatureProvider());
     }
 
