@@ -9,7 +9,6 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.processors;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.isA;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -80,7 +79,7 @@ public class UpdateFirmwareRequestMessageProcessorTest {
         this.device = new DlmsDeviceBuilder().withHls5Active(true).build();
         when(this.domainHelperService.findDlmsDevice(any(MessageMetadata.class))).thenReturn(this.device);
         when(this.dlmsConnectionManagerMock.getDlmsMessageListener()).thenReturn(this.messageListenerMock);
-        when(this.connectionHelper.createConnectionForDevice(same(this.device), isA(DlmsMessageListener.class)))
+        when(this.connectionHelper.createConnectionForDevice(same(this.device), any(DlmsMessageListener.class)))
                 .thenReturn(this.dlmsConnectionManagerMock);
     }
 
