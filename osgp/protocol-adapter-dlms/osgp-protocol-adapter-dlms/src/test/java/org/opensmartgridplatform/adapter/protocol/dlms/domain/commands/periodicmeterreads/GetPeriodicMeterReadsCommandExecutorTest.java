@@ -62,7 +62,8 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
 
     private DlmsConnectionManager connectionManager;
 
-    @Captor ArgumentCaptor<Boolean> isSelectingValuesSupportedCaptor;
+    @Captor
+    ArgumentCaptor<Boolean> isSelectingValuesSupportedCaptor;
 
     @Before
     public void setUp() {
@@ -75,7 +76,8 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
     public void testUsingIsSelectingValuesSupportedInExecute() throws Exception {
 
         for (final Protocol protocol : Protocol.values()) {
-            this.assertIsSelectingValuesSupported(protocol.getName(), protocol.getVersion(), protocol.isSelectValuesInSelectiveAccessSupported() );
+            this.assertIsSelectingValuesSupported(protocol.getName(), protocol.getVersion(),
+                    protocol.isSelectValuesInSelectiveAccessSupported());
         }
     }
 
@@ -90,22 +92,25 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
         final GetResult getResult1 = new GetResultBuilder().build();
         final GetResult getResult2 = new GetResultBuilder().build();
         final DataObject resultData = DataObject.newArrayData(new ArrayList<>());
-        final AttributeAddress[] attributeAddresses = new AttributeAddress[]{ CLOCK };
+        final AttributeAddress[] attributeAddresses = new AttributeAddress[] { CLOCK };
 
-        when(this.helperService.getAndCheck(same(this.connectionManager), same(device), any(), any())).thenReturn(asList(getResult1, getResult2));
+        when(this.helperService.getAndCheck(same(this.connectionManager), same(device), any(), any()))
+                .thenReturn(asList(getResult1, getResult2));
         when(this.helperService.readDataObject(any(), any())).thenReturn(resultData);
-        when(this.attributeAddressService.getProfileBufferAndScalerUnitForPeriodicMeterReads(any(), any(),
-                any(), anyBoolean())).thenReturn(attributeAddresses);
+        when(this.attributeAddressService
+                .getProfileBufferAndScalerUnitForPeriodicMeterReads(any(), any(), any(), anyBoolean()))
+                .thenReturn(attributeAddresses);
 
         // Execute request
         final Date timeFrom = new GregorianCalendar(2019, 1, 1).getTime();
         final Date timeTo = new GregorianCalendar(2019, 1, 5).getTime();
-        final PeriodicMeterReadsRequestDto request = new PeriodicMeterReadsRequestDto(PeriodTypeDto.DAILY, timeFrom, timeTo);
+        final PeriodicMeterReadsRequestDto request = new PeriodicMeterReadsRequestDto(PeriodTypeDto.DAILY, timeFrom,
+                timeTo);
         this.executor.execute(this.connectionManager, device, request);
 
         // Check if command executor uses right setting
-        verify(this.attributeAddressService).getProfileBufferAndScalerUnitForPeriodicMeterReads(any(), any(),
-                any(), this.isSelectingValuesSupportedCaptor.capture());
+        verify(this.attributeAddressService).getProfileBufferAndScalerUnitForPeriodicMeterReads(any(), any(), any(),
+                this.isSelectingValuesSupportedCaptor.capture());
         assertThat(this.isSelectingValuesSupportedCaptor.getValue()).isEqualTo(isSelectingValuesSupported);
 
         // Reset mock
