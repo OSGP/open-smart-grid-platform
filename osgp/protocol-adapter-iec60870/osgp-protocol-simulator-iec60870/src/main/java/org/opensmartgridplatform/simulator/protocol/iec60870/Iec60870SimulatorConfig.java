@@ -21,7 +21,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
 @Configuration
-@ComponentScan(basePackageClasses = (org.opensmartgridplatform.iec60870.Iec60870Server.class))
+@ComponentScan(basePackageClasses = { Iec60870Server.class })
 @PropertySource(value = "classpath:application.properties", ignoreResourceNotFound = false)
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/SimulatorProtocolIec60870/config}", ignoreResourceNotFound = true)
