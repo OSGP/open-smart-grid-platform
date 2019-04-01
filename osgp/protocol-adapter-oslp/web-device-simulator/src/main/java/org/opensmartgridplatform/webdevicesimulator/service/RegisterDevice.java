@@ -34,6 +34,7 @@ import org.opensmartgridplatform.webdevicesimulator.domain.entities.Device;
 import org.opensmartgridplatform.webdevicesimulator.domain.entities.DeviceMessageStatus;
 import org.opensmartgridplatform.webdevicesimulator.domain.entities.OslpLogItem;
 import org.opensmartgridplatform.webdevicesimulator.domain.repositories.OslpLogItemRepository;
+import org.opensmartgridplatform.webdevicesimulator.domain.valueobjects.Event;
 import org.opensmartgridplatform.webdevicesimulator.domain.valueobjects.ProtocolType;
 import org.opensmartgridplatform.webdevicesimulator.exceptions.DeviceSimulatorException;
 import org.opensmartgridplatform.webdevicesimulator.service.OslpChannelHandler.OutOfSequenceEvent;
@@ -247,21 +248,25 @@ public class RegisterDevice {
     }
 
     private OslpEnvelope createEventNotificationRequest(final Device device, final int sequenceNumber,
-            final Oslp.Event event, final String description, final Integer index, final String timestamp,
-            final boolean hasTimestamp) {
+            final Event event) {
         final String deviceUid = device.getDeviceUid();
+        final Oslp.Event oslpEvent = event.getOslpEvent();
+        final String description = event.getDescription();
+        final Integer index = event.getIndex();
+        final String timestamp = event.getTimestamp();
+        final boolean hasTimestamp = event.hasTimestamp();
 
         // Create an event notification depending on device protocol (for now
         // with 1 event).
 
         Oslp.EventNotification eventNotification = null;
         if (device.getProtocol().equals(ProtocolType.OSLP.toString())) {
-            eventNotification = EventNotification.newBuilder().setEvent(event)
+            eventNotification = EventNotification.newBuilder().setEvent(oslpEvent)
                     .setDescription(description == null ? "" : description)
                     .setIndex(ByteString.copyFrom(new byte[] { index == null ? 0 : index.byteValue() })).build();
         } else if (device.getProtocol().equals(ProtocolType.OSLP_ELSTER.toString())) {
             final Oslp.EventNotification.Builder builder = EventNotification.newBuilder();
-            builder.setEvent(event);
+            builder.setEvent(oslpEvent);
             if (StringUtils.isNotEmpty(description)) {
                 builder.setDescription(description);
             }
@@ -332,8 +337,9 @@ public class RegisterDevice {
             final Oslp.Event oslpEvent = Oslp.Event.valueOf(event);
 
             // Create request and write outgoing request to log.
-            final OslpEnvelope request = this.createEventNotificationRequest(device, sequenceNumber, oslpEvent,
-                    description, index, timestamp, hasTimestamp);
+            final Event deviceSimulatorEvent = new Event(oslpEvent, description, index, timestamp, hasTimestamp);
+            final OslpEnvelope request = this.createEventNotificationRequest(device, sequenceNumber,
+                    deviceSimulatorEvent);
             this.writeOslpLogItem(request, device, false);
 
             // Send event notification message and receive response.

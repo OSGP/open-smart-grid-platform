@@ -116,11 +116,9 @@ public class ReadOnlyLoggingConfig extends AbstractCustomConfig {
      * Method for creating the Transaction Manager.
      *
      * @return JpaTransactionManager
-     * @throws ClassNotFoundException
-     *             when class not found
      */
     @Bean
-    public JpaTransactionManager readableTransactionManager() throws ClassNotFoundException {
+    public JpaTransactionManager readableTransactionManager() {
         final JpaTransactionManager transactionManager = new JpaTransactionManager();
 
         try {

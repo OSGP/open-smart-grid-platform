@@ -110,11 +110,9 @@ public class LoggingConfig extends AbstractConfig {
      * Method for creating the Transaction Manager.
      *
      * @return JpaTransactionManager
-     * @throws ClassNotFoundException
-     *             when class not found
      */
     @Bean
-    public JpaTransactionManager transactionManager() throws ClassNotFoundException {
+    public JpaTransactionManager transactionManager() {
         final JpaTransactionManager transactionManager = new JpaTransactionManager();
 
         try {

@@ -45,21 +45,43 @@ public interface DeviceRepository extends JpaRepository<Device, Long>, JpaSpecif
 
     List<Device> findByNetworkAddress(InetAddress address);
 
-    @Query("SELECT d " + "FROM Device d " + "WHERE EXISTS " + "(" + "	SELECT auth.id "
-            + "	FROM d.authorizations auth " + "	WHERE auth.organisation = ?1" + ")")
+    // @formatter:off
+    @Query("SELECT d "
+         + "FROM Device d "
+         + "WHERE EXISTS "
+         + "("
+         + "    SELECT auth.id "
+         + "    FROM d.authorizations auth "
+         + "    WHERE auth.organisation = ?1"
+         + ")")
+    // @formatter:on
     Page<Device> findAllAuthorized(Organisation organisation, Pageable request);
 
-    @Query("SELECT d " + "FROM Device d " + "WHERE NOT EXISTS " + "(" + "	SELECT auth.id "
-            + "	FROM d.authorizations auth "
-            + "	WHERE auth.functionGroup = org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup.OWNER"
-            + ")")
+    // @formatter:off
+    @Query("SELECT d "
+         + "FROM Device d "
+         + "WHERE NOT EXISTS "
+         + "("
+         + "    SELECT auth.id "
+         + "    FROM d.authorizations auth "
+         + "    WHERE auth.functionGroup = org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup.OWNER"
+         + ")")
+    // @formatter:on
     List<Device> findDevicesWithNoOwner();
 
-    @Query("SELECT d " + "FROM Device d " + "WHERE EXISTS " + "(" + "	SELECT auth.id "
-            + "	FROM d.authorizations auth " + "	WHERE auth.organisation = ?1 AND "
-            + "		(auth.functionGroup = org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup.OWNER OR "
-            + "		 auth.functionGroup = org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup.INSTALLATION)"
-            + ") AND " + "d.modificationTime >= ?2")
+    // @formatter:off
+    @Query("SELECT d "
+         + "FROM Device d "
+         + "WHERE EXISTS "
+         + "("
+         + "    SELECT auth.id "
+         + "    FROM d.authorizations auth "
+         + "    WHERE auth.organisation = ?1 AND "
+         + "        (auth.functionGroup = org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup.OWNER OR "
+         + "         auth.functionGroup = org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup.INSTALLATION)"
+         + ") AND "
+         + "d.modificationTime >= ?2")
+    // @formatter:on
     List<Device> findRecentDevices(Organisation organisation, Date fromDate);
 
     /*

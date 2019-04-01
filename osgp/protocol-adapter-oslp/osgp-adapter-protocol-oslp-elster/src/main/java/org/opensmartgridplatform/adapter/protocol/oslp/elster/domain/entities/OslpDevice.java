@@ -7,7 +7,6 @@
  */
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities;
 
-import java.net.InetAddress;
 import java.security.SecureRandom;
 
 import javax.persistence.Column;
@@ -66,13 +65,6 @@ public class OslpDevice extends AbstractEntity {
     }
 
     public OslpDevice(final String deviceUid, final String deviceIdentification, final String deviceType) {
-        this.deviceUid = deviceUid;
-        this.deviceIdentification = deviceIdentification;
-        this.deviceType = deviceType;
-    }
-
-    public OslpDevice(final String deviceUid, final String deviceIdentification, final String deviceType,
-            final InetAddress networkAddress, final boolean activated, final boolean hasSchedule) {
         this.deviceUid = deviceUid;
         this.deviceIdentification = deviceIdentification;
         this.deviceType = deviceType;
