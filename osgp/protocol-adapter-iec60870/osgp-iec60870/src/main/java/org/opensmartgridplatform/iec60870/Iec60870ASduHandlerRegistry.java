@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.simulator.protocol.iec60870.server;
+package org.opensmartgridplatform.iec60870;
 
 import java.util.HashMap;
 import java.util.Map;

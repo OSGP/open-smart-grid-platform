@@ -22,13 +22,18 @@ import org.mockito.MockitoAnnotations;
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.Connection;
 import org.openmuc.j60870.TypeId;
+import org.opensmartgridplatform.iec60870.Iec60870ASduHandlerRegistry;
+import org.opensmartgridplatform.iec60870.Iec60870ConnectionEventListener;
+import org.opensmartgridplatform.iec60870.Iec60870ConnectionRegistry;
 import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870ASduFactory;
 import org.opensmartgridplatform.simulator.protocol.iec60870.server.handlers.Iec60870InterrogationCommandASduHandler;
 import org.opensmartgridplatform.simulator.protocol.iec60870.server.handlers.Iec60870SingleCommandASduHandler;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
-public class Iec60870ConnectionEventListenerTests {
+public class Iec60870ConnectionEventListenerTest {
+    @Mock
+    private Iec60870ConnectionRegistry iec60870ConnectionRegistry;
 
     @Mock
     private Iec60870ASduHandlerRegistry iec60870ASduHandlerRegistry;
@@ -50,7 +55,7 @@ public class Iec60870ConnectionEventListenerTests {
     public void setup() throws IOException {
         MockitoAnnotations.initMocks(this);
         this.iec60870ConnectionEventListener = new Iec60870ConnectionEventListener(this.connection, 1,
-                this.iec60870ASduHandlerRegistry);
+                this.iec60870ConnectionRegistry, this.iec60870ASduHandlerRegistry);
     }
 
     @Test

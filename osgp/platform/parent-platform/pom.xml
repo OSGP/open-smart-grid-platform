@@ -56,7 +56,7 @@
     <hibernate.version>4.2.16.Final</hibernate.version>
     <hibernate.validator.version>4.3.1.Final</hibernate.validator.version>
     <junit.version>4.12</junit.version>
-    <assertj.version>3.9.1</assertj.version>
+    <assertj.version>3.12.2</assertj.version>
     <mockito.version>1.10.19</mockito.version>
     <joda.version>2.4</joda.version>
     <flyway.version>4.1.2</flyway.version>
@@ -543,6 +543,12 @@
         <groupId>org.assertj</groupId>
         <artifactId>assertj-core</artifactId>
         <version>${assertj.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <version>${mockito.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>

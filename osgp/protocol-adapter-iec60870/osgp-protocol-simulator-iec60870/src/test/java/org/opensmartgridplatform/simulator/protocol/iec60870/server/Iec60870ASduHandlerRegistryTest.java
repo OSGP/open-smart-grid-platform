@@ -13,6 +13,10 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openmuc.j60870.TypeId;
+import org.opensmartgridplatform.iec60870.Iec60870ASduHandler;
+import org.opensmartgridplatform.iec60870.Iec60870ASduHandlerNotFoundException;
+import org.opensmartgridplatform.iec60870.Iec60870ASduHandlerRegistry;
+import org.opensmartgridplatform.iec60870.Iec60870Server;
 import org.opensmartgridplatform.simulator.protocol.iec60870.server.handlers.Iec60870InterrogationCommandASduHandler;
 import org.opensmartgridplatform.simulator.protocol.iec60870.server.handlers.Iec60870SingleCommandASduHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,11 +26,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class Iec60870ASduHandlerRegistryTests {
+public class Iec60870ASduHandlerRegistryTest {
     // Mock the RTU Simulator to prevent the simulator from starting, which
     // might cause 'address already in use' exceptions while running tests
     @MockBean
-    private Iec60870Simulator iec60870RtuSimulator;
+    private Iec60870Server iec60870Server;
 
     @Autowired
     private Iec60870ASduHandlerRegistry iec60870aSduHandlerRegistry;

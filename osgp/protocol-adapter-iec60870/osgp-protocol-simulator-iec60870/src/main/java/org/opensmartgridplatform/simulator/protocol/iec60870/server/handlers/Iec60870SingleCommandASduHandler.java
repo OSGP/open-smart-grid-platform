@@ -12,7 +12,7 @@ import java.io.IOException;
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.Connection;
 import org.openmuc.j60870.TypeId;
-import org.opensmartgridplatform.simulator.protocol.iec60870.server.Iec60870ASduHandler;
+import org.opensmartgridplatform.iec60870.Iec60870ASduHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

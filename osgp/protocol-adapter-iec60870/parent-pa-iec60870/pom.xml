@@ -53,7 +53,9 @@
     <servlet.version>3.0.1</servlet.version>
     <hibernate.version>4.2.16.Final</hibernate.version>
     <hibernate.validator.version>4.3.1.Final</hibernate.validator.version>
-    <junit.version>4.11</junit.version>
+    <junit.version>4.12</junit.version>
+    <assertj.version>3.12.2</assertj.version>
+    <mockito.version>2.25.1</mockito.version>
     <flyway.version>4.1.2</flyway.version>
     <slf4j.version>1.7.7</slf4j.version>
     <apache.commons.lang.version>3.3.2</apache.commons.lang.version>
@@ -276,13 +278,13 @@
         <version>${apache.activemq.version}</version>
       </dependency>
 
-      <!-- OpenIEC60870 -->
+      <!-- j60870 -->
       <dependency>
         <groupId>org.openmuc</groupId>
         <artifactId>j60870</artifactId>
         <version>${openmuc.j60870.version}</version>
       </dependency>
-      
+
       <!-- Orika (mapping framework) -->
       <dependency>
         <groupId>ma.glasnost.orika</groupId>
@@ -302,6 +304,19 @@
         <version>${junit.version}</version>
         <scope>test</scope>
       </dependency>
+      <dependency>
+        <groupId>org.assertj</groupId>
+        <artifactId>assertj-core</artifactId>
+        <version>${assertj.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <version>${mockito.version}</version>
+        <scope>test</scope>
+      </dependency>
+
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
