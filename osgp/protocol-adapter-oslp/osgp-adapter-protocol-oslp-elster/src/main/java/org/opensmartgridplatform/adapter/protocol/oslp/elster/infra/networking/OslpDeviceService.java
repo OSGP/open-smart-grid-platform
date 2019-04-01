@@ -694,8 +694,8 @@ public class OslpDeviceService implements DeviceService {
                 deviceRequest.getScheduleMessageDataContainer().getSchedule().getScheduleList());
 
         final Oslp.SetScheduleRequest.Builder request = SetScheduleRequest.newBuilder().addAllSchedules(oslpSchedules)
-                .setScheduleType(
-                        this.mapper.map(deviceRequest.getRelayType(), org.opensmartgridplatform.oslp.Oslp.RelayType.class));
+                .setScheduleType(this.mapper.map(deviceRequest.getRelayType(),
+                        org.opensmartgridplatform.oslp.Oslp.RelayType.class));
 
         final ScheduleDto schedule = new ScheduleDto(
                 deviceRequest.getScheduleMessageDataContainer().getSchedule().getScheduleList());
@@ -781,8 +781,8 @@ public class OslpDeviceService implements DeviceService {
 
         final Oslp.SetScheduleRequest.Builder oslpRequestBuilder = SetScheduleRequest.newBuilder()
                 .addAllSchedules(oslpSchedules)
-                .setScheduleType(
-                        this.mapper.map(deviceRequest.getRelayType(), org.opensmartgridplatform.oslp.Oslp.RelayType.class))
+                .setScheduleType(this.mapper.map(deviceRequest.getRelayType(),
+                        org.opensmartgridplatform.oslp.Oslp.RelayType.class))
                 .setPageInfo(Oslp.PageInfo.newBuilder().setCurrentPage(pager.getCurrentPage())
                         .setPageSize(pager.getPageSize()).setTotalPages(pager.getNumberOfPages()));
 
@@ -1995,7 +1995,7 @@ public class OslpDeviceService implements DeviceService {
         try {
             this.oslpChannelHandler.send(this.createAddress(ipAddress), oslpRequest, oslpResponseHandler,
                     deviceRequest.getDeviceIdentification());
-        } catch (final Exception e) {
+        } catch (final RuntimeException e) {
             LOGGER.error("Exception during sendMessage()", e);
             throw new IOException(e.getMessage());
         }

@@ -65,7 +65,7 @@ public class DlmsDatabase {
     /**
      * Before each scenario dlms related stuff needs to be removed.
      */
-    @Transactional(transactionManager = "txMgrCore")
+    @Transactional(transactionManager = "txMgrDlms")
     public void prepareDatabaseForScenario() {
 
         this.dlmsDSecurityKeyRepo.deleteAllInBatch();

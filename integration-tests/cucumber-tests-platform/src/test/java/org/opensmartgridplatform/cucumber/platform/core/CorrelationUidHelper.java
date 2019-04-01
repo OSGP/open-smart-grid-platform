@@ -1,3 +1,10 @@
+/**
+ * Copyright 2018 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.cucumber.platform.core;
 
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
@@ -15,10 +22,9 @@ public class CorrelationUidHelper {
      * @param organizationIdentification
      *            The organizationIdentifier used; if null or empty, the default
      *            test-org will be used.
-     * @throws Throwable
      */
     public static void saveCorrelationUidInScenarioContext(final String correlationUid,
-            String organizationIdentification) throws Throwable {
+            String organizationIdentification) {
         if (StringUtils.isEmpty(organizationIdentification)) {
             organizationIdentification = PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION;
         }

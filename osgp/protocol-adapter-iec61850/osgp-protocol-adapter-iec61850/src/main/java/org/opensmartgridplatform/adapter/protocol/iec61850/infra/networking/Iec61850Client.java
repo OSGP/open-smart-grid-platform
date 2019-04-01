@@ -19,11 +19,6 @@ import org.openmuc.openiec61850.FcModelNode;
 import org.openmuc.openiec61850.SclParseException;
 import org.openmuc.openiec61850.ServerModel;
 import org.openmuc.openiec61850.ServiceError;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.ConnectionFailureException;
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.NodeReadException;
@@ -35,6 +30,10 @@ import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.help
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.LogicalDevice;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.reporting.Iec61850ClientBaseEventListener;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.reporting.Iec61850ClientEventListenerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
 public class Iec61850Client {
@@ -60,12 +59,16 @@ public class Iec61850Client {
     @Autowired
     private int maxRetryCount;
 
+    @Autowired
+    private int connectionTimeout;
+
     @PostConstruct
     private void init() {
         LOGGER.info(
-                "portClient: {}, portClientLocal: {}, iec61850SsldPortServer: {}, iec61850RtuPortServer: {}, maxRetryCount: {}, maxRedeliveriesForIec61850Requests: {}",
+                "portClient: {}, portClientLocal: {}, iec61850SsldPortServer: {}, iec61850RtuPortServer: {}, maxRetryCount: {}, maxRedeliveriesForIec61850Requests: {}, connectionTimeout: {}",
                 this.iec61850PortClient, this.iec61850PortClientLocal, this.iec61850SsldPortServer,
-                this.iec61850RtuPortServer, this.maxRetryCount, this.maxRedeliveriesForIec61850Requests);
+                this.iec61850RtuPortServer, this.maxRetryCount, this.maxRedeliveriesForIec61850Requests,
+                this.connectionTimeout);
     }
 
     /**
@@ -98,6 +101,7 @@ public class Iec61850Client {
                 ipAddress.getHostAddress(), port, this.maxRedeliveriesForIec61850Requests, this.maxRetryCount);
 
         try {
+            clientSap.setResponseTimeout(this.connectionTimeout);
             final ClientAssociation association = clientSap.associate(ipAddress, port, null, reportListener);
             clientAssociation = new Iec61850ClientAssociation(association, reportListener);
         } catch (final IOException e) {
