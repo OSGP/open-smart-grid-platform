@@ -7,10 +7,16 @@ import java.util.Objects;
 
 import org.opensmartgridplatform.domain.da.measurements.MeasurementElement;
 
-public class FloatingPointMeasurementElement extends MeasurementElement<Float> {
+public class FloatingPointMeasurementElement implements MeasurementElement {
+
+    private Float value;
 
     public FloatingPointMeasurementElement(final Float value) {
-        super(value);
+        this.value = value;
+    }
+
+    public Float getValue() {
+        return this.value;
     }
 
     @Override

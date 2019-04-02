@@ -10,14 +10,20 @@ import java.util.Objects;
 
 import org.opensmartgridplatform.domain.da.measurements.MeasurementElement;
 
-public class TimestampMeasurementElement extends MeasurementElement<Long> {
+public class TimestampMeasurementElement implements MeasurementElement {
+
+    private Long value;
 
     public TimestampMeasurementElement(final long value) {
-        super(value);
+        this.value = value;
     }
 
     public TimestampMeasurementElement(final ZonedDateTime zonedDateTime) {
-        super(zonedDateTime.toInstant().toEpochMilli());
+        this(zonedDateTime.toInstant().toEpochMilli());
+    }
+
+    public Long getValue() {
+        return this.value;
     }
 
     public ZonedDateTime asZonedDateTime() {

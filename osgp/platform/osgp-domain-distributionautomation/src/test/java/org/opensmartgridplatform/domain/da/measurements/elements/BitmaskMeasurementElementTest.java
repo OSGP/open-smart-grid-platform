@@ -6,6 +6,7 @@ package org.opensmartgridplatform.domain.da.measurements.elements;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.EnumSet;
+import java.util.Set;
 
 import org.junit.Test;
 import org.opensmartgridplatform.domain.da.measurements.elements.BitmaskMeasurementElement.BitmaskFlag;
@@ -33,7 +34,7 @@ public class BitmaskMeasurementElementTest {
         final EnumSet<BitmaskFlag> expected = EnumSet.noneOf(BitmaskFlag.class);
 
         // Act
-        final EnumSet<BitmaskFlag> actual = element.asEnumSet();
+        final Set<BitmaskFlag> actual = element.asEnumSet();
 
         // Assert
         assertThat(actual).isEqualTo(expected);
@@ -48,7 +49,7 @@ public class BitmaskMeasurementElementTest {
         expected.add(BitmaskFlag.FLAG_1);
 
         // Act
-        final EnumSet<BitmaskFlag> actual = element.asEnumSet();
+        final Set<BitmaskFlag> actual = element.asEnumSet();
 
         // Assert
         assertThat(actual).isEqualTo(expected);
@@ -63,7 +64,7 @@ public class BitmaskMeasurementElementTest {
         expected.add(BitmaskFlag.FLAG_8);
 
         // Act
-        final EnumSet<BitmaskFlag> actual = element.asEnumSet();
+        final Set<BitmaskFlag> actual = element.asEnumSet();
 
         // Assert
         assertThat(actual).isEqualTo(expected);
@@ -77,7 +78,7 @@ public class BitmaskMeasurementElementTest {
         final EnumSet<BitmaskFlag> expected = EnumSet.allOf(BitmaskFlag.class);
 
         // Act
-        final EnumSet<BitmaskFlag> actual = element.asEnumSet();
+        final Set<BitmaskFlag> actual = element.asEnumSet();
 
         // Assert
         assertThat(actual).isEqualTo(expected);

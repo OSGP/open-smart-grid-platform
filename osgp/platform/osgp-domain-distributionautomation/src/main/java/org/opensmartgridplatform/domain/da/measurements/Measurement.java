@@ -8,13 +8,13 @@ import java.util.List;
 import java.util.Objects;
 
 public class Measurement {
-    private List<MeasurementElement<? super Object>> measurementElements = new ArrayList<>();
+    private List<MeasurementElement> measurementElements = new ArrayList<>();
 
-    public Measurement(final List<MeasurementElement<? super Object>> measurementElements) {
+    public Measurement(final List<MeasurementElement> measurementElements) {
         this.measurementElements = new ArrayList<>(measurementElements);
     }
 
-    public List<MeasurementElement<Object>> getMeasurementElements() {
+    public List<MeasurementElement> getMeasurementElements() {
         return new ArrayList<>(this.measurementElements);
     }
 

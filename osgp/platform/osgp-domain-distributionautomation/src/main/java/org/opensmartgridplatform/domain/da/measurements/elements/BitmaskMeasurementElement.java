@@ -9,10 +9,16 @@ import java.util.Set;
 
 import org.opensmartgridplatform.domain.da.measurements.MeasurementElement;
 
-public class BitmaskMeasurementElement extends MeasurementElement<Byte> {
+public class BitmaskMeasurementElement implements MeasurementElement {
+
+    private Byte value;
 
     public BitmaskMeasurementElement(final Byte value) {
-        super(value);
+        this.value = value;
+    }
+
+    public Byte getValue() {
+        return this.value;
     }
 
     public boolean getFlag(final short position) {
