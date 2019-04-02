@@ -5,6 +5,7 @@ package org.opensmartgridplatform.domain.da.measurements.elements;
 
 import java.util.EnumSet;
 import java.util.Objects;
+import java.util.Set;
 
 import org.opensmartgridplatform.domain.da.measurements.MeasurementElement;
 
@@ -23,8 +24,8 @@ public class BitmaskMeasurementElement extends MeasurementElement<Byte> {
         return (this.value & 1 << index) > 0;
     }
 
-    public EnumSet<BitmaskFlag> asEnumSet() {
-        final EnumSet<BitmaskFlag> bitmaskFlags = EnumSet.noneOf(BitmaskFlag.class);
+    public Set<BitmaskFlag> asEnumSet() {
+        final Set<BitmaskFlag> bitmaskFlags = EnumSet.noneOf(BitmaskFlag.class);
         for (final BitmaskFlag flag : BitmaskFlag.values()) {
             if ((this.value & flag.value) > 0) {
                 bitmaskFlags.add(flag);

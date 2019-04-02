@@ -2,7 +2,6 @@ package org.opensmartgridplatform.iec60870;
 
 import java.io.IOException;
 
-import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,9 +36,5 @@ public class Iec60870Server {
 
     public Iec60870ServerEventListener getIec60870ServerEventListener() {
         return this.iec60870ServerEventListener;
-    }
-
-    public void pushAsdu(final ASdu asdu) {
-
     }
 }
