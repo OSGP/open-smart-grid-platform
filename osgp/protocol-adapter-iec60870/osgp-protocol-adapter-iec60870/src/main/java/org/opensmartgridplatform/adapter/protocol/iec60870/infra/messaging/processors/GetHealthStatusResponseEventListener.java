@@ -48,8 +48,8 @@ public class GetHealthStatusResponseEventListener extends BaseResponseEventListe
         // For now return only a response on ASDU with type id: "interrogation
         // command" and cause of transmission: "activation confirmation".
         // Processing will change in a later story.
-        if (TypeId.C_IC_NA_1.equals(receivedAsdu.getTypeIdentification())
-                && CauseOfTransmission.ACTIVATION_CON.equals(receivedAsdu.getCauseOfTransmission())) {
+        if (TypeId.C_IC_NA_1 == receivedAsdu.getTypeIdentification()
+                && CauseOfTransmission.ACTIVATION_CON == receivedAsdu.getCauseOfTransmission()) {
             this.sendGetHealthStatusResponse();
         } else {
             LOGGER.info(
@@ -60,13 +60,13 @@ public class GetHealthStatusResponseEventListener extends BaseResponseEventListe
     private void saveReceivedMessage(final ASdu receivedAsdu) {
         LOGGER.info("In saveReceivedMessage");
 
-        if (receivedAsdu.getTypeIdentification().equals(TypeId.C_IC_NA_1)) {
+        if (receivedAsdu.getTypeIdentification() == TypeId.C_IC_NA_1) {
             this.responseMessagesRepresentation = "getHealthStatusResponse:";
         }
 
         this.responseMessagesRepresentation += System.lineSeparator() + System.lineSeparator() + receivedAsdu;
 
-        if (receivedAsdu.getTypeIdentification().equals(TypeId.M_ME_NB_1)) {
+        if (receivedAsdu.getTypeIdentification() == TypeId.M_ME_NB_1) {
             // This is the last ASDU for the interrogation command, log
             // the message in the DB.
             this.getDeviceMessageLoggingService().logMessage(this.getMessageMetadata(), true, true,
