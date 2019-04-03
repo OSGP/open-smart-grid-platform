@@ -8,6 +8,7 @@
 package org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.processors;
 
 import org.openmuc.j60870.ASdu;
+import org.openmuc.j60870.CauseOfTransmission;
 import org.openmuc.j60870.TypeId;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.BaseResponseEventListener;
 import org.opensmartgridplatform.adapter.protocol.iec60870.services.DeviceMessageLoggingService;
@@ -44,7 +45,11 @@ public class GetHealthStatusResponseEventListener extends BaseResponseEventListe
         LOGGER.info("Received the following ASDU for GetHealthStatus: {}", receivedAsdu);
         this.saveReceivedMessage(receivedAsdu);
 
-        if (receivedAsdu.getTypeIdentification() == TypeId.C_IC_NA_1) {
+        // For now return only a response on ASDU with type id: "interrogation
+        // command" and cause of transmission: "activation confirmation".
+        // Processing will change in a later story.
+        if (receivedAsdu.getTypeIdentification() == TypeId.C_IC_NA_1
+                && receivedAsdu.getCauseOfTransmission().equals(CauseOfTransmission.ACTIVATION_CON)) {
             this.sendGetHealthStatusResponse();
         } else {
             LOGGER.info(
