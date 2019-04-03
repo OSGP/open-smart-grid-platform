@@ -63,7 +63,6 @@ public abstract class BaseResponseEventListener implements ConnectionEventListen
                 .deviceMessageMetadata(deviceMessageMetadata).result(ResponseMessageResultType.OK)
                 .retryCount(this.messageMetadata.getRetryCount()).dataObject(response);
 
-        LOGGER.info("correlationIdProviderService: {}", this.correlationIdProviderService);
         // Set a new correlationUid for the response
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(
                 this.messageMetadata.getOrganisationIdentification(), this.messageMetadata.getDeviceIdentification());
