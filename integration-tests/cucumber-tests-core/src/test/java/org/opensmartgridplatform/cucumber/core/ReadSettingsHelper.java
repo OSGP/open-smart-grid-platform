@@ -88,13 +88,49 @@ public class ReadSettingsHelper {
     }
 
     /**
-     * Get a float object based on the settings if the key exists.
+     * Get a Double object based on the settings if the key exists.
      *
      * @param settings
      *            The settings
      * @param key
-     *            The key in the settings for the float object.
-     * @return The float object.
+     *            The key in the settings for the Double object.
+     * @return The Double object.
+     */
+    public static Double getDouble(final Map<String, String> settings, final String key) {
+        if (StringUtils.isEmpty(settings.get(key))) {
+            return null;
+        }
+
+        return Double.parseDouble(settings.get(key));
+    }
+
+    /**
+     * Get a Double object based on the settings if the key exists.
+     *
+     * @param settings
+     *            The settings
+     * @param key
+     *            The key in the settings for the Double object.
+     * @param defaultValue
+     *            The default value to return if the key wasn't found.
+     * @return The Double object.
+     */
+    public static Double getDouble(final Map<String, String> settings, final String key, final Double defaultValue) {
+        if (!settings.containsKey(key)) {
+            return defaultValue;
+        }
+
+        return Double.parseDouble(settings.get(key));
+    }
+
+    /**
+     * Get a Float object based on the settings if the key exists.
+     *
+     * @param settings
+     *            The settings
+     * @param key
+     *            The key in the settings for the Float object.
+     * @return The Float object.
      */
     public static Float getFloat(final Map<String, String> settings, final String key) {
         if (StringUtils.isEmpty(settings.get(key))) {
@@ -105,15 +141,15 @@ public class ReadSettingsHelper {
     }
 
     /**
-     * Get a float object based on the settings if the key exists.
+     * Get a Float object based on the settings if the key exists.
      *
      * @param settings
      *            The settings
      * @param key
-     *            The key in the settings for the float object.
+     *            The key in the settings for the Float object.
      * @param defaultValue
      *            The default value to return if the key wasn't found.
-     * @return The float object.
+     * @return The Float object.
      */
     public static Float getFloat(final Map<String, String> settings, final String key, final Float defaultValue) {
         if (!settings.containsKey(key)) {

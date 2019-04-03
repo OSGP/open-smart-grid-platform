@@ -7,13 +7,6 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.ws.client.core.WebServiceTemplate;
-
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.ConfigureDefinableLoadProfileAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.ConfigureDefinableLoadProfileAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.ConfigureDefinableLoadProfileRequest;
@@ -85,6 +78,9 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.U
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.SmartMeteringBaseClient;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
 import org.opensmartgridplatform.shared.infra.ws.DefaultWebServiceTemplateFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.ws.client.core.WebServiceTemplate;
 
 @Component
 public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
@@ -93,13 +89,13 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
     private DefaultWebServiceTemplateFactory smartMeteringConfigurationWebServiceTemplateFactory;
 
     public UpdateFirmwareAsyncResponse updateFirmware(final UpdateFirmwareRequest updateFirmwareRequest)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException {
 
         return (UpdateFirmwareAsyncResponse) this.getTemplate().marshalSendAndReceive(updateFirmwareRequest);
     }
 
     public UpdateFirmwareResponse getUpdateFirmwareResponse(final UpdateFirmwareAsyncRequest updateFirmwareAsyncRequest)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException {
 
         final String correlationUid = updateFirmwareAsyncRequest.getCorrelationUid();
         this.waitForNotification(correlationUid);
@@ -108,13 +104,12 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
     }
 
     public GetFirmwareVersionAsyncResponse getFirmwareVersion(final GetFirmwareVersionRequest getFirmwareVersionRequest)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException {
         return (GetFirmwareVersionAsyncResponse) this.getTemplate().marshalSendAndReceive(getFirmwareVersionRequest);
     }
 
     public GetFirmwareVersionResponse retrieveGetFirmwareVersionResponse(
-            final GetFirmwareVersionAsyncRequest getFirmwareVersionAsyncRequest)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            final GetFirmwareVersionAsyncRequest getFirmwareVersionAsyncRequest) throws WebServiceSecurityException {
 
         final String correlationUid = getFirmwareVersionAsyncRequest.getCorrelationUid();
         this.waitForNotification(correlationUid);
@@ -123,14 +118,12 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
     }
 
     public SetActivityCalendarAsyncResponse setActivityCalendar(
-            final SetActivityCalendarRequest setActivityCalendarRequest)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            final SetActivityCalendarRequest setActivityCalendarRequest) throws WebServiceSecurityException {
         return (SetActivityCalendarAsyncResponse) this.getTemplate().marshalSendAndReceive(setActivityCalendarRequest);
     }
 
     public SetActivityCalendarResponse getSetActivityCalendarResponse(
-            final SetActivityCalendarAsyncRequest setActivityCalendarAsyncRequest)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            final SetActivityCalendarAsyncRequest setActivityCalendarAsyncRequest) throws WebServiceSecurityException {
 
         final String correlationUid = setActivityCalendarAsyncRequest.getCorrelationUid();
         this.waitForNotification(correlationUid);
@@ -139,15 +132,14 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
     }
 
     public GetAdministrativeStatusAsyncResponse getAdministrativeStatus(
-            final GetAdministrativeStatusRequest getAdministrativeStatusRequest)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            final GetAdministrativeStatusRequest getAdministrativeStatusRequest) throws WebServiceSecurityException {
         return (GetAdministrativeStatusAsyncResponse) this.getTemplate()
                 .marshalSendAndReceive(getAdministrativeStatusRequest);
     }
 
     public GetAdministrativeStatusResponse retrieveGetAdministrativeStatusResponse(
             final GetAdministrativeStatusAsyncRequest getAdministrativeStatusAsyncRequest)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException {
 
         final String correlationUid = getAdministrativeStatusAsyncRequest.getCorrelationUid();
         this.waitForNotification(correlationUid);
@@ -157,15 +149,14 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
     }
 
     public SetAdministrativeStatusAsyncResponse setAdministrativeStatus(
-            final SetAdministrativeStatusRequest setAdministrativeStatusRequest)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            final SetAdministrativeStatusRequest setAdministrativeStatusRequest) throws WebServiceSecurityException {
         return (SetAdministrativeStatusAsyncResponse) this.getTemplate()
                 .marshalSendAndReceive(setAdministrativeStatusRequest);
     }
 
     public SetAdministrativeStatusResponse retrieveSetAdministrativeStatusResponse(
             final SetAdministrativeStatusAsyncRequest setAdministrativeStatusAsyncRequest)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException {
 
         final String correlationUid = setAdministrativeStatusAsyncRequest.getCorrelationUid();
         this.waitForNotification(correlationUid);
@@ -175,15 +166,14 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
     }
 
     public SetAlarmNotificationsAsyncResponse setAlarmNotifications(
-            final SetAlarmNotificationsRequest setAlarmNotificationsRequest)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            final SetAlarmNotificationsRequest setAlarmNotificationsRequest) throws WebServiceSecurityException {
         return (SetAlarmNotificationsAsyncResponse) this.getTemplate()
                 .marshalSendAndReceive(setAlarmNotificationsRequest);
     }
 
     public SetAlarmNotificationsResponse retrieveSetAlarmNotificationsResponse(
             final SetAlarmNotificationsAsyncRequest setAlarmNotificationsAsyncRequest)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException {
 
         final String correlationUid = setAlarmNotificationsAsyncRequest.getCorrelationUid();
         this.waitForNotification(correlationUid);
@@ -193,15 +183,14 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
     }
 
     public SetConfigurationObjectAsyncResponse setConfigurationObject(
-            final SetConfigurationObjectRequest setConfigurationObjectRequest)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            final SetConfigurationObjectRequest setConfigurationObjectRequest) throws WebServiceSecurityException {
         return (SetConfigurationObjectAsyncResponse) this.getTemplate()
                 .marshalSendAndReceive(setConfigurationObjectRequest);
     }
 
     public SetConfigurationObjectResponse retrieveSetConfigurationObjectResponse(
             final SetConfigurationObjectAsyncRequest setConfigurationObjectAsyncRequest)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException {
 
         final String correlationUid = setConfigurationObjectAsyncRequest.getCorrelationUid();
         this.waitForNotification(correlationUid);
@@ -211,13 +200,12 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
     }
 
     public SetSpecialDaysAsyncResponse setSpecialDays(final SetSpecialDaysRequest setSpecialDaysRequest)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException {
         return (SetSpecialDaysAsyncResponse) this.getTemplate().marshalSendAndReceive(setSpecialDaysRequest);
     }
 
     public SetSpecialDaysResponse retrieveSetSpecialDaysResponse(
-            final SetSpecialDaysAsyncRequest setSpecialDaysAsyncRequest)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            final SetSpecialDaysAsyncRequest setSpecialDaysAsyncRequest) throws WebServiceSecurityException {
 
         final String correlationUid = setSpecialDaysAsyncRequest.getCorrelationUid();
         this.waitForNotification(correlationUid);
@@ -227,14 +215,14 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
 
     public SetEncryptionKeyExchangeOnGMeterAsyncResponse setEncryptionKeyExchangeOnGMeter(
             final SetEncryptionKeyExchangeOnGMeterRequest setEncryptionKeyExchangeOnGMeterRequest)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException {
         return (SetEncryptionKeyExchangeOnGMeterAsyncResponse) this.getTemplate()
                 .marshalSendAndReceive(setEncryptionKeyExchangeOnGMeterRequest);
     }
 
     public SetEncryptionKeyExchangeOnGMeterResponse retrieveSetEncryptionKeyExchangeOnGMeterResponse(
             final SetEncryptionKeyExchangeOnGMeterAsyncRequest setEncryptionKeyExchangeOnGMeterAsyncRequest)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException {
 
         final String correlationUid = setEncryptionKeyExchangeOnGMeterAsyncRequest.getCorrelationUid();
         this.waitForNotification(correlationUid);
@@ -245,14 +233,14 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
 
     public GetMbusEncryptionKeyStatusAsyncResponse getMbusEncryptionKeyStatus(
             final GetMbusEncryptionKeyStatusRequest getMbusEncryptionKeyStatusRequest)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException {
         return (GetMbusEncryptionKeyStatusAsyncResponse) this.getTemplate()
                 .marshalSendAndReceive(getMbusEncryptionKeyStatusRequest);
     }
 
     public GetMbusEncryptionKeyStatusResponse retrieveGetMbusEncryptionKeyStatusResponse(
             final GetMbusEncryptionKeyStatusAsyncRequest getMbusEncryptionKeyStatusAsyncRequest)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException {
 
         final String correlationUid = getMbusEncryptionKeyStatusAsyncRequest.getCorrelationUid();
         this.waitForNotification(correlationUid);
@@ -262,15 +250,14 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
     }
 
     public SetMbusUserKeyByChannelAsyncResponse setMbusUserKeyByChannel(
-            final SetMbusUserKeyByChannelRequest setMbusUserKeyByChannelRequest)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            final SetMbusUserKeyByChannelRequest setMbusUserKeyByChannelRequest) throws WebServiceSecurityException {
         return (SetMbusUserKeyByChannelAsyncResponse) this.getTemplate()
                 .marshalSendAndReceive(setMbusUserKeyByChannelRequest);
     }
 
     public SetMbusUserKeyByChannelResponse getSetMbusUserKeyByChannelResponse(
             final SetMbusUserKeyByChannelAsyncRequest setMbusUserKeyByChannelAsyncRequest)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException {
 
         final String correlationUid = setMbusUserKeyByChannelAsyncRequest.getCorrelationUid();
         this.waitForNotification(correlationUid);
@@ -280,13 +267,13 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
     }
 
     public ReplaceKeysAsyncResponse replaceKeys(final ReplaceKeysRequest replaceKeysRequest)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException {
 
         return (ReplaceKeysAsyncResponse) this.getTemplate().marshalSendAndReceive(replaceKeysRequest);
     }
 
     public ReplaceKeysResponse getReplaceKeysResponse(final ReplaceKeysAsyncRequest replaceKeysAsyncRequest)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException {
 
         final String correlationUid = replaceKeysAsyncRequest.getCorrelationUid();
         this.waitForNotification(correlationUid);
@@ -295,8 +282,7 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
     }
 
     public GenerateAndReplaceKeysAsyncResponse generateAndReplaceKeys(
-            final GenerateAndReplaceKeysRequest generateAndReplaceKeysRequest)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            final GenerateAndReplaceKeysRequest generateAndReplaceKeysRequest) throws WebServiceSecurityException {
 
         return (GenerateAndReplaceKeysAsyncResponse) this.getTemplate()
                 .marshalSendAndReceive(generateAndReplaceKeysRequest);
@@ -304,7 +290,7 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
 
     public GenerateAndReplaceKeysResponse getGenerateAndReplaceKeysResponse(
             final GenerateAndReplaceKeysAsyncRequest generateAndReplaceKeysAsyncRequest)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException {
 
         final String correlationUid = generateAndReplaceKeysAsyncRequest.getCorrelationUid();
         this.waitForNotification(correlationUid);
@@ -314,15 +300,14 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
     }
 
     public SetClockConfigurationAsyncResponse setClockConfiguration(
-            final SetClockConfigurationRequest setClockConfigurationRequest)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            final SetClockConfigurationRequest setClockConfigurationRequest) throws WebServiceSecurityException {
         return (SetClockConfigurationAsyncResponse) this.getTemplate()
                 .marshalSendAndReceive(setClockConfigurationRequest);
     }
 
     public SetClockConfigurationResponse getSetClockConfigurationResponse(
             final SetClockConfigurationAsyncRequest setClockConfigurationAsyncRequest)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException {
 
         final String correlationUid = setClockConfigurationAsyncRequest.getCorrelationUid();
         this.waitForNotification(correlationUid);
@@ -333,14 +318,14 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
 
     public ConfigureDefinableLoadProfileAsyncResponse configureDefinableLoadProfile(
             final ConfigureDefinableLoadProfileRequest configureDefinableLoadProfileRequest)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException {
         return (ConfigureDefinableLoadProfileAsyncResponse) this.getTemplate()
                 .marshalSendAndReceive(configureDefinableLoadProfileRequest);
     }
 
     public ConfigureDefinableLoadProfileResponse getConfigureDefinableLoadProfileResponse(
             final ConfigureDefinableLoadProfileAsyncRequest configureDefinableLoadProfileAsyncRequest)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException {
 
         final String correlationUid = configureDefinableLoadProfileAsyncRequest.getCorrelationUid();
         this.waitForNotification(correlationUid);
@@ -350,12 +335,12 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
     }
 
     public SetPushSetupSmsAsyncResponse setPushSetupSms(final SetPushSetupSmsRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException {
         return (SetPushSetupSmsAsyncResponse) this.getTemplate().marshalSendAndReceive(request);
     }
 
     public SetPushSetupSmsResponse getSetPushSetupSmsResponse(final SetPushSetupSmsAsyncRequest asyncRequest)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException {
 
         final String correlationUid = asyncRequest.getCorrelationUid();
         this.waitForNotification(correlationUid);
@@ -363,21 +348,21 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
         return (SetPushSetupSmsResponse) this.getTemplate().marshalSendAndReceive(asyncRequest);
     }
 
-    private WebServiceTemplate getTemplate() throws WebServiceSecurityException, GeneralSecurityException, IOException {
+    private WebServiceTemplate getTemplate() throws WebServiceSecurityException {
         return this.smartMeteringConfigurationWebServiceTemplateFactory
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
     }
 
     public GetMbusEncryptionKeyStatusByChannelAsyncResponse getMbusEncryptionKeyStatusByChannel(
             final GetMbusEncryptionKeyStatusByChannelRequest getMbusEncryptionKeyStatusByChannelRequest)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException {
         return (GetMbusEncryptionKeyStatusByChannelAsyncResponse) this.getTemplate()
                 .marshalSendAndReceive(getMbusEncryptionKeyStatusByChannelRequest);
     }
 
     public GetMbusEncryptionKeyStatusByChannelResponse retrieveGetMbusEncryptionKeyStatusByChannelResponse(
             final GetMbusEncryptionKeyStatusByChannelAsyncRequest getMbusEncryptionKeyStatusByChannelAsyncRequest)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException {
 
         final String correlationUid = getMbusEncryptionKeyStatusByChannelAsyncRequest.getCorrelationUid();
         this.waitForNotification(correlationUid);

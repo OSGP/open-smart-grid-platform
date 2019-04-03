@@ -7,13 +7,6 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.support.ws.core;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.ws.client.core.WebServiceTemplate;
-
 import org.opensmartgridplatform.adapter.ws.schema.core.configurationmanagement.GetConfigurationAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.configurationmanagement.GetConfigurationAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.configurationmanagement.GetConfigurationRequest;
@@ -25,6 +18,9 @@ import org.opensmartgridplatform.adapter.ws.schema.core.configurationmanagement.
 import org.opensmartgridplatform.cucumber.platform.support.ws.BaseClient;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
 import org.opensmartgridplatform.shared.infra.ws.DefaultWebServiceTemplateFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.ws.client.core.WebServiceTemplate;
 
 @Component
 public class CoreConfigurationManagementClient extends BaseClient {
@@ -33,28 +29,28 @@ public class CoreConfigurationManagementClient extends BaseClient {
     private DefaultWebServiceTemplateFactory coreConfigurationManagementWstf;
 
     public GetConfigurationAsyncResponse getConfiguration(final GetConfigurationRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException {
         final WebServiceTemplate wst = this.coreConfigurationManagementWstf
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (GetConfigurationAsyncResponse) wst.marshalSendAndReceive(request);
     }
 
     public GetConfigurationResponse getGetConfiguration(final GetConfigurationAsyncRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException {
         final WebServiceTemplate wst = this.coreConfigurationManagementWstf
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (GetConfigurationResponse) wst.marshalSendAndReceive(request);
     }
 
     public SetConfigurationAsyncResponse setConfiguration(final SetConfigurationRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException {
         final WebServiceTemplate wst = this.coreConfigurationManagementWstf
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (SetConfigurationAsyncResponse) wst.marshalSendAndReceive(request);
     }
 
     public SetConfigurationResponse getSetConfiguration(final SetConfigurationAsyncRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException {
         final WebServiceTemplate wst = this.coreConfigurationManagementWstf
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (SetConfigurationResponse) wst.marshalSendAndReceive(request);

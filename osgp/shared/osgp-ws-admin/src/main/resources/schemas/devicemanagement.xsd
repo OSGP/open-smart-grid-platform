@@ -322,7 +322,7 @@
 
   <xsd:complexType name="MessageLogPage">
     <xsd:sequence>
-      <xsd:element name="TotalPages" type="xsd:int" />
+      <xsd:element minOccurs="1" name="NextPageAvailable" type="xsd:boolean" />
       <xsd:element maxOccurs="unbounded" name="MessageLogs"
         type="tns:MessageLog" />
     </xsd:sequence>

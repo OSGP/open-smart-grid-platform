@@ -13,33 +13,31 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import org.opensmartgridplatform.cucumber.core.GlueBase;
+import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemPagingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-
-import org.opensmartgridplatform.cucumber.core.GlueBase;
-import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemRepository;
 
 import cucumber.api.java.en.Then;
 
 public class DeviceLogItemSteps extends GlueBase {
 
     @Autowired
-    private DeviceLogItemRepository deviceLogItemRepository;
+    private DeviceLogItemPagingRepository deviceLogItemRepository;
 
     @Then("^the get administrative status communication for device \"([^\"]*)\" should be in the device_log_item table$")
     public void theGetAdministrativeStatusCommunicationForDeviceShouldBeInTheDeviceLogItemTable(
             final String deviceIdentification) throws Throwable {
 
         final Pageable pageable = new PageRequest(0, Integer.MAX_VALUE);
-        final Page<org.opensmartgridplatform.logging.domain.entities.DeviceLogItem> deviceLogPage = this.deviceLogItemRepository
+        final Page<org.opensmartgridplatform.logging.domain.entities.DeviceLogItem> page = this.deviceLogItemRepository
                 .findByDeviceIdentification(deviceIdentification, pageable);
 
-        assertTrue("device log items are present", deviceLogPage.hasContent());
+        assertTrue("device log items are present", page.hasContent());
 
-        final List<org.opensmartgridplatform.logging.domain.entities.DeviceLogItem> deviceLogItems = deviceLogPage
-                .getContent();
+        final List<org.opensmartgridplatform.logging.domain.entities.DeviceLogItem> deviceLogItems = page.getContent();
         for (final org.opensmartgridplatform.logging.domain.entities.DeviceLogItem deviceLogItem : deviceLogItems) {
             assertNotNull("encoded message", deviceLogItem.getEncodedMessage());
             assertTrue("\"GET_ADMINISTRATIVE_STATUS\" is part of the decoded message",
@@ -52,9 +50,9 @@ public class DeviceLogItemSteps extends GlueBase {
             final String deviceIdentification) throws Throwable {
 
         final Pageable pageable = new PageRequest(0, Integer.MAX_VALUE);
-        final Page<org.opensmartgridplatform.logging.domain.entities.DeviceLogItem> deviceLogPage = this.deviceLogItemRepository
+        final Page<org.opensmartgridplatform.logging.domain.entities.DeviceLogItem> page = this.deviceLogItemRepository
                 .findByDeviceIdentification(deviceIdentification, pageable);
 
-        assertEquals("number of device log items for " + deviceIdentification, 0, deviceLogPage.getTotalElements());
+        assertEquals("number of device log items for " + deviceIdentification, 0, page.getNumberOfElements());
     }
 }

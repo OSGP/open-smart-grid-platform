@@ -178,28 +178,27 @@ public class FirmwareManagementEndpoint {
         String moduleVersionMa = null;
         String moduleVersionMbus = null;
         String moduleVersionSec = null;
+        String moduleVersionMBusDriverActive = null;
 
         for (final FirmwareModuleType firmwareModuleType : firmwareModuleTypes) {
             final String firmwareModuleTypeString = firmwareModuleType.toString();
             if (FirmwareModuleType.COMMUNICATION.equals(firmwareModuleType)) {
                 moduleVersionComm = firmwareModuleTypeString;
-            }
-            if (FirmwareModuleType.FUNCTIONAL.equals(firmwareModuleType)) {
+            } else if (FirmwareModuleType.FUNCTIONAL.equals(firmwareModuleType)) {
                 moduleVersionFunc = firmwareModuleTypeString;
-            }
-            if (FirmwareModuleType.MODULE_ACTIVE.equals(firmwareModuleType)) {
+            } else if (FirmwareModuleType.MODULE_ACTIVE.equals(firmwareModuleType)) {
                 moduleVersionMa = firmwareModuleTypeString;
-            }
-            if (FirmwareModuleType.M_BUS.equals(firmwareModuleType)) {
+            } else if (FirmwareModuleType.M_BUS.equals(firmwareModuleType)) {
                 moduleVersionMbus = firmwareModuleTypeString;
-            }
-            if (FirmwareModuleType.SECURITY.equals(firmwareModuleType)) {
+            } else if (FirmwareModuleType.SECURITY.equals(firmwareModuleType)) {
                 moduleVersionSec = firmwareModuleTypeString;
+            } else if (FirmwareModuleType.M_BUS_DRIVER_ACTIVE.equals(firmwareModuleType)) {
+                moduleVersionMBusDriverActive = firmwareModuleTypeString;
             }
         }
 
         final FirmwareModuleData firmwareModuleData = new FirmwareModuleData(moduleVersionComm, moduleVersionFunc,
-                moduleVersionMa, moduleVersionMbus, moduleVersionSec);
+                moduleVersionMa, moduleVersionMbus, moduleVersionSec, moduleVersionMBusDriverActive);
 
         return new FirmwareUpdateMessageDataContainer(firmwareModuleData, firmwareIndentification);
     }

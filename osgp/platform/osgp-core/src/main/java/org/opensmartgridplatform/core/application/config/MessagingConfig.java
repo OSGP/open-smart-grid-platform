@@ -8,15 +8,14 @@
 
 package org.opensmartgridplatform.core.application.config;
 
+import org.opensmartgridplatform.shared.application.config.AbstractMessagingConfig;
+import org.opensmartgridplatform.shared.application.config.jms.JmsConfiguration;
+import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-
-import org.opensmartgridplatform.shared.application.config.AbstractMessagingConfig;
-import org.opensmartgridplatform.shared.application.config.jms.JmsConfiguration;
-import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationFactory;
 
 /**
  * An application context Java configuration class.
@@ -32,11 +31,12 @@ public class MessagingConfig extends AbstractMessagingConfig {
     // === JMS SETTINGS ===
     @Bean
     public JmsConfiguration coreLogItemRequestJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.dlms.log.item.requests");
+        return jmsConfigurationFactory.initializeConfiguration("jms.log.item.requests");
     }
 
     @Bean
     public JmsTemplate coreLogItemRequestsJmsTemplate(final JmsConfiguration coreLogItemRequestJmsConfiguration) {
         return coreLogItemRequestJmsConfiguration.getJmsTemplate();
     }
+
 }

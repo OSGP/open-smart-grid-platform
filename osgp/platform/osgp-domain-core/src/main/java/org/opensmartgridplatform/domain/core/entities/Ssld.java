@@ -165,6 +165,20 @@ public class Ssld extends Device {
         return Collections.unmodifiableList(this.outputSettings);
     }
 
+    /**
+     * Returns the {@link DeviceOutputSetting} for the given external index, or
+     * null if it doesn't exist.
+     */
+    public DeviceOutputSetting getOutputSetting(final int externalId) {
+        for (final DeviceOutputSetting setting : this.outputSettings) {
+            if (setting.getExternalId() == externalId) {
+                return setting;
+            }
+        }
+
+        return null;
+    }
+
     public void updateOutputSettings(final List<DeviceOutputSetting> outputSettings) {
         this.outputSettings = outputSettings;
     }

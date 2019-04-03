@@ -16,9 +16,6 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStri
 import java.util.Map;
 
 import org.junit.Assert;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ws.soap.client.SoapFaultClientException;
-
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.AddDeviceRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.AddDeviceResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.Device;
@@ -31,6 +28,9 @@ import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonDefaults;
 import org.opensmartgridplatform.cucumber.platform.common.support.ws.core.CoreDeviceInstallationClient;
 import org.opensmartgridplatform.cucumber.platform.glue.steps.ws.GenericResponseSteps;
+import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -44,21 +44,20 @@ public class CreateDeviceSteps extends GlueBase {
     private CoreDeviceInstallationClient client;
 
     @When("^receiving an add device request$")
-    public void receivingAnAddDeviceRequest(final Map<String, String> settings) throws Throwable {
+    public void receivingAnAddDeviceRequest(final Map<String, String> settings) {
         final AddDeviceRequest request = new AddDeviceRequest();
         final Device device = this.createDevice(settings);
         request.setDevice(device);
 
         try {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, this.client.addDevice(request));
-        } catch (final SoapFaultClientException ex) {
+        } catch (final Exception ex) {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, ex);
         }
     }
 
     @When("^receiving an add device request with an unknown organization$")
-    public void receivingAnAddDeviceRequestWithAnUnknownOrganization(final Map<String, String> settings)
-            throws Throwable {
+    public void receivingAnAddDeviceRequestWithAnUnknownOrganization(final Map<String, String> settings) {
         ScenarioContext.current().put(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
         this.receivingAnAddDeviceRequest(settings);
     }
@@ -69,12 +68,12 @@ public class CreateDeviceSteps extends GlueBase {
      * @throws Throwable
      */
     @Then("^the add device response is successful$")
-    public void theAddDeviceResponseIsSuccessful() throws Throwable {
+    public void theAddDeviceResponseIsSuccessful() {
         Assert.assertTrue(ScenarioContext.current().get(PlatformKeys.RESPONSE) instanceof AddDeviceResponse);
     }
 
     @When("^receiving an update device request")
-    public void receivingAnUpdateDeviceRequest(final Map<String, String> settings) throws Throwable {
+    public void receivingAnUpdateDeviceRequest(final Map<String, String> settings) {
         final UpdateDeviceRequest request = new UpdateDeviceRequest();
 
         String deviceIdentification = getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
@@ -91,7 +90,7 @@ public class CreateDeviceSteps extends GlueBase {
 
         try {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, this.client.updateDevice(request));
-        } catch (final SoapFaultClientException ex) {
+        } catch (final WebServiceSecurityException | SoapFaultClientException ex) {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, ex);
         }
     }
@@ -99,7 +98,7 @@ public class CreateDeviceSteps extends GlueBase {
     private Device createDevice(final Map<String, String> settings) {
 
         final Device device = new Device();
-        device.setAlias(getString(settings, PlatformKeys.KEY_ALIAS, PlatformCommonDefaults.DEFAULT_ALIAS));
+        device.setAlias(getString(settings, PlatformKeys.ALIAS, PlatformCommonDefaults.DEFAULT_ALIAS));
         device.setContainerCity(
                 getString(settings, PlatformKeys.KEY_CITY, PlatformCommonDefaults.DEFAULT_CONTAINER_CITY));
         device.setContainerMunicipality(getString(settings, PlatformKeys.KEY_MUNICIPALITY,
@@ -141,8 +140,8 @@ public class CreateDeviceSteps extends GlueBase {
      *
      * @throws Throwable
      */
-    @Then("^the update device response is successfull$")
-    public void theUpdateDeviceResponseIsSuccessfull() throws Throwable {
+    @Then("^the update device response is successful$")
+    public void theUpdateDeviceResponseIsSuccessful() {
         Assert.assertTrue(ScenarioContext.current().get(PlatformKeys.RESPONSE) instanceof UpdateDeviceResponse);
     }
 
@@ -153,17 +152,17 @@ public class CreateDeviceSteps extends GlueBase {
      * @throws Throwable
      */
     @Then("^the add device response contains$")
-    public void theAddDeviceResponseContains(final Map<String, String> expectedResult) throws Throwable {
+    public void theAddDeviceResponseContains(final Map<String, String> expectedResult) {
         Assert.assertTrue(ScenarioContext.current().get(PlatformKeys.RESPONSE) instanceof AddDeviceResponse);
     }
 
     @Then("^the add device response contains soap fault$")
-    public void theAddDeviceResponseContainsSoapFault(final Map<String, String> expectedResult) throws Throwable {
+    public void theAddDeviceResponseContainsSoapFault(final Map<String, String> expectedResult) {
         GenericResponseSteps.verifySoapFault(expectedResult);
     }
 
     @Then("^the update device response contains$")
-    public void theUpdateDeviceResponseContains(final Map<String, String> expectedResult) throws Throwable {
+    public void theUpdateDeviceResponseContains(final Map<String, String> expectedResult) {
         Assert.assertTrue(ScenarioContext.current().get(PlatformKeys.RESPONSE) instanceof UpdateDeviceResponse);
     }
 
@@ -174,7 +173,7 @@ public class CreateDeviceSteps extends GlueBase {
      * @throws Throwable
      */
     @Then("^the update device response contains soap fault$")
-    public void theUpdateDeviceResponseContainsSoapFault(final Map<String, String> expectedResult) throws Throwable {
+    public void theUpdateDeviceResponseContainsSoapFault(final Map<String, String> expectedResult) {
         GenericResponseSteps.verifySoapFault(expectedResult);
     }
 }

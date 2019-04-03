@@ -97,7 +97,7 @@ public class UpdateDeviceCdmaSettingsSteps extends GlueBase {
             UpdateDeviceCdmaSettingsResponse response = null;
             try {
                 response = this.client.getUpdateDeviceCdmaSettingsResponse(request);
-            } catch (WebServiceSecurityException | InterruptedException e) {
+            } catch (final WebServiceSecurityException e) {
                 // do nothing
             }
             assertNotNull(response);

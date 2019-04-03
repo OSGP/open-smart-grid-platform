@@ -150,7 +150,7 @@ public class DlmsDeviceSteps {
 
         assertNotNull(smartMeter);
         assertEquals(smartMeter.getSupplier(), settings.get(PlatformSmartmeteringKeys.SUPPLIER));
-        assertEquals(smartMeter.getChannel(), settings.get(PlatformSmartmeteringKeys.CHANNEL));
+        assertEquals(smartMeter.getChannel(), getShort(settings, PlatformSmartmeteringKeys.CHANNEL));
         assertEquals(smartMeter.getMbusIdentificationNumber(),
                 getLong(settings, PlatformSmartmeteringKeys.MBUS_IDENTIFICATION_NUMBER, null));
         assertEquals(smartMeter.getMbusManufacturerIdentification(),
@@ -430,7 +430,9 @@ public class DlmsDeviceSteps {
     }
 
     private void createDlmsDeviceInProtocolAdapterDatabase(final Map<String, String> inputSettings) {
-        final DlmsDeviceBuilder dlmsDeviceBuilder = new DlmsDeviceBuilder();
+        final ProtocolInfo protocolInfo = this.getProtocolInfo(inputSettings);
+
+        final DlmsDeviceBuilder dlmsDeviceBuilder = new DlmsDeviceBuilder().setProtocol(protocolInfo);
         /*
          * Enable the necessary security key builders in the DLMS device builder
          * before calling withSettings. This allows the withSettings to be
@@ -481,25 +483,19 @@ public class DlmsDeviceSteps {
      * @return ProtocolInfo
      */
     private ProtocolInfo getProtocolInfo(final Map<String, String> inputSettings) {
-        if (inputSettings.containsKey(PlatformSmartmeteringKeys.PROTOCOL)
-                && inputSettings.containsKey(PlatformSmartmeteringKeys.PROTOCOL_VERSION)) {
-            return this.protocolInfoRepository.findByProtocolAndProtocolVersion(
-                    inputSettings.get(PlatformSmartmeteringKeys.PROTOCOL),
-                    inputSettings.get(PlatformSmartmeteringKeys.PROTOCOL_VERSION));
-        } else {
-            return this.protocolInfoRepository.findByProtocolAndProtocolVersion(PlatformSmartmeteringDefaults.PROTOCOL,
-                    PlatformSmartmeteringDefaults.PROTOCOL_VERSION);
-        }
+        final String protocol = inputSettings.getOrDefault(PlatformSmartmeteringKeys.PROTOCOL,
+                PlatformSmartmeteringDefaults.PROTOCOL);
+        final String protocolVersion = inputSettings.getOrDefault(PlatformSmartmeteringKeys.PROTOCOL_VERSION,
+                PlatformSmartmeteringDefaults.PROTOCOL_VERSION);
+        return this.protocolInfoRepository.findByProtocolAndProtocolVersion(protocol, protocolVersion);
     }
 
     private DeviceModel getDeviceModel(final Map<String, String> inputSettings) {
-
-        if (inputSettings.containsKey(PlatformSmartmeteringKeys.MANUFACTURER_CODE)
-                && inputSettings.containsKey(PlatformSmartmeteringKeys.DEVICE_MODEL_CODE)) {
-            final Manufacturer manufacturer = this.manufacturerRepository
-                    .findByCode(inputSettings.get(PlatformSmartmeteringKeys.MANUFACTURER_CODE));
-            return this.deviceModelRepository.findByManufacturerAndModelCode(manufacturer,
-                    inputSettings.get(PlatformSmartmeteringKeys.DEVICE_MODEL_CODE));
+        final String manufacturerCode = inputSettings.get(PlatformSmartmeteringKeys.MANUFACTURER_CODE);
+        final String modelCode = inputSettings.get(PlatformSmartmeteringKeys.DEVICE_MODEL_CODE);
+        if (manufacturerCode != null && modelCode != null) {
+            final Manufacturer manufacturer = this.manufacturerRepository.findByCode(manufacturerCode);
+            return this.deviceModelRepository.findByManufacturerAndModelCode(manufacturer,modelCode);
         }
 
         return null;

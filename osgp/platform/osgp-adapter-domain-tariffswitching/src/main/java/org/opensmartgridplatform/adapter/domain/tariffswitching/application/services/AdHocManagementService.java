@@ -21,6 +21,7 @@ import org.opensmartgridplatform.domain.core.repositories.SsldRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceStatusMapped;
 import org.opensmartgridplatform.domain.core.valueobjects.DomainType;
+import org.opensmartgridplatform.domain.core.valueobjects.RelayType;
 import org.opensmartgridplatform.domain.core.valueobjects.TariffValue;
 import org.opensmartgridplatform.dto.valueobjects.DeviceStatusDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
@@ -142,21 +143,35 @@ public class AdHocManagementService extends AbstractService {
         final List<RelayStatus> relayStatuses = device.getRelayStatuses();
 
         for (final TariffValue tariffValue : deviceStatusMapped.getTariffValues()) {
-            boolean updated = false;
-            for (final RelayStatus relayStatus : relayStatuses) {
-                if (relayStatus.getIndex() == tariffValue.getIndex()) {
-                    relayStatus.updateLastKnownState(tariffValue.isHigh(), new Date());
-                    updated = true;
-                    break;
-                }
-            }
-            if (!updated) {
-                final RelayStatus newRelayStatus = new RelayStatus.Builder(device, tariffValue.getIndex())
-                        .withLastKnownState(tariffValue.isHigh(), new Date()).build();
+            final Integer externalIndex = tariffValue.getIndex();
+            final boolean state = this.isRelayOn(tariffValue.isHigh(), device, externalIndex);
+
+            final RelayStatus oldRelayStatus = device.getRelayStatusByIndex(externalIndex);
+            if (oldRelayStatus != null) {
+                // Update the old relay status value
+                oldRelayStatus.updateLastKnownState(state, new Date());
+            } else {
+                // Create a new relay status value
+                final RelayStatus newRelayStatus = new RelayStatus.Builder(device, externalIndex)
+                        .withLastKnownState(state, new Date()).build();
                 relayStatuses.add(newRelayStatus);
             }
         }
 
         this.ssldRepository.save(device);
+    }
+
+    private boolean isRelayOn(final boolean isHighTariff, final Ssld device, final Integer externalIndex) {
+        // The relay state is on, during the LOW tariff period
+        boolean state = !isHighTariff;
+
+        final DeviceOutputSetting setting = device.getOutputSetting(externalIndex);
+
+        if (setting != null && setting.getOutputType() == RelayType.TARIFF_REVERSED) {
+            // Invert the state because TARIFF_REVERSED uses inverse values.
+            state = !state;
+        }
+
+        return state;
     }
 }

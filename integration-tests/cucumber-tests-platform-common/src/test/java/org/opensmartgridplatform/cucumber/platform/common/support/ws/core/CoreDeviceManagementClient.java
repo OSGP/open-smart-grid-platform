@@ -7,9 +7,6 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.support.ws.core;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.SetOwnerRequest;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.SetOwnerResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindAllOrganisationsRequest;
@@ -34,6 +31,8 @@ import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateD
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceCdmaSettingsAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceCdmaSettingsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceCdmaSettingsResponse;
+import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceRequest;
+import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceResponse;
 import org.opensmartgridplatform.cucumber.platform.support.ws.BaseClient;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
 import org.opensmartgridplatform.shared.infra.ws.DefaultWebServiceTemplateFactory;
@@ -47,37 +46,33 @@ public class CoreDeviceManagementClient extends BaseClient {
     @Autowired
     private DefaultWebServiceTemplateFactory coreDeviceManagementWstf;
 
-    public FindDevicesResponse findDevices(final FindDevicesRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+    public FindDevicesResponse findDevices(final FindDevicesRequest request) throws WebServiceSecurityException {
         final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
         return (FindDevicesResponse) wst.marshalSendAndReceive(request);
     }
 
-    public FindEventsResponse findEventsResponse(final FindEventsRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+    public FindEventsResponse findEventsResponse(final FindEventsRequest request) throws WebServiceSecurityException {
         final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
         return (FindEventsResponse) wst.marshalSendAndReceive(request);
     }
 
     public SetEventNotificationsResponse getSetEventNotificationsResponse(
-            final SetEventNotificationsAsyncRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            final SetEventNotificationsAsyncRequest request) throws WebServiceSecurityException {
         final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
         return (SetEventNotificationsResponse) wst.marshalSendAndReceive(request);
     }
 
     public SetEventNotificationsAsyncResponse setEventNotifications(final SetEventNotificationsRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException {
         final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
         return (SetEventNotificationsAsyncResponse) wst.marshalSendAndReceive(request);
     }
 
-    public SetOwnerResponse setOwner(final SetOwnerRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+    public SetOwnerResponse setOwner(final SetOwnerRequest request) throws WebServiceSecurityException {
         final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
         return (SetOwnerResponse) wst.marshalSendAndReceive(request);
@@ -98,15 +93,14 @@ public class CoreDeviceManagementClient extends BaseClient {
     }
 
     public FindAllOrganisationsResponse findAllOrganizations(final FindAllOrganisationsRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException {
         final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
         return (FindAllOrganisationsResponse) wst.marshalSendAndReceive(request);
     }
 
     public FindAllOrganisationsResponse findAllOrganizations(final String organizationIdentification,
-            final FindAllOrganisationsRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            final FindAllOrganisationsRequest request) throws WebServiceSecurityException {
         final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(organizationIdentification,
                 this.getUserName());
         return (FindAllOrganisationsResponse) wst.marshalSendAndReceive(request);
@@ -127,8 +121,7 @@ public class CoreDeviceManagementClient extends BaseClient {
     }
 
     public SetDeviceLifecycleStatusResponse getSetDeviceLifecycleStatusResponse(
-            final SetDeviceLifecycleStatusAsyncRequest asyncRequest)
-            throws WebServiceSecurityException, InterruptedException {
+            final SetDeviceLifecycleStatusAsyncRequest asyncRequest) throws WebServiceSecurityException {
         final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
         return (SetDeviceLifecycleStatusResponse) wst.marshalSendAndReceive(asyncRequest);
@@ -142,11 +135,15 @@ public class CoreDeviceManagementClient extends BaseClient {
     }
 
     public UpdateDeviceCdmaSettingsResponse getUpdateDeviceCdmaSettingsResponse(
-            final UpdateDeviceCdmaSettingsAsyncRequest asyncRequest)
-            throws WebServiceSecurityException, InterruptedException {
+            final UpdateDeviceCdmaSettingsAsyncRequest asyncRequest) throws WebServiceSecurityException {
         final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
         return (UpdateDeviceCdmaSettingsResponse) wst.marshalSendAndReceive(asyncRequest);
     }
 
+    public UpdateDeviceResponse updateDevice(final UpdateDeviceRequest request) throws WebServiceSecurityException {
+        final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
+        return (UpdateDeviceResponse) wst.marshalSendAndReceive(request);
+    }
 }

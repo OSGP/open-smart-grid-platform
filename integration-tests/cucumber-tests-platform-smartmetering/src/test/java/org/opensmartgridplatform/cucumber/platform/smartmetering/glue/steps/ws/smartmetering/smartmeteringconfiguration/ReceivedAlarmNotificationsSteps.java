@@ -7,8 +7,8 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration;
 
-import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 import static org.junit.Assert.assertEquals;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.List;
 import java.util.Map;
@@ -17,20 +17,19 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-
 import org.opensmartgridplatform.cucumber.core.RetryableAssert;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.hooks.SimulatePushedAlarmsHooks;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ServiceEndpoint;
 import org.opensmartgridplatform.logging.domain.entities.DeviceLogItem;
-import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemRepository;
+import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemPagingRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -41,7 +40,7 @@ public class ReceivedAlarmNotificationsSteps {
     private static final String PATTERN = "DlmsPushNotification \\[device = \\w*, trigger type = Push alarm monitor, alarms=\\[(\\w*(, )?)+\\]\\]";
 
     @Autowired
-    private DeviceLogItemRepository deviceLogItemRepository;
+    private DeviceLogItemPagingRepository deviceLogItemRepository;
 
     @Autowired
     private ServiceEndpoint serviceEndpoint;

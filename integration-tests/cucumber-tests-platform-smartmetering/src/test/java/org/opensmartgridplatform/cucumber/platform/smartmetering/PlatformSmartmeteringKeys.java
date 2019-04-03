@@ -85,8 +85,8 @@ public class PlatformSmartmeteringKeys extends org.opensmartgridplatform.cucumbe
     public static final String INVOCATION_COUNTER = "InvocationCounter";
     public static final String NETWORK_ADDRESS = "NetworkAddress";
     public static final String PORT = "Port";
-    public static final Object PROTOCOL = "Protocol";
-    public static final Object PROTOCOL_VERSION = "ProtocolVersion";
+    public static final String PROTOCOL = "Protocol";
+    public static final String PROTOCOL_VERSION = "ProtocolVersion";
     public static final String SELECTIVE_ACCESS_SUPPORTED = "SelectiveAccessSupported";
     public static final String SUPPLIER = "Supplier";
     public static final String TECHNICAL_INSTALLATION_DATE = "TechnicalInstallationDate";

@@ -13,7 +13,7 @@
 
   <artifactId>parent-pa-dlms</artifactId>
   <groupId>org.opensmartgridplatform</groupId>
-  <version>4.33.0</version>
+  <version>4.34.3</version>
   <packaging>pom</packaging>
   <name>parent-pa-dlms</name>
   <!-- Description, Organization, Licences, URL and Distribution Management 
@@ -42,10 +42,10 @@
 
   <properties>
     <module.baseUri>${project.baseUri}/../</module.baseUri>
-    <osgp.version>4.33.0</osgp.version>
-    <osgp.dlms.version>4.33.0</osgp.dlms.version>
-    <osgp.shared.version>4.33.0</osgp.shared.version>
-    <osgp.jasper-interface.version>4.33.0</osgp.jasper-interface.version>
+    <osgp.version>4.34.3</osgp.version>
+    <osgp.dlms.version>4.34.3</osgp.dlms.version>
+    <osgp.shared.version>4.34.3</osgp.shared.version>
+    <osgp.jasper-interface.version>4.34.3</osgp.jasper-interface.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <spring.version>4.3.18.RELEASE</spring.version>
@@ -54,6 +54,7 @@
     <spring.wssecurity.version>2.4.0.RELEASE</spring.wssecurity.version>
     <spring.wssupport.version>2.4.0.RELEASE</spring.wssupport.version>
     <spring.ws.version>2.4.0.RELEASE</spring.ws.version>
+    <assertj.version>3.9.1</assertj.version>
     <xmlunit.version>1.6</xmlunit.version>
     <mockito.version>1.10.19</mockito.version>
     <apache.wss4j.version>1.6.19</apache.wss4j.version>
@@ -125,6 +126,12 @@
         <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-dto</artifactId>
         <version>${osgp.shared.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-dto</artifactId>
+        <version>${osgp.shared.version}</version>
+        <type>test-jar</type>
       </dependency>
       <dependency>
         <groupId>org.opensmartgridplatform</groupId>
@@ -356,6 +363,12 @@
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>${junit.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.assertj</groupId>
+        <artifactId>assertj-core</artifactId>
+        <version>${assertj.version}</version>
         <scope>test</scope>
       </dependency>
 

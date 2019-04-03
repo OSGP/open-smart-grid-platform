@@ -14,7 +14,7 @@
 
   <artifactId>parent-shared</artifactId>
   <groupId>org.opensmartgridplatform</groupId>
-  <version>4.33.0</version>
+  <version>4.34.3</version>
   <packaging>pom</packaging>
   <name>parent-shared</name>
   <!-- Description, Organization, Licences, URL and Distribution Management 
@@ -46,7 +46,7 @@
 
   <properties>
     <module.baseUri>${project.baseUri}/../</module.baseUri>
-    <osgp.version>4.33.0</osgp.version>
+    <osgp.version>4.34.3</osgp.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <spring.version>4.3.18.RELEASE</spring.version>
@@ -63,7 +63,7 @@
     <slf4j.version>1.7.7</slf4j.version>
     <apache.commons.lang.version>3.3.2</apache.commons.lang.version>
     <apache.httpcomponents.version>4.3.6</apache.httpcomponents.version>
-    <jackson.version>2.9.7</jackson.version>
+    <jackson.version>2.9.8</jackson.version>
     <commons.codec.version>1.9</commons.codec.version>
     <orika.version>1.5.1</orika.version>
     <jxr.version>2.5</jxr.version>
@@ -71,7 +71,6 @@
     <maven.site.plugin>3.7.1</maven.site.plugin>
     <apache.activemq.version>5.15.7</apache.activemq.version>
     <commons.pool.version>1.6</commons.pool.version>
-    <jackson.jaxrs.version>2.8.6</jackson.jaxrs.version>
     <proton-jms.version>0.7</proton-jms.version>
     <cxf.version>3.0.1</cxf.version>
     <logback.version>1.1.2</logback.version>

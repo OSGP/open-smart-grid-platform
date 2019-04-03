@@ -11,17 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.validator.method.MethodConstraintViolationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.domain.Page;
-import org.springframework.transaction.TransactionSystemException;
-import org.springframework.ws.server.endpoint.annotation.Endpoint;
-import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
-import org.springframework.ws.server.endpoint.annotation.RequestPayload;
-import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
-
 import org.opensmartgridplatform.adapter.ws.admin.application.mapping.DeviceManagementMapper;
 import org.opensmartgridplatform.adapter.ws.admin.application.services.DeviceManagementService;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
@@ -70,6 +59,16 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Slice;
+import org.springframework.transaction.TransactionSystemException;
+import org.springframework.ws.server.endpoint.annotation.Endpoint;
+import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
+import org.springframework.ws.server.endpoint.annotation.RequestPayload;
+import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 /**
  * Device Management Endpoint class
@@ -85,7 +84,8 @@ public class DeviceManagementEndpoint {
 
     private static final String DEVICE_MANAGEMENT_NAMESPACE = "http://www.opensmartgridplatform.org/schemas/admin/devicemanagement/2014/10";
     private static final ComponentType COMPONENT_TYPE_WS_ADMIN = ComponentType.WS_ADMIN;
-    private static final String EXCEPTION_OCCURED = "Exception Occured.";
+    private static final String EXCEPTION_OCCURRED = "Exception Occurred.";
+    private static final String STACK_TRACE = "Exception: {}, StackTrace: {}";
 
     private final DeviceManagementService deviceManagementService;
     private final DeviceManagementMapper deviceManagementMapper;
@@ -122,11 +122,11 @@ public class DeviceManagementEndpoint {
         try {
             this.deviceManagementService.addOrganisation(organisationIdentification, organisation);
         } catch (final MethodConstraintViolationException e) {
-            LOGGER.error(EXCEPTION_OCCURED, e);
+            LOGGER.error(EXCEPTION_OCCURRED, e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_ADMIN,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final TransactionSystemException e) {
-            LOGGER.error(EXCEPTION_OCCURED, e);
+            LOGGER.error(EXCEPTION_OCCURRED, e);
             throw new TechnicalException(COMPONENT_TYPE_WS_ADMIN, e);
         } catch (final Exception e) {
             this.handleException(e);
@@ -147,11 +147,11 @@ public class DeviceManagementEndpoint {
             this.deviceManagementService.removeOrganisation(organisationIdentification,
                     request.getOrganisationIdentification());
         } catch (final MethodConstraintViolationException e) {
-            LOGGER.error(EXCEPTION_OCCURED, e);
+            LOGGER.error(EXCEPTION_OCCURRED, e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_ADMIN,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final TransactionSystemException ex) {
-            LOGGER.error("Exception: {}, StackTrace: {}", ex.getMessage(), ex.getStackTrace(), ex);
+            LOGGER.error(STACK_TRACE, ex.getMessage(), ex.getStackTrace(), ex);
             throw new TechnicalException(COMPONENT_TYPE_WS_ADMIN, ex.getApplicationException());
         } catch (final Exception e) {
             this.handleException(e);
@@ -172,11 +172,11 @@ public class DeviceManagementEndpoint {
             this.deviceManagementService.activateOrganisation(organisationIdentification,
                     request.getOrganisationIdentification());
         } catch (final MethodConstraintViolationException e) {
-            LOGGER.error(EXCEPTION_OCCURED, e);
+            LOGGER.error(EXCEPTION_OCCURRED, e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_ADMIN,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final TransactionSystemException ex) {
-            LOGGER.error("Exception: {}, StackTrace: {}", ex.getMessage(), ex.getStackTrace(), ex);
+            LOGGER.error(STACK_TRACE, ex.getMessage(), ex.getStackTrace(), ex);
             throw new TechnicalException(COMPONENT_TYPE_WS_ADMIN, ex.getApplicationException());
         } catch (final Exception e) {
             this.handleException(e);
@@ -200,11 +200,11 @@ public class DeviceManagementEndpoint {
                     this.deviceManagementMapper.mapAsList(request.getNewOrganisationPlatformDomains(),
                             PlatformDomain.class));
         } catch (final MethodConstraintViolationException e) {
-            LOGGER.error(EXCEPTION_OCCURED, e);
+            LOGGER.error(EXCEPTION_OCCURRED, e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_TYPE_WS_ADMIN,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final TransactionSystemException ex) {
-            LOGGER.error("Exception: {}, StackTrace: {}", ex.getMessage(), ex.getStackTrace(), ex);
+            LOGGER.error(STACK_TRACE, ex.getMessage(), ex.getStackTrace(), ex);
             throw new TechnicalException(COMPONENT_TYPE_WS_ADMIN, ex.getApplicationException());
         } catch (final Exception e) {
             this.handleException(e);
@@ -224,17 +224,16 @@ public class DeviceManagementEndpoint {
         final FindMessageLogsResponse response = new FindMessageLogsResponse();
 
         try {
-            final Page<DeviceLogItem> page = this.deviceManagementService.findOslpMessages(organisationIdentification,
-                    request.getDeviceIdentification(), request.getPage());
+            final Slice<DeviceLogItem> page = this.deviceManagementService.findDeviceMessages(
+                    organisationIdentification, request.getDeviceIdentification(), request.getPage());
 
             // Map to output
             final MessageLogPage logPage = new MessageLogPage();
-            logPage.setTotalPages(page.getTotalPages());
             logPage.getMessageLogs().addAll(this.deviceManagementMapper.mapAsList(page.getContent(), MessageLog.class));
-
+            logPage.setNextPageAvailable(page.hasNext());
             response.setMessageLogPage(logPage);
         } catch (final MethodConstraintViolationException e) {
-            LOGGER.error(EXCEPTION_OCCURED, e);
+            LOGGER.error(EXCEPTION_OCCURRED, e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_TYPE_WS_ADMIN,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
@@ -279,7 +278,7 @@ public class DeviceManagementEndpoint {
                 }
             }
         } catch (final MethodConstraintViolationException e) {
-            LOGGER.error(EXCEPTION_OCCURED, e);
+            LOGGER.error(EXCEPTION_OCCURRED, e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_TYPE_WS_ADMIN,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
@@ -315,7 +314,7 @@ public class DeviceManagementEndpoint {
             response.getDeviceAuthorisations()
                     .addAll(this.deviceManagementMapper.mapAsList(authorizations, DeviceAuthorisation.class));
         } catch (final MethodConstraintViolationException e) {
-            LOGGER.error(EXCEPTION_OCCURED, e);
+            LOGGER.error(EXCEPTION_OCCURRED, e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_TYPE_WS_ADMIN,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
@@ -362,7 +361,7 @@ public class DeviceManagementEndpoint {
         try {
             this.deviceManagementService.removeDevice(organisationIdentification, request.getDeviceIdentification());
         } catch (final MethodConstraintViolationException e) {
-            LOGGER.error(EXCEPTION_OCCURED, e);
+            LOGGER.error(EXCEPTION_OCCURRED, e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_TYPE_WS_ADMIN,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
@@ -384,7 +383,7 @@ public class DeviceManagementEndpoint {
             this.deviceManagementService.setOwner(organisationIdentification, request.getDeviceIdentification(),
                     request.getOrganisationIdentification());
         } catch (final MethodConstraintViolationException e) {
-            LOGGER.error(EXCEPTION_OCCURED, e);
+            LOGGER.error(EXCEPTION_OCCURRED, e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_TYPE_WS_ADMIN,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
@@ -406,7 +405,7 @@ public class DeviceManagementEndpoint {
             this.deviceManagementService.updateKey(organisationIdentification, request.getDeviceIdentification(),
                     request.getPublicKey(), request.getProtocolInfoId());
         } catch (final MethodConstraintViolationException e) {
-            LOGGER.error(EXCEPTION_OCCURED, e);
+            LOGGER.error(EXCEPTION_OCCURRED, e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_TYPE_WS_ADMIN,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
@@ -427,7 +426,7 @@ public class DeviceManagementEndpoint {
         try {
             this.deviceManagementService.revokeKey(organisationIdentification, request.getDeviceIdentification());
         } catch (final MethodConstraintViolationException e) {
-            LOGGER.error(EXCEPTION_OCCURED, e);
+            LOGGER.error(EXCEPTION_OCCURRED, e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_TYPE_WS_ADMIN,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
@@ -453,7 +452,7 @@ public class DeviceManagementEndpoint {
             getProtocolInfosResponse.getProtocolInfos().addAll(this.deviceManagementMapper.mapAsList(protocolInfos,
                     org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.ProtocolInfo.class));
         } catch (final MethodConstraintViolationException e) {
-            LOGGER.error(EXCEPTION_OCCURED, e);
+            LOGGER.error(EXCEPTION_OCCURRED, e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_TYPE_WS_ADMIN,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
@@ -477,7 +476,7 @@ public class DeviceManagementEndpoint {
             this.deviceManagementService.updateDeviceProtocol(organisationIdentification,
                     request.getDeviceIdentification(), protocolInfo.getProtocol(), protocolInfo.getProtocolVersion());
         } catch (final MethodConstraintViolationException e) {
-            LOGGER.error(EXCEPTION_OCCURED, e);
+            LOGGER.error(EXCEPTION_OCCURRED, e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_TYPE_WS_ADMIN,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {

@@ -158,8 +158,7 @@ public enum SubDataAttribute {
      */
     REPORT_ID("RptID"),
     /**
-     * Property of RCB, Reserve. Must be set before RptEna is set to
-     * true.
+     * Property of RCB, Reserve. Must be set before RptEna is set to true.
      */
     RESERVE_REPORTING_CONTROL_BLOCK("Resv"),
     /**
@@ -331,7 +330,32 @@ public enum SubDataAttribute {
     /**
      * ctl Model
      */
-    CTL_MODEL("ctlModel");
+    CTL_MODEL("ctlModel"),
+
+    /**
+     * Event Type
+     */
+    EVENT_TYPE("evnType"),
+    /**
+     * Switch Number
+     */
+    SWITCH_NUMBER("swNum"),
+    /**
+     * Switch Value
+     */
+    SWITCH_VALUE("swVal"),
+    /**
+     * Trigger Type
+     */
+    TRIGGER_TYPE("trgType"),
+    /**
+     * Trigger Time
+     */
+    TRIGGER_TIME("trgTime"),
+    /**
+     * Remark
+     */
+    REMARK("remark");
 
     private String description;
 
