@@ -16,7 +16,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * configuration requires Spring Framework 3.0
  */
 @Configuration
-@ComponentScan(basePackages = {"org.opensmartgridplatform.domain.core", "org.opensmartgridplatform.adapter.domain.microgrids"})
+@ComponentScan(basePackages = { "org.opensmartgridplatform.shared.domain.services",
+        "org.opensmartgridplatform.domain.core", "org.opensmartgridplatform.adapter.domain.microgrids" })
 @EnableTransactionManagement
 public class ApplicationContext {
 

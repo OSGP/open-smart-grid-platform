@@ -9,8 +9,8 @@
  */
 package org.opensmartgridplatform.adapter.domain.da.application.services;
 
-import org.opensmartgridplatform.domain.core.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
+import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.opensmartgridplatform.domain.core.entities.RtuDevice;

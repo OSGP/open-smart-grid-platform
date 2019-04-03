@@ -74,6 +74,7 @@ public class BaseMessageProcessorMap implements MessageProcessorMap {
         try {
             return MessageType.valueOf(jmsType);
         } catch (final IllegalArgumentException e) {
+            LOGGER.debug("Unknown message type", e);
             LOGGER.error("Unknown message type: {} in {}", jmsType, this.messageProcessorMapName);
             throw new JMSException("Unknown message type");
         }
