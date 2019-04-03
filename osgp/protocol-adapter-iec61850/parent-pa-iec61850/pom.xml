@@ -68,7 +68,7 @@
     <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
     <maven.site.plugin>3.7.1</maven.site.plugin>
     <pmd.version>4.3</pmd.version>
-    <apache.activemq.version>5.15.7</apache.activemq.version>
+    <apache.activemq.version>5.15.9</apache.activemq.version>
     <commons.pool.version>1.6</commons.pool.version>
     <proton-jms.version>0.7</proton-jms.version>
     <logback.version>1.2.3</logback.version>
