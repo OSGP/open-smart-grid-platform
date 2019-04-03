@@ -48,8 +48,8 @@ public class GetHealthStatusResponseEventListener extends BaseResponseEventListe
         // For now return only a response on ASDU with type id: "interrogation
         // command" and cause of transmission: "activation confirmation".
         // Processing will change in a later story.
-        if (receivedAsdu.getTypeIdentification() == TypeId.C_IC_NA_1
-                && receivedAsdu.getCauseOfTransmission().equals(CauseOfTransmission.ACTIVATION_CON)) {
+        if (TypeId.C_IC_NA_1.equals(receivedAsdu.getTypeIdentification())
+                && CauseOfTransmission.ACTIVATION_CON.equals(receivedAsdu.getCauseOfTransmission())) {
             this.sendGetHealthStatusResponse();
         } else {
             LOGGER.info(
