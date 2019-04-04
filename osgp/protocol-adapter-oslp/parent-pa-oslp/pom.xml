@@ -68,7 +68,7 @@
     <jxr.version>3.0.0</jxr.version>
     <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
     <maven.site.plugin>3.7.1</maven.site.plugin>
-    <apache.activemq.version>5.15.8</apache.activemq.version>
+    <apache.activemq.version>5.15.9</apache.activemq.version>
     <commons.pool.version>2.6.1</commons.pool.version>
     <jackson.version>2.9.8</jackson.version>
     <logback.version>1.2.3</logback.version>

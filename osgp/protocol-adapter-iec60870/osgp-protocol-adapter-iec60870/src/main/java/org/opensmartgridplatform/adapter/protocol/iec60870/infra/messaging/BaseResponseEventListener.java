@@ -12,6 +12,7 @@ import java.io.Serializable;
 
 import org.openmuc.j60870.ConnectionEventListener;
 import org.opensmartgridplatform.adapter.protocol.iec60870.services.DeviceMessageLoggingService;
+import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
@@ -30,13 +31,16 @@ public abstract class BaseResponseEventListener implements ConnectionEventListen
     private final MessageMetadata messageMetadata;
     private final ResponseMessageSender responseMessageSender;
     private final DeviceMessageLoggingService deviceMessageLoggingService;
+    private final CorrelationIdProviderService correlationIdProviderService;
 
     public BaseResponseEventListener(final MessageMetadata messageMetadata,
             final ResponseMessageSender responseMessageSender,
-            final DeviceMessageLoggingService deviceMessageLoggingService) {
+            final DeviceMessageLoggingService deviceMessageLoggingService,
+            final CorrelationIdProviderService correlationIdProviderService) {
         this.messageMetadata = messageMetadata;
         this.responseMessageSender = responseMessageSender;
         this.deviceMessageLoggingService = deviceMessageLoggingService;
+        this.correlationIdProviderService = correlationIdProviderService;
     }
 
     @Override
@@ -53,10 +57,18 @@ public abstract class BaseResponseEventListener implements ConnectionEventListen
     protected void sendResponse(final Serializable response) {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(this.messageMetadata);
-        final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage.Builder()
+
+        final ProtocolResponseMessage.Builder protocolResponseMessageBuilder = new ProtocolResponseMessage.Builder()
                 .domain(this.messageMetadata.getDomain()).domainVersion(this.messageMetadata.getDomainVersion())
                 .deviceMessageMetadata(deviceMessageMetadata).result(ResponseMessageResultType.OK)
-                .retryCount(this.messageMetadata.getRetryCount()).dataObject(response).build();
+                .retryCount(this.messageMetadata.getRetryCount()).dataObject(response);
+
+        // Set a new correlationUid for the response
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(
+                this.messageMetadata.getOrganisationIdentification(), this.messageMetadata.getDeviceIdentification());
+
+        final ProtocolResponseMessage protocolResponseMessage = protocolResponseMessageBuilder
+                .correlationUid(correlationUid).build();
 
         this.responseMessageSender.send(protocolResponseMessage);
     }

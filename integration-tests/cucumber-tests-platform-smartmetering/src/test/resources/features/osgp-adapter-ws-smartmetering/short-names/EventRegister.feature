@@ -1,7 +1,7 @@
 # Needs a DlmsDevice simulator with e650 profile on port 1026
-@SmartMetering @Platform @SN
+
 # This test is broken, needs fixing later when support for L+G E650 devices is needed:
-@Skip
+@SmartMetering @Platform @SN @Skip
 Feature: SmartMetering short names - Event Register
 
   Scenario: Get specific attribute value from L+G E650

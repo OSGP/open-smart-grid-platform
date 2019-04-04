@@ -8,7 +8,6 @@
 package org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 
 import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
@@ -18,6 +17,7 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.help
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.helper.RequestMessageData;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.services.Iec60870DeviceService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.services.DeviceMessageLoggingService;
+import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.shared.exceptionhandling.ProtocolAdapterException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -61,6 +61,9 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
     private Iec60870DeviceService iec60870DeviceService;
 
     @Autowired
+    private CorrelationIdProviderService correlationIdProviderService;
+
+    @Autowired
     private DeviceMessageLoggingService deviceMessageLoggingService;
 
     /**
@@ -98,7 +101,7 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
     }
 
     @Override
-    public void processMessage(final ObjectMessage message) throws JMSException {
+    public void processMessage(final ObjectMessage message) {
         LOGGER.info("Processing get health status request message in new code...");
 
         MessageMetadata messageMetadata = null;
@@ -130,14 +133,12 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
         Constructor<? extends BaseResponseEventListener> constructor;
         try {
             constructor = this.responseEventListener.getConstructor(MessageMetadata.class, ResponseMessageSender.class,
-                    DeviceMessageLoggingService.class);
+                    DeviceMessageLoggingService.class, CorrelationIdProviderService.class);
 
             return constructor.newInstance(messageMetadata, this.responseMessageSender,
-                    this.deviceMessageLoggingService);
+                    this.deviceMessageLoggingService, this.correlationIdProviderService);
 
-        } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
-                | IllegalArgumentException | InvocationTargetException e) {
-
+        } catch (RuntimeException | ReflectiveOperationException e) {
             throw new IllegalStateException("Failed to create an instance for " + this.responseEventListener.getName(),
                     e);
         }
@@ -152,8 +153,7 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
                 requestMessageData.getDomain(), requestMessageData.getDomainVersion());
     }
 
-    protected void handleError(final MessageMetadata messageMetadata, final ProtocolAdapterException e)
-            throws JMSException {
+    protected void handleError(final MessageMetadata messageMetadata, final ProtocolAdapterException e) {
         LOGGER.warn("Error while processing message", e);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(messageMetadata);

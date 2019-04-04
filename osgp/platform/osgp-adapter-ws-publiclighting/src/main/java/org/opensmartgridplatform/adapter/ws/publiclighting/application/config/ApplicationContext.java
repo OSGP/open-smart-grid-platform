@@ -28,9 +28,10 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
  * configuration requires Spring Framework 3.0
  */
 @Configuration
-@ComponentScan(basePackages = { "org.opensmartgridplatform.domain.core",
-        "org.opensmartgridplatform.adapter.ws.publiclighting", "org.opensmartgridplatform.adapter.ws.shared.services",
-        "org.opensmartgridplatform.adapter.ws.mapping", "org.opensmartgridplatform.shared.application.config" })
+@ComponentScan(basePackages = { "org.opensmartgridplatform.shared.domain.services",
+        "org.opensmartgridplatform.domain.core", "org.opensmartgridplatform.adapter.ws.publiclighting",
+        "org.opensmartgridplatform.adapter.ws.shared.services", "org.opensmartgridplatform.adapter.ws.mapping",
+        "org.opensmartgridplatform.shared.application.config" })
 @EnableTransactionManagement()
 @ImportResource("classpath:applicationContext.xml")
 @Import({ MessagingConfig.class, PersistenceConfigCore.class, WebServiceConfig.class,

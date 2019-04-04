@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.domain.core.services;
+package org.opensmartgridplatform.shared.domain.services;
 
 import java.util.UUID;
 
