@@ -28,24 +28,6 @@
     <display.version>${project.version}-${BUILD_TAG}</display.version>
   </properties>
 
-<!--   <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-pmd-plugin</artifactId>
-        <version>5.5.1</version>
-        <configuration>
-          <excludeRoots>
-            <excludeRoot>
-              target/generated-sources/jaxb
-            </excludeRoot>
-          </excludeRoots>
-          <verbose>true</verbose>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build> -->
-
   <dependencies>
     <!-- Alliander -->
     <dependency>

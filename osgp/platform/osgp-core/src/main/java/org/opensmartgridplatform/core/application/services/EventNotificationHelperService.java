@@ -7,9 +7,7 @@
  */
 package org.opensmartgridplatform.core.application.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import java.util.Optional;
 
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DomainInfo;
@@ -20,6 +18,9 @@ import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.DomainInfoRepository;
 import org.opensmartgridplatform.domain.core.repositories.EventRepository;
 import org.opensmartgridplatform.domain.core.repositories.SsldRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Service class which encapsulates data access and transaction management. The
@@ -55,11 +56,11 @@ public class EventNotificationHelperService {
     }
 
     public Ssld findSsld(final Long id) throws UnknownEntityException {
-        final Ssld ssld = this.ssldRepository.findById(id).get();
-        if (ssld == null) {
+        final Optional<Ssld> ssld = this.ssldRepository.findById(id);
+        if (!ssld.isPresent()) {
             throw new UnknownEntityException(Ssld.class, Long.toString(id));
         }
-        return ssld;
+        return ssld.get();
     }
 
     @Transactional(value = "transactionManager")

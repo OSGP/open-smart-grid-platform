@@ -90,18 +90,29 @@ public class JasperWirelessSmsClientTest {
     @Test
     public void testSendWakeUpSms() throws Exception {
         // given
-        final Source requestPayload = new StringSource("<ns2:SendSMSRequest "
-                + "xmlns:ns2=\"http://api.jasperwireless.com/ws/schema\" messageTextEncoding=\"\">" + "<ns2:messageId>"
-                + WKAEWUPSMS_CORRID + "</ns2:messageId>" + "<ns2:version>" + API_VERSION + "</ns2:version>"
-                + "<ns2:licenseKey>" + LICENSEKEY + "</ns2:licenseKey>" + "<ns2:sentToIccid>" + ICC_ID
-                + "</ns2:sentToIccid>" + "<ns2:messageText/>" + "</ns2:SendSMSRequest>");
+        final Source requestPayload = new StringSource(
+        // @formatter:off
+          "<ns2:SendSMSRequest "
+        +   "xmlns:ns2=\"http://api.jasperwireless.com/ws/schema\" messageTextEncoding=\"\">"
+        +   "<ns2:messageId>" + WKAEWUPSMS_CORRID + "</ns2:messageId>"
+        +   "<ns2:version>" + API_VERSION + "</ns2:version>"
+        +   "<ns2:licenseKey>" + LICENSEKEY + "</ns2:licenseKey>"
+        +   "<ns2:sentToIccid>" + ICC_ID + "</ns2:sentToIccid>"
+        +   "<ns2:messageText/>"
+        + "</ns2:SendSMSRequest>");
+        // @formatter:on
 
-        final Source responsePayload = new StringSource("<ns2:SendSMSResponse "
-                + "ns2:requestId=\"IfBlIDGkzgTkWqa3\" xmlns:ns2=\"http://api.jasperwireless.com/ws/schema\">"
-                + "<ns2:correlationId>" + WKAEWUPSMS_CORRID + "</ns2:correlationId>" + "<ns2:version>" + API_VERSION
-                + "</ns2:version>" + "<ns2:build>jasper_release_6.29-160108-154179</ns2:build>"
-                + "<ns2:timestamp>2016-01-18T12:22:05.082Z</ns2:timestamp>" + "<ns2:smsMsgId>" + SMS_MSG_ID
-                + "</ns2:smsMsgId>" + "</ns2:SendSMSResponse>");
+        final Source responsePayload = new StringSource(
+        // @formatter:off
+          "<ns2:SendSMSResponse "
+        +   "ns2:requestId=\"IfBlIDGkzgTkWqa3\" xmlns:ns2=\"http://api.jasperwireless.com/ws/schema\">"
+        +   "<ns2:correlationId>" + WKAEWUPSMS_CORRID + "</ns2:correlationId>"
+        +   "<ns2:version>" + API_VERSION + "</ns2:version>"
+        +   "<ns2:build>jasper_release_6.29-160108-154179</ns2:build>"
+        +   "<ns2:timestamp>2016-01-18T12:22:05.082Z</ns2:timestamp>"
+        +   "<ns2:smsMsgId>" + SMS_MSG_ID + "</ns2:smsMsgId>"
+        + "</ns2:SendSMSResponse>");
+        // @formatter:on
 
         // when
         when(this.correlationIdProviderService.getCorrelationId("wakeupsms", ICC_ID)).thenReturn(WKAEWUPSMS_CORRID);
@@ -118,26 +129,44 @@ public class JasperWirelessSmsClientTest {
     @Test
     public void testSendWakeUpSmsResult() throws Exception {
         // given
-        final Source requestPayload = new StringSource("<ns2:GetSMSDetailsRequest "
-                + "xmlns:ns2=\"http://api.jasperwireless.com/ws/schema\" messageTextEncoding=\"\">" + "<ns2:messageId>"
-                + WKAEWUPSMS_CORRID + "</ns2:messageId>" + "<ns2:version>" + API_VERSION + "</ns2:version>"
-                + "<ns2:licenseKey>" + LICENSEKEY + "</ns2:licenseKey>" + "<ns2:smsMsgIds>" + "<ns2:smsMsgId>"
-                + SMS_MSG_ID + "</ns2:smsMsgId>" + "</ns2:smsMsgIds>" + "</ns2:GetSMSDetailsRequest>");
+        final Source requestPayload = new StringSource(
+        // @formatter:off
+          "<ns2:GetSMSDetailsRequest "
+        +   "xmlns:ns2=\"http://api.jasperwireless.com/ws/schema\" messageTextEncoding=\"\">"
+        +   "<ns2:messageId>" + WKAEWUPSMS_CORRID + "</ns2:messageId>"
+        +   "<ns2:version>" + API_VERSION + "</ns2:version>"
+        +   "<ns2:licenseKey>" + LICENSEKEY + "</ns2:licenseKey>"
+        +   "<ns2:smsMsgIds>"
+        +     "<ns2:smsMsgId>" + SMS_MSG_ID + "</ns2:smsMsgId>"
+        +   "</ns2:smsMsgIds>"
+        + "</ns2:GetSMSDetailsRequest>");
+        // @formatter:on
 
-        final Source responsePayload = new StringSource("<ns2:GetSMSDetailsResponse "
-                + "ns2:requestId=\"c16KNt8BksvZDLex\" xmlns:ns2=\"http://api.jasperwireless.com/ws/schema\">"
-                + "<ns2:correlationId>" + WKAEWUPSMS_CORRID + "</ns2:correlationId>" + "<ns2:version>" + API_VERSION
-                + "</ns2:version>" + "<ns2:build>jasper_release_6.29-160108-154179</ns2:build>"
-                + "<ns2:timestamp>2016-01-18T12:31:51.760Z</ns2:timestamp>" + "<ns2:smsMessages>" + "<ns2:smsMessage>"
-                + "<ns2:smsMsgId>" + SMS_MSG_ID + "</ns2:smsMsgId>" + "<ns2:status>" + JWCC_STATUS + "</ns2:status>"
-                + "<ns2:senderLogin>MaartenvanHaasteren</ns2:senderLogin>"
-                + "<ns2:sentToIccid>3197002475559</ns2:sentToIccid>" + "<ns2:sentFrom>Server</ns2:sentFrom>"
-                + "<ns2:smsMsgAttemptStatus>" + MODEM_STATUS + "</ns2:smsMsgAttemptStatus>"
-                + "<ns2:msgType>MT</ns2:msgType>" + "<ns2:dateSent>2016-01-18T12:22:04.853Z</ns2:dateSent>"
-                + "<ns2:dateReceived>2016-01-18T12:22:09.878Z</ns2:dateReceived>"
-                + "<ns2:dateAdded>2016-01-18T12:22:04.854Z</ns2:dateAdded>"
-                + "<ns2:dateModified>2016-01-18T12:22:09.889Z</ns2:dateModified>" + "</ns2:smsMessage>"
-                + "</ns2:smsMessages>" + "</ns2:GetSMSDetailsResponse>");
+        final Source responsePayload = new StringSource(
+        // @formatter:off
+          "<ns2:GetSMSDetailsResponse "
+        +   "ns2:requestId=\"c16KNt8BksvZDLex\" xmlns:ns2=\"http://api.jasperwireless.com/ws/schema\">"
+        +   "<ns2:correlationId>" + WKAEWUPSMS_CORRID + "</ns2:correlationId>"
+        +   "<ns2:version>" + API_VERSION + "</ns2:version>"
+        +   "<ns2:build>jasper_release_6.29-160108-154179</ns2:build>"
+        +   "<ns2:timestamp>2016-01-18T12:31:51.760Z</ns2:timestamp>"
+        +   "<ns2:smsMessages>"
+        +     "<ns2:smsMessage>"
+        +       "<ns2:smsMsgId>" + SMS_MSG_ID + "</ns2:smsMsgId>"
+        +       "<ns2:status>" + JWCC_STATUS + "</ns2:status>"
+        +       "<ns2:senderLogin>MaartenvanHaasteren</ns2:senderLogin>"
+        +       "<ns2:sentToIccid>3197002475559</ns2:sentToIccid>"
+        +       "<ns2:sentFrom>Server</ns2:sentFrom>"
+        +       "<ns2:smsMsgAttemptStatus>" + MODEM_STATUS + "</ns2:smsMsgAttemptStatus>"
+        +       "<ns2:msgType>MT</ns2:msgType>"
+        +       "<ns2:dateSent>2016-01-18T12:22:04.853Z</ns2:dateSent>"
+        +       "<ns2:dateReceived>2016-01-18T12:22:09.878Z</ns2:dateReceived>"
+        +       "<ns2:dateAdded>2016-01-18T12:22:04.854Z</ns2:dateAdded>"
+        +       "<ns2:dateModified>2016-01-18T12:22:09.889Z</ns2:dateModified>"
+        +     "</ns2:smsMessage>"
+        +   "</ns2:smsMessages>"
+        + "</ns2:GetSMSDetailsResponse>");
+        // @formatter:on
 
         // when
         when(this.correlationIdProviderService.getCorrelationId("wakeupsms", ICC_ID)).thenReturn(WKAEWUPSMS_CORRID);

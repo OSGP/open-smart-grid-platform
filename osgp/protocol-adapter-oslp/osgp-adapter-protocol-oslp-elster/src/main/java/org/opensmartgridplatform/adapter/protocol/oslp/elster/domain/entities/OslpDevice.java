@@ -151,10 +151,7 @@ public class OslpDevice extends AbstractEntity {
         if (this.deviceType != null ? !this.deviceType.equals(device.deviceType) : device.deviceType != null) {
             return false;
         }
-        if (this.deviceUid != null ? !this.deviceUid.equals(device.deviceUid) : device.deviceUid != null) {
-            return false;
-        }
-        return true;
+        return !(this.deviceUid != null ? !this.deviceUid.equals(device.deviceUid) : device.deviceUid != null);
     }
 
     @Override

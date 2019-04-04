@@ -45,17 +45,8 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
 
     @Override
     public Specification<Device> hasTechnicalInstallationDate() throws ArgumentNullOrEmptyException {
-        return new Specification<Device>() {
 
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
-                    final CriteriaBuilder cb) {
-
-                return cb.isNotNull(deviceRoot.<Date> get("technicalInstallationDate"));
-            }
-        };
+        return ((deviceRoot, query, cb) -> cb.isNotNull(deviceRoot.<Date> get("technicalInstallationDate")));
     }
 
     @Override
@@ -64,22 +55,18 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
             throw new ArgumentNullOrEmptyException(ORGANISATION);
         }
 
-        return new Specification<Device>() {
+        return ((deviceRoot, query, cb) -> this.createPredicateForOrganisation(deviceRoot, query, cb, organisation));
+    }
 
-            private static final long serialVersionUID = 1L;
+    private Predicate createPredicateForOrganisation(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
+            final CriteriaBuilder cb, final Organisation organisation) {
 
-            @Override
-            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
-                    final CriteriaBuilder cb) {
+        final Subquery<Long> subquery = query.subquery(Long.class);
+        final Root<DeviceAuthorization> deviceAuthorizationRoot = subquery.from(DeviceAuthorization.class);
+        subquery.select(deviceAuthorizationRoot.get(DEVICE).get(ID).as(Long.class));
+        subquery.where(cb.equal(deviceAuthorizationRoot.get(ORGANISATION), organisation.getId()));
 
-                final Subquery<Long> subquery = query.subquery(Long.class);
-                final Root<DeviceAuthorization> deviceAuthorizationRoot = subquery.from(DeviceAuthorization.class);
-                subquery.select(deviceAuthorizationRoot.get(DEVICE).get(ID).as(Long.class));
-                subquery.where(cb.equal(deviceAuthorizationRoot.get(ORGANISATION), organisation.getId()));
-
-                return cb.in(deviceRoot.get(ID)).value(subquery);
-            }
-        };
+        return cb.in(deviceRoot.get(ID)).value(subquery);
     }
 
     @Override
@@ -89,21 +76,20 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
             throw new ArgumentNullOrEmptyException(DEVICE_IDENTIFICATION);
         }
 
-        return new Specification<Device>() {
+        return ((deviceRoot, query, cb) -> this.createPredicateForDeviceIdentification(deviceRoot, query, cb,
+                deviceIdentification, exactMatch));
+    }
 
-            private static final long serialVersionUID = 1L;
+    private Predicate createPredicateForDeviceIdentification(final Root<Device> deviceRoot,
+            final CriteriaQuery<?> query, final CriteriaBuilder cb, final String deviceIdentification,
+            final boolean exactMatch) {
 
-            @Override
-            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
-                    final CriteriaBuilder cb) {
-                if (exactMatch) {
-                    return cb.equal(deviceRoot.<String> get(DEVICE_IDENTIFICATION), deviceIdentification);
-                } else {
-                    return cb.like(cb.upper(deviceRoot.<String> get(DEVICE_IDENTIFICATION)),
-                            deviceIdentification.toUpperCase());
-                }
-            }
-        };
+        if (exactMatch) {
+            return cb.equal(deviceRoot.<String> get(DEVICE_IDENTIFICATION), deviceIdentification);
+        } else {
+            return cb.like(cb.upper(deviceRoot.<String> get(DEVICE_IDENTIFICATION)),
+                    deviceIdentification.toUpperCase());
+        }
     }
 
     @Override
@@ -112,17 +98,8 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
             throw new ArgumentNullOrEmptyException("city");
         }
 
-        return new Specification<Device>() {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
-                    final CriteriaBuilder cb) {
-
-                return cb.like(cb.upper(deviceRoot.<String> get("containerCity")), city.toUpperCase());
-            }
-        };
+        return ((deviceRoot, query, cb) -> cb.like(cb.upper(deviceRoot.<String> get("containerCity")),
+                city.toUpperCase()));
     }
 
     @Override
@@ -131,17 +108,8 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
             throw new ArgumentNullOrEmptyException("postalCode");
         }
 
-        return new Specification<Device>() {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
-                    final CriteriaBuilder cb) {
-
-                return cb.like(cb.upper(deviceRoot.<String> get("containerPostalCode")), postalCode.toUpperCase());
-            }
-        };
+        return ((deviceRoot, query, cb) -> cb.like(cb.upper(deviceRoot.<String> get("containerPostalCode")),
+                postalCode.toUpperCase()));
     }
 
     @Override
@@ -150,17 +118,8 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
             throw new ArgumentNullOrEmptyException("street");
         }
 
-        return new Specification<Device>() {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
-                    final CriteriaBuilder cb) {
-
-                return cb.like(cb.upper(deviceRoot.<String> get("containerStreet")), street.toUpperCase());
-            }
-        };
+        return ((deviceRoot, query, cb) -> cb.like(cb.upper(deviceRoot.<String> get("containerStreet")),
+                street.toUpperCase()));
     }
 
     @Override
@@ -169,17 +128,8 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
             throw new ArgumentNullOrEmptyException("number");
         }
 
-        return new Specification<Device>() {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
-                    final CriteriaBuilder cb) {
-
-                return cb.like(cb.upper(deviceRoot.<String> get("containerNumber")), number.toUpperCase());
-            }
-        };
+        return ((deviceRoot, query, cb) -> cb.like(cb.upper(deviceRoot.<String> get("containerNumber")),
+                number.toUpperCase()));
     }
 
     @Override
@@ -188,17 +138,8 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
             throw new ArgumentNullOrEmptyException("municipality");
         }
 
-        return new Specification<Device>() {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
-                    final CriteriaBuilder cb) {
-
-                return cb.like(cb.upper(deviceRoot.<String> get("containerMunicipality")), municipality.toUpperCase());
-            }
-        };
+        return ((deviceRoot, query, cb) -> cb.like(cb.upper(deviceRoot.<String> get("containerMunicipality")),
+                municipality.toUpperCase()));
     }
 
     @Override
@@ -207,17 +148,7 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
             throw new ArgumentNullOrEmptyException(ALIAS);
         }
 
-        return new Specification<Device>() {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
-                    final CriteriaBuilder cb) {
-
-                return cb.like(cb.upper(deviceRoot.<String> get(ALIAS)), alias.toUpperCase());
-            }
-        };
+        return ((deviceRoot, query, cb) -> cb.like(cb.upper(deviceRoot.<String> get(ALIAS)), alias.toUpperCase()));
     }
 
     @Override
@@ -227,24 +158,23 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
             throw new ArgumentNullOrEmptyException("isManagedExternally");
         }
 
-        return new Specification<Device>() {
+        return ((deviceRoot, query, cb) -> this.createPredicateForIsManagedExternally(deviceRoot, query, cb,
+                isManagedExternally));
+    }
 
-            private static final long serialVersionUID = 1L;
+    private Predicate createPredicateForIsManagedExternally(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
+            final CriteriaBuilder cb, final boolean isManagedExternally) {
 
-            @Override
-            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
-                    final CriteriaBuilder cb) {
-                final Subquery<Long> subquery = query.subquery(Long.class);
-                final Root<DeviceAuthorization> deviceAuthorizationRoot = subquery.from(DeviceAuthorization.class);
-                subquery.select(cb.countDistinct(deviceAuthorizationRoot));
-                subquery.where(cb.equal(deviceAuthorizationRoot.get(DEVICE), deviceRoot.<Long> get(ID)));
-                if (isManagedExternally) {
-                    return cb.greaterThan(subquery, Long.valueOf(1));
-                } else {
-                    return cb.lessThanOrEqualTo(subquery, Long.valueOf(1));
-                }
-            }
-        };
+        final Subquery<Long> subquery = query.subquery(Long.class);
+        final Root<DeviceAuthorization> deviceAuthorizationRoot = subquery.from(DeviceAuthorization.class);
+        subquery.select(cb.countDistinct(deviceAuthorizationRoot));
+        subquery.where(cb.equal(deviceAuthorizationRoot.get(DEVICE), deviceRoot.<Long> get(ID)));
+
+        if (isManagedExternally) {
+            return cb.greaterThan(subquery, Long.valueOf(1));
+        } else {
+            return cb.lessThanOrEqualTo(subquery, Long.valueOf(1));
+        }
     }
 
     @Override
@@ -253,17 +183,7 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
             throw new ArgumentNullOrEmptyException("activated");
         }
 
-        return new Specification<Device>() {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
-                    final CriteriaBuilder cb) {
-
-                return cb.equal(deviceRoot.<Boolean> get("isActivated"), activated);
-            }
-        };
+        return ((deviceRoot, query, cb) -> cb.equal(deviceRoot.<Boolean> get("isActivated"), activated));
     }
 
     @Override
@@ -272,17 +192,7 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
             throw new ArgumentNullOrEmptyException(IN_MAINTENANCE);
         }
 
-        return new Specification<Device>() {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
-                    final CriteriaBuilder cb) {
-
-                return cb.equal(deviceRoot.<Boolean> get(IN_MAINTENANCE), inMaintenance);
-            }
-        };
+        return ((deviceRoot, query, cb) -> cb.equal(deviceRoot.<Boolean> get(IN_MAINTENANCE), inMaintenance));
     }
 
     @Override
@@ -291,24 +201,22 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
             throw new ArgumentNullOrEmptyException("owner");
         }
 
-        return new Specification<Device>() {
+        return ((deviceRoot, query, cb) -> this.createPredicateForOwnerOrganisation(deviceRoot, query, cb,
+                organisation));
+    }
 
-            private static final long serialVersionUID = 1L;
+    private Predicate createPredicateForOwnerOrganisation(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
+            final CriteriaBuilder cb, final String organisation) {
 
-            @Override
-            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
-                    final CriteriaBuilder cb) {
+        final Subquery<Long> subquery = query.subquery(Long.class);
+        final Root<DeviceAuthorization> deviceAuthorizationRoot = subquery.from(DeviceAuthorization.class);
+        subquery.select(deviceAuthorizationRoot.get(DEVICE).get(ID).as(Long.class));
+        subquery.where(cb.and(
+                cb.like(cb.upper(deviceAuthorizationRoot.get(ORGANISATION).<String> get(NAME)),
+                        organisation.toUpperCase()),
+                cb.equal(deviceAuthorizationRoot.get("functionGroup"), DeviceFunctionGroup.OWNER.ordinal())));
 
-                final Subquery<Long> subquery = query.subquery(Long.class);
-                final Root<DeviceAuthorization> deviceAuthorizationRoot = subquery.from(DeviceAuthorization.class);
-                subquery.select(deviceAuthorizationRoot.get(DEVICE).get(ID).as(Long.class));
-                subquery.where(cb.and(
-                        cb.like(cb.upper(deviceAuthorizationRoot.get(ORGANISATION).<String> get(NAME)),
-                                organisation.toUpperCase()),
-                        cb.equal(deviceAuthorizationRoot.get("functionGroup"), DeviceFunctionGroup.OWNER.ordinal())));
-                return cb.in(deviceRoot.get(ID)).value(subquery);
-            }
-        };
+        return cb.in(deviceRoot.get(ID)).value(subquery);
     }
 
     @Override
@@ -317,17 +225,8 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
             throw new ArgumentNullOrEmptyException(DEVICE_TYPE);
         }
 
-        return new Specification<Device>() {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
-                    final CriteriaBuilder cb) {
-
-                return cb.like(cb.upper(deviceRoot.<String> get(DEVICE_TYPE)), deviceType.toUpperCase());
-            }
-        };
+        return ((deviceRoot, query, cb) -> cb.like(cb.upper(deviceRoot.<String> get(DEVICE_TYPE)),
+                deviceType.toUpperCase()));
     }
 
     @Override
@@ -336,17 +235,9 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
             throw new ArgumentNullOrEmptyException(DEVICE_MODEL);
         }
 
-        return new Specification<Device>() {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
-                    final CriteriaBuilder cb) {
-                return cb.like(cb.upper(deviceRoot.<String> get(DEVICE_MODEL).get("modelCode").as(String.class)),
-                        deviceModel.toUpperCase());
-            }
-        };
+        return ((deviceRoot, query, cb) -> cb.like(
+                cb.upper(deviceRoot.<String> get(DEVICE_MODEL).get("modelCode").as(String.class)),
+                deviceModel.toUpperCase()));
     }
 
     @Override
@@ -355,22 +246,19 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
             throw new ArgumentNullOrEmptyException(MANUFACTURER);
         }
 
-        return new Specification<Device>() {
+        return ((deviceRoot, query, cb) -> this.createPredicateForManufacturer(deviceRoot, query, cb, manufacturer));
+    }
 
-            private static final long serialVersionUID = 1L;
+    private Predicate createPredicateForManufacturer(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
+            final CriteriaBuilder cb, final Manufacturer manufacturer) {
 
-            @Override
-            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
-                    final CriteriaBuilder cb) {
+        final Subquery<Long> subquery = query.subquery(Long.class);
+        final Root<DeviceModel> deviceModelRoot = subquery.from(DeviceModel.class);
+        subquery.select(deviceModelRoot.get(ID).as(Long.class));
+        subquery.where(cb.equal(cb.upper(deviceModelRoot.get(MANUFACTURER).<String> get(NAME)),
+                manufacturer.getName().toUpperCase()));
 
-                final Subquery<Long> subquery = query.subquery(Long.class);
-                final Root<DeviceModel> deviceModelRoot = subquery.from(DeviceModel.class);
-                subquery.select(deviceModelRoot.get(ID).as(Long.class));
-                subquery.where(cb.equal(cb.upper(deviceModelRoot.get(MANUFACTURER).<String> get(NAME)),
-                        manufacturer.getName().toUpperCase()));
-                return cb.in(deviceRoot.get(DEVICE_MODEL).get(ID).as(Long.class)).value(subquery);
-            }
-        };
+        return cb.in(deviceRoot.get(DEVICE_MODEL).get(ID).as(Long.class)).value(subquery);
     }
 
     @Override
@@ -383,28 +271,27 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
             throw new ArgumentNullOrEmptyException("firmwareModuleType");
         }
 
-        return new Specification<Device>() {
+        return ((deviceRoot, query, cb) -> this.createPredicateForFirmwareModuleVersion(deviceRoot, query, cb,
+                firmwareModuleFilterType, firmwareModuleVersion));
+    }
 
-            private static final long serialVersionUID = 1L;
+    private Predicate createPredicateForFirmwareModuleVersion(final Root<Device> deviceRoot,
+            final CriteriaQuery<?> query, final CriteriaBuilder cb,
+            final FirmwareModuleFilterType firmwareModuleFilterType, final String firmwareModuleVersion) {
 
-            @Override
-            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
-                    final CriteriaBuilder cb) {
-                final String moduleDescription = firmwareModuleFilterType.getDescription();
+        final String moduleDescription = firmwareModuleFilterType.getDescription();
 
-                final Subquery<Long> subquery = query.subquery(Long.class);
-                final Root<DeviceCurrentFirmwareModuleVersion> moduleVersionRoot = subquery
-                        .from(DeviceCurrentFirmwareModuleVersion.class);
-                subquery.select(moduleVersionRoot.get("deviceId").as(Long.class));
-                final Predicate moduleTypePredicate = cb
-                        .equal(moduleVersionRoot.get("moduleDescription").as(String.class), moduleDescription);
-                final Predicate moduleVersionPredicate = cb
-                        .like(moduleVersionRoot.get("moduleVersion").as(String.class), firmwareModuleVersion);
-                subquery.where(cb.and(moduleTypePredicate, moduleVersionPredicate));
+        final Subquery<Long> subquery = query.subquery(Long.class);
+        final Root<DeviceCurrentFirmwareModuleVersion> moduleVersionRoot = subquery
+                .from(DeviceCurrentFirmwareModuleVersion.class);
+        subquery.select(moduleVersionRoot.get("deviceId").as(Long.class));
+        final Predicate moduleTypePredicate = cb.equal(moduleVersionRoot.get("moduleDescription").as(String.class),
+                moduleDescription);
+        final Predicate moduleVersionPredicate = cb.like(moduleVersionRoot.get("moduleVersion").as(String.class),
+                firmwareModuleVersion);
+        subquery.where(cb.and(moduleTypePredicate, moduleVersionPredicate));
 
-                return cb.in(deviceRoot.get(ID).as(Long.class)).value(subquery);
-            }
-        };
+        return cb.in(deviceRoot.get(ID).as(Long.class)).value(subquery);
     }
 
     @Override
@@ -414,17 +301,7 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
             throw new ArgumentNullOrEmptyException(DEVICE_IDENTIFICATIONS);
         }
 
-        return new Specification<Device>() {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
-                    final CriteriaBuilder cb) {
-
-                return cb.in(deviceRoot.get(DEVICE_IDENTIFICATION)).value(deviceIdentifications);
-            }
-        };
+        return ((deviceRoot, query, cb) -> cb.in(deviceRoot.get(DEVICE_IDENTIFICATION)).value(deviceIdentifications));
     }
 
     @Override
@@ -434,16 +311,6 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
             throw new ArgumentNullOrEmptyException(DEVICE_IDENTIFICATIONS);
         }
 
-        return new Specification<Device>() {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
-                    final CriteriaBuilder cb) {
-
-                return cb.not(deviceRoot.get(DEVICE_IDENTIFICATION).in(deviceIdentifications));
-            }
-        };
+        return ((deviceRoot, query, cb) -> cb.not(deviceRoot.get(DEVICE_IDENTIFICATION).in(deviceIdentifications)));
     }
 }

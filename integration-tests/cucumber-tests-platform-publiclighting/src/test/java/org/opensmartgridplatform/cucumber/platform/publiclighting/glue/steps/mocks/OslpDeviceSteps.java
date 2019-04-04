@@ -682,7 +682,6 @@ public class OslpDeviceSteps {
      *
      * @throws UnknownHostException
      */
-    @SuppressWarnings("unlikely-arg-type")
     @Given("^the device returns a get configuration status \"([^\"]*)\" over \"([^\"]*)\"$")
     public void theDeviceReturnsAGetConfigurationStatusWithResultOverOSLP(final String result, final String protocol,
             final Map<String, String> requestParameters) throws UnknownHostException {
@@ -691,7 +690,7 @@ public class OslpDeviceSteps {
         // values the same. Some with underscore and some without.
         MeterType meterType;
         final String sMeterType = getString(requestParameters, PlatformPubliclightingKeys.METER_TYPE, "");
-        if (!sMeterType.contains("_") && sMeterType.equals(MeterType.P1_VALUE)) {
+        if (!sMeterType.contains("_") && sMeterType.equals(String.valueOf(MeterType.P1_VALUE))) {
             final String[] sMeterTypeArray = sMeterType.split("");
             meterType = MeterType.valueOf(sMeterTypeArray[0] + "_" + sMeterTypeArray[1]);
         } else {

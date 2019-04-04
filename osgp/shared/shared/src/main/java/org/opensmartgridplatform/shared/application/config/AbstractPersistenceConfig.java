@@ -87,7 +87,7 @@ public abstract class AbstractPersistenceConfig extends AbstractConfig {
      * This is the old property of Hibernate 4.X, replaced by
      * hibernate.physical_naming_strategy in Hibernate 5.x.
      */
-    private static final String PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY_DEPRACATED = "hibernate.ejb.naming_strategy";
+    private static final String PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY_DEPRECATED = "hibernate.ejb.naming_strategy";
     @Value("${hibernate.ejb.naming_strategy}")
     private String hibernateNamingStrategyDeprecated;
 
@@ -186,7 +186,7 @@ public abstract class AbstractPersistenceConfig extends AbstractConfig {
         String deprecatedProperty = null;
         try {
             deprecatedProperty = this.environment
-                    .getRequiredProperty(PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY_DEPRACATED);
+                    .getRequiredProperty(PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY_DEPRECATED);
         } catch (final IllegalStateException e) {
             // The property is expected to be absent.
             LOGGER.debug("IllegalStateException", e);
@@ -195,7 +195,7 @@ public abstract class AbstractPersistenceConfig extends AbstractConfig {
 
         final String message = String.format(
                 "Using '%s=%s' is deprecated and no longer works with Hibernate 5.X! Use '%s=%s' instead!",
-                PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY_DEPRACATED, deprecatedProperty,
+                PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY_DEPRECATED, deprecatedProperty,
                 PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY, HibernateNamingStrategy.class.getName());
 
         LOGGER.error(message);

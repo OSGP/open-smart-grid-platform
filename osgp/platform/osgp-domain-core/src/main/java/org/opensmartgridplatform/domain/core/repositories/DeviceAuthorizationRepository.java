@@ -27,10 +27,16 @@ public interface DeviceAuthorizationRepository extends JpaRepository<DeviceAutho
 
     List<DeviceAuthorization> findByOrganisationAndDevice(Organisation organisation, Device device);
 
-    @Query("select da from DeviceAuthorization da " + "where da.device = ?1 " + "and (?2 in "
-            + "        (select da.organisation " + "         from DeviceAuthorization da "
-            + "         where da.device = ?1 and da.functionGroup = org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup.OWNER) "
-            + "     or da.organisation = ?2)")
+    // @formatter:off
+    @Query("select da "
+         + "from DeviceAuthorization da "
+         + "where da.device = ?1 "
+         + "and (?2 in "
+         + "        (select da.organisation "
+         + "         from DeviceAuthorization da "
+         + "         where da.device = ?1 and da.functionGroup = org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup.OWNER) "
+         + "     or da.organisation = ?2)")
+    // @formatter:on
     List<DeviceAuthorization> findByDeviceForOrganisation(Device device, Organisation organisation);
 
     void deleteByDeviceAndFunctionGroupAndOrganisation(Device device, DeviceFunctionGroup functionGroup,

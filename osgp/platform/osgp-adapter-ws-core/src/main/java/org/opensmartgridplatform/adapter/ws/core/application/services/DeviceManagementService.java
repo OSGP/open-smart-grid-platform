@@ -7,6 +7,8 @@
  */
 package org.opensmartgridplatform.adapter.ws.core.application.services;
 
+import static org.springframework.data.jpa.domain.Specification.where;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,7 +83,7 @@ import org.springframework.validation.annotation.Validated;
 public class DeviceManagementService {
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementService.class);
 
-    // The wildcard, used for filtering
+    // The wildcard, used for filtering.
     private static final String WILDCARD = "\\*";
 
     @Autowired
@@ -203,9 +205,9 @@ public class DeviceManagementService {
                 final Device device = this.domainHelperService.findDevice(deviceIdentification);
                 this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_EVENT_NOTIFICATIONS);
 
-                specification = Specification.where(this.eventSpecifications.isFromDevice(device));
+                specification = where(this.eventSpecifications.isFromDevice(device));
             } else {
-                specification = Specification.where(this.eventSpecifications.isAuthorized(organisation));
+                specification = where(this.eventSpecifications.isAuthorized(organisation));
             }
 
             if (from != null) {
@@ -529,10 +531,10 @@ public class DeviceManagementService {
         if (!StringUtils.isEmpty(deviceFilter.getOrganisationIdentification())) {
             final Organisation org = this.domainHelperService
                     .findOrganisation(deviceFilter.getOrganisationIdentification());
-            specification = Specification.where(this.deviceSpecifications.forOrganisation(org));
+            specification = where(this.deviceSpecifications.forOrganisation(org));
         } else {
             // dummy for 'not initialized'
-            specification = Specification.where(this.deviceSpecifications.forOrganisation(organisation));
+            specification = where(this.deviceSpecifications.forOrganisation(organisation));
         }
         return specification;
     }

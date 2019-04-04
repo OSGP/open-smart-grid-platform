@@ -95,25 +95,17 @@ public class ScenarioHooks {
     }
 
     private Map<String, String> initSettings() {
-        return new HashMap<String, String>() {
-            private static final long serialVersionUID = 1L;
-            {
-                this.put(PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                        PlatformDefaults.DEFAULT_SMART_METER_DEVICE_IDENTIFICATION);
-                this.put(PlatformKeys.KEY_DEVICE_AUTHENTICATIONKEY, PlatformSmartmeteringDefaults.SECURITY_KEY_A_XML);
-                this.put(PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY, PlatformSmartmeteringDefaults.SECURITY_KEY_E_XML);
-            }
-        };
+        final Map<String, String> map = new HashMap<>();
+        map.put(PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_SMART_METER_DEVICE_IDENTIFICATION);
+        map.put(PlatformKeys.KEY_DEVICE_AUTHENTICATIONKEY, PlatformSmartmeteringDefaults.SECURITY_KEY_A_XML);
+        map.put(PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY, PlatformSmartmeteringDefaults.SECURITY_KEY_E_XML);
+        return map;
     }
 
     private Map<String, String> initResponseParameters() {
-        return new HashMap<String, String>() {
-            private static final long serialVersionUID = 1L;
-            {
-                this.put(PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                        PlatformDefaults.DEFAULT_SMART_METER_DEVICE_IDENTIFICATION);
-                this.put(PlatformKeys.KEY_RESULT, PlatformDefaults.EXPECTED_RESULT_OK);
-            }
-        };
+        final Map<String, String> map = new HashMap<>();
+        map.put(PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_SMART_METER_DEVICE_IDENTIFICATION);
+        map.put(PlatformKeys.KEY_RESULT, PlatformDefaults.EXPECTED_RESULT_OK);
+        return map;
     }
 }

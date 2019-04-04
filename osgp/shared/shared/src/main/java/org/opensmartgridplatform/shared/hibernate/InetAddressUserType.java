@@ -31,9 +31,8 @@ public class InetAddressUserType extends ImmutableUserType {
         return new int[] { TextType.INSTANCE.sqlType() };
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
-    public Class returnedClass() {
+    public Class<?> returnedClass() {
         return InetAddress.class;
     }
 

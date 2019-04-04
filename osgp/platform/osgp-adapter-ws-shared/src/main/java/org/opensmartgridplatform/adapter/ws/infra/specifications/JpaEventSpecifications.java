@@ -38,16 +38,7 @@ public class JpaEventSpecifications implements EventSpecifications {
             throw new ArgumentNullOrEmptyException("dateFrom");
         }
 
-        return new Specification<Event>() {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public Predicate toPredicate(final Root<Event> eventRoot, final CriteriaQuery<?> query,
-                    final CriteriaBuilder cb) {
-                return cb.greaterThanOrEqualTo(eventRoot.<Date> get("dateTime"), dateFrom);
-            }
-        };
+        return ((eventRoot, query, cb) -> cb.greaterThanOrEqualTo(eventRoot.<Date> get("dateTime"), dateFrom));
     }
 
     @Override
@@ -56,16 +47,8 @@ public class JpaEventSpecifications implements EventSpecifications {
         if (dateUntil == null) {
             throw new ArgumentNullOrEmptyException("dateUntil");
         }
-        return new Specification<Event>() {
 
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public Predicate toPredicate(final Root<Event> eventRoot, final CriteriaQuery<?> query,
-                    final CriteriaBuilder cb) {
-                return cb.lessThanOrEqualTo(eventRoot.<Date> get("dateTime"), dateUntil);
-            }
-        };
+        return ((eventRoot, query, cb) -> cb.lessThanOrEqualTo(eventRoot.<Date> get("dateTime"), dateUntil));
     }
 
     @Override
@@ -73,16 +56,8 @@ public class JpaEventSpecifications implements EventSpecifications {
         if (device == null) {
             throw new ArgumentNullOrEmptyException(DEVICE);
         }
-        return new Specification<Event>() {
 
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public Predicate toPredicate(final Root<Event> eventRoot, final CriteriaQuery<?> query,
-                    final CriteriaBuilder cb) {
-                return cb.equal(eventRoot.<Integer> get(DEVICE), device.getId());
-            }
-        };
+        return ((eventRoot, query, cb) -> cb.equal(eventRoot.<Integer> get(DEVICE), device.getId()));
     }
 
     @Override
@@ -92,26 +67,20 @@ public class JpaEventSpecifications implements EventSpecifications {
             throw new ArgumentNullOrEmptyException("organisation");
         }
 
-        return new Specification<Event>() {
+        return ((eventRoot, query, cb) -> this.createPredicateForIsAuthorized(eventRoot, query, cb, organisation));
+    }
 
-            private static final long serialVersionUID = 1L;
+    private Predicate createPredicateForIsAuthorized(final Root<Event> eventRoot, final CriteriaQuery<?> query,
+            final CriteriaBuilder cb, final Organisation organisation) {
 
-            @Override
-            public Predicate toPredicate(final Root<Event> eventRoot, final CriteriaQuery<?> query,
-                    final CriteriaBuilder cb) {
+        final Subquery<Long> subquery = query.subquery(Long.class);
+        final Root<DeviceAuthorization> deviceAuthorizationRoot = subquery.from(DeviceAuthorization.class);
+        subquery.select(deviceAuthorizationRoot.get(DEVICE).get("id").as(Long.class));
+        subquery.where(cb.and(cb.equal(deviceAuthorizationRoot.get("organisation"), organisation.getId()), cb.or(
+                cb.equal(deviceAuthorizationRoot.get("functionGroup"), DeviceFunctionGroup.OWNER.ordinal()),
+                cb.equal(deviceAuthorizationRoot.get("functionGroup"), DeviceFunctionGroup.MANAGEMENT.ordinal()))));
 
-                final Subquery<Long> subquery = query.subquery(Long.class);
-                final Root<DeviceAuthorization> deviceAuthorizationRoot = subquery.from(DeviceAuthorization.class);
-                subquery.select(deviceAuthorizationRoot.get(DEVICE).get("id").as(Long.class));
-                subquery.where(cb.and(cb.equal(deviceAuthorizationRoot.get("organisation"), organisation.getId()),
-                        cb.or(cb.equal(deviceAuthorizationRoot.get("functionGroup"),
-                                DeviceFunctionGroup.OWNER.ordinal()),
-                                cb.equal(deviceAuthorizationRoot.get("functionGroup"),
-                                        DeviceFunctionGroup.MANAGEMENT.ordinal()))));
-
-                return cb.in(eventRoot.get(DEVICE)).value(subquery);
-            }
-        };
+        return cb.in(eventRoot.get(DEVICE)).value(subquery);
     }
 
     @Override
@@ -120,17 +89,14 @@ public class JpaEventSpecifications implements EventSpecifications {
             throw new ArgumentNullOrEmptyException("eventTypes");
         }
 
-        return new Specification<Event>() {
+        return ((eventRoot, query, cb) -> this.createPredicateForHasEventTypes(eventRoot, query, cb, eventTypes));
+    }
 
-            private static final long serialVersionUID = 1L;
+    private Predicate createPredicateForHasEventTypes(final Root<Event> eventRoot, final CriteriaQuery<?> query,
+            final CriteriaBuilder cb, final List<EventType> eventTypes) {
 
-            @Override
-            public Predicate toPredicate(final Root<Event> eventRoot, final CriteriaQuery<?> query,
-                    final CriteriaBuilder cb) {
+        final Path<Event> eventType = eventRoot.<Event> get("eventType");
 
-                final Path<Event> eventType = eventRoot.<Event> get("eventType");
-                return eventType.in(eventTypes);
-            }
-        };
+        return eventType.in(eventTypes);
     }
 }

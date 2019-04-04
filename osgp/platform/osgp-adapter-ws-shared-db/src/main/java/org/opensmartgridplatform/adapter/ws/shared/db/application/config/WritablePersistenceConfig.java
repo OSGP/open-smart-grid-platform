@@ -116,8 +116,8 @@ public class WritablePersistenceConfig extends AbstractCustomConfig {
      * Method for creating the Transaction Manager.
      *
      * @return JpaTransactionManager
-     * @throws ClassNotFoundException
-     *             when class not found
+     * @throws SharedDbException
+     *             When creating entity manager factory fails.
      */
     @Bean
     public JpaTransactionManager writableTransactionManager() throws SharedDbException {
@@ -139,8 +139,6 @@ public class WritablePersistenceConfig extends AbstractCustomConfig {
      * Method for creating the Entity Manager Factory Bean.
      *
      * @return LocalContainerEntityManagerFactoryBean
-     * @throws ClassNotFoundException
-     *             when class not found
      */
     @Bean
     public LocalContainerEntityManagerFactoryBean writableEntityManagerFactory() {

@@ -59,7 +59,8 @@
     <apache.commons.lang.version>3.8.1</apache.commons.lang.version>
     <apache.httpcomponents.version>4.5.7</apache.httpcomponents.version>
     <orika.version>1.5.4</orika.version>
-    <netty.version>3.9.4.Final</netty.version> 
+    <netty.version>3.10.6.Final</netty.version>
+    <jxr.version>3.0.0</jxr.version>
     <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
     <maven.site.plugin>3.7.1</maven.site.plugin>
     <pmd.version>4.3</pmd.version>

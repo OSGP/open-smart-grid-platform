@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.adapter.ws.core.endpoints;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -275,13 +276,10 @@ public class FirmwareManagementEndpoint {
             if (message != null) {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
                 if (message.getDataObject() != null) {
-                    final List<FirmwareVersion> target = response.getFirmwareVersion();
-
-                    @SuppressWarnings("unchecked")
-                    final List<FirmwareVersionDto> firmwareVersions = (List<FirmwareVersionDto>) message
-                            .getDataObject();
-
-                    target.addAll(this.firmwareManagementMapper.mapAsList(firmwareVersions, FirmwareVersion.class));
+                    final List<FirmwareVersionDto> firmwareVersions = this
+                            .convertFirmwareVersions(message.getDataObject());
+                    response.getFirmwareVersion()
+                            .addAll(this.firmwareManagementMapper.mapAsList(firmwareVersions, FirmwareVersion.class));
                 } else {
                     LOGGER.info("Get Firmware Version firmware is null");
                 }
@@ -291,6 +289,18 @@ public class FirmwareManagementEndpoint {
         }
 
         return response;
+    }
+
+    private List<FirmwareVersionDto> convertFirmwareVersions(final Serializable source) {
+        final List<FirmwareVersionDto> firmwareVersions = new ArrayList<>();
+        if (source instanceof List<?>) {
+            for (final Object o : (List<?>) source) {
+                if (o instanceof FirmwareVersionDto) {
+                    firmwareVersions.add((FirmwareVersionDto) o);
+                }
+            }
+        }
+        return firmwareVersions;
     }
 
     // === MANUFACTURERS LOGIC ===
