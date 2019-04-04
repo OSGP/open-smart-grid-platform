@@ -89,11 +89,10 @@ public class JpaEventSpecifications implements EventSpecifications {
             throw new ArgumentNullOrEmptyException("eventTypes");
         }
 
-        return ((eventRoot, query, cb) -> this.createPredicateForHasEventTypes(eventRoot, query, cb, eventTypes));
+        return ((eventRoot, query, cb) -> this.createPredicateForHasEventTypes(eventRoot, eventTypes));
     }
 
-    private Predicate createPredicateForHasEventTypes(final Root<Event> eventRoot, final CriteriaQuery<?> query,
-            final CriteriaBuilder cb, final List<EventType> eventTypes) {
+    private Predicate createPredicateForHasEventTypes(final Root<Event> eventRoot, final List<EventType> eventTypes) {
 
         final Path<Event> eventType = eventRoot.<Event> get("eventType");
 

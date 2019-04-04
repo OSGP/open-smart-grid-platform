@@ -13,8 +13,6 @@ import java.util.TimeZone;
 
 import org.apache.tools.ant.taskdefs.optional.junit.XMLJUnitResultFormatter;
 import org.joda.time.DateTimeZone;
-import org.junit.internal.JUnitSystem;
-import org.junit.internal.RealSystem;
 import org.junit.runner.Computer;
 import org.junit.runner.Description;
 import org.junit.runner.JUnitCore;
@@ -62,9 +60,7 @@ public abstract class AppBase {
 
         final JUnitCore junit = new JUnitCore();
 
-        final JUnitSystem system = new RealSystem();
-
-        system.out().println("JUnit version " + Version.id());
+        LOGGER.info("JUnit version {}", Version.id());
 
         final JUnitCommandLineParseResult jUnitCommandLineParseResult = JUnitCommandLineParseResult.parse(testClasses);
 

@@ -19,6 +19,10 @@ import org.junit.runner.manipulation.Filter;
 import org.junit.runners.model.InitializationError;
 
 public class JUnitCommandLineParseResult {
+
+    private static final String DASH_DASH = "--";
+    private static final String DASH_DASH_FILTER = "--filter";
+
     private final List<String> filterSpecs = new ArrayList<>();
     private final List<Class<?>> classes = new ArrayList<>();
     private final List<Throwable> parserErrors = new ArrayList<>();
@@ -65,12 +69,12 @@ public class JUnitCommandLineParseResult {
         for (int i = 0; i != args.length; ++i) {
             final String arg = args[i];
 
-            if (arg.equals("--")) {
+            if (DASH_DASH.equals(arg)) {
                 return this.copyArray(args, i + 1, args.length);
-            } else if (arg.startsWith("--")) {
-                if (arg.startsWith("--filter=") || arg.equals("--filter")) {
+            } else if (DASH_DASH.startsWith(arg)) {
+                if (DASH_DASH_FILTER.startsWith(arg) || DASH_DASH_FILTER.equals(arg)) {
                     String filterSpec;
-                    if (arg.equals("--filter")) {
+                    if (DASH_DASH_FILTER.equals(arg)) {
                         ++i;
 
                         if (i < args.length) {

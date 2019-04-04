@@ -19,6 +19,11 @@ import org.junit.runner.manipulation.Filter;
  * Utility class whose methods create a {@link FilterFactory}.
  */
 public class FilterFactories {
+
+    private FilterFactories() {
+        // Private constructor to prevent instantiation of this class.
+    }
+
     /**
      * Creates a {@link Filter}.
      *

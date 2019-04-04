@@ -45,6 +45,7 @@ public class JUnitResultFormatterAsRunListener extends RunListener {
         // Empty body.
     }
 
+    @SuppressWarnings("squid:S106")
     @Override
     public void testStarted(final Description description) throws Exception {
         this.formatter.startTestSuite(new JUnitTest(description.getDisplayName()));
@@ -62,6 +63,7 @@ public class JUnitResultFormatterAsRunListener extends RunListener {
         System.setErr(new PrintStream(this.stderr));
     }
 
+    @SuppressWarnings("squid:S106")
     @Override
     public void testFinished(final Description description) throws Exception {
         System.out.flush();

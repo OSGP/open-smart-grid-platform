@@ -76,13 +76,12 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
             throw new ArgumentNullOrEmptyException(DEVICE_IDENTIFICATION);
         }
 
-        return ((deviceRoot, query, cb) -> this.createPredicateForDeviceIdentification(deviceRoot, query, cb,
+        return ((deviceRoot, query, cb) -> this.createPredicateForDeviceIdentification(deviceRoot, cb,
                 deviceIdentification, exactMatch));
     }
 
-    private Predicate createPredicateForDeviceIdentification(final Root<Device> deviceRoot,
-            final CriteriaQuery<?> query, final CriteriaBuilder cb, final String deviceIdentification,
-            final boolean exactMatch) {
+    private Predicate createPredicateForDeviceIdentification(final Root<Device> deviceRoot, final CriteriaBuilder cb,
+            final String deviceIdentification, final boolean exactMatch) {
 
         if (exactMatch) {
             return cb.equal(deviceRoot.<String> get(DEVICE_IDENTIFICATION), deviceIdentification);
