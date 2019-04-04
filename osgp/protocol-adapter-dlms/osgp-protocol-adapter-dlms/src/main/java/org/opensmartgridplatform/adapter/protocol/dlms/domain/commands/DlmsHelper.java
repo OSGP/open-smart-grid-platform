@@ -1,9 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands;
 
@@ -58,12 +59,10 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionTyp
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
-@Service(value = "dlmsHelperService")
-public class DlmsHelperService {
+public class DlmsHelper {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DlmsHelperService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DlmsHelper.class);
 
     private static final Map<Integer, TransportServiceTypeDto> TRANSPORT_SERVICE_TYPE_PER_ENUM_VALUE = new TreeMap<>();
 
@@ -99,10 +98,11 @@ public class DlmsHelperService {
                 return getResult.getResultData();
             }
 
-            final String errorMessage = String.format(
-                    "Retrieving attribute value for { %d, %s, %d }. Result: resultCode(%d), with data: %s",
-                    attributeAddress.getClassId(), attributeAddress.getInstanceId().asShortObisCodeString(),
-                    attributeAddress.getId(), resultCode.getCode(), this.getDebugInfo(getResult.getResultData()));
+            final String errorMessage = String
+                    .format("Retrieving attribute value for { %d, %s, %d }. Result: resultCode(%d), with data: %s",
+                            attributeAddress.getClassId(), attributeAddress.getInstanceId().asShortObisCodeString(),
+                            attributeAddress.getId(), resultCode.getCode(),
+                            this.getDebugInfo(getResult.getResultData()));
 
             LOGGER.error(errorMessage);
             throw new FunctionalException(FunctionalExceptionType.ERROR_RETRIEVING_ATTRIBUTE_VALUE,
@@ -130,16 +130,17 @@ public class DlmsHelperService {
      * is checked.
      *
      * @param getResultList
-     *            the list of results to be checked, when null a
-     *            nullpointerexception is thrown
+     *         the list of results to be checked, when null a
+     *         nullpointerexception is thrown
      * @param expectedResults
-     *            the number of results expected
+     *         the number of results expected
      * @param description
-     *            a description that will be used in exceptions thrown, may be
-     *            null
+     *         a description that will be used in exceptions thrown, may be
+     *         null
+     *
      * @throws ProtocolAdapterException
-     *             when the number of results does not match the expected number
-     *             or when the one and only result is erroneous.
+     *         when the number of results does not match the expected number
+     *         or when the one and only result is erroneous.
      */
     public void checkResultList(final List<GetResult> getResultList, final int expectedResults,
             final String description) throws ProtocolAdapterException {
@@ -213,8 +214,9 @@ public class DlmsHelperService {
         }
 
         if (!scalerUnitObject.isComplex()) {
-            throw new ProtocolAdapterException("complex data (structure) expected while retrieving scaler and unit."
-                    + this.getDebugInfo(scalerUnitObject));
+            throw new ProtocolAdapterException(
+                    "complex data (structure) expected while retrieving scaler and unit." + this
+                            .getDebugInfo(scalerUnitObject));
         }
         final List<DataObject> dataObjects = scalerUnitObject.getValue();
         if (dataObjects.size() != 2) {
@@ -380,7 +382,8 @@ public class DlmsHelperService {
      * DateTime), use {@link #asDataObject(DateTime, int, boolean)} instead.
      *
      * @param dateTime
-     *            a DateTime to translate into COSEM date-time format.
+     *         a DateTime to translate into COSEM date-time format.
+     *
      * @return a DataObject having a CosemDateTime matching the given DateTime
      *         as value.
      */
@@ -418,14 +421,15 @@ public class DlmsHelperService {
      * alternative.
      *
      * @param dateTime
-     *            a DateTime indicating an instant in time to be used for the
-     *            COSEM date-time.
+     *         a DateTime indicating an instant in time to be used for the
+     *         COSEM date-time.
      * @param deviation
-     *            the deviation in minutes of local time to GMT to be included
-     *            in the COSEM date-time.
+     *         the deviation in minutes of local time to GMT to be included
+     *         in the COSEM date-time.
      * @param dst
-     *            {@code true} if daylight savings are active for the instant of
-     *            the COSEM date-time, otherwise {@code false}.
+     *         {@code true} if daylight savings are active for the instant of
+     *         the COSEM date-time, otherwise {@code false}.
+     *
      * @return a DataObject having a CosemDateTime for the instant of the given
      *         DateTime, with the given deviation and DST status information, as
      *         value.
@@ -489,14 +493,15 @@ public class DlmsHelperService {
         }
         if (objectDefinitionElements.size() != 4) {
             LOGGER.error("Unexpected ResultData for Object Definition value: {}", this.getDebugInfo(resultData));
-            throw new ProtocolAdapterException("Expected list for Object Definition to contain 4 elements, got: "
-                    + objectDefinitionElements.size());
+            throw new ProtocolAdapterException(
+                    "Expected list for Object Definition to contain 4 elements, got: " + objectDefinitionElements
+                            .size());
         }
         final Long classId = this.readLongNotNull(objectDefinitionElements.get(0), "Class ID from " + description);
-        final CosemObisCodeDto logicalName = this.readLogicalName(objectDefinitionElements.get(1),
-                "Logical Name from " + description);
-        final Long attributeIndex = this.readLongNotNull(objectDefinitionElements.get(2),
-                "Attribute Index from " + description);
+        final CosemObisCodeDto logicalName = this
+                .readLogicalName(objectDefinitionElements.get(1), "Logical Name from " + description);
+        final Long attributeIndex = this
+                .readLongNotNull(objectDefinitionElements.get(2), "Attribute Index from " + description);
         final Long dataIndex = this.readLongNotNull(objectDefinitionElements.get(3), "Data Index from " + description);
 
         return new CosemObjectDefinitionDto(classId.intValue(), logicalName, attributeIndex.intValue(),
@@ -521,12 +526,13 @@ public class DlmsHelperService {
         if (sendDestinationAndMethodElements == null) {
             return null;
         }
-        final TransportServiceTypeDto transportService = this.readTransportServiceType(
-                sendDestinationAndMethodElements.get(0), "Transport Service from " + description);
-        final String destination = this.readString(sendDestinationAndMethodElements.get(1),
-                "Destination from " + description);
-        final MessageTypeDto message = this.readMessageType(sendDestinationAndMethodElements.get(2),
-                "Message from " + description);
+        final TransportServiceTypeDto transportService = this
+                .readTransportServiceType(sendDestinationAndMethodElements.get(0),
+                        "Transport Service from " + description);
+        final String destination = this
+                .readString(sendDestinationAndMethodElements.get(1), "Destination from " + description);
+        final MessageTypeDto message = this
+                .readMessageType(sendDestinationAndMethodElements.get(2), "Message from " + description);
 
         return new SendDestinationAndMethodDto(transportService, destination, message);
     }
@@ -747,9 +753,9 @@ public class DlmsHelperService {
             throw new IllegalArgumentException("LogicalName values should be 6 bytes long: " + logicalNameValue.length);
         }
 
-        return "logical name: " + (logicalNameValue[0] & 0xFF) + '-' + (logicalNameValue[1] & 0xFF) +
-                ':' + (logicalNameValue[2] & 0xFF) + '.' + (logicalNameValue[3] & 0xFF) +
-                '.' + (logicalNameValue[4] & 0xFF) + '.' + (logicalNameValue[5] & 0xFF);
+        return "logical name: " + (logicalNameValue[0] & 0xFF) + '-' + (logicalNameValue[1] & 0xFF) + ':' + (
+                logicalNameValue[2] & 0xFF) + '.' + (logicalNameValue[3] & 0xFF) + '.' + (logicalNameValue[4] & 0xFF)
+                + '.' + (logicalNameValue[5] & 0xFF);
     }
 
     public String getDebugInfoDateTimeBytes(final byte[] dateTimeValue) {
@@ -789,8 +795,7 @@ public class DlmsHelperService {
         final BigInteger bigValue = this.byteArrayToBigInteger(bitStringValue);
         final String stringValue = this.byteArrayToString(bitStringValue);
 
-        return "number of bytes=" + bitStringValue.length + ", value=" + bigValue +
-                ", bits=" + stringValue;
+        return "number of bytes=" + bitStringValue.length + ", value=" + bigValue + ", bits=" + stringValue;
     }
 
     private String byteArrayToString(final byte[] bitStringValue) {
@@ -869,10 +874,11 @@ public class DlmsHelperService {
     private void logAndThrowExceptionForUnexpectedResultData(final DataObject resultData, final String expectedType)
             throws ProtocolAdapterException {
         LOGGER.error("Unexpected ResultData for {} value: {}", expectedType, this.getDebugInfo(resultData));
-        final String resultDataType = resultData.getValue() == null ? "null"
-                : resultData.getValue().getClass().getName();
-        throw new ProtocolAdapterException("Expected ResultData of " + expectedType + ", got: " + resultData.getType()
-                + ", value type: " + resultDataType);
+        final String resultDataType =
+                resultData.getValue() == null ? "null" : resultData.getValue().getClass().getName();
+        throw new ProtocolAdapterException(
+                "Expected ResultData of " + expectedType + ", got: " + resultData.getType() + ", value type: "
+                        + resultDataType);
     }
 
     public void validateBufferedDateTime(final DateTime bufferedDateTime, final CosemDateTimeDto cosemDateTime,
@@ -887,9 +893,10 @@ public class DlmsHelperService {
         }
         if (bufferedDateTime.isBefore(beginDateTime) || bufferedDateTime.isAfter(endDateTime)) {
             final DateTimeFormatter dtf = ISODateTimeFormat.dateTime();
-            throw new BufferedDateTimeValidationException("Not using an object from capture buffer (clock="
-                    + dtf.print(bufferedDateTime) + "), because the date does not match the given period: ["
-                    + dtf.print(beginDateTime) + " .. " + dtf.print(endDateTime) + "].");
+            throw new BufferedDateTimeValidationException(
+                    "Not using an object from capture buffer (clock=" + dtf.print(bufferedDateTime)
+                            + "), because the date does not match the given period: [" + dtf.print(beginDateTime)
+                            + " .. " + dtf.print(endDateTime) + "].");
         }
     }
 }

@@ -1,9 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands;
 
@@ -26,17 +27,16 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObjectDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDataDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component()
 public class SetConfigurationObjectCommandExecutor
@@ -45,6 +45,7 @@ public class SetConfigurationObjectCommandExecutor
     private static final Logger LOGGER = LoggerFactory.getLogger(SetConfigurationObjectCommandExecutor.class);
 
     private static final List<ConfigurationFlagTypeDto> FLAGS_TYPES_FORBIDDEN_TO_SET = new ArrayList<>();
+
     static {
         FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagTypeDto.PO_ENABLE);
         FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagTypeDto.HLS_3_ON_P_3_ENABLE);
@@ -58,8 +59,7 @@ public class SetConfigurationObjectCommandExecutor
     @Autowired
     private ConfigurationObjectHelperService configurationObjectHelperService;
 
-    @Autowired
-    private DlmsHelperService dlmsHelperService;
+    private final DlmsHelper dlmsHelper = new DlmsHelper();
 
     @Autowired
     private GetConfigurationObjectHelper getConfigurationObjectHelper;
@@ -73,7 +73,8 @@ public class SetConfigurationObjectCommandExecutor
             throws ProtocolAdapterException {
 
         this.checkActionRequestType(bundleInput);
-        final SetConfigurationObjectRequestDataDto setConfigurationObjectRequestDataDto = (SetConfigurationObjectRequestDataDto) bundleInput;
+        final SetConfigurationObjectRequestDataDto setConfigurationObjectRequestDataDto =
+                (SetConfigurationObjectRequestDataDto) bundleInput;
 
         return setConfigurationObjectRequestDataDto.getConfigurationObject();
     }
@@ -96,8 +97,8 @@ public class SetConfigurationObjectCommandExecutor
 
             final SetParameter setParameter = this.buildSetParameter(configurationObject, configurationObjectOnDevice);
 
-            conn.getDlmsMessageListener()
-                    .setDescription("SetConfigurationObject, set attribute: " + JdlmsObjectToStringUtil
+            conn.getDlmsMessageListener().setDescription(
+                    "SetConfigurationObject, set attribute: " + JdlmsObjectToStringUtil
                             .describeAttributes(new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID)));
 
             return conn.getConnection().set(setParameter);
@@ -111,7 +112,7 @@ public class SetConfigurationObjectCommandExecutor
 
         final AttributeAddress configurationObjectValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
         final DataObject complexData = this.buildSetParameterData(configurationObject, configurationObjectOnDevice);
-        LOGGER.info("Configuration object complex data: {}", this.dlmsHelperService.getDebugInfo(complexData));
+        LOGGER.info("Configuration object complex data: {}", this.dlmsHelper.getDebugInfo(complexData));
 
         return new SetParameter(configurationObjectValue, complexData);
     }
@@ -125,8 +126,8 @@ public class SetConfigurationObjectCommandExecutor
         } else {
             // copy from meter if there is a set gprsoperationmode
             if (configurationObjectOnDevice.getGprsOperationMode() != null) {
-                linkedList.add(
-                        DataObject.newEnumerateData(configurationObjectOnDevice.getGprsOperationMode().getValue()));
+                linkedList.add(DataObject
+                        .newEnumerateData(configurationObjectOnDevice.getGprsOperationMode().getValue()));
             }
         }
 
@@ -159,8 +160,8 @@ public class SetConfigurationObjectCommandExecutor
         if (configurationObjectOnDevice != null) {
             for (final ConfigurationFlagDto configurationFlagOnDevice : configurationObjectOnDevice
                     .getConfigurationFlags().getConfigurationFlag()) {
-                final ConfigurationFlagDto configurationFlag = this.getConfigurationFlag(configurationFlags,
-                        configurationFlagOnDevice.getConfigurationFlagType());
+                final ConfigurationFlagDto configurationFlag = this
+                        .getConfigurationFlag(configurationFlags, configurationFlagOnDevice.getConfigurationFlagType());
                 if (configurationFlag == null) {
                     configurationFlags.add(configurationFlagOnDevice);
                 }

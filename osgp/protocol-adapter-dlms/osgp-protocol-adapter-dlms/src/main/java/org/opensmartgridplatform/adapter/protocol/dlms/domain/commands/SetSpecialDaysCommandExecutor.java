@@ -1,9 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands;
 
@@ -20,13 +21,11 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDayDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
+import org.springframework.stereotype.Component;
 
 @Component()
 public class SetSpecialDaysCommandExecutor extends AbstractCommandExecutor<List<SpecialDayDto>, AccessResultCode> {
@@ -35,8 +34,7 @@ public class SetSpecialDaysCommandExecutor extends AbstractCommandExecutor<List<
     private static final ObisCode OBIS_CODE = new ObisCode("0.0.11.0.0.255");
     private static final int ATTRIBUTE_ID = 2;
 
-    @Autowired
-    private DlmsHelperService dlmsHelperService;
+    private final DlmsHelper dlmsHelper = new DlmsHelper();
 
     public SetSpecialDaysCommandExecutor() {
         super(SpecialDaysRequestDataDto.class);
@@ -71,11 +69,11 @@ public class SetSpecialDaysCommandExecutor extends AbstractCommandExecutor<List<
         for (final SpecialDayDto specialDay : specialDays) {
 
             specialDayData.append(", ").append(specialDay.getDayId()).append(" => ")
-                          .append(specialDay.getSpecialDayDate());
+                    .append(specialDay.getSpecialDayDate());
 
             final List<DataObject> specDayEntry = new ArrayList<>();
             specDayEntry.add(DataObject.newUInteger16Data(i));
-            specDayEntry.add(this.dlmsHelperService.asDataObject(specialDay.getSpecialDayDate()));
+            specDayEntry.add(this.dlmsHelper.asDataObject(specialDay.getSpecialDayDate()));
             specDayEntry.add(DataObject.newUInteger8Data((short) specialDay.getDayId()));
 
             final DataObject dayStruct = DataObject.newStructureData(specDayEntry);
@@ -88,14 +86,15 @@ public class SetSpecialDaysCommandExecutor extends AbstractCommandExecutor<List<
 
         final SetParameter request = new SetParameter(specialDaysTableEntries, entries);
 
-        String specialDayValues;
+        final String specialDayValues;
         if (specialDayData.length() == 0) {
             specialDayValues = "";
         } else {
             specialDayValues = ", values [" + specialDayData.substring(2) + "]";
         }
-        conn.getDlmsMessageListener().setDescription("SetSpecialDays" + specialDayValues + ", set attribute: "
-                + JdlmsObjectToStringUtil.describeAttributes(specialDaysTableEntries));
+        conn.getDlmsMessageListener().setDescription(
+                "SetSpecialDays" + specialDayValues + ", set attribute: " + JdlmsObjectToStringUtil
+                        .describeAttributes(specialDaysTableEntries));
 
         try {
             return conn.getConnection().set(request);

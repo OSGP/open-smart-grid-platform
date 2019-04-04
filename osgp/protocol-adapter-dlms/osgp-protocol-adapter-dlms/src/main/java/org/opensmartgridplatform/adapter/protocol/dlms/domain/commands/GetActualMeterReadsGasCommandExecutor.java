@@ -1,9 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands;
 
@@ -16,11 +17,6 @@ import org.openmuc.jdlms.ObisCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualMeterReadsDataGasDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualMeterReadsQueryDto;
@@ -28,10 +24,13 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DlmsMeterValueDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MeterReadsGasResponseDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 @Component()
-public class GetActualMeterReadsGasCommandExecutor extends
-        AbstractCommandExecutor<ActualMeterReadsQueryDto, MeterReadsGasResponseDto> {
+public class GetActualMeterReadsGasCommandExecutor
+        extends AbstractCommandExecutor<ActualMeterReadsQueryDto, MeterReadsGasResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetActualMeterReadsGasCommandExecutor.class);
 
@@ -44,8 +43,7 @@ public class GetActualMeterReadsGasCommandExecutor extends
     private static final ObisCode OBIS_CODE_MBUS_MASTER_VALUE_3 = new ObisCode("0.3.24.2.1.255");
     private static final ObisCode OBIS_CODE_MBUS_MASTER_VALUE_4 = new ObisCode("0.4.24.2.1.255");
 
-    @Autowired
-    private DlmsHelperService dlmsHelperService;
+    private final DlmsHelper dlmsHelper = new DlmsHelper();
 
     public GetActualMeterReadsGasCommandExecutor() {
         super(ActualMeterReadsDataGasDto.class);
@@ -80,19 +78,18 @@ public class GetActualMeterReadsGasCommandExecutor extends
         final AttributeAddress scalerUnit = new AttributeAddress(CLASS_ID_MBUS,
                 this.masterValueForChannel(actualMeterReadsRequest.getChannel()), ATTRIBUTE_ID_SCALER_UNIT);
 
-        conn.getDlmsMessageListener()
-                .setDescription("GetActualMeterReadsGas for channel " + actualMeterReadsRequest.getChannel()
-                        + ", retrieve attributes: "
+        conn.getDlmsMessageListener().setDescription(
+                "GetActualMeterReadsGas for channel " + actualMeterReadsRequest.getChannel() + ", retrieve attributes: "
                         + JdlmsObjectToStringUtil.describeAttributes(mbusValue, mbusTime, scalerUnit));
 
-        final List<GetResult> getResultList = this.dlmsHelperService.getAndCheck(conn, device,
+        final List<GetResult> getResultList = this.dlmsHelper.getAndCheck(conn, device,
                 "retrieve actual meter reads for mbus " + actualMeterReadsRequest.getChannel(), mbusValue, mbusTime,
                 scalerUnit);
 
-        final DlmsMeterValueDto consumption = this.dlmsHelperService.getScaledMeterValue(getResultList.get(0),
-                getResultList.get(2), "retrieve scaled value for mbus " + actualMeterReadsRequest.getChannel());
-        final CosemDateTimeDto cosemDateTime = this.dlmsHelperService
-                .readDateTime(getResultList.get(1), "captureTime gas");
+        final DlmsMeterValueDto consumption = this.dlmsHelper
+                .getScaledMeterValue(getResultList.get(0), getResultList.get(2),
+                        "retrieve scaled value for mbus " + actualMeterReadsRequest.getChannel());
+        final CosemDateTimeDto cosemDateTime = this.dlmsHelper.readDateTime(getResultList.get(1), "captureTime gas");
         final Date captureTime;
         if (cosemDateTime.isDateTimeSpecified()) {
             captureTime = cosemDateTime.asDateTime().toDate();

@@ -1,9 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands;
 
@@ -16,11 +17,6 @@ import org.openmuc.jdlms.ObisCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActiveEnergyValuesDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualMeterReadsDataDto;
@@ -28,10 +24,13 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualMeterReads
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DlmsMeterValueDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MeterReadsResponseDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 @Component()
-public class GetActualMeterReadsCommandExecutor extends
-        AbstractCommandExecutor<ActualMeterReadsQueryDto, MeterReadsResponseDto> {
+public class GetActualMeterReadsCommandExecutor
+        extends AbstractCommandExecutor<ActualMeterReadsQueryDto, MeterReadsResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetActualMeterReadsCommandExecutor.class);
 
@@ -50,20 +49,20 @@ public class GetActualMeterReadsCommandExecutor extends
     private static final byte ATTRIBUTE_ID_TIME = 2;
 
     // scaler unit attribute address is filled dynamically
-    private static final AttributeAddress[] ATTRIBUTE_ADDRESSES = {
-            new AttributeAddress(CLASS_ID_CLOCK, OBIS_CODE_CLOCK, ATTRIBUTE_ID_TIME),
-            new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_IMPORT, ATTRIBUTE_ID_VALUE),
-            new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_IMPORT_RATE_1, ATTRIBUTE_ID_VALUE),
-            new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_IMPORT_RATE_2, ATTRIBUTE_ID_VALUE),
-            new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_EXPORT, ATTRIBUTE_ID_VALUE),
-            new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_EXPORT_RATE_1, ATTRIBUTE_ID_VALUE),
-            new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_EXPORT_RATE_2, ATTRIBUTE_ID_VALUE),
-            new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_IMPORT, ATTRIBUTE_ID_SCALER_UNIT),
-            new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_IMPORT_RATE_1, ATTRIBUTE_ID_SCALER_UNIT),
-            new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_IMPORT_RATE_2, ATTRIBUTE_ID_SCALER_UNIT),
-            new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_EXPORT, ATTRIBUTE_ID_SCALER_UNIT),
-            new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_EXPORT_RATE_1, ATTRIBUTE_ID_SCALER_UNIT),
-            new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_EXPORT_RATE_2, ATTRIBUTE_ID_SCALER_UNIT) };
+    private static final AttributeAddress[] ATTRIBUTE_ADDRESSES = { new AttributeAddress(CLASS_ID_CLOCK,
+            OBIS_CODE_CLOCK, ATTRIBUTE_ID_TIME), new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_IMPORT,
+            ATTRIBUTE_ID_VALUE), new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_IMPORT_RATE_1,
+            ATTRIBUTE_ID_VALUE), new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_IMPORT_RATE_2,
+            ATTRIBUTE_ID_VALUE), new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_EXPORT,
+            ATTRIBUTE_ID_VALUE), new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_EXPORT_RATE_1,
+            ATTRIBUTE_ID_VALUE), new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_EXPORT_RATE_2,
+            ATTRIBUTE_ID_VALUE), new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_IMPORT,
+            ATTRIBUTE_ID_SCALER_UNIT), new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_IMPORT_RATE_1,
+            ATTRIBUTE_ID_SCALER_UNIT), new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_IMPORT_RATE_2,
+            ATTRIBUTE_ID_SCALER_UNIT), new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_EXPORT,
+            ATTRIBUTE_ID_SCALER_UNIT), new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_EXPORT_RATE_1,
+            ATTRIBUTE_ID_SCALER_UNIT), new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_EXPORT_RATE_2,
+            ATTRIBUTE_ID_SCALER_UNIT) };
 
     private static final int INDEX_TIME = 0;
     private static final int INDEX_ACTIVE_ENERGY_IMPORT = 1;
@@ -79,8 +78,7 @@ public class GetActualMeterReadsCommandExecutor extends
     private static final int INDEX_ACTIVE_ENERGY_EXPORT_RATE_1_SCALER_UNIT = 11;
     private static final int INDEX_ACTIVE_ENERGY_EXPORT_RATE_2_SCALER_UNIT = 12;
 
-    @Autowired
-    private DlmsHelperService dlmsHelperService;
+    private final DlmsHelper dlmsHelper = new DlmsHelper();
 
     public GetActualMeterReadsCommandExecutor() {
         super(ActualMeterReadsDataDto.class);
@@ -105,40 +103,46 @@ public class GetActualMeterReadsCommandExecutor extends
             final ActualMeterReadsQueryDto actualMeterReadsQuery) throws ProtocolAdapterException {
 
         if (actualMeterReadsQuery != null && actualMeterReadsQuery.isMbusQuery()) {
-            throw new IllegalArgumentException("ActualMeterReadsQuery object for energy reads should not be about gas.");
+            throw new IllegalArgumentException(
+                    "ActualMeterReadsQuery object for energy reads should not be about gas.");
         }
 
-        conn.getDlmsMessageListener().setDescription("GetActualMeterReads retrieve attributes: "
-                + JdlmsObjectToStringUtil.describeAttributes(ATTRIBUTE_ADDRESSES));
+        conn.getDlmsMessageListener().setDescription(
+                "GetActualMeterReads retrieve attributes: " + JdlmsObjectToStringUtil
+                        .describeAttributes(ATTRIBUTE_ADDRESSES));
 
         LOGGER.info("Retrieving actual energy reads");
-        final List<GetResult> getResultList = this.dlmsHelperService.getAndCheck(conn, device,
-                "retrieve actual meter reads", ATTRIBUTE_ADDRESSES);
+        final List<GetResult> getResultList = this.dlmsHelper
+                .getAndCheck(conn, device, "retrieve actual meter reads", ATTRIBUTE_ADDRESSES);
 
-        final CosemDateTimeDto cosemDateTime = this.dlmsHelperService.readDateTime(getResultList.get(INDEX_TIME),
-                "Actual Energy Reads Time");
+        final CosemDateTimeDto cosemDateTime = this.dlmsHelper
+                .readDateTime(getResultList.get(INDEX_TIME), "Actual Energy Reads Time");
         final DateTime time = cosemDateTime.asDateTime();
         if (time == null) {
             throw new ProtocolAdapterException("Unexpected null/unspecified value for Actual Energy Reads Time");
         }
-        final DlmsMeterValueDto activeEnergyImport = this.dlmsHelperService.getScaledMeterValue(
-                getResultList.get(INDEX_ACTIVE_ENERGY_IMPORT),
-                getResultList.get(INDEX_ACTIVE_ENERGY_IMPORT_SCALER_UNIT), "Actual Energy Reads +A");
-        final DlmsMeterValueDto activeEnergyExport = this.dlmsHelperService.getScaledMeterValue(
-                getResultList.get(INDEX_ACTIVE_ENERGY_EXPORT),
-                getResultList.get(INDEX_ACTIVE_ENERGY_EXPORT_SCALER_UNIT), "Actual Energy Reads -A");
-        final DlmsMeterValueDto activeEnergyImportRate1 = this.dlmsHelperService.getScaledMeterValue(
-                getResultList.get(INDEX_ACTIVE_ENERGY_IMPORT_RATE_1),
-                getResultList.get(INDEX_ACTIVE_ENERGY_IMPORT_RATE_1_SCALER_UNIT), "Actual Energy Reads +A rate 1");
-        final DlmsMeterValueDto activeEnergyImportRate2 = this.dlmsHelperService.getScaledMeterValue(
-                getResultList.get(INDEX_ACTIVE_ENERGY_IMPORT_RATE_2),
-                getResultList.get(INDEX_ACTIVE_ENERGY_IMPORT_RATE_2_SCALER_UNIT), "Actual Energy Reads +A rate 2");
-        final DlmsMeterValueDto activeEnergyExportRate1 = this.dlmsHelperService.getScaledMeterValue(
-                getResultList.get(INDEX_ACTIVE_ENERGY_EXPORT_RATE_1),
-                getResultList.get(INDEX_ACTIVE_ENERGY_EXPORT_RATE_1_SCALER_UNIT), "Actual Energy Reads -A rate 1");
-        final DlmsMeterValueDto activeEnergyExportRate2 = this.dlmsHelperService.getScaledMeterValue(
-                getResultList.get(INDEX_ACTIVE_ENERGY_EXPORT_RATE_2),
-                getResultList.get(INDEX_ACTIVE_ENERGY_EXPORT_RATE_2_SCALER_UNIT), "Actual Energy Reads -A rate 2");
+        final DlmsMeterValueDto activeEnergyImport = this.dlmsHelper
+                .getScaledMeterValue(getResultList.get(INDEX_ACTIVE_ENERGY_IMPORT),
+                        getResultList.get(INDEX_ACTIVE_ENERGY_IMPORT_SCALER_UNIT), "Actual Energy Reads +A");
+        final DlmsMeterValueDto activeEnergyExport = this.dlmsHelper
+                .getScaledMeterValue(getResultList.get(INDEX_ACTIVE_ENERGY_EXPORT),
+                        getResultList.get(INDEX_ACTIVE_ENERGY_EXPORT_SCALER_UNIT), "Actual Energy Reads -A");
+        final DlmsMeterValueDto activeEnergyImportRate1 = this.dlmsHelper
+                .getScaledMeterValue(getResultList.get(INDEX_ACTIVE_ENERGY_IMPORT_RATE_1),
+                        getResultList.get(INDEX_ACTIVE_ENERGY_IMPORT_RATE_1_SCALER_UNIT),
+                        "Actual Energy Reads +A rate 1");
+        final DlmsMeterValueDto activeEnergyImportRate2 = this.dlmsHelper
+                .getScaledMeterValue(getResultList.get(INDEX_ACTIVE_ENERGY_IMPORT_RATE_2),
+                        getResultList.get(INDEX_ACTIVE_ENERGY_IMPORT_RATE_2_SCALER_UNIT),
+                        "Actual Energy Reads +A rate 2");
+        final DlmsMeterValueDto activeEnergyExportRate1 = this.dlmsHelper
+                .getScaledMeterValue(getResultList.get(INDEX_ACTIVE_ENERGY_EXPORT_RATE_1),
+                        getResultList.get(INDEX_ACTIVE_ENERGY_EXPORT_RATE_1_SCALER_UNIT),
+                        "Actual Energy Reads -A rate 1");
+        final DlmsMeterValueDto activeEnergyExportRate2 = this.dlmsHelper
+                .getScaledMeterValue(getResultList.get(INDEX_ACTIVE_ENERGY_EXPORT_RATE_2),
+                        getResultList.get(INDEX_ACTIVE_ENERGY_EXPORT_RATE_2_SCALER_UNIT),
+                        "Actual Energy Reads -A rate 2");
 
         return new MeterReadsResponseDto(time.toDate(),
                 new ActiveEnergyValuesDto(activeEnergyImport, activeEnergyExport, activeEnergyImportRate1,

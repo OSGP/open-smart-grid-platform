@@ -1,9 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.mapping;
 
@@ -12,23 +13,20 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.DlmsHelperService;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventLogCategoryDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 @Component(value = "dataObjectToEventListConverter")
 public class DataObjectToEventListConverter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataObjectToEventListConverter.class);
 
-    @Autowired
-    private DlmsHelperService dlmsHelperService;
+    private final DlmsHelper dlmsHelper = new DlmsHelper();
 
     public List<EventDto> convert(final DataObject source, final EventLogCategoryDto eventLogCategory)
             throws ProtocolAdapterException {
@@ -56,8 +54,8 @@ public class DataObjectToEventListConverter {
         }
 
         if (eventData.size() != eventLogCategory.getNumberOfEventElements()) {
-            throw new ProtocolAdapterException("eventData size should be "
-                    + eventLogCategory.getNumberOfEventElements());
+            throw new ProtocolAdapterException(
+                    "eventData size should be " + eventLogCategory.getNumberOfEventElements());
         }
 
         // extract values from List<DataObject> eventData.
@@ -73,7 +71,7 @@ public class DataObjectToEventListConverter {
 
     private DateTime extractDateTime(final List<DataObject> eventData) throws ProtocolAdapterException {
 
-        final DateTime dateTime = this.dlmsHelperService.convertDataObjectToDateTime(eventData.get(0)).asDateTime();
+        final DateTime dateTime = this.dlmsHelper.convertDataObjectToDateTime(eventData.get(0)).asDateTime();
         if (dateTime == null) {
             throw new ProtocolAdapterException("eventData time is null/unspecified");
         }

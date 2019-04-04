@@ -1,9 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands;
 
@@ -21,13 +22,12 @@ import org.joda.time.format.ISODateTimeFormat;
 import org.junit.Test;
 import org.openmuc.jdlms.datatypes.CosemDateTime;
 import org.openmuc.jdlms.datatypes.DataObject;
-
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClockStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemTimeDto;
 
-public class DlmsHelperServiceTest {
+public class DlmsHelperTest {
 
     public static final DateTimeZone DATE_TIME_ZONE_AMSTERDAM = DateTimeZone.forID("Europe/Amsterdam");
     public static final DateTimeZone DATE_TIME_ZONE_NEW_YORK = DateTimeZone.forID("America/New_York");
@@ -48,12 +48,12 @@ public class DlmsHelperServiceTest {
     public static final short DEVIATION_AMSTERDAM_SUMMER_TIME = -120;
     public static final short DEVIATION_AMSTERDAM_WINTER_TIME = -60;
 
-    private final DlmsHelperService dlmsHelperService = new DlmsHelperService();
+    private final DlmsHelper dlmsHelper = new DlmsHelper();
 
     @Test
     public void testDateTimeSummerTime() {
 
-        final DataObject dateInSummerTimeDataObject = this.dlmsHelperService.asDataObject(this.dateTimeSummerTime());
+        final DataObject dateInSummerTimeDataObject = this.dlmsHelper.asDataObject(this.dateTimeSummerTime());
 
         assertTrue(dateInSummerTimeDataObject.isCosemDateFormat());
         assertTrue(dateInSummerTimeDataObject.getValue() instanceof CosemDateTime);
@@ -66,8 +66,8 @@ public class DlmsHelperServiceTest {
     @Test
     public void testDateTimeSummerTimeWithDeviationAndDst() {
 
-        final DataObject dateInSummerTimeDataObject = this.dlmsHelperService.asDataObject(this.dateTimeSummerTime(),
-                -120, true);
+        final DataObject dateInSummerTimeDataObject = this.dlmsHelper
+                .asDataObject(this.dateTimeSummerTime(), -120, true);
 
         assertTrue(dateInSummerTimeDataObject.isCosemDateFormat());
         assertTrue(dateInSummerTimeDataObject.getValue() instanceof CosemDateTime);
@@ -89,8 +89,8 @@ public class DlmsHelperServiceTest {
          * This test has a time input as if a server in the UTC time zone would
          * be synchronizing time on a device in the Amsterdam time zone.
          */
-        final DataObject dateInSummerTimeDataObject = this.dlmsHelperService.asDataObject(this.dateTimeSummerTimeUtc(),
-                -120, true);
+        final DataObject dateInSummerTimeDataObject = this.dlmsHelper
+                .asDataObject(this.dateTimeSummerTimeUtc(), -120, true);
 
         assertTrue(dateInSummerTimeDataObject.isCosemDateFormat());
         assertTrue(dateInSummerTimeDataObject.getValue() instanceof CosemDateTime);
@@ -103,7 +103,7 @@ public class DlmsHelperServiceTest {
     @Test
     public void testDateTimeWinterTime() {
 
-        final DataObject dateInWinterTimeDataObject = this.dlmsHelperService.asDataObject(this.dateTimeWinterTime());
+        final DataObject dateInWinterTimeDataObject = this.dlmsHelper.asDataObject(this.dateTimeWinterTime());
 
         assertTrue(dateInWinterTimeDataObject.isCosemDateFormat());
         assertTrue(dateInWinterTimeDataObject.getValue() instanceof CosemDateTime);
@@ -116,8 +116,8 @@ public class DlmsHelperServiceTest {
     @Test
     public void testDateTimeWinterTimeWithDeviationAndDst() {
 
-        final DataObject dateInWinterTimeDataObject = this.dlmsHelperService.asDataObject(this.dateTimeWinterTime(),
-                -60, false);
+        final DataObject dateInWinterTimeDataObject = this.dlmsHelper
+                .asDataObject(this.dateTimeWinterTime(), -60, false);
 
         assertTrue(dateInWinterTimeDataObject.isCosemDateFormat());
         assertTrue(dateInWinterTimeDataObject.getValue() instanceof CosemDateTime);
@@ -139,8 +139,8 @@ public class DlmsHelperServiceTest {
          * This test has a time input as if a server in the New York time zone
          * would be synchronizing time on a device in the Amsterdam time zone.
          */
-        final DataObject dateInWinterTimeDataObject = this.dlmsHelperService.asDataObject(
-                this.dateTimeWinterTimeNewYork(), -60, false);
+        final DataObject dateInWinterTimeDataObject = this.dlmsHelper
+                .asDataObject(this.dateTimeWinterTimeNewYork(), -60, false);
 
         assertTrue(dateInWinterTimeDataObject.isCosemDateFormat());
         assertTrue(dateInWinterTimeDataObject.getValue() instanceof CosemDateTime);
@@ -153,7 +153,7 @@ public class DlmsHelperServiceTest {
     @Test
     public void testFromByteArraySummerTime() throws Exception {
 
-        final CosemDateTimeDto cosemDateTime = this.dlmsHelperService.fromDateTimeValue(this.byteArraySummerTime());
+        final CosemDateTimeDto cosemDateTime = this.dlmsHelper.fromDateTimeValue(this.byteArraySummerTime());
 
         assertTrue(cosemDateTime.isDateTimeSpecified());
 
@@ -165,7 +165,7 @@ public class DlmsHelperServiceTest {
     @Test
     public void testFromByteArrayWinterTime() throws Exception {
 
-        final CosemDateTimeDto cosemDateTime = this.dlmsHelperService.fromDateTimeValue(this.byteArrayWinterTime());
+        final CosemDateTimeDto cosemDateTime = this.dlmsHelper.fromDateTimeValue(this.byteArrayWinterTime());
 
         assertTrue(cosemDateTime.isDateTimeSpecified());
 
@@ -177,8 +177,7 @@ public class DlmsHelperServiceTest {
     @Test
     public void testFromByteArrayUnspecifiedTime() throws Exception {
 
-        final CosemDateTimeDto cosemDateTime = this.dlmsHelperService
-                .fromDateTimeValue(this.byteArrayUnspecifiedTime());
+        final CosemDateTimeDto cosemDateTime = this.dlmsHelper.fromDateTimeValue(this.byteArrayUnspecifiedTime());
 
         assertFalse(cosemDateTime.isDateTimeSpecified());
         assertFalse(cosemDateTime.isLocalDateSpecified());
@@ -192,7 +191,7 @@ public class DlmsHelperServiceTest {
     @Test
     public void testCorrectLogMessageForBitStringObject() {
         final String expected = "number of bytes=2, value=37440, bits=10010010 01000000 ";
-        final String logMessage = this.dlmsHelperService.getDebugInfoBitStringBytes(new byte[] { -110, 64 });
+        final String logMessage = this.dlmsHelper.getDebugInfoBitStringBytes(new byte[] { -110, 64 });
 
         assertEquals(expected, logMessage);
     }
@@ -207,7 +206,8 @@ public class DlmsHelperServiceTest {
          * Original time in Europe/Amsterdam is in UTC+2 for the summer time, so
          * subtract 2 from the hour for UTC time at the same instant.
          */
-        return new DateTime(YEAR, MONTH_SUMMER_TIME, DAY, HOUR - 2, MINUTE, SECOND, HUNDREDTHS * 10, DATE_TIME_ZONE_UTC);
+        return new DateTime(YEAR, MONTH_SUMMER_TIME, DAY, HOUR - 2, MINUTE, SECOND, HUNDREDTHS * 10,
+                DATE_TIME_ZONE_UTC);
     }
 
     private DateTime dateTimeWinterTime() {

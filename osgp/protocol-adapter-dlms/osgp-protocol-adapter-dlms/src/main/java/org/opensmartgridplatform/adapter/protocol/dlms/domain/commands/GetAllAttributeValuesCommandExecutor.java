@@ -1,9 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands;
 
@@ -19,15 +20,13 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetAllAttributeValuesRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 @Component
 public class GetAllAttributeValuesCommandExecutor extends AbstractCommandExecutor<DataObject, String> {
@@ -43,8 +42,7 @@ public class GetAllAttributeValuesCommandExecutor extends AbstractCommandExecuto
     private static final ObisCode OBIS_CODE = new ObisCode("0.0.40.0.0.255");
     private static final int ATTRIBUTE_ID = 2;
 
-    @Autowired
-    private DlmsHelperService dlmsHelper;
+    private final DlmsHelper dlmsHelper = new DlmsHelper();
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetAllAttributeValuesCommandExecutor.class);
 
@@ -73,8 +71,9 @@ public class GetAllAttributeValuesCommandExecutor extends AbstractCommandExecuto
 
         final AttributeAddress attributeAddress = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
-        conn.getDlmsMessageListener().setDescription("RetrieveAllAttributeValues, retrieve attribute: "
-                + JdlmsObjectToStringUtil.describeAttributes(attributeAddress));
+        conn.getDlmsMessageListener().setDescription(
+                "RetrieveAllAttributeValues, retrieve attribute: " + JdlmsObjectToStringUtil
+                        .describeAttributes(attributeAddress));
 
         LOGGER.debug("Retrieving all attribute values for class id: {}, obis code: {}, attribute id: {}", CLASS_ID,
                 OBIS_CODE, ATTRIBUTE_ID);
@@ -151,8 +150,9 @@ public class GetAllAttributeValuesCommandExecutor extends AbstractCommandExecuto
         final AttributeAddress attributeAddress = new AttributeAddress(classNumber, new ObisCode(obisCodeByteArray),
                 attributeValue);
 
-        conn.getDlmsMessageListener().setDescription("RetrieveAllAttributeValues, retrieve attribute: "
-                + JdlmsObjectToStringUtil.describeAttributes(attributeAddress));
+        conn.getDlmsMessageListener().setDescription(
+                "RetrieveAllAttributeValues, retrieve attribute: " + JdlmsObjectToStringUtil
+                        .describeAttributes(attributeAddress));
 
         LOGGER.debug("Retrieving configuration objects data for class id: {}, obis code: {}, attribute id: {}",
                 classNumber, obisCodeByteArray, attributeValue);

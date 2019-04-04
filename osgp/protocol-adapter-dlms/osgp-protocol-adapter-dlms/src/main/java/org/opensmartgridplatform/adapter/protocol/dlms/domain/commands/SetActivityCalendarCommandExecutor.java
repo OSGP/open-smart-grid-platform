@@ -1,9 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands;
 
@@ -49,8 +50,7 @@ public class SetActivityCalendarCommandExecutor extends AbstractCommandExecutor<
     @Autowired
     private SetActivityCalendarCommandActivationExecutor setActivityCalendarCommandActivationExecutor;
 
-    @Autowired
-    private DlmsHelperService dlmsHelperService;
+    private final DlmsHelper dlmsHelper = new DlmsHelper();
 
     public SetActivityCalendarCommandExecutor() {
         super(ActivityCalendarDataDto.class);
@@ -89,9 +89,9 @@ public class SetActivityCalendarCommandExecutor extends AbstractCommandExecutor<
                 .addExecutor(this.getWeekProfileTableExecutor(weekProfileSet))
                 .addExecutor(this.getDayProfileTablePassiveExecutor(dayProfileSet));
 
-        conn.getDlmsMessageListener()
-                .setDescription("SetActivityCalendar for calendar " + activityCalendar.getCalendarName()
-                        + ", set attributes: " + dataObjectExecutors.describeAttributes());
+        conn.getDlmsMessageListener().setDescription(
+                "SetActivityCalendar for calendar " + activityCalendar.getCalendarName() + ", set attributes: "
+                        + dataObjectExecutors.describeAttributes());
 
         dataObjectExecutors.execute(conn);
 
@@ -127,10 +127,10 @@ public class SetActivityCalendarCommandExecutor extends AbstractCommandExecutor<
     private DataObjectAttrExecutor getDayProfileTablePassiveExecutor(final Set<DayProfileDto> dayProfileSet) {
         final AttributeAddress dayProfileTablePassive = new AttributeAddress(CLASS_ID, OBIS_CODE,
                 ATTRIBUTE_ID_DAY_PROFILE_TABLE_PASSIVE);
-        final DataObject dayArray = DataObject.newArrayData(this.configurationMapper.mapAsList(dayProfileSet,
-                DataObject.class));
+        final DataObject dayArray = DataObject
+                .newArrayData(this.configurationMapper.mapAsList(dayProfileSet, DataObject.class));
 
-        LOGGER.info("DayProfileTablePassive to set is: {}", this.dlmsHelperService.getDebugInfo(dayArray));
+        LOGGER.info("DayProfileTablePassive to set is: {}", this.dlmsHelper.getDebugInfo(dayArray));
 
         return new DataObjectAttrExecutor("DAYS", dayProfileTablePassive, dayArray, CLASS_ID, OBIS_CODE,
                 ATTRIBUTE_ID_DAY_PROFILE_TABLE_PASSIVE);
@@ -153,10 +153,10 @@ public class SetActivityCalendarCommandExecutor extends AbstractCommandExecutor<
 
         final AttributeAddress weekProfileTablePassive = new AttributeAddress(CLASS_ID, OBIS_CODE,
                 ATTRIBUTE_ID_WEEK_PROFILE_TABLE_PASSIVE);
-        final DataObject weekArray = DataObject.newArrayData(this.configurationMapper.mapAsList(weekProfileSet,
-                DataObject.class));
+        final DataObject weekArray = DataObject
+                .newArrayData(this.configurationMapper.mapAsList(weekProfileSet, DataObject.class));
 
-        LOGGER.info("WeekProfileTablePassive to set is: {}", this.dlmsHelperService.getDebugInfo(weekArray));
+        LOGGER.info("WeekProfileTablePassive to set is: {}", this.dlmsHelper.getDebugInfo(weekArray));
 
         return new DataObjectAttrExecutor("WEEKS", weekProfileTablePassive, weekArray, CLASS_ID, OBIS_CODE,
                 ATTRIBUTE_ID_WEEK_PROFILE_TABLE_PASSIVE);
@@ -177,10 +177,10 @@ public class SetActivityCalendarCommandExecutor extends AbstractCommandExecutor<
 
         final AttributeAddress seasonProfilePassive = new AttributeAddress(CLASS_ID, OBIS_CODE,
                 ATTRIBUTE_ID_SEASON_PROFILE_PASSIVE);
-        final DataObject seasonsArray = DataObject.newArrayData(this.configurationMapper.mapAsList(seasonProfileList,
-                DataObject.class));
+        final DataObject seasonsArray = DataObject
+                .newArrayData(this.configurationMapper.mapAsList(seasonProfileList, DataObject.class));
 
-        LOGGER.info("SeasonProfilePassive to set is: {}", this.dlmsHelperService.getDebugInfo(seasonsArray));
+        LOGGER.info("SeasonProfilePassive to set is: {}", this.dlmsHelper.getDebugInfo(seasonsArray));
 
         return new DataObjectAttrExecutor("SEASONS", seasonProfilePassive, seasonsArray, CLASS_ID, OBIS_CODE,
                 ATTRIBUTE_ID_SEASON_PROFILE_PASSIVE);

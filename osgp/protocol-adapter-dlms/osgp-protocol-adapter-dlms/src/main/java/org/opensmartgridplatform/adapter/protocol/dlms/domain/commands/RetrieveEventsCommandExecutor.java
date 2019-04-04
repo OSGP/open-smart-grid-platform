@@ -1,9 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands;
 
@@ -52,8 +53,7 @@ public class RetrieveEventsCommandExecutor extends AbstractCommandExecutor<FindE
     @Autowired
     DataObjectToEventListConverter dataObjectToEventListConverter;
 
-    @Autowired
-    private DlmsHelperService dlmsHelperService;
+    private final DlmsHelper dlmsHelper = new DlmsHelper();
 
     // @formatter:off
     private static final EnumMap<EventLogCategoryDto, ObisCode> EVENT_LOG_CATEGORY_OBISCODE_MAP = new EnumMap<>(
@@ -79,17 +79,17 @@ public class RetrieveEventsCommandExecutor extends AbstractCommandExecutor<FindE
     public List<EventDto> execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final FindEventsRequestDto findEventsQuery) throws ProtocolAdapterException {
 
-        final SelectiveAccessDescription selectiveAccessDescription = this.getSelectiveAccessDescription(
-                findEventsQuery.getFrom(), findEventsQuery.getUntil());
+        final SelectiveAccessDescription selectiveAccessDescription = this
+                .getSelectiveAccessDescription(findEventsQuery.getFrom(), findEventsQuery.getUntil());
 
         final AttributeAddress eventLogBuffer = new AttributeAddress(CLASS_ID,
                 EVENT_LOG_CATEGORY_OBISCODE_MAP.get(findEventsQuery.getEventLogCategory()), ATTRIBUTE_ID,
                 selectiveAccessDescription);
 
-        conn.getDlmsMessageListener()
-                .setDescription("RetrieveEvents for " + findEventsQuery.getEventLogCategory() + " from "
-                        + findEventsQuery.getFrom() + " until " + findEventsQuery.getUntil() + ", retrieve attribute: "
-                        + JdlmsObjectToStringUtil.describeAttributes(eventLogBuffer));
+        conn.getDlmsMessageListener().setDescription(
+                "RetrieveEvents for " + findEventsQuery.getEventLogCategory() + " from " + findEventsQuery.getFrom()
+                        + " until " + findEventsQuery.getUntil() + ", retrieve attribute: " + JdlmsObjectToStringUtil
+                        .describeAttributes(eventLogBuffer));
 
         final GetResult getResult;
         try {
@@ -99,15 +99,16 @@ public class RetrieveEventsCommandExecutor extends AbstractCommandExecutor<FindE
         }
 
         if (getResult == null) {
-            throw new ProtocolAdapterException("No GetResult received while retrieving event register "
-                    + findEventsQuery.getEventLogCategory());
+            throw new ProtocolAdapterException(
+                    "No GetResult received while retrieving event register " + findEventsQuery.getEventLogCategory());
         }
 
         if (!AccessResultCode.SUCCESS.equals(getResult.getResultCode())) {
             LOGGER.info("Result of getting events for {} is {}", findEventsQuery.getEventLogCategory(),
                     getResult.getResultCode());
-            throw new ProtocolAdapterException("Getting the events for  " + findEventsQuery.getEventLogCategory()
-                    + " from the meter resulted in: " + getResult.getResultCode());
+            throw new ProtocolAdapterException(
+                    "Getting the events for  " + findEventsQuery.getEventLogCategory() + " from the meter resulted in: "
+                            + getResult.getResultCode());
         }
 
         final DataObject resultData = getResult.getResultData();
@@ -123,12 +124,13 @@ public class RetrieveEventsCommandExecutor extends AbstractCommandExecutor<FindE
          * value to determine which elements from the buffered array should be
          * retrieved.
          */
-        final DataObject clockDefinition = DataObject.newStructureData(Arrays.asList(
-                DataObject.newUInteger16Data(CLASS_ID_CLOCK), DataObject.newOctetStringData(OBIS_BYTES_CLOCK),
-                DataObject.newInteger8Data(ATTRIBUTE_ID_TIME), DataObject.newUInteger16Data(0)));
+        final DataObject clockDefinition = DataObject.newStructureData(
+                Arrays.asList(DataObject.newUInteger16Data(CLASS_ID_CLOCK),
+                        DataObject.newOctetStringData(OBIS_BYTES_CLOCK), DataObject.newInteger8Data(ATTRIBUTE_ID_TIME),
+                        DataObject.newUInteger16Data(0)));
 
-        final DataObject fromValue = this.dlmsHelperService.asDataObject(beginDateTime);
-        final DataObject toValue = this.dlmsHelperService.asDataObject(endDateTime);
+        final DataObject fromValue = this.dlmsHelper.asDataObject(beginDateTime);
+        final DataObject toValue = this.dlmsHelper.asDataObject(endDateTime);
 
         /*
          * Retrieve all captured objects by setting selectedValues to an empty
@@ -136,8 +138,8 @@ public class RetrieveEventsCommandExecutor extends AbstractCommandExecutor<FindE
          */
         final DataObject selectedValues = DataObject.newArrayData(Collections.emptyList());
 
-        final DataObject accessParameter = DataObject.newStructureData(Arrays.asList(clockDefinition, fromValue,
-                toValue, selectedValues));
+        final DataObject accessParameter = DataObject
+                .newStructureData(Arrays.asList(clockDefinition, fromValue, toValue, selectedValues));
 
         return new SelectiveAccessDescription(ACCESS_SELECTOR_RANGE_DESCRIPTOR, accessParameter);
     }

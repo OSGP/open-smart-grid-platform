@@ -10,7 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.DlmsHelperService;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.DeviceSessionTerminatedAfterReadingInvocationCounterException;
@@ -31,14 +31,13 @@ public class InvocationCounterManager {
             new ObisCode(new byte[] { 0, 0, 43, 1, 0, -1 }), 2);
 
     private final DlmsConnectionFactory connectionFactory;
-    private final DlmsHelperService dlmsHelper;
+    private final DlmsHelper dlmsHelper = new DlmsHelper();
     private final DlmsDeviceRepository deviceRepository;
 
     @Autowired
-    public InvocationCounterManager(final DlmsConnectionFactory connectionFactory, final DlmsHelperService dlmsHelper,
+    public InvocationCounterManager(final DlmsConnectionFactory connectionFactory,
             final DlmsDeviceRepository deviceRepository) {
         this.connectionFactory = connectionFactory;
-        this.dlmsHelper = dlmsHelper;
         this.deviceRepository = deviceRepository;
     }
 

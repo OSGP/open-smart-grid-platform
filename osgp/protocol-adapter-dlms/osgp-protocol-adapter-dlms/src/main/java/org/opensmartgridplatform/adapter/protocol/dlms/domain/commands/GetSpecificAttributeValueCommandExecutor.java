@@ -1,9 +1,10 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands;
 
@@ -13,22 +14,19 @@ import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ObisCodeValuesDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecificAttributeValueRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 @Component
-public class GetSpecificAttributeValueCommandExecutor extends
-AbstractCommandExecutor<SpecificAttributeValueRequestDto, String> {
+public class GetSpecificAttributeValueCommandExecutor
+        extends AbstractCommandExecutor<SpecificAttributeValueRequestDto, String> {
 
-    @Autowired
-    private DlmsHelperService dlmsHelper;
+    private final DlmsHelper dlmsHelper = new DlmsHelper();
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetSpecificAttributeValueCommandExecutor.class);
 
@@ -56,8 +54,9 @@ AbstractCommandExecutor<SpecificAttributeValueRequestDto, String> {
         final AttributeAddress attributeAddress = new AttributeAddress(requestData.getClassId(), obisCode,
                 requestData.getAttribute());
 
-        conn.getDlmsMessageListener().setDescription("GetSpecificAttributeValue, retrieve attribute: "
-                + JdlmsObjectToStringUtil.describeAttributes(attributeAddress));
+        conn.getDlmsMessageListener().setDescription(
+                "GetSpecificAttributeValue, retrieve attribute: " + JdlmsObjectToStringUtil
+                        .describeAttributes(attributeAddress));
 
         final DataObject attributeValue = this.dlmsHelper.getAttributeValue(conn, attributeAddress);
         return this.dlmsHelper.getDebugInfo(attributeValue);

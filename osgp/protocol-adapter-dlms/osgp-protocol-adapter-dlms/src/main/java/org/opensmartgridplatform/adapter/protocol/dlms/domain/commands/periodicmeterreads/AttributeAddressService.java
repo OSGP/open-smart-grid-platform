@@ -35,21 +35,13 @@ import org.joda.time.DateTime;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.DlmsHelperService;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodTypeDto;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-@Service
 public class AttributeAddressService {
 
-    private final DlmsHelperService dlmsHelperService;
-
-    @Autowired
-    public AttributeAddressService(final DlmsHelperService dlmsHelperService) {
-        this.dlmsHelperService = dlmsHelperService;
-    }
+    private final DlmsHelper dlmsHelper = new DlmsHelper();
 
     public AttributeAddress[] getProfileBufferAndScalerUnitForPeriodicMeterReads(final PeriodTypeDto periodType,
             final DateTime from, final DateTime to, final boolean isSelectingValuesSupported)
@@ -65,16 +57,18 @@ public class AttributeAddressService {
 
     private AttributeAddress getProfileBuffer(final PeriodTypeDto periodType, final DateTime from, final DateTime to,
             final boolean isSelectingValuesSupported) throws ProtocolAdapterException {
-        final SelectiveAccessDescription access = this.getSelectiveAccessDescription(periodType, from, to,
-                isSelectingValuesSupported);
+        final SelectiveAccessDescription access = this
+                .getSelectiveAccessDescription(periodType, from, to, isSelectingValuesSupported);
 
         switch (periodType) {
         case INTERVAL:
-            return new AttributeAddress(CLASS_ID_PROFILE_GENERIC, OBIS_CODE_INTERVAL_BILLING, ATTRIBUTE_ID_BUFFER, access);
+            return new AttributeAddress(CLASS_ID_PROFILE_GENERIC, OBIS_CODE_INTERVAL_BILLING, ATTRIBUTE_ID_BUFFER,
+                    access);
         case DAILY:
             return new AttributeAddress(CLASS_ID_PROFILE_GENERIC, OBIS_CODE_DAILY_BILLING, ATTRIBUTE_ID_BUFFER, access);
         case MONTHLY:
-            return new AttributeAddress(CLASS_ID_PROFILE_GENERIC, OBIS_CODE_MONTHLY_BILLING, ATTRIBUTE_ID_BUFFER, access);
+            return new AttributeAddress(CLASS_ID_PROFILE_GENERIC, OBIS_CODE_MONTHLY_BILLING, ATTRIBUTE_ID_BUFFER,
+                    access);
         default:
             throw new ProtocolAdapterException(String.format("periodtype %s not supported", periodType));
         }
@@ -120,8 +114,8 @@ public class AttributeAddressService {
         }
         final DataObject selectedValues = DataObject.newArrayData(objectDefinitions);
 
-        final DataObject accessParameter = this.dlmsHelperService.getAccessSelectionTimeRangeParameter(from, to,
-                selectedValues);
+        final DataObject accessParameter = this.dlmsHelper
+                .getAccessSelectionTimeRangeParameter(from, to, selectedValues);
 
         return new SelectiveAccessDescription(ACCESS_SELECTOR_RANGE_DESCRIPTOR, accessParameter);
     }
@@ -165,9 +159,9 @@ public class AttributeAddressService {
          * {4,0-4.24.2.1.255,5,0}  -  M-Bus Master Value 1 Channel 4 Capture time
          */
 
-        objectDefinitions.add(this.dlmsHelperService.getClockDefinition());
+        objectDefinitions.add(this.dlmsHelper.getClockDefinition());
 
-        objectDefinitions.add(this.dlmsHelperService.getAMRProfileDefinition());
+        objectDefinitions.add(this.dlmsHelper.getAMRProfileDefinition());
 
         this.addActiveEnergyImportRate1(objectDefinitions);
         this.addActiveEnergyImportRate2(objectDefinitions);
@@ -196,7 +190,7 @@ public class AttributeAddressService {
          * {4,0-4.24.2.1.255,5,0}  -  M-Bus Master Value 1 Channel 4 Capture time
          */
 
-        objectDefinitions.add(this.dlmsHelperService.getClockDefinition());
+        objectDefinitions.add(this.dlmsHelper.getClockDefinition());
 
         this.addActiveEnergyImportRate1(objectDefinitions);
         this.addActiveEnergyImportRate2(objectDefinitions);
@@ -207,32 +201,28 @@ public class AttributeAddressService {
 
     private void addActiveEnergyImportRate1(final List<DataObject> objectDefinitions) {
         // {3,1-0:1.8.1.255,2,0} - Active energy import (+A) rate 1
-        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(
-                DataObject.newUInteger16Data(CLASS_ID_REGISTER),
+        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(DataObject.newUInteger16Data(CLASS_ID_REGISTER),
                 DataObject.newOctetStringData(OBIS_BYTES_ACTIVE_ENERGY_IMPORT_RATE_1),
                 DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
     }
 
     private void addActiveEnergyImportRate2(final List<DataObject> objectDefinitions) {
         // {3,1-0:1.8.2.255,2,0} - Active energy import (+A) rate 2
-        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(
-                DataObject.newUInteger16Data(CLASS_ID_REGISTER),
+        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(DataObject.newUInteger16Data(CLASS_ID_REGISTER),
                 DataObject.newOctetStringData(OBIS_BYTES_ACTIVE_ENERGY_IMPORT_RATE_2),
                 DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
     }
 
     private void addActiveEnergyExportRate1(final List<DataObject> objectDefinitions) {
         // {3,1-0:2.8.1.255,2,0} - Active energy export (-A) rate 1
-        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(
-                DataObject.newUInteger16Data(CLASS_ID_REGISTER),
+        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(DataObject.newUInteger16Data(CLASS_ID_REGISTER),
                 DataObject.newOctetStringData(OBIS_BYTES_ACTIVE_ENERGY_EXPORT_RATE_1),
                 DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
     }
 
     private void addActiveEnergyExportRate2(final List<DataObject> objectDefinitions) {
         // {3,1-0:2.8.2.255,2,0} - Active energy export (-A) rate 2
-        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(
-                DataObject.newUInteger16Data(CLASS_ID_REGISTER),
+        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(DataObject.newUInteger16Data(CLASS_ID_REGISTER),
                 DataObject.newOctetStringData(OBIS_BYTES_ACTIVE_ENERGY_EXPORT_RATE_2),
                 DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
     }

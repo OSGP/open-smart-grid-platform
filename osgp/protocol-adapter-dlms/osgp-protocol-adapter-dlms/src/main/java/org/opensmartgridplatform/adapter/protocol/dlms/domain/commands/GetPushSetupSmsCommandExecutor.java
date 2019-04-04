@@ -1,9 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands;
 
@@ -15,13 +16,11 @@ import org.openmuc.jdlms.ObisCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemObisCodeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupSmsDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 @Component()
 public class GetPushSetupSmsCommandExecutor extends GetPushSetupCommandExecutor<Void, PushSetupSmsDto> {
@@ -40,43 +39,45 @@ public class GetPushSetupSmsCommandExecutor extends GetPushSetupCommandExecutor<
         ATTRIBUTE_ADDRESSES[5] = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_REPETITION_DELAY);
     }
 
-    @Autowired
-    private DlmsHelperService dlmsHelperService;
+    private final DlmsHelper dlmsHelper = new DlmsHelper();
 
     @Override
     public PushSetupSmsDto execute(final DlmsConnectionManager conn, final DlmsDevice device, final Void useless)
             throws ProtocolAdapterException {
 
-        conn.getDlmsMessageListener().setDescription("GetPushSetupSms, retrieve attributes: "
-                + JdlmsObjectToStringUtil.describeAttributes(ATTRIBUTE_ADDRESSES));
+        conn.getDlmsMessageListener().setDescription("GetPushSetupSms, retrieve attributes: " + JdlmsObjectToStringUtil
+                .describeAttributes(ATTRIBUTE_ADDRESSES));
 
         LOGGER.info("Retrieving Push Setup SMS");
 
-        final List<GetResult> getResultList = this.dlmsHelperService.getWithList(conn, device, ATTRIBUTE_ADDRESSES);
+        final List<GetResult> getResultList = this.dlmsHelper.getWithList(conn, device, ATTRIBUTE_ADDRESSES);
 
         GetPushSetupCommandExecutor.checkResultList(getResultList, ATTRIBUTE_ADDRESSES);
 
         final PushSetupSmsDto.Builder pushSetupSmsBuilder = new PushSetupSmsDto.Builder();
         pushSetupSmsBuilder.withLogicalName(new CosemObisCodeDto(OBIS_CODE.bytes()));
 
-        pushSetupSmsBuilder.withPushObjectList(this.dlmsHelperService
+        pushSetupSmsBuilder.withPushObjectList(this.dlmsHelper
                 .readListOfObjectDefinition(getResultList.get(INDEX_PUSH_OBJECT_LIST), "Push Object List"));
 
-        pushSetupSmsBuilder.withSendDestinationAndMethod(this.dlmsHelperService.readSendDestinationAndMethod(
-                getResultList.get(INDEX_SEND_DESTINATION_AND_METHOD), "Send Destination And Method"));
+        pushSetupSmsBuilder.withSendDestinationAndMethod(this.dlmsHelper
+                .readSendDestinationAndMethod(getResultList.get(INDEX_SEND_DESTINATION_AND_METHOD),
+                        "Send Destination And Method"));
 
-        pushSetupSmsBuilder.withCommunicationWindow(this.dlmsHelperService
+        pushSetupSmsBuilder.withCommunicationWindow(this.dlmsHelper
                 .readListOfWindowElement(getResultList.get(INDEX_COMMUNICATION_WINDOW), "Communication Window"));
 
-        pushSetupSmsBuilder.withRandomisationStartInterval(this.dlmsHelperService
+        pushSetupSmsBuilder.withRandomisationStartInterval(this.dlmsHelper
                 .readLongNotNull(getResultList.get(INDEX_RANDOMISATION_START_INTERVAL), "Randomisation Start Interval")
                 .intValue());
 
-        pushSetupSmsBuilder.withNumberOfRetries(this.dlmsHelperService
-                .readLongNotNull(getResultList.get(INDEX_NUMBER_OF_RETRIES), "Number of Retries").intValue());
+        pushSetupSmsBuilder.withNumberOfRetries(
+                this.dlmsHelper.readLongNotNull(getResultList.get(INDEX_NUMBER_OF_RETRIES), "Number of Retries")
+                        .intValue());
 
-        pushSetupSmsBuilder.withRepetitionDelay(this.dlmsHelperService
-                .readLongNotNull(getResultList.get(INDEX_REPETITION_DELAY), "Repetition Delay").intValue());
+        pushSetupSmsBuilder.withRepetitionDelay(
+                this.dlmsHelper.readLongNotNull(getResultList.get(INDEX_REPETITION_DELAY), "Repetition Delay")
+                        .intValue());
 
         return pushSetupSmsBuilder.build();
     }

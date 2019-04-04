@@ -1,9 +1,10 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands;
 
@@ -34,7 +35,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.MethodAccessItem
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MethodAccessModeTypeDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -60,8 +60,7 @@ public class GetAssociationLnObjectsCommandExecutor extends AbstractCommandExecu
     private static final int ACCESS_RIGHTS_METHOD_ACCESS_METHOD_ID_INDEX = 0;
     private static final int ACCESS_RIGHTS_METHOD_ACCESS_ACCESS_MODE_INDEX = 1;
 
-    @Autowired
-    private DlmsHelperService dlmsHelperService;
+    private final DlmsHelper dlmsHelper = new DlmsHelper();
 
     public GetAssociationLnObjectsCommandExecutor() {
         super(GetAssociationLnObjectsRequestDto.class);
@@ -83,19 +82,20 @@ public class GetAssociationLnObjectsCommandExecutor extends AbstractCommandExecu
     }
 
     @Override
-    public AssociationLnListTypeDto execute(final DlmsConnectionManager conn, final DlmsDevice device, final Void object)
-            throws ProtocolAdapterException {
+    public AssociationLnListTypeDto execute(final DlmsConnectionManager conn, final DlmsDevice device,
+            final Void object) throws ProtocolAdapterException {
 
         final AttributeAddress attributeAddress = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
-        conn.getDlmsMessageListener().setDescription("GetAssociationLnObjects, retrieve attribute: "
-                + JdlmsObjectToStringUtil.describeAttributes(attributeAddress));
+        conn.getDlmsMessageListener().setDescription(
+                "GetAssociationLnObjects, retrieve attribute: " + JdlmsObjectToStringUtil
+                        .describeAttributes(attributeAddress));
 
         LOGGER.debug("Retrieving Association LN objects for class id: {}, obis code: {}, attribute id: {}", CLASS_ID,
                 OBIS_CODE, ATTRIBUTE_ID);
 
-        final List<GetResult> getResultList = this.dlmsHelperService.getAndCheck(conn, device, "Association LN Objects",
-                attributeAddress);
+        final List<GetResult> getResultList = this.dlmsHelper
+                .getAndCheck(conn, device, "Association LN Objects", attributeAddress);
 
         final DataObject resultData = getResultList.get(0).getResultData();
         if (!resultData.isComplex()) {
@@ -116,9 +116,8 @@ public class GetAssociationLnObjectsCommandExecutor extends AbstractCommandExecu
             final List<DataObject> obisCodeMetaDataList = obisCodeMetaData.getValue();
             final short version = obisCodeMetaDataList.get(VERSION_INDEX).getValue();
             final AssociationLnListElementDto element = new AssociationLnListElementDto(
-                    this.dlmsHelperService.readLong(obisCodeMetaDataList.get(CLASS_ID_INDEX), "classId"), version,
-                    this.dlmsHelperService.readLogicalName(obisCodeMetaDataList.get(OBIS_CODE_INDEX),
-                            "AssociationLN Element"),
+                    this.dlmsHelper.readLong(obisCodeMetaDataList.get(CLASS_ID_INDEX), "classId"), version,
+                    this.dlmsHelper.readLogicalName(obisCodeMetaDataList.get(OBIS_CODE_INDEX), "AssociationLN Element"),
                     this.convertAccessRights(obisCodeMetaDataList.get(ACCESS_RIGHTS_INDEX)));
 
             elements.add(element);
@@ -164,14 +163,11 @@ public class GetAssociationLnObjectsCommandExecutor extends AbstractCommandExecu
                 asl = new AccessSelectorListDto(this.convertAccessSelectors(accessSelectorsObjects));
             }
 
-            attributeAccessItems.add(new AttributeAccessItemDto(
-                    this.dlmsHelperService
-                            .readLong(attributeAccessItem.get(ACCESS_RIGHTS_ATTRIBUTE_ACCESS_ATTRIBUTE_ID_INDEX), "")
-                            .intValue(),
-                    AttributeAccessModeTypeDto.values()[this.dlmsHelperService
-                            .readLong(attributeAccessItem.get(ACCESS_RIGHTS_ATTRIBUTE_ACCESS_ACCESS_MODE_INDEX), "")
-                            .intValue()],
-                    asl));
+            attributeAccessItems.add(new AttributeAccessItemDto(this.dlmsHelper
+                    .readLong(attributeAccessItem.get(ACCESS_RIGHTS_ATTRIBUTE_ACCESS_ATTRIBUTE_ID_INDEX), "")
+                    .intValue(), AttributeAccessModeTypeDto.values()[this.dlmsHelper
+                    .readLong(attributeAccessItem.get(ACCESS_RIGHTS_ATTRIBUTE_ACCESS_ACCESS_MODE_INDEX), "")
+                    .intValue()], asl));
         }
 
         return new AttributeAccessDescriptorDto(attributeAccessItems);
@@ -181,7 +177,7 @@ public class GetAssociationLnObjectsCommandExecutor extends AbstractCommandExecu
             throws ProtocolAdapterException {
         final List<Integer> convertedAccessSelectors = new ArrayList<>();
         for (final DataObject accessSelectorRaw : accessSelectors) {
-            convertedAccessSelectors.add(this.dlmsHelperService.readLong(accessSelectorRaw, "").intValue());
+            convertedAccessSelectors.add(this.dlmsHelper.readLong(accessSelectorRaw, "").intValue());
         }
         return convertedAccessSelectors;
     }
@@ -193,11 +189,9 @@ public class GetAssociationLnObjectsCommandExecutor extends AbstractCommandExecu
         for (final DataObject methodAccessItemRaw : methodAccessDescriptor) {
             final List<DataObject> methodAccessItem = methodAccessItemRaw.getValue();
             methodAccessItems.add(new MethodAccessItemDto(
-                    this.dlmsHelperService
-                            .readLong(methodAccessItem.get(ACCESS_RIGHTS_METHOD_ACCESS_METHOD_ID_INDEX), "").intValue(),
-                    MethodAccessModeTypeDto.values()[this.dlmsHelperService
-                            .readLong(methodAccessItem.get(ACCESS_RIGHTS_METHOD_ACCESS_ACCESS_MODE_INDEX), "")
-                            .intValue()]));
+                    this.dlmsHelper.readLong(methodAccessItem.get(ACCESS_RIGHTS_METHOD_ACCESS_METHOD_ID_INDEX), "")
+                            .intValue(), MethodAccessModeTypeDto.values()[this.dlmsHelper
+                    .readLong(methodAccessItem.get(ACCESS_RIGHTS_METHOD_ACCESS_ACCESS_MODE_INDEX), "").intValue()]));
         }
 
         return new MethodAccessDescriptorDto(methodAccessItems);

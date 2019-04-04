@@ -10,9 +10,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Fail.fail;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.refEq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -21,10 +18,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.DlmsHelperService;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.DlmsConnectionManagerStub;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.DlmsConnectionStub;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDeviceBuilder;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
@@ -32,37 +28,33 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.DeviceSessionT
 
 @RunWith(MockitoJUnitRunner.class)
 public class InvocationCounterManagerTest {
-    private static final AttributeAddress ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE = new AttributeAddress(1,
-            new ObisCode(new byte[] { 0, 0, 43, 1, 0, -1 }), 2);
 
     private InvocationCounterManager manager;
 
     @Mock
     private DlmsConnectionFactory connectionFactory;
 
-    @Mock
-    private DlmsHelperService dlmsHelperService;
+    private DlmsConnectionManagerStub dlmsConnectionManagerStub;
+    private DlmsConnectionStub dlmsConnectionStub;
 
     @Mock
     private DlmsDeviceRepository deviceRepository;
 
     @Before
     public void setUp() {
-        this.manager = new InvocationCounterManager(this.connectionFactory, this.dlmsHelperService,
-                this.deviceRepository);
+        this.manager = new InvocationCounterManager(this.connectionFactory, this.deviceRepository);
+        this.dlmsConnectionStub = new DlmsConnectionStub();
+        this.dlmsConnectionManagerStub = new DlmsConnectionManagerStub(this.dlmsConnectionStub);
     }
 
     @Test
     public void initializesInvocationCounterForDevice() throws Exception {
-        final DlmsDevice device = new DlmsDeviceBuilder().build();
+        final DlmsDevice device = new DlmsDeviceBuilder().withIdentification("id123").build();
 
-        final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
-        when(this.connectionFactory.getPublicClientConnection(device, null)).thenReturn(connectionManager);
+        when(this.connectionFactory.getPublicClientConnection(device, null)).thenReturn(this.dlmsConnectionManagerStub);
 
         final DataObject dataObject = DataObject.newInteger32Data(123);
-        when(this.dlmsHelperService
-                .getAttributeValue(eq(connectionManager), refEq(ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE)))
-                .thenReturn(dataObject);
+        this.dlmsConnectionStub.setDefaultReturnValue(dataObject);
 
         try {
             this.manager.initializeInvocationCounter(device);
@@ -73,7 +65,8 @@ public class InvocationCounterManagerTest {
 
         assertThat(device.getInvocationCounter()).isEqualTo(dataObject.getValue());
         verify(this.deviceRepository).save(device);
-        verify(connectionManager).close();
+
+        assertThat(this.dlmsConnectionStub.isCloseCalled()).isEqualTo(true);
     }
 
     @Test

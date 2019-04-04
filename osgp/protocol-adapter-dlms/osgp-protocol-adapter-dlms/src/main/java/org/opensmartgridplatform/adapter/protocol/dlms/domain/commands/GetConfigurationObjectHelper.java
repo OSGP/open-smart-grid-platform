@@ -1,9 +1,10 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands;
 
@@ -21,15 +22,14 @@ import org.openmuc.jdlms.interfaceclass.attribute.DataAttribute;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagsDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObjectDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GprsOperationModeTypeDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component()
 public class GetConfigurationObjectHelper {
@@ -47,8 +47,7 @@ public class GetConfigurationObjectHelper {
     @Autowired
     private ConfigurationObjectHelperService configurationObjectHelperService;
 
-    @Autowired
-    private DlmsHelperService dlmsHelperService;
+    private final DlmsHelper dlmsHelper = new DlmsHelper();
 
     public ConfigurationObjectDto getConfigurationObjectDto(final DlmsConnectionManager conn)
             throws ProtocolAdapterException {
@@ -65,11 +64,13 @@ public class GetConfigurationObjectHelper {
 
         final AttributeAddress configurationObjectValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
-        conn.getDlmsMessageListener().setDescription("retrieve current ConfigurationObject, attribute: "
-                + JdlmsObjectToStringUtil.describeAttributes(configurationObjectValue));
+        conn.getDlmsMessageListener().setDescription(
+                "retrieve current ConfigurationObject, attribute: " + JdlmsObjectToStringUtil
+                        .describeAttributes(configurationObjectValue));
 
         LOGGER.info(
-                "Retrieving current configuration object by issuing get request for class id: {}, obis code: {}, attribute id: {}",
+                "Retrieving current configuration object by issuing get request for class id: {}, obis code: {}, "
+                        + "attribute id: {}",
                 CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
         final GetResult getResult = conn.getConnection().get(configurationObjectValue);
 
@@ -90,14 +91,14 @@ public class GetConfigurationObjectHelper {
             LOGGER.warn("Configuration object result data is not complex: {}", resultData);
             throw new ProtocolAdapterException("No complex result data received retrieving configuration object.");
         }
-        LOGGER.info("Configuration object current complex data: {}", this.dlmsHelperService.getDebugInfo(resultData));
+        LOGGER.info("Configuration object current complex data: {}", this.dlmsHelper.getDebugInfo(resultData));
         final List<DataObject> elements = resultData.getValue();
 
         if (elements == null || elements.size() != NUMBER_OF_CONFIGURATION_OBJECT_ELEMENTS) {
             LOGGER.warn("Unexpected configuration object structure elements: {}", elements);
             throw new ProtocolAdapterException("Expected configuration object result data structure to have "
-                    + NUMBER_OF_CONFIGURATION_OBJECT_ELEMENTS + " elements, but got "
-                    + (elements == null ? 0 : elements.size()));
+                    + NUMBER_OF_CONFIGURATION_OBJECT_ELEMENTS + " elements, but got " + (
+                    elements == null ? 0 : elements.size()));
         }
 
         final GprsOperationModeTypeDto gprsOperationMode = this
@@ -136,8 +137,8 @@ public class GetConfigurationObjectHelper {
         if (flagsData == null || !flagsData.isBitString()) {
             LOGGER.warn("Configuration flags data is not a BitString: {}", flagsData);
             throw new ProtocolAdapterException(
-                    "Expected bit-string data as flags of configuration object structure elements, but got: "
-                            + (flagsData == null ? "null" : flagsData.getType()));
+                    "Expected bit-string data as flags of configuration object structure elements, but got: " + (
+                            flagsData == null ? "null" : flagsData.getType()));
         }
 
         final BitString bitString = flagsData.getValue();

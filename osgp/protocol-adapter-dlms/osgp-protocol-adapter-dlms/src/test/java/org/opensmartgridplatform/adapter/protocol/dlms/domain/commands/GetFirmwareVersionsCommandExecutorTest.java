@@ -1,17 +1,12 @@
 /**
  * Copyright 2018 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands;
-
-import static java.util.Arrays.asList;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.refEq;
-import static org.mockito.Matchers.same;
-import static org.mockito.Mockito.when;
 
 import java.util.List;
 
@@ -19,14 +14,13 @@ import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
+import org.openmuc.jdlms.datatypes.DataObject;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.DlmsConnectionManagerStub;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.DlmsConnectionStub;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
-import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareModuleType;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
 
@@ -37,88 +31,74 @@ public class GetFirmwareVersionsCommandExecutorTest {
 
     private static final ObisCode OBIS_CODE_ACTIVE_FIRMWARE_VERSION = new ObisCode("1.0.0.2.0.255");
     private static final ObisCode OBIS_CODE_MODULE_ACTIVE_FIRMWARE_VERSION = new ObisCode("1.1.0.2.0.255");
-    private static final ObisCode OBIS_CODE_COMMUNICATION_MODULE_ACTIVE_FIRMWARE_VERSION = new ObisCode("1.2.0.2.0.255");
+    private static final ObisCode OBIS_CODE_COMMUNICATION_MODULE_ACTIVE_FIRMWARE_VERSION = new ObisCode(
+            "1.2.0.2.0.255");
     private static final ObisCode OBIS_CODE_MBUS_DRIVER_ACTIVE_FIRMWARE_VERSION = new ObisCode("1.4.0.2.0.255");
 
     private GetFirmwareVersionsCommandExecutor executor;
 
-    @Mock
-    private DlmsMessageListener listener;
-
-    @Mock
-    private DlmsHelperService helperService;
-
-    private DlmsConnectionManager connectionHolder;
+    private DlmsConnectionManagerStub connectionHolder;
+    private DlmsConnectionStub connectionStub;
 
     @Before
     public void setUp() {
-        this.executor = new GetFirmwareVersionsCommandExecutor(this.helperService);
-        this.connectionHolder = new DlmsConnectionManager(null, null, this.listener, null);
+        this.executor = new GetFirmwareVersionsCommandExecutor();
+        this.connectionStub = new DlmsConnectionStub();
+        this.connectionHolder = new DlmsConnectionManagerStub(this.connectionStub);
     }
 
     @Test
     public void returns3FirmwareVersionsForDsmr422Device() throws Exception {
         final DlmsDevice device = new DlmsDevice();
 
-        final GetResult getResult1 = new GetResultBuilder().build();
-        final GetResult getResult2 = new GetResultBuilder().build();
-        final GetResult getResult3 = new GetResultBuilder().build();
+        // Set return values in DLMS connection stub
+        this.connectionStub
+                .addReturnValue(new AttributeAddress(CLASS_ID, OBIS_CODE_ACTIVE_FIRMWARE_VERSION, ATTRIBUTE_ID),
+                        DataObject.newOctetStringData("string1".getBytes()));
+        this.connectionStub
+                .addReturnValue(new AttributeAddress(CLASS_ID, OBIS_CODE_MODULE_ACTIVE_FIRMWARE_VERSION, ATTRIBUTE_ID),
+                        DataObject.newOctetStringData("string2".getBytes()));
+        this.connectionStub.addReturnValue(
+                new AttributeAddress(CLASS_ID, OBIS_CODE_COMMUNICATION_MODULE_ACTIVE_FIRMWARE_VERSION, ATTRIBUTE_ID),
+                DataObject.newOctetStringData("string3".getBytes()));
 
-        when(this.helperService.getAndCheck(same(this.connectionHolder),
-                same(device),
-                eq("retrieve firmware versions"),
-                refEq(new AttributeAddress(CLASS_ID, OBIS_CODE_ACTIVE_FIRMWARE_VERSION, ATTRIBUTE_ID)),
-                refEq(new AttributeAddress(CLASS_ID, OBIS_CODE_MODULE_ACTIVE_FIRMWARE_VERSION, ATTRIBUTE_ID)),
-                refEq(new AttributeAddress(CLASS_ID, OBIS_CODE_COMMUNICATION_MODULE_ACTIVE_FIRMWARE_VERSION, ATTRIBUTE_ID))))
-                .thenReturn(asList(getResult1, getResult2, getResult3));
-        when(this.helperService.readString(getResult1.getResultData(), FirmwareModuleType.ACTIVE_FIRMWARE.getDescription()))
-                .thenReturn("string1");
-        when(this.helperService.readString(getResult2.getResultData(), FirmwareModuleType.MODULE_ACTIVE.getDescription()))
-                .thenReturn("string2");
-        when(this.helperService.readString(getResult3.getResultData(), FirmwareModuleType.COMMUNICATION.getDescription()))
-                .thenReturn("string3");
-
+        // Execute command
         final List<FirmwareVersionDto> result = this.executor.execute(this.connectionHolder, device, null);
 
-        Assertions.assertThat(result).usingRecursiveFieldByFieldElementComparator().containsExactly(
-                new FirmwareVersionDto(FirmwareModuleType.ACTIVE_FIRMWARE, "string1"),
-                new FirmwareVersionDto(FirmwareModuleType.MODULE_ACTIVE, "string2"),
-                new FirmwareVersionDto(FirmwareModuleType.COMMUNICATION, "string3"));
+        // Check return values
+        Assertions.assertThat(result).usingRecursiveFieldByFieldElementComparator()
+                .containsExactly(new FirmwareVersionDto(FirmwareModuleType.ACTIVE_FIRMWARE, "string1"),
+                        new FirmwareVersionDto(FirmwareModuleType.MODULE_ACTIVE, "string2"),
+                        new FirmwareVersionDto(FirmwareModuleType.COMMUNICATION, "string3"));
     }
 
     @Test
     public void returns4FirmwareVersionsForSmr51Device() throws Exception {
         final DlmsDevice device = new DlmsDevice().setProtocol("SMR", "5.1");
 
-        final GetResult getResult1 = new GetResultBuilder().build();
-        final GetResult getResult2 = new GetResultBuilder().build();
-        final GetResult getResult3 = new GetResultBuilder().build();
-        final GetResult getResult4 = new GetResultBuilder().build();
+        // Set return values in DLMS connection stub
+        this.connectionStub
+                .addReturnValue(new AttributeAddress(CLASS_ID, OBIS_CODE_ACTIVE_FIRMWARE_VERSION, ATTRIBUTE_ID),
+                        DataObject.newOctetStringData("string1".getBytes()));
+        this.connectionStub
+                .addReturnValue(new AttributeAddress(CLASS_ID, OBIS_CODE_MODULE_ACTIVE_FIRMWARE_VERSION, ATTRIBUTE_ID),
+                        DataObject.newOctetStringData("string2".getBytes()));
+        this.connectionStub.addReturnValue(
+                new AttributeAddress(CLASS_ID, OBIS_CODE_COMMUNICATION_MODULE_ACTIVE_FIRMWARE_VERSION, ATTRIBUTE_ID),
+                DataObject.newOctetStringData("string3".getBytes()));
+        this.connectionStub.addReturnValue(
+                new AttributeAddress(CLASS_ID, OBIS_CODE_MBUS_DRIVER_ACTIVE_FIRMWARE_VERSION, ATTRIBUTE_ID),
+                DataObject.newOctetStringData("string4".getBytes()));
 
-        when(this.helperService.getAndCheck(same(this.connectionHolder),
-                same(device),
-                eq("retrieve firmware versions"),
-                refEq(new AttributeAddress(CLASS_ID, OBIS_CODE_ACTIVE_FIRMWARE_VERSION, ATTRIBUTE_ID)),
-                refEq(new AttributeAddress(CLASS_ID, OBIS_CODE_MODULE_ACTIVE_FIRMWARE_VERSION, ATTRIBUTE_ID)),
-                refEq(new AttributeAddress(CLASS_ID, OBIS_CODE_COMMUNICATION_MODULE_ACTIVE_FIRMWARE_VERSION, ATTRIBUTE_ID)),
-                refEq(new AttributeAddress(CLASS_ID, OBIS_CODE_MBUS_DRIVER_ACTIVE_FIRMWARE_VERSION, ATTRIBUTE_ID))))
-                .thenReturn(asList(getResult1, getResult2, getResult3, getResult4));
-        when(this.helperService.readString(getResult1.getResultData(), FirmwareModuleType.ACTIVE_FIRMWARE.getDescription()))
-                .thenReturn("string1");
-        when(this.helperService.readString(getResult2.getResultData(), FirmwareModuleType.MODULE_ACTIVE.getDescription()))
-                .thenReturn("string2");
-        when(this.helperService.readString(getResult3.getResultData(), FirmwareModuleType.COMMUNICATION.getDescription()))
-                .thenReturn("string3");
-        when(this.helperService.readString(getResult4.getResultData(), FirmwareModuleType.M_BUS_DRIVER_ACTIVE.getDescription()))
-                .thenReturn("string4");
-
+        // Execute command
         final List<FirmwareVersionDto> result = this.executor.execute(this.connectionHolder, device, null);
 
-        Assertions.assertThat(result).usingRecursiveFieldByFieldElementComparator().containsExactly(
-                new FirmwareVersionDto(FirmwareModuleType.ACTIVE_FIRMWARE, "string1"),
-                new FirmwareVersionDto(FirmwareModuleType.MODULE_ACTIVE, "string2"),
-                new FirmwareVersionDto(FirmwareModuleType.COMMUNICATION, "string3"),
-                new FirmwareVersionDto(FirmwareModuleType.M_BUS_DRIVER_ACTIVE, "string4"));
+        // Check return values
+        Assertions.assertThat(result).usingRecursiveFieldByFieldElementComparator()
+                .containsExactly(new FirmwareVersionDto(FirmwareModuleType.ACTIVE_FIRMWARE, "string1"),
+                        new FirmwareVersionDto(FirmwareModuleType.MODULE_ACTIVE, "string2"),
+                        new FirmwareVersionDto(FirmwareModuleType.COMMUNICATION, "string3"),
+                        new FirmwareVersionDto(FirmwareModuleType.M_BUS_DRIVER_ACTIVE, "string4"));
     }
 }
 

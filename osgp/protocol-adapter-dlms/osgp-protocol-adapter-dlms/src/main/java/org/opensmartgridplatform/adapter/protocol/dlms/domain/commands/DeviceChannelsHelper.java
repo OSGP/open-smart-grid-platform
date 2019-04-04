@@ -1,9 +1,10 @@
 /**
  * Copyright 2018 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands;
 
@@ -22,13 +23,11 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Fin
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementValuesDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelElementsDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 @Component()
 public class DeviceChannelsHelper {
@@ -52,8 +51,7 @@ public class DeviceChannelsHelper {
     private static final short FIRST_CHANNEL = 1;
     private static final short NR_OF_CHANNELS = 4;
 
-    @Autowired
-    private DlmsHelperService dlmsHelperService;
+    private final DlmsHelper dlmsHelper = new DlmsHelper();
 
     public List<ChannelElementValuesDto> findCandidateChannelsForDevice(final DlmsConnectionManager conn,
             final DlmsDevice device, final MbusChannelElementsDto requestDto) throws ProtocolAdapterException {
@@ -85,21 +83,22 @@ public class DeviceChannelsHelper {
     protected List<GetResult> getMBusClientAttributeValues(final DlmsConnectionManager conn, final DlmsDevice device,
             final short channel) throws ProtocolAdapterException {
         final AttributeAddress[] attrAddresses = this.makeAttributeAddresses(channel);
-        conn.getDlmsMessageListener().setDescription("DeviceChannelsHelper, retrieve M-Bus client setup attributes: "
-                + JdlmsObjectToStringUtil.describeAttributes(attrAddresses));
-        return this.dlmsHelperService.getWithList(conn, device, attrAddresses);
+        conn.getDlmsMessageListener().setDescription(
+                "DeviceChannelsHelper, retrieve M-Bus client setup attributes: " + JdlmsObjectToStringUtil
+                        .describeAttributes(attrAddresses));
+        return this.dlmsHelper.getWithList(conn, device, attrAddresses);
     }
 
     protected ChannelElementValuesDto makeChannelElementValues(final short channel, final List<GetResult> resultList)
             throws ProtocolAdapterException {
         final short primaryAddress = this.readShort(resultList, INDEX_PRIMARY_ADDRESS, "primaryAddress");
-        final String identificationNumber = this.readIdentificationNumber(resultList, INDEX_IDENTIFICATION_NUMBER,
-                "identificationNumber");
-        final String manufacturerIdentification = this.readManufacturerIdentification(resultList, INDEX_MANUFACTURER_ID,
-                "manufacturerIdentification");
+        final String identificationNumber = this
+                .readIdentificationNumber(resultList, INDEX_IDENTIFICATION_NUMBER, "identificationNumber");
+        final String manufacturerIdentification = this
+                .readManufacturerIdentification(resultList, INDEX_MANUFACTURER_ID, "manufacturerIdentification");
         final short version = this.readShort(resultList, INDEX_VERSION, "version");
-        final short deviceTypeIdentification = this.readShort(resultList, INDEX_DEVICE_TYPE,
-                "deviceTypeIdentification");
+        final short deviceTypeIdentification = this
+                .readShort(resultList, INDEX_DEVICE_TYPE, "deviceTypeIdentification");
         return new ChannelElementValuesDto(channel, primaryAddress, identificationNumber, manufacturerIdentification,
                 version, deviceTypeIdentification);
     }
@@ -107,7 +106,7 @@ public class DeviceChannelsHelper {
     private String readIdentificationNumber(final List<GetResult> resultList, final int index, final String description)
             throws ProtocolAdapterException {
 
-        final Long identification = this.dlmsHelperService.readLong(resultList.get(index), description);
+        final Long identification = this.dlmsHelper.readLong(resultList.get(index), description);
         return IdentificationNumber.fromIdentification(identification).getLast8Digits();
     }
 
@@ -120,13 +119,13 @@ public class DeviceChannelsHelper {
 
     private int readInt(final List<GetResult> resultList, final int index, final String description)
             throws ProtocolAdapterException {
-        final Integer value = this.dlmsHelperService.readInteger(resultList.get(index), description);
+        final Integer value = this.dlmsHelper.readInteger(resultList.get(index), description);
         return value == null ? 0 : value;
     }
 
     private short readShort(final List<GetResult> resultList, final int index, final String description)
             throws ProtocolAdapterException {
-        final Short value = this.dlmsHelperService.readShort(resultList.get(index), description);
+        final Short value = this.dlmsHelper.readShort(resultList.get(index), description);
         return value == null ? 0 : value;
     }
 
@@ -149,19 +148,14 @@ public class DeviceChannelsHelper {
     protected ChannelElementValuesDto writeUpdatedMbus(final DlmsConnectionManager conn,
             final MbusChannelElementsDto requestDto, final short channel) throws ProtocolAdapterException {
 
-        final DataObjectAttrExecutors dataObjectExecutors = new DataObjectAttrExecutors("CoupleMBusDevice")
-                .addExecutor(
-                        this.getMbusAttributeExecutor(MbusClientAttribute.IDENTIFICATION_NUMBER,
-                                IdentificationNumber.fromLast8Digits(requestDto.getMbusIdentificationNumber())
-                                        .asDataObject(),
-                                channel))
-                .addExecutor(this.getMbusAttributeExecutor(MbusClientAttribute.MANUFACTURER_ID,
-                        ManufacturerId.fromIdentification(requestDto.getMbusManufacturerIdentification())
-                                .asDataObject(),
-                        channel))
-                .addExecutor(this.getMbusAttributeExecutor(MbusClientAttribute.VERSION,
-                        DataObject.newUInteger8Data(requestDto.getMbusVersion()), channel))
-                .addExecutor(this.getMbusAttributeExecutor(MbusClientAttribute.DEVICE_TYPE,
+        final DataObjectAttrExecutors dataObjectExecutors = new DataObjectAttrExecutors("CoupleMBusDevice").addExecutor(
+                this.getMbusAttributeExecutor(MbusClientAttribute.IDENTIFICATION_NUMBER,
+                        IdentificationNumber.fromLast8Digits(requestDto.getMbusIdentificationNumber()).asDataObject(),
+                        channel)).addExecutor(this.getMbusAttributeExecutor(MbusClientAttribute.MANUFACTURER_ID,
+                ManufacturerId.fromIdentification(requestDto.getMbusManufacturerIdentification()).asDataObject(),
+                channel)).addExecutor(this.getMbusAttributeExecutor(MbusClientAttribute.VERSION,
+                DataObject.newUInteger8Data(requestDto.getMbusVersion()), channel)).addExecutor(
+                this.getMbusAttributeExecutor(MbusClientAttribute.DEVICE_TYPE,
                         DataObject.newUInteger8Data(requestDto.getMbusDeviceTypeIdentification()), channel));
 
         if (requestDto.getPrimaryAddress() != null) {
@@ -169,8 +163,9 @@ public class DeviceChannelsHelper {
                     DataObject.newUInteger8Data(requestDto.getPrimaryAddress()), channel));
 
         }
-        conn.getDlmsMessageListener().setDescription("Write updated MBus attributes to channel " + channel
-                + ", set attributes: " + dataObjectExecutors.describeAttributes());
+        conn.getDlmsMessageListener().setDescription(
+                "Write updated MBus attributes to channel " + channel + ", set attributes: " + dataObjectExecutors
+                        .describeAttributes());
 
         dataObjectExecutors.execute(conn);
 
@@ -193,8 +188,8 @@ public class DeviceChannelsHelper {
     protected ChannelElementValuesDto findEmptyChannel(final List<ChannelElementValuesDto> channelElementValuesList) {
         for (final ChannelElementValuesDto channelElementValues : channelElementValuesList) {
 
-            if (this.checkChannelIdentificationValues(channelElementValues)
-                    && this.checkChannelConfigurationValues(channelElementValues)) {
+            if (this.checkChannelIdentificationValues(channelElementValues) && this
+                    .checkChannelConfigurationValues(channelElementValues)) {
                 return channelElementValues;
             }
         }
@@ -214,8 +209,8 @@ public class DeviceChannelsHelper {
      */
     private boolean checkChannelIdentificationValues(final ChannelElementValuesDto channelElementValues) {
         return (channelElementValues.getIdentificationNumber() == null
-                || "00000000".equals(channelElementValues.getIdentificationNumber())
-                        && (channelElementValues.getPrimaryAddress() == 0));
+                || "00000000".equals(channelElementValues.getIdentificationNumber()) && (
+                channelElementValues.getPrimaryAddress() == 0));
     }
 
     /*
