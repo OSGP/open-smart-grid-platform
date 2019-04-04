@@ -8,6 +8,7 @@
 package org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.processors;
 
 import org.openmuc.j60870.ASdu;
+import org.openmuc.j60870.CauseOfTransmission;
 import org.openmuc.j60870.TypeId;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.BaseResponseEventListener;
 import org.opensmartgridplatform.adapter.protocol.iec60870.services.DeviceMessageLoggingService;
@@ -44,7 +45,11 @@ public class GetHealthStatusResponseEventListener extends BaseResponseEventListe
         LOGGER.info("Received the following ASDU for GetHealthStatus: {}", receivedAsdu);
         this.saveReceivedMessage(receivedAsdu);
 
-        if (receivedAsdu.getTypeIdentification() == TypeId.C_IC_NA_1) {
+        // For now return only a response on ASDU with type id: "interrogation
+        // command" and cause of transmission: "activation confirmation".
+        // Processing will change in a later story.
+        if (TypeId.C_IC_NA_1 == receivedAsdu.getTypeIdentification()
+                && CauseOfTransmission.ACTIVATION_CON == receivedAsdu.getCauseOfTransmission()) {
             this.sendGetHealthStatusResponse();
         } else {
             LOGGER.info(
@@ -55,13 +60,13 @@ public class GetHealthStatusResponseEventListener extends BaseResponseEventListe
     private void saveReceivedMessage(final ASdu receivedAsdu) {
         LOGGER.info("In saveReceivedMessage");
 
-        if (receivedAsdu.getTypeIdentification().equals(TypeId.C_IC_NA_1)) {
+        if (receivedAsdu.getTypeIdentification() == TypeId.C_IC_NA_1) {
             this.responseMessagesRepresentation = "getHealthStatusResponse:";
         }
 
         this.responseMessagesRepresentation += System.lineSeparator() + System.lineSeparator() + receivedAsdu;
 
-        if (receivedAsdu.getTypeIdentification().equals(TypeId.M_ME_NB_1)) {
+        if (receivedAsdu.getTypeIdentification() == TypeId.M_ME_NB_1) {
             // This is the last ASDU for the interrogation command, log
             // the message in the DB.
             this.getDeviceMessageLoggingService().logMessage(this.getMessageMetadata(), true, true,
