@@ -15,12 +15,12 @@ import java.util.Objects;
 public class Measurement {
     private List<MeasurementElement> measurementElements = new ArrayList<>();
 
-    public static Measurement of(final MeasurementElement... elements) {
-        return new Measurement(Arrays.asList(elements));
-    }
-
     public Measurement(final List<MeasurementElement> measurementElements) {
         this.measurementElements = new ArrayList<>(measurementElements);
+    }
+
+    public static Measurement of(final MeasurementElement... elements) {
+        return new Measurement(Arrays.asList(elements));
     }
 
     public List<MeasurementElement> getMeasurementElements() {
