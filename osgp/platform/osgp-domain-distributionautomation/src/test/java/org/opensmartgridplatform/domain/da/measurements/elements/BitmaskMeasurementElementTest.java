@@ -92,7 +92,7 @@ public class BitmaskMeasurementElementTest {
         final boolean expected = false;
 
         // Act
-        final boolean actual = element.getFlag((short) 0);
+        final boolean actual = element.getFlag(BitmaskFlag.FLAG_1);
 
         // Assert
         assertThat(actual).isEqualTo(expected);
@@ -107,7 +107,7 @@ public class BitmaskMeasurementElementTest {
         final boolean expected = true;
 
         // Act
-        final boolean actual = element.getFlag((short) 0);
+        final boolean actual = element.getFlag(BitmaskFlag.FLAG_1);
 
         // Assert
         assertThat(actual).isEqualTo(expected);

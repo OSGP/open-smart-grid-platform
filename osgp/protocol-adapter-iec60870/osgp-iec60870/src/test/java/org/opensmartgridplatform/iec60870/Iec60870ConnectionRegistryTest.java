@@ -6,7 +6,9 @@ package org.opensmartgridplatform.iec60870;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-import java.util.List;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -24,53 +26,27 @@ public class Iec60870ConnectionRegistryTest {
     @Test
     public void getAllConnectionsShouldReturnAllConnectionsPresentInRegistry() {
         // Arrange
-        final Connection connection = mock(Connection.class);
-        this.iec60870ConnectionRegistry.registerConnection(1, connection);
-        this.iec60870ConnectionRegistry.registerConnection(2, connection);
-        final List<Connection> expected = java.util.Arrays.asList(connection, connection);
+        final Connection connection1 = mock(Connection.class);
+        final Connection connection2 = mock(Connection.class);
+        this.iec60870ConnectionRegistry.registerConnection(connection1);
+        this.iec60870ConnectionRegistry.registerConnection(connection2);
+        final Set<Connection> expected = new HashSet<>(Arrays.asList(connection1, connection2));
 
         // Act
-        final List<Connection> actual = this.iec60870ConnectionRegistry.getAllConnections();
+        final Set<Connection> actual = this.iec60870ConnectionRegistry.getAllConnections();
 
         // Assert
         assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void getConnectionShouldReturnConnectionWhenConnectionIsPresent() {
-        // Arrange
-        final int connectionId = 1;
-        final Connection expected = mock(Connection.class);
-        this.iec60870ConnectionRegistry.registerConnection(connectionId, expected);
-
-        // Act
-        final Connection actual = this.iec60870ConnectionRegistry.getConnection(connectionId);
-
-        // Assert
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void getConnectionShouldReturnNullWhenConnectionIsNotPresent() {
-        // Arrange
-        final int unknownConnectionId = 1;
-
-        // Act
-        final Connection actual = this.iec60870ConnectionRegistry.getConnection(unknownConnectionId);
-
-        // Assert
-        assertThat(actual).isNull();
     }
 
     @Test
     public void registerConnectionShouldAddConnectionToRegistry() {
         // Arrange
-        final int connectionId = 1;
         final Connection connection = mock(Connection.class);
         final int expectedNumberOfConnections = 1;
 
         // Act
-        this.iec60870ConnectionRegistry.registerConnection(connectionId, connection);
+        this.iec60870ConnectionRegistry.registerConnection(connection);
         final int actualNumberOfConnection = this.iec60870ConnectionRegistry.getAllConnections().size();
 
         // Assert
@@ -80,13 +56,12 @@ public class Iec60870ConnectionRegistryTest {
     @Test
     public void unregisterConnectionShouldRemoveConnectionFromRegistry() {
         // Arrange
-        final int connectionId = 1;
         final Connection connection = mock(Connection.class);
-        this.iec60870ConnectionRegistry.registerConnection(connectionId, connection);
+        this.iec60870ConnectionRegistry.registerConnection(connection);
         final int expectedNumberOfConnections = 0;
 
         // Act
-        this.iec60870ConnectionRegistry.unregisterConnection(connectionId);
+        this.iec60870ConnectionRegistry.unregisterConnection(connection);
         final int actualNumberOfConnections = this.iec60870ConnectionRegistry.getAllConnections().size();
 
         // Assert

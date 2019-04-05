@@ -7,6 +7,6 @@
  */
 package org.opensmartgridplatform.shared.application.services;
 
-public interface SubscriberService<T> {
-    void onNext(T t);
+public interface TransmitterService<T> {
+    void send(T t);
 }

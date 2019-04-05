@@ -29,8 +29,6 @@ public class Iec60870ServerEventListener implements ServerEventListener {
     private final Iec60870ASduHandlerRegistry iec60870ASduHandlerRegistry;
     private final int connectionTimeout;
 
-    private int connectionIdCounter = 1;
-
     public Iec60870ServerEventListener(final Iec60870ConnectionRegistry iec60870ConnectionRegistry,
             final Iec60870ASduHandlerRegistry iec60870ASduHandlerRegistry, final int connectionTimeout) {
         this.iec60870ConnectionRegistry = iec60870ConnectionRegistry;
@@ -39,21 +37,20 @@ public class Iec60870ServerEventListener implements ServerEventListener {
     }
 
     @Override
+        LOGGER.info("Client connected on connection ({}).", connection);
     public void connectionIndication(final Connection connection) {
-        final int connectionId = this.connectionIdCounter++;
-        LOGGER.info("Client connected on connection ({}).", connectionId);
 
         try {
-            LOGGER.info("Waiting for StartDT on connection ({}) for {} ms.", connectionId, this.connectionTimeout);
-            connection.waitForStartDT(new Iec60870ConnectionEventListener(connection, connectionId,
-                    this.iec60870ConnectionRegistry, this.iec60870ASduHandlerRegistry), this.connectionTimeout);
+            LOGGER.info("Waiting for StartDT on connection ({}) for {} ms.", connection, this.connectionTimeout);
+            connection.waitForStartDT(new Iec60870ConnectionEventListener(connection, this.iec60870ConnectionRegistry,
+                    this.iec60870ASduHandlerRegistry), this.connectionTimeout);
         } catch (final IOException | TimeoutException e) {
-            LOGGER.error("Exception occurred while connection ({}) was waiting for StartDT.", connectionId, e);
+            LOGGER.error("Exception occurred while connection ({}) was waiting for StartDT.", connection, e);
             return;
         }
 
-        this.iec60870ConnectionRegistry.registerConnection(connectionId, connection);
-        LOGGER.info("Connection ({}) listening for incoming commands.", connectionId);
+        this.iec60870ConnectionRegistry.registerConnection(connection);
+        LOGGER.info("Connection ({}) listening for incoming commands.", connection);
     }
 
     @Override

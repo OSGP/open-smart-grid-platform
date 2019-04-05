@@ -1,5 +1,9 @@
 /**
  * Copyright 2019 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.domain.da.measurements.elements;
 
@@ -21,13 +25,8 @@ public class BitmaskMeasurementElement implements MeasurementElement {
         return this.value;
     }
 
-    public boolean getFlag(final short position) {
-        return this.getFlag(position, true);
-    }
-
-    public boolean getFlag(final short position, final boolean zeroBased) {
-        final int index = zeroBased ? position : position - 1;
-        return (this.value & 1 << index) > 0;
+    public boolean getFlag(final BitmaskFlag flag) {
+        return (this.value & flag.value) > 0;
     }
 
     public Set<BitmaskFlag> asEnumSet() {

@@ -54,7 +54,7 @@ public class Iec60870ConnectionEventListenerTest {
     @Before
     public void setup() throws IOException {
         MockitoAnnotations.initMocks(this);
-        this.iec60870ConnectionEventListener = new Iec60870ConnectionEventListener(this.connection, 1,
+        this.iec60870ConnectionEventListener = new Iec60870ConnectionEventListener(this.connection,
                 this.iec60870ConnectionRegistry, this.iec60870ASduHandlerRegistry);
     }
 

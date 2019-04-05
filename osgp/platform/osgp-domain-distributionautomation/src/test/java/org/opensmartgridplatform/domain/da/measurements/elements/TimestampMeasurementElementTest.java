@@ -13,7 +13,7 @@ import org.junit.Test;
 public class TimestampMeasurementElementTest {
 
     @Test
-    public void getValueshouldReturnCorrectValueWhenConstructedUsingTimestamp() {
+    public void getValueShouldReturnCorrectValueWhenConstructedUsingTimestamp() {
         // Arrange
         final ZonedDateTime zonedDateTime = ZonedDateTime.of(2020, 2, 20, 21, 59, 59, 0, ZoneOffset.UTC);
         final long expected = zonedDateTime.toInstant().toEpochMilli();
@@ -22,12 +22,12 @@ public class TimestampMeasurementElementTest {
         final TimestampMeasurementElement element = new TimestampMeasurementElement(expected);
         final long actual = element.getValue();
 
-        // Arrange
+        // Assert
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
-    public void getValueshouldReturnCorrectValueWhenConstructedUsingZonedDateTime() {
+    public void getValueShouldReturnCorrectValueWhenConstructedUsingZonedDateTime() {
         // Arrange
         final ZonedDateTime zonedDateTime = ZonedDateTime.of(2020, 2, 20, 21, 59, 59, 0, ZoneOffset.UTC);
         final long expected = zonedDateTime.toInstant().toEpochMilli();
@@ -36,7 +36,7 @@ public class TimestampMeasurementElementTest {
         final TimestampMeasurementElement element = new TimestampMeasurementElement(zonedDateTime);
         final long actual = element.getValue();
 
-        // Arrange
+        // Assert
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -50,7 +50,7 @@ public class TimestampMeasurementElementTest {
         final TimestampMeasurementElement element = new TimestampMeasurementElement(timestamp);
         final ZonedDateTime actual = element.asZonedDateTime();
 
-        // Arrange
+        // Assert
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -63,7 +63,7 @@ public class TimestampMeasurementElementTest {
         final TimestampMeasurementElement element = new TimestampMeasurementElement(expected);
         final ZonedDateTime actual = element.asZonedDateTime();
 
-        // Arrange
+        // Assert
         assertThat(actual).isEqualTo(expected);
     }
 }

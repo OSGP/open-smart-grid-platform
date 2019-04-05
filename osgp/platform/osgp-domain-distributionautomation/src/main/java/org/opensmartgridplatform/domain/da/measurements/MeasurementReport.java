@@ -1,9 +1,14 @@
 /**
  * Copyright 2019 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.domain.da.measurements;
 
 import java.util.List;
+import java.util.Objects;
 
 public class MeasurementReport {
 
@@ -26,6 +31,26 @@ public class MeasurementReport {
 
     public List<MeasurementGroup> getMeasurementGroups() {
         return this.measurementGroups;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (!(obj instanceof MeasurementReport)) {
+            return false;
+        }
+
+        final MeasurementReport that = (MeasurementReport) obj;
+        return Objects.equals(this.measurementReportHeader, that.measurementReportHeader)
+                && Objects.equals(this.measurementGroups, that.measurementGroups);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.measurementReportHeader, this.measurementGroups);
     }
 
     public static class Builder {

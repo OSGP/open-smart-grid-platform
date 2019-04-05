@@ -21,28 +21,28 @@ public class Iec60870ASduHandlerRegistryTest {
 
     @Test
     public void getHandlerShouldReturnHandlerWhenPresent() throws Iec60870ASduHandlerNotFoundException {
-        // arrange
+        // Arrange
         final TypeId typeId = TypeId.M_ME_TF_1;
         final Iec60870ASduHandler expected = mock(Iec60870ASduHandler.class);
         this.iec60870ASduHandlerRegistry.registerHandler(typeId, expected);
 
-        // act
+        // Act
         final Iec60870ASduHandler actual = this.iec60870ASduHandlerRegistry.getHandler(typeId);
 
-        // assert
+        // Assert
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void getHandlerShouldThrowExceptionWhenNotPresent() {
-        // arrange
+        // Arrange
         final TypeId typeId = TypeId.M_ME_TF_1;
         final Class<?> expected = Iec60870ASduHandlerNotFoundException.class;
 
-        // act
+        // Act
         final Throwable actual = catchThrowable(() -> this.iec60870ASduHandlerRegistry.getHandler(typeId));
 
-        // assert
+        // Assert
         assertThat(actual).isInstanceOf(expected);
     }
 }

@@ -1,30 +1,31 @@
+/**
+ * Copyright 2019 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.iec60870;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.openmuc.j60870.Connection;
 import org.springframework.stereotype.Component;
 
 @Component
 public class Iec60870ConnectionRegistry {
-    private Map<Integer, Connection> connections = new ConcurrentHashMap<>();
+    private Set<Connection> connections = new HashSet<>();
 
-    public List<Connection> getAllConnections() {
-        return new ArrayList<>(this.connections.values());
+    public Set<Connection> getAllConnections() {
+        return new HashSet<>(this.connections);
     }
 
-    public Connection getConnection(final int id) {
-        return this.connections.get(id);
+    public void registerConnection(final Connection connection) {
+        this.connections.add(connection);
     }
 
-    public void registerConnection(final int id, final Connection connection) {
-        this.connections.put(id, connection);
-    }
-
-    public void unregisterConnection(final int id) {
-        this.connections.remove(id);
+    public void unregisterConnection(final Connection connection) {
+        this.connections.remove(connection);
     }
 }
