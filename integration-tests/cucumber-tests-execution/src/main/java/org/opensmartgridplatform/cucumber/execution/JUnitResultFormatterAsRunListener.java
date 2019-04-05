@@ -23,6 +23,9 @@ import org.junit.runner.notification.RunListener;
  *
  * Because Ant JUnit formatter uses one stderr/stdout per one test suite, we
  * capture each test case into a separate report file.
+ *
+ * SonarQube reports issue S106 about using stderr/stdout. These issues are
+ * suppressed.
  */
 public class JUnitResultFormatterAsRunListener extends RunListener {
     protected final JUnitResultFormatter formatter;
@@ -92,8 +95,4 @@ public class JUnitResultFormatterAsRunListener extends RunListener {
         this.formatter.addError(new DescriptionAsTest(failure.getDescription()), failure.getException());
     }
 
-    @Override
-    public void testIgnored(final Description description) throws Exception {
-        super.testIgnored(description);
-    }
 }

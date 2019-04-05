@@ -52,11 +52,7 @@ public class DescriptionAsTest implements Test {
 
         final DescriptionAsTest that = (DescriptionAsTest) o;
 
-        if (!this.description.equals(that.description)) {
-            return false;
-        }
-
-        return true;
+        return this.description.equals(that.description);
     }
 
     @Override

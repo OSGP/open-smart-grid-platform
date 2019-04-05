@@ -17,8 +17,12 @@ import org.junit.runner.FilterFactory.FilterNotCreatedException;
 import org.junit.runner.Request;
 import org.junit.runner.manipulation.Filter;
 import org.junit.runners.model.InitializationError;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JUnitCommandLineParseResult {
+
+    private static Logger LOGGER = LoggerFactory.getLogger(JUnitCommandLineParseResult.class);
 
     private static final String DASH_DASH = "--";
     private static final String DASH_DASH_FILTER = "--filter";
@@ -66,31 +70,17 @@ public class JUnitCommandLineParseResult {
     }
 
     String[] parseOptions(final String... args) {
-        for (int i = 0; i != args.length; ++i) {
+        for (int i = 0; i != args.length; i += 2) {
             final String arg = args[i];
+            final int valueIndex = i + 1;
+
+            LOGGER.info(" argument {}:{}", i, arg);
 
             if (DASH_DASH.equals(arg)) {
-                return this.copyArray(args, i + 1, args.length);
+                return this.copyArray(args, valueIndex, args.length);
             } else if (DASH_DASH.startsWith(arg)) {
-                if (DASH_DASH_FILTER.startsWith(arg) || DASH_DASH_FILTER.equals(arg)) {
-                    String filterSpec;
-                    if (DASH_DASH_FILTER.equals(arg)) {
-                        ++i;
-
-                        if (i < args.length) {
-                            filterSpec = args[i];
-                        } else {
-                            this.parserErrors.add(new CommandLineParserError(arg + " value not specified"));
-                            break;
-                        }
-                    } else {
-                        filterSpec = arg.substring(arg.indexOf('=') + 1);
-                    }
-
-                    this.filterSpecs.add(filterSpec);
-                } else {
-                    this.parserErrors
-                            .add(new CommandLineParserError("JUnit knows nothing about the " + arg + " option"));
+                if (!this.parseFilterSpecs(arg, valueIndex, args)) {
+                    break;
                 }
             } else {
                 return this.copyArray(args, i, args.length);
@@ -98,6 +88,27 @@ public class JUnitCommandLineParseResult {
         }
 
         return new String[] {};
+    }
+
+    private boolean parseFilterSpecs(final String arg, final int valueIndex, final String... args) {
+        if (DASH_DASH_FILTER.startsWith(arg) || DASH_DASH_FILTER.equals(arg)) {
+            String filterSpec = "";
+            if (DASH_DASH_FILTER.equals(arg)) {
+                if (valueIndex < args.length) {
+                    filterSpec = args[valueIndex];
+                } else {
+                    this.parserErrors.add(new CommandLineParserError(arg + " value not specified"));
+                    return false;
+                }
+            } else {
+                filterSpec = arg.substring(arg.indexOf('=') + 1);
+            }
+            this.filterSpecs.add(filterSpec);
+        } else {
+            this.parserErrors.add(new CommandLineParserError("JUnit knows nothing about the " + arg + " option"));
+        }
+
+        return true;
     }
 
     private String[] copyArray(final String[] args, final int from, final int to) {

@@ -35,6 +35,11 @@ public abstract class AppBase {
     @Option(name = "-skip-xml-report", metaVar = "DIR", usage = "Suppress the JUnit XML report generation (for more logging)")
     private boolean skipXmlReport;
 
+    /**
+     * SonarQube reports issue S106 about using stderr/stdout. These issues are
+     * suppressed.
+     */
+    @SuppressWarnings("squid:S106")
     public static int run(final AppBase app, final String[] testClasses, final String... args) {
         // Ensure the tests are executed in UTC time
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
