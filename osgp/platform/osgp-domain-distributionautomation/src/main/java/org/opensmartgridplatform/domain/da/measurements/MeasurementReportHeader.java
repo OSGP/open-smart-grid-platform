@@ -7,6 +7,8 @@
  */
 package org.opensmartgridplatform.domain.da.measurements;
 
+import com.google.common.base.Objects;
+
 public class MeasurementReportHeader {
 
     private MeasurementType measurementType;
@@ -35,6 +37,26 @@ public class MeasurementReportHeader {
 
     public int getCommonAddress() {
         return this.commonAddress;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof MeasurementReportHeader)) {
+            return false;
+        }
+        final MeasurementReportHeader that = (MeasurementReportHeader) obj;
+        return Objects.equal(this.measurementType, that.measurementType)
+                && Objects.equal(this.reasonType, that.reasonType)
+                && Objects.equal(this.originatorAddress, that.originatorAddress)
+                && Objects.equal(this.commonAddress, that.commonAddress);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(this.measurementType, this.reasonType, this.originatorAddress, this.commonAddress);
     }
 
     public static class Builder {

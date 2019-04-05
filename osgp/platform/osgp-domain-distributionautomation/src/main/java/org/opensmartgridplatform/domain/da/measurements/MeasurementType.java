@@ -32,14 +32,12 @@ public enum MeasurementType {
     public static MeasurementType forIdentifierNumber(final int identifierNumber) {
         final Optional<MeasurementType> measurementType = Arrays.asList(values()).stream()
                 .filter(m -> m.identifierNumber == identifierNumber).findFirst();
-
-        return measurementType.isPresent() ? measurementType.get() : null;
+        return measurementType.orElse(null);
     }
 
     public static MeasurementType forIdentifierName(final String identifierName) {
         final Optional<MeasurementType> measurementType = Arrays.asList(values()).stream()
                 .filter(m -> m.identifierName.equals(identifierName)).findFirst();
-        return measurementType.isPresent() ? measurementType.get() : null;
+        return measurementType.orElse(null);
     }
-
 }
