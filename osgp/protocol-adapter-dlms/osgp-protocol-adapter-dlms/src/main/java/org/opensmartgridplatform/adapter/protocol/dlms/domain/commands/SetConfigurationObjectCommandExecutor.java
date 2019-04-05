@@ -23,6 +23,7 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.BitString;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
@@ -188,7 +189,8 @@ public class SetConfigurationObjectCommandExecutor
      * list of forbidden flag types
      *
      * @param configurationFlagType
-     *            the flag to check
+     *         the flag to check
+     *
      * @return true if the flag is forbidden, else false
      */
     private boolean isForbidden(final ConfigurationFlagTypeDto configurationFlagType) {

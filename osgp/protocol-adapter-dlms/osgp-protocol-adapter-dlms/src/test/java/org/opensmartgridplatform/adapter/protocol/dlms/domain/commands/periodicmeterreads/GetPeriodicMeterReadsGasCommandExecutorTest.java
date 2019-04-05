@@ -23,22 +23,20 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
 
 @RunWith(MockitoJUnitRunner.class)
-public class GetPeriodicMeterReadsCommandExecutorTest {
+public class GetPeriodicMeterReadsGasCommandExecutorTest {
 
-    private GetPeriodicMeterReadsCommandExecutor executor;
+    private GetPeriodicMeterReadsGasCommandExecutor executor;
 
     private DlmsConnectionManagerStub connectionManagerStub;
-
     private DlmsConnectionStub connectionStub;
 
     @Before
     public void setUp() {
-        this.executor = new GetPeriodicMeterReadsCommandExecutor();
+        this.executor = new GetPeriodicMeterReadsGasCommandExecutor();
         this.connectionStub = new DlmsConnectionStub();
         this.connectionManagerStub = new DlmsConnectionManagerStub(this.connectionStub);
 
@@ -77,52 +75,6 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
         final List<AttributeAddress> attributeAddressesScalerUnit = requestedAttributeAddresses.stream()
                 .filter(a -> a.getClassId() == 3 && a.getId() == 3).collect(Collectors.toList());
         assertThat(attributeAddressesScalerUnit.size()).isEqualTo(4);
-    }
-
-    @Test
-    public void testUsingIsSelectingValuesSupportedInExecute() throws Exception {
-
-        for (final Protocol protocol : Protocol.values()) {
-            this.assertIsSelectingValuesSupported(protocol.getName(), protocol.getVersion(),
-                    protocol.isSelectValuesInSelectiveAccessSupported());
-
-            this.connectionStub.clearRequestedAttributeAddresses();
-        }
-    }
-
-    private void assertIsSelectingValuesSupported(final String protocolName, final String protocolVersion,
-            final boolean isSelectingValuesSupported) throws Exception {
-
-        // Create device with requested protocol version
-        final DlmsDevice device = new DlmsDevice();
-        device.setProtocol(protocolName, protocolVersion);
-
-        // Create request object
-        final Date timeFrom = new GregorianCalendar(2019, 1, 1).getTime();
-        final Date timeTo = new GregorianCalendar(2019, 1, 5).getTime();
-        final PeriodicMeterReadsRequestDto request = new PeriodicMeterReadsRequestDto(PeriodTypeDto.DAILY, timeFrom,
-                timeTo);
-
-        // Execute request
-        this.executor.execute(this.connectionManagerStub, device, request);
-
-        // Get resulting requests from connection stub
-        final List<AttributeAddress> requestedAttributeAddresses = this.connectionStub.getRequestedAttributeAddresses();
-
-        // Check if command executor uses right setting
-        final List<AttributeAddress> attributeAddressesWithProfile = requestedAttributeAddresses.stream()
-                .filter(a -> a.getClassId() == 7).collect(Collectors.toList());
-        for (final AttributeAddress attributeAddress : attributeAddressesWithProfile) {
-            final List<DataObject> accessParameters = attributeAddress.getAccessSelection().getAccessParameter()
-                    .getValue();
-            final List<DataObject> selectedValues = accessParameters.get(3).getValue();
-
-            if (isSelectingValuesSupported) {
-                assertThat(selectedValues.size()).isEqualTo(6);
-            } else {
-                assertThat(selectedValues.size()).isEqualTo(0);
-            }
-        }
     }
 }
 

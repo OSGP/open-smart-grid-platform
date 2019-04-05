@@ -26,6 +26,7 @@ import org.openmuc.jdlms.interfaceclass.attribute.DemandRegisterAttribute;
 import org.openmuc.jdlms.interfaceclass.attribute.ExtendedRegisterAttribute;
 import org.openmuc.jdlms.interfaceclass.attribute.ProfileGenericAttribute;
 import org.openmuc.jdlms.interfaceclass.attribute.RegisterAttribute;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;

@@ -19,6 +19,7 @@ import org.openmuc.jdlms.datatypes.BitString;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.interfaceclass.InterfaceClass;
 import org.openmuc.jdlms.interfaceclass.attribute.DataAttribute;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -68,10 +69,8 @@ public class GetConfigurationObjectHelper {
                 "retrieve current ConfigurationObject, attribute: " + JdlmsObjectToStringUtil
                         .describeAttributes(configurationObjectValue));
 
-        LOGGER.info(
-                "Retrieving current configuration object by issuing get request for class id: {}, obis code: {}, "
-                        + "attribute id: {}",
-                CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
+        LOGGER.info("Retrieving current configuration object by issuing get request for class id: {}, obis code: {}, "
+                + "attribute id: {}", CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
         final GetResult getResult = conn.getConnection().get(configurationObjectValue);
 
         if (getResult == null) {

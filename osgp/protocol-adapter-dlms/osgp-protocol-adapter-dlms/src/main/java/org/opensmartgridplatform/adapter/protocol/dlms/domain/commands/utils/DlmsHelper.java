@@ -6,7 +6,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands;
+package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -36,6 +36,7 @@ import org.openmuc.jdlms.datatypes.CosemDateTime.ClockStatus;
 import org.openmuc.jdlms.datatypes.CosemTime;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.DataObjectDefinitions;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.BufferedDateTimeValidationException;
@@ -87,8 +88,8 @@ public class DlmsHelper {
      * @return a result from trying to retrieve the value for the attribute
      *         identified by {@code attributeAddress}.
      */
-    public DataObject getAttributeValue(final DlmsConnectionManager conn, final AttributeAddress attributeAddress)
-            throws FunctionalException {
+    public static DataObject getAttributeValue(final DlmsConnectionManager conn,
+            final AttributeAddress attributeAddress) throws FunctionalException {
         Objects.requireNonNull(conn, "conn must not be null");
         Objects.requireNonNull(attributeAddress, "attributeAddress must not be null");
         try {
@@ -101,8 +102,7 @@ public class DlmsHelper {
             final String errorMessage = String
                     .format("Retrieving attribute value for { %d, %s, %d }. Result: resultCode(%d), with data: %s",
                             attributeAddress.getClassId(), attributeAddress.getInstanceId().asShortObisCodeString(),
-                            attributeAddress.getId(), resultCode.getCode(),
-                            this.getDebugInfo(getResult.getResultData()));
+                            attributeAddress.getId(), resultCode.getCode(), getDebugInfo(getResult.getResultData()));
 
             LOGGER.error(errorMessage);
             throw new FunctionalException(FunctionalExceptionType.ERROR_RETRIEVING_ATTRIBUTE_VALUE,
@@ -117,10 +117,10 @@ public class DlmsHelper {
      * get results from the meter and check if the number of results equals the
      * number of attribute addresses provided.
      */
-    public List<GetResult> getAndCheck(final DlmsConnectionManager conn, final DlmsDevice device,
+    public static List<GetResult> getAndCheck(final DlmsConnectionManager conn, final DlmsDevice device,
             final String description, final AttributeAddress... params) throws ProtocolAdapterException {
-        final List<GetResult> getResults = this.getWithList(conn, device, params);
-        this.checkResultList(getResults, params.length, description);
+        final List<GetResult> getResults = getWithList(conn, device, params);
+        checkResultList(getResults, params.length, description);
         return getResults;
     }
 
@@ -142,7 +142,7 @@ public class DlmsHelper {
      *         when the number of results does not match the expected number
      *         or when the one and only result is erroneous.
      */
-    public void checkResultList(final List<GetResult> getResultList, final int expectedResults,
+    public static void checkResultList(final List<GetResult> getResultList, final int expectedResults,
             final String description) throws ProtocolAdapterException {
         if (getResultList.isEmpty()) {
             throw new ProtocolAdapterException("No GetResult received: " + description);
@@ -156,13 +156,13 @@ public class DlmsHelper {
         }
     }
 
-    public List<GetResult> getWithList(final DlmsConnectionManager conn, final DlmsDevice device,
+    public static List<GetResult> getWithList(final DlmsConnectionManager conn, final DlmsDevice device,
             final AttributeAddress... params) throws ProtocolAdapterException {
         try {
             if (device.isWithListSupported()) {
                 return conn.getConnection().get(Arrays.asList(params));
             } else {
-                return this.getWithListWorkaround(conn, params);
+                return getWithListWorkaround(conn, params);
             }
         } catch (final IOException e) {
             throw new ConnectionException(e);
@@ -171,11 +171,11 @@ public class DlmsHelper {
         }
     }
 
-    public DataObject getClockDefinition() {
+    public static DataObject getClockDefinition() {
         return DataObjectDefinitions.getClockDefinition();
     }
 
-    public DataObject getAccessSelectionTimeRangeParameter(final DateTime from, final DateTime to,
+    public static DataObject getAccessSelectionTimeRangeParameter(final DateTime from, final DateTime to,
             final DataObject selectedValues) {
 
         /*
@@ -184,10 +184,10 @@ public class DlmsHelper {
          * value to determine which elements from the buffered array should be
          * retrieved.
          */
-        final DataObject clockDefinition = this.getClockDefinition();
+        final DataObject clockDefinition = getClockDefinition();
 
-        final DataObject fromValue = this.asDataObject(from);
-        final DataObject toValue = this.asDataObject(to);
+        final DataObject fromValue = asDataObject(from);
+        final DataObject toValue = asDataObject(to);
 
         return DataObject.newStructureData(Arrays.asList(clockDefinition, fromValue, toValue, selectedValues));
     }
@@ -199,33 +199,33 @@ public class DlmsHelper {
      * @return the meter value with dlms unit or null when
      *         {@link #readLong(GetResult, String)} is null
      */
-    public DlmsMeterValueDto getScaledMeterValue(final GetResult value, final GetResult scalerUnit,
+    public static DlmsMeterValueDto getScaledMeterValue(final GetResult value, final GetResult scalerUnit,
             final String description) throws ProtocolAdapterException {
-        return this.getScaledMeterValue(value.getResultData(), scalerUnit.getResultData(), description);
+        return getScaledMeterValue(value.getResultData(), scalerUnit.getResultData(), description);
     }
 
-    public DlmsMeterValueDto getScaledMeterValue(final DataObject value, final DataObject scalerUnitObject,
+    public static DlmsMeterValueDto getScaledMeterValue(final DataObject value, final DataObject scalerUnitObject,
             final String description) throws ProtocolAdapterException {
-        LOGGER.debug(this.getDebugInfo(value));
-        LOGGER.debug(this.getDebugInfo(scalerUnitObject));
-        final Long rawValue = this.readLong(value, description);
+        LOGGER.debug(getDebugInfo(value));
+        LOGGER.debug(getDebugInfo(scalerUnitObject));
+        final Long rawValue = readLong(value, description);
         if (rawValue == null) {
             return null;
         }
 
         if (!scalerUnitObject.isComplex()) {
             throw new ProtocolAdapterException(
-                    "complex data (structure) expected while retrieving scaler and unit." + this
-                            .getDebugInfo(scalerUnitObject));
+                    "complex data (structure) expected while retrieving scaler and unit." + getDebugInfo(
+                            scalerUnitObject));
         }
         final List<DataObject> dataObjects = scalerUnitObject.getValue();
         if (dataObjects.size() != 2) {
             throw new ProtocolAdapterException(
-                    "expected 2 values while retrieving scaler and unit." + this.getDebugInfo(scalerUnitObject));
+                    "expected 2 values while retrieving scaler and unit." + getDebugInfo(scalerUnitObject));
         }
-        final int scaler = this.readLongNotNull(dataObjects.get(0), description).intValue();
+        final int scaler = readLongNotNull(dataObjects.get(0), description).intValue();
         final DlmsUnitTypeDto unit = DlmsUnitTypeDto
-                .getUnitType(this.readLongNotNull(dataObjects.get(1), description).intValue());
+                .getUnitType(readLongNotNull(dataObjects.get(1), description).intValue());
 
         // determine value
         BigDecimal scaledValue = BigDecimal.valueOf(rawValue);
@@ -236,7 +236,7 @@ public class DlmsHelper {
         return new DlmsMeterValueDto(scaledValue, unit);
     }
 
-    public DataObject getAMRProfileDefinition() {
+    public static DataObject getAMRProfileDefinition() {
         return DataObjectDefinitions.getAMRProfileDefinition();
     }
 
@@ -246,8 +246,8 @@ public class DlmsHelper {
      *
      * @see #getWithList(DlmsConnectionManager, DlmsDevice, AttributeAddress...)
      */
-    private List<GetResult> getWithListWorkaround(final DlmsConnectionManager conn, final AttributeAddress... params)
-            throws IOException {
+    private static List<GetResult> getWithListWorkaround(final DlmsConnectionManager conn,
+            final AttributeAddress... params) throws IOException {
         final List<GetResult> getResultList = new ArrayList<>();
         for (final AttributeAddress param : params) {
             getResultList.add(conn.getConnection().get(param));
@@ -255,7 +255,8 @@ public class DlmsHelper {
         return getResultList;
     }
 
-    private void checkResultCode(final GetResult getResult, final String description) throws ProtocolAdapterException {
+    private static void checkResultCode(final GetResult getResult, final String description)
+            throws ProtocolAdapterException {
         final AccessResultCode resultCode = getResult.getResultCode();
         LOGGER.debug("{} - AccessResultCode: {}", description, resultCode);
         if (resultCode != AccessResultCode.SUCCESS) {
@@ -264,93 +265,98 @@ public class DlmsHelper {
         }
     }
 
-    public Long readLong(final GetResult getResult, final String description) throws ProtocolAdapterException {
-        this.checkResultCode(getResult, description);
-        return this.readLong(getResult.getResultData(), description);
+    public static Long readLong(final GetResult getResult, final String description) throws ProtocolAdapterException {
+        checkResultCode(getResult, description);
+        return readLong(getResult.getResultData(), description);
     }
 
-    public Long readLong(final DataObject resultData, final String description) throws ProtocolAdapterException {
-        final Number number = this.readNumber(resultData, description);
+    public static Long readLong(final DataObject resultData, final String description) throws ProtocolAdapterException {
+        final Number number = readNumber(resultData, description);
         if (number == null) {
             return null;
         }
         return number.longValue();
     }
 
-    public Long readLongNotNull(final GetResult getResult, final String description) throws ProtocolAdapterException {
-        this.checkResultCode(getResult, description);
-        return this.readLongNotNull(getResult.getResultData(), description);
+    public static Long readLongNotNull(final GetResult getResult, final String description)
+            throws ProtocolAdapterException {
+        checkResultCode(getResult, description);
+        return readLongNotNull(getResult.getResultData(), description);
     }
 
-    public Long readLongNotNull(final DataObject resultData, final String description) throws ProtocolAdapterException {
-        final Long result = this.readLong(resultData, description);
+    public static Long readLongNotNull(final DataObject resultData, final String description)
+            throws ProtocolAdapterException {
+        final Long result = readLong(resultData, description);
         if (result == null) {
             throw new ProtocolAdapterException(String.format("Unexpected null value for %s,", description));
         }
         return result;
     }
 
-    public Integer readInteger(final GetResult getResult, final String description) throws ProtocolAdapterException {
-        this.checkResultCode(getResult, description);
-        final Long value = this.readLong(getResult.getResultData(), description);
+    public static Integer readInteger(final GetResult getResult, final String description)
+            throws ProtocolAdapterException {
+        checkResultCode(getResult, description);
+        final Long value = readLong(getResult.getResultData(), description);
         return (value == null) ? null : value.intValue();
     }
 
-    public Short readShort(final GetResult getResult, final String description) throws ProtocolAdapterException {
-        this.checkResultCode(getResult, description);
-        final Long value = this.readLong(getResult.getResultData(), description);
+    public static Short readShort(final GetResult getResult, final String description) throws ProtocolAdapterException {
+        checkResultCode(getResult, description);
+        final Long value = readLong(getResult.getResultData(), description);
         return (value == null) ? null : value.shortValue();
     }
 
-    public DataObject readDataObject(final GetResult getResult, final String description)
+    public static DataObject readDataObject(final GetResult getResult, final String description)
             throws ProtocolAdapterException {
-        this.checkResultCode(getResult, description);
+        checkResultCode(getResult, description);
         return getResult.getResultData();
     }
 
-    public String readString(final DataObject resultData, final String description) throws ProtocolAdapterException {
-        final byte[] bytes = this.readByteArray(resultData, description, "String");
+    public static String readString(final DataObject resultData, final String description)
+            throws ProtocolAdapterException {
+        final byte[] bytes = readByteArray(resultData, description, "String");
         return new String(bytes, StandardCharsets.UTF_8);
     }
 
-    public CosemDateTimeDto readDateTime(final GetResult getResult, final String description)
+    public static CosemDateTimeDto readDateTime(final GetResult getResult, final String description)
             throws ProtocolAdapterException {
-        this.checkResultCode(getResult, description);
-        return this.readDateTime(getResult.getResultData(), description);
+        checkResultCode(getResult, description);
+        return readDateTime(getResult.getResultData(), description);
     }
 
-    public CosemDateTimeDto readDateTime(final DataObject resultData, final String description)
+    public static CosemDateTimeDto readDateTime(final DataObject resultData, final String description)
             throws ProtocolAdapterException {
-        this.logDebugResultData(resultData, description);
+        logDebugResultData(resultData, description);
         if (resultData == null || resultData.isNull()) {
             return null;
         }
         if (resultData.isByteArray()) {
-            return this.fromDateTimeValue(resultData.getValue());
+            return fromDateTimeValue(resultData.getValue());
         } else if (resultData.isCosemDateFormat()) {
             final CosemDateTime cosemDateTime = resultData.getValue();
-            return this.fromDateTimeValue(cosemDateTime.encode());
+            return fromDateTimeValue(cosemDateTime.encode());
         } else {
-            LOGGER.error("Unexpected ResultData for DateTime value: {}", this.getDebugInfo(resultData));
+            LOGGER.error("Unexpected ResultData for DateTime value: {}", getDebugInfo(resultData));
             throw new ProtocolAdapterException(
                     "Expected ResultData of ByteArray or CosemDateFormat, got: " + resultData.getType());
         }
     }
 
-    public CosemDateTimeDto convertDataObjectToDateTime(final DataObject object) throws ProtocolAdapterException {
+    public static CosemDateTimeDto convertDataObjectToDateTime(final DataObject object)
+            throws ProtocolAdapterException {
         CosemDateTimeDto dateTime = null;
         if (object.isByteArray()) {
-            dateTime = this.fromDateTimeValue(object.getValue());
+            dateTime = fromDateTimeValue(object.getValue());
         } else if (object.isCosemDateFormat()) {
             final CosemDateTime cosemDateTime = object.getValue();
-            dateTime = this.fromDateTimeValue(cosemDateTime.encode());
+            dateTime = fromDateTimeValue(cosemDateTime.encode());
         } else {
-            this.logAndThrowExceptionForUnexpectedResultData(object, "ByteArray or CosemDateFormat");
+            logAndThrowExceptionForUnexpectedResultData(object, "ByteArray or CosemDateFormat");
         }
         return dateTime;
     }
 
-    public CosemDateTimeDto fromDateTimeValue(final byte[] dateTimeValue) {
+    public static CosemDateTimeDto fromDateTimeValue(final byte[] dateTimeValue) {
 
         final ByteBuffer bb = ByteBuffer.wrap(dateTimeValue);
 
@@ -387,7 +393,7 @@ public class DlmsHelper {
      * @return a DataObject having a CosemDateTime matching the given DateTime
      *         as value.
      */
-    public DataObject asDataObject(final DateTime dateTime) {
+    public static DataObject asDataObject(final DateTime dateTime) {
 
         final CosemDate cosemDate = new CosemDate(dateTime.getYear(), dateTime.getMonthOfYear(),
                 dateTime.getDayOfMonth());
@@ -434,7 +440,7 @@ public class DlmsHelper {
      *         DateTime, with the given deviation and DST status information, as
      *         value.
      */
-    public DataObject asDataObject(final DateTime dateTime, final int deviation, final boolean dst) {
+    public static DataObject asDataObject(final DateTime dateTime, final int deviation, final boolean dst) {
         /*
          * Create a date time that may not point to the right instant in time,
          * but that will give proper values getting the different fields for the
@@ -458,93 +464,93 @@ public class DlmsHelper {
         return DataObject.newDateTimeData(cosemDateTime);
     }
 
-    public DataObject asDataObject(final CosemDateDto date) {
+    public static DataObject asDataObject(final CosemDateDto date) {
 
         final CosemDate cosemDate = new CosemDate(date.getYear(), date.getMonth(), date.getDayOfMonth(),
                 date.getDayOfWeek());
         return DataObject.newDateData(cosemDate);
     }
 
-    public List<CosemObjectDefinitionDto> readListOfObjectDefinition(final GetResult getResult,
+    public static List<CosemObjectDefinitionDto> readListOfObjectDefinition(final GetResult getResult,
             final String description) throws ProtocolAdapterException {
-        this.checkResultCode(getResult, description);
-        return this.readListOfObjectDefinition(getResult.getResultData(), description);
+        checkResultCode(getResult, description);
+        return readListOfObjectDefinition(getResult.getResultData(), description);
     }
 
-    public List<CosemObjectDefinitionDto> readListOfObjectDefinition(final DataObject resultData,
+    public static List<CosemObjectDefinitionDto> readListOfObjectDefinition(final DataObject resultData,
             final String description) throws ProtocolAdapterException {
-        final List<DataObject> listOfObjectDefinition = this.readList(resultData, description);
+        final List<DataObject> listOfObjectDefinition = readList(resultData, description);
         if (listOfObjectDefinition == null) {
             return Collections.emptyList();
         }
         final List<CosemObjectDefinitionDto> objectDefinitionList = new ArrayList<>();
         for (final DataObject objectDefinitionObject : listOfObjectDefinition) {
             objectDefinitionList
-                    .add(this.readObjectDefinition(objectDefinitionObject, "Object Definition from " + description));
+                    .add(readObjectDefinition(objectDefinitionObject, "Object Definition from " + description));
         }
         return objectDefinitionList;
     }
 
-    public CosemObjectDefinitionDto readObjectDefinition(final DataObject resultData, final String description)
+    public static CosemObjectDefinitionDto readObjectDefinition(final DataObject resultData, final String description)
             throws ProtocolAdapterException {
-        final List<DataObject> objectDefinitionElements = this.readList(resultData, description);
+        final List<DataObject> objectDefinitionElements = readList(resultData, description);
         if (objectDefinitionElements == null) {
             return null;
         }
         if (objectDefinitionElements.size() != 4) {
-            LOGGER.error("Unexpected ResultData for Object Definition value: {}", this.getDebugInfo(resultData));
+            LOGGER.error("Unexpected ResultData for Object Definition value: {}", getDebugInfo(resultData));
             throw new ProtocolAdapterException(
                     "Expected list for Object Definition to contain 4 elements, got: " + objectDefinitionElements
                             .size());
         }
-        final Long classId = this.readLongNotNull(objectDefinitionElements.get(0), "Class ID from " + description);
-        final CosemObisCodeDto logicalName = this
+        final Long classId = readLongNotNull(objectDefinitionElements.get(0), "Class ID from " + description);
+        final CosemObisCodeDto logicalName = DlmsHelper
                 .readLogicalName(objectDefinitionElements.get(1), "Logical Name from " + description);
-        final Long attributeIndex = this
+        final Long attributeIndex = DlmsHelper
                 .readLongNotNull(objectDefinitionElements.get(2), "Attribute Index from " + description);
-        final Long dataIndex = this.readLongNotNull(objectDefinitionElements.get(3), "Data Index from " + description);
+        final Long dataIndex = readLongNotNull(objectDefinitionElements.get(3), "Data Index from " + description);
 
         return new CosemObjectDefinitionDto(classId.intValue(), logicalName, attributeIndex.intValue(),
                 dataIndex.intValue());
     }
 
-    public CosemObisCodeDto readLogicalName(final DataObject resultData, final String description)
+    public static CosemObisCodeDto readLogicalName(final DataObject resultData, final String description)
             throws ProtocolAdapterException {
-        final byte[] bytes = this.readByteArray(resultData, description, "Logical Name");
+        final byte[] bytes = readByteArray(resultData, description, "Logical Name");
         return new CosemObisCodeDto(bytes);
     }
 
-    public SendDestinationAndMethodDto readSendDestinationAndMethod(final GetResult getResult, final String description)
-            throws ProtocolAdapterException {
-        this.checkResultCode(getResult, description);
-        return this.readSendDestinationAndMethod(getResult.getResultData(), description);
+    public static SendDestinationAndMethodDto readSendDestinationAndMethod(final GetResult getResult,
+            final String description) throws ProtocolAdapterException {
+        checkResultCode(getResult, description);
+        return readSendDestinationAndMethod(getResult.getResultData(), description);
     }
 
-    public SendDestinationAndMethodDto readSendDestinationAndMethod(final DataObject resultData,
+    public static SendDestinationAndMethodDto readSendDestinationAndMethod(final DataObject resultData,
             final String description) throws ProtocolAdapterException {
-        final List<DataObject> sendDestinationAndMethodElements = this.readList(resultData, description);
+        final List<DataObject> sendDestinationAndMethodElements = readList(resultData, description);
         if (sendDestinationAndMethodElements == null) {
             return null;
         }
-        final TransportServiceTypeDto transportService = this
+        final TransportServiceTypeDto transportService = DlmsHelper
                 .readTransportServiceType(sendDestinationAndMethodElements.get(0),
                         "Transport Service from " + description);
-        final String destination = this
+        final String destination = DlmsHelper
                 .readString(sendDestinationAndMethodElements.get(1), "Destination from " + description);
-        final MessageTypeDto message = this
+        final MessageTypeDto message = DlmsHelper
                 .readMessageType(sendDestinationAndMethodElements.get(2), "Message from " + description);
 
         return new SendDestinationAndMethodDto(transportService, destination, message);
     }
 
-    public TransportServiceTypeDto readTransportServiceType(final DataObject resultData, final String description)
-            throws ProtocolAdapterException {
-        final Number number = this.readNumber(resultData, description, "Enum");
+    public static TransportServiceTypeDto readTransportServiceType(final DataObject resultData,
+            final String description) throws ProtocolAdapterException {
+        final Number number = readNumber(resultData, description, "Enum");
         if (number == null) {
             return null;
         }
         final int enumValue = number.intValue();
-        final TransportServiceTypeDto transportService = this.getTransportServiceTypeForEnumValue(enumValue);
+        final TransportServiceTypeDto transportService = getTransportServiceTypeForEnumValue(enumValue);
         if (transportService == null) {
             LOGGER.error("Unexpected Enum value for TransportServiceType: {}", enumValue);
             throw new ProtocolAdapterException("Unknown Enum value for TransportServiceType: " + enumValue);
@@ -552,16 +558,16 @@ public class DlmsHelper {
         return transportService;
     }
 
-    private TransportServiceTypeDto getTransportServiceTypeForEnumValue(final int enumValue) {
+    private static TransportServiceTypeDto getTransportServiceTypeForEnumValue(final int enumValue) {
         if ((enumValue >= 200) && (enumValue <= 255)) {
             return TransportServiceTypeDto.MANUFACTURER_SPECIFIC;
         }
         return TRANSPORT_SERVICE_TYPE_PER_ENUM_VALUE.get(enumValue);
     }
 
-    public MessageTypeDto readMessageType(final DataObject resultData, final String description)
+    public static MessageTypeDto readMessageType(final DataObject resultData, final String description)
             throws ProtocolAdapterException {
-        final Number number = this.readNumber(resultData, description, "Enum");
+        final Number number = readNumber(resultData, description, "Enum");
         if (number == null) {
             return null;
         }
@@ -584,35 +590,35 @@ public class DlmsHelper {
         return message;
     }
 
-    public List<WindowElementDto> readListOfWindowElement(final GetResult getResult, final String description)
+    public static List<WindowElementDto> readListOfWindowElement(final GetResult getResult, final String description)
             throws ProtocolAdapterException {
-        this.checkResultCode(getResult, description);
-        return this.readListOfWindowElement(getResult.getResultData(), description);
+        checkResultCode(getResult, description);
+        return readListOfWindowElement(getResult.getResultData(), description);
     }
 
-    public List<WindowElementDto> readListOfWindowElement(final DataObject resultData, final String description)
+    public static List<WindowElementDto> readListOfWindowElement(final DataObject resultData, final String description)
             throws ProtocolAdapterException {
-        final List<DataObject> listOfWindowElement = this.readList(resultData, description);
+        final List<DataObject> listOfWindowElement = readList(resultData, description);
         if (listOfWindowElement == null) {
             return Collections.emptyList();
         }
         final List<WindowElementDto> windowElementList = new ArrayList<>();
         for (final DataObject windowElementObject : listOfWindowElement) {
-            windowElementList.add(this.readWindowElement(windowElementObject, "Window Element from " + description));
+            windowElementList.add(readWindowElement(windowElementObject, "Window Element from " + description));
         }
         return windowElementList;
     }
 
-    public WindowElementDto readWindowElement(final DataObject resultData, final String description)
+    public static WindowElementDto readWindowElement(final DataObject resultData, final String description)
             throws ProtocolAdapterException {
-        final List<DataObject> windowElementElements = this.readList(resultData, description);
+        final List<DataObject> windowElementElements = readList(resultData, description);
         if (windowElementElements == null) {
             return null;
         }
-        return this.buildWindowElementFromDataObjects(windowElementElements, description);
+        return buildWindowElementFromDataObjects(windowElementElements, description);
     }
 
-    private WindowElementDto buildWindowElementFromDataObjects(final List<DataObject> elements,
+    private static WindowElementDto buildWindowElementFromDataObjects(final List<DataObject> elements,
             final String description) throws ProtocolAdapterException {
         if (elements.size() != 2) {
             LOGGER.error("Unexpected number of ResultData elements for WindowElement value: {}", elements.size());
@@ -620,27 +626,27 @@ public class DlmsHelper {
                     "Expected list for WindowElement to contain 2 elements, got: " + elements.size());
         }
 
-        final CosemDateTimeDto startTime = this.readDateTime(elements.get(0), "Start Time from " + description);
-        final CosemDateTimeDto endTime = this.readDateTime(elements.get(1), "End Time from " + description);
+        final CosemDateTimeDto startTime = readDateTime(elements.get(0), "Start Time from " + description);
+        final CosemDateTimeDto endTime = readDateTime(elements.get(1), "End Time from " + description);
 
         return new WindowElementDto(startTime, endTime);
     }
 
-    public String getDebugInfo(final DataObject dataObject) {
+    public static String getDebugInfo(final DataObject dataObject) {
         if (dataObject == null) {
             return null;
         }
 
         final String dataType = getDataType(dataObject);
-        final String objectText = this.getObjectTextForDebugInfo(dataObject);
-        final String choiceText = this.getChoiceTextForDebugInfo(dataObject);
-        final String rawValueClass = this.getRawValueClassForDebugInfo(dataObject);
+        final String objectText = getObjectTextForDebugInfo(dataObject);
+        final String choiceText = getChoiceTextForDebugInfo(dataObject);
+        final String rawValueClass = getRawValueClassForDebugInfo(dataObject);
 
         return "DataObject: Choice=" + choiceText + ", ResultData is" + dataType + ", value=[" + rawValueClass + "]: "
                 + objectText;
     }
 
-    private String getObjectTextForDebugInfo(final DataObject dataObject) {
+    private static String getObjectTextForDebugInfo(final DataObject dataObject) {
 
         final String objectText;
         if (dataObject.isComplex()) {
@@ -648,7 +654,7 @@ public class DlmsHelper {
                 final StringBuilder builder = new StringBuilder();
                 builder.append("[");
                 builder.append(System.lineSeparator());
-                this.appendItemValues(dataObject, builder);
+                appendItemValues(dataObject, builder);
                 builder.append("]");
                 builder.append(System.lineSeparator());
                 objectText = builder.toString();
@@ -656,13 +662,13 @@ public class DlmsHelper {
                 objectText = String.valueOf(dataObject.getRawValue());
             }
         } else if (dataObject.isByteArray()) {
-            objectText = this.getDebugInfoByteArray(dataObject.getValue());
+            objectText = getDebugInfoByteArray(dataObject.getValue());
         } else if (dataObject.isBitString()) {
             final BitString bitString = dataObject.getValue();
-            objectText = this.getDebugInfoBitStringBytes(bitString.getBitString());
+            objectText = getDebugInfoBitStringBytes(bitString.getBitString());
         } else if (dataObject.isCosemDateFormat() && dataObject.getValue() instanceof CosemDateTime) {
             final CosemDateTime cosemDateTime = dataObject.getValue();
-            objectText = this.getDebugInfoDateTimeBytes(cosemDateTime.encode());
+            objectText = getDebugInfoDateTimeBytes(cosemDateTime.encode());
         } else {
             objectText = String.valueOf(dataObject.getRawValue());
         }
@@ -670,7 +676,7 @@ public class DlmsHelper {
         return objectText;
     }
 
-    private String getChoiceTextForDebugInfo(final DataObject dataObject) {
+    private static String getChoiceTextForDebugInfo(final DataObject dataObject) {
         final Type choiceIndex = dataObject.getType();
         if (choiceIndex == null) {
             return "null";
@@ -678,7 +684,7 @@ public class DlmsHelper {
         return choiceIndex.name();
     }
 
-    private String getRawValueClassForDebugInfo(final DataObject dataObject) {
+    private static String getRawValueClassForDebugInfo(final DataObject dataObject) {
         final Object rawValue = dataObject.getRawValue();
         if (rawValue == null) {
             return "null";
@@ -686,11 +692,11 @@ public class DlmsHelper {
         return rawValue.getClass().getName();
     }
 
-    private void appendItemValues(final DataObject dataObject, final StringBuilder builder) {
+    private static void appendItemValues(final DataObject dataObject, final StringBuilder builder) {
         for (final Object obj : (List<?>) dataObject.getValue()) {
             builder.append("\t");
             if (obj instanceof DataObject) {
-                builder.append(this.getDebugInfo((DataObject) obj));
+                builder.append(getDebugInfo((DataObject) obj));
             } else {
                 builder.append(obj);
             }
@@ -720,7 +726,7 @@ public class DlmsHelper {
         return dataType;
     }
 
-    public String getDebugInfoByteArray(final byte[] bytes) {
+    public static String getDebugInfoByteArray(final byte[] bytes) {
         /*
          * The guessing of the object type by byte length may turn out to be
          * ambiguous at some time. If this occurs the debug info will have to be
@@ -728,9 +734,9 @@ public class DlmsHelper {
          * for debugging purposes.
          */
         if (bytes.length == 6) {
-            return this.getDebugInfoLogicalName(bytes);
+            return getDebugInfoLogicalName(bytes);
         } else if (bytes.length == 12) {
-            return this.getDebugInfoDateTimeBytes(bytes);
+            return getDebugInfoDateTimeBytes(bytes);
         }
 
         final StringBuilder sb = new StringBuilder();
@@ -747,7 +753,7 @@ public class DlmsHelper {
         return "bytes[" + sb.toString() + "]";
     }
 
-    public String getDebugInfoLogicalName(final byte[] logicalNameValue) {
+    public static String getDebugInfoLogicalName(final byte[] logicalNameValue) {
 
         if (logicalNameValue.length != 6) {
             throw new IllegalArgumentException("LogicalName values should be 6 bytes long: " + logicalNameValue.length);
@@ -758,7 +764,7 @@ public class DlmsHelper {
                 + '.' + (logicalNameValue[5] & 0xFF);
     }
 
-    public String getDebugInfoDateTimeBytes(final byte[] dateTimeValue) {
+    public static String getDebugInfoDateTimeBytes(final byte[] dateTimeValue) {
 
         if (dateTimeValue.length != 12) {
             throw new IllegalArgumentException("DateTime values should be 12 bytes long: " + dateTimeValue.length);
@@ -787,18 +793,18 @@ public class DlmsHelper {
         return sb.toString();
     }
 
-    public String getDebugInfoBitStringBytes(final byte[] bitStringValue) {
+    public static String getDebugInfoBitStringBytes(final byte[] bitStringValue) {
         if (bitStringValue == null) {
             return null;
         }
 
-        final BigInteger bigValue = this.byteArrayToBigInteger(bitStringValue);
-        final String stringValue = this.byteArrayToString(bitStringValue);
+        final BigInteger bigValue = byteArrayToBigInteger(bitStringValue);
+        final String stringValue = byteArrayToString(bitStringValue);
 
         return "number of bytes=" + bitStringValue.length + ", value=" + bigValue + ", bits=" + stringValue;
     }
 
-    private String byteArrayToString(final byte[] bitStringValue) {
+    private static String byteArrayToString(final byte[] bitStringValue) {
         if (bitStringValue == null || bitStringValue.length == 0) {
             return null;
         }
@@ -810,7 +816,7 @@ public class DlmsHelper {
         return sb.toString();
     }
 
-    private BigInteger byteArrayToBigInteger(final byte[] bitStringValue) {
+    private static BigInteger byteArrayToBigInteger(final byte[] bitStringValue) {
         if (bitStringValue == null || bitStringValue.length == 0) {
             return null;
         }
@@ -822,58 +828,59 @@ public class DlmsHelper {
         return value;
     }
 
-    private Number readNumber(final DataObject resultData, final String description) throws ProtocolAdapterException {
-        return this.readNumber(resultData, description, "Number");
+    private static Number readNumber(final DataObject resultData, final String description)
+            throws ProtocolAdapterException {
+        return readNumber(resultData, description, "Number");
     }
 
-    private Number readNumber(final DataObject resultData, final String description, final String interpretation)
+    private static Number readNumber(final DataObject resultData, final String description, final String interpretation)
             throws ProtocolAdapterException {
-        this.logDebugResultData(resultData, description);
+        logDebugResultData(resultData, description);
         if (resultData == null || resultData.isNull()) {
             return null;
         }
         final Object resultValue = resultData.getValue();
         if (!resultData.isNumber() || !(resultValue instanceof Number)) {
-            this.logAndThrowExceptionForUnexpectedResultData(resultData, interpretation);
+            logAndThrowExceptionForUnexpectedResultData(resultData, interpretation);
         }
         return (Number) resultValue;
     }
 
-    private byte[] readByteArray(final DataObject resultData, final String description, final String interpretation)
-            throws ProtocolAdapterException {
-        this.logDebugResultData(resultData, description);
+    private static byte[] readByteArray(final DataObject resultData, final String description,
+            final String interpretation) throws ProtocolAdapterException {
+        logDebugResultData(resultData, description);
         if (resultData == null || resultData.isNull()) {
             return new byte[0];
         }
         final Object resultValue = resultData.getValue();
         if (!resultData.isByteArray() || !(resultValue instanceof byte[])) {
-            this.logAndThrowExceptionForUnexpectedResultData(resultData,
+            logAndThrowExceptionForUnexpectedResultData(resultData,
                     "byte array to be interpreted as " + interpretation);
         }
         return (byte[]) resultValue;
     }
 
     @SuppressWarnings("unchecked")
-    private List<DataObject> readList(final DataObject resultData, final String description)
+    private static List<DataObject> readList(final DataObject resultData, final String description)
             throws ProtocolAdapterException {
-        this.logDebugResultData(resultData, description);
+        logDebugResultData(resultData, description);
         if (resultData == null || resultData.isNull()) {
             return Collections.emptyList();
         }
         final Object resultValue = resultData.getValue();
         if (!resultData.isComplex() || !(resultValue instanceof List)) {
-            this.logAndThrowExceptionForUnexpectedResultData(resultData, "List");
+            logAndThrowExceptionForUnexpectedResultData(resultData, "List");
         }
         return (List<DataObject>) resultValue;
     }
 
-    private void logDebugResultData(final DataObject resultData, final String description) {
-        LOGGER.debug("{} - ResultData: {}", description, this.getDebugInfo(resultData));
+    private static void logDebugResultData(final DataObject resultData, final String description) {
+        LOGGER.debug("{} - ResultData: {}", description, getDebugInfo(resultData));
     }
 
-    private void logAndThrowExceptionForUnexpectedResultData(final DataObject resultData, final String expectedType)
-            throws ProtocolAdapterException {
-        LOGGER.error("Unexpected ResultData for {} value: {}", expectedType, this.getDebugInfo(resultData));
+    private static void logAndThrowExceptionForUnexpectedResultData(final DataObject resultData,
+            final String expectedType) throws ProtocolAdapterException {
+        LOGGER.error("Unexpected ResultData for {} value: {}", expectedType, getDebugInfo(resultData));
         final String resultDataType =
                 resultData.getValue() == null ? "null" : resultData.getValue().getClass().getName();
         throw new ProtocolAdapterException(
@@ -881,7 +888,7 @@ public class DlmsHelper {
                         + resultDataType);
     }
 
-    public void validateBufferedDateTime(final DateTime bufferedDateTime, final CosemDateTimeDto cosemDateTime,
+    public static void validateBufferedDateTime(final DateTime bufferedDateTime, final CosemDateTimeDto cosemDateTime,
             final DateTime beginDateTime, final DateTime endDateTime) throws BufferedDateTimeValidationException {
 
         if (bufferedDateTime == null) {

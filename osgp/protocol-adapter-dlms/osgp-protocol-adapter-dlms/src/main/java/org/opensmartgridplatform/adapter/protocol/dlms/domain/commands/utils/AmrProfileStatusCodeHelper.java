@@ -1,23 +1,22 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands;
+package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils;
 
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.stereotype.Service;
-
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.ByteRegisterConverter;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AmrProfileStatusCodeFlagDto;
 
-@Service("amrProfileStatusCodeHelperService")
-public class AmrProfileStatusCodeHelperService {
+public class AmrProfileStatusCodeHelper {
     private static final int NUMBER_OF_BITS_IN_REGISTER = 8;
 
     private static final ByteRegisterConverter<AmrProfileStatusCodeFlagDto> BYTE_REGISTER_CONVERTER;
@@ -36,15 +35,19 @@ public class AmrProfileStatusCodeHelperService {
                 NUMBER_OF_BITS_IN_REGISTER);
     }
 
-    public Integer toBitPosition(final AmrProfileStatusCodeFlagDto amrProfileStatus) {
+    private AmrProfileStatusCodeHelper() {
+        throw new IllegalStateException("Utility class");
+    }
+
+    public static Integer toBitPosition(final AmrProfileStatusCodeFlagDto amrProfileStatus) {
         return BYTE_REGISTER_CONVERTER.toBitPosition(amrProfileStatus);
     }
 
-    public Set<AmrProfileStatusCodeFlagDto> toAmrProfileStatusCodeFlags(final Number registerValue) {
+    public static Set<AmrProfileStatusCodeFlagDto> toAmrProfileStatusCodeFlags(final Number registerValue) {
         return BYTE_REGISTER_CONVERTER.toTypes(registerValue.longValue());
     }
 
-    public Short toValue(final Set<AmrProfileStatusCodeFlagDto> amrProfileStatusCodeFlags) {
+    public static Short toValue(final Set<AmrProfileStatusCodeFlagDto> amrProfileStatusCodeFlags) {
         return BYTE_REGISTER_CONVERTER.toLongValue(amrProfileStatusCodeFlags).shortValue();
     }
 }

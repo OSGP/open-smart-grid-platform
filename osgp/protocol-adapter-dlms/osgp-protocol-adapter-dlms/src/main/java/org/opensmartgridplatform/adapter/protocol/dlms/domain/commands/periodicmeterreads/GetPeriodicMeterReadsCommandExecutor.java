@@ -17,9 +17,9 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractPeriodicMeterReadsCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AmrProfileStatusCodeHelperService;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.JdlmsObjectToStringUtil;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.AmrProfileStatusCodeHelper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
@@ -60,15 +60,11 @@ public class GetPeriodicMeterReadsCommandExecutor
     private static final int BUFFER_INDEX_A_POS = 2;
     private static final int BUFFER_INDEX_A_NEG = 3;
 
-    private final DlmsHelper dlmsHelper = new DlmsHelper();
     private final AttributeAddressService attributeAddressService = new AttributeAddressService();
-    private final AmrProfileStatusCodeHelperService amrProfileStatusCodeHelperService;
 
     @Autowired
-    public GetPeriodicMeterReadsCommandExecutor(
-            final AmrProfileStatusCodeHelperService amrProfileStatusCodeHelperService) {
+    public GetPeriodicMeterReadsCommandExecutor() {
         super(PeriodicMeterReadsRequestDataDto.class);
-        this.amrProfileStatusCodeHelperService = amrProfileStatusCodeHelperService;
     }
 
     @Override
@@ -110,11 +106,11 @@ public class GetPeriodicMeterReadsCommandExecutor
                     "GetPeriodicMeterReads " + periodType + " from " + beginDateTime + " until " + endDateTime
                             + ", retrieve attribute: " + JdlmsObjectToStringUtil.describeAttributes(address));
 
-            getResultList.addAll(this.dlmsHelper
+            getResultList.addAll(DlmsHelper
                     .getAndCheck(conn, device, "retrieve periodic meter reads for " + periodType, address));
         }
 
-        final DataObject resultData = this.dlmsHelper.readDataObject(getResultList.get(0), "Periodic E-Meter Reads");
+        final DataObject resultData = DlmsHelper.readDataObject(getResultList.get(0), "Periodic E-Meter Reads");
         final List<DataObject> bufferedObjectsList = resultData.getValue();
 
         final List<PeriodicMeterReadsResponseItemDto> periodicMeterReads = new ArrayList<>();
@@ -136,11 +132,11 @@ public class GetPeriodicMeterReadsCommandExecutor
             final DateTime beginDateTime, final DateTime endDateTime, final List<DataObject> bufferedObjects,
             final List<GetResult> results) throws ProtocolAdapterException, BufferedDateTimeValidationException {
 
-        final CosemDateTimeDto cosemDateTime = this.dlmsHelper
+        final CosemDateTimeDto cosemDateTime = DlmsHelper
                 .readDateTime(bufferedObjects.get(BUFFER_INDEX_CLOCK), "Clock from " + periodType + " buffer");
         final DateTime bufferedDateTime = cosemDateTime == null ? null : cosemDateTime.asDateTime();
 
-        this.dlmsHelper.validateBufferedDateTime(bufferedDateTime, cosemDateTime, beginDateTime, endDateTime);
+        DlmsHelper.validateBufferedDateTime(bufferedDateTime, cosemDateTime, beginDateTime, endDateTime);
 
         LOGGER.debug("Processing profile (" + periodType + ") objects captured at: {}", cosemDateTime);
 
@@ -163,10 +159,10 @@ public class GetPeriodicMeterReadsCommandExecutor
         final AmrProfileStatusCodeDto amrProfileStatusCode = this
                 .readAmrProfileStatusCode(bufferedObjects.get(BUFFER_INDEX_AMR_STATUS));
 
-        final DlmsMeterValueDto positiveActiveEnergy = this.dlmsHelper
+        final DlmsMeterValueDto positiveActiveEnergy = DlmsHelper
                 .getScaledMeterValue(bufferedObjects.get(BUFFER_INDEX_A_POS),
                         results.get(RESULT_INDEX_IMPORT).getResultData(), "positiveActiveEnergy");
-        final DlmsMeterValueDto negativeActiveEnergy = this.dlmsHelper
+        final DlmsMeterValueDto negativeActiveEnergy = DlmsHelper
                 .getScaledMeterValue(bufferedObjects.get(BUFFER_INDEX_A_NEG),
                         results.get(RESULT_INDEX_IMPORT_2_OR_EXPORT).getResultData(), "negativeActiveEnergy");
 
@@ -180,16 +176,16 @@ public class GetPeriodicMeterReadsCommandExecutor
         final AmrProfileStatusCodeDto amrProfileStatusCode = this
                 .readAmrProfileStatusCode(bufferedObjects.get(BUFFER_INDEX_AMR_STATUS));
 
-        final DlmsMeterValueDto positiveActiveEnergyTariff1 = this.dlmsHelper
+        final DlmsMeterValueDto positiveActiveEnergyTariff1 = DlmsHelper
                 .getScaledMeterValue(bufferedObjects.get(BUFFER_INDEX_A_POS_RATE_1),
                         results.get(RESULT_INDEX_IMPORT).getResultData(), "positiveActiveEnergyTariff1");
-        final DlmsMeterValueDto positiveActiveEnergyTariff2 = this.dlmsHelper
+        final DlmsMeterValueDto positiveActiveEnergyTariff2 = DlmsHelper
                 .getScaledMeterValue(bufferedObjects.get(BUFFER_INDEX_A_POS_RATE_2),
                         results.get(RESULT_INDEX_IMPORT_2_OR_EXPORT).getResultData(), "positiveActiveEnergyTariff2");
-        final DlmsMeterValueDto negativeActiveEnergyTariff1 = this.dlmsHelper
+        final DlmsMeterValueDto negativeActiveEnergyTariff1 = DlmsHelper
                 .getScaledMeterValue(bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_1),
                         results.get(RESULT_INDEX_EXPORT).getResultData(), "negativeActiveEnergyTariff1");
-        final DlmsMeterValueDto negativeActiveEnergyTariff2 = this.dlmsHelper
+        final DlmsMeterValueDto negativeActiveEnergyTariff2 = DlmsHelper
                 .getScaledMeterValue(bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_2),
                         results.get(RESULT_INDEX_EXPORT_2).getResultData(), "negativeActiveEnergyTariff2");
 
@@ -217,7 +213,7 @@ public class GetPeriodicMeterReadsCommandExecutor
             throw new ProtocolAdapterException("Could not read AMR profile register data. Invalid data type.");
         }
 
-        final Set<AmrProfileStatusCodeFlagDto> flags = this.amrProfileStatusCodeHelperService
+        final Set<AmrProfileStatusCodeFlagDto> flags = AmrProfileStatusCodeHelper
                 .toAmrProfileStatusCodeFlags(amrProfileStatusData.getValue());
         return new AmrProfileStatusCodeDto(flags);
     }
@@ -230,16 +226,16 @@ public class GetPeriodicMeterReadsCommandExecutor
          * Buffer indexes minus one, since Monthly captured objects don't
          * include the AMR Profile status.
          */
-        final DlmsMeterValueDto positiveActiveEnergyTariff1 = this.dlmsHelper
+        final DlmsMeterValueDto positiveActiveEnergyTariff1 = DlmsHelper
                 .getScaledMeterValue(bufferedObjects.get(BUFFER_INDEX_A_POS_RATE_1 - 1),
                         results.get(RESULT_INDEX_IMPORT).getResultData(), "positiveActiveEnergyTariff1");
-        final DlmsMeterValueDto positiveActiveEnergyTariff2 = this.dlmsHelper
+        final DlmsMeterValueDto positiveActiveEnergyTariff2 = DlmsHelper
                 .getScaledMeterValue(bufferedObjects.get(BUFFER_INDEX_A_POS_RATE_2 - 1),
                         results.get(RESULT_INDEX_IMPORT_2_OR_EXPORT).getResultData(), "positiveActiveEnergyTariff2");
-        final DlmsMeterValueDto negativeActiveEnergyTariff1 = this.dlmsHelper
+        final DlmsMeterValueDto negativeActiveEnergyTariff1 = DlmsHelper
                 .getScaledMeterValue(bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_1 - 1),
                         results.get(RESULT_INDEX_EXPORT).getResultData(), "negativeActiveEnergyTariff1");
-        final DlmsMeterValueDto negativeActiveEnergyTariff2 = this.dlmsHelper
+        final DlmsMeterValueDto negativeActiveEnergyTariff2 = DlmsHelper
                 .getScaledMeterValue(bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_2 - 1),
                         results.get(RESULT_INDEX_EXPORT_2).getResultData(), "negativeActiveEnergyTariff2");
 
