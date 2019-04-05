@@ -37,8 +37,8 @@ public class Iec60870ServerEventListener implements ServerEventListener {
     }
 
     @Override
-        LOGGER.info("Client connected on connection ({}).", connection);
     public void connectionIndication(final Connection connection) {
+        LOGGER.info("Client connected on connection ({}).", connection);
 
         try {
             LOGGER.info("Waiting for StartDT on connection ({}) for {} ms.", connection, this.connectionTimeout);
