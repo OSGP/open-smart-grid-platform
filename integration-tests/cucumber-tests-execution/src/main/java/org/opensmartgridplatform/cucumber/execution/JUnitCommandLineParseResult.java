@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 
 public class JUnitCommandLineParseResult {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(JUnitCommandLineParseResult.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JUnitCommandLineParseResult.class);
 
     private static final String DASH_DASH = "--";
     private static final String DASH_DASH_FILTER = "--filter";
