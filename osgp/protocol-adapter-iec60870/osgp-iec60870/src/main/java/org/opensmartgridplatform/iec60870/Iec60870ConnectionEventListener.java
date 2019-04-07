@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.simulator.protocol.iec60870.server;
+package org.opensmartgridplatform.iec60870;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -27,14 +27,15 @@ public class Iec60870ConnectionEventListener implements ConnectionEventListener 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec60870ConnectionEventListener.class);
 
-    private final Iec60870ASduHandlerRegistry iec60870ASduHandlerRegistry;
     private final Connection connection;
-    private final int connectionId;
+    private final Iec60870ConnectionRegistry iec60870ConnectionRegistry;
+    private final Iec60870ASduHandlerRegistry iec60870ASduHandlerRegistry;
 
-    public Iec60870ConnectionEventListener(final Connection connection, final int connectionId,
+    public Iec60870ConnectionEventListener(final Connection connection,
+            final Iec60870ConnectionRegistry iec60870ConnectionRegistry,
             final Iec60870ASduHandlerRegistry iec60870aSduHandlerRegistry) {
         this.connection = connection;
-        this.connectionId = connectionId;
+        this.iec60870ConnectionRegistry = iec60870ConnectionRegistry;
         this.iec60870ASduHandlerRegistry = iec60870aSduHandlerRegistry;
     }
 
@@ -48,14 +49,15 @@ public class Iec60870ConnectionEventListener implements ConnectionEventListener 
         } catch (final Iec60870ASduHandlerNotFoundException e) {
             LOGGER.error("Unknown request received, no handler available for ASdu: {}", aSdu.toString(), e);
         } catch (final EOFException e) {
-            LOGGER.error("Connection closed on connection ({}).", this.connectionId, e);
+            LOGGER.error("Connection closed on connection ({}).", this.connection, e);
         } catch (final Exception e) {
-            LOGGER.error("Exception occurred on connection ({}).", this.connectionId, e);
+            LOGGER.error("Exception occurred on connection ({}).", this.connection, e);
         }
     }
 
     @Override
     public void connectionClosed(final IOException e) {
-        LOGGER.info("Connection ({}) closed.", this.connectionId, e);
+        LOGGER.info("Connection ({}) closed.", this.connection, e);
+        this.iec60870ConnectionRegistry.unregisterConnection(this.connection);
     }
 }

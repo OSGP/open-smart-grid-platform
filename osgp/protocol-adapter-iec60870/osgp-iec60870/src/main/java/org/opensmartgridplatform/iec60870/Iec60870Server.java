@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.simulator.protocol.iec60870.server;
+package org.opensmartgridplatform.iec60870;
 
 import java.io.IOException;
 
@@ -13,14 +13,13 @@ import org.openmuc.j60870.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Iec60870Simulator {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(Iec60870Simulator.class);
+public class Iec60870Server {
+    private static final Logger LOGGER = LoggerFactory.getLogger(Iec60870Server.class);
 
     private Iec60870ServerEventListener iec60870ServerEventListener;
     private Server server;
 
-    public Iec60870Simulator(final Iec60870ServerEventListener iec60870ServerEventListener) {
+    public Iec60870Server(final Iec60870ServerEventListener iec60870ServerEventListener) {
         this.iec60870ServerEventListener = iec60870ServerEventListener;
     }
 
@@ -42,4 +41,7 @@ public class Iec60870Simulator {
         LOGGER.info("Stopped IEC60870 Server.");
     }
 
+    public Iec60870ServerEventListener getIec60870ServerEventListener() {
+        return this.iec60870ServerEventListener;
+    }
 }

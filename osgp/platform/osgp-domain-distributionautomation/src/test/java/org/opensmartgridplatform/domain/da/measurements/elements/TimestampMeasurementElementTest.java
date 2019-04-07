@@ -1,0 +1,69 @@
+/**
+ * Copyright 2019 Smart Society Services B.V.
+ */
+package org.opensmartgridplatform.domain.da.measurements.elements;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+
+import org.junit.Test;
+
+public class TimestampMeasurementElementTest {
+
+    @Test
+    public void getValueShouldReturnCorrectValueWhenConstructedUsingTimestamp() {
+        // Arrange
+        final ZonedDateTime zonedDateTime = ZonedDateTime.of(2020, 2, 20, 21, 59, 59, 0, ZoneOffset.UTC);
+        final long expected = zonedDateTime.toInstant().toEpochMilli();
+
+        // Act
+        final TimestampMeasurementElement element = new TimestampMeasurementElement(expected);
+        final long actual = element.getValue();
+
+        // Assert
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void getValueShouldReturnCorrectValueWhenConstructedUsingZonedDateTime() {
+        // Arrange
+        final ZonedDateTime zonedDateTime = ZonedDateTime.of(2020, 2, 20, 21, 59, 59, 0, ZoneOffset.UTC);
+        final long expected = zonedDateTime.toInstant().toEpochMilli();
+
+        // Act
+        final TimestampMeasurementElement element = new TimestampMeasurementElement(zonedDateTime);
+        final long actual = element.getValue();
+
+        // Assert
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void AsZonedDateTimeShouldReturnCorrectZonedDateTimeWhenConstructedUsingTimestamp() {
+        // Arrange
+        final ZonedDateTime expected = ZonedDateTime.of(2020, 2, 20, 21, 59, 59, 0, ZoneOffset.UTC);
+        final long timestamp = expected.toInstant().toEpochMilli();
+
+        // Act
+        final TimestampMeasurementElement element = new TimestampMeasurementElement(timestamp);
+        final ZonedDateTime actual = element.asZonedDateTime();
+
+        // Assert
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void AsZonedDateTimeShouldReturnCorrectZonedDateTimeWhenConstructedUsingZonedDateTime() {
+        // Arrange
+        final ZonedDateTime expected = ZonedDateTime.of(2020, 2, 20, 21, 59, 59, 0, ZoneOffset.UTC);
+
+        // Act
+        final TimestampMeasurementElement element = new TimestampMeasurementElement(expected);
+        final ZonedDateTime actual = element.asZonedDateTime();
+
+        // Assert
+        assertThat(actual).isEqualTo(expected);
+    }
+}

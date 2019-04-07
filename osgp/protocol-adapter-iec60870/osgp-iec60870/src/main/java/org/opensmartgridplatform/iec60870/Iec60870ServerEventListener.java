@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.simulator.protocol.iec60870.server;
+package org.opensmartgridplatform.iec60870;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
@@ -25,33 +25,32 @@ public class Iec60870ServerEventListener implements ServerEventListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec60870ServerEventListener.class);
 
+    private Iec60870ConnectionRegistry iec60870ConnectionRegistry;
     private final Iec60870ASduHandlerRegistry iec60870ASduHandlerRegistry;
     private final int connectionTimeout;
 
-    private int connectionIdCounter = 1;
-
-    public Iec60870ServerEventListener(final Iec60870ASduHandlerRegistry iec60870ASduHandlerRegistry,
-            final int connectionTimeout) {
+    public Iec60870ServerEventListener(final Iec60870ConnectionRegistry iec60870ConnectionRegistry,
+            final Iec60870ASduHandlerRegistry iec60870ASduHandlerRegistry, final int connectionTimeout) {
+        this.iec60870ConnectionRegistry = iec60870ConnectionRegistry;
         this.iec60870ASduHandlerRegistry = iec60870ASduHandlerRegistry;
         this.connectionTimeout = connectionTimeout;
     }
 
     @Override
     public void connectionIndication(final Connection connection) {
-        final int connectionId = this.connectionIdCounter++;
-        LOGGER.info("Client connected on connection ({}).", connectionId);
+        LOGGER.info("Client connected on connection ({}).", connection);
 
         try {
-            LOGGER.info("Waiting for StartDT on connection ({}) for {} ms.", connectionId, this.connectionTimeout);
-            connection.waitForStartDT(
-                    new Iec60870ConnectionEventListener(connection, connectionId, this.iec60870ASduHandlerRegistry),
-                    this.connectionTimeout);
+            LOGGER.info("Waiting for StartDT on connection ({}) for {} ms.", connection, this.connectionTimeout);
+            connection.waitForStartDT(new Iec60870ConnectionEventListener(connection, this.iec60870ConnectionRegistry,
+                    this.iec60870ASduHandlerRegistry), this.connectionTimeout);
         } catch (final IOException | TimeoutException e) {
-            LOGGER.error("Exception occurred while connection ({}) was waiting for StartDT.", connectionId, e);
+            LOGGER.error("Exception occurred while connection ({}) was waiting for StartDT.", connection, e);
             return;
         }
 
-        LOGGER.info("Connection ({}) listening for incoming commands.", connectionId);
+        this.iec60870ConnectionRegistry.registerConnection(connection);
+        LOGGER.info("Connection ({}) listening for incoming commands.", connection);
     }
 
     @Override
