@@ -26,8 +26,6 @@ public class DataObjectToEventListConverter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataObjectToEventListConverter.class);
 
-    private final DlmsHelper dlmsHelper = new DlmsHelper();
-
     public List<EventDto> convert(final DataObject source, final EventLogCategoryDto eventLogCategory)
             throws ProtocolAdapterException {
         final List<EventDto> eventList = new ArrayList<>();
@@ -71,7 +69,7 @@ public class DataObjectToEventListConverter {
 
     private DateTime extractDateTime(final List<DataObject> eventData) throws ProtocolAdapterException {
 
-        final DateTime dateTime = this.dlmsHelper.convertDataObjectToDateTime(eventData.get(0)).asDateTime();
+        final DateTime dateTime = DlmsHelper.convertDataObjectToDateTime(eventData.get(0)).asDateTime();
         if (dateTime == null) {
             throw new ProtocolAdapterException("eventData time is null/unspecified");
         }

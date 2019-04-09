@@ -36,7 +36,6 @@ import org.openmuc.jdlms.datatypes.CosemDateTime.ClockStatus;
 import org.openmuc.jdlms.datatypes.CosemTime;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.DataObjectDefinitions;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.BufferedDateTimeValidationException;
@@ -79,6 +78,10 @@ public class DlmsHelper {
     }
 
     public static final int MILLISECONDS_PER_MINUTE = 60000;
+
+    private DlmsHelper() {
+        throw new IllegalStateException("Utility class");
+    }
 
     /**
      * Gets a single result from a meter, and returns the result data if

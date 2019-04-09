@@ -16,10 +16,9 @@ import org.joda.time.DateTime;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractPeriodicMeterReadsCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.JdlmsObjectToStringUtil;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.AmrProfileStatusCodeHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
@@ -60,8 +59,6 @@ public class GetPeriodicMeterReadsCommandExecutor
     private static final int BUFFER_INDEX_A_POS = 2;
     private static final int BUFFER_INDEX_A_NEG = 3;
 
-    private final AttributeAddressService attributeAddressService = new AttributeAddressService();
-
     @Autowired
     public GetPeriodicMeterReadsCommandExecutor() {
         super(PeriodicMeterReadsRequestDataDto.class);
@@ -88,7 +85,7 @@ public class GetPeriodicMeterReadsCommandExecutor
         final DateTime endDateTime = new DateTime(periodicMeterReadsRequest.getEndDate());
         final Protocol protocol = Protocol.withNameAndVersion(device.getProtocol(), device.getProtocolVersion());
 
-        final AttributeAddress[] profileBufferAndScalerUnit = this.attributeAddressService
+        final AttributeAddress[] profileBufferAndScalerUnit = AttributeAddressHelper
                 .getProfileBufferAndScalerUnitForPeriodicMeterReads(periodType, beginDateTime, endDateTime,
                         protocol.isSelectValuesInSelectiveAccessSupported());
 

@@ -31,7 +31,6 @@ public class InvocationCounterManager {
             new ObisCode(new byte[] { 0, 0, 43, 1, 0, -1 }), 2);
 
     private final DlmsConnectionFactory connectionFactory;
-    private final DlmsHelper dlmsHelper = new DlmsHelper();
     private final DlmsDeviceRepository deviceRepository;
 
     @Autowired
@@ -67,9 +66,8 @@ public class InvocationCounterManager {
 
     @SuppressWarnings("squid:S1905") // Casting to Number is necessary here.
     private int getInvocationCounter(final DlmsConnectionManager connectionManager) throws FunctionalException {
-        return ((Number) this.dlmsHelper
-                .getAttributeValue(connectionManager, ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE).getValue())
-                .intValue();
+        return ((Number) DlmsHelper.getAttributeValue(connectionManager, ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE)
+                .getValue()).intValue();
     }
 
     public void resetInvocationCounter(final DlmsDevice device) {

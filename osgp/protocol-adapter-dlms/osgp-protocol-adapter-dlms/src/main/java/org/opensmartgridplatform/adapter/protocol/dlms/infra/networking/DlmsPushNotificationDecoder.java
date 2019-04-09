@@ -1,9 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.networking;
 
@@ -16,12 +17,11 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.replay.ReplayingDecoder;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AlarmHelperService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm.AlarmHelperService;
 import org.opensmartgridplatform.dlms.DlmsPushNotification;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DlmsPushNotificationDecoder extends ReplayingDecoder<DlmsPushNotificationDecoder.DecodingState> {
 
@@ -47,8 +47,7 @@ public class DlmsPushNotificationDecoder extends ReplayingDecoder<DlmsPushNotifi
     private static final byte COMMA = 0x2C;
 
     public enum DecodingState {
-        EQUIPMENT_IDENTIFIER,
-        DATA_OBJECT;
+        EQUIPMENT_IDENTIFIER, DATA_OBJECT
     }
 
     private DlmsPushNotification.Builder builder;
@@ -90,8 +89,8 @@ public class DlmsPushNotificationDecoder extends ReplayingDecoder<DlmsPushNotifi
                     + " bytes for the equipment identifier, followed by byte 0x2C (a comma).");
         }
 
-        final byte[] equipmentIdentifierBytes = Arrays.copyOfRange(equipmentIdentifierPlusSeparatorBytes, 0,
-                EQUIPMENT_IDENTIFIER_LENGTH);
+        final byte[] equipmentIdentifierBytes = Arrays
+                .copyOfRange(equipmentIdentifierPlusSeparatorBytes, 0, EQUIPMENT_IDENTIFIER_LENGTH);
         final String equipmentIdentifier = new String(equipmentIdentifierBytes, StandardCharsets.US_ASCII);
         this.builder.withEquipmentIdentifier(equipmentIdentifier);
         this.builder.appendBytes(equipmentIdentifierPlusSeparatorBytes);
@@ -102,8 +101,9 @@ public class DlmsPushNotificationDecoder extends ReplayingDecoder<DlmsPushNotifi
         // Seems like BigEndianHeapChannelBuffer has some kind of overflow/underflow.
         final int readableBytes = buffer.writerIndex() - buffer.readerIndex();
         if (readableBytes > Math.max(NUMBER_OF_BYTES_FOR_ALARM, NUMBER_OF_BYTES_FOR_LOGICAL_NAME)) {
-            throw new UnrecognizedMessageDataException("length of data bytes is not " + NUMBER_OF_BYTES_FOR_ALARM
-                    + " (alarm) or " + NUMBER_OF_BYTES_FOR_LOGICAL_NAME + " (obiscode)");
+            throw new UnrecognizedMessageDataException(
+                    "length of data bytes is not " + NUMBER_OF_BYTES_FOR_ALARM + " (alarm) or "
+                            + NUMBER_OF_BYTES_FOR_LOGICAL_NAME + " (obiscode)");
         }
 
         if (readableBytes == NUMBER_OF_BYTES_FOR_ALARM) {

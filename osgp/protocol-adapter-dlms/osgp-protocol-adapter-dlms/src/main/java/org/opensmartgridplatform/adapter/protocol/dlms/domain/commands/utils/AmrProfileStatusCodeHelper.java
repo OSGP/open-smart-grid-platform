@@ -13,7 +13,6 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.ByteRegisterConverter;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AmrProfileStatusCodeFlagDto;
 
 public class AmrProfileStatusCodeHelper {
