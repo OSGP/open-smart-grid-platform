@@ -12,7 +12,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.testutil
 import static junit.framework.TestCase.fail;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.openmuc.jdlms.AttributeAddress;
@@ -56,7 +55,7 @@ public class TestUtil {
         } else if (actual.getType() == DataObject.Type.OCTET_STRING) {
             final byte[] actualOctetString = actual.getValue();
             final byte[] expectedOctetString = expected.getValue();
-            assertThat(Arrays.equals(actualOctetString, expectedOctetString)).isTrue();
+            assertThat(actualOctetString).isEqualTo(expectedOctetString);
         } else if (actual.isCosemDateFormat()) {
             assertThatDateIs(actual, expected);
         } else {
