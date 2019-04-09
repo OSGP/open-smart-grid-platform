@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-platform</artifactId>
-    <version>4.34.4-SNAPSHOT</version>
+    <version>4.34.4</version>
     <relativePath>../parent-platform/pom.xml</relativePath>
   </parent>
 
