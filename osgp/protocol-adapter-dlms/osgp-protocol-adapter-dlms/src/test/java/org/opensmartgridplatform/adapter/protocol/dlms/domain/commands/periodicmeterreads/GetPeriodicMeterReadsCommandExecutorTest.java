@@ -9,23 +9,23 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads;
 
 import static java.util.Arrays.asList;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.same;
-import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.GetPeriodicMeterReadsCommandExecutor.PERIODIC_E_METER_READS;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
-import java.util.GregorianCalendar;
+import java.util.List;
 
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.openmuc.jdlms.AttributeAddress;
@@ -34,87 +34,110 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AmrProfileStatusCodeHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.DlmsHelperService;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.GetResultBuilder;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.ProtocolFactory;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseItemDto;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GetPeriodicMeterReadsCommandExecutorTest {
     private static final AttributeAddress CLOCK = new AttributeAddress(8, new ObisCode(0, 0, 1, 0, 0, 255), 2);
 
+    @InjectMocks
     private GetPeriodicMeterReadsCommandExecutor executor;
 
     @Mock
-    private DlmsMessageListener listener;
-
+    private DlmsMessageListener dlmsMessageListener;
     @Mock
-    private DlmsHelperService helperService;
-
+    private DlmsHelperService dlmsHelperService;
     @Mock
     private AttributeAddressService attributeAddressService;
-
     @Mock
     private AmrProfileStatusCodeHelperService amrProfileStatusCodeHelperService;
-
+    @Mock
+    private ProtocolFactory protocolFactory;
+    @Mock
     private DlmsConnectionManager connectionManager;
-
-    @Captor
-    ArgumentCaptor<Boolean> isSelectingValuesSupportedCaptor;
 
     @Before
     public void setUp() {
-        this.executor = new GetPeriodicMeterReadsCommandExecutor(this.helperService,
-                this.amrProfileStatusCodeHelperService, this.attributeAddressService);
-        this.connectionManager = new DlmsConnectionManager(null, null, this.listener, null);
+        when(connectionManager.getDlmsMessageListener()).thenReturn(dlmsMessageListener);
     }
 
     @Test
-    public void testUsingIsSelectingValuesSupportedInExecute() throws Exception {
+    public void testHappy() throws Exception {
 
-        for (final Protocol protocol : Protocol.values()) {
-            this.assertIsSelectingValuesSupported(protocol.getName(), protocol.getVersion(),
-                    protocol.isSelectValuesInSelectiveAccessSupported());
-        }
-    }
+        // SETUP
+        String protocolName = "test-protocol-name";
+        String protocolVersion = "test-protocol-version";
+        Protocol procotol = Protocol.DSMR_4_2_2;
+        when(protocolFactory.getInstance(protocolName, protocolVersion)).thenReturn(procotol);
 
-    private void assertIsSelectingValuesSupported(final String protocolName, final String protocolVersion,
-            final boolean isSelectingValuesSupported) throws Exception {
+        PeriodTypeDto periodType = PeriodTypeDto.DAILY;
+        long from = 1111111L;
+        long to = 2222222L;
+        AttributeAddress attributeAddress = CLOCK;
+        AttributeAddress[] attributeAddresses = new AttributeAddress[] { attributeAddress };
+        when(this.attributeAddressService.getProfileBufferAndScalerUnitForPeriodicMeterReads(eq(periodType),
+                argThat(new TimeMatcher(from)), argThat(new TimeMatcher(to)),
+                eq(procotol.isSelectValuesInSelectiveAccessSupported()))).thenReturn(attributeAddresses);
 
-        // Create device with request protocol version
-        final DlmsDevice device = new DlmsDevice();
+        DataObject data0 = mock(DataObject.class);
+        DataObject data1 = mock(DataObject.class);
+        when(data1.isNumber()).thenReturn(true);
+        DataObject data2 = mock(DataObject.class);
+        DataObject data3 = mock(DataObject.class);
+        DataObject data4 = mock(DataObject.class);
+        DataObject data5 = mock(DataObject.class);
+        DataObject bufferedObject = mock(DataObject.class);
+        when(bufferedObject.getValue()).thenReturn(asList(data0, data1, data2, data3, data4, data5));
+        DataObject resultData = mock(DataObject.class);
+        when(resultData.getValue()).thenReturn(Collections.singletonList(bufferedObject));
+
+        DlmsDevice device = new DlmsDevice();
         device.setProtocol(protocolName, protocolVersion);
+        String expectedDescription = "retrieve periodic meter reads for " + periodType;
+        GetResult result0 = mock(GetResult.class);
+        GetResult result1 = mock(GetResult.class);
+        GetResult result2 = mock(GetResult.class);
+        GetResult result3 = mock(GetResult.class);
+        GetResult result4 = mock(GetResult.class);
+        GetResult result5 = mock(GetResult.class);
+        when(this.dlmsHelperService.getAndCheck(this.connectionManager, device, expectedDescription,
+                attributeAddress)).thenReturn(asList(result0, result1, result2, result3, result4, result5));
 
-        // Setup mocks
-        final GetResult getResult1 = new GetResultBuilder().build();
-        final GetResult getResult2 = new GetResultBuilder().build();
-        final DataObject resultData = DataObject.newArrayData(new ArrayList<>());
-        final AttributeAddress[] attributeAddresses = new AttributeAddress[] { CLOCK };
+        when(this.dlmsHelperService.readDataObject(result0, PERIODIC_E_METER_READS)).thenReturn(resultData);
 
-        when(this.helperService.getAndCheck(same(this.connectionManager), same(device), any(), any()))
-                .thenReturn(asList(getResult1, getResult2));
-        when(this.helperService.readDataObject(any(), any())).thenReturn(resultData);
-        when(this.attributeAddressService
-                .getProfileBufferAndScalerUnitForPeriodicMeterReads(any(), any(), any(), anyBoolean()))
-                .thenReturn(attributeAddresses);
+        CosemDateTimeDto cosemDateTime = mock(CosemDateTimeDto.class);
+        String expectedDateTimeDescription = "Clock from " + periodType + " buffer";
+        when(this.dlmsHelperService.readDateTime(data0, expectedDateTimeDescription)).thenReturn(cosemDateTime);
+        DateTime bufferedDateTime = DateTime.now();
+        when(cosemDateTime.asDateTime()).thenReturn(bufferedDateTime);
 
-        // Execute request
-        final Date timeFrom = new GregorianCalendar(2019, 1, 1).getTime();
-        final Date timeTo = new GregorianCalendar(2019, 1, 5).getTime();
-        final PeriodicMeterReadsRequestDto request = new PeriodicMeterReadsRequestDto(PeriodTypeDto.DAILY, timeFrom,
-                timeTo);
-        this.executor.execute(this.connectionManager, device, request);
+        // TODO: mock other calls
 
-        // Check if command executor uses right setting
-        verify(this.attributeAddressService).getProfileBufferAndScalerUnitForPeriodicMeterReads(any(), any(), any(),
-                this.isSelectingValuesSupportedCaptor.capture());
-        assertThat(this.isSelectingValuesSupportedCaptor.getValue()).isEqualTo(isSelectingValuesSupported);
+        PeriodicMeterReadsRequestDto request = new PeriodicMeterReadsRequestDto(periodType, new Date(from),
+                new Date(to));
 
-        // Reset mock
-        reset(this.attributeAddressService);
+        // CALL
+        PeriodicMeterReadsResponseDto result = this.executor.execute(this.connectionManager, device, request);
+
+        // VERIFY
+        verify(dlmsMessageListener).setDescription(
+                "GetPeriodicMeterReads DAILY from 1970-01-01T01:18:31.111+01:00 until 1970-01-01T01:37:02.222+01:00, "
+                        + "retrieve attribute: {8,0.0.1.0.0.255,2}");
+
+        verify(this.dlmsHelperService).validateBufferedDateTime(same(bufferedDateTime), same(cosemDateTime),
+                argThat(new TimeMatcher(from)), argThat(new TimeMatcher(to)));
+
+        List<PeriodicMeterReadsResponseItemDto> periodicMeterReads = result.getPeriodicMeterReads();
+        // TODO: assert contents of result
     }
 }
 
