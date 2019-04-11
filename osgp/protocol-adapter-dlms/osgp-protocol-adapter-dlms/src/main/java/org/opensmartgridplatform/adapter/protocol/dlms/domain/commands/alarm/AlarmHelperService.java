@@ -72,27 +72,9 @@ public class AlarmHelperService {
                 NUMBER_OF_BITS_IN_REGISTER);
     }
 
-    /**
-     * Returns an unmodifiable instance of the map containing a bit index for
-     * every AlarmType.
-     *
-     * @return an unmodifiable map containing every AlarmType and it's bit
-     *         index.
-     */
-    public Map<AlarmTypeDto, Integer> getAlarmRegisterBitIndexPerAlarmType() {
-        return Collections.unmodifiableMap(map);
-    }
 
-    /**
-     * Returns the position of the bit value for the given AlarmType, in the
-     * 4-byte register space.
-     *
-     * @param alarmType
-     *            AlarmType
-     * @return position of the bit holding the alarm type value.
-     */
-    public Integer toBitPosition(final AlarmTypeDto alarmType) {
-        return BYTE_REGISTER_CONVERTER.toBitPosition(alarmType);
+    Integer getBitIndexForAlarmType(AlarmTypeDto alarmType) {
+        return map.get(alarmType);
     }
 
     /**
@@ -107,6 +89,19 @@ public class AlarmHelperService {
         return BYTE_REGISTER_CONVERTER.toTypes(registerValue.longValue());
     }
 
+
+    /**
+     * Returns the position of the bit value for the given AlarmType, in the
+     * 4-byte register space.
+     *
+     * @param alarmType
+     *            AlarmType
+     * @return position of the bit holding the alarm type value.
+     */
+    Integer toBitPosition(final AlarmTypeDto alarmType) {
+        return BYTE_REGISTER_CONVERTER.toBitPosition(alarmType);
+    }
+
     /**
      * Calculate the long value for the given set of AlarmTypes
      *
@@ -114,7 +109,7 @@ public class AlarmHelperService {
      *            Set of AlarmTypes
      * @return Long value.
      */
-    public Long toLongValue(final Set<AlarmTypeDto> alarmTypes) {
+    Long toLongValue(final Set<AlarmTypeDto> alarmTypes) {
         return BYTE_REGISTER_CONVERTER.toLongValue(alarmTypes);
     }
 }

@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm;
 
 import java.io.IOException;
 import java.util.BitSet;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -82,8 +83,8 @@ public class SetAlarmNotificationsCommandExecutor
             LOGGER.info("Alarm Filter on device before setting notifications: {}", alarmNotificationsOnDevice);
 
             final long alarmFilterLongValueOnDevice = this.alarmFilterLongValue(alarmNotificationsOnDevice);
-            final long updatedAlarmFilterLongValue = this
-                    .calculateAlarmFilterLongValue(alarmNotificationsOnDevice, alarmNotifications);
+            final long updatedAlarmFilterLongValue = this.calculateAlarmFilterLongValue(alarmNotificationsOnDevice,
+                    alarmNotifications);
 
             if (alarmFilterLongValueOnDevice == updatedAlarmFilterLongValue) {
                 return AccessResultCode.SUCCESS;
@@ -103,13 +104,11 @@ public class SetAlarmNotificationsCommandExecutor
         final AttributeAddress alarmFilterValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
         conn.getDlmsMessageListener().setDescription(
-                "SetAlarmNotifications retrieve current value, retrieve attribute: " + JdlmsObjectToStringUtil
-                        .describeAttributes(alarmFilterValue));
+                "SetAlarmNotifications retrieve current value, retrieve attribute: "
+                        + JdlmsObjectToStringUtil.describeAttributes(alarmFilterValue));
 
-        LOGGER.info(
-                "Retrieving current alarm filter by issuing get request for class id: {}, obis code: {}, attribute "
-                        + "id: {}",
-                CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
+        LOGGER.info("Retrieving current alarm filter by issuing get request for class id: {}, obis code: {}, attribute "
+                + "id: {}", CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
         final GetResult getResult = conn.getConnection().get(alarmFilterValue);
 
         if (getResult == null) {
@@ -154,31 +153,6 @@ public class SetAlarmNotificationsCommandExecutor
 
     }
 
-    private long calculateAlarmFilterLongValue(final AlarmNotificationsDto alarmNotificationsOnDevice,
-            final AlarmNotificationsDto alarmNotificationsToSet) {
-
-        /*
-         * Create a new (modifiable) set of alarm notifications, based on the
-         * notifications to set.
-         *
-         * Next, add all notifications on the device. These will only really be
-         * added to the new set of notifications if it did not contain a
-         * notification for the alarm type for which the notification is added.
-         *
-         * This works because of the specification of addAll for the set,
-         * claiming elements will only be added if not already present, and the
-         * definition of equals on the AlarmNotification, ensuring only a single
-         * setting per AlarmType.
-         */
-
-        final Set<AlarmNotificationDto> notificationsToSet = new TreeSet<>(
-                alarmNotificationsToSet.getAlarmNotificationsSet());
-
-        notificationsToSet.addAll(alarmNotificationsOnDevice.getAlarmNotificationsSet());
-
-        return this.alarmFilterLongValue(new AlarmNotificationsDto(notificationsToSet));
-    }
-
     private AlarmNotificationsDto alarmNotifications(final long alarmFilterLongValue) {
 
         final BitSet bitSet = BitSet.valueOf(new long[] { alarmFilterLongValue });
@@ -186,20 +160,27 @@ public class SetAlarmNotificationsCommandExecutor
 
         final AlarmTypeDto[] alarmTypes = AlarmTypeDto.values();
         for (final AlarmTypeDto alarmType : alarmTypes) {
-            final boolean enabled = bitSet
-                    .get(this.alarmHelperService.getAlarmRegisterBitIndexPerAlarmType().get(alarmType));
+            final boolean enabled = bitSet.get(this.alarmHelperService.getBitIndexForAlarmType(alarmType));
             notifications.add(new AlarmNotificationDto(alarmType, enabled));
         }
 
         return new AlarmNotificationsDto(notifications);
     }
 
-    private long alarmFilterLongValue(final AlarmNotificationsDto alarmNotifications) {
+    private long calculateAlarmFilterLongValue(final AlarmNotificationsDto existingNotifications,
+            final AlarmNotificationsDto newNotifications) {
+        AlarmNotificationsDto notifications = new AlarmNotificationsDto(new HashSet<>(
+                newNotifications.getAlarmNotificationsSet()));
+        // adds only existing notifications with unique AlarmTypeDto
+        notifications.getAlarmNotificationsSet().addAll(existingNotifications.getAlarmNotificationsSet());
+        return this.alarmFilterLongValue(notifications);
+    }
 
+    private long alarmFilterLongValue(final AlarmNotificationsDto alarmNotifications) {
         final BitSet bitSet = new BitSet(NUMBER_OF_BITS_IN_ALARM_FILTER);
         for (final AlarmNotificationDto alarmNotification : alarmNotifications.getAlarmNotificationsSet()) {
-            bitSet.set(this.alarmHelperService.getAlarmRegisterBitIndexPerAlarmType()
-                    .get(alarmNotification.getAlarmType()), alarmNotification.isEnabled());
+            Integer index = this.alarmHelperService.getBitIndexForAlarmType(alarmNotification.getAlarmType());
+            bitSet.set(index, alarmNotification.isEnabled());
         }
 
         /*
