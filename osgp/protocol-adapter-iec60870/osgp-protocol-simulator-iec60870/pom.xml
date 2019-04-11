@@ -58,13 +58,6 @@
   </properties>
 
   <dependencies>
-    <!-- j60870 -->
-<!--     <dependency> -->
-<!--       <groupId>org.openmuc</groupId> -->
-<!--       <artifactId>j60870</artifactId> -->
-<!--       <version>${openmuc.j60870.version}</version> -->
-<!--     </dependency> -->
-
     <!-- iec60870 -->
     <dependency>
       <groupId>org.opensmartgridplatform</groupId>
@@ -83,6 +76,7 @@
       <artifactId>spring-boot-starter-tomcat</artifactId>
       <scope>provided</scope>
     </dependency>
+
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>

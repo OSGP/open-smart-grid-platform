@@ -37,8 +37,13 @@ public class Iec60870InterrogationCommandASduHandler extends Iec60870ASduHandler
         LOGGER.info("Received interrogation command. Sending confirmation for ASdu: {}", aSdu);
         connection.sendConfirmation(aSdu);
 
-        final ASdu responseASdu = this.iec60870aSduFactory.createInterrogationCommandResponseASdu();
-        LOGGER.info("Processing interrogation command. Sending response ASdu: {}.", responseASdu);
-        connection.send(responseASdu);
+        final ASdu responseAsdu = this.iec60870aSduFactory.createInterrogationCommandResponseASdu();
+        LOGGER.info("Processing interrogation command. Sending response ASdu: {}.", responseAsdu);
+        connection.send(responseAsdu);
+
+        final ASdu terminationAsdu = this.iec60870aSduFactory.createActivationTerminationResponseASdu();
+        LOGGER.info("Finished processing interrogation command. Sending terminiation ASdu: {}", terminationAsdu);
+        connection.send(aSdu);
+
     }
 }
