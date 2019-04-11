@@ -61,7 +61,7 @@ public class Iec60870ConnectionEventListenerTest {
     @Test
     public void interrogationCommandShouldBeHandledByInterrogationCommandHandler() throws Exception {
         // Arrange
-        final ASdu aSdu = this.iec60870aSduFactory.createInterrogationCommandASdu();
+        final ASdu aSdu = this.iec60870aSduFactory.createInterrogationCommandAsdu();
         when(this.iec60870ASduHandlerRegistry.getHandler(TypeId.C_IC_NA_1))
                 .thenReturn(this.interrogationCommandHandler);
 
@@ -75,7 +75,7 @@ public class Iec60870ConnectionEventListenerTest {
     @Test
     public void singleCommandShouldBeHandledBySingleCommandHandler() throws Exception {
         // Arrange
-        final ASdu aSdu = this.iec60870aSduFactory.createSingleCommandASdu();
+        final ASdu aSdu = this.iec60870aSduFactory.createSingleCommandAsdu();
         when(this.iec60870ASduHandlerRegistry.getHandler(TypeId.C_SC_NA_1)).thenReturn(this.singleCommandHandler);
 
         // Act

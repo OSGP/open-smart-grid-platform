@@ -13,7 +13,6 @@ import org.opensmartgridplatform.iec60870.Iec60870Server;
 import org.opensmartgridplatform.iec60870.Iec60870ServerEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -29,29 +28,20 @@ public class Iec60870SimulatorConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec60870SimulatorConfig.class);
 
-    @Autowired
-    private Iec60870ConnectionRegistry iec60870ConnectionRegistry;
-
-    @Autowired
-    private Iec60870ASduHandlerRegistry iec60870ASduHandlerRegistry;
-
     @Value("${iec60870.simulator.connection.timeout}")
     private int connectionTimeout;
 
     @Bean(destroyMethod = "stop")
-    public Iec60870Server iec60870Server() {
+    public Iec60870Server iec60870Server(final Iec60870ConnectionRegistry iec60870ConnectionRegistry,
+            final Iec60870ASduHandlerRegistry iec60870ASduHandlerRegistry) {
         LOGGER.debug("Creating IEC60870 Simulator Bean.");
-        final Iec60870Server server = new Iec60870Server(this.iec60870ServerEventListener());
+
+        final Iec60870Server server = new Iec60870Server(new Iec60870ServerEventListener(iec60870ConnectionRegistry,
+                iec60870ASduHandlerRegistry, this.connectionTimeout));
 
         LOGGER.debug("Starting IEC60870 Simulator.");
         server.start();
 
         return server;
-    }
-
-    @Bean
-    public Iec60870ServerEventListener iec60870ServerEventListener() {
-        return new Iec60870ServerEventListener(this.iec60870ConnectionRegistry, this.iec60870ASduHandlerRegistry,
-                this.connectionTimeout);
     }
 }
