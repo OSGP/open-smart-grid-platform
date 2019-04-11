@@ -38,7 +38,7 @@ public class Iec60870ASduFactoryTests {
                         new InformationElement[][] { { new IeQualifierOfInterrogation(20) } }) });
 
         // Act
-        final ASdu actual = this.iec60870ASduFactory.createInterrogationCommandASdu();
+        final ASdu actual = this.iec60870ASduFactory.createInterrogationCommandAsdu();
 
         // Assert
         assertThat(actual).isEqualToComparingFieldByFieldRecursively(expected);
@@ -64,7 +64,7 @@ public class Iec60870ASduFactoryTests {
         // @formatter:on
 
         // Act
-        final ASdu actual = this.iec60870ASduFactory.createInterrogationCommandResponseASdu(timestamp);
+        final ASdu actual = this.iec60870ASduFactory.createInterrogationCommandResponseAsdu(timestamp);
 
         // Assert
         assertThat(actual).isEqualToComparingFieldByFieldRecursively(expected);
@@ -78,7 +78,7 @@ public class Iec60870ASduFactoryTests {
                         new InformationElement[][] { { new IeQualifierOfInterrogation(20) } }) });
 
         // Act
-        final ASdu actual = this.iec60870ASduFactory.createSingleCommandASdu();
+        final ASdu actual = this.iec60870ASduFactory.createSingleCommandAsdu();
 
         // Assert
         assertThat(actual).isEqualToComparingFieldByFieldRecursively(expected);

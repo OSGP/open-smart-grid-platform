@@ -35,20 +35,13 @@ public class Iec60870SimulatorConfig {
     public Iec60870Server iec60870Server(final Iec60870ConnectionRegistry iec60870ConnectionRegistry,
             final Iec60870ASduHandlerRegistry iec60870ASduHandlerRegistry) {
         LOGGER.debug("Creating IEC60870 Simulator Bean.");
-        final Iec60870Server server = new Iec60870Server(
-                this.iec60870ServerEventListener(iec60870ConnectionRegistry, iec60870ASduHandlerRegistry));
+
+        final Iec60870Server server = new Iec60870Server(new Iec60870ServerEventListener(iec60870ConnectionRegistry,
+                iec60870ASduHandlerRegistry, this.connectionTimeout));
 
         LOGGER.debug("Starting IEC60870 Simulator.");
         server.start();
 
         return server;
-    }
-
-    @Bean
-    public Iec60870ServerEventListener iec60870ServerEventListener(
-            final Iec60870ConnectionRegistry iec60870ConnectionRegistry,
-            final Iec60870ASduHandlerRegistry iec60870ASduHandlerRegistry) {
-        return new Iec60870ServerEventListener(iec60870ConnectionRegistry, iec60870ASduHandlerRegistry,
-                this.connectionTimeout);
     }
 }

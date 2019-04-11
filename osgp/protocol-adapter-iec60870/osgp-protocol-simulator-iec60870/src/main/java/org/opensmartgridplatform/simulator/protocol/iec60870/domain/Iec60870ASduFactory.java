@@ -33,7 +33,7 @@ public class Iec60870ASduFactory {
     private static final IeQualifierOfInterrogation DEFAULT_IE_QUALIFIER_OF_INTERROGATION =
             new IeQualifierOfInterrogation(20);
 
-    public ASdu createInterrogationCommandASdu() {
+    public ASdu createInterrogationCommandAsdu() {
         return new Iec60870ASduBuilder().withTypeId(TypeId.C_IC_NA_1)
                 .withCauseOfTransmission(CauseOfTransmission.ACTIVATION)
                 .withInformationObjects(new InformationObject[] { new InformationObject(0,
@@ -41,12 +41,12 @@ public class Iec60870ASduFactory {
                 .build();
     }
 
-    public ASdu createInterrogationCommandResponseASdu() {
+    public ASdu createInterrogationCommandResponseAsdu() {
         final long timestamp = ZonedDateTime.now(ZoneOffset.UTC).toInstant().toEpochMilli();
-        return this.createInterrogationCommandResponseASdu(timestamp);
+        return this.createInterrogationCommandResponseAsdu(timestamp);
     }
 
-    public ASdu createInterrogationCommandResponseASdu(final long timestamp) {
+    public ASdu createInterrogationCommandResponseAsdu(final long timestamp) {
         return new Iec60870ASduBuilder().withTypeId(TypeId.M_ME_TF_1).withSequenceOfElements(false)
                 .withCauseOfTransmission(CauseOfTransmission.SPONTANEOUS)
                 .withInformationObjects(new InformationObject[] {
@@ -66,7 +66,7 @@ public class Iec60870ASduFactory {
                 .build();
     }
 
-    public ASdu createActivationTerminationResponseASdu() {
+    public ASdu createActivationTerminationResponseAsdu() {
         return new Iec60870ASduBuilder().withTypeId(TypeId.C_IC_NA_1).withSequenceOfElements(false)
                 .withCauseOfTransmission(CauseOfTransmission.ACTIVATION_TERMINATION)
                 .withInformationObjects(new InformationObject[] { new InformationObject(0,
@@ -74,7 +74,7 @@ public class Iec60870ASduFactory {
                 .build();
     }
 
-    public ASdu createSingleCommandASdu() {
+    public ASdu createSingleCommandAsdu() {
         return new Iec60870ASduBuilder().withTypeId(TypeId.C_SC_NA_1)
                 .withCauseOfTransmission(CauseOfTransmission.SPONTANEOUS)
                 .withInformationObjects(new InformationObject[] { new InformationObject(0,

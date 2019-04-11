@@ -26,24 +26,24 @@ public class Iec60870InterrogationCommandASduHandler extends Iec60870ASduHandler
     private static final TypeId TYPE_ID = TypeId.C_IC_NA_1;
 
     @Autowired
-    private Iec60870ASduFactory iec60870aSduFactory;
+    private Iec60870ASduFactory iec60870AsduFactory;
 
     public Iec60870InterrogationCommandASduHandler() {
         super(TYPE_ID);
     }
 
     @Override
-    public void handleASdu(final Connection connection, final ASdu aSdu) throws IOException {
-        LOGGER.info("Received interrogation command. Sending confirmation for ASdu: {}", aSdu);
-        connection.sendConfirmation(aSdu);
+    public void handleASdu(final Connection connection, final ASdu asdu) throws IOException {
+        LOGGER.info("Received interrogation command. Sending confirmation for ASDU: {}", asdu);
+        connection.sendConfirmation(asdu);
 
-        final ASdu responseAsdu = this.iec60870aSduFactory.createInterrogationCommandResponseASdu();
-        LOGGER.info("Processing interrogation command. Sending response ASdu: {}.", responseAsdu);
+        final ASdu responseAsdu = this.iec60870AsduFactory.createInterrogationCommandResponseAsdu();
+        LOGGER.info("Processing interrogation command. Sending response ASDU: {}.", responseAsdu);
         connection.send(responseAsdu);
 
-        final ASdu terminationAsdu = this.iec60870aSduFactory.createActivationTerminationResponseASdu();
-        LOGGER.info("Finished processing interrogation command. Sending terminiation ASdu: {}", terminationAsdu);
-        connection.send(aSdu);
+        final ASdu terminationAsdu = this.iec60870AsduFactory.createActivationTerminationResponseAsdu();
+        LOGGER.info("Finished processing interrogation command. Sending termination ASDU: {}", terminationAsdu);
+        connection.send(asdu);
 
     }
 }
