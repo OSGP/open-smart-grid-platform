@@ -27,11 +27,11 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AmrProfileStatusCodeHelperService;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.DlmsHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.DlmsConnectionManagerStub;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.DlmsConnectionStub;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.testutil.TestUtil;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.AmrProfileStatusCodeHelper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelDto;
@@ -43,8 +43,8 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
 
     private GetPeriodicMeterReadsGasCommandExecutor executor;
 
-    private DlmsHelperService dlmsHelperService;
-    private AmrProfileStatusCodeHelperService amrProfileStatusCodeHelperService;
+    private DlmsHelper dlmsHelper;
+    private AmrProfileStatusCodeHelper amrProfileStatusCodeHelper;
 
     private DlmsConnectionManagerStub connectionManagerStub;
     private DlmsConnectionStub connectionStub;
@@ -94,11 +94,10 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
 
     @Before
     public void setUp() {
-        this.dlmsHelperService = new DlmsHelperService();
-        this.amrProfileStatusCodeHelperService = new AmrProfileStatusCodeHelperService();
+        this.dlmsHelper = new DlmsHelper();
+        this.amrProfileStatusCodeHelper = new AmrProfileStatusCodeHelper();
 
-        this.executor = new GetPeriodicMeterReadsGasCommandExecutor(this.dlmsHelperService,
-                this.amrProfileStatusCodeHelperService);
+        this.executor = new GetPeriodicMeterReadsGasCommandExecutor(this.dlmsHelper, this.amrProfileStatusCodeHelper);
         this.connectionStub = new DlmsConnectionStub();
         this.connectionManagerStub = new DlmsConnectionManagerStub(this.connectionStub);
 
@@ -174,8 +173,8 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
 
     private AttributeAddress createAttributeAddress(final Protocol protocol, final PeriodTypeDto type,
             final Date timeFrom, final Date timeTo) throws Exception {
-        final DataObject from = this.dlmsHelperService.asDataObject(new DateTime(timeFrom));
-        final DataObject to = this.dlmsHelperService.asDataObject(new DateTime(timeTo));
+        final DataObject from = this.dlmsHelper.asDataObject(new DateTime(timeFrom));
+        final DataObject to = this.dlmsHelper.asDataObject(new DateTime(timeTo));
 
         if (protocol == Protocol.DSMR_4_2_2) {
             if (type == PeriodTypeDto.DAILY) {

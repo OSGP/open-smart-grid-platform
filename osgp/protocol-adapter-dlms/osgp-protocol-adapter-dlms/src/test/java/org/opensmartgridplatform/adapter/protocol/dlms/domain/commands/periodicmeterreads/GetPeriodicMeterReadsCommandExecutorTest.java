@@ -32,9 +32,9 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AmrProfileStatusCodeHelperService;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.DlmsHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.testutil.GetResultBuilder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.AmrProfileStatusCodeHelper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
@@ -52,13 +52,13 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
     private DlmsMessageListener listener;
 
     @Mock
-    private DlmsHelperService helperService;
+    private DlmsHelper helperService;
 
     @Mock
     private AttributeAddressService attributeAddressService;
 
     @Mock
-    private AmrProfileStatusCodeHelperService amrProfileStatusCodeHelperService;
+    private AmrProfileStatusCodeHelper amrProfileStatusCodeHelper;
 
     private DlmsConnectionManager connectionManager;
 
@@ -67,8 +67,8 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
 
     @Before
     public void setUp() {
-        this.executor = new GetPeriodicMeterReadsCommandExecutor(this.helperService,
-                this.amrProfileStatusCodeHelperService, this.attributeAddressService);
+        this.executor = new GetPeriodicMeterReadsCommandExecutor(this.helperService, this.amrProfileStatusCodeHelper,
+                this.attributeAddressService);
         this.connectionManager = new DlmsConnectionManager(null, null, this.listener, null);
     }
 

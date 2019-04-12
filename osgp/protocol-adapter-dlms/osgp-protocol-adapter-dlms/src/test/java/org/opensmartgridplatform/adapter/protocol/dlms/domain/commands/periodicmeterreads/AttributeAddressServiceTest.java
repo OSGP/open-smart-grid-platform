@@ -32,21 +32,26 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.DataObjectDefinitions;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.DlmsHelperService;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DataObjectDefinitions;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodTypeDto;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AttributeAddressServiceTest {
     private static final AttributeAddress CLOCK = new AttributeAddress(8, new ObisCode(0, 0, 1, 0, 0, 255), 2);
-    private static final AttributeAddress AMR_PROFILE_STATUS = new AttributeAddress(1, new ObisCode(0, 0, 96, 10, 2, 255), 2);
-    private static final AttributeAddress ACTIVE_ENERGY_IMPORT_RATE_1 = new AttributeAddress(3, OBIS_CODE_MONTHLY_DAILY_IMPORT_RATE_1, 2);
-    private static final AttributeAddress ACTIVE_ENERGY_IMPORT_RATE_2 = new AttributeAddress(3, OBIS_CODE_MONTHLY_DAILY_IMPORT_RATE_2, 2);
-    private static final AttributeAddress ACTIVE_ENERGY_EXPORT_RATE_1 = new AttributeAddress(3, OBIS_CODE_MONTHLY_DAILY_EXPORT_RATE_1, 2);
-    private static final AttributeAddress ACTIVE_ENERGY_EXPORT_RATE_2 = new AttributeAddress(3, OBIS_CODE_MONTHLY_DAILY_EXPORT_RATE_2, 2);
+    private static final AttributeAddress AMR_PROFILE_STATUS = new AttributeAddress(1,
+            new ObisCode(0, 0, 96, 10, 2, 255), 2);
+    private static final AttributeAddress ACTIVE_ENERGY_IMPORT_RATE_1 = new AttributeAddress(3,
+            OBIS_CODE_MONTHLY_DAILY_IMPORT_RATE_1, 2);
+    private static final AttributeAddress ACTIVE_ENERGY_IMPORT_RATE_2 = new AttributeAddress(3,
+            OBIS_CODE_MONTHLY_DAILY_IMPORT_RATE_2, 2);
+    private static final AttributeAddress ACTIVE_ENERGY_EXPORT_RATE_1 = new AttributeAddress(3,
+            OBIS_CODE_MONTHLY_DAILY_EXPORT_RATE_1, 2);
+    private static final AttributeAddress ACTIVE_ENERGY_EXPORT_RATE_2 = new AttributeAddress(3,
+            OBIS_CODE_MONTHLY_DAILY_EXPORT_RATE_2, 2);
 
     @Mock
-    private DlmsHelperService helperService;
+    private DlmsHelper helperService;
 
     private AttributeAddressService service;
 
@@ -60,15 +65,13 @@ public class AttributeAddressServiceTest {
 
     @Test
     public void testSelectedValuesForPeriodicMeterReads() throws Exception {
-        final List<AttributeAddress> expectedAttributeAddressesDaily = Arrays.asList(
-                CLOCK, AMR_PROFILE_STATUS,
-                ACTIVE_ENERGY_IMPORT_RATE_1, ACTIVE_ENERGY_IMPORT_RATE_2,
-                ACTIVE_ENERGY_EXPORT_RATE_1, ACTIVE_ENERGY_EXPORT_RATE_2);
+        final List<AttributeAddress> expectedAttributeAddressesDaily = Arrays
+                .asList(CLOCK, AMR_PROFILE_STATUS, ACTIVE_ENERGY_IMPORT_RATE_1, ACTIVE_ENERGY_IMPORT_RATE_2,
+                        ACTIVE_ENERGY_EXPORT_RATE_1, ACTIVE_ENERGY_EXPORT_RATE_2);
 
-        final List<AttributeAddress> expectedAttributeAddressesMonthly = Arrays.asList(
-                CLOCK,
-                ACTIVE_ENERGY_IMPORT_RATE_1, ACTIVE_ENERGY_IMPORT_RATE_2,
-                ACTIVE_ENERGY_EXPORT_RATE_1, ACTIVE_ENERGY_EXPORT_RATE_2);
+        final List<AttributeAddress> expectedAttributeAddressesMonthly = Arrays
+                .asList(CLOCK, ACTIVE_ENERGY_IMPORT_RATE_1, ACTIVE_ENERGY_IMPORT_RATE_2, ACTIVE_ENERGY_EXPORT_RATE_1,
+                        ACTIVE_ENERGY_EXPORT_RATE_2);
 
         List<DataObject> selectedValues;
 
@@ -97,13 +100,14 @@ public class AttributeAddressServiceTest {
         // Setup mocks
         when(this.helperService.getAMRProfileDefinition()).thenReturn(DataObjectDefinitions.getAMRProfileDefinition());
         when(this.helperService.getClockDefinition()).thenReturn(DataObjectDefinitions.getClockDefinition());
-        when(this.helperService.getAccessSelectionTimeRangeParameter(any(), any(), any())).thenReturn(DataObject.newNullData());
+        when(this.helperService.getAccessSelectionTimeRangeParameter(any(), any(), any()))
+                .thenReturn(DataObject.newNullData());
 
         this.service.getProfileBufferAndScalerUnitForPeriodicMeterReads(periodType, DateTime.now(), DateTime.now(),
                 isSelectingValuesSupported);
 
-        verify(this.helperService).getAccessSelectionTimeRangeParameter(any(), any(),
-                this.dataObjectSelectedValuesCaptor.capture());
+        verify(this.helperService)
+                .getAccessSelectionTimeRangeParameter(any(), any(), this.dataObjectSelectedValuesCaptor.capture());
 
         reset(this.helperService);
 
@@ -111,26 +115,28 @@ public class AttributeAddressServiceTest {
         return this.dataObjectSelectedValuesCaptor.getValue().getValue();
     }
 
-    private void assertListContainsObisCodes(final List<DataObject> dataObjects, final List<AttributeAddress> attributeAddresses) {
+    private void assertListContainsObisCodes(final List<DataObject> dataObjects,
+            final List<AttributeAddress> attributeAddresses) {
         assertThat(dataObjects.size()).isEqualTo(attributeAddresses.size());
 
         for (final AttributeAddress attributeAddress : attributeAddresses) {
-            this.assertListContainsObisCode(dataObjects, attributeAddress.getClassId(), attributeAddress.getInstanceId(),
-                    attributeAddress.getId());
+            this.assertListContainsObisCode(dataObjects, attributeAddress.getClassId(),
+                    attributeAddress.getInstanceId(), attributeAddress.getId());
         }
     }
 
-    private void assertListContainsObisCode(final List<DataObject> dataObjects, final int classId, final ObisCode obisCode,
-            final int id) {
+    private void assertListContainsObisCode(final List<DataObject> dataObjects, final int classId,
+            final ObisCode obisCode, final int id) {
         boolean found = false;
 
         for (final DataObject dataObject : dataObjects) {
             final List<DataObject> dataObjectValues = dataObject.getValue();
             final int dataObjectClassId = dataObjectValues.get(0).getValue();
             final byte[] dataObjectObisCode = dataObjectValues.get(1).getValue();
-            final int dataObjectId = ((Byte)dataObjectValues.get(2).getValue()).intValue();
+            final int dataObjectId = ((Byte) dataObjectValues.get(2).getValue()).intValue();
 
-            if (classId == dataObjectClassId && Arrays.equals(obisCode.bytes(), dataObjectObisCode) && id == dataObjectId) {
+            if (classId == dataObjectClassId && Arrays.equals(obisCode.bytes(), dataObjectObisCode)
+                    && id == dataObjectId) {
                 found = true;
             }
         }

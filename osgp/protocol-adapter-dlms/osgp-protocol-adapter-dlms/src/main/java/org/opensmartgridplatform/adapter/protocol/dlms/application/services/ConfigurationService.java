@@ -1,41 +1,37 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
 import java.util.List;
 
 import org.openmuc.jdlms.AccessResultCode;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.ConfigureDefinableLoadProfileCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.GenerateAndReplaceKeyCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.GetAdministrativeStatusCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.GetConfigurationObjectCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.GetFirmwareVersionsCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.GetMBusDeviceOnChannelCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.GetMbusEncryptionKeyStatusByChannelCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.GetMbusEncryptionKeyStatusCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.ReplaceKeyCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.SetAdministrativeStatusCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.SetAlarmNotificationsCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.SetClockConfigurationCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.SetConfigurationObjectCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.SetEncryptionKeyExchangeOnGMeterCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.SetPushSetupAlarmCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.SetPushSetupSmsCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.SetSpecialDaysCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm.SetAlarmNotificationsCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.GetConfigurationObjectCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.SetConfigurationObjectCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.datetime.SetActivityCalendarCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.datetime.SetClockConfigurationCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.datetime.SetSpecialDaysCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.GetFirmwareVersionsCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.GetMBusDeviceOnChannelCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.GetMbusEncryptionKeyStatusByChannelCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.GetMbusEncryptionKeyStatusCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.ConfigureDefinableLoadProfileCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.GetAdministrativeStatusCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.SetAdministrativeStatusCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.pushsetup.SetPushSetupAlarmCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.pushsetup.SetPushSetupSmsCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.security.GenerateAndReplaceKeyCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.security.ReplaceKeyCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.security.SetEncryptionKeyExchangeOnGMeterCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActivityCalendarDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto;
@@ -63,6 +59,10 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDaysReque
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDaysRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service(value = "dlmsConfigurationService")
 public class ConfigurationService {
@@ -175,8 +175,8 @@ public class ConfigurationService {
         }
         LOGGER.info(VISUAL_SEPARATOR);
 
-        final AccessResultCode accessResultCode = this.setConfigurationObjectCommandExecutor.execute(conn, device,
-                configurationObject);
+        final AccessResultCode accessResultCode = this.setConfigurationObjectCommandExecutor
+                .execute(conn, device, configurationObject);
         if (!AccessResultCode.SUCCESS.equals(accessResultCode)) {
             throw new ProtocolAdapterException("Set configuration object reported result is: " + accessResultCode);
         }
@@ -188,8 +188,8 @@ public class ConfigurationService {
 
         LOGGER.info("Device for Set Administrative Status is: {}", device);
 
-        final AccessResultCode accessResultCode = this.setAdministrativeStatusCommandExecutor.execute(conn, device,
-                administrativeStatusType);
+        final AccessResultCode accessResultCode = this.setAdministrativeStatusCommandExecutor
+                .execute(conn, device, administrativeStatusType);
         if (AccessResultCode.SUCCESS != accessResultCode) {
             throw new ProtocolAdapterException(
                     "AccessResultCode for set administrative status was not SUCCESS: " + accessResultCode);
@@ -201,8 +201,8 @@ public class ConfigurationService {
 
         LOGGER.info("Alarm Notifications to set on the device: {}", alarmNotifications);
 
-        final AccessResultCode accessResultCode = this.setAlarmNotificationsCommandExecutor.execute(conn, device,
-                alarmNotifications);
+        final AccessResultCode accessResultCode = this.setAlarmNotificationsCommandExecutor
+                .execute(conn, device, alarmNotifications);
         if (AccessResultCode.SUCCESS != accessResultCode) {
             throw new ProtocolAdapterException(
                     "AccessResultCode for set alarm notifications was not SUCCESS: " + accessResultCode);
@@ -228,8 +228,8 @@ public class ConfigurationService {
 
         LOGGER.info("Device for Set M-Bus User Key By Channel is: {}", device);
 
-        final GMeterInfoDto gMeterInfo = this.getMbusKeyExchangeData(conn, device,
-                setMbusUserKeyByChannelRequestDataDto);
+        final GMeterInfoDto gMeterInfo = this
+                .getMbusKeyExchangeData(conn, device, setMbusUserKeyByChannelRequestDataDto);
 
         this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, gMeterInfo);
 
@@ -239,14 +239,15 @@ public class ConfigurationService {
     public GMeterInfoDto getMbusKeyExchangeData(final DlmsConnectionManager conn, final DlmsDevice device,
             final SetMbusUserKeyByChannelRequestDataDto setMbusUserKeyByChannelRequestData) throws OsgpException {
 
-        final GetMBusDeviceOnChannelRequestDataDto mbusDeviceOnChannelRequest = new GetMBusDeviceOnChannelRequestDataDto(
+        final GetMBusDeviceOnChannelRequestDataDto mbusDeviceOnChannelRequest =
+                new GetMBusDeviceOnChannelRequestDataDto(
                 device.getDeviceIdentification(), setMbusUserKeyByChannelRequestData.getChannel());
-        final ChannelElementValuesDto channelElementValues = this.getMBusDeviceOnChannelCommandExecutor.execute(conn,
-                device, mbusDeviceOnChannelRequest);
+        final ChannelElementValuesDto channelElementValues = this.getMBusDeviceOnChannelCommandExecutor
+                .execute(conn, device, mbusDeviceOnChannelRequest);
 
-        final DlmsDevice mbusDevice = this.domainHelperService.findMbusDevice(
-                Long.valueOf(channelElementValues.getIdentificationNumber()),
-                channelElementValues.getManufacturerIdentification());
+        final DlmsDevice mbusDevice = this.domainHelperService
+                .findMbusDevice(Long.valueOf(channelElementValues.getIdentificationNumber()),
+                        channelElementValues.getManufacturerIdentification());
 
         return new GMeterInfoDto(setMbusUserKeyByChannelRequestData.getChannel(), mbusDevice.getDeviceIdentification());
     }
@@ -268,8 +269,8 @@ public class ConfigurationService {
 
         LOGGER.info("Push Setup Alarm to set on the device: {}", pushSetupAlarm);
 
-        final AccessResultCode accessResultCode = this.setPushSetupAlarmCommandExecutor.execute(conn, device,
-                pushSetupAlarm);
+        final AccessResultCode accessResultCode = this.setPushSetupAlarmCommandExecutor
+                .execute(conn, device, pushSetupAlarm);
 
         if (AccessResultCode.SUCCESS != accessResultCode) {
             throw new ProtocolAdapterException(
@@ -282,8 +283,8 @@ public class ConfigurationService {
 
         LOGGER.info("Push Setup Sms to set on the device: {}", pushSetupSms);
 
-        final AccessResultCode accessResultCode = this.setPushSetupSmsCommandExecutor.execute(conn, device,
-                pushSetupSms);
+        final AccessResultCode accessResultCode = this.setPushSetupSmsCommandExecutor
+                .execute(conn, device, pushSetupSms);
 
         if (AccessResultCode.SUCCESS != accessResultCode) {
             throw new ProtocolAdapterException(
@@ -374,7 +375,7 @@ public class ConfigurationService {
             final GetMbusEncryptionKeyStatusByChannelRequestDataDto getMbusEncryptionKeyStatusByChannelRequest)
             throws OsgpException {
 
-        return this.getMbusEncryptionKeyStatusByChannelCommandExecutor.execute(conn, device,
-                getMbusEncryptionKeyStatusByChannelRequest);
+        return this.getMbusEncryptionKeyStatusByChannelCommandExecutor
+                .execute(conn, device, getMbusEncryptionKeyStatusByChannelRequest);
     }
 }
