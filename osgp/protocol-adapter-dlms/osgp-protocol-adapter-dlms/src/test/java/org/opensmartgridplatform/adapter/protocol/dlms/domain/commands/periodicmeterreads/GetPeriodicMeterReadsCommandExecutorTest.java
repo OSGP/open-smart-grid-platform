@@ -37,7 +37,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.DlmsHelpe
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.ProtocolFactory;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodTypeDto;
@@ -60,8 +59,6 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
     @Mock
     private AmrProfileStatusCodeHelperService amrProfileStatusCodeHelperService;
     @Mock
-    private ProtocolFactory protocolFactory;
-    @Mock
     private DlmsConnectionManager connectionManager;
 
     @Before
@@ -73,13 +70,10 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
     public void testHappy() throws Exception {
 
         // SETUP
-        String protocolName = "test-protocol-name";
-        String protocolVersion = "test-protocol-version";
         Protocol procotol = Protocol.DSMR_4_2_2;
-        when(protocolFactory.getInstance(protocolName, protocolVersion)).thenReturn(procotol);
 
         DlmsDevice device = new DlmsDevice();
-        device.setProtocol(protocolName, protocolVersion);
+        device.setProtocol(procotol.getName(), procotol.getVersion());
 
         PeriodTypeDto periodType = PeriodTypeDto.DAILY;
         long from = 1111111L;

@@ -23,7 +23,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.JdlmsObje
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.ProtocolFactory;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.BufferedDateTimeValidationException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
@@ -67,17 +66,15 @@ public class GetPeriodicMeterReadsCommandExecutor
     private final DlmsHelperService dlmsHelperService;
     private final AttributeAddressService attributeAddressService;
     private final AmrProfileStatusCodeHelperService amrProfileStatusCodeHelperService;
-    private final ProtocolFactory protocolFactory;
 
     @Autowired
     public GetPeriodicMeterReadsCommandExecutor(final DlmsHelperService dlmsHelperService,
             final AmrProfileStatusCodeHelperService amrProfileStatusCodeHelperService,
-            final AttributeAddressService attributeAddressService, ProtocolFactory protocolFactory) {
+            final AttributeAddressService attributeAddressService) {
         super(PeriodicMeterReadsRequestDataDto.class);
         this.dlmsHelperService = dlmsHelperService;
         this.amrProfileStatusCodeHelperService = amrProfileStatusCodeHelperService;
         this.attributeAddressService = attributeAddressService;
-        this.protocolFactory = protocolFactory;
     }
 
     @Override
@@ -100,7 +97,7 @@ public class GetPeriodicMeterReadsCommandExecutor
 
         final DateTime from = new DateTime(periodicMeterReadsRequest.getBeginDate());
         final DateTime to = new DateTime(periodicMeterReadsRequest.getEndDate());
-        final Protocol protocol = protocolFactory.getInstance(device.getProtocol(), device.getProtocolVersion());
+        final Protocol protocol = Protocol.withNameAndVersion(device.getProtocol(), device.getProtocolVersion());
 
         final AttributeAddress[] profileBufferAndScalerUnit =
                 this.attributeAddressService.getProfileBufferAndScalerUnitForPeriodicMeterReads(
