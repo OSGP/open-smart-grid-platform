@@ -3,11 +3,11 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodic
 import org.joda.time.DateTime;
 import org.mockito.ArgumentMatcher;
 
-public class TimeMatcher extends ArgumentMatcher<DateTime> {
+public class DateTimeMatcher extends ArgumentMatcher<DateTime> {
 
     private long time;
 
-    public TimeMatcher(long time) {
+    public DateTimeMatcher(long time) {
         this.time = time;
     }
 

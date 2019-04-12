@@ -47,7 +47,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterRea
 
 @RunWith(MockitoJUnitRunner.class)
 public class GetPeriodicMeterReadsCommandExecutorTest {
-    private static final AttributeAddress CLOCK = new AttributeAddress(8, new ObisCode(0, 0, 1, 0, 0, 255), 2);
 
     @InjectMocks
     private GetPeriodicMeterReadsCommandExecutor executor;
@@ -79,14 +78,20 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
         Protocol procotol = Protocol.DSMR_4_2_2;
         when(protocolFactory.getInstance(protocolName, protocolVersion)).thenReturn(procotol);
 
+        DlmsDevice device = new DlmsDevice();
+        device.setProtocol(protocolName, protocolVersion);
+
         PeriodTypeDto periodType = PeriodTypeDto.DAILY;
         long from = 1111111L;
         long to = 2222222L;
-        AttributeAddress attributeAddress = CLOCK;
-        AttributeAddress[] attributeAddresses = new AttributeAddress[] { attributeAddress };
+        int classId = 8;
+        String address = "0.0.1.0.0.255";
+        int id = 2;
+        AttributeAddress attributeAddress = createAttributeAddress(classId, address, id);
         when(this.attributeAddressService.getProfileBufferAndScalerUnitForPeriodicMeterReads(eq(periodType),
-                argThat(new TimeMatcher(from)), argThat(new TimeMatcher(to)),
-                eq(procotol.isSelectValuesInSelectiveAccessSupported()))).thenReturn(attributeAddresses);
+                argThat(new DateTimeMatcher(from)), argThat(new DateTimeMatcher(to)),
+                eq(procotol.isSelectValuesInSelectiveAccessSupported()))).thenReturn(
+                new AttributeAddress[] { attributeAddress });
 
         DataObject data0 = mock(DataObject.class);
         DataObject data1 = mock(DataObject.class);
@@ -100,8 +105,6 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
         DataObject resultData = mock(DataObject.class);
         when(resultData.getValue()).thenReturn(Collections.singletonList(bufferedObject));
 
-        DlmsDevice device = new DlmsDevice();
-        device.setProtocol(protocolName, protocolVersion);
         String expectedDescription = "retrieve periodic meter reads for " + periodType;
         GetResult result0 = mock(GetResult.class);
         GetResult result1 = mock(GetResult.class);
@@ -115,7 +118,7 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
         when(this.dlmsHelperService.readDataObject(result0, PERIODIC_E_METER_READS)).thenReturn(resultData);
 
         CosemDateTimeDto cosemDateTime = mock(CosemDateTimeDto.class);
-        String expectedDateTimeDescription = "Clock from " + periodType + " buffer";
+        String expectedDateTimeDescription = String.format("Clock from %s buffer", periodType);
         when(this.dlmsHelperService.readDateTime(data0, expectedDateTimeDescription)).thenReturn(cosemDateTime);
         DateTime bufferedDateTime = DateTime.now();
         when(cosemDateTime.asDateTime()).thenReturn(bufferedDateTime);
@@ -130,14 +133,22 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
 
         // VERIFY
         verify(dlmsMessageListener).setDescription(
-                "GetPeriodicMeterReads DAILY from 1970-01-01T01:18:31.111+01:00 until 1970-01-01T01:37:02.222+01:00, "
-                        + "retrieve attribute: {8,0.0.1.0.0.255,2}");
+                String.format("GetPeriodicMeterReads DAILY from %s until %s, retrieve attribute: {%s,%s,%s}",
+                        new DateTime(from), new DateTime(to), classId, address, id));
 
         verify(this.dlmsHelperService).validateBufferedDateTime(same(bufferedDateTime), same(cosemDateTime),
-                argThat(new TimeMatcher(from)), argThat(new TimeMatcher(to)));
+                argThat(new DateTimeMatcher(from)), argThat(new DateTimeMatcher(to)));
 
         List<PeriodicMeterReadsResponseItemDto> periodicMeterReads = result.getPeriodicMeterReads();
         // TODO: assert contents of result
+    }
+
+    private AttributeAddress createAttributeAddress(int classId, String address, int id) {
+        AttributeAddress attributeAddress = mock(AttributeAddress.class);
+        when(attributeAddress.getClassId()).thenReturn(classId);
+        when(attributeAddress.getInstanceId()).thenReturn(new ObisCode(address));
+        when(attributeAddress.getId()).thenReturn(id);
+        return attributeAddress;
     }
 }
 
