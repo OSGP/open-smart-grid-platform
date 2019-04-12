@@ -43,6 +43,9 @@ import org.springframework.stereotype.Component;
 public class GetPeriodicMeterReadsCommandExecutor
         extends AbstractPeriodicMeterReadsCommandExecutor<PeriodicMeterReadsRequestDto, PeriodicMeterReadsResponseDto> {
 
+    static final String PERIODIC_E_METER_READS = "Periodic E-Meter Reads";
+    static final String FORMAT_DESCRIPTION = "GetPeriodicMeterReads %s from %s until %s, retrieve attribute: %s";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsCommandExecutor.class);
 
     private static final int RESULT_INDEX_IMPORT = 1;
@@ -90,42 +93,34 @@ public class GetPeriodicMeterReadsCommandExecutor
             final PeriodicMeterReadsRequestDto periodicMeterReadsRequest) throws ProtocolAdapterException {
 
         final PeriodTypeDto periodType = periodicMeterReadsRequest.getPeriodType();
-        final DateTime beginDateTime = new DateTime(periodicMeterReadsRequest.getBeginDate());
-        final DateTime endDateTime = new DateTime(periodicMeterReadsRequest.getEndDate());
+
+        final DateTime from = new DateTime(periodicMeterReadsRequest.getBeginDate());
+        final DateTime to = new DateTime(periodicMeterReadsRequest.getEndDate());
         final Protocol protocol = Protocol.withNameAndVersion(device.getProtocol(), device.getProtocolVersion());
 
         final AttributeAddress[] profileBufferAndScalerUnit = this.attributeAddressService
-                .getProfileBufferAndScalerUnitForPeriodicMeterReads(periodType, beginDateTime, endDateTime,
+                .getProfileBufferAndScalerUnitForPeriodicMeterReads(periodType, from, to,
                         protocol.isSelectValuesInSelectiveAccessSupported());
 
         LOGGER.debug("Retrieving current billing period and profiles for period type: {}, from: {}, to: {}", periodType,
-                beginDateTime, endDateTime);
+                from, to);
 
-        /*
-         * workaround for a problem when using with_list and retrieving a
-         * profile buffer, this will be returned erroneously.
-         */
-        final List<GetResult> getResultList = new ArrayList<>(profileBufferAndScalerUnit.length);
+        // Get results one by one because getWithList does not work for all devices
+        final List<GetResult> getResultList = new ArrayList<>();
         for (final AttributeAddress address : profileBufferAndScalerUnit) {
-
-            conn.getDlmsMessageListener().setDescription(
-                    "GetPeriodicMeterReads " + periodType + " from " + beginDateTime + " until " + endDateTime
-                            + ", retrieve attribute: " + JdlmsObjectToStringUtil.describeAttributes(address));
-
+            conn.getDlmsMessageListener().setDescription(String.format(FORMAT_DESCRIPTION, periodType, from, to,
+                    JdlmsObjectToStringUtil.describeAttributes(address)));
             getResultList.addAll(this.dlmsHelper
                     .getAndCheck(conn, device, "retrieve periodic meter reads for " + periodType, address));
         }
 
-        final DataObject resultData = this.dlmsHelper.readDataObject(getResultList.get(0), "Periodic E-Meter Reads");
+        final DataObject resultData = this.dlmsHelper.readDataObject(getResultList.get(0), PERIODIC_E_METER_READS);
         final List<DataObject> bufferedObjectsList = resultData.getValue();
-
         final List<PeriodicMeterReadsResponseItemDto> periodicMeterReads = new ArrayList<>();
         for (final DataObject bufferedObject : bufferedObjectsList) {
-            final List<DataObject> bufferedObjects = bufferedObject.getValue();
             try {
                 periodicMeterReads.add(this
-                        .processNextPeriodicMeterReads(periodType, beginDateTime, endDateTime, bufferedObjects,
-                                getResultList));
+                        .processNextPeriodicMeterReads(periodType, from, to, bufferedObject.getValue(), getResultList));
             } catch (final BufferedDateTimeValidationException e) {
                 LOGGER.warn(e.getMessage(), e);
             }
@@ -135,16 +130,10 @@ public class GetPeriodicMeterReadsCommandExecutor
     }
 
     private PeriodicMeterReadsResponseItemDto processNextPeriodicMeterReads(final PeriodTypeDto periodType,
-            final DateTime beginDateTime, final DateTime endDateTime, final List<DataObject> bufferedObjects,
+            final DateTime from, final DateTime to, final List<DataObject> bufferedObjects,
             final List<GetResult> results) throws ProtocolAdapterException, BufferedDateTimeValidationException {
 
-        final CosemDateTimeDto cosemDateTime = this.dlmsHelper
-                .readDateTime(bufferedObjects.get(BUFFER_INDEX_CLOCK), "Clock from " + periodType + " buffer");
-        final DateTime bufferedDateTime = cosemDateTime == null ? null : cosemDateTime.asDateTime();
-
-        this.dlmsHelper.validateBufferedDateTime(bufferedDateTime, cosemDateTime, beginDateTime, endDateTime);
-
-        LOGGER.debug("Processing profile (" + periodType + ") objects captured at: {}", cosemDateTime);
+        final DateTime bufferedDateTime = this.getBufferedDateTime(periodType, from, to, bufferedObjects);
 
         switch (periodType) {
         case INTERVAL:
@@ -156,6 +145,16 @@ public class GetPeriodicMeterReadsCommandExecutor
         default:
             throw new AssertionError("Unknown PeriodType: " + periodType);
         }
+    }
+
+    private DateTime getBufferedDateTime(final PeriodTypeDto periodType, final DateTime from, final DateTime to,
+            final List<DataObject> bufferedObjects) throws ProtocolAdapterException, BufferedDateTimeValidationException {
+        final CosemDateTimeDto cosemDateTime = this.dlmsHelper.readDateTime(bufferedObjects.get(BUFFER_INDEX_CLOCK),
+                String.format("Clock from %s buffer", periodType));
+        final DateTime bufferedDateTime = cosemDateTime == null ? null : cosemDateTime.asDateTime();
+        this.dlmsHelper.validateBufferedDateTime(bufferedDateTime, cosemDateTime, from, to);
+        LOGGER.debug("Processing profile ({}) objects captured at: {}", periodType, cosemDateTime);
+        return bufferedDateTime;
     }
 
     private PeriodicMeterReadsResponseItemDto getNextPeriodicMeterReadsForInterval(
@@ -229,8 +228,7 @@ public class GetPeriodicMeterReadsCommandExecutor
             throws ProtocolAdapterException {
 
         /*
-         * Buffer indexes minus one, since Monthly captured objects don't
-         * include the AMR Profile status.
+         * Buffer indexes minus one, since Monthly captured objects don't include the AMR Profile status.
          */
         final DlmsMeterValueDto positiveActiveEnergyTariff1 = this.dlmsHelper
                 .getScaledMeterValue(bufferedObjects.get(BUFFER_INDEX_A_POS_RATE_1 - 1),
