@@ -29,7 +29,7 @@ import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.DlmsConnectionManagerStub;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.DlmsConnectionStub;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.testutil.TestUtil;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.testutil.AttributeAddressAssert;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.AmrProfileStatusCodeHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -154,7 +154,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
 
         final AttributeAddress expectedAttributeAddressProfile = this
                 .createAttributeAddress(protocol, type, timeFrom, timeTo);
-        TestUtil.assertAttributeAddressIs(actualAttributeAddressProfile, expectedAttributeAddressProfile);
+        AttributeAddressAssert.is(actualAttributeAddressProfile, expectedAttributeAddressProfile);
 
         // There should be 1 request to the scaler_unit (id = 3) of the meter value in the register (class-id = 3)
         final List<AttributeAddress> attributeAddressesScalerUnit = requestedAttributeAddresses.stream()

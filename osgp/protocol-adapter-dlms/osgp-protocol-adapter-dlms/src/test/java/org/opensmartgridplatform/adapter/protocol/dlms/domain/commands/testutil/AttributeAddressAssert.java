@@ -19,8 +19,9 @@ import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.openmuc.jdlms.datatypes.CosemDateFormat;
 import org.openmuc.jdlms.datatypes.DataObject;
 
-public class TestUtil {
-    public static void assertAttributeAddressIs(final AttributeAddress actual, final AttributeAddress expected) {
+public class AttributeAddressAssert {
+
+    public static void is(final AttributeAddress actual, final AttributeAddress expected) {
         assertThat(actual.getClassId()).isEqualTo(expected.getClassId());
         assertThat(actual.getInstanceId()).isEqualTo(expected.getInstanceId());
         assertThat(actual.getId()).isEqualTo(expected.getId());
