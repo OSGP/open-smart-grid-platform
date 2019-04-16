@@ -10,23 +10,21 @@ package org.opensmartgridplatform.logging.application.config;
 import javax.annotation.Resource;
 
 import org.apache.activemq.RedeliveryPolicy;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
-import org.springframework.core.env.Environment;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jms.listener.DefaultMessageListenerContainer;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
-
 import org.opensmartgridplatform.logging.domain.entities.WebServiceMonitorLogItem;
 import org.opensmartgridplatform.logging.domain.repositories.WebServiceMonitorLogRepository;
 import org.opensmartgridplatform.logging.infra.jms.LoggingMessageListener;
 import org.opensmartgridplatform.shared.application.config.AbstractMessagingConfig;
 import org.opensmartgridplatform.shared.application.config.jms.JmsConfiguration;
 import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationFactory;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.jms.listener.DefaultMessageListenerContainer;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * An application context Java configuration class.
@@ -35,9 +33,9 @@ import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationF
 @ComponentScan(basePackageClasses = { WebServiceMonitorLogItem.class, LoggingMessageListener.class })
 @EnableJpaRepositories(basePackageClasses = { WebServiceMonitorLogRepository.class })
 @EnableTransactionManagement
-@PropertySources({ @PropertySource("classpath:osgp-logging.properties"),
-    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-    @PropertySource(value = "file:${osgp/Logging/config}", ignoreResourceNotFound = true), })
+@PropertySource("classpath:osgp-logging.properties")
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/Logging/config}", ignoreResourceNotFound = true)
 @Import({ LoggingConfig.class, ProtocolMessagingConfig.class })
 public class ApplicationContext extends AbstractMessagingConfig {
 
@@ -55,14 +53,14 @@ public class ApplicationContext extends AbstractMessagingConfig {
     @Bean
     public RedeliveryPolicy defaultRedeliveryPolicy() {
         final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
-        redeliveryPolicy.setInitialRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_INITIAL_REDELIVERY_DELAY)));
-        redeliveryPolicy.setMaximumRedeliveries(Integer.parseInt(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERIES)));
-        redeliveryPolicy.setMaximumRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERY_DELAY)));
-        redeliveryPolicy.setRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_REDELIVERY_DELAY)));
+        redeliveryPolicy.setInitialRedeliveryDelay(Long
+                .parseLong(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_INITIAL_REDELIVERY_DELAY)));
+        redeliveryPolicy.setMaximumRedeliveries(
+                Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERIES)));
+        redeliveryPolicy.setMaximumRedeliveryDelay(Long
+                .parseLong(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERY_DELAY)));
+        redeliveryPolicy.setRedeliveryDelay(
+                Long.parseLong(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_REDELIVERY_DELAY)));
 
         return redeliveryPolicy;
     }

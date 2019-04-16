@@ -8,15 +8,17 @@
 package org.opensmartgridplatform.domain.core.repositories;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
+import org.opensmartgridplatform.domain.core.entities.Device;
+import org.opensmartgridplatform.domain.core.entities.Event;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-
-import org.opensmartgridplatform.domain.core.entities.Device;
-import org.opensmartgridplatform.domain.core.entities.Event;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecificationExecutor<Event> {
@@ -27,4 +29,9 @@ public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecific
     List<Object> findLatestEventForEveryDevice(Collection<Device> devices);
 
     List<Event> findTop2ByDeviceOrderByDateTimeDesc(Device device);
+
+    List<Event> findByDateTimeBefore(Date date);
+
+    Slice<Event> findByDateTimeBefore(Date date, Pageable pageable);
+
 }

@@ -15,27 +15,26 @@ import javax.sql.DataSource;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationVersion;
 import org.hibernate.ejb.HibernatePersistence;
+import org.opensmartgridplatform.logging.domain.repositories.WebServiceMonitorLogRepository;
+import org.opensmartgridplatform.shared.application.config.AbstractConfig;
+import org.opensmartgridplatform.shared.infra.db.DefaultConnectionPoolFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
-import org.opensmartgridplatform.logging.domain.repositories.WebServiceMonitorLogRepository;
-import org.opensmartgridplatform.shared.application.config.AbstractConfig;
-import org.opensmartgridplatform.shared.infra.db.DefaultConnectionPoolFactory;
 import com.zaxxer.hikari.HikariDataSource;
 
 @EnableJpaRepositories(basePackageClasses = { WebServiceMonitorLogRepository.class })
 @Configuration
-@PropertySources({ @PropertySource("classpath:osgp-logging.properties"),
-    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-    @PropertySource(value = "file:${osgp/Logging/config}", ignoreResourceNotFound = true), })
+@PropertySource("classpath:osgp-logging.properties")
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/Logging/config}", ignoreResourceNotFound = true)
 public class LoggingConfig extends AbstractConfig {
 
     private static final String PROPERTY_NAME_DATABASE_USERNAME = "db.username";
@@ -70,8 +69,6 @@ public class LoggingConfig extends AbstractConfig {
 
     /**
      * Method for creating the Data Source.
-     *
-     * @return DataSource
      */
     public DataSource getDataSource() {
         if (this.dataSource == null) {
@@ -86,14 +83,14 @@ public class LoggingConfig extends AbstractConfig {
                     .parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_PORT));
             final String databaseName = this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_NAME);
 
-            final int minPoolSize = Integer.parseInt(this.environment
-                    .getRequiredProperty(PROPERTY_NAME_DATABASE_MIN_POOL_SIZE));
-            final int maxPoolSize = Integer.parseInt(this.environment
-                    .getRequiredProperty(PROPERTY_NAME_DATABASE_MAX_POOL_SIZE));
-            final boolean isAutoCommit = Boolean.parseBoolean(this.environment
-                    .getRequiredProperty(PROPERTY_NAME_DATABASE_AUTO_COMMIT));
-            final int idleTimeout = Integer.parseInt(this.environment
-                    .getRequiredProperty(PROPERTY_NAME_DATABASE_IDLE_TIMEOUT));
+            final int minPoolSize = Integer
+                    .parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_MIN_POOL_SIZE));
+            final int maxPoolSize = Integer
+                    .parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_MAX_POOL_SIZE));
+            final boolean isAutoCommit = Boolean
+                    .parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_AUTO_COMMIT));
+            final int idleTimeout = Integer
+                    .parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_IDLE_TIMEOUT));
 
             final DefaultConnectionPoolFactory.Builder builder = new DefaultConnectionPoolFactory.Builder()
                     .withUsername(username).withPassword(password).withDriverClassName(driverClassName)
@@ -109,19 +106,15 @@ public class LoggingConfig extends AbstractConfig {
 
     /**
      * Method for creating the Transaction Manager.
-     *
-     * @return JpaTransactionManager
-     * @throws ClassNotFoundException
-     *             when class not found
      */
     @Bean
-    public JpaTransactionManager transactionManager() throws ClassNotFoundException {
+    public JpaTransactionManager transactionManager() {
         final JpaTransactionManager transactionManager = new JpaTransactionManager();
 
         try {
             transactionManager.setEntityManagerFactory(this.entityManagerFactory().getObject());
             transactionManager.setTransactionSynchronization(JpaTransactionManager.SYNCHRONIZATION_ALWAYS);
-        } catch (final ClassNotFoundException e) {
+        } catch (final Exception e) {
             final String msg = "Error in creating transaction manager bean";
             LOGGER.error(msg, e);
             throw e;
@@ -130,9 +123,6 @@ public class LoggingConfig extends AbstractConfig {
         return transactionManager;
     }
 
-    /**
-     * @return
-     */
     @Bean(initMethod = "migrate")
     public Flyway loggingFlyway() {
         final Flyway flyway = new Flyway();
@@ -151,20 +141,16 @@ public class LoggingConfig extends AbstractConfig {
 
     /**
      * Method for creating the Entity Manager Factory Bean.
-     *
-     * @return LocalContainerEntityManagerFactoryBean
-     * @throws ClassNotFoundException
-     *             when class not found
      */
     @Bean
     @DependsOn("loggingFlyway")
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory() throws ClassNotFoundException {
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 
         entityManagerFactoryBean.setPersistenceUnitName("OSGP_LOGGING");
         entityManagerFactoryBean.setDataSource(this.getDataSource());
-        entityManagerFactoryBean.setPackagesToScan(this.environment
-                .getRequiredProperty(PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN));
+        entityManagerFactoryBean
+                .setPackagesToScan(this.environment.getRequiredProperty(PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN));
         entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistence.class);
 
         final Properties jpaProperties = new Properties();

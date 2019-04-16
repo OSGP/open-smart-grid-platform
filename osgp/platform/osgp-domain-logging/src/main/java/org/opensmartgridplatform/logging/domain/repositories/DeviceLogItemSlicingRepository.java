@@ -7,6 +7,8 @@
  */
 package org.opensmartgridplatform.logging.domain.repositories;
 
+import java.util.Date;
+
 import org.opensmartgridplatform.logging.domain.entities.DeviceLogItem;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -18,4 +20,6 @@ public interface DeviceLogItemSlicingRepository extends JpaRepository<DeviceLogI
     Slice<DeviceLogItem> findByDeviceIdentification(String deviceIdentification, Pageable pagable);
 
     Slice<DeviceLogItem> findAllBy(Pageable pageable);
+
+    Slice<DeviceLogItem> findByCreationTimeBefore(Date date, Pageable pageable);
 }
