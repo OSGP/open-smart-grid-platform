@@ -264,11 +264,9 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
         for (final DataObject bufferedObject : bufferedObjectsList) {
             final List<DataObject> bufferedObjectValue = bufferedObject.getValue();
 
-            final ParametersObject parameters = new ParametersObject(queryPeriodType, queryBeginDateTime,
-                    queryEndDateTime, bufferedObjectValue, periodicMeterReadsQuery.getChannel(),
-                    device.isSelectiveAccessSupported(), getResultList);
             try {
-                periodicMeterReads.add(this.getNextPeriodicMeterReads(parameters));
+                periodicMeterReads.add(this.getNextPeriodicMeterReads(periodicMeterReadsQuery, bufferedObjectValue,
+                        device.isSelectiveAccessSupported(), getResultList));
             } catch (final BufferedDateTimeValidationException e) {
                 LOGGER.warn(e.getMessage(), e);
             }
@@ -277,37 +275,46 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
         return new PeriodicMeterReadGasResponseDto(queryPeriodType, periodicMeterReads);
     }
 
-    private PeriodicMeterReadsGasResponseItemDto getNextPeriodicMeterReads(final ParametersObject parameters)
+    private PeriodicMeterReadsGasResponseItemDto getNextPeriodicMeterReads(
+            final PeriodicMeterReadsRequestDto periodicMeterReadsQuery, final List<DataObject> bufferedObjects,
+            final boolean isSelectiveAccessSupported, final List<GetResult> getResultList)
             throws ProtocolAdapterException, BufferedDateTimeValidationException {
 
+        final PeriodTypeDto queryPeriodType = periodicMeterReadsQuery.getPeriodType();
+        final DateTime queryBeginDateTime = new DateTime(periodicMeterReadsQuery.getBeginDate());
+        final DateTime queryEndDateTime = new DateTime(periodicMeterReadsQuery.getEndDate());
+
         final CosemDateTimeDto cosemDateTime = this.dlmsHelper
-                .readDateTime(parameters.getBufferedObjects().get(BUFFER_INDEX_CLOCK),
-                        "Clock from " + parameters.getPeriodType() + " buffer gas");
+                .readDateTime(bufferedObjects.get(BUFFER_INDEX_CLOCK), "Clock from " + queryPeriodType + " buffer gas");
         final DateTime bufferedDateTime = cosemDateTime == null ? null : cosemDateTime.asDateTime();
 
-        this.dlmsHelper.validateBufferedDateTime(bufferedDateTime, cosemDateTime, parameters.getBeginDateTime(),
-                parameters.getEndDateTime());
+        this.dlmsHelper.validateBufferedDateTime(bufferedDateTime, cosemDateTime, queryBeginDateTime, queryEndDateTime);
 
-        LOGGER.debug("Processing profile ({}) objects captured at: {}", parameters.getPeriodType(), cosemDateTime);
+        LOGGER.debug("Processing profile ({}) objects captured at: {}", queryPeriodType, cosemDateTime);
 
-        return this.getNextPeriodicMeterReadsBasedOnPeriodType(parameters, bufferedDateTime);
+        return this.getNextPeriodicMeterReadsBasedOnPeriodType(periodicMeterReadsQuery, bufferedObjects,
+                isSelectiveAccessSupported, getResultList, bufferedDateTime);
     }
 
     private PeriodicMeterReadsGasResponseItemDto getNextPeriodicMeterReadsBasedOnPeriodType(
-            final ParametersObject parameters, final DateTime bufferedDateTime)
-            throws ProtocolAdapterException, AssertionError {
-        switch (parameters.getPeriodType()) {
+            final PeriodicMeterReadsRequestDto periodicMeterReadsQuery, final List<DataObject> bufferedObjects,
+            final boolean isSelectiveAccessSupported, final List<GetResult> getResultList,
+            final DateTime bufferedDateTime) throws ProtocolAdapterException, AssertionError {
+
+        final PeriodTypeDto queryPeriodType = periodicMeterReadsQuery.getPeriodType();
+        final ChannelDto queryChannel = periodicMeterReadsQuery.getChannel();
+
+        switch (queryPeriodType) {
         case INTERVAL:
-            return this.getNextPeriodicMeterReadsForInterval(parameters.getBufferedObjects(), bufferedDateTime,
-                    parameters.getResults());
+            return this.getNextPeriodicMeterReadsForInterval(bufferedObjects, bufferedDateTime, getResultList);
         case DAILY:
-            return this.getNextPeriodicMeterReadsForDaily(parameters.getBufferedObjects(), bufferedDateTime,
-                    parameters.getChannel(), parameters.isSelectiveAccessSupported(), parameters.getResults());
+            return this.getNextPeriodicMeterReadsForDaily(bufferedObjects, bufferedDateTime, queryChannel,
+                    isSelectiveAccessSupported, getResultList);
         case MONTHLY:
-            return this.getNextPeriodicMeterReadsForMonthly(parameters.getBufferedObjects(), bufferedDateTime,
-                    parameters.getChannel(), parameters.isSelectiveAccessSupported(), parameters.getResults());
+            return this.getNextPeriodicMeterReadsForMonthly(bufferedObjects, bufferedDateTime, queryChannel,
+                    isSelectiveAccessSupported, getResultList);
         default:
-            throw new AssertionError("Unknown PeriodType: " + parameters.getPeriodType());
+            throw new AssertionError("Unknown PeriodType: " + queryPeriodType);
         }
     }
 
