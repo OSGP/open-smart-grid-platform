@@ -10,16 +10,17 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodic
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
+import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.AttributeAddressHelper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsCaptureObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.Medium;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.AmrProfileStatusCodeHelper;
@@ -51,149 +52,11 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsGasCommandExecutor.class);
 
-    private static final int RESULT_INDEX_SCALER_UNIT = 1;
-
-    private static final int BUFFER_INDEX_CLOCK = 0;
-    private static final int BUFFER_INDEX_AMR_STATUS = 1;
-    private static final int BUFFER_INDEX_MBUS_VALUE_INT = 2;
-    private static final int BUFFER_INDEX_MBUS_CAPTURETIME_INT = 3;
-
-    private static final Map<Integer, Integer> INDEX_MONTHLY_SELECTIVE_ACCESS_MBUS_VALUE_MAP = new HashMap<>();
-    private static final Map<Integer, Integer> INDEX_MONTHLY_SELECTIVE_ACCESS_MBUS_VALUE_CAPTURE_TIME_MAP =
-            new HashMap<>();
-    private static final Map<Integer, Integer> INDEX_MONTHLY_MBUS_VALUE_MAP = new HashMap<>();
-    private static final Map<Integer, Integer> INDEX_MONTHLY_MBUS_VALUE_CAPTURE_TIME_MAP = new HashMap<>();
-
-    static {
-        // Indicates the position of the value or value_capture_time for
-        // channel 1, 2, 3 and 4
-
-        /*-
-         * When specific capture_objects are selected with selective access:
-         *
-         * {8,0-0:1.0.0.255,2,0};                                       position 0
-         *
-         * Value and capture time for one of the four channels will be selected,
-         * for which position 1 and 2 are used.
-         *
-         * {4,0-1:24.2.1.255,2,0};   value channel 1                    position 1
-         * {4,0-1:24.2.1.255,5,0};   value capture time channel 1       position 2
-         * {4,0-2:24.2.1.255,2,0};   value channel 2                    position 1
-         * {4,0-2:24.2.1.255,5,0};   value capture time channel 2       position 2
-         * {4,0-3:24.2.1.255,2,0};   value channel 3                    position 1
-         * {4,0-3:24.2.1.255,5,0};   value capture time channel 3       position 2
-         * {4,0-4:24.2.1.255,2,0};   value channel 4                    position 1
-         * {4,0-4:24.2.1.255,5,0};   value capture time channel 4       position 2
-         */
-        INDEX_MONTHLY_SELECTIVE_ACCESS_MBUS_VALUE_MAP.put(1, 1);
-        INDEX_MONTHLY_SELECTIVE_ACCESS_MBUS_VALUE_CAPTURE_TIME_MAP.put(1, 2);
-        INDEX_MONTHLY_SELECTIVE_ACCESS_MBUS_VALUE_MAP.put(2, 1);
-        INDEX_MONTHLY_SELECTIVE_ACCESS_MBUS_VALUE_CAPTURE_TIME_MAP.put(2, 2);
-        INDEX_MONTHLY_SELECTIVE_ACCESS_MBUS_VALUE_MAP.put(3, 1);
-        INDEX_MONTHLY_SELECTIVE_ACCESS_MBUS_VALUE_CAPTURE_TIME_MAP.put(3, 2);
-        INDEX_MONTHLY_SELECTIVE_ACCESS_MBUS_VALUE_MAP.put(4, 1);
-        INDEX_MONTHLY_SELECTIVE_ACCESS_MBUS_VALUE_CAPTURE_TIME_MAP.put(4, 2);
-
-        /*-
-         * When no specific capture_objects are selected with selective access:
-         *
-         * {8,0-0:1.0.0.255,2,0};                                    position 0
-         * {3,1-0:1.8.1.255,2,0};                                    position 1
-         * {3,1-0:1.8.2.255,2,0};                                    position 2
-         * {3,1-0:2.8.1.255,2,0};                                    position 3
-         * {3,1-0:2.8.2.255,2,0};                                    position 4
-         * {4,0-1:24.2.1.255,2,0};   value channel 1                 position 5
-         * {4,0-1:24.2.1.255,5,0};   value capture time channel 1    position 6
-         * {4,0-2:24.2.1.255,2,0};   value channel 2                 position 7
-         * {4,0-2:24.2.1.255,5,0};   value capture time channel 2    position 8
-         * {4,0-3:24.2.1.255,2,0};   value channel 3                 position 9
-         * {4,0-3:24.2.1.255,5,0};   value capture time channel 3    position 10
-         * {4,0-4:24.2.1.255,2,0};   value channel 4                 position 11
-         * {4,0-4:24.2.1.255,5,0};   value capture time channel 4    position 12
-         */
-        INDEX_MONTHLY_MBUS_VALUE_MAP.put(1, 5);
-        INDEX_MONTHLY_MBUS_VALUE_CAPTURE_TIME_MAP.put(1, 6);
-        INDEX_MONTHLY_MBUS_VALUE_MAP.put(2, 7);
-        INDEX_MONTHLY_MBUS_VALUE_CAPTURE_TIME_MAP.put(2, 8);
-        INDEX_MONTHLY_MBUS_VALUE_MAP.put(3, 9);
-        INDEX_MONTHLY_MBUS_VALUE_CAPTURE_TIME_MAP.put(3, 10);
-        INDEX_MONTHLY_MBUS_VALUE_MAP.put(4, 11);
-        INDEX_MONTHLY_MBUS_VALUE_CAPTURE_TIME_MAP.put(4, 12);
-    }
-
-    private static final Map<Integer, Integer> INDEX_DAILY_MBUS_VALUE_MAP = new HashMap<>();
-    private static final Map<Integer, Integer> INDEX_DAILY_MBUS_VALUE_CAPTURE_TIME_MAP = new HashMap<>();
-    private static final Map<Integer, Integer> INDEX_DAILY_SELECTIVE_ACCESS_MBUS_VALUE_MAP = new HashMap<>();
-    private static final Map<Integer, Integer> INDEX_DAILY_SELECTIVE_ACCESS_MBUS_VALUE_CAPTURE_TIME_MAP =
-            new HashMap<>();
-
-    static {
-        // Indicates the position of the value or value_capture_time for
-        // channel 1, 2, 3 and 4
-
-        /*-
-         * When no specific capture_objects are selected with selective access:
-         *
-         * {8,0-0:1.0.0.255,2,0};                                    position 0
-         * {1,0-0:96.10.2.255,2,0}                                   position 1
-         * {3,1-0:1.8.1.255,2,0};                                    position 2
-         * {3,1-0:1.8.2.255,2,0};                                    position 3
-         * {3,1-0:2.8.1.255,2,0};                                    position 4
-         * {3,1-0:2.8.2.255,2,0};                                    position 5
-         * {4,0-1:24.2.1.255,2,0};   value channel 1                 position 6
-         * {4,0-1:24.2.1.255,5,0};   value capture time channel 1    position 7
-         * {4,0-2:24.2.1.255,2,0};   value channel 2                 position 8
-         * {4,0-2:24.2.1.255,5,0};   value capture time channel 2    position 9
-         * {4,0-3:24.2.1.255,2,0};   value channel 3                 position 10
-         * {4,0-3:24.2.1.255,5,0};   value capture time channel 3    position 11
-         * {4,0-4:24.2.1.255,2,0};   value channel 4                 position 12
-         * {4,0-4:24.2.1.255,5,0};   value capture time channel 4    position 13
-         */
-        INDEX_DAILY_MBUS_VALUE_MAP.put(1, 6);
-        INDEX_DAILY_MBUS_VALUE_CAPTURE_TIME_MAP.put(1, 7);
-        INDEX_DAILY_MBUS_VALUE_MAP.put(2, 8);
-        INDEX_DAILY_MBUS_VALUE_CAPTURE_TIME_MAP.put(2, 9);
-        INDEX_DAILY_MBUS_VALUE_MAP.put(3, 10);
-        INDEX_DAILY_MBUS_VALUE_CAPTURE_TIME_MAP.put(3, 11);
-        INDEX_DAILY_MBUS_VALUE_MAP.put(4, 12);
-        INDEX_DAILY_MBUS_VALUE_CAPTURE_TIME_MAP.put(4, 13);
-
-        /*-
-         * When specific capture_objects are selected with selective access:
-         *
-         * {8,0-0:1.0.0.255,2,0};                                    position 0
-         * {1,0-0:96.10.2.255,2,0}                                   position 1
-         *
-         * Value and capture time for one of the four channels will be selected,
-         * for which position 2 and 3 are used.
-         *
-         * {4,0-1:24.2.1.255,2,0};   value channel 1                 position 2
-         * {4,0-1:24.2.1.255,5,0};   value capture time channel 1    position 3
-         * {4,0-2:24.2.1.255,2,0};   value channel 2                 position 2
-         * {4,0-2:24.2.1.255,5,0};   value capture time channel 2    position 3
-         * {4,0-3:24.2.1.255,2,0};   value channel 3                 position 2
-         * {4,0-3:24.2.1.255,5,0};   value capture time channel 3    position 3
-         * {4,0-4:24.2.1.255,2,0};   value channel 4                 position 2
-         * {4,0-4:24.2.1.255,5,0};   value capture time channel 4    position 3
-         */
-        INDEX_DAILY_SELECTIVE_ACCESS_MBUS_VALUE_MAP.put(1, 2);
-        INDEX_DAILY_SELECTIVE_ACCESS_MBUS_VALUE_CAPTURE_TIME_MAP.put(1, 3);
-        INDEX_DAILY_SELECTIVE_ACCESS_MBUS_VALUE_MAP.put(2, 2);
-        INDEX_DAILY_SELECTIVE_ACCESS_MBUS_VALUE_CAPTURE_TIME_MAP.put(2, 3);
-        INDEX_DAILY_SELECTIVE_ACCESS_MBUS_VALUE_MAP.put(3, 2);
-        INDEX_DAILY_SELECTIVE_ACCESS_MBUS_VALUE_CAPTURE_TIME_MAP.put(3, 3);
-        INDEX_DAILY_SELECTIVE_ACCESS_MBUS_VALUE_MAP.put(4, 2);
-        INDEX_DAILY_SELECTIVE_ACCESS_MBUS_VALUE_CAPTURE_TIME_MAP.put(4, 3);
-    }
-
     private static final String GAS_VALUE = "gasValue";
-    private static final String GAS_VALUES = "gasValue: {}";
     private static final String UNEXPECTED_VALUE = "Unexpected null/unspecified value for Gas Capture Time";
 
     private final DlmsHelper dlmsHelper;
-
     private final AmrProfileStatusCodeHelper amrProfileStatusCodeHelper;
-
     private final AttributeAddressHelper attributeAddressHelper;
 
     @Autowired
@@ -232,10 +95,11 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
         final DateTime queryBeginDateTime = new DateTime(periodicMeterReadsQuery.getBeginDate());
         final DateTime queryEndDateTime = new DateTime(periodicMeterReadsQuery.getEndDate());
         final Protocol protocol = Protocol.withNameAndVersion(device.getProtocol(), device.getProtocolVersion());
+        final List<DlmsCaptureObject> selectedObjects = new ArrayList<>();
 
-        final AttributeAddress[] profileBufferAndScalerUnit = this
+        final List<AttributeAddress> profileBufferAndScalerUnit = this
                 .getProfileBufferAndScalerUnit(queryPeriodType, periodicMeterReadsQuery.getChannel(),
-                        queryBeginDateTime, queryEndDateTime, protocol);
+                        queryBeginDateTime, queryEndDateTime, protocol, selectedObjects);
 
         LOGGER.debug("Retrieving current billing period and profiles for gas for period type: {}, from: {}, to: {}",
                 queryPeriodType, queryBeginDateTime, queryEndDateTime);
@@ -244,7 +108,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
          * workaround for a problem when using with_list and retrieving a profile
          * buffer, this will be returned erroneously.
          */
-        final List<GetResult> getResultList = new ArrayList<>(profileBufferAndScalerUnit.length);
+        final List<GetResult> getResultList = new ArrayList<>();
         for (final AttributeAddress address : profileBufferAndScalerUnit) {
 
             conn.getDlmsMessageListener().setDescription(
@@ -265,8 +129,9 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
             final List<DataObject> bufferedObjectValue = bufferedObject.getValue();
 
             try {
-                periodicMeterReads.add(this.getNextPeriodicMeterReads(periodicMeterReadsQuery, bufferedObjectValue,
-                        device.isSelectiveAccessSupported(), getResultList));
+                periodicMeterReads.add(this
+                        .convertToResponseItem(periodicMeterReadsQuery, bufferedObjectValue, selectedObjects,
+                                getResultList, profileBufferAndScalerUnit));
             } catch (final BufferedDateTimeValidationException e) {
                 LOGGER.warn(e.getMessage(), e);
             }
@@ -275,144 +140,141 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
         return new PeriodicMeterReadGasResponseDto(queryPeriodType, periodicMeterReads);
     }
 
-    private PeriodicMeterReadsGasResponseItemDto getNextPeriodicMeterReads(
+    private PeriodicMeterReadsGasResponseItemDto convertToResponseItem(
             final PeriodicMeterReadsRequestDto periodicMeterReadsQuery, final List<DataObject> bufferedObjects,
-            final boolean isSelectiveAccessSupported, final List<GetResult> getResultList)
+            final List<DlmsCaptureObject> selectedObjects, final List<GetResult> getResultList,
+            final List<AttributeAddress> attributeAddresses)
+            throws ProtocolAdapterException, BufferedDateTimeValidationException {
+
+        final Date logTime = this.readClock(periodicMeterReadsQuery, bufferedObjects, selectedObjects);
+        final AmrProfileStatusCodeDto status = this.readStatus(bufferedObjects, selectedObjects);
+        final DataObject gasValue = this.readValue(bufferedObjects, selectedObjects);
+        final DataObject scalerUnit = this.readScalerUnit(getResultList, attributeAddresses, selectedObjects);
+        final Date captureTime = this.readCaptureTime(bufferedObjects, selectedObjects);
+
+        return new PeriodicMeterReadsGasResponseItemDto(logTime,
+                this.dlmsHelper.getScaledMeterValue(gasValue, scalerUnit, GAS_VALUE), captureTime, status);
+    }
+
+    private Integer getIndex(final List<DlmsCaptureObject> selectedObjects, final DlmsObjectType type,
+            final Integer attributeId) {
+        int index = 0;
+
+        for (final DlmsCaptureObject object : selectedObjects) {
+            if (object.getObject().getType().equals(type) && (attributeId == null
+                    || object.getAttributeId() == attributeId)) {
+                return index;
+            }
+            index++;
+        }
+
+        return null;
+    }
+
+    private Date readClock(final PeriodicMeterReadsRequestDto periodicMeterReadsQuery,
+            final List<DataObject> bufferedObjects, final List<DlmsCaptureObject> selectedObjects)
             throws ProtocolAdapterException, BufferedDateTimeValidationException {
 
         final PeriodTypeDto queryPeriodType = periodicMeterReadsQuery.getPeriodType();
         final DateTime queryBeginDateTime = new DateTime(periodicMeterReadsQuery.getBeginDate());
         final DateTime queryEndDateTime = new DateTime(periodicMeterReadsQuery.getEndDate());
 
-        final CosemDateTimeDto cosemDateTime = this.dlmsHelper
-                .readDateTime(bufferedObjects.get(BUFFER_INDEX_CLOCK), "Clock from " + queryPeriodType + " buffer gas");
+        final Integer clockIndex = this.getIndex(selectedObjects, DlmsObjectType.CLOCK, null);
+
+        CosemDateTimeDto cosemDateTime = null;
+
+        if (clockIndex != null) {
+            cosemDateTime = this.dlmsHelper.readDateTime(bufferedObjects.get(clockIndex),
+                    "Clock from " + queryPeriodType + " buffer " + "gas");
+        }
+
         final DateTime bufferedDateTime = cosemDateTime == null ? null : cosemDateTime.asDateTime();
 
         this.dlmsHelper.validateBufferedDateTime(bufferedDateTime, cosemDateTime, queryBeginDateTime, queryEndDateTime);
 
-        LOGGER.debug("Processing profile ({}) objects captured at: {}", queryPeriodType, cosemDateTime);
-
-        return this.getNextPeriodicMeterReadsBasedOnPeriodType(periodicMeterReadsQuery, bufferedObjects,
-                isSelectiveAccessSupported, getResultList, bufferedDateTime);
-    }
-
-    private PeriodicMeterReadsGasResponseItemDto getNextPeriodicMeterReadsBasedOnPeriodType(
-            final PeriodicMeterReadsRequestDto periodicMeterReadsQuery, final List<DataObject> bufferedObjects,
-            final boolean isSelectiveAccessSupported, final List<GetResult> getResultList,
-            final DateTime bufferedDateTime) throws ProtocolAdapterException, AssertionError {
-
-        final PeriodTypeDto queryPeriodType = periodicMeterReadsQuery.getPeriodType();
-        final ChannelDto queryChannel = periodicMeterReadsQuery.getChannel();
-
-        switch (queryPeriodType) {
-        case INTERVAL:
-            return this.getNextPeriodicMeterReadsForInterval(bufferedObjects, bufferedDateTime, getResultList);
-        case DAILY:
-            return this.getNextPeriodicMeterReadsForDaily(bufferedObjects, bufferedDateTime, queryChannel,
-                    isSelectiveAccessSupported, getResultList);
-        case MONTHLY:
-            return this.getNextPeriodicMeterReadsForMonthly(bufferedObjects, bufferedDateTime, queryChannel,
-                    isSelectiveAccessSupported, getResultList);
-        default:
-            throw new AssertionError("Unknown PeriodType: " + queryPeriodType);
+        if (bufferedDateTime != null) {
+            return bufferedDateTime.toDate();
+        } else {
+            return null;
         }
     }
 
-    private PeriodicMeterReadsGasResponseItemDto getNextPeriodicMeterReadsForInterval(
-            final List<DataObject> bufferedObjects, final DateTime bufferedDateTime, final List<GetResult> results)
+    private AmrProfileStatusCodeDto readStatus(final List<DataObject> bufferedObjects,
+            final List<DlmsCaptureObject> selectedObjects) throws ProtocolAdapterException {
+
+        final Integer statusIndex = this.getIndex(selectedObjects, DlmsObjectType.AMR_STATUS, null);
+
+        final AmrProfileStatusCodeDto amrProfileStatusCode = null;
+
+        if (statusIndex != null) {
+            this.readAmrProfileStatusCode(bufferedObjects.get(statusIndex));
+        }
+
+        return amrProfileStatusCode;
+    }
+
+    private DataObject readValue(final List<DataObject> bufferedObjects,
+            final List<DlmsCaptureObject> selectedObjects) {
+
+        final Integer valueIndex = this.getIndex(selectedObjects, DlmsObjectType.MBUS_MASTER_VALUE, 2);
+
+        DataObject value = null;
+
+        if (valueIndex != null) {
+            value = bufferedObjects.get(valueIndex);
+        }
+
+        return value;
+    }
+
+    private DataObject readScalerUnit(final List<GetResult> getResultList,
+            final List<AttributeAddress> attributeAddresses, final List<DlmsCaptureObject> selectedObjects) {
+
+        final DlmsCaptureObject captureObject = selectedObjects.stream()
+                .filter(c -> c.getObject().getType() == DlmsObjectType.MBUS_MASTER_VALUE).collect(Collectors.toList())
+                .get(0);
+
+        int index = 0;
+        Integer scalerUnitIndex = null;
+        for (final AttributeAddress address : attributeAddresses) {
+            if (address.getInstanceId().equals(new ObisCode(captureObject.getObject().getObisCode()))) {
+                scalerUnitIndex = index;
+            }
+            index++;
+        }
+
+        if (scalerUnitIndex != null) {
+            return getResultList.get(scalerUnitIndex).getResultData();
+        }
+
+        return null;
+    }
+
+    private Date readCaptureTime(final List<DataObject> bufferedObjects, final List<DlmsCaptureObject> selectedObjects)
             throws ProtocolAdapterException {
 
-        final AmrProfileStatusCodeDto amrProfileStatusCode = this
-                .readAmrProfileStatusCode(bufferedObjects.get(BUFFER_INDEX_AMR_STATUS));
+        final Integer captureTimeIndex = this.getIndex(selectedObjects, DlmsObjectType.MBUS_MASTER_VALUE, 5);
 
-        final DataObject gasValue = bufferedObjects.get(BUFFER_INDEX_MBUS_VALUE_INT);
-        LOGGER.debug(GAS_VALUES, this.dlmsHelper.getDebugInfo(gasValue));
+        if (captureTimeIndex != null) {
+            final CosemDateTimeDto cosemDateTime = this.dlmsHelper
+                    .readDateTime(bufferedObjects.get(captureTimeIndex), "Clock from mbus interval extended register");
 
-        final CosemDateTimeDto cosemDateTime = this.dlmsHelper
-                .readDateTime(bufferedObjects.get(BUFFER_INDEX_MBUS_CAPTURETIME_INT),
-                        "Clock from mbus interval extended register");
-        final Date captureTime;
-        if (cosemDateTime.isDateTimeSpecified()) {
-            captureTime = cosemDateTime.asDateTime().toDate();
-        } else {
-            throw new ProtocolAdapterException(UNEXPECTED_VALUE);
+            final Date captureTime;
+            if (cosemDateTime.isDateTimeSpecified()) {
+                captureTime = cosemDateTime.asDateTime().toDate();
+            } else {
+                throw new ProtocolAdapterException(UNEXPECTED_VALUE);
+            }
+
+            return captureTime;
         }
-        return new PeriodicMeterReadsGasResponseItemDto(bufferedDateTime.toDate(), this.dlmsHelper
-                .getScaledMeterValue(gasValue, results.get(RESULT_INDEX_SCALER_UNIT).getResultData(), GAS_VALUE),
-                captureTime, amrProfileStatusCode);
+
+        return null;
     }
 
-    private PeriodicMeterReadsGasResponseItemDto getNextPeriodicMeterReadsForDaily(
-            final List<DataObject> bufferedObjects, final DateTime bufferedDateTime, final ChannelDto channel,
-            final boolean isSelectiveAccessSupported, final List<GetResult> results) throws ProtocolAdapterException {
-
-        final AmrProfileStatusCodeDto amrProfileStatusCode = this
-                .readAmrProfileStatusCode(bufferedObjects.get(BUFFER_INDEX_AMR_STATUS));
-
-        final DataObject gasValue;
-        final DataObject gasCaptureTime;
-        if (isSelectiveAccessSupported) {
-            gasValue = bufferedObjects.get(INDEX_DAILY_SELECTIVE_ACCESS_MBUS_VALUE_MAP.get(channel.getChannelNumber()));
-            gasCaptureTime = bufferedObjects
-                    .get(INDEX_DAILY_SELECTIVE_ACCESS_MBUS_VALUE_CAPTURE_TIME_MAP.get(channel.getChannelNumber()));
-        } else {
-            gasValue = bufferedObjects.get(INDEX_DAILY_MBUS_VALUE_MAP.get(channel.getChannelNumber()));
-            gasCaptureTime = bufferedObjects
-                    .get(INDEX_DAILY_MBUS_VALUE_CAPTURE_TIME_MAP.get(channel.getChannelNumber()));
-        }
-
-        LOGGER.debug(GAS_VALUES, this.dlmsHelper.getDebugInfo(gasValue));
-        LOGGER.debug("gasCaptureTime: {}", this.dlmsHelper.getDebugInfo(gasCaptureTime));
-
-        final CosemDateTimeDto cosemDateTime = this.dlmsHelper
-                .readDateTime(gasCaptureTime, "Clock from daily mbus daily extended register");
-        final Date captureTime;
-        if (cosemDateTime.isDateTimeSpecified()) {
-            captureTime = cosemDateTime.asDateTime().toDate();
-        } else {
-            throw new ProtocolAdapterException(UNEXPECTED_VALUE);
-        }
-        return new PeriodicMeterReadsGasResponseItemDto(bufferedDateTime.toDate(), this.dlmsHelper
-                .getScaledMeterValue(gasValue, results.get(RESULT_INDEX_SCALER_UNIT).getResultData(), GAS_VALUE),
-                captureTime, amrProfileStatusCode);
-    }
-
-    private PeriodicMeterReadsGasResponseItemDto getNextPeriodicMeterReadsForMonthly(
-            final List<DataObject> bufferedObjects, final DateTime bufferedDateTime, final ChannelDto channel,
-            final boolean isSelectiveAccessSupported, final List<GetResult> results) throws ProtocolAdapterException {
-
-        final DataObject gasValue;
-        final DataObject gasCaptureTime;
-        if (isSelectiveAccessSupported) {
-            gasValue = bufferedObjects
-                    .get(INDEX_MONTHLY_SELECTIVE_ACCESS_MBUS_VALUE_MAP.get(channel.getChannelNumber()));
-            gasCaptureTime = bufferedObjects
-                    .get(INDEX_MONTHLY_SELECTIVE_ACCESS_MBUS_VALUE_CAPTURE_TIME_MAP.get(channel.getChannelNumber()));
-        } else {
-            gasValue = bufferedObjects.get(INDEX_MONTHLY_MBUS_VALUE_MAP.get(channel.getChannelNumber()));
-            gasCaptureTime = bufferedObjects
-                    .get(INDEX_MONTHLY_MBUS_VALUE_CAPTURE_TIME_MAP.get(channel.getChannelNumber()));
-        }
-
-        LOGGER.debug(GAS_VALUES, this.dlmsHelper.getDebugInfo(gasValue));
-        LOGGER.debug("gasCaptureTime: {}", this.dlmsHelper.getDebugInfo(gasCaptureTime));
-
-        final CosemDateTimeDto cosemDateTime = this.dlmsHelper
-                .readDateTime(gasCaptureTime, "gas capture time for mbus monthly");
-        final Date captureTime;
-        if (cosemDateTime.isDateTimeSpecified()) {
-            captureTime = cosemDateTime.asDateTime().toDate();
-        } else {
-            throw new ProtocolAdapterException(UNEXPECTED_VALUE);
-        }
-        return new PeriodicMeterReadsGasResponseItemDto(bufferedDateTime.toDate(), this.dlmsHelper
-                .getScaledMeterValue(gasValue, results.get(RESULT_INDEX_SCALER_UNIT).getResultData(), GAS_VALUE),
-                captureTime);
-    }
-
-    private AttributeAddress[] getProfileBufferAndScalerUnit(final PeriodTypeDto periodType, final ChannelDto channel,
-            final DateTime beginDateTime, final DateTime endDateTime, final Protocol protocol)
-            throws ProtocolAdapterException {
+    private List<AttributeAddress> getProfileBufferAndScalerUnit(final PeriodTypeDto periodType,
+            final ChannelDto channel, final DateTime beginDateTime, final DateTime endDateTime, final Protocol protocol,
+            final List<DlmsCaptureObject> selectedObjects) throws ProtocolAdapterException {
 
         final DlmsObjectType type;
         switch (periodType) {
@@ -429,11 +291,9 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
             throw new ProtocolAdapterException(String.format("periodtype %s not supported", periodType));
         }
 
-        final List<AttributeAddress> profileBuffer = this.attributeAddressHelper
+        return this.attributeAddressHelper
                 .getAttributeAddressWithScalerUnitAddresses(protocol, type, channel.getChannelNumber(), beginDateTime,
-                        endDateTime, Medium.GAS);
-
-        return profileBuffer.toArray(new AttributeAddress[0]);
+                        endDateTime, Medium.GAS, selectedObjects);
     }
 
     /**

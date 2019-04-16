@@ -32,11 +32,12 @@ public class AttributeAddressHelper {
 
     public AttributeAddress getAttributeAddress(final Protocol protocol, final DlmsObjectType type,
             final Integer channel) {
-        return this.getAttributeAddress(protocol, type, channel, null, null, null);
+        return this.getAttributeAddress(protocol, type, channel, null, null, null, null);
     }
 
     public AttributeAddress getAttributeAddress(final Protocol protocol, final DlmsObjectType type,
-            final Integer channel, final DateTime from, final DateTime to, final Medium filterMedium) {
+            final Integer channel, final DateTime from, final DateTime to, final Medium filterMedium,
+            final List<DlmsCaptureObject> selectedObjects) {
         final List<DlmsObject> objects = this.getObjects(protocol, type);
 
         if (objects != null && !objects.isEmpty()) {
@@ -46,7 +47,7 @@ public class AttributeAddressHelper {
             final int attributeId = object.getDefaultAttributeId();
 
             final SelectiveAccessDescription access = this
-                    .getAccessDescription(object, from, to, channel, filterMedium, protocol);
+                    .getAccessDescription(object, from, to, channel, filterMedium, protocol, selectedObjects);
 
             return new AttributeAddress(classId, obisCode, attributeId, access);
         } else {
@@ -56,12 +57,12 @@ public class AttributeAddressHelper {
 
     public List<AttributeAddress> getAttributeAddressWithScalerUnitAddresses(final Protocol protocol,
             final DlmsObjectType type, final Integer channel, final DateTime from, final DateTime to,
-            final Medium filterMedium) {
+            final Medium filterMedium, final List<DlmsCaptureObject> selectedObjects) {
 
         final List<AttributeAddress> attributeAddressesWithScalerUnitAddresses = new ArrayList<>();
 
         attributeAddressesWithScalerUnitAddresses
-                .add(this.getAttributeAddress(protocol, type, channel, from, to, filterMedium));
+                .add(this.getAttributeAddress(protocol, type, channel, from, to, filterMedium, selectedObjects));
 
         final List<DlmsObject> objects = this.getObjects(protocol, type);
 
@@ -119,13 +120,15 @@ public class AttributeAddressHelper {
     }
 
     private SelectiveAccessDescription getAccessDescription(final DlmsObject object, final DateTime from,
-            final DateTime to, final Integer channel, final Medium filterMedium, final Protocol protocol) {
+            final DateTime to, final Integer channel, final Medium filterMedium, final Protocol protocol,
+            final List<DlmsCaptureObject> selectedObjects) {
         if (!(object instanceof DlmsProfile) || from == null || to == null) {
             return null;
         } else {
             final int accessSelector = 1;
 
-            final DataObject selectedValues = this.getSelectedValues(object, channel, filterMedium, protocol);
+            final DataObject selectedValues = this
+                    .getSelectedValues(object, channel, filterMedium, protocol, selectedObjects);
 
             final DataObject accessParameter = this.dlmsHelper
                     .getAccessSelectionTimeRangeParameter(from, to, selectedValues);
@@ -135,7 +138,7 @@ public class AttributeAddressHelper {
     }
 
     private DataObject getSelectedValues(final DlmsObject object, final Integer channel, final Medium filterMedium,
-            final Protocol protocol) {
+            final Protocol protocol, final List<DlmsCaptureObject> selectedObjects) {
         final List<DataObject> objectDefinitions = new ArrayList<>();
 
         if (object instanceof DlmsProfile && ((DlmsProfile) object).getCaptureObjects() != null && protocol
@@ -158,6 +161,11 @@ public class AttributeAddressHelper {
                                 DataObject.newOctetStringData(obisCode.bytes()),
                                 DataObject.newInteger8Data((byte) captureObject.getAttributeId()),
                                 DataObject.newUInteger16Data(0))));
+
+                // Add object to list to decode result list from meter
+                if (selectedObjects != null) {
+                    selectedObjects.add(captureObject);
+                }
             }
 
             if (profile.getCaptureObjects().size() == objectDefinitions.size()) {
