@@ -27,6 +27,7 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.AttributeAddressHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.DlmsConnectionManagerStub;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.DlmsConnectionStub;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.testutil.TestUtil;
@@ -45,6 +46,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
 
     private DlmsHelper dlmsHelper;
     private AmrProfileStatusCodeHelper amrProfileStatusCodeHelper;
+    private AttributeAddressHelper attributeAddressHelper;
 
     private DlmsConnectionManagerStub connectionManagerStub;
     private DlmsConnectionStub connectionStub;
@@ -96,8 +98,10 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     public void setUp() {
         this.dlmsHelper = new DlmsHelper();
         this.amrProfileStatusCodeHelper = new AmrProfileStatusCodeHelper();
+        this.attributeAddressHelper = new AttributeAddressHelper(this.dlmsHelper);
 
-        this.executor = new GetPeriodicMeterReadsGasCommandExecutor(this.dlmsHelper, this.amrProfileStatusCodeHelper);
+        this.executor = new GetPeriodicMeterReadsGasCommandExecutor(this.dlmsHelper, this.amrProfileStatusCodeHelper,
+                this.attributeAddressHelper);
         this.connectionStub = new DlmsConnectionStub();
         this.connectionManagerStub = new DlmsConnectionManagerStub(this.connectionStub);
 
