@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.adapter.domain.core.application.tasks;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -23,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Scheduled job which will find {@link DeviceLogItem} records older than
@@ -58,16 +60,18 @@ public class DeviceMessageCleanupJob extends CsvWriterJob implements Job {
         LOGGER.info("Quartz triggered cleanup of database - device message records.");
         final DateTime start = DateTime.now();
 
-        final Date retention = this.calculateDate();
-        final List<DeviceLogItem> oldDeviceMessages = this.transactionalDeviceLogItemService
-                .findDeviceLogItemsBeforeDate(retention, this.deviceMessagePageSize);
-        if (!oldDeviceMessages.isEmpty()) {
-            this.saveDeviceMessagesToCsvFile(oldDeviceMessages);
+        try {
+            final Date retention = this.calculateDate();
+            final List<DeviceLogItem> oldDeviceMessages = this.transactionalDeviceLogItemService
+                    .findDeviceLogItemsBeforeDate(retention, this.deviceMessagePageSize);
+            if (!oldDeviceMessages.isEmpty()) {
+                this.saveDeviceMessagesToCsvFile(oldDeviceMessages);
 
-            LOGGER.info("Deleting device messages...");
-            this.transactionalDeviceLogItemService.deleteDeviceLogItems(oldDeviceMessages);
-
-            System.gc();
+                LOGGER.info("Deleting device messages...");
+                this.transactionalDeviceLogItemService.deleteDeviceLogItems(oldDeviceMessages);
+            }
+        } catch (final Exception e) {
+            LOGGER.error("Exception during CSV file creation, compression or device message deletion.", e);
         }
 
         final DateTime end = DateTime.now();
@@ -82,26 +86,26 @@ public class DeviceMessageCleanupJob extends CsvWriterJob implements Job {
         return date;
     }
 
-    private void saveDeviceMessagesToCsvFile(final List<DeviceLogItem> deviceMessages) {
-        try {
-            LOGGER.info("Converting device messages ...");
-            final String[] header = DeviceMessageToStringArrayConverter.getDeviceMessageFieldNames();
-            final List<String[]> lines = DeviceMessageToStringArrayConverter.convertDeviceMessages(deviceMessages);
-            LOGGER.info("Device messages converted.");
+    private void saveDeviceMessagesToCsvFile(final List<DeviceLogItem> deviceMessages) throws IOException {
+        LOGGER.info("Converting device messages ...");
+        final String[] header = DeviceMessageToStringArrayConverter.getDeviceMessageFieldNames();
+        final List<String[]> lines = DeviceMessageToStringArrayConverter.convertDeviceMessages(deviceMessages);
+        LOGGER.info("Device messages converted.");
 
-            final String csvFilePath = this.writeCsvFile(this.csvFileLocation, this.csvFilePrefix, header, lines);
+        final String csvFilePath = this.writeCsvFile(this.csvFileLocation, this.csvFilePrefix, header, lines);
 
-            if (this.csvFileCompressionEnabled) {
-                this.compressCsvFile(csvFilePath);
-            }
-        } catch (final Exception e) {
-            LOGGER.error("Exception during CSV file creation, compression or device message deletion.", e);
+        if (this.csvFileCompressionEnabled) {
+            this.compressCsvFile(csvFilePath);
         }
     }
 
-    private final static class DeviceMessageToStringArrayConverter {
+    private static final class DeviceMessageToStringArrayConverter {
 
-        private final static String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+        private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
+        private DeviceMessageToStringArrayConverter() {
+            // Private constructor to prevent instantiation.
+        }
 
         public static String[] getDeviceMessageFieldNames() {
             final String[] array = new String[12];
@@ -142,8 +146,16 @@ public class DeviceMessageCleanupJob extends CsvWriterJob implements Job {
             array[3] = String.valueOf(deviceMessage.getVersion());
             array[4] = String.valueOf(deviceMessage.isIncoming());
             array[5] = deviceMessage.getDeviceUid();
-            array[6] = deviceMessage.getEncodedMessage().replace(",", "");
-            array[7] = deviceMessage.getDecodedMessage().replace("\n", "");
+            if (StringUtils.isEmpty(deviceMessage.getEncodedMessage())) {
+                array[6] = "";
+            } else {
+                array[6] = deviceMessage.getEncodedMessage().replace(",", "");
+            }
+            if (StringUtils.isEmpty(deviceMessage.getDecodedMessage())) {
+                array[7] = "";
+            } else {
+                array[7] = deviceMessage.getDecodedMessage().replace("\n", "");
+            }
             array[8] = deviceMessage.getDeviceIdentification();
             array[9] = deviceMessage.getOrganisationIdentification();
             array[10] = String.valueOf(deviceMessage.isValid());

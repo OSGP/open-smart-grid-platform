@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.adapter.domain.core.application.tasks;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -58,15 +59,18 @@ public class EventCleanupJob extends CsvWriterJob implements Job {
         LOGGER.info("Quartz triggered cleanup of database - event records.");
         final DateTime start = DateTime.now();
 
-        final Date retention = this.calculateDate();
-        final List<Event> oldEvents = this.transactionalEventService.getEventsBeforeDate(retention, this.eventPageSize);
-        if (!oldEvents.isEmpty()) {
-            this.saveEventsToCsvFile(oldEvents);
+        try {
+            final Date retention = this.calculateDate();
+            final List<Event> oldEvents = this.transactionalEventService.getEventsBeforeDate(retention,
+                    this.eventPageSize);
+            if (!oldEvents.isEmpty()) {
+                this.saveEventsToCsvFile(oldEvents);
 
-            LOGGER.info("Deleting events...");
-            this.transactionalEventService.deleteEvents(oldEvents);
-
-            System.gc();
+                LOGGER.info("Deleting events...");
+                this.transactionalEventService.deleteEvents(oldEvents);
+            }
+        } catch (final Exception e) {
+            LOGGER.error("Exception during CSV file creation, compression or event deletion.", e);
         }
 
         final DateTime end = DateTime.now();
@@ -81,26 +85,26 @@ public class EventCleanupJob extends CsvWriterJob implements Job {
         return date;
     }
 
-    private void saveEventsToCsvFile(final List<Event> events) {
-        try {
-            LOGGER.info("Converting events...");
-            final String[] header = EventToStringArrayConverter.getEventFieldNames();
-            final List<String[]> lines = EventToStringArrayConverter.convertEvents(events);
-            LOGGER.info("Events converted.");
+    private void saveEventsToCsvFile(final List<Event> events) throws IOException {
+        LOGGER.info("Converting events...");
+        final String[] header = EventToStringArrayConverter.getEventFieldNames();
+        final List<String[]> lines = EventToStringArrayConverter.convertEvents(events);
+        LOGGER.info("Events converted.");
 
-            final String csvFilePath = this.writeCsvFile(this.csvFileLocation, this.csvFilePrefix, header, lines);
+        final String csvFilePath = this.writeCsvFile(this.csvFileLocation, this.csvFilePrefix, header, lines);
 
-            if (this.csvFileCompressionEnabled) {
-                this.compressCsvFile(csvFilePath);
-            }
-        } catch (final Exception e) {
-            LOGGER.error("Exception during CSV file creation, compression or event deletion.", e);
+        if (this.csvFileCompressionEnabled) {
+            this.compressCsvFile(csvFilePath);
         }
     }
 
-    private final static class EventToStringArrayConverter {
+    private static final class EventToStringArrayConverter {
 
-        private final static String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+        private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
+        private EventToStringArrayConverter() {
+            // Private constructor to prevent instantiation.
+        }
 
         public static String[] getEventFieldNames() {
             final String[] array = new String[9];

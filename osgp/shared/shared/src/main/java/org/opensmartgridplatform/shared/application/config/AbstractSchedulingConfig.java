@@ -114,14 +114,47 @@ public abstract class AbstractSchedulingConfig extends AbstractConfig {
     protected Scheduler constructAndStartQuartzScheduler(final SchedulingConfigProperties schedulingConfigProperties)
             throws SchedulerException {
 
+        final Scheduler scheduler = this.constructSchedulerInstance(schedulingConfigProperties);
+        scheduler.start();
+
+        return scheduler;
+    }
+
+    /**
+     * Construct and delay starting the Quartz scheduler instance. Use
+     * {@link OsgpScheduler#createAndScheduleJob(Scheduler, Class, String) to
+     * add scheduled jobs to the Quartz scheduler.
+     *
+     * @param schedulingConfigProperties
+     *            an object containing all the properties needed to configure
+     *            the Quartz scheduler instance
+     * @param startDelayInSeconds
+     *            The startup delay in seconds.
+     *
+     * @return The Quartz scheduler instance.
+     *
+     * @throws SchedulerException
+     *             If construction of the scheduler or starting the scheduler
+     *             fails.
+     */
+    protected Scheduler constructAndDelayStartQuartzScheduler(
+            final SchedulingConfigProperties schedulingConfigProperties, final int startDelayInSeconds)
+            throws SchedulerException {
+
+        final Scheduler scheduler = this.constructSchedulerInstance(schedulingConfigProperties);
+        scheduler.startDelayed(startDelayInSeconds);
+
+        return scheduler;
+    }
+
+    private Scheduler constructSchedulerInstance(final SchedulingConfigProperties schedulingConfigProperties)
+            throws SchedulerException {
         final Properties properties = this.constructQuartzConfiguration(schedulingConfigProperties);
 
         final StdSchedulerFactory factory = new StdSchedulerFactory();
         factory.initialize(properties);
         final Scheduler scheduler = factory.getScheduler();
         scheduler.setJobFactory(this.springBeanJobFactory());
-
-        scheduler.start();
 
         return scheduler;
     }
