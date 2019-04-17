@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,7 +36,7 @@ public class TransactionalEventService {
     private EventRepository eventRepository;
 
     public List<Event> getEventsBeforeDate(final Date date, final int pageSize) {
-        final PageRequest pageRequest = new PageRequest(0, pageSize);
+        final PageRequest pageRequest = new PageRequest(0, pageSize, Sort.Direction.DESC, "id");
         final Slice<Event> slice = this.eventRepository.findByDateTimeBefore(date, pageRequest);
         final List<Event> events = slice.getContent();
         LOGGER.info("Found {} events with date time before {}.", events.size(), date);

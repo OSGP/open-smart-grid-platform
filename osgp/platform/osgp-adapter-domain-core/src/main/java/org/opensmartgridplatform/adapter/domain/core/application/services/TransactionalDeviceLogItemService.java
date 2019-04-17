@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,10 +36,12 @@ public class TransactionalDeviceLogItemService {
     private DeviceLogItemSlicingRepository deviceLogItemSlicingRepository;
 
     public List<DeviceLogItem> findDeviceLogItemsBeforeDate(final Date date, final int pageSize) {
+        final PageRequest pageRequest = new PageRequest(0, pageSize, Sort.Direction.DESC, "id");
         final Slice<DeviceLogItem> slice = this.deviceLogItemSlicingRepository.findByCreationTimeBefore(date,
-                new PageRequest(0, pageSize));
+                pageRequest);
         final List<DeviceLogItem> deviceLogItems = slice.getContent();
         LOGGER.info("Found {} device log items with date time before {}.", deviceLogItems.size(), date);
+
         return deviceLogItems;
     }
 
