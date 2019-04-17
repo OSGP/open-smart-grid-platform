@@ -20,6 +20,8 @@ import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.impl.jdbcjobstore.JobStoreTX;
 import org.quartz.impl.jdbcjobstore.PostgreSQLDelegate;
 import org.quartz.simpl.SimpleThreadPool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -31,6 +33,8 @@ import org.springframework.util.StringUtils;
  * This class provides the basic configuration used for Quartz schedulers.
  */
 public abstract class AbstractSchedulingConfig extends AbstractConfig {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractOsgpSchedulerConfig.class);
 
     protected static final String KEY_QUARTZ_SCHEDULER_THREAD_COUNT = "quartz.scheduler.thread.count";
 
@@ -57,6 +61,12 @@ public abstract class AbstractSchedulingConfig extends AbstractConfig {
 
     @Autowired
     private ApplicationContext applicationContext;
+
+    private int startAttemptCount = 0;
+
+    private final int maxStartAttemptCount = 10;
+
+    private final long startAttemptSleepTime = 30000;
 
     @Bean
     public SpringBeanJobFactory springBeanJobFactory() {
@@ -114,10 +124,42 @@ public abstract class AbstractSchedulingConfig extends AbstractConfig {
     protected Scheduler constructAndStartQuartzScheduler(final SchedulingConfigProperties schedulingConfigProperties)
             throws SchedulerException {
 
-        final Scheduler scheduler = this.constructSchedulerInstance(schedulingConfigProperties);
+        Scheduler scheduler = null;
+        try {
+            scheduler = this.constructSchedulerInstance(schedulingConfigProperties);
+        } catch (final Exception e) {
+            LOGGER.error("Exception", e);
+            scheduler = this.retryConstructAndStartQuartzScheduler(schedulingConfigProperties);
+        }
+
         scheduler.start();
 
         return scheduler;
+    }
+
+    private Scheduler retryConstructAndStartQuartzScheduler(final SchedulingConfigProperties schedulingConfigProperties)
+            throws SchedulerException {
+
+        this.startAttemptCount++;
+
+        if (this.startAttemptCount < this.maxStartAttemptCount) {
+            try {
+                try {
+                    Thread.sleep(this.startAttemptSleepTime);
+                    return this.constructSchedulerInstance(schedulingConfigProperties);
+                } catch (final InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new SchedulerException(e);
+                }
+            } catch (final Exception e) {
+                LOGGER.error("Exception", e);
+                return this.retryConstructAndStartQuartzScheduler(schedulingConfigProperties);
+            }
+        } else {
+            final String message = String.format("Unable to construct scheduler after %d retries!",
+                    this.maxStartAttemptCount);
+            throw new SchedulerException(message);
+        }
     }
 
     /**
@@ -149,6 +191,7 @@ public abstract class AbstractSchedulingConfig extends AbstractConfig {
 
     private Scheduler constructSchedulerInstance(final SchedulingConfigProperties schedulingConfigProperties)
             throws SchedulerException {
+
         final Properties properties = this.constructQuartzConfiguration(schedulingConfigProperties);
 
         final StdSchedulerFactory factory = new StdSchedulerFactory();
