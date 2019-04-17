@@ -20,7 +20,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.opensmartgridplatform.adapter.domain.core.application.services.TransactionalEventService;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.Event;
 import org.opensmartgridplatform.domain.core.repositories.EventRepository;
@@ -28,6 +27,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.EventType;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
+import org.springframework.data.domain.Sort;
 
 public class TransactionalEventServiceTest {
 
@@ -47,7 +47,7 @@ public class TransactionalEventServiceTest {
     @Test
     public void serviceReturnsOneEvent() {
         final Slice<Event> mockSlice = this.mockSliceOfEvents(1);
-        final PageRequest pageRequest = new PageRequest(0, 1);
+        final PageRequest pageRequest = new PageRequest(0, 1, Sort.Direction.DESC, "id");
         Mockito.when(this.eventRepository.findByDateTimeBefore(this.date, pageRequest)).thenReturn(mockSlice);
 
         final List<Event> events = this.transactionalEventService.getEventsBeforeDate(this.date, 1);
@@ -58,7 +58,7 @@ public class TransactionalEventServiceTest {
     @Test
     public void serviceReturnsTenEvents() {
         final Slice<Event> mockSlice = this.mockSliceOfEvents(10);
-        final PageRequest pageRequest = new PageRequest(0, 10);
+        final PageRequest pageRequest = new PageRequest(0, 10, Sort.Direction.DESC, "id");
         Mockito.when(this.eventRepository.findByDateTimeBefore(this.date, pageRequest)).thenReturn(mockSlice);
 
         final List<Event> events = this.transactionalEventService.getEventsBeforeDate(this.date, 10);

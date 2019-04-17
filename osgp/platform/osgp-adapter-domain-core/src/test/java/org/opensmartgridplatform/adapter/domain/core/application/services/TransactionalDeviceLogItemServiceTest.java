@@ -25,6 +25,7 @@ import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemSlicin
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
+import org.springframework.data.domain.Sort;
 
 public class TransactionalDeviceLogItemServiceTest {
 
@@ -44,7 +45,7 @@ public class TransactionalDeviceLogItemServiceTest {
     @Test
     public void serviceReturnsOneDeviceLogItem() {
         final Slice<DeviceLogItem> mockSlice = this.mockSliceOfDeviceLogItems(1);
-        final PageRequest pageRequest = new PageRequest(0, 1);
+        final PageRequest pageRequest = new PageRequest(0, 1, Sort.Direction.DESC, "id");
         Mockito.when(this.deviceLogItemSlicingRepository.findByCreationTimeBefore(this.date, pageRequest))
                 .thenReturn(mockSlice);
 
@@ -55,9 +56,9 @@ public class TransactionalDeviceLogItemServiceTest {
     }
 
     @Test
-    public void serviceReturnsTenDeviceLogItem() {
+    public void serviceReturnsTenDeviceLogItems() {
         final Slice<DeviceLogItem> mockSlice = this.mockSliceOfDeviceLogItems(10);
-        final PageRequest pageRequest = new PageRequest(0, 10);
+        final PageRequest pageRequest = new PageRequest(0, 10, Sort.Direction.DESC, "id");
         Mockito.when(this.deviceLogItemSlicingRepository.findByCreationTimeBefore(this.date, pageRequest))
                 .thenReturn(mockSlice);
 
