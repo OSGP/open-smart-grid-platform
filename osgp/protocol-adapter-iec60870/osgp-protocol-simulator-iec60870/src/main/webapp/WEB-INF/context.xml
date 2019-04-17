@@ -34,6 +34,6 @@
   <Environment name="osgp/SimulatorProtocolIec60870/config" value="/etc/osp/osgp-simulator-protocol-iec60870.properties" type="java.lang.String" override="true" />
   
   <!--  Logging config file -->
-  <Environment name="osgp/AdapterProtocolIec60870/log-config" value="/etc/osp/osgp-simulator-protocol-iec60870-logback.xml" type="java.lang.String" override="true" />
+  <Environment name="osgp/SimulatorProtocolIec60870/log-config" value="/etc/osp/osgp-simulator-protocol-iec60870-logback.xml" type="java.lang.String" override="true" />
 
 </Context>
