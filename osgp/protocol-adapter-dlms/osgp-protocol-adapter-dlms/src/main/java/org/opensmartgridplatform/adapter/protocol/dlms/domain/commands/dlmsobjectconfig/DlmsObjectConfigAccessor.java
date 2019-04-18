@@ -1,3 +1,11 @@
+/**
+ * Copyright 2019 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig;
 
 import java.util.ArrayList;
@@ -35,6 +43,12 @@ public class DlmsObjectConfigAccessor {
 
         this.configs.add(new DlmsObjectConfigDsmr422(Collections.singletonList(Protocol.OTHER_PROTOCOL)));
         this.configs.add(new DlmsObjectConfigSmr50(Collections.singletonList(Protocol.SMR_5_1)));
+    }
+
+    // SetConfigs is only to be used for testing
+    void setConfigs(final List<DlmsObjectConfig> configs) {
+        this.configs.clear();
+        this.configs.addAll(configs);
     }
 
     public AttributeAddress getAttributeAddress(final DlmsDevice device, final DlmsObjectType type,
