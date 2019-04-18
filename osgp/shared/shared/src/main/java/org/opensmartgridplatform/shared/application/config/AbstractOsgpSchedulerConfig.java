@@ -85,6 +85,7 @@ public class AbstractOsgpSchedulerConfig extends AbstractSchedulingConfig {
             statement.executeQuery("SELECT * FROM qrtz_locks LIMIT 1");
             connection.close();
         } catch (final SQLException e) {
+            LOGGER.debug("SQLException", e);
             if (e.getMessage().contains("ERROR: relation \"qrtz_locks\" does not exist")) {
                 this.determineRetry("Table qrtz_lock does not exist");
             }
