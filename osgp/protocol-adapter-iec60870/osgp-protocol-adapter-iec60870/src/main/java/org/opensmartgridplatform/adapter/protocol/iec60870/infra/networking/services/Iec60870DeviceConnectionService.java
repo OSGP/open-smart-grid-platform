@@ -7,15 +7,15 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.services;
 
-import java.util.concurrent.ConcurrentHashMap;
-
 import javax.annotation.PreDestroy;
 
 import org.openmuc.j60870.Connection;
 import org.openmuc.j60870.ConnectionEventListener;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnection;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionCache;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceConnection;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceConnectionParameters;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.Iec60870Client;
-import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.helper.DeviceConnection;
 import org.opensmartgridplatform.shared.exceptionhandling.ConnectionFailureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,9 +27,8 @@ public class Iec60870DeviceConnectionService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec60870DeviceConnectionService.class);
 
-    private static final int PARALLELLISM_THRESHOLD = 1;
-
-    private static ConcurrentHashMap<String, DeviceConnection> cache = new ConcurrentHashMap<>();
+    @Autowired
+    private ClientConnectionCache cache;
 
     @Autowired
     private Iec60870Client iec60870Client;
@@ -45,7 +44,8 @@ public class Iec60870DeviceConnectionService {
         } else {
             final DeviceConnection newDeviceConnection = this.iec60870Client.connect(deviceConnectionParameters,
                     asduListener);
-            cache.put(deviceConnectionParameters.getDeviceIdentification(), newDeviceConnection);
+            this.cache.addConnection(deviceConnectionParameters.getDeviceIdentification(),
+                    newDeviceConnection);
 
             return newDeviceConnection;
         }
@@ -61,20 +61,23 @@ public class Iec60870DeviceConnectionService {
             return cachedDeviceConnection;
         } else {
             final DeviceConnection newDeviceConnection = this.iec60870Client.connect(deviceConnectionParameters);
-            cache.put(deviceConnectionParameters.getDeviceIdentification(), newDeviceConnection);
+            this.cache.addConnection(deviceConnectionParameters.getDeviceIdentification(),
+                    newDeviceConnection);
 
             return newDeviceConnection;
         }
     }
 
     private DeviceConnection fetchDeviceConnection(final String deviceIdentification) {
-        final DeviceConnection connection = cache.get(deviceIdentification);
-        if (connection != null) {
+        final ClientConnection connection = this.cache.getConnection(deviceIdentification);
+        DeviceConnection result = null;
+        if (connection instanceof DeviceConnection) {
             LOGGER.info("Connection found for device: {}", deviceIdentification);
+            result = (DeviceConnection) connection;
         } else {
             LOGGER.info("No connection found for device: {}", deviceIdentification);
         }
-        return connection;
+        return result;
     }
 
     /**
@@ -85,12 +88,12 @@ public class Iec60870DeviceConnectionService {
      *            Device for which to close the connection.
      */
     public void disconnect(final String deviceIdentification) {
-        final DeviceConnection deviceConnection = cache.get(deviceIdentification);
+        final ClientConnection connection = this.cache.getConnection(deviceIdentification);
 
-        if (deviceConnection != null) {
-            this.iec60870Client.disconnect(deviceConnection);
+        if (connection instanceof DeviceConnection) {
+            this.iec60870Client.disconnect((DeviceConnection) connection);
 
-            cache.remove(deviceIdentification);
+            this.cache.removeConnection(deviceIdentification);
         } else {
             LOGGER.warn("No connection found for deviceIdentification {}", deviceIdentification);
         }
@@ -98,9 +101,8 @@ public class Iec60870DeviceConnectionService {
 
     @PreDestroy
     public void closeAllConnections() {
-        LOGGER.warn("Closing connections for {} devices", cache.size());
-
-        cache.forEachKey(PARALLELLISM_THRESHOLD, this::disconnect);
+        LOGGER.warn("Closing connections for {} devices", this.cache.getSize());
+        this.cache.applyToAll(this::disconnect);
     }
 
 }

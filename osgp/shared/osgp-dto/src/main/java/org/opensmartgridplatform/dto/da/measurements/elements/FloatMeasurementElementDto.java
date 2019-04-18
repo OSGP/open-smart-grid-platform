@@ -5,21 +5,23 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.domain.da.measurements.elements;
+package org.opensmartgridplatform.dto.da.measurements.elements;
 
 import java.util.Objects;
 
-import org.opensmartgridplatform.domain.da.measurements.MeasurementElement;
+import org.opensmartgridplatform.dto.da.measurements.MeasurementElementDto;
 
-public class FloatingPointMeasurementElement implements MeasurementElement {
+public class FloatMeasurementElementDto implements MeasurementElementDto {
 
-    private Float value;
+    private static final long serialVersionUID = 8006310470907755173L;
 
-    public FloatingPointMeasurementElement(final Float value) {
+    private float value;
+
+    public FloatMeasurementElementDto(final float value) {
         this.value = value;
     }
 
-    public Float getValue() {
+    public float getValue() {
         return this.value;
     }
 
@@ -28,15 +30,16 @@ public class FloatingPointMeasurementElement implements MeasurementElement {
         if (this == obj) {
             return true;
         }
-        if (!(obj instanceof FloatingPointMeasurementElement)) {
+
+        if (!(obj instanceof FloatMeasurementElementDto)) {
             return false;
         }
-        final FloatingPointMeasurementElement that = (FloatingPointMeasurementElement) obj;
+        final FloatMeasurementElementDto that = (FloatMeasurementElementDto) obj;
         return Float.compare(this.value, that.value) == 0;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(Float.floatToIntBits(this.value));
+        return Objects.hashCode(Float.floatToIntBits(this.value));
     }
 }

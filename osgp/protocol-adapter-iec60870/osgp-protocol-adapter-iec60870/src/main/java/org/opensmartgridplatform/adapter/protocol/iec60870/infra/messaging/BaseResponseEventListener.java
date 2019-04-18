@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.Serializable;
 
 import org.openmuc.j60870.ConnectionEventListener;
-import org.opensmartgridplatform.adapter.protocol.iec60870.services.DeviceMessageLoggingService;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;

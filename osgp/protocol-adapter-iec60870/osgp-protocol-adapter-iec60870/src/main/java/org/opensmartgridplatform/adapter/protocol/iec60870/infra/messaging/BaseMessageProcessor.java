@@ -13,10 +13,9 @@ import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.helper.DeviceConnection;
-import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.helper.RequestMessageData;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceConnection;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.RequestMessageData;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.services.Iec60870DeviceService;
-import org.opensmartgridplatform.adapter.protocol.iec60870.services.DeviceMessageLoggingService;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.shared.exceptionhandling.ProtocolAdapterException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
@@ -117,7 +116,6 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
             this.handleError(messageMetadata, e);
         } catch (final Exception e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
-            return;
         }
     }
 

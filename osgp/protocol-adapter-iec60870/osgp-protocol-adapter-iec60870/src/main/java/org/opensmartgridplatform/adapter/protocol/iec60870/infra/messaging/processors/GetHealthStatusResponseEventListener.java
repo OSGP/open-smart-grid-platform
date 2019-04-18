@@ -11,7 +11,7 @@ import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.CauseOfTransmission;
 import org.openmuc.j60870.TypeId;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.BaseResponseEventListener;
-import org.opensmartgridplatform.adapter.protocol.iec60870.services.DeviceMessageLoggingService;
+import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.DeviceMessageLoggingService;
 import org.opensmartgridplatform.dto.da.GetHealthStatusResponseDto;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
