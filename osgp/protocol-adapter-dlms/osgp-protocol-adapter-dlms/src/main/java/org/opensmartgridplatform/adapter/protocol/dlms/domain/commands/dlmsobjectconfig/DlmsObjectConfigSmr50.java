@@ -65,7 +65,7 @@ public class DlmsObjectConfigSmr50 extends DlmsObjectConfig {
 
         // Gas objects
         final DlmsObject mbusMasterValue =
-                new DlmsExtendedRegister(MBUS_MASTER_VALUE, "0.<c>.24.2.1.255", 0, M3, GAS);
+                new DlmsExtendedRegister(MBUS_MASTER_VALUE, "0.<c>.24.2.2.255", 0, M3, GAS);
 
         // Profiles
         final List<DlmsCaptureObject> captureObjectsIntervalE = Arrays.asList(

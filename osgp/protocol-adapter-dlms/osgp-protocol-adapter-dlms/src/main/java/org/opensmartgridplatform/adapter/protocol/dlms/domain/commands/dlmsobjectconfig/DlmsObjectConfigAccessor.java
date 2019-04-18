@@ -11,13 +11,20 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.GetPeriodicMeterReadsGasCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class DlmsObjectConfigAccessor {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsGasCommandExecutor.class);
+
     private final List<DlmsObjectConfig> configs = new ArrayList<>();
 
     private final DlmsHelper dlmsHelper;
@@ -30,15 +37,17 @@ public class DlmsObjectConfigAccessor {
         this.configs.add(new DlmsObjectConfigSmr50(Collections.singletonList(Protocol.SMR_5_1)));
     }
 
-    public AttributeAddress getAttributeAddress(final Protocol protocol, final DlmsObjectType type,
+    public AttributeAddress getAttributeAddress(final DlmsDevice device, final DlmsObjectType type,
             final Integer channel) {
-        return this.getAttributeAddress(protocol, type, channel, null, null, null, null);
+        return this.getAttributeAddress(device, type, channel, null, null, null, null);
     }
 
-    public AttributeAddress getAttributeAddress(final Protocol protocol, final DlmsObjectType type,
+    public AttributeAddress getAttributeAddress(final DlmsDevice device, final DlmsObjectType type,
             final Integer channel, final DateTime from, final DateTime to, final Medium filterMedium,
             final List<DlmsCaptureObject> selectedObjects) {
-        final List<DlmsObject> objects = this.getObjects(protocol, type, filterMedium);
+        final List<DlmsObject> objects = this
+                .getObjects(Protocol.withNameAndVersion(device.getProtocol(), device.getProtocolVersion()), type,
+                        filterMedium);
 
         if (objects != null && !objects.isEmpty()) {
             final DlmsObject object = objects.get(0);
@@ -47,7 +56,7 @@ public class DlmsObjectConfigAccessor {
             final int attributeId = object.getDefaultAttributeId();
 
             final SelectiveAccessDescription access = this
-                    .getAccessDescription(object, from, to, channel, filterMedium, protocol, selectedObjects);
+                    .getAccessDescription(object, from, to, channel, filterMedium, device, selectedObjects);
 
             return new AttributeAddress(classId, obisCode, attributeId, access);
         } else {
@@ -104,15 +113,19 @@ public class DlmsObjectConfigAccessor {
     }
 
     private SelectiveAccessDescription getAccessDescription(final DlmsObject object, final DateTime from,
-            final DateTime to, final Integer channel, final Medium filterMedium, final Protocol protocol,
+            final DateTime to, final Integer channel, final Medium filterMedium, final DlmsDevice device,
             final List<DlmsCaptureObject> selectedObjects) {
         if (!(object instanceof DlmsProfile) || from == null || to == null) {
+            return null;
+        } else if (!device.isSelectiveAccessSupported()) {
+            LOGGER.info("Device does not support selective access, returning all captureobjects as selected objects");
+            selectedObjects.addAll(((DlmsProfile) object).getCaptureObjects());
             return null;
         } else {
             final int accessSelector = 1;
 
-            final DataObject selectedValues = this
-                    .getSelectedValues(object, channel, filterMedium, protocol, selectedObjects);
+            final DataObject selectedValues = this.getSelectedValues(object, channel, filterMedium,
+                    Protocol.withNameAndVersion(device.getProtocol(), device.getProtocolVersion()), selectedObjects);
 
             final DataObject accessParameter = this.dlmsHelper
                     .getAccessSelectionTimeRangeParameter(from, to, selectedValues);
