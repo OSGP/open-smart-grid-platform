@@ -17,13 +17,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AttributeAddressHelper {
+public class DlmsObjectConfigAccessor {
     private final List<DlmsObjectConfig> configs = new ArrayList<>();
 
     private final DlmsHelper dlmsHelper;
 
     @Autowired
-    public AttributeAddressHelper(final DlmsHelper dlmsHelper) {
+    public DlmsObjectConfigAccessor(final DlmsHelper dlmsHelper) {
         this.dlmsHelper = dlmsHelper;
 
         this.configs.add(new DlmsObjectConfigDsmr422(Collections.singletonList(Protocol.OTHER_PROTOCOL)));
@@ -38,7 +38,7 @@ public class AttributeAddressHelper {
     public AttributeAddress getAttributeAddress(final Protocol protocol, final DlmsObjectType type,
             final Integer channel, final DateTime from, final DateTime to, final Medium filterMedium,
             final List<DlmsCaptureObject> selectedObjects) {
-        final List<DlmsObject> objects = this.getObjects(protocol, type);
+        final List<DlmsObject> objects = this.getObjects(protocol, type, filterMedium);
 
         if (objects != null && !objects.isEmpty()) {
             final DlmsObject object = objects.get(0);
@@ -55,48 +55,25 @@ public class AttributeAddressHelper {
         }
     }
 
-    public List<AttributeAddress> getAttributeAddressWithScalerUnitAddresses(final Protocol protocol,
-            final DlmsObjectType type, final Integer channel, final DateTime from, final DateTime to,
-            final Medium filterMedium, final List<DlmsCaptureObject> selectedObjects) {
+    public List<AttributeAddress> getAttributeAddressesForScalerUnit(final List<DlmsCaptureObject> selectedObjects,
+            final Integer channel) {
+        final List<AttributeAddress> attributeAddresses = new ArrayList<>();
 
-        final List<AttributeAddress> attributeAddressesWithScalerUnitAddresses = new ArrayList<>();
+        // Get all Registers from the list of selected objects for which the default attribute is captured.
+        final List<DlmsRegister> dlmsRegisters = selectedObjects.stream()
+                .filter(c -> c.getAttributeId() == c.getRelatedObject().getDefaultAttributeId())
+                .map(DlmsCaptureObject::getRelatedObject).filter(r -> r instanceof DlmsRegister)
+                .map(r -> (DlmsRegister) r).collect(Collectors.toList());
 
-        attributeAddressesWithScalerUnitAddresses
-                .add(this.getAttributeAddress(protocol, type, channel, from, to, filterMedium, selectedObjects));
-
-        final List<DlmsObject> objects = this.getObjects(protocol, type);
-
-        if (objects != null && !objects.isEmpty()) {
-            final DlmsObject object = objects.get(0);
-            if (object instanceof DlmsProfile) {
-                final DlmsProfile profile = (DlmsProfile) object;
-
-                for (final DlmsCaptureObject captureObject : profile.getCaptureObjects()) {
-                    final DlmsObject captureObjectObject = captureObject.getObject();
-
-                    if (captureObjectObject instanceof DlmsRegister) {
-
-                        if (!this.mediumMatches(filterMedium, captureObjectObject) || !this
-                                .channelMatches(channel, captureObject)
-                                || captureObject.getAttributeId() != captureObjectObject.getDefaultAttributeId()) {
-                            continue;
-                        }
-
-                        final AttributeAddress attributeAddressForScalerUnit = new AttributeAddress(
-                                captureObjectObject.getClassId(),
-                                this.replaceChannel(captureObjectObject.getObisCode(), channel),
-                                ((DlmsRegister) captureObjectObject).getScalerUnitAttributeId(), null);
-
-                        attributeAddressesWithScalerUnitAddresses.add(attributeAddressForScalerUnit);
-                    }
-                }
-            }
+        for (final DlmsRegister register : dlmsRegisters) {
+            attributeAddresses.add(new AttributeAddress(register.getClassId(),
+                    this.replaceChannel(register.getObisCode(), channel), register.getScalerUnitAttributeId()));
         }
 
-        return attributeAddressesWithScalerUnitAddresses;
+        return attributeAddresses;
     }
 
-    private List<DlmsObject> getObjects(final Protocol protocol, final DlmsObjectType type) {
+    private List<DlmsObject> getObjects(final Protocol protocol, final DlmsObjectType type, final Medium filterMedium) {
         final List<DlmsObjectConfig> configsForProtocol = this.configs.stream()
                 .filter(c -> c.protocols.contains(protocol)).collect(Collectors.toList());
 
@@ -107,7 +84,14 @@ public class AttributeAddressHelper {
 
             final List<DlmsObject> objects = objectConfig.getObjects();
 
-            return objects.stream().filter(i -> i.getType().equals(type)).collect(Collectors.toList());
+            // @formatter:off
+           return objects.stream()
+                    .filter(i -> i.getType().equals(type))
+                    .filter(i -> !(i instanceof DlmsProfile) ||
+                            ((DlmsProfile)i).getMedium() == Medium.COMBINED ||
+                            ((DlmsProfile)i).getMedium() == filterMedium)
+                    .collect(Collectors.toList());
+            // @formatter:on
         }
     }
 
@@ -141,35 +125,35 @@ public class AttributeAddressHelper {
             final Protocol protocol, final List<DlmsCaptureObject> selectedObjects) {
         final List<DataObject> objectDefinitions = new ArrayList<>();
 
-        if (object instanceof DlmsProfile && ((DlmsProfile) object).getCaptureObjects() != null && protocol
-                .isSelectValuesInSelectiveAccessSupported()) {
+        if (object instanceof DlmsProfile && ((DlmsProfile) object).getCaptureObjects() != null) {
 
             final DlmsProfile profile = (DlmsProfile) object;
 
             for (final DlmsCaptureObject captureObject : profile.getCaptureObjects()) {
-                final DlmsObject captureObjectObject = captureObject.getObject();
+                final DlmsObject relatedObject = captureObject.getRelatedObject();
 
-                if (!this.mediumMatches(filterMedium, captureObjectObject) || !this
-                        .channelMatches(channel, captureObject)) {
+                if (!this.mediumMatches(filterMedium, relatedObject) || !this.channelMatches(channel, captureObject)) {
                     continue;
                 }
 
                 // Create and add object definition for this capture object
-                final ObisCode obisCode = this.replaceChannel(captureObjectObject.getObisCode(), channel);
+                final ObisCode obisCode = this.replaceChannel(relatedObject.getObisCode(), channel);
                 objectDefinitions.add(DataObject.newStructureData(
-                        Arrays.asList(DataObject.newUInteger16Data(captureObjectObject.getClassId()),
+                        Arrays.asList(DataObject.newUInteger16Data(relatedObject.getClassId()),
                                 DataObject.newOctetStringData(obisCode.bytes()),
                                 DataObject.newInteger8Data((byte) captureObject.getAttributeId()),
                                 DataObject.newUInteger16Data(0))));
 
-                // Add object to list to decode result list from meter
+                // Add object to selected object list
                 if (selectedObjects != null) {
                     selectedObjects.add(captureObject);
                 }
             }
 
-            if (profile.getCaptureObjects().size() == objectDefinitions.size()) {
-                // If all capture objects are selected, then use an empty list (which means select all)
+            if (profile.getCaptureObjects().size() == objectDefinitions.size() || !protocol
+                    .isSelectValuesInSelectiveAccessSupported()) {
+                // If all capture objects are selected or selecting values is not supported, then use an empty list
+                // (which means select all)
                 objectDefinitions.clear();
             }
         }

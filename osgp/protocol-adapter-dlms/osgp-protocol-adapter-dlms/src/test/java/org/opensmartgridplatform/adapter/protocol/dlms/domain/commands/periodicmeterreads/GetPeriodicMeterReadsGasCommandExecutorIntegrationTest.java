@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 
 import org.joda.time.DateTime;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -27,7 +26,7 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.AttributeAddressHelper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigAccessor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.DlmsConnectionManagerStub;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.DlmsConnectionStub;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.testutil.AttributeAddressAssert;
@@ -46,7 +45,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
 
     private DlmsHelper dlmsHelper;
     private AmrProfileStatusCodeHelper amrProfileStatusCodeHelper;
-    private AttributeAddressHelper attributeAddressHelper;
+    private DlmsObjectConfigAccessor dlmsObjectConfigAccessor;
 
     private DlmsConnectionManagerStub connectionManagerStub;
     private DlmsConnectionStub connectionStub;
@@ -98,10 +97,10 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     public void setUp() {
         this.dlmsHelper = new DlmsHelper();
         this.amrProfileStatusCodeHelper = new AmrProfileStatusCodeHelper();
-        this.attributeAddressHelper = new AttributeAddressHelper(this.dlmsHelper);
+        this.dlmsObjectConfigAccessor = new DlmsObjectConfigAccessor(this.dlmsHelper);
 
         this.executor = new GetPeriodicMeterReadsGasCommandExecutor(this.dlmsHelper, this.amrProfileStatusCodeHelper,
-                this.attributeAddressHelper);
+                this.dlmsObjectConfigAccessor);
         this.connectionStub = new DlmsConnectionStub();
         this.connectionManagerStub = new DlmsConnectionManagerStub(this.connectionStub);
 
@@ -115,7 +114,6 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
         }
     }
 
-    @Ignore // To be implemented
     @Test
     public void testExecuteSmr5_0() throws Exception {
         for (final PeriodTypeDto type : PeriodTypeDto.values()) {
@@ -123,7 +121,6 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
         }
     }
 
-    @Ignore // To be implemented
     @Test
     public void testExecuteSmr5_1() throws Exception {
         for (final PeriodTypeDto type : PeriodTypeDto.values()) {

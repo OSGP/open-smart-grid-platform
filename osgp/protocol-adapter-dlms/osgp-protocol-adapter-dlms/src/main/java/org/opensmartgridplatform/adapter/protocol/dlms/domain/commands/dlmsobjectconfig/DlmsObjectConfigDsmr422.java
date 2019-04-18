@@ -6,11 +6,11 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dl
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.ACTIVE_ENERGY_IMPORT_RATE_1;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.AMR_STATUS;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.CLOCK;
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.DAILY_LOAD_PROFILE_COMBINED;
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.INTERVAL_VALUES_E;
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.INTERVAL_VALUES_G;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.DAILY_LOAD_PROFILE;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.INTERVAL_VALUES;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.MBUS_MASTER_VALUE;
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.MONTHLY_BILLING_VALUES_COMBINED;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.MONTHLY_BILLING_VALUES;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.Medium.COMBINED;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.Medium.ELECTRICITY;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.Medium.GAS;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.ProfileCaptureTime.DAY;
@@ -70,14 +70,16 @@ public class DlmsObjectConfigDsmr422 extends DlmsObjectConfig {
                 new DlmsCaptureObject(amrStatus),
                 new DlmsCaptureObject(activeEnergyImport),
                 new DlmsCaptureObject(activeEnergyExport));
-        objectList.add(new DlmsProfile(INTERVAL_VALUES_E, "1.0.99.1.0.255", captureObjectsIntervalE, QUARTER_HOUR));
+        objectList.add(new DlmsProfile(INTERVAL_VALUES, "1.0.99.1.0.255", captureObjectsIntervalE, QUARTER_HOUR,
+                ELECTRICITY));
 
         final List<DlmsCaptureObject> captureObjectsIntervalG = Arrays.asList(
                 new DlmsCaptureObject(clock),
                 new DlmsCaptureObject(amrStatusMbus),
                 new DlmsCaptureObject(mbusMasterValue),
                 new DlmsCaptureObject(mbusMasterValue, 5));
-        objectList.add(new DlmsProfile(INTERVAL_VALUES_G, "0.<c>.24.3.0.255", captureObjectsIntervalG, QUARTER_HOUR));
+        objectList.add(new DlmsProfile(INTERVAL_VALUES, "0.<c>.24.3.0.255", captureObjectsIntervalG, QUARTER_HOUR,
+                GAS));
 
         final List<DlmsCaptureObject> captureObjectsDaily = Arrays.asList(
                 new DlmsCaptureObject(clock),
@@ -94,7 +96,7 @@ public class DlmsObjectConfigDsmr422 extends DlmsObjectConfig {
                 new DlmsCaptureObjectWithChannel(mbusMasterValue, 3, 5),
                 new DlmsCaptureObjectWithChannel(mbusMasterValue, 4),
                 new DlmsCaptureObjectWithChannel(mbusMasterValue, 4, 5));
-        objectList.add(new DlmsProfile(DAILY_LOAD_PROFILE_COMBINED, "1.0.99.2.0.255", captureObjectsDaily, DAY));
+        objectList.add(new DlmsProfile(DAILY_LOAD_PROFILE, "1.0.99.2.0.255", captureObjectsDaily, DAY, COMBINED));
 
         final List<DlmsCaptureObject> captureObjectsMonthly = Arrays.asList(
                 new DlmsCaptureObject(clock),
@@ -110,8 +112,8 @@ public class DlmsObjectConfigDsmr422 extends DlmsObjectConfig {
                 new DlmsCaptureObjectWithChannel(mbusMasterValue, 3, 5),
                 new DlmsCaptureObjectWithChannel(mbusMasterValue, 4),
                 new DlmsCaptureObjectWithChannel(mbusMasterValue, 4, 5));
-        objectList.add(new DlmsProfile(MONTHLY_BILLING_VALUES_COMBINED, "0.0.98.1.0.255", captureObjectsMonthly,
-                MONTH));
+        objectList.add(new DlmsProfile(MONTHLY_BILLING_VALUES, "0.0.98.1.0.255", captureObjectsMonthly, MONTH,
+                COMBINED));
 
         return objectList;
     }
