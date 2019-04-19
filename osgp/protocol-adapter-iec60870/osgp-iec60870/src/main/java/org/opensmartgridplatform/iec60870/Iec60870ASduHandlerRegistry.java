@@ -7,7 +7,7 @@
  */
 package org.opensmartgridplatform.iec60870;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 import org.openmuc.j60870.TypeId;
@@ -27,7 +27,7 @@ public class Iec60870ASduHandlerRegistry {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec60870ASduHandlerRegistry.class);
 
-    private Map<TypeId, Iec60870ASduHandler> handlers = new HashMap<>();
+    private Map<TypeId, Iec60870ASduHandler> handlers = new EnumMap<>(TypeId.class);
 
     public Iec60870ASduHandler getHandler(final TypeId typeId) throws Iec60870ASduHandlerNotFoundException {
         if (!this.handlers.containsKey(typeId)) {

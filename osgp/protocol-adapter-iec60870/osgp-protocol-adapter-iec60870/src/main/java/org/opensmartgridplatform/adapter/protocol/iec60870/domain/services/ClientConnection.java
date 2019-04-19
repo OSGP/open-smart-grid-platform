@@ -7,10 +7,21 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services;
 
-/**
- *
- * Marker interface
- *
- */
+import org.openmuc.j60870.Connection;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ConnectionInfo;
+
 public interface ClientConnection {
+    /**
+     * Get the connection info.
+     *
+     * @return a {@link ConnectionInfo} instance.
+     */
+    ConnectionInfo getConnectionInfo();
+
+    /**
+     * Get the connection.
+     *
+     * @return a {@link Connection} instance.
+     */
+    Connection getConnection();
 }

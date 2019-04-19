@@ -11,6 +11,6 @@ import org.openmuc.j60870.ASdu;
 import org.opensmartgridplatform.dto.da.measurements.MeasurementReportDto;
 
 @FunctionalInterface
-public interface AsduToMeasurementReportMapper {
+public interface AsduConverterService {
     MeasurementReportDto convert(ASdu asdu);
 }

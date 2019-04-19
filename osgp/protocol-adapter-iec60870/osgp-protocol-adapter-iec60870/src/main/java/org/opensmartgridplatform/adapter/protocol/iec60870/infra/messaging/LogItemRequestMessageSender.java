@@ -12,6 +12,7 @@ import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.LogItem;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +27,7 @@ public class LogItemRequestMessageSender {
     @Autowired
     private JmsTemplate logItemRequestsJmsTemplate;
 
-    public void send(final LogItemRequestMessage logItemRequestMessage) {
+    public void send(final LogItem logItemRequestMessage) {
 
         LOGGER.debug("Sending LogItemRequestMessage");
 
@@ -37,9 +38,9 @@ public class LogItemRequestMessageSender {
 
     private class LogItemMessageCreator implements MessageCreator {
 
-        private final LogItemRequestMessage logItemRequestMessage;
+        private final LogItem logItemRequestMessage;
 
-        public LogItemMessageCreator(final LogItemRequestMessage logItemRequestMessage) {
+        public LogItemMessageCreator(final LogItem logItemRequestMessage) {
             this.logItemRequestMessage = logItemRequestMessage;
         }
 

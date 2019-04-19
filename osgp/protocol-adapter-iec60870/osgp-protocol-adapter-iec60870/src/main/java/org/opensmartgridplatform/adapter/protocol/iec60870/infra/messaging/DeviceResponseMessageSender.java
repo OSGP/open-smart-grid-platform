@@ -13,7 +13,7 @@ import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
 import org.apache.commons.lang3.StringUtils;
-import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.services.Iec60870DeviceConnectionService;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionService;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
@@ -41,7 +41,7 @@ public class DeviceResponseMessageSender implements ResponseMessageSender {
     private JmsTemplate iec60870ResponsesJmsTemplate;
 
     @Autowired
-    private Iec60870DeviceConnectionService iec60870deviceConnectionService;
+    private ClientConnectionService iec60870deviceConnectionService;
 
     @Autowired
     private boolean isCloseConnectionsOnBrokerFailure;
@@ -77,32 +77,34 @@ public class DeviceResponseMessageSender implements ResponseMessageSender {
     }
 
     private boolean checkMessage(final ProtocolResponseMessage msg) {
+        boolean result = true;
+
         if (StringUtils.isBlank(msg.getOrganisationIdentification())) {
             LOGGER.error(LOG_MESSAGE_BLANK_FIELD, "OrganisationIdentification");
-            return false;
+            result = false;
         }
         if (StringUtils.isBlank(msg.getDeviceIdentification())) {
             LOGGER.error(LOG_MESSAGE_BLANK_FIELD, "DeviceIdentification");
-            return false;
+            result = false;
         }
         if (StringUtils.isBlank(msg.getCorrelationUid())) {
             LOGGER.error(LOG_MESSAGE_BLANK_FIELD, "CorrelationUid");
-            return false;
+            result = false;
         }
         if (msg.getResult() == null) {
             LOGGER.error(LOG_MESSAGE_NULL_FIELD, "Result");
-            return false;
+            result = false;
         }
         if (StringUtils.isBlank(msg.getDomain())) {
             LOGGER.error(LOG_MESSAGE_BLANK_FIELD, "Domain");
-            return false;
+            result = false;
         }
         if (StringUtils.isBlank(msg.getMessageType())) {
             LOGGER.error(LOG_MESSAGE_BLANK_FIELD, "MessageType");
-            return false;
+            result = false;
         }
 
-        return true;
+        return result;
     }
 
     private void sendMessage(final ProtocolResponseMessage responseMessage) {

@@ -12,22 +12,26 @@ import static org.mockito.Mockito.spy;
 
 import org.openmuc.j60870.Connection;
 import org.opensmartgridplatform.adapter.protocol.iec60870.application.mapping.Iec60870Mapper;
-import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.Iec60870MeasurementReportMessageSender;
+import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.Client;
+import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.Iec60870AsduConverterService;
+import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.Iec60870LoggingService;
+import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.Iec60870MeasurementReportingService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.repositories.Iec60870DeviceRepository;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.AsduToMeasurementReportMapper;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.AsduConverterService;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientAsduHandler;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionCache;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionService;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.Iec60870ClientAsduHandlerRegistry;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.Iec60870ClientConnectionCache;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.MeasurementReportMessageSender;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.asduhandlers.ShortFloatWithTime56MeasurementASduHandler;
-import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.DeviceMessageLoggingService;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.Iec60870DeviceConnectionService;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.LoggingService;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.MeasurementReportingService;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.asduhandlers.ShortFloatWithTime56MeasurementAsduHandler;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.DeviceRequestMessageListener;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.DeviceResponseMessageSender;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.LogItemRequestMessageSender;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.processors.GetHealthStatusRequestMessageProcessor;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.Iec60870Client;
-import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.services.Iec60870DeviceConnectionService;
-import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.services.Iec60870DeviceService;
-import org.opensmartgridplatform.iec60870.Iec60870ASduHandlerRegistry;
 import org.opensmartgridplatform.shared.application.config.jms.JmsConfiguration;
 import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationFactory;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
@@ -37,6 +41,8 @@ import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.core.JmsTemplate;
+
+import ma.glasnost.orika.MapperFacade;
 
 @Configuration
 public class TestConfiguration {
@@ -62,13 +68,8 @@ public class TestConfiguration {
     }
 
     @Bean
-    public Iec60870DeviceService iec60870DeviceService() {
-        return new Iec60870DeviceService();
-    }
-
-    @Bean
-    public DeviceMessageLoggingService deviceMessageLoggingService() {
-        return mock(DeviceMessageLoggingService.class);
+    public LoggingService deviceMessageLoggingService() {
+        return new Iec60870LoggingService();
     }
 
     @Bean
@@ -92,6 +93,11 @@ public class TestConfiguration {
     }
 
     @Bean
+    public ClientConnectionService iec60870ClientConnectionService() {
+        return new Iec60870DeviceConnectionService();
+    }
+
+    @Bean
     public Connection connection() {
         return mock(Connection.class);
     }
@@ -102,13 +108,8 @@ public class TestConfiguration {
     }
 
     @Bean
-    public Iec60870Client iec60870Client() {
+    public Client iec60870Client() {
         return mock(Iec60870Client.class);
-    }
-
-    @Bean
-    public Iec60870DeviceConnectionService iec60870DeviceConnectionService() {
-        return new Iec60870DeviceConnectionService();
     }
 
     @Bean
@@ -147,23 +148,28 @@ public class TestConfiguration {
     }
 
     @Bean
-    public Iec60870ASduHandlerRegistry iec60870ASduHandlerRegistry() {
-        return new Iec60870ASduHandlerRegistry();
+    public Iec60870ClientAsduHandlerRegistry iec60870ClientASduHandlerRegistry() {
+        return new Iec60870ClientAsduHandlerRegistry();
     }
 
     @Bean
-    public ShortFloatWithTime56MeasurementASduHandler shortFloatWithTime56MeasurementASduHandler() {
-        return new ShortFloatWithTime56MeasurementASduHandler();
+    public ClientAsduHandler shortFloatWithTime56MeasurementASduHandler() {
+        return new ShortFloatWithTime56MeasurementAsduHandler();
     }
 
     @Bean
-    public AsduToMeasurementReportMapper asduToMeasurementReportMapper() {
+    public MapperFacade iec60870Mapper() {
         return new Iec60870Mapper();
     }
 
     @Bean
-    public MeasurementReportMessageSender measurementReportMessageSender() {
-        return new Iec60870MeasurementReportMessageSender();
+    public AsduConverterService asduToMeasurementReportMapper() {
+        return new Iec60870AsduConverterService();
+    }
+
+    @Bean
+    public MeasurementReportingService measurementReportMessageSender() {
+        return new Iec60870MeasurementReportingService();
     }
 
 }

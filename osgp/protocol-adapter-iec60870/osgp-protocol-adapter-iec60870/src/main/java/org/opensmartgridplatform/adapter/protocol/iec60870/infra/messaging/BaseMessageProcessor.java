@@ -7,16 +7,14 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging;
 
-import java.lang.reflect.Constructor;
-
 import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceConnection;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.RequestMessageData;
-import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.services.Iec60870DeviceService;
-import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnection;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionService;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.LoggingService;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.RequestInfo;
 import org.opensmartgridplatform.shared.exceptionhandling.ProtocolAdapterException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -53,17 +51,13 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
     @Qualifier("iec60870RequestMessageProcessorMap")
     private MessageProcessorMap iec60870RequestMessageProcessorMap;
 
+    @Autowired
+    private ClientConnectionService iec60870DeviceConnectionService;
+
+    @Autowired
+    private LoggingService iec60870LoggingService;
+
     private MessageType messageType;
-    private Class<? extends BaseResponseEventListener> responseEventListener;
-
-    @Autowired
-    private Iec60870DeviceService iec60870DeviceService;
-
-    @Autowired
-    private CorrelationIdProviderService correlationIdProviderService;
-
-    @Autowired
-    private DeviceMessageLoggingService deviceMessageLoggingService;
 
     /**
      * Each MessageProcessor should register its MessageType at construction.
@@ -72,22 +66,16 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
      *            The MessageType the MessageProcessor implementation can
      *            process.
      */
-    protected BaseMessageProcessor(final MessageType messageType,
-            final Class<? extends BaseResponseEventListener> responseEventListener) {
+    protected BaseMessageProcessor(final MessageType messageType) {
         this.messageType = messageType;
-        this.responseEventListener = responseEventListener;
     }
 
     protected ResponseMessageSender getResponseMessageSender() {
         return this.responseMessageSender;
     }
 
-    protected Iec60870DeviceService getIec60870DeviceService() {
-        return this.iec60870DeviceService;
-    }
-
-    protected DeviceMessageLoggingService getDeviceMessageLoggingService() {
-        return this.deviceMessageLoggingService;
+    protected LoggingService getLoggingService() {
+        return this.iec60870LoggingService;
     }
 
     /**
@@ -106,12 +94,9 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
         MessageMetadata messageMetadata = null;
         try {
             messageMetadata = MessageMetadata.fromMessage(message);
-
-            final BaseResponseEventListener eventListener = this.createEventListener(messageMetadata);
-            final DeviceConnection deviceConnection = this.iec60870DeviceService.connectToDevice(
-                    messageMetadata.getDeviceIdentification(), messageMetadata.getIpAddress(), eventListener);
-
-            this.process(messageMetadata, deviceConnection);
+            final RequestInfo requestInfo = RequestInfo.newBuilder().messageMetadata(messageMetadata).build();
+            final ClientConnection deviceConnection = this.iec60870DeviceConnectionService.getConnection(requestInfo);
+            this.process(deviceConnection, requestInfo);
         } catch (final ProtocolAdapterException e) {
             this.handleError(messageMetadata, e);
         } catch (final Exception e) {
@@ -119,34 +104,10 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
         }
     }
 
-    /**
-     * Create a new instance of the event listener for this message processor.
-     *
-     * @param messageMetadata
-     *            MessageMetaData to pass to the new event listener.
-     * @return The created event listener.
-     */
-    private BaseResponseEventListener createEventListener(final MessageMetadata messageMetadata) {
-
-        Constructor<? extends BaseResponseEventListener> constructor;
-        try {
-            constructor = this.responseEventListener.getConstructor(MessageMetadata.class, ResponseMessageSender.class,
-                    DeviceMessageLoggingService.class, CorrelationIdProviderService.class);
-
-            return constructor.newInstance(messageMetadata, this.responseMessageSender,
-                    this.deviceMessageLoggingService, this.correlationIdProviderService);
-
-        } catch (RuntimeException | ReflectiveOperationException e) {
-            throw new IllegalStateException("Failed to create an instance for " + this.responseEventListener.getName(),
-                    e);
-        }
-
-    }
-
-    public abstract void process(final MessageMetadata messageMetadata, final DeviceConnection deviceConnection)
+    public abstract void process(final ClientConnection deviceConnection, RequestInfo requestInfo)
             throws ProtocolAdapterException;
 
-    protected void printDomainInfo(final RequestMessageData requestMessageData) {
+    protected void printDomainInfo(final RequestInfo requestMessageData) {
         LOGGER.info("Calling DeviceService function: {} for domain: {} {}", requestMessageData.getMessageType(),
                 requestMessageData.getDomain(), requestMessageData.getDomainVersion());
     }

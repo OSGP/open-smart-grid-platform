@@ -7,12 +7,12 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects;
 
-public class DomainInformation {
+public class DomainInfo {
 
     final String domain;
     final String domainVersion;
 
-    public DomainInformation(final String domain, final String domainVersion) {
+    public DomainInfo(final String domain, final String domainVersion) {
         this.domain = domain;
         this.domainVersion = domainVersion;
     }

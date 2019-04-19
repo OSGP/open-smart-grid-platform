@@ -22,10 +22,9 @@ import org.openmuc.j60870.ConnectionEventListener;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.entities.Iec60870Device;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.Iec60870DeviceFactory;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.repositories.Iec60870DeviceRepository;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnection;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionCache;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ConnectionInfo;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceConnection;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceConnectionParameters;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.DeviceRequestMessageListener;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.Iec60870Client;
 import org.opensmartgridplatform.dto.da.GetHealthStatusRequestDto;
@@ -49,7 +48,7 @@ public class ConnectToDeviceSteps {
     private Iec60870DeviceRepository repository;
 
     @Autowired
-    private ClientConnectionCache cache;
+    private ClientConnectionCache connectionCache;
 
     @Autowired
     private Iec60870Client client;
@@ -64,12 +63,12 @@ public class ConnectToDeviceSteps {
     public void givenTheIec60870DeviceIsNotConnected() throws ConnectionFailureException {
         // Make sure the connection is not present in the cache on the first
         // call
-        when(this.cache.getConnection(DEVICE_IDENTIFICATION)).thenReturn(null).thenCallRealMethod();
+        when(this.connectionCache.getConnection(DEVICE_IDENTIFICATION)).thenReturn(null).thenCallRealMethod();
 
         // Make sure the client connect works as expected
         final DeviceConnection deviceConnection = new DeviceConnection(mock(Connection.class),
-                new DeviceConnectionParameters.Builder().deviceIdentification(DEVICE_IDENTIFICATION).build());
-        when(this.client.connect(any(DeviceConnectionParameters.class), any(ConnectionEventListener.class)))
+                new ConnectionInfo.Builder().deviceIdentification(DEVICE_IDENTIFICATION).build());
+        when(this.client.connect(any(ConnectionInfo.class), any(ConnectionEventListener.class)))
                 .thenReturn(deviceConnection);
     }
 
@@ -83,11 +82,11 @@ public class ConnectToDeviceSteps {
 
     @Then("I should connect to the IEC60870 device")
     public void thenIShouldConnectToTheIec60870Device() throws ConnectionFailureException {
-        verify(this.client).connect(any(DeviceConnectionParameters.class), any(ConnectionEventListener.class));
+        verify(this.client).connect(any(ConnectionInfo.class), any(ConnectionEventListener.class));
     }
 
     @Then("I should cache the connection with the IEC60870 device")
     public void thenIShouldCacheTheConnection() {
-        verify(this.cache).addConnection(eq(DEVICE_IDENTIFICATION), any(ClientConnection.class));
+        verify(this.connectionCache).addConnection(eq(DEVICE_IDENTIFICATION), any(DeviceConnection.class));
     }
 }

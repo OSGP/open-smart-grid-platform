@@ -7,7 +7,8 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.application.config;
 
-import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.DeviceMessageLoggingService;
+import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.Iec60870LoggingService;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.LoggingService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.DeviceRequestMessageListener;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.DeviceResponseMessageSender;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.LogItemRequestMessageSender;
@@ -110,7 +111,7 @@ public class Iec60870MessagingConfig extends AbstractMessagingConfig {
     // === DEVICE MESSAGE LOGGING ===
 
     @Bean
-    public DeviceMessageLoggingService deviceMessageLoggingService() {
-        return new DeviceMessageLoggingService(this.logItemRequestMessageSender());
+    public LoggingService iec60870LoggingService() {
+        return new Iec60870LoggingService();
     }
 }

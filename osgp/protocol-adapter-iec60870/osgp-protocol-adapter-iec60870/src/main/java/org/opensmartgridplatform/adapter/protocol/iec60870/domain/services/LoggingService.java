@@ -7,9 +7,15 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services;
 
-import org.opensmartgridplatform.dto.da.measurements.MeasurementReportDto;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.LogItem;
 
-public interface MeasurementReportMessageSender extends MessageSender<MeasurementReportDto> {
-    @Override
-    void send(MeasurementReportDto measurementReportDto);
+@FunctionalInterface
+public interface LoggingService {
+    /**
+     * Log.
+     *
+     * @param logItem
+     *            The {@link LogItem} to log.
+     */
+    void log(LogItem logItem);
 }

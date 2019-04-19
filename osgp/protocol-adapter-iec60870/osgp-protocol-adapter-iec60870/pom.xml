@@ -124,7 +124,7 @@
             <skipTests>${skip.unit.tests}</skipTests>
             <!-- excludes integration tests when unit tests are run -->
             <excludes>
-              <exclude>**/*IT.java</exclude>
+              <exclude>**/TestRunnerIT.java</exclude>
             </excludes>
           </configuration>
         </plugin>
@@ -136,7 +136,7 @@
           <version>2.18</version>
           <executions>
             <execution>
-              <id>integration-tests</id>
+              <id>integration-test</id>
               <goals>
                 <goal>integration-test</goal>
                 <goal>verify</goal>

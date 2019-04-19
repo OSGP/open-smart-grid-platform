@@ -7,7 +7,11 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.steps;
 
+import static org.mockito.Mockito.reset;
+
+import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.LogItemRequestMessageSender;
 import org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.TestConfiguration;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 import cucumber.api.java.Before;
@@ -15,10 +19,11 @@ import cucumber.api.java.Before;
 @ContextConfiguration(classes = { TestConfiguration.class })
 public class ContextConfigurationSteps {
 
+    @Autowired
+    LogItemRequestMessageSender logItemRequestMessageSender;
+
     @Before
-    public void loadContext() {
-        // dummy method with cucumber Before annotation to make sure the test
-        // configuration as given in the ContextConfiguration annotation is
-        // loaded
+    public void resetContext() {
+        reset(this.logItemRequestMessageSender);
     }
 }

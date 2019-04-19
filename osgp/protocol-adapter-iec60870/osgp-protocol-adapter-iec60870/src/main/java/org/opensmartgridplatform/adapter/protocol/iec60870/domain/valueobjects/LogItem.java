@@ -5,11 +5,11 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging;
+package org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class LogItemRequestMessage {
+public class LogItem {
 
     private static final int MAX_MESSAGE_LENGTH = 8000;
 
@@ -27,7 +27,7 @@ public class LogItemRequestMessage {
 
     private int payloadMessageSerializedSize;
 
-    public LogItemRequestMessage(final String deviceIdentification, final String organisationIdentification,
+    public LogItem(final String deviceIdentification, final String organisationIdentification,
             final boolean incoming, final boolean valid, final String message, final int payloadMessageSerializedSize) {
         this.deviceIdentification = deviceIdentification;
         this.organisationIdentification = organisationIdentification;

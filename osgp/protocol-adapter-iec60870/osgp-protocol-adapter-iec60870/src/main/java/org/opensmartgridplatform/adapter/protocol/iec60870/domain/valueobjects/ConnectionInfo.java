@@ -7,14 +7,25 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects;
 
-public class DeviceConnectionParameters {
+/**
+ * A value object, containing the relevant information for setting up a
+ * connection to a device:
+ * <ul>
+ * <li>Device Identification</li>
+ * <li>IP Address</li>
+ * <li>Common Address</li>
+ * <li>Port</li>
+ * </ul>
+ *
+ */
+public class ConnectionInfo {
 
     final String ipAddress;
     final String deviceIdentification;
     final int commonAddress;
     final Integer port;
 
-    public DeviceConnectionParameters(final Builder builder) {
+    public ConnectionInfo(final Builder builder) {
         this.ipAddress = builder.ipAddress;
         this.deviceIdentification = builder.deviceIdentification;
         this.commonAddress = builder.commonAddress;
@@ -47,8 +58,8 @@ public class DeviceConnectionParameters {
             return this;
         }
 
-        public DeviceConnectionParameters build() {
-            return new DeviceConnectionParameters(this);
+        public ConnectionInfo build() {
+            return new ConnectionInfo(this);
         }
 
     }

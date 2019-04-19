@@ -7,20 +7,25 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.steps;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import org.openmuc.j60870.ASdu;
-import org.openmuc.j60870.Connection;
 import org.openmuc.j60870.ConnectionEventListener;
 import org.openmuc.j60870.TypeId;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.AsduFactory;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientAsduHandlerRegistry;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionCache;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.Iec60870ClientConnectionEventListener;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ConnectionInfo;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DomainInfo;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.LogItem;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseInfo;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.DeviceResponseMessageSender;
+import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.LogItemRequestMessageSender;
 import org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.matchers.MeasurementReportTypeMatcher;
-import org.opensmartgridplatform.iec60870.Iec60870ASduHandlerRegistry;
-import org.opensmartgridplatform.iec60870.Iec60870ConnectionEventListener;
-import org.opensmartgridplatform.iec60870.Iec60870ConnectionRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,14 +44,23 @@ public class ReceiveMeasurementsSteps {
     private DeviceResponseMessageSender iec60870ResponseMessageSender;
 
     @Autowired
-    private Iec60870ASduHandlerRegistry iec60870ASduHandlerRegistry;
+    private LogItemRequestMessageSender iec60870LogItemRequestMessageSender;
+
+    @Autowired
+    private ClientAsduHandlerRegistry iec60870ClientAsduHandlerRegistry;
 
     @Given("an existing connection with an IEC60870 device")
     public void givenAnExistingConnection() {
         LOGGER.debug("Given an existing connection");
 
-        this.connectionEventListener = new Iec60870ConnectionEventListener(mock(Connection.class),
-                mock(Iec60870ConnectionRegistry.class), this.iec60870ASduHandlerRegistry);
+        final ConnectionInfo connectionInfo = new ConnectionInfo.Builder().commonAddress(0)
+                .deviceIdentification("TEST-DEVICE").ipAddress("localhost").port(2404).build();
+        final ResponseInfo responseInfo = new ResponseInfo.Builder().withDeviceIdentification("TEST-DEVICE")
+                .withOrganisationIdentification("TEST-ORGANISATION")
+                .withDomainInfo(new DomainInfo("TEST-DOMAIN", "TEST_DOMAIN-VERSION"))
+                .withMessageType("TEST-MESSAGE-TYPE").build();
+        this.connectionEventListener = new Iec60870ClientConnectionEventListener(connectionInfo,
+                mock(ClientConnectionCache.class), this.iec60870ClientAsduHandlerRegistry, responseInfo);
     }
 
     @When("I receive an ASDU of type {string} from the IEC60870 device")
@@ -62,5 +76,12 @@ public class ReceiveMeasurementsSteps {
         LOGGER.debug("Then I should send a measurement report of type {}", typeId);
 
         verify(this.iec60870ResponseMessageSender).send(argThat(new MeasurementReportTypeMatcher(typeId)));
+    }
+
+    @Then("I should send a log item")
+    public void thenIShouldSendALogItemOfType() {
+        LOGGER.debug("Then I should send a log item");
+
+        verify(this.iec60870LogItemRequestMessageSender).send(any(LogItem.class));
     }
 }
