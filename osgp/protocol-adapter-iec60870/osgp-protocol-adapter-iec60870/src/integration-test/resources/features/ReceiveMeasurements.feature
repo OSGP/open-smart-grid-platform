@@ -1,4 +1,4 @@
-@ProtocolAdapterIec60870 @TestThis
+@ProtocolAdapterIec60870
 Feature: OSGP Protocol Adapter IEC60870 - Receive Measurements
     In order to provide measurement data to osgp clients
     As a protocol adapter

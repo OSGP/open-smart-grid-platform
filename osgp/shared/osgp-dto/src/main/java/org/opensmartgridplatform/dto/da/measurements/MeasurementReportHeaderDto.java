@@ -5,19 +5,11 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-/**
- * Copyright 2019 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- */
 package org.opensmartgridplatform.dto.da.measurements;
 
 import java.io.Serializable;
 import java.util.Objects;
 
-// TODO - Replace the measurement report header by a more generic solution, probably a Map<String,String> could be used.
 public class MeasurementReportHeaderDto implements Serializable {
 
     private static final long serialVersionUID = 1408641961558265027L;

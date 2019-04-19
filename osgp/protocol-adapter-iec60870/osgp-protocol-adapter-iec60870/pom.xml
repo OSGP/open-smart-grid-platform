@@ -31,6 +31,8 @@
   <properties>
     <display.version>${project.version}-${BUILD_TAG}</display.version>
     <cucumber.version>4.2.6</cucumber.version>
+    <spring.test.version>4.3.23.RELEASE</spring.test.version>
+
   </properties>
 
   <profiles>
@@ -148,7 +150,7 @@
             </execution>
           </executions>
         </plugin>
-      
+
     </plugins>
   </build>
 
@@ -307,7 +309,7 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
-      <version>4.3.23.RELEASE</version>
+      <version>${spring.test.version}</version>
     </dependency>
 
     <dependency>
