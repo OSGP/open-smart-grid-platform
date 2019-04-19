@@ -10,8 +10,8 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobje
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.joda.time.DateTime;
@@ -33,49 +33,45 @@ public class DlmsObjectConfigAccessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsGasCommandExecutor.class);
 
-    private final List<DlmsObjectConfig> configs = new ArrayList<>();
-
     private final DlmsHelper dlmsHelper;
+    private final List<DlmsObjectConfig> dlmsObjectConfigs;
 
     @Autowired
-    public DlmsObjectConfigAccessor(final DlmsHelper dlmsHelper) {
+    public DlmsObjectConfigAccessor(final DlmsHelper dlmsHelper, List<DlmsObjectConfig> dlmsObjectConfigs) {
         this.dlmsHelper = dlmsHelper;
-
-        this.configs.add(new DlmsObjectConfigDsmr422(Collections.singletonList(Protocol.OTHER_PROTOCOL)));
-        this.configs.add(new DlmsObjectConfigSmr50(Collections.singletonList(Protocol.SMR_5_1)));
+        this.dlmsObjectConfigs = dlmsObjectConfigs;
     }
 
-    // SetConfigs is only to be used for testing
-    void setConfigs(final List<DlmsObjectConfig> configs) {
-        this.configs.clear();
-        this.configs.addAll(configs);
-    }
-
-    public AttributeAddress getAttributeAddress(final DlmsDevice device, final DlmsObjectType type,
+    public Optional<AttributeAddress> findAttributeAddress(final DlmsDevice device, final DlmsObjectType type,
             final Integer channel) {
-        return this.getAttributeAddress(device, type, channel, null, null, null, null);
+        return this.findAttributeAddress(device, type, channel, null, null, null, null);
     }
 
-    public AttributeAddress getAttributeAddress(final DlmsDevice device, final DlmsObjectType type,
+    public Optional<AttributeAddress> findAttributeAddress(final DlmsDevice device, final DlmsObjectType type,
             final Integer channel, final DateTime from, final DateTime to, final Medium filterMedium,
             final List<DlmsCaptureObject> selectedObjects) {
-        final List<DlmsObject> objects = this
-                .getObjects(Protocol.withNameAndVersion(device.getProtocol(), device.getProtocolVersion()), type,
-                        filterMedium);
+        return this.findDlmsObject(Protocol.withNameAndVersion(device.getProtocol(), device.getProtocolVersion()), type,
+                filterMedium).map(dlmsObject -> new AttributeAddress(dlmsObject.getClassId(),
+                this.replaceChannel(dlmsObject.getObisCode(), channel), dlmsObject.getDefaultAttributeId(),
+                this.getAccessDescription(dlmsObject, from, to, channel, filterMedium, device, selectedObjects)));
+    }
 
-        if (objects != null && !objects.isEmpty()) {
-            final DlmsObject object = objects.get(0);
-            final int classId = object.getClassId();
-            final ObisCode obisCode = this.replaceChannel(object.getObisCode(), channel);
-            final int attributeId = object.getDefaultAttributeId();
+    private Optional<DlmsObject> findDlmsObject(final Protocol protocol, final DlmsObjectType type,
+            final Medium filterMedium) {
+        return this.dlmsObjectConfigs.stream().filter(config -> config.contains(protocol)).findAny().flatMap(
+                dlmsObjectConfig -> findDlmsObject(dlmsObjectConfig, type, filterMedium));
+    }
 
-            final SelectiveAccessDescription access = this
-                    .getAccessDescription(object, from, to, channel, filterMedium, device, selectedObjects);
-
-            return new AttributeAddress(classId, obisCode, attributeId, access);
-        } else {
-            return null;
-        }
+    private Optional<DlmsObject> findDlmsObject(DlmsObjectConfig dlmsObjectConfig, DlmsObjectType type,
+            Medium filterMedium) {
+        // @formatter:off
+        return dlmsObjectConfig.getObjects()
+                .filter(o1 -> o1.getType().equals(type))
+                .filter(o2 -> !(o2 instanceof DlmsProfile)
+                        || ((DlmsProfile) o2).getMedium() == Medium.COMBINED
+                        || ((DlmsProfile) o2).getMedium() == filterMedium)
+                .findAny();
+        // @formatter:on
     }
 
     public List<AttributeAddress> getAttributeAddressesForScalerUnit(final List<DlmsCaptureObject> selectedObjects,
@@ -83,39 +79,18 @@ public class DlmsObjectConfigAccessor {
         final List<AttributeAddress> attributeAddresses = new ArrayList<>();
 
         // Get all Registers from the list of selected objects for which the default attribute is captured.
-        final List<DlmsRegister> dlmsRegisters = selectedObjects.stream()
-                .filter(c -> c.getAttributeId() == c.getRelatedObject().getDefaultAttributeId())
-                .map(DlmsCaptureObject::getRelatedObject).filter(r -> r instanceof DlmsRegister)
-                .map(r -> (DlmsRegister) r).collect(Collectors.toList());
+        final List<DlmsRegister> dlmsRegisters = selectedObjects.stream().filter(
+                c -> c.getAttributeId() == c.getRelatedObject().getDefaultAttributeId()).map(
+                DlmsCaptureObject::getRelatedObject).filter(r -> r instanceof DlmsRegister).map(
+                r -> (DlmsRegister) r).collect(Collectors.toList());
 
         for (final DlmsRegister register : dlmsRegisters) {
-            attributeAddresses.add(new AttributeAddress(register.getClassId(),
-                    this.replaceChannel(register.getObisCode(), channel), register.getScalerUnitAttributeId()));
+            attributeAddresses.add(
+                    new AttributeAddress(register.getClassId(), this.replaceChannel(register.getObisCode(), channel),
+                            register.getScalerUnitAttributeId()));
         }
 
         return attributeAddresses;
-    }
-
-    private List<DlmsObject> getObjects(final Protocol protocol, final DlmsObjectType type, final Medium filterMedium) {
-        final List<DlmsObjectConfig> configsForProtocol = this.configs.stream()
-                .filter(c -> c.protocols.contains(protocol)).collect(Collectors.toList());
-
-        if (configsForProtocol.isEmpty()) {
-            return Collections.emptyList();
-        } else {
-            final DlmsObjectConfig objectConfig = configsForProtocol.get(0);
-
-            final List<DlmsObject> objects = objectConfig.getObjects();
-
-            // @formatter:off
-           return objects.stream()
-                    .filter(i -> i.getType().equals(type))
-                    .filter(i -> !(i instanceof DlmsProfile) ||
-                            ((DlmsProfile)i).getMedium() == Medium.COMBINED ||
-                            ((DlmsProfile)i).getMedium() == filterMedium)
-                    .collect(Collectors.toList());
-            // @formatter:on
-        }
     }
 
     private ObisCode replaceChannel(String obisCode, final Integer channel) {
@@ -141,8 +116,8 @@ public class DlmsObjectConfigAccessor {
             final DataObject selectedValues = this.getSelectedValues(object, channel, filterMedium,
                     Protocol.withNameAndVersion(device.getProtocol(), device.getProtocolVersion()), selectedObjects);
 
-            final DataObject accessParameter = this.dlmsHelper
-                    .getAccessSelectionTimeRangeParameter(from, to, selectedValues);
+            final DataObject accessParameter = this.dlmsHelper.getAccessSelectionTimeRangeParameter(from, to,
+                    selectedValues);
 
             return new SelectiveAccessDescription(accessSelector, accessParameter);
         }
@@ -177,8 +152,8 @@ public class DlmsObjectConfigAccessor {
                 }
             }
 
-            if (profile.getCaptureObjects().size() == objectDefinitions.size() || !protocol
-                    .isSelectValuesInSelectiveAccessSupported()) {
+            if (profile.getCaptureObjects().size() == objectDefinitions.size()
+                    || !protocol.isSelectValuesInSelectiveAccessSupported()) {
                 // If all capture objects are selected or selecting values is not supported, then use an empty list
                 // (which means select all)
                 objectDefinitions.clear();

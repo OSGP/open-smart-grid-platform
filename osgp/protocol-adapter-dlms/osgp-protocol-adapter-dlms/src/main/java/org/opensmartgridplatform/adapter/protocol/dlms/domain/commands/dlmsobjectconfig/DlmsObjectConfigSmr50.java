@@ -34,15 +34,13 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 
 public class DlmsObjectConfigSmr50 extends DlmsObjectConfig {
 
-    public DlmsObjectConfigSmr50(final List<Protocol> similarProtocols) {
-        this.protocols = new ArrayList<>();
-        this.protocols.add(Protocol.SMR_5_0);
-        this.protocols.addAll(similarProtocols);
-
-        this.objects = createObjectListDSMR422();
+    @Override
+    List<Protocol> initProtocols() {
+        return Arrays.asList(Protocol.SMR_5_0, Protocol.SMR_5_1);
     }
 
-    private static List<DlmsObject> createObjectListDSMR422() {
+    @Override
+    List<DlmsObject> initObjects() {
         final List<DlmsObject> objectList = new ArrayList<>();
 
         // @formatter:off
@@ -74,14 +72,7 @@ public class DlmsObjectConfigSmr50 extends DlmsObjectConfig {
         final DlmsObject mbusMasterValue =
                 new DlmsExtendedRegister(MBUS_MASTER_VALUE, "0.<c>.24.2.2.255", 0, M3, GAS);
 
-        // Profiles
-        final List<DlmsCaptureObject> captureObjectsIntervalE = Arrays.asList(
-                new DlmsCaptureObject(clock),
-                new DlmsCaptureObject(amrStatusIntervalE),
-                new DlmsCaptureObject(activeEnergyImport),
-                new DlmsCaptureObject(activeEnergyExport));
-        objectList.add(new DlmsProfile(INTERVAL_VALUES, "1.0.99.1.0.255", captureObjectsIntervalE, QUARTER_HOUR,
-                ELECTRICITY));
+        addProfiles(objectList, clock, amrStatusIntervalE, activeEnergyImport, activeEnergyExport);
 
         final List<DlmsCaptureObject> captureObjectsIntervalG = Arrays.asList(
                 new DlmsCaptureObject(clock),
@@ -126,5 +117,13 @@ public class DlmsObjectConfigSmr50 extends DlmsObjectConfig {
                 GAS));
 
         return objectList;
-    }
+    }private void addProfiles(List<DlmsObject> objectList, DlmsObject clock, DlmsObject amrStatusIntervalE,
+            DlmsObject activeEnergyImport, DlmsObject activeEnergyExport) {
+    final List<DlmsCaptureObject> captureObjectsIntervalE = Arrays.asList(
+            new DlmsCaptureObject(clock),
+            new DlmsCaptureObject(amrStatusIntervalE),
+            new DlmsCaptureObject(activeEnergyImport),
+            new DlmsCaptureObject(activeEnergyExport));
+        objectList.add(new DlmsProfile(INTERVAL_VALUES, "1.0.99.1.0.255", captureObjectsIntervalE, QUARTER_HOUR,
+                ELECTRICITY));}
 }

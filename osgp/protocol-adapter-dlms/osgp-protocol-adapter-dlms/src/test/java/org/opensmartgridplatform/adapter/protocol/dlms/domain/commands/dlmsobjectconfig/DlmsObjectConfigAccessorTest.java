@@ -9,17 +9,20 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
@@ -34,10 +37,9 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 public class DlmsObjectConfigAccessorTest {
 
     private DlmsObjectConfigAccessor accessor;
-    private DlmsHelper dlmsHelper;
 
-    final DateTime from = DateTime.now().minusDays(1);
-    final DateTime to = DateTime.now();
+    private final DateTime from = DateTime.now().minusDays(1);
+    private final DateTime to = DateTime.now();
 
     private final DlmsDevice device51 = new DlmsDevice();
     private final DlmsDevice device51_2 = new DlmsDevice();
@@ -50,59 +52,66 @@ public class DlmsObjectConfigAccessorTest {
     private final DlmsRegister registerWithChannel = new DlmsRegister(DlmsObjectType.MBUS_MASTER_VALUE,
             "0.<c>.24.1.255.4", 0, RegisterUnit.WH, Medium.GAS);
 
-    private final List<DlmsCaptureObject> captureObjectsE = Arrays
-            .asList(new DlmsCaptureObject(this.clock1, 2), new DlmsCaptureObject(this.register, 2));
+    private final List<DlmsCaptureObject> captureObjectsE = Arrays.asList(new DlmsCaptureObject(this.clock1, 2),
+            new DlmsCaptureObject(this.register, 2));
     private final DlmsProfile profileE = new DlmsProfile(DlmsObjectType.INTERVAL_VALUES, "1.0.99.1.1.255",
             this.captureObjectsE, ProfileCaptureTime.HOUR, Medium.ELECTRICITY);
 
-    private final List<DlmsCaptureObject> captureObjectsCombined = Arrays
-            .asList(new DlmsCaptureObject(this.clock1, 2), new DlmsCaptureObject(this.register, 2),
-                    new DlmsCaptureObjectWithChannel(this.registerWithChannel, 1, 2));
+    private final List<DlmsCaptureObject> captureObjectsCombined = Arrays.asList(new DlmsCaptureObject(this.clock1, 2),
+            new DlmsCaptureObject(this.register, 2), new DlmsCaptureObjectWithChannel(this.registerWithChannel, 1, 2));
     private final DlmsProfile profileCombined = new DlmsProfile(DlmsObjectType.DAILY_LOAD_PROFILE, "1.0.98.1.1.255",
             this.captureObjectsCombined, ProfileCaptureTime.HOUR, Medium.COMBINED);
 
+    private DlmsHelper dlmsHelper = new DlmsHelper();
+
+    @Mock
+    private DlmsObjectConfig config422;
+
+    @Mock
+    private DlmsObjectConfig config50;
+
     @Before
     public void setUp() {
-        this.dlmsHelper = new DlmsHelper();
-        this.accessor = new DlmsObjectConfigAccessor(this.dlmsHelper);
+        final List<DlmsObject> objects1 = Arrays.asList(this.clock1, this.clock2, this.register,
+                this.registerWithChannel, this.profileE, this.profileCombined);
+
+        final List<DlmsObject> objects2 = Collections.singletonList(this.clock1);
+
+        when(config422.contains(Protocol.SMR_5_1)).thenReturn(true);
+        when(config422.getObjects()).thenReturn(objects1.stream());
+
+        when(config50.contains(Protocol.SMR_5_1)).thenReturn(true);
+        when(config50.getObjects()).thenReturn(objects2.stream());
+
+        List<DlmsObjectConfig> configs = Arrays.asList(config422, config50);
+
+        this.accessor = new DlmsObjectConfigAccessor(this.dlmsHelper, configs);
 
         this.device51.setProtocol("SMR", "5.1");
         this.device51.setSelectiveAccessSupported(true);
         this.device51_2.setProtocol("SMR", "5.1");
         this.device51_2.setSelectiveAccessSupported(false);
         this.device422.setProtocol("DSMR", "4.2.2");
-
-        final List<Protocol> protocols1 = Collections.singletonList(Protocol.SMR_5_1);
-        final List<DlmsObject> objects1 = Arrays
-                .asList(this.clock1, this.clock2, this.register, this.registerWithChannel, this.profileE,
-                        this.profileCombined);
-        final DlmsObjectConfig config1 = new DlmsObjectConfig(protocols1, objects1);
-
-        final List<Protocol> protocols2 = Collections.singletonList(Protocol.SMR_5_1);
-        final List<DlmsObject> objects2 = Collections.singletonList(this.clock1);
-        final DlmsObjectConfig config2 = new DlmsObjectConfig(protocols2, objects2);
-
-        this.accessor.setConfigs(Arrays.asList(config1, config2));
     }
 
     @Test
     public void testNoMatchingObject() throws Exception {
         // CALL
-        final AttributeAddress attributeAddress = this.accessor
-                .getAttributeAddress(this.device51, DlmsObjectType.AMR_STATUS, null);
+        final Optional<AttributeAddress> attributeAddress = this.accessor.findAttributeAddress(this.device51,
+                DlmsObjectType.AMR_STATUS, null);
 
         // VERIFY
-        assertThat(attributeAddress).isEqualTo(null);
+        assertThat(attributeAddress.isPresent()).isFalse();
     }
 
     @Test
     public void testNoMatchingObjectForProtocol() throws Exception {
         // CALL
-        final AttributeAddress attributeAddress = this.accessor
-                .getAttributeAddress(this.device422, DlmsObjectType.ACTIVE_ENERGY_IMPORT, null);
+        final Optional<AttributeAddress> attributeAddress = this.accessor.findAttributeAddress(this.device422,
+                DlmsObjectType.ACTIVE_ENERGY_IMPORT, null);
 
         // VERIFY
-        assertThat(attributeAddress).isEqualTo(null);
+        assertThat(attributeAddress.isPresent()).isFalse();
     }
 
     @Test
@@ -112,11 +121,11 @@ public class DlmsObjectConfigAccessorTest {
                 this.register.getObisCode(), this.register.getDefaultAttributeId(), null);
 
         // CALL
-        final AttributeAddress attributeAddress = this.accessor
-                .getAttributeAddress(this.device51, DlmsObjectType.ACTIVE_ENERGY_IMPORT, null);
+        final Optional<AttributeAddress> attributeAddress = this.accessor.findAttributeAddress(this.device51,
+                DlmsObjectType.ACTIVE_ENERGY_IMPORT, null);
 
         // VERIFY
-        AttributeAddressAssert.is(attributeAddress, expectedAddress);
+        AttributeAddressAssert.is(attributeAddress.get(), expectedAddress);
     }
 
     @Test
@@ -128,11 +137,11 @@ public class DlmsObjectConfigAccessorTest {
                 this.registerWithChannel.getDefaultAttributeId(), null);
 
         // CALL
-        final AttributeAddress attributeAddress = this.accessor
-                .getAttributeAddress(this.device51, DlmsObjectType.MBUS_MASTER_VALUE, channel);
+        final Optional<AttributeAddress> attributeAddress = this.accessor.findAttributeAddress(this.device51,
+                DlmsObjectType.MBUS_MASTER_VALUE, channel);
 
         // VERIFY
-        AttributeAddressAssert.is(attributeAddress, expectedAddress);
+        AttributeAddressAssert.is(attributeAddress.get(), expectedAddress);
     }
 
     @Test
@@ -154,12 +163,11 @@ public class DlmsObjectConfigAccessorTest {
                 this.profileE.getObisCode(), this.profileE.getDefaultAttributeId(), access);
 
         // CALL
-        final AttributeAddress attributeAddress = this.accessor
-                .getAttributeAddress(this.device51, DlmsObjectType.INTERVAL_VALUES, channel, this.from, this.to,
-                        filterMedium, selectedObjects);
+        final Optional<AttributeAddress> attributeAddress = this.accessor.findAttributeAddress(this.device51,
+                DlmsObjectType.INTERVAL_VALUES, channel, this.from, this.to, filterMedium, selectedObjects);
 
         // VERIFY
-        AttributeAddressAssert.is(attributeAddress, expectedAddress);
+        AttributeAddressAssert.is(attributeAddress.get(), expectedAddress);
         assertThat(selectedObjects).isEqualTo(this.captureObjectsE);
     }
 
@@ -181,18 +189,17 @@ public class DlmsObjectConfigAccessorTest {
         final AttributeAddress expectedAddress = new AttributeAddress(this.profileCombined.getClassId(),
                 this.profileCombined.getObisCode(), this.profileCombined.getDefaultAttributeId(), access);
 
-        final List<DlmsCaptureObject> expectedSelectedObjects = this.captureObjectsCombined.stream()
-                .filter(c -> !(c.getRelatedObject() instanceof DlmsRegister)
-                        || ((DlmsRegister) c.getRelatedObject()).getMedium() == filterMedium)
-                .collect(Collectors.toList());
+        final List<DlmsCaptureObject> expectedSelectedObjects = this.captureObjectsCombined.stream().filter(
+                c -> !(c.getRelatedObject() instanceof DlmsRegister)
+                        || ((DlmsRegister) c.getRelatedObject()).getMedium() == filterMedium).collect(
+                Collectors.toList());
 
         // CALL
-        final AttributeAddress attributeAddress = this.accessor
-                .getAttributeAddress(this.device51, DlmsObjectType.DAILY_LOAD_PROFILE, channel, this.from, this.to,
-                        filterMedium, selectedObjects);
+        final Optional<AttributeAddress> attributeAddress = this.accessor.findAttributeAddress(this.device51,
+                DlmsObjectType.DAILY_LOAD_PROFILE, channel, this.from, this.to, filterMedium, selectedObjects);
 
         // VERIFY
-        AttributeAddressAssert.is(attributeAddress, expectedAddress);
+        AttributeAddressAssert.is(attributeAddress.get(), expectedAddress);
         assertThat(selectedObjects).isEqualTo(expectedSelectedObjects);
     }
 
@@ -215,12 +222,11 @@ public class DlmsObjectConfigAccessorTest {
                 this.profileCombined.getObisCode(), this.profileCombined.getDefaultAttributeId(), access);
 
         // CALL
-        final AttributeAddress attributeAddress = this.accessor
-                .getAttributeAddress(this.device51, DlmsObjectType.DAILY_LOAD_PROFILE, channel, this.from, this.to,
-                        filterMedium, selectedObjects);
+        final Optional<AttributeAddress> attributeAddress = this.accessor.findAttributeAddress(this.device51,
+                DlmsObjectType.DAILY_LOAD_PROFILE, channel, this.from, this.to, filterMedium, selectedObjects);
 
         // VERIFY
-        AttributeAddressAssert.is(attributeAddress, expectedAddress);
+        AttributeAddressAssert.is(attributeAddress.get(), expectedAddress);
         assertThat(selectedObjects).isEqualTo(this.captureObjectsCombined);
     }
 

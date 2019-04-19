@@ -35,16 +35,13 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 
 public class DlmsObjectConfigDsmr422 extends DlmsObjectConfig {
 
-    public DlmsObjectConfigDsmr422(final List<Protocol> similarProtocols) {
-
-        this.protocols = new ArrayList<>();
-        this.protocols.add(Protocol.DSMR_4_2_2);
-        this.protocols.addAll(similarProtocols);
-
-        this.objects = createObjectListDSMR422();
+    @Override
+    List<Protocol> initProtocols() {
+        return Arrays.asList(Protocol.DSMR_4_2_2, Protocol.OTHER_PROTOCOL);
     }
 
-    private static List<DlmsObject> createObjectListDSMR422() {
+    @Override
+    List<DlmsObject> initObjects() {
         final List<DlmsObject> objectList = new ArrayList<>();
 
         // @formatter:off

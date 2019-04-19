@@ -9,23 +9,29 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 
-public class DlmsObjectConfig {
-    List<Protocol> protocols;
-    List<DlmsObject> objects;
+public abstract class DlmsObjectConfig {
 
-    public DlmsObjectConfig() {
+    private final List<Protocol> protocols;
+    private final List<DlmsObject> objects;
 
+    DlmsObjectConfig() {
+        this.protocols = initProtocols();
+        this.objects = initObjects();
     }
 
-    public DlmsObjectConfig(final List<Protocol> protocols, final List<DlmsObject> objects) {
-        this.protocols = protocols;
-        this.objects = objects;
+    public Stream<DlmsObject> getObjects() {
+        return this.objects.stream();
     }
 
-    public List<DlmsObject> getObjects() {
-        return this.objects;
+    boolean contains(Protocol protocol) {
+        return protocols.contains(protocol);
     }
+
+    abstract List<Protocol> initProtocols();
+
+    abstract List<DlmsObject> initObjects();
 }
