@@ -26,8 +26,8 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigAccessor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigConfiguration;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.DlmsConnectionManagerStub;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.DlmsConnectionStub;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.testutil.AttributeAddressAssert;
@@ -46,7 +46,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
 
     private DlmsHelper dlmsHelper;
     private AmrProfileStatusCodeHelper amrProfileStatusCodeHelper;
-    private DlmsObjectConfigAccessor dlmsObjectConfigAccessor;
+    private DlmsObjectConfigService dlmsObjectConfigService;
 
     private DlmsConnectionManagerStub connectionManagerStub;
     private DlmsConnectionStub connectionStub;
@@ -98,12 +98,12 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     public void setUp() {
         this.dlmsHelper = new DlmsHelper();
         this.amrProfileStatusCodeHelper = new AmrProfileStatusCodeHelper();
-        DlmsObjectConfigConfiguration dlmsObjectConfigConfiguration = new DlmsObjectConfigConfiguration();
-        this.dlmsObjectConfigAccessor = new DlmsObjectConfigAccessor(this.dlmsHelper,
+        final DlmsObjectConfigConfiguration dlmsObjectConfigConfiguration = new DlmsObjectConfigConfiguration();
+        this.dlmsObjectConfigService = new DlmsObjectConfigService(this.dlmsHelper,
                 dlmsObjectConfigConfiguration.getDlmsObjectConfigs());
 
         this.executor = new GetPeriodicMeterReadsGasCommandExecutor(this.dlmsHelper, this.amrProfileStatusCodeHelper,
-                this.dlmsObjectConfigAccessor);
+                this.dlmsObjectConfigService);
         this.connectionStub = new DlmsConnectionStub();
         this.connectionManagerStub = new DlmsConnectionManagerStub(this.connectionStub);
 
@@ -153,17 +153,19 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
         assertThat(requestedAttributeAddresses.size()).isEqualTo(2);
 
         // There should be 1 request to the buffer (id = 2) of a profile (class-id = 7)
-        final AttributeAddress actualAttributeAddressProfile = requestedAttributeAddresses.stream().filter(
-                a -> a.getClassId() == this.CLASS_ID_PROFILE).collect(Collectors.toList()).get(0);
+        final AttributeAddress actualAttributeAddressProfile = requestedAttributeAddresses.stream()
+                .filter(a -> a.getClassId() == this.CLASS_ID_PROFILE)
+                .collect(Collectors.toList())
+                .get(0);
 
         final AttributeAddress expectedAttributeAddressProfile = this.createAttributeAddress(protocol, type, timeFrom,
                 timeTo);
         AttributeAddressAssert.is(actualAttributeAddressProfile, expectedAttributeAddressProfile);
 
         // There should be 1 request to the scaler_unit (id = 3) of the meter value in the register (class-id = 3)
-        final List<AttributeAddress> attributeAddressesScalerUnit = requestedAttributeAddresses.stream().filter(
-                a -> a.getClassId() == this.CLASS_ID_EXTENDED_REGISTER
-                        && a.getId() == this.ATTR_ID_SCALER_UNIT).collect(Collectors.toList());
+        final List<AttributeAddress> attributeAddressesScalerUnit = requestedAttributeAddresses.stream()
+                .filter(a -> a.getClassId() == this.CLASS_ID_EXTENDED_REGISTER && a.getId() == this.ATTR_ID_SCALER_UNIT)
+                .collect(Collectors.toList());
         assertThat(attributeAddressesScalerUnit.size()).isEqualTo(1);
     }
 

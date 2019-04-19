@@ -11,6 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodic
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -20,7 +21,7 @@ import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsCaptureObject;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigAccessor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.Medium;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.AmrProfileStatusCodeHelper;
@@ -56,16 +57,16 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
 
     private final DlmsHelper dlmsHelper;
     private final AmrProfileStatusCodeHelper amrProfileStatusCodeHelper;
-    private final DlmsObjectConfigAccessor dlmsObjectConfigAccessor;
+    private final DlmsObjectConfigService dlmsObjectConfigService;
 
     @Autowired
     public GetPeriodicMeterReadsGasCommandExecutor(final DlmsHelper dlmsHelper,
             final AmrProfileStatusCodeHelper amrProfileStatusCodeHelper,
-            final DlmsObjectConfigAccessor dlmsObjectConfigAccessor) {
+            final DlmsObjectConfigService dlmsObjectConfigService) {
         super(PeriodicMeterReadsGasRequestDto.class);
         this.dlmsHelper = dlmsHelper;
         this.amrProfileStatusCodeHelper = amrProfileStatusCodeHelper;
-        this.dlmsObjectConfigAccessor = dlmsObjectConfigAccessor;
+        this.dlmsObjectConfigService = dlmsObjectConfigService;
     }
 
     @Override
@@ -108,10 +109,11 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
         final List<GetResult> getResultList = new ArrayList<>();
         for (final AttributeAddress address : profileBufferAndScalerUnit) {
 
-            conn.getDlmsMessageListener().setDescription(
-                    "GetPeriodicMeterReadsGas for channel " + periodicMeterReadsQuery.getChannel() + ", "
-                            + queryPeriodType + " from " + queryBeginDateTime + " until " + queryEndDateTime
-                            + ", retrieve attribute: " + JdlmsObjectToStringUtil.describeAttributes(address));
+            conn.getDlmsMessageListener()
+                    .setDescription(
+                            "GetPeriodicMeterReadsGas for channel " + periodicMeterReadsQuery.getChannel() + ", "
+                                    + queryPeriodType + " from " + queryBeginDateTime + " until " + queryEndDateTime
+                                    + ", retrieve attribute: " + JdlmsObjectToStringUtil.describeAttributes(address));
 
             getResultList.addAll(this.dlmsHelper.getAndCheck(conn, device,
                     "retrieve periodic meter reads for " + queryPeriodType + ", channel "
@@ -237,9 +239,10 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
             final List<AttributeAddress> attributeAddresses, final List<DlmsCaptureObject> selectedObjects,
             final Integer channel) {
 
-        final DlmsCaptureObject captureObject = selectedObjects.stream().filter(
-                c -> c.getRelatedObject().getType() == DlmsObjectType.MBUS_MASTER_VALUE).collect(
-                Collectors.toList()).get(0);
+        final DlmsCaptureObject captureObject = selectedObjects.stream()
+                .filter(c -> c.getRelatedObject().getType() == DlmsObjectType.MBUS_MASTER_VALUE)
+                .collect(Collectors.toList())
+                .get(0);
 
         int index = 0;
         Integer scalerUnitIndex = null;
@@ -302,12 +305,18 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
         final List<AttributeAddress> attributeAddresses = new ArrayList<>();
 
         // Add the attribute address for the profile
-        attributeAddresses.add(
-                this.dlmsObjectConfigAccessor.findAttributeAddress(device, type, channel.getChannelNumber(),
-                        beginDateTime, endDateTime, Medium.GAS, selectedObjects).get());
+        final Optional<AttributeAddress> attributeAddressProfileOptional =
+                this.dlmsObjectConfigService.findAttributeAddress(
+                device, type, channel.getChannelNumber(), beginDateTime, endDateTime, Medium.GAS, selectedObjects);
+
+        if (!attributeAddressProfileOptional.isPresent()) {
+            throw new ProtocolAdapterException("No address found for " + type);
+        } else {
+            attributeAddresses.add(attributeAddressProfileOptional.get());
+        }
 
         // Add the attribute address for the scaler units
-        attributeAddresses.addAll(this.dlmsObjectConfigAccessor.getAttributeAddressesForScalerUnit(selectedObjects,
+        attributeAddresses.addAll(this.dlmsObjectConfigService.getAttributeAddressesForScalerUnit(selectedObjects,
                 channel.getChannelNumber()));
 
         LOGGER.info("Dlms object accessor returned (incl scaler unit addresses) {} ", attributeAddresses);

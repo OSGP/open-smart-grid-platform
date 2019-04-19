@@ -29,7 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class DlmsObjectConfigAccessor {
+public class DlmsObjectConfigService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsGasCommandExecutor.class);
 
@@ -37,7 +37,7 @@ public class DlmsObjectConfigAccessor {
     private final List<DlmsObjectConfig> dlmsObjectConfigs;
 
     @Autowired
-    public DlmsObjectConfigAccessor(final DlmsHelper dlmsHelper, List<DlmsObjectConfig> dlmsObjectConfigs) {
+    public DlmsObjectConfigService(final DlmsHelper dlmsHelper, final List<DlmsObjectConfig> dlmsObjectConfigs) {
         this.dlmsHelper = dlmsHelper;
         this.dlmsObjectConfigs = dlmsObjectConfigs;
     }
@@ -51,19 +51,23 @@ public class DlmsObjectConfigAccessor {
             final Integer channel, final DateTime from, final DateTime to, final Medium filterMedium,
             final List<DlmsCaptureObject> selectedObjects) {
         return this.findDlmsObject(Protocol.withNameAndVersion(device.getProtocol(), device.getProtocolVersion()), type,
-                filterMedium).map(dlmsObject -> new AttributeAddress(dlmsObject.getClassId(),
-                this.replaceChannel(dlmsObject.getObisCode(), channel), dlmsObject.getDefaultAttributeId(),
-                this.getAccessDescription(dlmsObject, from, to, channel, filterMedium, device, selectedObjects)));
+                filterMedium)
+                .map(dlmsObject -> new AttributeAddress(dlmsObject.getClassId(),
+                        this.replaceChannel(dlmsObject.getObisCode(), channel), dlmsObject.getDefaultAttributeId(),
+                        this.getAccessDescription(dlmsObject, from, to, channel, filterMedium, device,
+                                selectedObjects)));
     }
 
     private Optional<DlmsObject> findDlmsObject(final Protocol protocol, final DlmsObjectType type,
             final Medium filterMedium) {
-        return this.dlmsObjectConfigs.stream().filter(config -> config.contains(protocol)).findAny().flatMap(
-                dlmsObjectConfig -> findDlmsObject(dlmsObjectConfig, type, filterMedium));
+        return this.dlmsObjectConfigs.stream()
+                .filter(config -> config.contains(protocol))
+                .findAny()
+                .flatMap(dlmsObjectConfig -> this.findDlmsObject(dlmsObjectConfig, type, filterMedium));
     }
 
-    private Optional<DlmsObject> findDlmsObject(DlmsObjectConfig dlmsObjectConfig, DlmsObjectType type,
-            Medium filterMedium) {
+    private Optional<DlmsObject> findDlmsObject(final DlmsObjectConfig dlmsObjectConfig, final DlmsObjectType type,
+            final Medium filterMedium) {
         // @formatter:off
         return dlmsObjectConfig.getObjects()
                 .filter(o1 -> o1.getType().equals(type))
@@ -79,10 +83,12 @@ public class DlmsObjectConfigAccessor {
         final List<AttributeAddress> attributeAddresses = new ArrayList<>();
 
         // Get all Registers from the list of selected objects for which the default attribute is captured.
-        final List<DlmsRegister> dlmsRegisters = selectedObjects.stream().filter(
-                c -> c.getAttributeId() == c.getRelatedObject().getDefaultAttributeId()).map(
-                DlmsCaptureObject::getRelatedObject).filter(r -> r instanceof DlmsRegister).map(
-                r -> (DlmsRegister) r).collect(Collectors.toList());
+        final List<DlmsRegister> dlmsRegisters = selectedObjects.stream()
+                .filter(c -> c.getAttributeId() == c.getRelatedObject().getDefaultAttributeId())
+                .map(DlmsCaptureObject::getRelatedObject)
+                .filter(r -> r instanceof DlmsRegister)
+                .map(r -> (DlmsRegister) r)
+                .collect(Collectors.toList());
 
         for (final DlmsRegister register : dlmsRegisters) {
             attributeAddresses.add(
@@ -125,42 +131,57 @@ public class DlmsObjectConfigAccessor {
 
     private DataObject getSelectedValues(final DlmsObject object, final Integer channel, final Medium filterMedium,
             final Protocol protocol, final List<DlmsCaptureObject> selectedObjects) {
-        final List<DataObject> objectDefinitions = new ArrayList<>();
+        List<DataObject> objectDefinitions = new ArrayList<>();
 
         if (object instanceof DlmsProfile && ((DlmsProfile) object).getCaptureObjects() != null) {
 
             final DlmsProfile profile = (DlmsProfile) object;
 
-            for (final DlmsCaptureObject captureObject : profile.getCaptureObjects()) {
-                final DlmsObject relatedObject = captureObject.getRelatedObject();
-
-                if (!this.mediumMatches(filterMedium, relatedObject) || !this.channelMatches(channel, captureObject)) {
-                    continue;
-                }
-
-                // Create and add object definition for this capture object
-                final ObisCode obisCode = this.replaceChannel(relatedObject.getObisCode(), channel);
-                objectDefinitions.add(DataObject.newStructureData(
-                        Arrays.asList(DataObject.newUInteger16Data(relatedObject.getClassId()),
-                                DataObject.newOctetStringData(obisCode.bytes()),
-                                DataObject.newInteger8Data((byte) captureObject.getAttributeId()),
-                                DataObject.newUInteger16Data(0))));
-
-                // Add object to selected object list
-                if (selectedObjects != null) {
-                    selectedObjects.add(captureObject);
-                }
-            }
-
-            if (profile.getCaptureObjects().size() == objectDefinitions.size()
-                    || !protocol.isSelectValuesInSelectiveAccessSupported()) {
-                // If all capture objects are selected or selecting values is not supported, then use an empty list
-                // (which means select all)
-                objectDefinitions.clear();
+            if (!protocol.isSelectValuesInSelectiveAccessSupported()) {
+                // If all selecting values is not supported, then all values are selected (and the objectDefinitions
+                // list should be empty)
+                selectedObjects.addAll(profile.getCaptureObjects());
+            } else {
+                objectDefinitions = this.getObjectDefinitions(channel, filterMedium, protocol, profile,
+                        selectedObjects);
             }
         }
 
         return DataObject.newArrayData(objectDefinitions);
+    }
+
+    private List<DataObject> getObjectDefinitions(final Integer channel, final Medium filterMedium,
+            final Protocol protocol, final DlmsProfile profile, final List<DlmsCaptureObject> selectedObjects) {
+        final List<DataObject> objectDefinitions = new ArrayList<>();
+
+        for (final DlmsCaptureObject captureObject : profile.getCaptureObjects()) {
+            final DlmsObject relatedObject = captureObject.getRelatedObject();
+
+            if (!this.mediumMatches(filterMedium, relatedObject) || !this.channelMatches(channel, captureObject)) {
+                continue;
+            }
+
+            // Create and add object definition for this capture object
+            final ObisCode obisCode = this.replaceChannel(relatedObject.getObisCode(), channel);
+            objectDefinitions.add(DataObject.newStructureData(
+                    Arrays.asList(DataObject.newUInteger16Data(relatedObject.getClassId()),
+                            DataObject.newOctetStringData(obisCode.bytes()),
+                            DataObject.newInteger8Data((byte) captureObject.getAttributeId()),
+                            DataObject.newUInteger16Data(0))));
+
+            // Add object to selected object list
+            if (selectedObjects != null) {
+                selectedObjects.add(captureObject);
+            }
+        }
+
+        if (profile.getCaptureObjects().size() == objectDefinitions.size()
+                || !protocol.isSelectValuesInSelectiveAccessSupported()) {
+            // If all capture objects are selected then return an empty list (which means select all)
+            objectDefinitions.clear();
+        }
+
+        return objectDefinitions;
     }
 
     private boolean mediumMatches(final Medium filterMedium, final DlmsObject object) {
