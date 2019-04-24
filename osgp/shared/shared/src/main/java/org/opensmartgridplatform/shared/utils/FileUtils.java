@@ -8,9 +8,9 @@
 package org.opensmartgridplatform.shared.utils;
 
 import java.io.File;
-import java.util.List;
-
-import org.assertj.core.util.Files;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 
 public class FileUtils {
 
@@ -42,14 +42,12 @@ public class FileUtils {
         return null;
     }
 
-    public static int countNumberOfLinesInFile(final String inputFilePath) {
+    public static long countNumberOfLinesInFile(final String inputFilePath) throws IOException {
 
         return countNumberOfLinesInFile(new File(inputFilePath));
     }
 
-    public static int countNumberOfLinesInFile(final File inputFile) {
-        final List<String> lines = Files.linesOf(inputFile, "UTF-8");
-
-        return lines.size();
+    public static long countNumberOfLinesInFile(final File inputFile) throws IOException {
+        return Files.lines(inputFile.toPath(), Charset.forName("UTF-8")).count();
     }
 }

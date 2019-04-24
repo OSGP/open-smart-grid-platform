@@ -85,8 +85,8 @@ public class EventCleanupJobTest {
         assertThat(csvFile).hasExtension("csv");
         assertThat(csvFile.length()).isNotZero();
 
-        final int numberOfLines = FileUtils.countNumberOfLinesInFile(csvFile);
-        assertThat(numberOfLines).isEqualTo(2);
+        final long numberOfLines = FileUtils.countNumberOfLinesInFile(csvFile);
+        assertThat(numberOfLines).isEqualTo(2l);
     }
 
     private List<Event> createEvents() {
