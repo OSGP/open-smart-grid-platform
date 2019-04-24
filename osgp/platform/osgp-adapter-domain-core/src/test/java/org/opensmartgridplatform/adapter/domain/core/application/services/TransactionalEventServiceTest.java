@@ -51,7 +51,7 @@ public class TransactionalEventServiceTest {
         final PageRequest pageRequest = new PageRequest(0, 10, Sort.Direction.DESC, "id");
         Mockito.when(this.eventRepository.findByDateTimeBefore(this.now, pageRequest)).thenReturn(mockSlice);
 
-        final List<Event> events = this.transactionalEventService.getEventsBeforeDate(this.now, 1);
+        final List<Event> events = this.transactionalEventService.getEventsBeforeDate(this.now, 10);
         assertThat(events.size()).isEqualTo(1);
     }
 
