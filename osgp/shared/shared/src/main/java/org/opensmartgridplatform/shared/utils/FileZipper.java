@@ -37,11 +37,6 @@ public class FileZipper {
     private static final int ONE_MB = 1 * 1024 * 1024;
     private static final String ZIP = ".zip";
 
-    public static String compressFileUsingDefaultSettings(final String filePath) throws IOException {
-        final FileZipper fileZipper = new FileZipper();
-        return fileZipper.compressFile(filePath);
-    }
-
     private final int compressionLevel;
 
     private final boolean removeInputFile;
@@ -62,6 +57,11 @@ public class FileZipper {
 
     public boolean isRemoveInputFile() {
         return this.removeInputFile;
+    }
+
+    public static String compressFileUsingDefaultSettings(final String filePath) throws IOException {
+        final FileZipper fileZipper = new FileZipper();
+        return fileZipper.compressFile(filePath);
     }
 
     public String compressFile(final String filePath) throws IOException {
