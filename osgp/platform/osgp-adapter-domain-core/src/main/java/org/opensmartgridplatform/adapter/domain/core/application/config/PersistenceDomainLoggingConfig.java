@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2019 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -40,7 +40,7 @@ public class PersistenceDomainLoggingConfig extends AbstractPersistenceConfig {
     @Value("${db.host.domain_logging}")
     private String databaseHost;
 
-    @Value("${db.port.domain_logging:5432}")
+    @Value("${db.port.domain_logging}")
     private int databasePort;
 
     @Value("${db.name.domain_logging}")

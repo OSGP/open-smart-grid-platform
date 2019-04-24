@@ -8,6 +8,7 @@
 package org.opensmartgridplatform.adapter.domain.core.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -29,7 +30,7 @@ import org.springframework.data.domain.Sort;
 
 public class TransactionalDeviceLogItemServiceTest {
 
-    private final Date date = DateTime.now().toDate();
+    private final Date now = DateTime.now().toDate();
 
     @InjectMocks
     private TransactionalDeviceLogItemService transactionalDeviceLogItemService;
@@ -45,13 +46,12 @@ public class TransactionalDeviceLogItemServiceTest {
     @Test
     public void serviceReturnsOneDeviceLogItem() {
         final Slice<DeviceLogItem> mockSlice = this.mockSliceOfDeviceLogItems(1);
-        final PageRequest pageRequest = new PageRequest(0, 1, Sort.Direction.DESC, "id");
-        Mockito.when(this.deviceLogItemSlicingRepository.findByCreationTimeBefore(this.date, pageRequest))
+        final PageRequest pageRequest = new PageRequest(0, 10, Sort.Direction.DESC, "id");
+        Mockito.when(this.deviceLogItemSlicingRepository.findByCreationTimeBefore(this.now, pageRequest))
                 .thenReturn(mockSlice);
 
         final List<DeviceLogItem> deviceLogItems = this.transactionalDeviceLogItemService
-                .findDeviceLogItemsBeforeDate(this.date, 1);
-        assertThat(deviceLogItems.isEmpty()).isFalse();
+                .findDeviceLogItemsBeforeDate(this.now, 10);
         assertThat(deviceLogItems.size()).isEqualTo(1);
     }
 
@@ -59,12 +59,11 @@ public class TransactionalDeviceLogItemServiceTest {
     public void serviceReturnsTenDeviceLogItems() {
         final Slice<DeviceLogItem> mockSlice = this.mockSliceOfDeviceLogItems(10);
         final PageRequest pageRequest = new PageRequest(0, 10, Sort.Direction.DESC, "id");
-        Mockito.when(this.deviceLogItemSlicingRepository.findByCreationTimeBefore(this.date, pageRequest))
+        Mockito.when(this.deviceLogItemSlicingRepository.findByCreationTimeBefore(this.now, pageRequest))
                 .thenReturn(mockSlice);
 
         final List<DeviceLogItem> deviceLogItems = this.transactionalDeviceLogItemService
-                .findDeviceLogItemsBeforeDate(this.date, 10);
-        assertThat(deviceLogItems.isEmpty()).isFalse();
+                .findDeviceLogItemsBeforeDate(this.now, 10);
         assertThat(deviceLogItems.size()).isEqualTo(10);
     }
 
@@ -75,7 +74,7 @@ public class TransactionalDeviceLogItemServiceTest {
         try {
             this.transactionalDeviceLogItemService.deleteDeviceLogItems(deviceLogItems);
         } catch (final Exception e) {
-            assertThat(e).isNull();
+            fail("Unexpected exception! " + e.getMessage());
         }
     }
 

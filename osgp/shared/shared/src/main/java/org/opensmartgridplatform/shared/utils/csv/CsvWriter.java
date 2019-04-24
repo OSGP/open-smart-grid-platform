@@ -27,14 +27,37 @@ public class CsvWriter {
     private static final String CSV = ".csv";
     private static final String DATE_TIME_FORMAT = "yyyyMMdd-HHmmss";
 
+    public static String writeCsvFile(final String csvFileLocation, final String csvFilePrefix,
+            final String[] headerLine, final List<String[]> lines) throws IOException {
+        LOGGER.info("Writing data to CSV file...");
+        final CsvWriter csvWriter = new CsvWriter();
+        final boolean storageLocationOk = csvWriter.checkCsvFileStorageLocation(csvFileLocation);
+        if (!storageLocationOk) {
+            throw new IOException("Unable to find or create folder with path: " + csvFileLocation);
+        }
+
+        final String csvFilePath = csvWriter.getCsvFilePath(csvFileLocation, csvFilePrefix);
+        csvWriter.writeCsvFile(csvFilePath, headerLine, lines);
+
+        return csvFilePath;
+    }
+
     /**
      * Create or validate the folder where a CSV file is going to be stored.
      *
      * @param csvFileStorageLocation
      *            The path to the folder.
+     *
+     * @return True if the folder and it's parent folders have been created,
+     *         false otherwise.
      */
-    public void checkCsvFileStorageLocation(final String csvFileStorageLocation) {
-        new File(csvFileStorageLocation).mkdirs();
+    public boolean checkCsvFileStorageLocation(final String csvFileStorageLocation) {
+        final File folder = new File(csvFileStorageLocation);
+        if (folder.exists()) {
+            return true;
+        } else {
+            return folder.mkdirs();
+        }
     }
 
     /**
@@ -49,9 +72,9 @@ public class CsvWriter {
      * @return The full path, e.g. /tmp/csv-files/[prefix]-[time stamp].csv
      */
     public String getCsvFilePath(final String csvFileStorageLocation, final String csvFilePrefix) {
-        String slash = "";
-        if (!csvFileStorageLocation.endsWith(File.separator)) {
-            slash = File.separator;
+        String slash = File.separator;
+        if (csvFileStorageLocation.endsWith(File.separator)) {
+            slash = "";
         }
         final String timestamp = DateTime.now().toString(DATE_TIME_FORMAT);
 
@@ -64,19 +87,19 @@ public class CsvWriter {
      * @param csvFilePath
      *            The full path of the CSV file to be stored. Create it using
      *            {@link CsvWriter#getCsvFilePath(String, String)} for example.
-     * @param header
-     *            The header to be used.
+     * @param headerLine
+     *            The header line to be used.
      * @param lines
      *            The content of the CSV file.
      *
      * @throws IOException
      *             In case the file can not be written.
      */
-    public void writeCsvFile(final String csvFilePath, final String[] header, final List<String[]> lines)
+    public void writeCsvFile(final String csvFilePath, final String[] headerLine, final List<String[]> lines)
             throws IOException {
         final File csvFile = new File(csvFilePath);
         try (PrintWriter printWriter = new PrintWriter(csvFile)) {
-            printWriter.println(this.convertToCsv(header));
+            printWriter.println(this.convertToCsv(headerLine));
             lines.stream().map(this::convertToCsv).forEach(printWriter::println);
         }
         final String message = String.format("CSV file [%s] not created!", csvFilePath);
@@ -85,6 +108,10 @@ public class CsvWriter {
     }
 
     private String convertToCsv(final String[] line) {
-        return Stream.of(line).collect(Collectors.joining(COMMA));
+        return Stream.of(line).map(value -> this.escapeText(value)).collect(Collectors.joining(COMMA));
+    }
+
+    private String escapeText(final String text) {
+        return text.replaceAll("\\r\\n|\\r|\\n|,", "");
     }
 }

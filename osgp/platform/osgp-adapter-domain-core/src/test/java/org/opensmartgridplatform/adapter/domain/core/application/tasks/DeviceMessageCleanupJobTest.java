@@ -11,6 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -25,7 +26,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.opensmartgridplatform.adapter.domain.core.application.services.TransactionalDeviceLogItemService;
 import org.opensmartgridplatform.logging.domain.entities.DeviceLogItem;
-import org.quartz.JobExecutionException;
+import org.opensmartgridplatform.shared.utils.FileUtils;
 import org.springframework.test.util.ReflectionTestUtils;
 
 public class DeviceMessageCleanupJobTest {
@@ -54,14 +55,9 @@ public class DeviceMessageCleanupJobTest {
     }
 
     @Test
-    public void test() throws JobExecutionException {
+    public void test() throws IOException {
         // Arrange
-        final DeviceLogItem.Builder builder = new DeviceLogItem.Builder().withIncoming(false).withDeviceUid("deviceUID")
-                .withEncodedMessage("0x4F 0x53 0x4C 0x50 ").withDecodedMessage("O S L P")
-                .withDeviceIdentification("test").withOrganisationIdentification("organisation").withValid(true)
-                .withPayloadMessageSerializedSize(4);
-        final DeviceLogItem deviceLogItem = new DeviceLogItem(builder);
-        final List<DeviceLogItem> deviceLogItems = Arrays.asList(deviceLogItem);
+        final List<DeviceLogItem> deviceLogItems = this.createDeviceLogItems();
         Mockito.when(this.transactionalDeviceLogItemService.findDeviceLogItemsBeforeDate(any(Date.class),
                 any(Integer.class))).thenReturn(deviceLogItems);
 
@@ -73,17 +69,31 @@ public class DeviceMessageCleanupJobTest {
         // Example path:
         // /tmp/junit7318456469288690301/junit-mocked-csv-file-20190416-112237.csv.zip
         final String path = this.folder.getRoot().getAbsolutePath();
-        final File folder = new File(path);
-        final File[] files = folder.listFiles();
-        File outputFile = null;
-        for (final File file : files) {
-            if (file.getName().startsWith(this.filePrefix)) {
-                outputFile = file;
-                break;
-            }
-        }
-        assertThat(outputFile.exists()).isTrue();
-        assertThat(outputFile).hasExtension("zip");
-        assertThat(outputFile.length()).isNotZero();
+
+        final File zipFile = FileUtils.findFileInFolderUsingFilePrefix(path, this.filePrefix);
+        assertThat(zipFile.exists()).isTrue();
+        assertThat(zipFile).hasExtension("zip");
+        assertThat(zipFile.length()).isNotZero();
+
+        ZipFileReader.extractZipFile(zipFile.getAbsolutePath(), path);
+        zipFile.delete();
+
+        final File csvFile = FileUtils.findFileInFolderUsingFilePrefix(path, this.filePrefix);
+        assertThat(csvFile.exists()).isTrue();
+        assertThat(csvFile).hasExtension("csv");
+        assertThat(csvFile.length()).isNotZero();
+
+        final int numberOfLines = FileUtils.countNumberOfLinesInFile(csvFile);
+        assertThat(numberOfLines).isEqualTo(2);
     }
+
+    private List<DeviceLogItem> createDeviceLogItems() {
+        final DeviceLogItem.Builder builder = new DeviceLogItem.Builder().withIncoming(false).withDeviceUid("deviceUID")
+                .withEncodedMessage("0x4F 0x53 0x4C 0x50 ").withDecodedMessage("O S L P")
+                .withDeviceIdentification("test").withOrganisationIdentification("organisation").withValid(true)
+                .withPayloadMessageSerializedSize(4);
+        final DeviceLogItem deviceLogItem = new DeviceLogItem(builder);
+        return Arrays.asList(deviceLogItem);
+    }
+
 }

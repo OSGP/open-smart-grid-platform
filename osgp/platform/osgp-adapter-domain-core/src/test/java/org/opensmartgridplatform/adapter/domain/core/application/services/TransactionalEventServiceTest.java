@@ -8,6 +8,7 @@
 package org.opensmartgridplatform.adapter.domain.core.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -31,7 +32,7 @@ import org.springframework.data.domain.Sort;
 
 public class TransactionalEventServiceTest {
 
-    private final Date date = DateTime.now().toDate();
+    private final Date now = DateTime.now().toDate();
 
     @InjectMocks
     private TransactionalEventService transactionalEventService;
@@ -47,11 +48,10 @@ public class TransactionalEventServiceTest {
     @Test
     public void serviceReturnsOneEvent() {
         final Slice<Event> mockSlice = this.mockSliceOfEvents(1);
-        final PageRequest pageRequest = new PageRequest(0, 1, Sort.Direction.DESC, "id");
-        Mockito.when(this.eventRepository.findByDateTimeBefore(this.date, pageRequest)).thenReturn(mockSlice);
+        final PageRequest pageRequest = new PageRequest(0, 10, Sort.Direction.DESC, "id");
+        Mockito.when(this.eventRepository.findByDateTimeBefore(this.now, pageRequest)).thenReturn(mockSlice);
 
-        final List<Event> events = this.transactionalEventService.getEventsBeforeDate(this.date, 1);
-        assertThat(events.isEmpty()).isFalse();
+        final List<Event> events = this.transactionalEventService.getEventsBeforeDate(this.now, 1);
         assertThat(events.size()).isEqualTo(1);
     }
 
@@ -59,10 +59,9 @@ public class TransactionalEventServiceTest {
     public void serviceReturnsTenEvents() {
         final Slice<Event> mockSlice = this.mockSliceOfEvents(10);
         final PageRequest pageRequest = new PageRequest(0, 10, Sort.Direction.DESC, "id");
-        Mockito.when(this.eventRepository.findByDateTimeBefore(this.date, pageRequest)).thenReturn(mockSlice);
+        Mockito.when(this.eventRepository.findByDateTimeBefore(this.now, pageRequest)).thenReturn(mockSlice);
 
-        final List<Event> events = this.transactionalEventService.getEventsBeforeDate(this.date, 10);
-        assertThat(events.isEmpty()).isFalse();
+        final List<Event> events = this.transactionalEventService.getEventsBeforeDate(this.now, 10);
         assertThat(events.size()).isEqualTo(10);
     }
 
@@ -73,7 +72,7 @@ public class TransactionalEventServiceTest {
         try {
             this.transactionalEventService.deleteEvents(events);
         } catch (final Exception e) {
-            assertThat(e).isNull();
+            fail("Unexpected exception! " + e.getMessage());
         }
     }
 

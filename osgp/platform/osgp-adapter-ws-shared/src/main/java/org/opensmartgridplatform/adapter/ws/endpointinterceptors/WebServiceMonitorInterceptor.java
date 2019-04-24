@@ -94,12 +94,7 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
 
         final SoapMessage response = this.getSoapResponse(messageContext);
         this.printSoapMessage(response);
-
-        if (this.soapMessageLoggingEnabled) {
-            final LoggingRequestMessage loggingRequestMessage = this.createLoggingRequestMessage(messageContext,
-                    endpoint);
-            this.loggingMessageSender.send(loggingRequestMessage);
-        }
+        this.createAndSendLoggingRequestMessage(messageContext, endpoint, null);
 
         return true;
     }
@@ -109,13 +104,7 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
 
         final SoapMessage fault = this.getSoapResponse(messageContext);
         this.printSoapMessage(fault);
-
-        if (this.soapMessageLoggingEnabled) {
-            final LoggingRequestMessage loggingRequestMessage = this.createLoggingRequestMessage(messageContext,
-                    endpoint);
-            loggingRequestMessage.setResponseResult(FAULT_RESPONSE_RESULT);
-            this.loggingMessageSender.send(loggingRequestMessage);
-        }
+        this.createAndSendLoggingRequestMessage(messageContext, endpoint, FAULT_RESPONSE_RESULT);
 
         return true;
     }
@@ -172,7 +161,7 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
 
     /**
      * Try to find the XML_ELEMENT_CORRELATION_UID, XML_ELEMENT_DEVICE_ID and
-     * the XML_ELEMENT_OGSP_RESULT_TYPE from the soap message. Note that these
+     * the XML_ELEMENT_OSGP_RESULT_TYPE from the soap message. Note that these
      * elements are not always present in the soap message. In that case, the
      * values will be null. Also, determine the data size of the response.
      *
@@ -242,19 +231,25 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
     }
 
     /**
-     * Create the logging Request Message.
+     * Create the logging Request Message and send it using
+     * {@link WebServiceMonitorInterceptor#loggingMessageSender}.
      *
      * @param messageContext
      *            The messageContext.
      * @param endpoint
      *            The endpoint.
-     *
-     * @return The loggingRequestMessage.
+     * @param overrideResult
+     *            When set, use this value as result for the
+     *            {@link LoggingRequestMessage}.
      *
      * @throws WebServiceMonitorInterceptorException
      */
-    private LoggingRequestMessage createLoggingRequestMessage(final MessageContext messageContext,
-            final Object endpoint) throws WebServiceMonitorInterceptorException {
+    private void createAndSendLoggingRequestMessage(final MessageContext messageContext, final Object endpoint,
+            final String overrideResult) throws WebServiceMonitorInterceptorException {
+        if (!this.soapMessageLoggingEnabled) {
+            return;
+        }
+
         // Get the current time.
         final Date now = new Date();
 
@@ -265,14 +260,11 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
         final SoapMessage request = this.getSoapRequest(messageContext);
         final SoapHeader soapHeader = request.getSoapHeader();
 
-        // Read OrganisationIdentification from header from request.
+        // Read OrganisationIdentification, UserName and ApplicationName from
+        // header from request.
         final String organisationIdentification = this.getHeaderValue(soapHeader,
                 this.organisationIdentificationHeader);
-
-        // Read UserName from header from request.
         final String userName = this.getHeaderValue(soapHeader, this.userNameHeader);
-
-        // Read ApplicationName from header from request.
         final String appName = this.getHeaderValue(soapHeader, this.applicationNameHeader);
 
         // Read correlationUid and deviceId from request.
@@ -303,7 +295,12 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
         final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification, correlationUid);
         final ResponseResultAndDataSize responseResultAndDataSize = this.resultAndDataSizeFrom(responseData);
 
-        return new LoggingRequestMessage(now, ids, userName, appName, classAndMethod, responseResultAndDataSize);
+        final LoggingRequestMessage loggingRequestMessage = new LoggingRequestMessage(now, ids, userName, appName,
+                classAndMethod, responseResultAndDataSize);
+        if (!StringUtils.isEmpty(overrideResult)) {
+            loggingRequestMessage.setResponseResult(overrideResult);
+        }
+        this.loggingMessageSender.send(loggingRequestMessage);
     }
 
     private SoapMessage getSoapRequest(final MessageContext messageContext) {

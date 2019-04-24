@@ -15,10 +15,11 @@ import java.util.List;
 import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.domain.core.application.services.TransactionalEventService;
 import org.opensmartgridplatform.domain.core.entities.Event;
+import org.opensmartgridplatform.shared.utils.FileZipper;
+import org.opensmartgridplatform.shared.utils.csv.CsvWriter;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +29,11 @@ import org.springframework.util.Assert;
 /**
  * Scheduled job which will find {@link Event} records older than
  * {@link EventCleanupJob#eventRetentionPeriodInMonths}}. The old events are
- * converted to CSV file and stored to the file system. Then the old events are
- * deleted from the database.
+ * converted to CSV format and stored as a file on the file system. Then the old
+ * events are deleted from the database.
  */
 @DisallowConcurrentExecution
-public class EventCleanupJob extends CsvWriterJob implements Job {
+public class EventCleanupJob implements Job {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EventCleanupJob.class);
 
@@ -55,12 +56,12 @@ public class EventCleanupJob extends CsvWriterJob implements Job {
     private TransactionalEventService transactionalEventService;
 
     @Override
-    public void execute(final JobExecutionContext context) throws JobExecutionException {
+    public void execute(final JobExecutionContext context) {
         LOGGER.info("Quartz triggered cleanup of database - event records.");
         final DateTime start = DateTime.now();
 
         try {
-            final Date retention = this.calculateDate();
+            final Date retention = this.calculateRetentionDate();
             final List<Event> oldEvents = this.transactionalEventService.getEventsBeforeDate(retention,
                     this.eventPageSize);
             if (!oldEvents.isEmpty()) {
@@ -77,7 +78,7 @@ public class EventCleanupJob extends CsvWriterJob implements Job {
         LOGGER.info("Start: {}, end: {}, duration: {} milliseconds.", start, end, end.getMillis() - start.getMillis());
     }
 
-    private Date calculateDate() {
+    private Date calculateRetentionDate() {
         final Date date = DateTime.now().minusMonths(this.eventRetentionPeriodInMonths).toDate();
         LOGGER.info("Determined date: {} based on event retention period in months: {}.", date,
                 this.eventRetentionPeriodInMonths);
@@ -87,20 +88,31 @@ public class EventCleanupJob extends CsvWriterJob implements Job {
 
     private void saveEventsToCsvFile(final List<Event> events) throws IOException {
         LOGGER.info("Converting events...");
-        final String[] header = EventToStringArrayConverter.getEventFieldNames();
+        final String[] headerLine = EventToStringArrayConverter.getEventFieldNames();
         final List<String[]> lines = EventToStringArrayConverter.convertEvents(events);
         LOGGER.info("Events converted.");
 
-        final String csvFilePath = this.writeCsvFile(this.csvFileLocation, this.csvFilePrefix, header, lines);
+        final String csvFilePath = CsvWriter.writeCsvFile(this.csvFileLocation, this.csvFilePrefix, headerLine, lines);
 
         if (this.csvFileCompressionEnabled) {
-            this.compressCsvFile(csvFilePath);
+            LOGGER.info("Compressing CSV file...");
+            FileZipper.compressFileUsingDefaultSettings(csvFilePath);
         }
     }
 
     private static final class EventToStringArrayConverter {
 
         private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
+        private static final int ID = 0;
+        private static final int CREATION_TIME = 1;
+        private static final int MODIFICATION_TIME = 2;
+        private static final int VERSION = 3;
+        private static final int DEVICE_IDENTIFICATION = 4;
+        private static final int DATE_TIME = 5;
+        private static final int EVENT_TYPE = 6;
+        private static final int DESCRIPTION = 7;
+        private static final int RELAY_INDEX = 8;
 
         private EventToStringArrayConverter() {
             // Private constructor to prevent instantiation.
@@ -136,15 +148,15 @@ public class EventCleanupJob extends CsvWriterJob implements Job {
             Assert.notNull(event, "Event instance is null!");
 
             final String[] array = new String[9];
-            array[0] = String.valueOf(event.getId());
-            array[1] = formatDate(event.getCreationTime());
-            array[2] = formatDate(event.getModificationTime());
-            array[3] = String.valueOf(event.getVersion());
-            array[4] = event.getDevice().getDeviceIdentification();
-            array[5] = formatDate(event.getDateTime());
-            array[6] = event.getEventType().name();
-            array[7] = event.getDescription();
-            array[8] = String.valueOf(event.getIndex());
+            array[ID] = String.valueOf(event.getId());
+            array[CREATION_TIME] = formatDate(event.getCreationTime());
+            array[MODIFICATION_TIME] = formatDate(event.getModificationTime());
+            array[VERSION] = String.valueOf(event.getVersion());
+            array[DEVICE_IDENTIFICATION] = event.getDevice().getDeviceIdentification();
+            array[DATE_TIME] = formatDate(event.getDateTime());
+            array[EVENT_TYPE] = event.getEventType().name();
+            array[DESCRIPTION] = event.getDescription();
+            array[RELAY_INDEX] = String.valueOf(event.getIndex());
 
             return array;
         }

@@ -35,14 +35,13 @@ public class CsvWriterTest {
     private final CsvWriter csvWriter = new CsvWriter();
 
     private final String fileName = "file.csv";
-    private String[] header;
+    private final String[] header = new String[] { "HEADER_1", "HEADER_2" };
     private List<String[]> lines;
 
     private String filePath;
 
     @Before
     public void setup() throws IOException {
-        this.header = new String[] { "HEADER_1", "HEADER_2" };
         this.lines = new ArrayList<>();
         this.lines.add(new String[] { "a1", "a2" });
         this.lines.add(new String[] { "b1", "b2" });
