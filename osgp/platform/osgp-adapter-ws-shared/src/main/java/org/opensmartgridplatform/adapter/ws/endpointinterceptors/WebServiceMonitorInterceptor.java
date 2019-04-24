@@ -20,13 +20,19 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.commons.lang3.StringUtils;
+import org.opensmartgridplatform.adapter.ws.infra.jms.EndpointClassAndMethod;
+import org.opensmartgridplatform.adapter.ws.infra.jms.LoggingMessageSender;
+import org.opensmartgridplatform.adapter.ws.infra.jms.LoggingRequestMessage;
+import org.opensmartgridplatform.adapter.ws.infra.jms.ResponseResultAndDataSize;
+import org.opensmartgridplatform.domain.core.exceptions.WebServiceMonitorInterceptorException;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
+import org.springframework.ws.WebServiceMessage;
 import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.server.EndpointInterceptor;
 import org.springframework.ws.server.endpoint.MethodEndpoint;
@@ -36,14 +42,6 @@ import org.springframework.ws.soap.SoapMessage;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
-import org.opensmartgridplatform.adapter.ws.infra.jms.EndpointClassAndMethod;
-import org.opensmartgridplatform.adapter.ws.infra.jms.LoggingMessageSender;
-import org.opensmartgridplatform.adapter.ws.infra.jms.LoggingRequestMessage;
-import org.opensmartgridplatform.adapter.ws.infra.jms.ResponseResultAndDataSize;
-import org.opensmartgridplatform.domain.core.exceptions.WebServiceMonitorInterceptorException;
-import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
-
-@Transactional(value = "transactionManager")
 public class WebServiceMonitorInterceptor implements EndpointInterceptor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceMonitorInterceptor.class);
@@ -59,7 +57,7 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
 
     private static final String XML_ELEMENT_CORRELATION_UID = "CorrelationUid";
     private static final String XML_ELEMENT_DEVICE_ID = "DeviceId";
-    private static final String XML_ELEMENT_OSP_RESULT_TYPE = "Result";
+    private static final String XML_ELEMENT_OSGP_RESULT_TYPE = "Result";
 
     private static final String FAULT_RESPONSE_RESULT = "SOAP_FAULT";
 
@@ -67,25 +65,36 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
     private final String userNameHeader;
     private final String applicationNameHeader;
 
+    private final boolean soapMessageLoggingEnabled;
+    private final boolean soapMessagePrintingEnabled;
+
     public WebServiceMonitorInterceptor(final String organisationIdentificationHeader, final String userNameHeader,
-            final String applicationNameHeader) {
+            final String applicationNameHeader, final WebServiceMonitorInterceptorCapabilities capabilities) {
+        LOGGER.info("Initializing WebServiceMonitorInterceptor with SOAP headers [{}, {}, {}] and {}.",
+                organisationIdentificationHeader, userNameHeader, applicationNameHeader, capabilities);
+
         this.organisationIdentificationHeader = organisationIdentificationHeader;
         this.userNameHeader = userNameHeader;
         this.applicationNameHeader = applicationNameHeader;
+        this.soapMessageLoggingEnabled = capabilities.isSoapMessageLoggingEnabled();
+        this.soapMessagePrintingEnabled = capabilities.isSoapMessagePrintingEnabled();
     }
 
     @Override
     public boolean handleRequest(final MessageContext messageContext, final Object endpoint) throws Exception {
-        // This method is not used, but is part of the EndpointInterceptor
-        // interface.
+
+        final SoapMessage request = this.getSoapRequest(messageContext);
+        this.printSoapMessage(request);
+
         return true;
     }
 
     @Override
     public boolean handleResponse(final MessageContext messageContext, final Object endpoint) throws Exception {
 
-        final LoggingRequestMessage loggingRequestMessage = this.createLoggingRequestMessage(messageContext, endpoint);
-        this.loggingMessageSender.send(loggingRequestMessage);
+        final SoapMessage response = this.getSoapResponse(messageContext);
+        this.printSoapMessage(response);
+        this.createAndSendLoggingRequestMessage(messageContext, endpoint, null);
 
         return true;
     }
@@ -93,9 +102,9 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
     @Override
     public boolean handleFault(final MessageContext messageContext, final Object endpoint) throws Exception {
 
-        final LoggingRequestMessage loggingRequestMessage = this.createLoggingRequestMessage(messageContext, endpoint);
-        loggingRequestMessage.setResponseResult(FAULT_RESPONSE_RESULT);
-        this.loggingMessageSender.send(loggingRequestMessage);
+        final SoapMessage fault = this.getSoapResponse(messageContext);
+        this.printSoapMessage(fault);
+        this.createAndSendLoggingRequestMessage(messageContext, endpoint, FAULT_RESPONSE_RESULT);
 
         return true;
     }
@@ -115,14 +124,14 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
      */
     private EndpointClassAndMethod getEndPointClassAndMethod(final Object endpoint) {
         final MethodEndpoint method = (MethodEndpoint) endpoint;
-        return new EndpointClassAndMethod(classNameFrom(method), methodNameFrom(method));
+        return new EndpointClassAndMethod(this.classNameFrom(method), this.methodNameFrom(method));
     }
 
-    private String classNameFrom(MethodEndpoint method) {
+    private String classNameFrom(final MethodEndpoint method) {
         return method.getBean().toString().split("@")[0];
     }
 
-    private String methodNameFrom(MethodEndpoint method) {
+    private String methodNameFrom(final MethodEndpoint method) {
         return method.getMethod().getName() + "()";
     }
 
@@ -152,7 +161,7 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
 
     /**
      * Try to find the XML_ELEMENT_CORRELATION_UID, XML_ELEMENT_DEVICE_ID and
-     * the XML_ELEMENT_OSP_RESULT_TYPE from the soap message. Note that these
+     * the XML_ELEMENT_OSGP_RESULT_TYPE from the soap message. Note that these
      * elements are not always present in the soap message. In that case, the
      * values will be null. Also, determine the data size of the response.
      *
@@ -169,14 +178,11 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
             soapMessage.writeTo(outputStream);
             final int dataSize = outputStream.size();
 
-            // final String message = new String(outputStream.toByteArray());
-            // LOGGER.info("soap message: {}", message);
-
             // Try to find the desired XML elements in the document.
             final Document document = soapMessage.getDocument();
             final String correlationUid = this.evaluateXPathExpression(document, XML_ELEMENT_CORRELATION_UID);
             final String deviceId = this.evaluateXPathExpression(document, XML_ELEMENT_DEVICE_ID);
-            final String result = this.evaluateXPathExpression(document, XML_ELEMENT_OSP_RESULT_TYPE);
+            final String result = this.evaluateXPathExpression(document, XML_ELEMENT_OSGP_RESULT_TYPE);
 
             // Create the Map containing the output.
             final Map<String, Object> map = new HashMap<>();
@@ -225,19 +231,25 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
     }
 
     /**
-     * Create the logging Request Message.
+     * Create the logging Request Message and send it using
+     * {@link WebServiceMonitorInterceptor#loggingMessageSender}.
      *
      * @param messageContext
      *            The messageContext.
      * @param endpoint
      *            The endpoint.
-     *
-     * @return The loggingRequestMessage.
+     * @param overrideResult
+     *            When set, use this value as result for the
+     *            {@link LoggingRequestMessage}.
      *
      * @throws WebServiceMonitorInterceptorException
      */
-    private LoggingRequestMessage createLoggingRequestMessage(final MessageContext messageContext, final Object endpoint)
-            throws WebServiceMonitorInterceptorException {
+    private void createAndSendLoggingRequestMessage(final MessageContext messageContext, final Object endpoint,
+            final String overrideResult) throws WebServiceMonitorInterceptorException {
+        if (!this.soapMessageLoggingEnabled) {
+            return;
+        }
+
         // Get the current time.
         final Date now = new Date();
 
@@ -245,68 +257,80 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
         final EndpointClassAndMethod classAndMethod = this.getEndPointClassAndMethod(endpoint);
 
         // Get the request.
-        Assert.isInstanceOf(SoapMessage.class, messageContext.getRequest());
-        final SoapMessage request = (SoapMessage) messageContext.getRequest();
-        this.printSoapMessage(request);
-
+        final SoapMessage request = this.getSoapRequest(messageContext);
         final SoapHeader soapHeader = request.getSoapHeader();
 
-        // Read OrganisationIdentification from header from request.
-        final String organisationIdentification = this.getHeaderValue(soapHeader, this.organisationIdentificationHeader);
-
-        // Read UserName from header from request.
-        final String usrName = this.getHeaderValue(soapHeader, this.userNameHeader);
-
-        // Read ApplicationName from header from request.
+        // Read OrganisationIdentification, UserName and ApplicationName from
+        // header from request.
+        final String organisationIdentification = this.getHeaderValue(soapHeader,
+                this.organisationIdentificationHeader);
+        final String userName = this.getHeaderValue(soapHeader, this.userNameHeader);
         final String appName = this.getHeaderValue(soapHeader, this.applicationNameHeader);
 
         // Read correlationUid and deviceId from request.
         final Map<String, Object> requestData = this.parseSoapMessage(request);
-
         if (requestData == null) {
             throw new WebServiceMonitorInterceptorException("unable to get correlationUid or deviceId from request");
         }
 
         // Get the response.
-        Assert.isInstanceOf(SoapMessage.class, messageContext.getResponse());
-        final SoapMessage response = (SoapMessage) messageContext.getResponse();
-        this.printSoapMessage(response);
+        final SoapMessage response = this.getSoapResponse(messageContext);
 
         // Read correlationUid and deviceId and result and data size from
         // response.
         final Map<String, Object> responseData = this.parseSoapMessage(response);
-
         if (responseData == null) {
             throw new WebServiceMonitorInterceptorException(
                     "unable to get correlationUid or deviceId or result from response");
         }
 
-        // Check response for correlationId, otherwise request
+        // Check response for correlationId, otherwise request.
         String correlationUid = (String) responseData.get(CORRELATION_UID);
         if (StringUtils.isEmpty(correlationUid)) {
             correlationUid = (String) requestData.get(CORRELATION_UID);
         }
 
-        // Creating the logging request message
+        // Creating the logging request message.
         final String deviceIdentification = (String) requestData.get(DEVICE_ID);
-        final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification,
-                correlationUid);
+        final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification, correlationUid);
+        final ResponseResultAndDataSize responseResultAndDataSize = this.resultAndDataSizeFrom(responseData);
 
-        return new LoggingRequestMessage(now, ids, usrName, appName, classAndMethod,
-                resultAndDataSizeFrom(responseData));
+        final LoggingRequestMessage loggingRequestMessage = new LoggingRequestMessage(now, ids, userName, appName,
+                classAndMethod, responseResultAndDataSize);
+        if (!StringUtils.isEmpty(overrideResult)) {
+            loggingRequestMessage.setResponseResult(overrideResult);
+        }
+        this.loggingMessageSender.send(loggingRequestMessage);
     }
 
-    private ResponseResultAndDataSize resultAndDataSizeFrom(Map<String, Object> responseData) {
-        return new ResponseResultAndDataSize((String) responseData.get(RESPONSE_RESULT), (int) responseData.get(RESPONSE_DATA_SIZE));
+    private SoapMessage getSoapRequest(final MessageContext messageContext) {
+        final WebServiceMessage webServiceMessage = messageContext.getRequest();
+        Assert.isInstanceOf(SoapMessage.class, webServiceMessage);
+        return (SoapMessage) webServiceMessage;
+    }
+
+    private SoapMessage getSoapResponse(final MessageContext messageContext) {
+        final WebServiceMessage webServiceMessage = messageContext.getResponse();
+        Assert.isInstanceOf(SoapMessage.class, webServiceMessage);
+        return (SoapMessage) webServiceMessage;
+    }
+
+    private ResponseResultAndDataSize resultAndDataSizeFrom(final Map<String, Object> responseData) {
+        return new ResponseResultAndDataSize((String) responseData.get(RESPONSE_RESULT),
+                (int) responseData.get(RESPONSE_DATA_SIZE));
     }
 
     /**
      * Print a soap message.
-     * 
+     *
      * @param soapMessage
      *            The message to print.
      */
     private void printSoapMessage(final SoapMessage soapMessage) {
+        if (!this.soapMessagePrintingEnabled) {
+            return;
+        }
+
         try {
             final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             soapMessage.writeTo(outputStream);

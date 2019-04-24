@@ -47,7 +47,6 @@ public class OsgpScheduler {
     public OsgpScheduler(final Scheduler quartzScheduler) throws SchedulerException {
         this.quartzScheduler = quartzScheduler;
         LOGGER.info("Starting {}.", quartzScheduler.getSchedulerName());
-        quartzScheduler.start();
     }
 
     /**
