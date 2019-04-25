@@ -44,7 +44,7 @@ public class CsvWriterTest {
     public void setup() throws IOException {
         this.lines = new ArrayList<>();
         this.lines.add(new String[] { "a1", "a2" });
-        this.lines.add(new String[] { "b1", "b2" });
+        this.lines.add(new String[] { "b1", null });
 
         this.filePath = this.folder.getRoot().getAbsolutePath() + File.separator + this.fileName;
     }
@@ -78,7 +78,7 @@ public class CsvWriterTest {
         final StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(this.header[0] + COMMA + this.header[1] + System.lineSeparator());
         stringBuilder.append(this.lines.get(0)[0] + COMMA + this.lines.get(0)[1] + System.lineSeparator());
-        stringBuilder.append(this.lines.get(1)[0] + COMMA + this.lines.get(1)[1]);
+        stringBuilder.append(this.lines.get(1)[0] + COMMA + "");
 
         return stringBuilder.toString();
     }
