@@ -193,7 +193,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
 
         if (clockIndex != null) {
             cosemDateTime = this.dlmsHelper.readDateTime(bufferedObjects.get(clockIndex),
-                    "Clock from " + queryPeriodType + " buffer " + "gas");
+                    "Clock from " + queryPeriodType + " buffer gas");
         }
 
         final DateTime bufferedDateTime = cosemDateTime == null ? null : cosemDateTime.asDateTime();

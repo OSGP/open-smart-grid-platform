@@ -36,7 +36,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 @RunWith(MockitoJUnitRunner.class)
 public class DlmsObjectConfigServiceTest {
 
-    private DlmsObjectConfigService accessor;
+    private DlmsObjectConfigService service;
 
     private final DateTime from = DateTime.now().minusDays(1);
     private final DateTime to = DateTime.now();
@@ -85,7 +85,7 @@ public class DlmsObjectConfigServiceTest {
 
         final List<DlmsObjectConfig> configs = Arrays.asList(this.config422, this.config50);
 
-        this.accessor = new DlmsObjectConfigService(this.dlmsHelper, configs);
+        this.service = new DlmsObjectConfigService(this.dlmsHelper, configs);
 
         this.device422.setProtocol("DSMR", "4.2.2");
         this.device422.setSelectiveAccessSupported(true);
@@ -98,7 +98,7 @@ public class DlmsObjectConfigServiceTest {
     @Test
     public void testNoMatchingObject() throws Exception {
         // CALL
-        final Optional<AttributeAddress> attributeAddress = this.accessor.findAttributeAddress(this.device51,
+        final Optional<AttributeAddress> attributeAddress = this.service.findAttributeAddress(this.device51,
                 DlmsObjectType.AMR_STATUS, null);
 
         // VERIFY
@@ -108,7 +108,7 @@ public class DlmsObjectConfigServiceTest {
     @Test
     public void testNoMatchingObjectForProtocol() throws Exception {
         // CALL
-        final Optional<AttributeAddress> attributeAddress = this.accessor.findAttributeAddress(this.device51,
+        final Optional<AttributeAddress> attributeAddress = this.service.findAttributeAddress(this.device51,
                 DlmsObjectType.INTERVAL_VALUES, null);
 
         // VERIFY
@@ -122,7 +122,7 @@ public class DlmsObjectConfigServiceTest {
                 this.register.getObisCode(), this.register.getDefaultAttributeId(), null);
 
         // CALL
-        final Optional<AttributeAddress> attributeAddress = this.accessor.findAttributeAddress(this.device422,
+        final Optional<AttributeAddress> attributeAddress = this.service.findAttributeAddress(this.device422,
                 DlmsObjectType.ACTIVE_ENERGY_IMPORT, null);
 
         // VERIFY
@@ -138,7 +138,7 @@ public class DlmsObjectConfigServiceTest {
                 this.registerWithChannel.getDefaultAttributeId(), null);
 
         // CALL
-        final Optional<AttributeAddress> attributeAddress = this.accessor.findAttributeAddress(this.device422,
+        final Optional<AttributeAddress> attributeAddress = this.service.findAttributeAddress(this.device422,
                 DlmsObjectType.MBUS_MASTER_VALUE, channel);
 
         // VERIFY
@@ -154,9 +154,7 @@ public class DlmsObjectConfigServiceTest {
 
         final DataObject selectedValues = DataObject.newArrayData(Collections.emptyList());
 
-        final DataObject accessParams = DataObject.newStructureData(
-                Arrays.asList(this.getDataObject(this.clock1), this.getDataObject(this.from),
-                        this.getDataObject(this.to), selectedValues));
+        final DataObject accessParams = this.getAccessParams(selectedValues);
 
         final SelectiveAccessDescription access = new SelectiveAccessDescription(1, accessParams);
 
@@ -164,7 +162,7 @@ public class DlmsObjectConfigServiceTest {
                 this.profileE.getObisCode(), this.profileE.getDefaultAttributeId(), access);
 
         // CALL
-        final Optional<AttributeAddress> attributeAddress = this.accessor.findAttributeAddress(this.device422,
+        final Optional<AttributeAddress> attributeAddress = this.service.findAttributeAddress(this.device422,
                 DlmsObjectType.INTERVAL_VALUES, channel, this.from, this.to, filterMedium, selectedObjects);
 
         // VERIFY
@@ -188,9 +186,7 @@ public class DlmsObjectConfigServiceTest {
                 .map(o -> this.getDataObject(o.getRelatedObject()))
                 .collect(Collectors.toList()));
 
-        final DataObject accessParams = DataObject.newStructureData(
-                Arrays.asList(this.getDataObject(this.clock1), this.getDataObject(this.from),
-                        this.getDataObject(this.to), selectedValues));
+        final DataObject accessParams = this.getAccessParams(selectedValues);
 
         final SelectiveAccessDescription access = new SelectiveAccessDescription(1, accessParams);
 
@@ -198,7 +194,7 @@ public class DlmsObjectConfigServiceTest {
                 this.profileCombined.getObisCode(), this.profileCombined.getDefaultAttributeId(), access);
 
         // CALL
-        final Optional<AttributeAddress> attributeAddress = this.accessor.findAttributeAddress(this.device422,
+        final Optional<AttributeAddress> attributeAddress = this.service.findAttributeAddress(this.device422,
                 DlmsObjectType.DAILY_LOAD_PROFILE, channel, this.from, this.to, filterMedium, selectedObjects);
 
         // VERIFY
@@ -215,9 +211,7 @@ public class DlmsObjectConfigServiceTest {
 
         final DataObject selectedValues = DataObject.newArrayData(Collections.emptyList());
 
-        final DataObject accessParams = DataObject.newStructureData(
-                Arrays.asList(this.getDataObject(this.clock1), this.getDataObject(this.from),
-                        this.getDataObject(this.to), selectedValues));
+        final DataObject accessParams = this.getAccessParams(selectedValues);
 
         final SelectiveAccessDescription access = new SelectiveAccessDescription(1, accessParams);
 
@@ -225,7 +219,7 @@ public class DlmsObjectConfigServiceTest {
                 this.profileCombined.getObisCode(), this.profileCombined.getDefaultAttributeId(), access);
 
         // CALL
-        final Optional<AttributeAddress> attributeAddress = this.accessor.findAttributeAddress(this.device422,
+        final Optional<AttributeAddress> attributeAddress = this.service.findAttributeAddress(this.device422,
                 DlmsObjectType.DAILY_LOAD_PROFILE, channel, this.from, this.to, filterMedium, selectedObjects);
 
         // VERIFY
@@ -249,7 +243,7 @@ public class DlmsObjectConfigServiceTest {
                 this.profileCombined.getObisCode(), this.profileCombined.getDefaultAttributeId(), access);
 
         // CALL
-        final Optional<AttributeAddress> attributeAddress = this.accessor.findAttributeAddress(
+        final Optional<AttributeAddress> attributeAddress = this.service.findAttributeAddress(
                 this.device422_noSelectiveAccess, DlmsObjectType.DAILY_LOAD_PROFILE, channel, this.from, this.to,
                 filterMedium, selectedObjects);
 
@@ -272,9 +266,7 @@ public class DlmsObjectConfigServiceTest {
         // Selecting values is not supported
         final DataObject selectedValues = DataObject.newArrayData(Collections.emptyList());
 
-        final DataObject accessParams = DataObject.newStructureData(
-                Arrays.asList(this.getDataObject(this.clock1), this.getDataObject(this.from),
-                        this.getDataObject(this.to), selectedValues));
+        final DataObject accessParams = this.getAccessParams(selectedValues);
 
         final SelectiveAccessDescription access = new SelectiveAccessDescription(1, accessParams);
 
@@ -282,7 +274,7 @@ public class DlmsObjectConfigServiceTest {
                 this.profileCombined.getObisCode(), this.profileCombined.getDefaultAttributeId(), access);
 
         // CALL
-        final Optional<AttributeAddress> attributeAddress = this.accessor.findAttributeAddress(this.device51,
+        final Optional<AttributeAddress> attributeAddress = this.service.findAttributeAddress(this.device51,
                 DlmsObjectType.DAILY_LOAD_PROFILE, channel, this.from, this.to, filterMedium, selectedObjects);
 
         // VERIFY
@@ -315,6 +307,11 @@ public class DlmsObjectConfigServiceTest {
 
     private DataObject getDataObject(final DateTime dateTime) {
         return this.dlmsHelper.asDataObject(dateTime);
+    }
+
+    private DataObject getAccessParams(final DataObject selectedValues) {
+        return DataObject.newStructureData(Arrays.asList(this.getDataObject(this.clock1), this.getDataObject(this.from),
+                this.getDataObject(this.to), selectedValues));
     }
 }
 
