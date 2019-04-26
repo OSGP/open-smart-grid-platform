@@ -7,9 +7,6 @@
  */
 package org.opensmartgridplatform.adapter.ws.core.application.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
 import org.opensmartgridplatform.domain.core.exceptions.NotAuthorizedException;
@@ -22,6 +19,8 @@ import org.opensmartgridplatform.domain.core.valueobjects.PlatformFunction;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service(value = "wsCoreDomainHelperService")
 public class DomainHelperService {
@@ -77,5 +76,9 @@ public class DomainHelperService {
         if (device.isInMaintenance()) {
             throw new FunctionalException(FunctionalExceptionType.DEVICE_IN_MAINTENANCE, COMPONENT_TYPE);
         }
+    }
+
+    public void isOrganisationEnabled(final Organisation organisation) throws FunctionalException {
+        this.organisationDomainService.isOrganisationEnabled(organisation, COMPONENT_TYPE);
     }
 }

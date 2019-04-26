@@ -110,9 +110,6 @@ public class DeviceManagementService {
     @Autowired
     private ProtocolInfoRepository protocolRepository;
 
-    @Autowired
-    private String netManagementOrganisation;
-
     /**
      * Constructor
      */
@@ -427,6 +424,7 @@ public class DeviceManagementService {
 
         final Organisation organisation = this.findOrganisation(organisationIdentification);
         this.isAllowed(organisation, PlatformFunction.UPDATE_KEY);
+        this.organisationDomainService.isOrganisationEnabled(organisation, ComponentType.WS_ADMIN);
 
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
 
