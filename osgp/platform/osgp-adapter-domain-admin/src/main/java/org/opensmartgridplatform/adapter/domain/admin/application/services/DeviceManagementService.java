@@ -7,19 +7,12 @@
  */
 package org.opensmartgridplatform.adapter.domain.admin.application.services;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
 import org.opensmartgridplatform.domain.core.exceptions.PlatformException;
 import org.opensmartgridplatform.domain.core.exceptions.UnknownEntityException;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.SsldRepository;
-import org.opensmartgridplatform.shared.validation.Identification;
 import org.opensmartgridplatform.domain.core.validation.PublicKey;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
@@ -29,6 +22,12 @@ import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.opensmartgridplatform.shared.validation.Identification;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service(value = "domainAdminDeviceManagementService")
 @Transactional(value = "transactionManager")
@@ -55,8 +54,8 @@ public class DeviceManagementService extends AbstractService {
             final String correlationUid, final String messageType, @PublicKey final String publicKey)
             throws FunctionalException {
 
-        LOGGER.info("MessageType: {}. Updating key for device [{}] on behalf of organisation [{}]",
-                deviceIdentification, organisationIdentification, messageType);
+        LOGGER.info("MessageType: {}. Updating key for device [{}] on behalf of organisation [{}]", messageType,
+                deviceIdentification, organisationIdentification);
 
         try {
             this.organisationDomainService.searchOrganisation(organisationIdentification);
@@ -73,8 +72,8 @@ public class DeviceManagementService extends AbstractService {
             final String correlationUid, final String messageType, final ResponseMessageResultType deviceResult,
             final OsgpException exception) {
 
-        LOGGER.info("handleUpdateKeyResponse called for device: {} for organisation: {}", deviceIdentification,
-                organisationIdentification);
+        LOGGER.info("MessageType: {}. Handle update key response for device: {} for organisation: {}", messageType,
+                deviceIdentification, organisationIdentification);
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException osgpException = exception;
@@ -134,8 +133,8 @@ public class DeviceManagementService extends AbstractService {
             final String correlationUid, final String messageType, final ResponseMessageResultType deviceResult,
             final OsgpException exception) {
 
-        LOGGER.info("handleRevokeKeyResponse called for device: {} for organisation: {}", deviceIdentification,
-                organisationIdentification);
+        LOGGER.info("MessageType: {}. Handle revoke key for device: {} for organisation: {}", messageType,
+                deviceIdentification, organisationIdentification);
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException osgpException = exception;

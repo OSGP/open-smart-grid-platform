@@ -35,3 +35,13 @@ Feature: AdminDeviceManagement Update Key
       | PublicKey |
       |           |
       |        10 |
+
+  Scenario: Disallow updating a device key if the requesting organisation is not enabled
+    Given an organization
+      | OrganizationIdentification | test-org |
+      | Enabled                    | false    |
+    When receiving an update key request
+      | DeviceIdentification | TEST1024000000001 |
+      | PUblicKey            |                   |
+    Then the update device response contains soap fault
+      | Message | DISABLED_ORGANISATION |
