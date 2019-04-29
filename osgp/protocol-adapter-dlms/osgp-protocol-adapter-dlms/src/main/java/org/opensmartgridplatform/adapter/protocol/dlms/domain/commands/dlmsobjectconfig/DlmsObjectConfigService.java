@@ -44,18 +44,17 @@ public class DlmsObjectConfigService {
 
     public Optional<AttributeAddress> findAttributeAddress(final DlmsDevice device, final DlmsObjectType type,
             final Integer channel) {
-        return this.findAttributeAddress(device, type, channel, null, null, null, null);
+        return this.findAttributeAddressForProfile(device, type, channel, null, null, null)
+                .map(addressForProfile -> (AttributeAddress) addressForProfile);
     }
 
-    public Optional<AttributeAddress> findAttributeAddress(final DlmsDevice device, final DlmsObjectType type,
-            final Integer channel, final DateTime from, final DateTime to, final Medium filterMedium,
-            final List<DlmsCaptureObject> selectedObjects) {
+    public Optional<AttributeAddressForProfile> findAttributeAddressForProfile(final DlmsDevice device,
+            final DlmsObjectType type, final Integer channel, final DateTime from, final DateTime to,
+            final Medium filterMedium) {
         return this.findDlmsObject(Protocol.withNameAndVersion(device.getProtocol(), device.getProtocolVersion()), type,
                 filterMedium)
-                .map(dlmsObject -> new AttributeAddress(dlmsObject.getClassId(),
-                        this.replaceChannel(dlmsObject.getObisCode(), channel), dlmsObject.getDefaultAttributeId(),
-                        this.getAccessDescription(dlmsObject, from, to, channel, filterMedium, device,
-                                selectedObjects)));
+                .map(dlmsObject -> this.getAttributeAddressForProfile(dlmsObject, channel, from, to, filterMedium,
+                        device));
     }
 
     private Optional<DlmsObject> findDlmsObject(final Protocol protocol, final DlmsObjectType type,
@@ -97,6 +96,19 @@ public class DlmsObjectConfigService {
         }
 
         return attributeAddresses;
+    }
+
+    private AttributeAddressForProfile getAttributeAddressForProfile(final DlmsObject dlmsObject, final Integer channel,
+            final DateTime from, final DateTime to, final Medium filterMedium, final DlmsDevice device) {
+        final List<DlmsCaptureObject> selectedObjects = new ArrayList<>();
+
+        final SelectiveAccessDescription access = this.getAccessDescription(dlmsObject, from, to, channel, filterMedium,
+                device, selectedObjects);
+
+        final ObisCode obisCode = this.replaceChannel(dlmsObject.getObisCode(), channel);
+
+        return new AttributeAddressForProfile(dlmsObject.getClassId(), obisCode, dlmsObject.getDefaultAttributeId(),
+                access, selectedObjects);
     }
 
     private ObisCode replaceChannel(String obisCode, final Integer channel) {

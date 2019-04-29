@@ -11,7 +11,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobje
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -150,7 +149,6 @@ public class DlmsObjectConfigServiceTest {
         // SETUP
         final Integer channel = null;
         final Medium filterMedium = Medium.ELECTRICITY;
-        final List<DlmsCaptureObject> selectedObjects = new ArrayList<>();
 
         final DataObject selectedValues = DataObject.newArrayData(Collections.emptyList());
 
@@ -162,12 +160,13 @@ public class DlmsObjectConfigServiceTest {
                 this.profileE.getObisCode(), this.profileE.getDefaultAttributeId(), access);
 
         // CALL
-        final Optional<AttributeAddress> attributeAddress = this.service.findAttributeAddress(this.device422,
-                DlmsObjectType.INTERVAL_VALUES, channel, this.from, this.to, filterMedium, selectedObjects);
+        final Optional<AttributeAddressForProfile> attributeAddressForProfile =
+                this.service.findAttributeAddressForProfile(
+                this.device422, DlmsObjectType.INTERVAL_VALUES, channel, this.from, this.to, filterMedium);
 
         // VERIFY
-        AttributeAddressAssert.is(attributeAddress.get(), expectedAddress);
-        assertThat(selectedObjects).isEqualTo(this.captureObjectsE);
+        AttributeAddressAssert.is(attributeAddressForProfile.get(), expectedAddress);
+        assertThat(attributeAddressForProfile.get().getSelectedObjects()).isEqualTo(this.captureObjectsE);
     }
 
     @Test
@@ -175,7 +174,6 @@ public class DlmsObjectConfigServiceTest {
         // SETUP
         final Integer channel = null;
         final Medium filterMedium = Medium.ELECTRICITY;
-        final List<DlmsCaptureObject> selectedObjects = new ArrayList<>();
 
         final List<DlmsCaptureObject> expectedSelectedObjects = this.captureObjectsCombined.stream()
                 .filter(c -> !(c.getRelatedObject() instanceof DlmsRegister)
@@ -194,12 +192,13 @@ public class DlmsObjectConfigServiceTest {
                 this.profileCombined.getObisCode(), this.profileCombined.getDefaultAttributeId(), access);
 
         // CALL
-        final Optional<AttributeAddress> attributeAddress = this.service.findAttributeAddress(this.device422,
-                DlmsObjectType.DAILY_LOAD_PROFILE, channel, this.from, this.to, filterMedium, selectedObjects);
+        final Optional<AttributeAddressForProfile> attributeAddressForProfile =
+                this.service.findAttributeAddressForProfile(
+                this.device422, DlmsObjectType.DAILY_LOAD_PROFILE, channel, this.from, this.to, filterMedium);
 
         // VERIFY
-        AttributeAddressAssert.is(attributeAddress.get(), expectedAddress);
-        assertThat(selectedObjects).isEqualTo(expectedSelectedObjects);
+        AttributeAddressAssert.is(attributeAddressForProfile.get(), expectedAddress);
+        assertThat(attributeAddressForProfile.get().getSelectedObjects()).isEqualTo(expectedSelectedObjects);
     }
 
     @Test
@@ -207,7 +206,6 @@ public class DlmsObjectConfigServiceTest {
         // SETUP
         final Integer channel = 1;
         final Medium filterMedium = null;
-        final List<DlmsCaptureObject> selectedObjects = new ArrayList<>();
 
         final DataObject selectedValues = DataObject.newArrayData(Collections.emptyList());
 
@@ -219,12 +217,13 @@ public class DlmsObjectConfigServiceTest {
                 this.profileCombined.getObisCode(), this.profileCombined.getDefaultAttributeId(), access);
 
         // CALL
-        final Optional<AttributeAddress> attributeAddress = this.service.findAttributeAddress(this.device422,
-                DlmsObjectType.DAILY_LOAD_PROFILE, channel, this.from, this.to, filterMedium, selectedObjects);
+        final Optional<AttributeAddressForProfile> attributeAddressForProfile =
+                this.service.findAttributeAddressForProfile(
+                this.device422, DlmsObjectType.DAILY_LOAD_PROFILE, channel, this.from, this.to, filterMedium);
 
         // VERIFY
-        AttributeAddressAssert.is(attributeAddress.get(), expectedAddress);
-        assertThat(selectedObjects).isEqualTo(this.captureObjectsCombined);
+        AttributeAddressAssert.is(attributeAddressForProfile.get(), expectedAddress);
+        assertThat(attributeAddressForProfile.get().getSelectedObjects()).isEqualTo(this.captureObjectsCombined);
     }
 
     @Test
@@ -234,7 +233,6 @@ public class DlmsObjectConfigServiceTest {
         // SETUP
         final Integer channel = 1;
         final Medium filterMedium = Medium.GAS;
-        final List<DlmsCaptureObject> selectedObjects = new ArrayList<>();
 
         // Selective access not supported
         final SelectiveAccessDescription access = null;
@@ -243,15 +241,16 @@ public class DlmsObjectConfigServiceTest {
                 this.profileCombined.getObisCode(), this.profileCombined.getDefaultAttributeId(), access);
 
         // CALL
-        final Optional<AttributeAddress> attributeAddress = this.service.findAttributeAddress(
+        final Optional<AttributeAddressForProfile> attributeAddressForProfile =
+                this.service.findAttributeAddressForProfile(
                 this.device422_noSelectiveAccess, DlmsObjectType.DAILY_LOAD_PROFILE, channel, this.from, this.to,
-                filterMedium, selectedObjects);
+                filterMedium);
 
         // VERIFY
-        AttributeAddressAssert.is(attributeAddress.get(), expectedAddress);
+        AttributeAddressAssert.is(attributeAddressForProfile.get(), expectedAddress);
 
         // All values should be returned.
-        assertThat(selectedObjects).isEqualTo(this.captureObjectsCombined);
+        assertThat(attributeAddressForProfile.get().getSelectedObjects()).isEqualTo(this.captureObjectsCombined);
     }
 
     @Test
@@ -261,7 +260,6 @@ public class DlmsObjectConfigServiceTest {
         // SETUP
         final Integer channel = 1;
         final Medium filterMedium = Medium.GAS;
-        final List<DlmsCaptureObject> selectedObjects = new ArrayList<>();
 
         // Selecting values is not supported
         final DataObject selectedValues = DataObject.newArrayData(Collections.emptyList());
@@ -274,14 +272,15 @@ public class DlmsObjectConfigServiceTest {
                 this.profileCombined.getObisCode(), this.profileCombined.getDefaultAttributeId(), access);
 
         // CALL
-        final Optional<AttributeAddress> attributeAddress = this.service.findAttributeAddress(this.device51,
-                DlmsObjectType.DAILY_LOAD_PROFILE, channel, this.from, this.to, filterMedium, selectedObjects);
+        final Optional<AttributeAddressForProfile> attributeAddressForProfile =
+                this.service.findAttributeAddressForProfile(
+                this.device51, DlmsObjectType.DAILY_LOAD_PROFILE, channel, this.from, this.to, filterMedium);
 
         // VERIFY
-        AttributeAddressAssert.is(attributeAddress.get(), expectedAddress);
+        AttributeAddressAssert.is(attributeAddressForProfile.get(), expectedAddress);
 
         // All values should be returned.
-        assertThat(selectedObjects).isEqualTo(this.captureObjectsCombined);
+        assertThat(attributeAddressForProfile.get().getSelectedObjects()).isEqualTo(this.captureObjectsCombined);
     }
 
     private ObisCode getObisCodeWithChannel(final String obisAsString, final Integer channel) {

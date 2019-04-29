@@ -14,7 +14,6 @@ import static org.assertj.core.api.Fail.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -32,13 +31,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.AttributeAddressForProfile;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsCaptureObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsClock;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsExtendedRegister;
@@ -109,7 +107,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
         //SETUP
         final PeriodicMeterReadsRequestDto request = new PeriodicMeterReadsRequestDto(PeriodTypeDto.DAILY,
                 this.fromDateTime.toDate(), this.toDateTime.toDate(), ChannelDto.ONE);
-        when(this.dlmsObjectConfigService.findAttributeAddress(any(), any(), any(), any(), any(), any(),
+        when(this.dlmsObjectConfigService.findAttributeAddressForProfile(any(), any(), any(), any(), any(),
                 any())).thenReturn(Optional.empty());
 
         // CALL
@@ -145,20 +143,26 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
                 captureObjects, ProfileCaptureTime.DAY, Medium.COMBINED);
 
         // SETUP - mock dlms object config to return attribute addresses
-        final AttributeAddress attributeAddress = this.createAttributeAddress(dlmsProfile);
+        final AttributeAddressForProfile attributeAddressForProfile = this.createAttributeAddressForProfile(dlmsProfile,
+                captureObjects);
         final AttributeAddress attributeAddressScalerUnit = this.createAttributeAddress(dlmsExtendedRegister);
 
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(final InvocationOnMock invocation) {
-                final Object[] args = invocation.getArguments();
-                ((List<DlmsCaptureObject>) args[6]).addAll(captureObjects);
-                return Optional.of(attributeAddress);
-            }
-        }).when(this.dlmsObjectConfigService)
-                .findAttributeAddress(eq(this.device), eq(DlmsObjectType.DAILY_LOAD_PROFILE),
-                        eq(channel.getChannelNumber()), eq(this.fromDateTime), eq(this.toDateTime), eq(Medium.GAS),
-                        eq(Collections.emptyList()));
+        when(this.dlmsObjectConfigService.findAttributeAddressForProfile(eq(this.device),
+                eq(DlmsObjectType.DAILY_LOAD_PROFILE), eq(channel.getChannelNumber()), eq(this.fromDateTime),
+                eq(this.toDateTime), eq(Medium.GAS))).thenReturn(Optional.of(attributeAddressForProfile));
+
+        //        doAnswer(new Answer() {
+        //            @Override
+        //            public Object answer(final InvocationOnMock invocation) {
+        //                final Object[] args = invocation.getArguments();
+        //                ((List<DlmsCaptureObject>) args[6]).addAll(captureObjects);
+        //                return Optional.of(attributeAddress);
+        //            }
+        //        }).when(this.dlmsObjectConfigService)
+        //                .findAttributeAddress(eq(this.device), eq(DlmsObjectType.DAILY_LOAD_PROFILE),
+        //                        eq(channel.getChannelNumber()), eq(this.fromDateTime), eq(this.toDateTime), eq
+        // (Medium.GAS),
+        //                        eq(Collections.emptyList()));
 
         when(this.dlmsObjectConfigService.getAttributeAddressesForScalerUnit(eq(captureObjects),
                 eq(channel.getChannelNumber()))).thenReturn(Collections.singletonList(attributeAddressScalerUnit));
@@ -181,8 +185,8 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
 
         final String expectedDescription = "retrieve periodic meter reads for " + periodType + ", channel " + channel;
         final GetResult getResult = mock(GetResult.class);
-        when(this.dlmsHelper.getAndCheck(this.connectionManager, this.device, expectedDescription,
-                attributeAddress)).thenReturn(Collections.singletonList(getResult));
+        when(this.dlmsHelper.getAndCheck(eq(this.connectionManager), eq(this.device), eq(expectedDescription),
+                eq((AttributeAddress) attributeAddressForProfile))).thenReturn(Collections.singletonList(getResult));
         when(this.dlmsHelper.getAndCheck(this.connectionManager, this.device, expectedDescription,
                 attributeAddressScalerUnit)).thenReturn(Collections.singletonList(getResult));
 
@@ -231,6 +235,12 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
     private AttributeAddress createAttributeAddress(final DlmsObject dlmsObject) {
         return new AttributeAddress(dlmsObject.getClassId(), new ObisCode(dlmsObject.getObisCode()),
                 dlmsObject.getDefaultAttributeId());
+    }
+
+    private AttributeAddressForProfile createAttributeAddressForProfile(final DlmsObject dlmsObject,
+            final List<DlmsCaptureObject> selectedObjects) {
+        return new AttributeAddressForProfile(dlmsObject.getClassId(), new ObisCode(dlmsObject.getObisCode()),
+                dlmsObject.getDefaultAttributeId(), null, selectedObjects);
     }
 
     private DlmsDevice createDevice(final Protocol protocol) {
