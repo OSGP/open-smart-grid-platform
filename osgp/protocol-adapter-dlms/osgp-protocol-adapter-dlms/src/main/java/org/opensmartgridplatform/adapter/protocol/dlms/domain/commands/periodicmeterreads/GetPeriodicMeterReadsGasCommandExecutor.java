@@ -20,6 +20,7 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.AttributeAddressForProfile;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsCaptureObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
@@ -305,14 +306,15 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
         final List<AttributeAddress> attributeAddresses = new ArrayList<>();
 
         // Add the attribute address for the profile
-        final Optional<AttributeAddress> attributeAddressProfileOptional =
-                this.dlmsObjectConfigService.findAttributeAddress(
-                device, type, channel.getChannelNumber(), beginDateTime, endDateTime, Medium.GAS, selectedObjects);
+        final Optional<AttributeAddressForProfile> attributeAddressProfileOptional =
+                this.dlmsObjectConfigService.findAttributeAddressForProfile(
+                device, type, channel.getChannelNumber(), beginDateTime, endDateTime, Medium.GAS);
 
         if (!attributeAddressProfileOptional.isPresent()) {
             throw new ProtocolAdapterException("No address found for " + type);
         } else {
             attributeAddresses.add(attributeAddressProfileOptional.get());
+            selectedObjects.addAll(attributeAddressProfileOptional.get().getSelectedObjects());
         }
 
         // Add the attribute address for the scaler units
