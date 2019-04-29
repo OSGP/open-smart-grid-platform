@@ -72,8 +72,8 @@ public class DeviceManagementService extends AbstractService {
             final String correlationUid, final String messageType, final ResponseMessageResultType deviceResult,
             final OsgpException exception) {
 
-        LOGGER.info("handleUpdateKeyResponse called for device: {} for organisation: {}", deviceIdentification,
-                organisationIdentification);
+        LOGGER.info("MessageType: {}. Handle update key response for device: {} for organisation: {}", messageType,
+                deviceIdentification, organisationIdentification);
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException osgpException = exception;
@@ -133,8 +133,8 @@ public class DeviceManagementService extends AbstractService {
             final String correlationUid, final String messageType, final ResponseMessageResultType deviceResult,
             final OsgpException exception) {
 
-        LOGGER.info("handleRevokeKeyResponse called for device: {} for organisation: {}", deviceIdentification,
-                organisationIdentification);
+        LOGGER.info("MessageType: {}. Handle revoke key for device: {} for organisation: {}", messageType,
+                deviceIdentification, organisationIdentification);
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException osgpException = exception;
