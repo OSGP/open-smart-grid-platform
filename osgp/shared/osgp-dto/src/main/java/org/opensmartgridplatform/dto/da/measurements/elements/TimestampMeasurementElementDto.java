@@ -43,4 +43,10 @@ public class TimestampMeasurementElementDto implements MeasurementElementDto {
     public int hashCode() {
         return Objects.hash(this.value);
     }
+
+    @Override
+    public String toString() {
+        return "TimestampMeasurementElementDto [value=" + this.value + "]";
+    }
+
 }

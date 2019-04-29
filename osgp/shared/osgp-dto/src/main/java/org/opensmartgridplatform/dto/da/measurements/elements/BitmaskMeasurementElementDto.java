@@ -42,4 +42,10 @@ public class BitmaskMeasurementElementDto implements MeasurementElementDto {
     public int hashCode() {
         return Objects.hash(this.value);
     }
+
+    @Override
+    public String toString() {
+        return "BitmaskMeasurementElementDto [value=" + this.value + "]";
+    }
+
 }

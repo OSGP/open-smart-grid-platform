@@ -9,6 +9,7 @@ package org.opensmartgridplatform.dto.da.measurements;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -29,7 +30,7 @@ public class MeasurementGroupDto implements Serializable {
     }
 
     public List<MeasurementDto> getMeasurements() {
-        return new ArrayList<>(this.measurements);
+        return Collections.unmodifiableList(this.measurements);
     }
 
     @Override
@@ -49,5 +50,11 @@ public class MeasurementGroupDto implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(this.identification, this.measurements);
+    }
+
+    @Override
+    public String toString() {
+        return "MeasurementGroupDto [identification=" + this.identification + ", measurements=" + this.measurements
+                + "]";
     }
 }

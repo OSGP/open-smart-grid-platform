@@ -16,8 +16,8 @@ public class MeasurementReportHeaderDto implements Serializable {
 
     private final String typeIdentification;
     private final String reason;
-    private final int commonAddress;
     private final int originatorAddress;
+    private final int commonAddress;
 
     public MeasurementReportHeaderDto(final String typeIdentification, final String reason, final int originatorAddress,
             final int commonAddress) {
@@ -62,5 +62,11 @@ public class MeasurementReportHeaderDto implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(this.typeIdentification, this.reason, this.originatorAddress, this.commonAddress);
+    }
+
+    @Override
+    public String toString() {
+        return "MeasurementReportHeaderDto [typeIdentification=" + this.typeIdentification + ", reason=" + this.reason
+                + ", originatorAddress=" + this.originatorAddress + ", commonAddress=" + this.commonAddress + "]";
     }
 }

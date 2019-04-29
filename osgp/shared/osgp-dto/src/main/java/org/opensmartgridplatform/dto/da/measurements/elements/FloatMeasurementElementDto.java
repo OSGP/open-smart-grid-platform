@@ -42,4 +42,10 @@ public class FloatMeasurementElementDto implements MeasurementElementDto {
     public int hashCode() {
         return Objects.hashCode(Float.floatToIntBits(this.value));
     }
+
+    @Override
+    public String toString() {
+        return "FloatMeasurementElementDto [value=" + this.value + "]";
+    }
+
 }
