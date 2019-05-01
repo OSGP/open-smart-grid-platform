@@ -12,19 +12,17 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
+import org.opensmartgridplatform.adapter.ws.da.infra.jms.messageprocessors.DomainResponseMessageProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
-import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 
 public class DistributionAutomationResponseMessageListener implements MessageListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DistributionAutomationResponseMessageListener.class);
 
     @Autowired
-    private MessageProcessorMap domainResponseMessageProcessorMap;
+    private DomainResponseMessageProcessor domainResponseMessageProcessor;
 
     public DistributionAutomationResponseMessageListener() {
         // empty constructor
@@ -39,10 +37,7 @@ public class DistributionAutomationResponseMessageListener implements MessageLis
             final String correlationUid = objectMessage.getJMSCorrelationID();
             LOGGER.info("objectMessage CorrelationUID: {}", correlationUid);
 
-            final MessageProcessor processor = this.domainResponseMessageProcessorMap
-                    .getMessageProcessor(objectMessage);
-
-            processor.processMessage(objectMessage);
+            this.domainResponseMessageProcessor.processMessage(objectMessage);
 
         } catch (final JMSException ex) {
             LOGGER.error("Exception: {} ", ex.getMessage(), ex);

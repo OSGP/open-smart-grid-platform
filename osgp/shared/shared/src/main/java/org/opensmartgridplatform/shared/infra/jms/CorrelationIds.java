@@ -42,4 +42,11 @@ public class CorrelationIds {
         return this.correlationUid;
     }
 
+    @Override
+    public String toString() {
+        return "CorrelationIds [organisationIdentification=" + this.organisationIdentification
+                + ", deviceIdentification=" + this.deviceIdentification + ", correlationUid=" + this.correlationUid
+                + "]";
+    }
+
 }
