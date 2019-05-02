@@ -11,53 +11,45 @@ import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.TypeId;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.LogItemFactory;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.ResponseMetadataFactory;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.AsduConverterService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientAsduHandlerImpl;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.LoggingService;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.MeasurementReportingService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.LogItem;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseMetadata;
-import org.opensmartgridplatform.dto.da.measurements.MeasurementReportDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * Abstract class providing an implementation for handling Measurement ASDUs.
+ * ASDU Handler for ASDUs with type identification C_IC_NA_1:.
+ * <ul>
+ * <li>Interrogation Command</li>
+ * </ul>
  *
  */
-public abstract class MeasurementAsduHandler extends ClientAsduHandlerImpl {
+public class InterrogationAsduHandler extends ClientAsduHandlerImpl {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MeasurementAsduHandler.class);
-
-    @Autowired
-    private AsduConverterService converter;
-
-    @Autowired
-    private MeasurementReportingService reportingService;
+    private static final Logger LOGGER = LoggerFactory.getLogger(InterrogationAsduHandler.class);
 
     @Autowired
     private LoggingService loggingService;
 
     @Autowired
-    protected ResponseMetadataFactory responseMetadataFactory;
+    private ResponseMetadataFactory responseMetadataFactory;
 
     @Autowired
     private LogItemFactory logItemFactory;
 
-    public MeasurementAsduHandler(final TypeId typeId) {
-        super(typeId);
+    public InterrogationAsduHandler() {
+        super(TypeId.C_IC_NA_1);
     }
 
     @Override
     public void handleAsdu(final ASdu asdu, final ResponseMetadata responseMetadata) {
-        LOGGER.info("Received measurement of type {}.", asdu.getTypeIdentification());
+        LOGGER.info("Received interrogation command {}.", asdu);
         final ResponseMetadata newResponseMetadata = this.responseMetadataFactory
                 .createWithNewCorrelationUid(responseMetadata);
 
-        final MeasurementReportDto measurementReportDto = this.converter.convert(asdu);
-        this.reportingService.send(measurementReportDto, newResponseMetadata);
-
+        // Only log item for now
         final LogItem logItem = this.logItemFactory.create(asdu, newResponseMetadata, true);
         this.loggingService.log(logItem);
     }

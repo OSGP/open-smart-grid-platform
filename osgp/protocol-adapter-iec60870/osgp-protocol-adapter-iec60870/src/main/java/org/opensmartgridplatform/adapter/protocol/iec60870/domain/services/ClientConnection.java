@@ -8,15 +8,15 @@
 package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services;
 
 import org.openmuc.j60870.Connection;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ConnectionInfo;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ConnectionParameters;
 
 public interface ClientConnection {
     /**
-     * Get the connection info.
+     * Get the connection parameters.
      *
-     * @return a {@link ConnectionInfo} instance.
+     * @return a {@link ConnectionParameters} instance.
      */
-    ConnectionInfo getConnectionInfo();
+    ConnectionParameters getConnectionParameters();
 
     /**
      * Get the connection.

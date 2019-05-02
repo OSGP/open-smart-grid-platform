@@ -19,37 +19,33 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
  * <li>Device Identification</li>
  * <li>Message Type</li>
  * <li>IP Address</li>
- * <li>Domain</li>
- * <li>Domain Version</li>
+ * <li>{@link DomainInfo}</li>
  * </ul>
  *
  */
-public class RequestInfo {
+public class RequestMetadata {
 
     final Serializable messageData;
-    final String domain;
-    final String domainVersion;
     final String messageType;
     final String correlationUid;
     final String organisationIdentification;
     final String deviceIdentification;
     final String ipAddress;
+    final DomainInfo domainInfo;
 
-    public RequestInfo(final Builder builder) {
+    public RequestMetadata(final Builder builder) {
         this.messageData = builder.messageData;
-        this.domain = builder.domain;
-        this.domainVersion = builder.domainVersion;
         this.messageType = builder.messageType;
         this.correlationUid = builder.correlationUid;
         this.organisationIdentification = builder.organisationIdentification;
         this.deviceIdentification = builder.deviceIdentification;
         this.ipAddress = builder.ipAddress;
+        this.domainInfo = builder.domainInfo;
     }
 
     public static class Builder {
         private Serializable messageData = null;
-        private String domain = null;
-        private String domainVersion = null;
+        private DomainInfo domainInfo = null;
         private String messageType = null;
         private String correlationUid = null;
         private String organisationIdentification = null;
@@ -62,8 +58,7 @@ public class RequestInfo {
         }
 
         public Builder messageMetadata(final MessageMetadata messageMetadata) {
-            this.domain = messageMetadata.getDomain();
-            this.domainVersion = messageMetadata.getDomainVersion();
+            this.domainInfo = new DomainInfo(messageMetadata.getDomain(), messageMetadata.getDomainVersion());
             this.messageType = messageMetadata.getMessageType();
             this.correlationUid = messageMetadata.getCorrelationUid();
             this.organisationIdentification = messageMetadata.getOrganisationIdentification();
@@ -72,13 +67,8 @@ public class RequestInfo {
             return this;
         }
 
-        public Builder domain(final String domain) {
-            this.domain = domain;
-            return this;
-        }
-
-        public Builder domainVersion(final String domainVersion) {
-            this.domainVersion = domainVersion;
+        public Builder domainInfo(final DomainInfo domainInfo) {
+            this.domainInfo = domainInfo;
             return this;
         }
 
@@ -107,8 +97,8 @@ public class RequestInfo {
             return this;
         }
 
-        public RequestInfo build() {
-            return new RequestInfo(this);
+        public RequestMetadata build() {
+            return new RequestMetadata(this);
         }
 
     }
@@ -121,12 +111,8 @@ public class RequestInfo {
         return this.messageData;
     }
 
-    public String getDomain() {
-        return this.domain;
-    }
-
-    public String getDomainVersion() {
-        return this.domainVersion;
+    public DomainInfo getDomainInfo() {
+        return this.domainInfo;
     }
 
     public String getMessageType() {

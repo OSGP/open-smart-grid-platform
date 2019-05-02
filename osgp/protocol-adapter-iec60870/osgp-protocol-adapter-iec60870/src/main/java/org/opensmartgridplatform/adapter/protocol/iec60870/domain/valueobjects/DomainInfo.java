@@ -24,4 +24,9 @@ public class DomainInfo {
     public String getDomainVersion() {
         return this.domainVersion;
     }
+
+    @Override
+    public String toString() {
+        return "DomainInfo [domain=" + this.domain + ", domainVersion=" + this.domainVersion + "]";
+    }
 }

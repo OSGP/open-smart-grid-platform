@@ -18,14 +18,14 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects;
  * </ul>
  *
  */
-public class ConnectionInfo {
+public class ConnectionParameters {
 
     final String ipAddress;
     final String deviceIdentification;
     final int commonAddress;
     final Integer port;
 
-    public ConnectionInfo(final Builder builder) {
+    public ConnectionParameters(final Builder builder) {
         this.ipAddress = builder.ipAddress;
         this.deviceIdentification = builder.deviceIdentification;
         this.commonAddress = builder.commonAddress;
@@ -58,8 +58,8 @@ public class ConnectionInfo {
             return this;
         }
 
-        public ConnectionInfo build() {
-            return new ConnectionInfo(this);
+        public ConnectionParameters build() {
+            return new ConnectionParameters(this);
         }
 
     }

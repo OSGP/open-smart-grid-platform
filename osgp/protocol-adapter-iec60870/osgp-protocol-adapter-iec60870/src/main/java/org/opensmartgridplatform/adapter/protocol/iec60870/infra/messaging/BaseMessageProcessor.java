@@ -14,7 +14,7 @@ import javax.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnection;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.LoggingService;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.RequestInfo;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.RequestMetadata;
 import org.opensmartgridplatform.shared.exceptionhandling.ProtocolAdapterException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -94,9 +94,11 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
         MessageMetadata messageMetadata = null;
         try {
             messageMetadata = MessageMetadata.fromMessage(message);
-            final RequestInfo requestInfo = RequestInfo.newBuilder().messageMetadata(messageMetadata).build();
-            final ClientConnection deviceConnection = this.iec60870DeviceConnectionService.getConnection(requestInfo);
-            this.process(deviceConnection, requestInfo);
+            final RequestMetadata requestMetadata = RequestMetadata.newBuilder().messageMetadata(messageMetadata)
+                    .build();
+            final ClientConnection deviceConnection = this.iec60870DeviceConnectionService
+                    .getConnection(requestMetadata);
+            this.process(deviceConnection, requestMetadata);
         } catch (final ProtocolAdapterException e) {
             this.handleError(messageMetadata, e);
         } catch (final Exception e) {
@@ -104,12 +106,12 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
         }
     }
 
-    public abstract void process(final ClientConnection deviceConnection, RequestInfo requestInfo)
+    public abstract void process(final ClientConnection deviceConnection, RequestMetadata requestMetadata)
             throws ProtocolAdapterException;
 
-    protected void printDomainInfo(final RequestInfo requestMessageData) {
-        LOGGER.info("Calling DeviceService function: {} for domain: {} {}", requestMessageData.getMessageType(),
-                requestMessageData.getDomain(), requestMessageData.getDomainVersion());
+    protected void printDomainInfo(final RequestMetadata requestMessageData) {
+        LOGGER.info("Calling DeviceService function: {} for domain: {}", requestMessageData.getMessageType(),
+                requestMessageData.getDomainInfo());
     }
 
     protected void handleError(final MessageMetadata messageMetadata, final ProtocolAdapterException e) {

@@ -12,20 +12,23 @@ import static org.mockito.Mockito.spy;
 
 import org.openmuc.j60870.Connection;
 import org.opensmartgridplatform.adapter.protocol.iec60870.application.mapping.Iec60870Mapper;
-import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.Client;
 import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.Iec60870AsduConverterService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.Iec60870LoggingService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.Iec60870MeasurementReportingService;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.LogItemFactory;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.ResponseMetadataFactory;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.repositories.Iec60870DeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.AsduConverterService;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.Client;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientAsduHandler;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientAsduHandlerRegistryImpl;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionCache;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionCacheImpl;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionService;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.Iec60870ClientAsduHandlerRegistry;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.Iec60870ClientConnectionCache;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.Iec60870DeviceConnectionService;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionServiceImpl;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.LoggingService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.MeasurementReportingService;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.asduhandlers.InterrogationAsduHandler;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.asduhandlers.ShortFloatWithTime56MeasurementAsduHandler;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.DeviceRequestMessageListener;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.DeviceResponseMessageSender;
@@ -89,12 +92,12 @@ public class TestConfiguration {
 
     @Bean
     public ClientConnectionCache iec60870ClientConnectionCache() {
-        return spy(Iec60870ClientConnectionCache.class);
+        return spy(ClientConnectionCacheImpl.class);
     }
 
     @Bean
     public ClientConnectionService iec60870ClientConnectionService() {
-        return new Iec60870DeviceConnectionService();
+        return new ClientConnectionServiceImpl();
     }
 
     @Bean
@@ -148,13 +151,18 @@ public class TestConfiguration {
     }
 
     @Bean
-    public Iec60870ClientAsduHandlerRegistry iec60870ClientASduHandlerRegistry() {
-        return new Iec60870ClientAsduHandlerRegistry();
+    public ClientAsduHandlerRegistryImpl iec60870ClientASduHandlerRegistry() {
+        return new ClientAsduHandlerRegistryImpl();
     }
 
     @Bean
     public ClientAsduHandler shortFloatWithTime56MeasurementASduHandler() {
         return new ShortFloatWithTime56MeasurementAsduHandler();
+    }
+
+    @Bean
+    public ClientAsduHandler interrogationCommandASduHandler() {
+        return new InterrogationAsduHandler();
     }
 
     @Bean
@@ -170,6 +178,16 @@ public class TestConfiguration {
     @Bean
     public MeasurementReportingService measurementReportMessageSender() {
         return new Iec60870MeasurementReportingService();
+    }
+
+    @Bean
+    public ResponseMetadataFactory responseMetadataFactory() {
+        return new ResponseMetadataFactory();
+    }
+
+    @Bean
+    public LogItemFactory logItemFactory() {
+        return new LogItemFactory();
     }
 
 }

@@ -21,16 +21,16 @@ import org.springframework.beans.factory.annotation.Autowired;
  * registration of implementation classes to {@link Iec60870ASduHandlerRegistry}
  *
  */
-public abstract class Iec60870ClientAsduHandler implements ClientAsduHandler {
+public abstract class ClientAsduHandlerImpl implements ClientAsduHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Iec60870ClientAsduHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClientAsduHandlerImpl.class);
 
     @Autowired
-    private Iec60870ClientAsduHandlerRegistry iec60870ClientASduHandlerRegistry;
+    private ClientAsduHandlerRegistryImpl iec60870ClientASduHandlerRegistry;
 
     private TypeId typeId;
 
-    public Iec60870ClientAsduHandler(final TypeId typeId) {
+    public ClientAsduHandlerImpl(final TypeId typeId) {
         this.typeId = typeId;
     }
 

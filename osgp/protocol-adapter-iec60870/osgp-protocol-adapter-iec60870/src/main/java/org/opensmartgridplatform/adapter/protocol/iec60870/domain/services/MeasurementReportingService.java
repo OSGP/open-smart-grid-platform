@@ -7,7 +7,7 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services;
 
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseInfo;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseMetadata;
 import org.opensmartgridplatform.dto.da.measurements.MeasurementReportDto;
 
 @FunctionalInterface
@@ -17,8 +17,8 @@ public interface MeasurementReportingService {
      *
      * @param measurementReportDto
      *            The {@link MeasurementReportDto} instance to send.
-     * @param responseInfo
-     *            The {@link ResponseInfo} instance.
+     * @param responseMetadata
+     *            The {@link ResponseMetadata} instance.
      */
-    void send(MeasurementReportDto measurementReportDto, ResponseInfo responseInfo);
+    void send(MeasurementReportDto measurementReportDto, ResponseMetadata responseMetadata);
 }

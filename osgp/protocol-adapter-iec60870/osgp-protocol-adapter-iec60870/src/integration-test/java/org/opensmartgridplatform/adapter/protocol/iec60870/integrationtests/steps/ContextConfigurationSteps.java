@@ -20,10 +20,10 @@ import cucumber.api.java.Before;
 public class ContextConfigurationSteps {
 
     @Autowired
-    LogItemRequestMessageSender logItemRequestMessageSender;
+    LogItemRequestMessageSender logItemRequestMessageSenderMock;
 
     @Before
     public void resetContext() {
-        reset(this.logItemRequestMessageSender);
+        reset(this.logItemRequestMessageSenderMock);
     }
 }

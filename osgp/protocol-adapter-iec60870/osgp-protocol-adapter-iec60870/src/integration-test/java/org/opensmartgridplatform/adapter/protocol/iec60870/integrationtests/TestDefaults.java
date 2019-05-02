@@ -5,10 +5,10 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects;
+package org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests;
 
-public enum DeviceMessageStatus {
-    OK,
-    FAILURE,
-    REJECTED
+public class TestDefaults {
+    public static final String DEFAULT_DEVICE_IDENTIFICATION = "TEST_DEVICE_1";
+    public static final String DEFAULT_MESSAGE_TYPE = "GET_HEALTH_STATUS";
+
 }

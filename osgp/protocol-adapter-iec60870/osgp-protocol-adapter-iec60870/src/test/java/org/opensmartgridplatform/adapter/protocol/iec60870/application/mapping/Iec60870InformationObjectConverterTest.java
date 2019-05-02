@@ -29,22 +29,22 @@ public class Iec60870InformationObjectConverterTest {
 
     private final Iec60870Mapper mapper = new Iec60870Mapper();
 
-    private static final long timestamp = ZonedDateTime.now(ZoneOffset.UTC).toInstant().toEpochMilli();
+    private static final long TIMESTAMP_NOW = ZonedDateTime.now(ZoneOffset.UTC).toInstant().toEpochMilli();
 
     // @formatter:off
     private static final MeasurementGroupDto MEASUREMENT_GROUP_DTO = new MeasurementGroupDto(
             "1",
             Arrays.asList(new MeasurementDto(Arrays.asList(
-                    new FloatMeasurementElementDto(10.0f),
-                    new BitmaskMeasurementElementDto((byte) 0),
-                    new TimestampMeasurementElementDto(timestamp)))));
+                    new FloatMeasurementElementDto(30.51f),
+                    new BitmaskMeasurementElementDto((byte) 241),
+                    new TimestampMeasurementElementDto(TIMESTAMP_NOW)))));
 
     private static final InformationObject INFORMATION_OBJECT = new InformationObject(
             1,
             new InformationElement[][] { {
-                    new IeShortFloat(10.0f),
-                    new IeQuality(false, false, false, false, false),
-                    new IeTime56(timestamp) } });
+                    new IeShortFloat(30.51f),
+                    new IeQuality(true, true, true, true, true),
+                    new IeTime56(TIMESTAMP_NOW) } });
     // @formatter:on
 
     @Test

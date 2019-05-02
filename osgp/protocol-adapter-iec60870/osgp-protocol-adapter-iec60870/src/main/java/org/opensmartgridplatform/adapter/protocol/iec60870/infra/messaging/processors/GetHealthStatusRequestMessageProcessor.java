@@ -13,7 +13,7 @@ import org.openmuc.j60870.CauseOfTransmission;
 import org.openmuc.j60870.IeQualifierOfInterrogation;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnection;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.LogItem;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.RequestInfo;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.RequestMetadata;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.BaseMessageProcessor;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.ProtocolAdapterException;
@@ -35,18 +35,18 @@ public class GetHealthStatusRequestMessageProcessor extends BaseMessageProcessor
     }
 
     @Override
-    public void process(final ClientConnection deviceConnection, final RequestInfo requestInfo)
+    public void process(final ClientConnection deviceConnection, final RequestMetadata requestMetadata)
             throws ProtocolAdapterException {
 
-        final String deviceIdentification = requestInfo.getDeviceIdentification();
-        final String organisationIdentification = requestInfo.getOrganisationIdentification();
+        final String deviceIdentification = requestMetadata.getDeviceIdentification();
+        final String organisationIdentification = requestMetadata.getOrganisationIdentification();
 
         LOGGER.info("getHealthStatus for IEC60870 device {} for organisation {}", deviceIdentification,
                 organisationIdentification);
 
         try {
             final int ieQualifierOfInterrogationValue = 20;
-            final int commonAddress = deviceConnection.getConnectionInfo().getCommonAddress();
+            final int commonAddress = deviceConnection.getConnectionParameters().getCommonAddress();
             deviceConnection.getConnection().interrogation(commonAddress, CauseOfTransmission.ACTIVATION,
                     new IeQualifierOfInterrogation(ieQualifierOfInterrogationValue));
 
@@ -54,8 +54,8 @@ public class GetHealthStatusRequestMessageProcessor extends BaseMessageProcessor
                     + ", CauseOfTransmission: " + CauseOfTransmission.ACTIVATION + ", IeQualifierOfInterrogation: "
                     + ieQualifierOfInterrogationValue + "]";
 
-            final LogItem logItem = new LogItem(deviceIdentification, organisationIdentification, false, true,
-                    interrogationMessage, 0);
+            final LogItem logItem = new LogItem(deviceIdentification, organisationIdentification, false,
+                    interrogationMessage);
             this.getLoggingService().log(logItem);
 
         } catch (final IOException | RuntimeException e) {
@@ -63,5 +63,4 @@ public class GetHealthStatusRequestMessageProcessor extends BaseMessageProcessor
             throw new ProtocolAdapterException(ComponentType.PROTOCOL_IEC60870, e.getMessage());
         }
     }
-
 }

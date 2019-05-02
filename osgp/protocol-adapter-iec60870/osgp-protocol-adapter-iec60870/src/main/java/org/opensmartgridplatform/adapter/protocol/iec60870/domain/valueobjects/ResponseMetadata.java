@@ -18,9 +18,8 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects;
  * <li>{@link DomainInfo}</li>
  * </ul>
  *
- *
  */
-public class ResponseInfo {
+public class ResponseMetadata {
 
     private final String correlationUid;
     private final String deviceIdentification;
@@ -28,7 +27,7 @@ public class ResponseInfo {
     private final String messageType;
     private final DomainInfo domainInfo;
 
-    private ResponseInfo(final Builder builder) {
+    private ResponseMetadata(final Builder builder) {
         this.correlationUid = builder.correlationUid;
         this.deviceIdentification = builder.deviceIdentification;
         this.organisationIdentification = builder.organisationIdentification;
@@ -36,12 +35,12 @@ public class ResponseInfo {
         this.domainInfo = builder.domainInfo;
     }
 
-    public static ResponseInfo from(final RequestInfo requestInfo) {
-        return new Builder().withCorrelationUid(requestInfo.correlationUid)
-                .withDeviceIdentification(requestInfo.getDeviceIdentification())
-                .withOrganisationIdentification(requestInfo.getOrganisationIdentification())
-                .withMessageType(requestInfo.getMessageType())
-                .withDomainInfo(new DomainInfo(requestInfo.getDomain(), requestInfo.getDomainVersion())).build();
+    public static ResponseMetadata from(final RequestMetadata requestMetadata) {
+        return new Builder().withCorrelationUid(requestMetadata.correlationUid)
+                .withDeviceIdentification(requestMetadata.getDeviceIdentification())
+                .withOrganisationIdentification(requestMetadata.getOrganisationIdentification())
+                .withMessageType(requestMetadata.getMessageType()).withDomainInfo(requestMetadata.getDomainInfo())
+                .build();
     }
 
     public String getCorrelationUid() {
@@ -75,12 +74,12 @@ public class ResponseInfo {
         public Builder() {
         }
 
-        public Builder(final ResponseInfo responseInfo) {
-            this.correlationUid = responseInfo.getCorrelationUid();
-            this.deviceIdentification = responseInfo.getDeviceIdentification();
-            this.organisationIdentification = responseInfo.getOrganisationIdentification();
-            this.messageType = responseInfo.getMessageType();
-            this.domainInfo = responseInfo.getDomainInfo();
+        public Builder(final ResponseMetadata responseMetadata) {
+            this.correlationUid = responseMetadata.getCorrelationUid();
+            this.deviceIdentification = responseMetadata.getDeviceIdentification();
+            this.organisationIdentification = responseMetadata.getOrganisationIdentification();
+            this.messageType = responseMetadata.getMessageType();
+            this.domainInfo = responseMetadata.getDomainInfo();
         }
 
         public Builder withCorrelationUid(final String correlationUid) {
@@ -108,8 +107,8 @@ public class ResponseInfo {
             return this;
         }
 
-        public ResponseInfo build() {
-            return new ResponseInfo(this);
+        public ResponseMetadata build() {
+            return new ResponseMetadata(this);
         }
     }
 

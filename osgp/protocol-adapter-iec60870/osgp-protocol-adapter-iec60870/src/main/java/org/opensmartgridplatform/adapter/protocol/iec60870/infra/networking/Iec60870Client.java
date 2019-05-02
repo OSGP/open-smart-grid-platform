@@ -18,9 +18,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.openmuc.j60870.ClientConnectionBuilder;
 import org.openmuc.j60870.Connection;
 import org.openmuc.j60870.ConnectionEventListener;
-import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.Client;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.Client;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnection;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ConnectionInfo;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ConnectionParameters;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceConnection;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.ConnectionFailureException;
@@ -48,12 +48,13 @@ public class Iec60870Client implements Client {
     }
 
     @Override
-    public ClientConnection connect(final ConnectionInfo connectionInfo, final ConnectionEventListener asduListener)
-            throws ConnectionFailureException {
+    public ClientConnection connect(final ConnectionParameters connectionParameters,
+            final ConnectionEventListener asduListener) throws ConnectionFailureException {
 
-        final InetAddress address = this.convertIpAddress(connectionInfo.getIpAddress());
-        final String deviceIdentification = connectionInfo.getDeviceIdentification();
-        final int port = connectionInfo.getPort() == null ? IEC60870_DEFAULT_PORT : connectionInfo.getPort();
+        final InetAddress address = this.convertIpAddress(connectionParameters.getIpAddress());
+        final String deviceIdentification = connectionParameters.getDeviceIdentification();
+        final int port = connectionParameters.getPort() == null ? IEC60870_DEFAULT_PORT
+                : connectionParameters.getPort();
 
         final ClientConnectionBuilder clientConnectionBuilder = new ClientConnectionBuilder(address).setPort(port);
 
@@ -63,10 +64,10 @@ public class Iec60870Client implements Client {
             connection.startDataTransfer(asduListener, this.connectionTimeout);
             LOGGER.info("Connected to device: {}", deviceIdentification);
 
-            return new DeviceConnection(connection, connectionInfo);
+            return new DeviceConnection(connection, connectionParameters);
 
         } catch (final IOException | TimeoutException e) {
-            final String errorMessage = "Unable to connect to remote host: " + connectionInfo.getIpAddress();
+            final String errorMessage = "Unable to connect to remote host: " + connectionParameters.getIpAddress();
             LOGGER.error(errorMessage, e);
 
             throw new ConnectionFailureException(ComponentType.PROTOCOL_IEC60870, errorMessage);
@@ -89,7 +90,7 @@ public class Iec60870Client implements Client {
 
     @Override
     public void disconnect(final ClientConnection clientConnection) {
-        final String deviceIdentification = clientConnection.getConnectionInfo().getDeviceIdentification();
+        final String deviceIdentification = clientConnection.getConnectionParameters().getDeviceIdentification();
         LOGGER.info("Disconnecting from device: {}...", deviceIdentification);
         clientConnection.getConnection().close();
         LOGGER.info("Disconnected from device: {}", deviceIdentification);

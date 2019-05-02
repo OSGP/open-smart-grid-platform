@@ -7,28 +7,29 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services;
 
-import java.util.function.Consumer;
+import java.util.Collection;
 
 public interface ClientConnectionCache {
 
     /**
-     * Get a connection from the cache.
+     * Gets all connections from the cache.
+     *
+     * @return A {@link Collection} of {@link ClientConnection} instances.
+     */
+    public Collection<ClientConnection> getConnections();
+
+    /**
+     * Gets a connection from the cache.
      *
      * @param key
      *            The key of the connection to be retrieved.
-     * @return A {@link ClientConnection} instance.
+     * @return A {@link ClientConnection} instance or null when no connection is
+     *         found.
      */
     public ClientConnection getConnection(String key);
 
     /**
-     * Get size.
-     *
-     * @return The number of items in the cache.
-     */
-    public int getSize();
-
-    /**
-     * Add connection to the cache.
+     * Adds a connection to the cache.
      *
      * @param key
      *            The key of the connection to be added.
@@ -38,18 +39,10 @@ public interface ClientConnectionCache {
     public void addConnection(String key, ClientConnection connection);
 
     /**
-     * Remove connection from the cache.
+     * Removes a connection from the cache.
      *
      * @param key
      *            The key of the connection to be removed.
      */
     public void removeConnection(String key);
-
-    /**
-     * Apply an action to all connections in the cache.
-     * 
-     * @param action
-     *            The action to apply to all connections.
-     */
-    public void applyToAll(Consumer<String> action);
 }

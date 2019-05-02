@@ -7,10 +7,8 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services;
 
-import java.io.IOException;
-
 import org.openmuc.j60870.ASdu;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseInfo;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseMetadata;
 
 @FunctionalInterface
 public interface ClientAsduHandler {
@@ -19,9 +17,8 @@ public interface ClientAsduHandler {
      *
      * @param asdu
      *            The {@link ASdu} instance.
-     * @param responseInfo
-     *            The {@link ResponseInfo} instance.
-     * @throws IOException
+     * @param responseMetadata
+     *            The {@link ResponseMetadata} instance.
      */
-    void handleAsdu(ASdu asdu, ResponseInfo responseInfo) throws IOException;
+    void handleAsdu(ASdu asdu, ResponseMetadata responseMetadata);
 }

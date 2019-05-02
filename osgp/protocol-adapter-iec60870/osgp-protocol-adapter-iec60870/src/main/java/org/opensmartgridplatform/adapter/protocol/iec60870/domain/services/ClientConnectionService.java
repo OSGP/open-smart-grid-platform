@@ -7,19 +7,19 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services;
 
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.RequestInfo;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.RequestMetadata;
 import org.opensmartgridplatform.shared.exceptionhandling.ConnectionFailureException;
 
 public interface ClientConnectionService {
     /**
-     * Get a connection.
+     * Gets a connection.
      *
-     * @param requestInfo
-     *            The {@link RequestInfo} instance.
+     * @param requestMetadata
+     *            The {@link RequestMetadata} instance.
      * @return A {@link ClientConnection} instance.
      * @throws ConnectionFailureException
      */
-    ClientConnection getConnection(RequestInfo requestInfo) throws ConnectionFailureException;
+    ClientConnection getConnection(RequestMetadata requestMetadata) throws ConnectionFailureException;
 
     /**
      * Close all connections.

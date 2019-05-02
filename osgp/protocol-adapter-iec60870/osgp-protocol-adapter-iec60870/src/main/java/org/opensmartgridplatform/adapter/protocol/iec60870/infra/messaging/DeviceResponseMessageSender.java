@@ -41,7 +41,7 @@ public class DeviceResponseMessageSender implements ResponseMessageSender {
     private JmsTemplate iec60870ResponsesJmsTemplate;
 
     @Autowired
-    private ClientConnectionService iec60870deviceConnectionService;
+    private ClientConnectionService iec60870DeviceConnectionService;
 
     @Autowired
     private boolean isCloseConnectionsOnBrokerFailure;
@@ -70,7 +70,7 @@ public class DeviceResponseMessageSender implements ResponseMessageSender {
              */
             if (this.isCloseConnectionsOnBrokerFailure) {
                 LOGGER.error(LOG_MESSAGE_JMS_EXCEPTION, e);
-                this.iec60870deviceConnectionService.closeAllConnections();
+                this.iec60870DeviceConnectionService.closeAllConnections();
             }
             throw e;
         }

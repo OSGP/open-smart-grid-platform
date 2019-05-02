@@ -5,11 +5,10 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.protocol.iec60870.application.services;
+package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services;
 
 import org.openmuc.j60870.ConnectionEventListener;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnection;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ConnectionInfo;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ConnectionParameters;
 import org.opensmartgridplatform.shared.exceptionhandling.ConnectionFailureException;
 
 public interface Client {
@@ -17,15 +16,15 @@ public interface Client {
     /**
      * Connect to a device.
      *
-     * @param connectionInfo
-     *            The {@link ConnectionInfo} instance.
+     * @param connectionParameters
+     *            The {@link ConnectionParameters} instance.
      * @param asduListener
      *            The {@link ConnectionEventListener} instance.
      * @return A {@link ClientConnection} instance.
      * @throws ConnectionFailureException
      *
      */
-    ClientConnection connect(ConnectionInfo connectionInfo, ConnectionEventListener asduListener)
+    ClientConnection connect(ConnectionParameters connectionParameters, ConnectionEventListener asduListener)
             throws ConnectionFailureException;
 
     /**

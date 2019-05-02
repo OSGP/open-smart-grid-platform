@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services;
 import java.util.EnumMap;
 import java.util.Map;
 
+import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.TypeId;
 import org.opensmartgridplatform.iec60870.Iec60870ASduHandlerNotFoundException;
 import org.slf4j.Logger;
@@ -24,19 +25,21 @@ import org.springframework.stereotype.Component;
  *
  */
 @Component
-public class Iec60870ClientAsduHandlerRegistry implements ClientAsduHandlerRegistry {
+public class ClientAsduHandlerRegistryImpl implements ClientAsduHandlerRegistry {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Iec60870ClientAsduHandlerRegistry.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClientAsduHandlerRegistryImpl.class);
 
     private Map<TypeId, ClientAsduHandler> handlers = new EnumMap<>(TypeId.class);
 
     @Override
-    public ClientAsduHandler getHandler(final TypeId typeId) throws Iec60870ASduHandlerNotFoundException {
-        if (!this.handlers.containsKey(typeId)) {
+    public ClientAsduHandler getHandler(final ASdu asdu) throws Iec60870ASduHandlerNotFoundException {
+        final TypeId typeId = asdu.getTypeIdentification();
+        final ClientAsduHandler handler = this.handlers.get(typeId);
+        if (handler == null) {
             LOGGER.error("No ASdu handler found for type Id {}", typeId);
             throw new Iec60870ASduHandlerNotFoundException(typeId);
         }
-        return this.handlers.get(typeId);
+        return handler;
     }
 
     @Override

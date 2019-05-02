@@ -33,7 +33,7 @@ import org.opensmartgridplatform.dto.da.measurements.elements.TimestampMeasureme
 public class Iec60870AsduConverterTest {
     private final Iec60870Mapper mapper = new Iec60870Mapper();
 
-    private static final long timestamp = ZonedDateTime.now(ZoneOffset.UTC).toInstant().toEpochMilli();
+    private static final long TIMESTAMP_NOW = ZonedDateTime.now(ZoneOffset.UTC).toInstant().toEpochMilli();
 
     // @formatter:off
     private static final MeasurementReportDto MEASUREMENT_REPORT_DTO = new MeasurementReportDto(
@@ -47,7 +47,7 @@ public class Iec60870AsduConverterTest {
                     Arrays.asList(new MeasurementDto(Arrays.asList(
                             new FloatMeasurementElementDto(10.0f),
                             new BitmaskMeasurementElementDto((byte) 0),
-                            new TimestampMeasurementElementDto(timestamp)))))));
+                            new TimestampMeasurementElementDto(TIMESTAMP_NOW)))))));
 
     private static final ASdu ASDU = new ASdu(
             TypeId.M_ME_TF_1,
@@ -63,7 +63,7 @@ public class Iec60870AsduConverterTest {
                     new InformationElement[][] { {
                         new IeShortFloat(10.0f),
                         new IeQuality(false, false, false, false, false),
-                        new IeTime56(timestamp) } } )});
+                        new IeTime56(TIMESTAMP_NOW) } } )});
     // @formatter:on
 
     @Test

@@ -9,7 +9,7 @@ Scenario Outline: Receive an ASDU
     Given an existing connection with an IEC60870 device
     When I receive an ASDU of type "<type_id>" from the IEC60870 device
     Then I should send a measurement report of type "<type_id>" to the platform
-    And I should send a log item
+    And I should send a log item with a message containing type "<type_id>"
     
     Examples: 
         |type_id  |

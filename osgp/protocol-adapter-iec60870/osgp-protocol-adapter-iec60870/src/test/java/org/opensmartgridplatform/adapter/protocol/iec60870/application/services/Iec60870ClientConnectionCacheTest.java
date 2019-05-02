@@ -14,7 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnection;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionCache;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.Iec60870ClientConnectionCache;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionCacheImpl;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceConnection;
 
 public class Iec60870ClientConnectionCacheTest {
@@ -25,7 +25,7 @@ public class Iec60870ClientConnectionCacheTest {
 
     @Before
     public void setup() {
-        this.cache = new Iec60870ClientConnectionCache();
+        this.cache = new ClientConnectionCacheImpl();
     }
 
     @Test
@@ -52,5 +52,4 @@ public class Iec60870ClientConnectionCacheTest {
         // Assert
         assertThat(this.cache.getConnection(KEY)).isNull();
     }
-
 }

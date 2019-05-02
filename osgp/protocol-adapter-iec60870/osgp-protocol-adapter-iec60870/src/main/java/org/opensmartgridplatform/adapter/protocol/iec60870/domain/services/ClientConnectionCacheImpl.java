@@ -7,26 +7,33 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 
 import org.springframework.stereotype.Component;
 
 @Component
-public class Iec60870ClientConnectionCache implements ClientConnectionCache {
-    private static final int PARALLELLISM_THRESHOLD = 1;
+public class ClientConnectionCacheImpl implements ClientConnectionCache {
     private ConcurrentHashMap<String, ClientConnection> cache = new ConcurrentHashMap<>();
+
+    @Override
+    public Collection<ClientConnection> getConnections() {
+        return Collections.unmodifiableCollection(this.cache.values());
+    }
 
     @Override
     public ClientConnection getConnection(final String key) {
         return this.cache.get(key);
     }
 
-    @Override
-    public int getSize() {
-        return this.cache.size();
-    }
-
+    /**
+     *
+     * Adds a connection to the cache.<br/>
+     * <br/>
+     * <b><i>Warning: Adding a connection using an already existing key will
+     * replace the existing connection!</i></b>
+     */
     @Override
     public void addConnection(final String key, final ClientConnection connection) {
         this.cache.put(key, connection);
@@ -35,10 +42,5 @@ public class Iec60870ClientConnectionCache implements ClientConnectionCache {
     @Override
     public void removeConnection(final String key) {
         this.cache.remove(key);
-    }
-
-    @Override
-    public void applyToAll(final Consumer<String> action) {
-        this.cache.forEachKey(PARALLELLISM_THRESHOLD, action);
     }
 }

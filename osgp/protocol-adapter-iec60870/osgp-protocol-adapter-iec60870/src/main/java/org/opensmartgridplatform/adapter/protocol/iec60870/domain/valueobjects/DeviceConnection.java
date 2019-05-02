@@ -12,17 +12,17 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.Clien
 
 public class DeviceConnection implements ClientConnection {
 
-    private final ConnectionInfo connectionInfo;
+    private final ConnectionParameters connectionParameters;
     private final Connection connection;
 
-    public DeviceConnection(final Connection connection, final ConnectionInfo connectionInfo) {
+    public DeviceConnection(final Connection connection, final ConnectionParameters connectionParameters) {
         this.connection = connection;
-        this.connectionInfo = connectionInfo;
+        this.connectionParameters = connectionParameters;
     }
 
     @Override
-    public ConnectionInfo getConnectionInfo() {
-        return this.connectionInfo;
+    public ConnectionParameters getConnectionParameters() {
+        return this.connectionParameters;
     }
 
     @Override

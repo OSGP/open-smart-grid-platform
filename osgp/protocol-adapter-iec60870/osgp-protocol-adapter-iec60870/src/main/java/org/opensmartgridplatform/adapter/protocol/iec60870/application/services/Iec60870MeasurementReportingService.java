@@ -8,7 +8,7 @@
 package org.opensmartgridplatform.adapter.protocol.iec60870.application.services;
 
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.MeasurementReportingService;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseInfo;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseMetadata;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.DeviceResponseMessageSender;
 import org.opensmartgridplatform.dto.da.measurements.MeasurementReportDto;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
@@ -20,19 +20,20 @@ import org.springframework.stereotype.Service;
 @Service
 public class Iec60870MeasurementReportingService implements MeasurementReportingService {
 
+    private final static String MESSAGE_TYPE = "GET_MEASUREMENT_REPORT";
+
     @Autowired
     DeviceResponseMessageSender deviceResponseMessageSender;
 
     @Override
-    public void send(final MeasurementReportDto measurementReportDto, final ResponseInfo responseInfo) {
+    public void send(final MeasurementReportDto measurementReportDto, final ResponseMetadata responseMetadata) {
+        final DeviceMessageMetadata deviceMessageMetadata = DeviceMessageMetadata.newBuilder().withBypassRetry(true)
+                .withCorrelationUid(responseMetadata.getCorrelationUid())
+                .withDeviceIdentification(responseMetadata.getDeviceIdentification()).withMessageType(MESSAGE_TYPE)
+                .withOrganisationIdentification(responseMetadata.getOrganisationIdentification()).build();
         final ProtocolResponseMessage responseMessage = ProtocolResponseMessage.newBuilder()
-                .deviceMessageMetadata(DeviceMessageMetadata.newBuilder().withBypassRetry(true)
-                        .withCorrelationUid(responseInfo.getCorrelationUid())
-                        .withDeviceIdentification(responseInfo.getDeviceIdentification())
-                        .withMessageType(responseInfo.getMessageType())
-                        .withOrganisationIdentification(responseInfo.getOrganisationIdentification()).build())
-                .correlationUid(responseInfo.getCorrelationUid()).domain(responseInfo.getDomainInfo().getDomain())
-                .domainVersion(responseInfo.getDomainInfo().getDomainVersion()).dataObject(measurementReportDto)
+                .deviceMessageMetadata(deviceMessageMetadata).domain(responseMetadata.getDomainInfo().getDomain())
+                .domainVersion(responseMetadata.getDomainInfo().getDomainVersion()).dataObject(measurementReportDto)
                 .result(ResponseMessageResultType.OK).build();
         this.deviceResponseMessageSender.send(responseMessage);
     }

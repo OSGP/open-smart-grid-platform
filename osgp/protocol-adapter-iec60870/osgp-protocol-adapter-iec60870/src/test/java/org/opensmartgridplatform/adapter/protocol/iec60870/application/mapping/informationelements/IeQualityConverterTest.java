@@ -11,7 +11,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 import org.openmuc.j60870.IeQuality;
-import org.opensmartgridplatform.adapter.protocol.iec60870.application.mapping.informationelements.IeQualityConverter;
 import org.opensmartgridplatform.dto.da.measurements.elements.BitmaskMeasurementElementDto;
 
 public class IeQualityConverterTest {
@@ -106,7 +105,7 @@ public class IeQualityConverterTest {
     }
 
     @Test
-    public void shouldConvertIeQualityAllTrueToByte() {
+    public void shouldConvertIeQualityAllToByte() {
         // Arrange
         final BitmaskMeasurementElementDto expected = new BitmaskMeasurementElementDto((byte) IE_QUALITY_ALL);
         final IeQuality source = new IeQuality(true, true, true, true, true);

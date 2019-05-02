@@ -15,41 +15,28 @@ public class LogItem {
 
     private boolean incoming;
 
-    private String encodedMessage;
-
-    private String decodedMessage;
+    private String message;
 
     private String deviceIdentification;
 
     private String organisationIdentification;
 
-    private boolean valid;
-
-    private int payloadMessageSerializedSize;
-
-    public LogItem(final String deviceIdentification, final String organisationIdentification,
-            final boolean incoming, final boolean valid, final String message, final int payloadMessageSerializedSize) {
+    public LogItem(final String deviceIdentification, final String organisationIdentification, final boolean incoming,
+            final String message) {
         this.deviceIdentification = deviceIdentification;
         this.organisationIdentification = organisationIdentification;
         this.incoming = incoming;
-        this.valid = valid;
-        this.payloadMessageSerializedSize = payloadMessageSerializedSize;
 
         // Truncate the log-items to max length.
-        this.encodedMessage = null;
-        this.decodedMessage = StringUtils.substring(message, 0, MAX_MESSAGE_LENGTH);
+        this.message = StringUtils.substring(message, 0, MAX_MESSAGE_LENGTH);
     }
 
     public Boolean isIncoming() {
         return this.incoming;
     }
 
-    public String getEncodedMessage() {
-        return this.encodedMessage;
-    }
-
-    public String getDecodedMessage() {
-        return this.decodedMessage;
+    public String getMessage() {
+        return this.message;
     }
 
     public String getDeviceIdentification() {
@@ -58,13 +45,5 @@ public class LogItem {
 
     public String getOrganisationIdentification() {
         return this.organisationIdentification;
-    }
-
-    public Boolean isValid() {
-        return this.valid;
-    }
-
-    public int getPayloadMessageSerializedSize() {
-        return this.payloadMessageSerializedSize;
     }
 }
