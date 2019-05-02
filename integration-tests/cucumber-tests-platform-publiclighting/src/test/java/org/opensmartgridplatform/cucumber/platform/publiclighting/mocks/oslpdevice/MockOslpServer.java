@@ -497,7 +497,8 @@ public class MockOslpServer {
 
             this.addRelayDataToSsldData(ssldData, requestMap, i);
 
-            final org.opensmartgridplatform.oslp.Oslp.PowerUsageData.Builder powerUsageData = PowerUsageData.newBuilder();
+            final org.opensmartgridplatform.oslp.Oslp.PowerUsageData.Builder powerUsageData = PowerUsageData
+                    .newBuilder();
 
             this.addDataToPowerUsageData(powerUsageData, requestMap, i);
 
@@ -534,7 +535,8 @@ public class MockOslpServer {
         }
     }
 
-    private void addDataToPowerUsageData(final org.opensmartgridplatform.oslp.Oslp.PowerUsageData.Builder powerUsageData,
+    private void addDataToPowerUsageData(
+            final org.opensmartgridplatform.oslp.Oslp.PowerUsageData.Builder powerUsageData,
             final Map<String, String[]> requestMap, final Integer currentItem) {
         final String[] meterTypeArray = requestMap.get(PlatformPubliclightingKeys.METER_TYPE);
         if (meterTypeArray != null && meterTypeArray.length > 0

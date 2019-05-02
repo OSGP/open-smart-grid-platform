@@ -236,7 +236,6 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
                 }
 
                 callback.handle(message);
-                // } else {
             } else {
                 if (!this.mockResponses.isEmpty()) {
                     LOGGER.debug("Received OSLP Request: {}", message.getPayloadMessage().toString().split(" ")[0]);
@@ -248,8 +247,8 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
                             .withSignature(this.oslpSignature).withProvider(this.oslpSignatureProvider)
                             .withPrimaryKey(this.privateKey).withDeviceId(deviceId);
 
-                    // Pass the incremented sequence number to the handleRequest()
-                    // function for checking.
+                    // Pass the incremented sequence number to the
+                    // handleRequest() function for checking.
                     responseBuilder.withPayloadMessage(this.handleRequest(message));
                     // Add the new sequence number to the OslpEnvelope
                     responseBuilder.withSequenceNumber(this.convertIntegerToByteArray(this.sequenceNumber));
@@ -259,8 +258,8 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
                     LOGGER.debug("sending OSLP response with sequence number: {}",
                             this.convertByteArrayToInteger(response.getSequenceNumber()));
 
-                    // wait for the response to actually be written. This improves
-                    // stability of the tests
+                    // wait for the response to actually be written. This
+                    // improves stability of the tests
                     final ChannelFuture future = e.getChannel().write(response);
                     future.await();
 
