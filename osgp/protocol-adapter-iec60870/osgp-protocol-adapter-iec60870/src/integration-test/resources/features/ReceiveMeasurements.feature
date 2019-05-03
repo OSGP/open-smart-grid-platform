@@ -1,8 +1,8 @@
 @ProtocolAdapterIec60870
 Feature: OSGP Protocol Adapter IEC60870 - Receive Measurements
-    In order to provide measurement data to osgp clients
+    In order to provide measurement data to OSGP clients
     As a protocol adapter
-    I want to be able to process measurement data from IEC60870 devices
+    I want to be able to process incoming measurement data from IEC60870 devices
     
 
 Scenario Outline: Receive an ASDU

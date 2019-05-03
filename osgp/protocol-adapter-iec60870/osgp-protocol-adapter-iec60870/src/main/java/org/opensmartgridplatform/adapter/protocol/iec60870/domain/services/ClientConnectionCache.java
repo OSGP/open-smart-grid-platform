@@ -9,6 +9,8 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services;
 
 import java.util.Collection;
 
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.exceptions.ClientConnectionAlreadyInCacheException;
+
 public interface ClientConnectionCache {
 
     /**
@@ -35,8 +37,10 @@ public interface ClientConnectionCache {
      *            The key of the connection to be added.
      * @param connection
      *            The {@link ClientConnection} instance to be added.
+     * @throws ClientConnectionAlreadyInCacheException
+     *             when a connection is already present using the same key.
      */
-    public void addConnection(String key, ClientConnection connection);
+    public void addConnection(String key, ClientConnection connection) throws ClientConnectionAlreadyInCacheException;
 
     /**
      * Removes a connection from the cache.

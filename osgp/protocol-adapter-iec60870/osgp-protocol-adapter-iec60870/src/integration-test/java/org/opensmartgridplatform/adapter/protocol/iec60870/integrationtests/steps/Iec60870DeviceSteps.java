@@ -7,9 +7,8 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.steps;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.TestDefaults.DEFAULT_DEVICE_IDENTIFICATION;
+import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.TestDefaults.DEFAULT_DEVICE_IDENTIFICATION;
 
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.entities.Iec60870Device;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.Iec60870DeviceFactory;
@@ -26,6 +25,6 @@ public class Iec60870DeviceSteps {
     @Given("an IEC60870 device")
     public void givenIec60870Device() {
         final Iec60870Device device = Iec60870DeviceFactory.createDefaultWith(DEFAULT_DEVICE_IDENTIFICATION);
-        when(this.repositoryMock.findByDeviceIdentification(any(String.class))).thenReturn(device);
+        when(this.repositoryMock.findByDeviceIdentification(DEFAULT_DEVICE_IDENTIFICATION)).thenReturn(device);
     }
 }

@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.exceptions.ClientConnectionAlreadyInCacheException;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -27,16 +28,13 @@ public class ClientConnectionCacheImpl implements ClientConnectionCache {
         return this.cache.get(key);
     }
 
-    /**
-     *
-     * Adds a connection to the cache.<br/>
-     * <br/>
-     * <b><i>Warning: Adding a connection using an already existing key will
-     * replace the existing connection!</i></b>
-     */
     @Override
-    public void addConnection(final String key, final ClientConnection connection) {
-        this.cache.put(key, connection);
+    public void addConnection(final String key, final ClientConnection connection)
+            throws ClientConnectionAlreadyInCacheException {
+        final ClientConnection conn = this.cache.putIfAbsent(key, connection);
+        if (conn != null) {
+            throw new ClientConnectionAlreadyInCacheException(conn);
+        }
     }
 
     @Override

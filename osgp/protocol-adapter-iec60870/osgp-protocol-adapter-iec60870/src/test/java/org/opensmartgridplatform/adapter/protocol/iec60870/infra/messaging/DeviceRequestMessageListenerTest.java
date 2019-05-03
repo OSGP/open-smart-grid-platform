@@ -7,12 +7,12 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.TestDefaults.DEFAULT_DEVICE_IDENTIFICATION;
-import static org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.TestDefaults.DEFAULT_MESSAGE_TYPE;
+import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.TestDefaults.DEFAULT_DEVICE_IDENTIFICATION;
+import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.TestDefaults.DEFAULT_MESSAGE_TYPE;
 
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
@@ -24,11 +24,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.processors.GetHealthStatusRequestMessageProcessor;
+import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.matchers.ErrorResponseMessageMatcher;
 import org.opensmartgridplatform.dto.da.GetHealthStatusRequestDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.ObjectMessageBuilder;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeviceRequestMessageListenerTest {
@@ -72,6 +72,6 @@ public class DeviceRequestMessageListenerTest {
         this.deviceRequestMessageListener.onMessage(message, session);
 
         // Assert
-        verify(this.deviceResponseMessageSender).send(any(ResponseMessage.class));
+        verify(this.deviceResponseMessageSender).send(argThat(new ErrorResponseMessageMatcher()));
     }
 }

@@ -13,10 +13,15 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.TestDefaults.DEFAULT_DEVICE_IDENTIFICATION;
+import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.TestDefaults.DEFAULT_DEVICE_IDENTIFICATION;
+import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.TestDefaults.DEFAULT_DOMAIN;
+import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.TestDefaults.DEFAULT_DOMAIN_VERSION;
+import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.TestDefaults.DEFAULT_MESSAGE_TYPE;
+import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.TestDefaults.DEFAULT_ORGANISATION_IDENTIFICATION;
 
 import org.openmuc.j60870.Connection;
 import org.openmuc.j60870.ConnectionEventListener;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.exceptions.ClientConnectionAlreadyInCacheException;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.Client;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientAsduHandlerRegistry;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionCache;
@@ -30,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
@@ -48,40 +54,56 @@ public class ConnectionSteps {
 
     private ConnectionEventListener connectionEventListener;
 
+    private ConnectionParameters connectionParameters;
+
+    @Before
+    public void setup() {
+        // Make sure there is no connection in the cache
+        reset(this.connectionCacheSpy);
+
+        this.connectionParameters = new ConnectionParameters.Builder().commonAddress(0)
+                .deviceIdentification(DEFAULT_DEVICE_IDENTIFICATION).ipAddress("localhost").port(2404).build();
+    }
+
     @Given("the IEC60870 device is not connected")
     public void givenIec60870DeviceIsNotConnected() throws ConnectionFailureException {
         LOGGER.debug("Given IEC60870 device is not connected");
 
-        reset(this.connectionCacheSpy);
-
         // Make sure the client connect works as expected
         final DeviceConnection deviceConnection = new DeviceConnection(mock(Connection.class),
-                new ConnectionParameters.Builder().deviceIdentification(DEFAULT_DEVICE_IDENTIFICATION).build());
-        when(this.clientMock.connect(any(ConnectionParameters.class), any(ConnectionEventListener.class)))
+                this.connectionParameters);
+        when(this.clientMock.connect(eq(this.connectionParameters), any(ClientConnectionEventListener.class)))
                 .thenReturn(deviceConnection);
     }
 
     @Given("an existing connection with an IEC60870 device")
-    public void givenIec60870DeviceIsConnected() {
+    public void givenIec60870DeviceIsConnected() throws ClientConnectionAlreadyInCacheException {
         LOGGER.debug("Given IEC60870 device is connected");
 
-        final ConnectionParameters connectionParameters = new ConnectionParameters.Builder().commonAddress(0)
-                .deviceIdentification("TEST-DEVICE").ipAddress("localhost").port(2404).build();
-        final ResponseMetadata responseMetadata = new ResponseMetadata.Builder().withDeviceIdentification("TEST-DEVICE")
-                .withOrganisationIdentification("TEST-ORGANISATION")
-                .withDomainInfo(new DomainInfo("TEST-DOMAIN", "TEST_DOMAIN-VERSION"))
-                .withMessageType("TEST-MESSAGE-TYPE").build();
-        this.connectionEventListener = new ClientConnectionEventListener(connectionParameters.getDeviceIdentification(),
-                this.connectionCacheSpy, this.clientAsduHandlerRegistry, responseMetadata);
+        // Make sure the connection event listener works as expected
+        final ResponseMetadata responseMetadata = new ResponseMetadata.Builder()
+                .withDeviceIdentification(DEFAULT_DEVICE_IDENTIFICATION)
+                .withOrganisationIdentification(DEFAULT_ORGANISATION_IDENTIFICATION)
+                .withDomainInfo(new DomainInfo(DEFAULT_DOMAIN, DEFAULT_DOMAIN_VERSION))
+                .withMessageType(DEFAULT_MESSAGE_TYPE).build();
+        this.connectionEventListener = new ClientConnectionEventListener(
+                this.connectionParameters.getDeviceIdentification(), this.connectionCacheSpy,
+                this.clientAsduHandlerRegistry, responseMetadata);
+
+        // Make sure a connection could be retrieved from the cache
+        // Only needed for scenarios sending requests to a device
+        final Connection connection = mock(Connection.class);
+        this.connectionCacheSpy.addConnection(DEFAULT_DEVICE_IDENTIFICATION,
+                new DeviceConnection(connection, this.connectionParameters));
     }
 
     @Then("I should connect to the IEC60870 device")
     public void thenIShouldConnectToIec60870Device() throws ConnectionFailureException {
-        verify(this.clientMock).connect(any(ConnectionParameters.class), any(ConnectionEventListener.class));
+        verify(this.clientMock).connect(eq(this.connectionParameters), any(ClientConnectionEventListener.class));
     }
 
     @Then("I should cache the connection with the IEC60870 device")
-    public void thenIShouldCacheConnection() {
+    public void thenIShouldCacheConnection() throws ClientConnectionAlreadyInCacheException {
         verify(this.connectionCacheSpy).addConnection(eq(DEFAULT_DEVICE_IDENTIFICATION), any(DeviceConnection.class));
     }
 

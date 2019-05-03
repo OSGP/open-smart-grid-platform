@@ -24,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
  * <ul>
  * <li>Interrogation Command</li>
  * </ul>
- *
  */
 public class InterrogationAsduHandler extends ClientAsduHandlerImpl {
 

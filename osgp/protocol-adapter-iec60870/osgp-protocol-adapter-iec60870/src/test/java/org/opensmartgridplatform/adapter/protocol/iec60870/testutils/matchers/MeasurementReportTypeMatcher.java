@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.matchers;
+package org.opensmartgridplatform.adapter.protocol.iec60870.testutils.matchers;
 
 import org.mockito.ArgumentMatcher;
 import org.opensmartgridplatform.dto.da.measurements.MeasurementReportDto;

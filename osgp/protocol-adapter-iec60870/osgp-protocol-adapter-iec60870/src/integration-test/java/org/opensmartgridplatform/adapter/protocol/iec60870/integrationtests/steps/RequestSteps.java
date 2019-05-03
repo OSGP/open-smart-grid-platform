@@ -8,8 +8,8 @@
 package org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.steps;
 
 import static org.mockito.Mockito.mock;
-import static org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.TestDefaults.DEFAULT_DEVICE_IDENTIFICATION;
-import static org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.TestDefaults.DEFAULT_MESSAGE_TYPE;
+import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.TestDefaults.DEFAULT_DEVICE_IDENTIFICATION;
+import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.TestDefaults.DEFAULT_MESSAGE_TYPE;
 
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;

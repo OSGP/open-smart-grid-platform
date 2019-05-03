@@ -12,6 +12,7 @@ import static org.mockito.Mockito.mock;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.exceptions.ClientConnectionAlreadyInCacheException;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnection;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionCache;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionCacheImpl;
@@ -29,7 +30,7 @@ public class Iec60870ClientConnectionCacheTest {
     }
 
     @Test
-    public void shouldBeAbleToAddConnectionToCache() {
+    public void shouldBeAbleToAddConnectionToCache() throws ClientConnectionAlreadyInCacheException {
         // Arrange
         final ClientConnection connection = mock(DeviceConnection.class);
 
@@ -41,7 +42,7 @@ public class Iec60870ClientConnectionCacheTest {
     }
 
     @Test
-    public void shouldBeAbleToRemoveConnectionFromCache() {
+    public void shouldBeAbleToRemoveConnectionFromCache() throws ClientConnectionAlreadyInCacheException {
         // Arrange
         final ClientConnection connection = mock(DeviceConnection.class);
         this.cache.addConnection(KEY, connection);
