@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class Iec60870MeasurementReportingService implements MeasurementReportingService {
 
-    private final static String MESSAGE_TYPE = "GET_MEASUREMENT_REPORT";
+    private static final String MESSAGE_TYPE = "GET_MEASUREMENT_REPORT";
 
     @Autowired
     DeviceResponseMessageSender deviceResponseMessageSender;
