@@ -67,8 +67,48 @@
     </xsd:complexType>
 
     <!--
-        Types for measurements and their related types.
+        Types for measurement reports.
      -->
+
+    <xsd:complexType name="MeasurementReport">
+        <xsd:annotation>
+            <xsd:documentation>Report containing measurements sent by a device and the related metadata.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="MeasurementReportHeader" type="da:MeasurementReportHeader"/>
+            <xsd:sequence>
+                <xsd:element name="MeasurementGroups" type="da:MeasurementGroups"/>
+            </xsd:sequence>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="MeasurementReportHeader">
+        <xsd:annotation>
+            <xsd:documentation>The header information for measurements sent by a device.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="MeasurementType" type="da:MeasurementType">
+                <xsd:annotation>
+                    <xsd:documentation>The kind of measurement in the report</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="ReasonType" type="da:ReasonType">
+                <xsd:annotation>
+                    <xsd:documentation>The reason for sending the measurements.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="OriginatorAddress" type="xsd:int">
+                <xsd:annotation>
+                    <xsd:documentation>The address of the originating controlling station sending the measurements.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="CommonAddress" type="xsd:int">
+                <xsd:annotation>
+                    <xsd:documentation>Address of the target station or the broadcast address.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
 
     <xsd:simpleType name="MeasurementType">
         <xsd:restriction base="xsd:string">
@@ -84,45 +124,67 @@
         </xsd:restriction>
     </xsd:simpleType>
 
-    <xsd:complexType name = "MeasurementElement">
-        <xsd:choice>
-            <xsd:element name="bitmaskMeasurementElement" type="xsd:byte"/>
-            <xsd:element name="floatingPointMeasurementElement" type="xsd:float"/>
-           <xsd:element name="timestampMeasurementElement" type="xsd:long"/>
-        </xsd:choice>
-    </xsd:complexType>
-
-    <xsd:complexType name = "Measurement">
+    <xsd:complexType name="MeasurementGroups">
         <xsd:sequence>
-            <xsd:element name="measurementElement" type="da:MeasurementElement" minOccurs="1" maxOccurs="unbounded"/>
+            <xsd:element name="MeasurementGroup" type="da:MeasurementGroup" maxOccurs="unbounded"/>
         </xsd:sequence>
     </xsd:complexType>
 
     <xsd:complexType name="MeasurementGroup">
         <xsd:sequence>
-            <xsd:element name="measurementGroupIdentifier" type="xsd:int"/>
+            <xsd:element name="MeasurementGroupIdentifier" type="xsd:int"/>
             <xsd:sequence>
-                <xsd:element name="measurement" type="da:Measurement" minOccurs="1" maxOccurs="unbounded"/> 
+                <xsd:element name="Measurements" type="da:Measurements"/>
             </xsd:sequence>
         </xsd:sequence>
     </xsd:complexType>
 
-    <xsd:complexType name="MeasurementReportHeader">
+    <xsd:complexType name="Measurements">
         <xsd:sequence>
-            <xsd:element name="measurementType" type="da:MeasurementType"/>
-            <xsd:element name="reasonType" type="da:ReasonType"/>
-            <xsd:element name="originatorAddress" type="xsd:int"/>
-            <xsd:element name="commonAddress" type="xsd:int"/>
+            <xsd:element name="Measurement" type="da:Measurement" minOccurs="1" maxOccurs="unbounded"/>
         </xsd:sequence>
     </xsd:complexType>
 
-    <xsd:complexType name="MeasurementReport">
+    <xsd:complexType name="Measurement">
         <xsd:sequence>
-            <xsd:element name="measurementReportHeader" type="da:MeasurementReportHeader"/>
-            <xsd:sequence>
-                <xsd:element name="measurementGroups" type="da:MeasurementGroup" minOccurs="1" maxOccurs="unbounded"/>    
-            </xsd:sequence>
+            <xsd:element name="MeasurementElements" type="da:MeasurementElements"/>
         </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="MeasurementElements">
+        <xsd:sequence>
+            <xsd:choice minOccurs="1" maxOccurs="unbounded">
+                 <xsd:element name="FloatingPointMeasurementElement" type="da:FloatingPointMeasurementElement"></xsd:element>
+                 <xsd:element name="BitmaskMeasurementElement" type="da:BitmaskMeasurementElement"></xsd:element>
+                 <xsd:element name="TimestampMeasurementElement" type="da:TimestampMeasurementElement"></xsd:element>
+            </xsd:choice>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="MeasurementElement" abstract="true"/>
+
+    <xsd:complexType name="BitmaskMeasurementElement">
+        <xsd:complexContent>
+            <xsd:extension base="da:MeasurementElement">
+                <xsd:attribute name="value" type="xsd:byte"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="FloatingPointMeasurementElement">
+        <xsd:complexContent>
+            <xsd:extension base="da:MeasurementElement">
+                <xsd:attribute name="value" type="xsd:float"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="TimestampMeasurementElement">
+        <xsd:complexContent>
+            <xsd:extension base="da:MeasurementElement">
+                <xsd:attribute name="value" type="xsd:long"/>
+            </xsd:extension>
+        </xsd:complexContent>
     </xsd:complexType>
 
     <!--
@@ -203,8 +265,7 @@
     <xsd:element name="GetMeasurementReportRequest">
         <xsd:complexType>
             <xsd:sequence>
-                <xsd:element name="DeviceIdentification" type="common:Identification" minOccurs="1"
-                    maxOccurs="1"/>
+                <xsd:element name="DeviceIdentification" type="common:Identification"/>
             </xsd:sequence>
         </xsd:complexType>
     </xsd:element>
@@ -303,8 +364,8 @@
     <xsd:element name="GetMeasurementReportResponse">
         <xsd:complexType>
             <xsd:sequence>
-                <xsd:element name="Result" type="common:OsgpResultType" minOccurs="1" maxOccurs="1"/>
-                <xsd:element name="MeasurementReport" type="da:MeasurementReport" minOccurs="1" maxOccurs="1"/>
+                <xsd:element name="Result" type="common:OsgpResultType"/>
+                <xsd:element name="MeasurementReport" type="da:MeasurementReport"/>
             </xsd:sequence>
         </xsd:complexType>
     </xsd:element>

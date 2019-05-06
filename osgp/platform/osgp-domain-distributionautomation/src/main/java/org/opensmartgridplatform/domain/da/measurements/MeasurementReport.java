@@ -20,12 +20,13 @@ public class MeasurementReport {
         this.measurementGroups = builder.measurementGroups;
     }
 
-    public MeasurementReport(final MeasurementReportHeader header, final List<MeasurementGroup> measurementGroups) {
-        this.measurementReportHeader = header;
+    public MeasurementReport(final MeasurementReportHeader measurementReportHeader,
+            final List<MeasurementGroup> measurementGroups) {
+        this.measurementReportHeader = measurementReportHeader;
         this.measurementGroups = measurementGroups;
     }
 
-    public MeasurementReportHeader getHeader() {
+    public MeasurementReportHeader getMeasurementReportHeader() {
         return this.measurementReportHeader;
     }
 

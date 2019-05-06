@@ -11,6 +11,8 @@ import org.opensmartgridplatform.adapter.ws.da.application.exceptionhandling.Res
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.common.AsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.common.OsgpResultType;
+import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.BitmaskMeasurementElement;
+import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.FloatingPointMeasurementElement;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.GetMeasurementReportRequest;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.GetMeasurementReportResponse;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.GetPQValuesAsyncRequest;
@@ -22,11 +24,13 @@ import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generi
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.GetPQValuesRequest;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.GetPQValuesResponse;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.Measurement;
-import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.MeasurementElement;
+import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.MeasurementElements;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.MeasurementGroup;
+import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.MeasurementGroups;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.MeasurementReport;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.MeasurementReportHeader;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.MeasurementType;
+import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.Measurements;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.ReasonType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.slf4j.Logger;
@@ -167,15 +171,27 @@ public class MonitoringEndpoint extends GenericDistributionAutomationEndPoint {
     }
 
     private MeasurementReport createDummyMeasurementReport() {
-        final MeasurementElement me = new MeasurementElement();
-        me.setBitmaskMeasurementElement((byte) 64);
+        final FloatingPointMeasurementElement fpme = new FloatingPointMeasurementElement();
+        fpme.setValue(70f);
+
+        final BitmaskMeasurementElement bme = new BitmaskMeasurementElement();
+        bme.setValue((byte) 64);
+
+        final MeasurementElements mes = new MeasurementElements();
+        mes.getMeasurementElementList().add(fpme);
+        mes.getMeasurementElementList().add(bme);
 
         final Measurement m = new Measurement();
-        m.getMeasurementElement().add(me);
+
+        final BitmaskMeasurementElement bme2 = new BitmaskMeasurementElement();
+        bme2.setValue((byte) 71);
+
+        m.setMeasurementElements(mes);
 
         final MeasurementGroup mg = new MeasurementGroup();
         mg.setMeasurementGroupIdentifier(7);
-        mg.getMeasurement().add(m);
+        mg.setMeasurements(new Measurements());
+        mg.getMeasurements().getMeasurementList().add(m);
 
         final MeasurementReportHeader mrh = new MeasurementReportHeader();
         mrh.setCommonAddress(3);
@@ -184,7 +200,10 @@ public class MonitoringEndpoint extends GenericDistributionAutomationEndPoint {
         mrh.setReasonType(ReasonType.SPONTANEOUS);
 
         final MeasurementReport mr = new MeasurementReport();
-        mr.getMeasurementGroups().add(mg);
+        final MeasurementGroups mgs = new MeasurementGroups();
+        mgs.getMeasurementGroupList().add(mg);
+
+        mr.setMeasurementGroups(mgs);
         mr.setMeasurementReportHeader(mrh);
 
         return mr;

@@ -14,6 +14,10 @@ import java.util.Objects;
 
 import org.opensmartgridplatform.domain.da.measurements.MeasurementElement;
 
+/**
+ * Stores a timestamp as the number of milliseconds since the epoch of
+ * 1970-01-01T00:00:00Z.
+ */
 public class TimestampMeasurementElement implements MeasurementElement {
 
     private Long value;

@@ -7,19 +7,26 @@
  */
 package org.opensmartgridplatform.adapter.ws.da.application.mapping;
 
-import org.opensmartgridplatform.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
-import org.opensmartgridplatform.domain.da.valueobjects.GetHealthStatusResponse;
-import org.opensmartgridplatform.domain.da.valueobjects.GetDeviceModelResponse;
-import org.opensmartgridplatform.domain.da.valueobjects.GetPQValuesResponse;
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.converter.builtin.PassThroughConverter;
-import ma.glasnost.orika.impl.ConfigurableMapper;
 import org.joda.time.DateTime;
+import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.BitmaskMeasurementElement;
+import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.FloatingPointMeasurementElement;
+import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.Measurement;
+import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.MeasurementGroup;
+import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.MeasurementReport;
+import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.TimestampMeasurementElement;
+import org.opensmartgridplatform.domain.da.valueobjects.GetDeviceModelResponse;
+import org.opensmartgridplatform.domain.da.valueobjects.GetHealthStatusResponse;
+import org.opensmartgridplatform.domain.da.valueobjects.GetPQValuesResponse;
 import org.opensmartgridplatform.domain.da.valueobjects.iec61850.DataSample;
 import org.opensmartgridplatform.domain.da.valueobjects.iec61850.LogicalDevice;
 import org.opensmartgridplatform.domain.da.valueobjects.iec61850.LogicalNode;
 import org.opensmartgridplatform.domain.da.valueobjects.iec61850.PhysicalDevice;
+import org.opensmartgridplatform.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
 import org.springframework.stereotype.Component;
+
+import ma.glasnost.orika.MapperFactory;
+import ma.glasnost.orika.converter.builtin.PassThroughConverter;
+import ma.glasnost.orika.impl.ConfigurableMapper;
 
 @Component
 public class DistributionAutomationMapper extends ConfigurableMapper {
@@ -37,13 +44,11 @@ public class DistributionAutomationMapper extends ConfigurableMapper {
         mapperFactory
                 .classMap(GetDeviceModelResponse.class,
                         org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.GetDeviceModelResponse.class)
-                .field("physicalDevice", "physicalServer")
-                .byDefault().register();
+                .field("physicalDevice", "physicalServer").byDefault().register();
         mapperFactory
                 .classMap(PhysicalDevice.class,
                         org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.PhysicalServerType.class)
-                .field("logicalDevices", "logicalDevice")
-                .byDefault().register();
+                .field("logicalDevices", "logicalDevice").byDefault().register();
 
         mapperFactory
                 .classMap(GetPQValuesResponse.class,
@@ -52,9 +57,7 @@ public class DistributionAutomationMapper extends ConfigurableMapper {
         mapperFactory
                 .classMap(LogicalDevice.class,
                         org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.LogicalDeviceType.class)
-                .field("name", "id")
-                .field("logicalNodes", "logicalNode")
-                .byDefault().register();
+                .field("name", "id").field("logicalNodes", "logicalNode").byDefault().register();
         mapperFactory
                 .classMap(LogicalNode.class,
                         org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.LogicalNodeType.class)
@@ -62,9 +65,28 @@ public class DistributionAutomationMapper extends ConfigurableMapper {
         mapperFactory
                 .classMap(DataSample.class,
                         org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.DataSampleType.class)
-                .field("sampleType", "type")
-                .field("timestamp", "timestamp")
-                .field("value", "value")
-                .register();
+                .field("sampleType", "type").field("timestamp", "timestamp").field("value", "value").register();
+        mapperFactory
+                .classMap(BitmaskMeasurementElement.class,
+                        org.opensmartgridplatform.domain.da.measurements.elements.BitmaskMeasurementElement.class)
+                .byDefault().register();
+        mapperFactory
+                .classMap(FloatingPointMeasurementElement.class,
+                        org.opensmartgridplatform.domain.da.measurements.elements.FloatingPointMeasurementElement.class)
+                .byDefault().register();
+        mapperFactory
+                .classMap(TimestampMeasurementElement.class,
+                        org.opensmartgridplatform.domain.da.measurements.elements.TimestampMeasurementElement.class)
+                .byDefault().register();
+        mapperFactory.classMap(Measurement.class, org.opensmartgridplatform.domain.da.measurements.Measurement.class)
+                .field("measurementElements.measurementElementList", "measurementElements").byDefault().register();
+        mapperFactory
+                .classMap(MeasurementGroup.class,
+                        org.opensmartgridplatform.domain.da.measurements.MeasurementGroup.class)
+                .field("measurements.measurementList", "measurements").byDefault().register();
+        mapperFactory
+                .classMap(MeasurementReport.class,
+                        org.opensmartgridplatform.domain.da.measurements.MeasurementReport.class)
+                .field("measurementGroups.measurementGroupList", "measurementGroups").byDefault().register();
     }
 }

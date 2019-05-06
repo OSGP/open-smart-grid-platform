@@ -16,6 +16,15 @@ public class MeasurementReportHeader {
     private int originatorAddress;
     private int commonAddress;
 
+    public MeasurementReportHeader(final MeasurementType measurementType, final ReasonType reasonType,
+            final int originatorAddress, final int commonAddress) {
+        // Constructor for mapping by Orika
+        this.measurementType = measurementType;
+        this.reasonType = reasonType;
+        this.originatorAddress = originatorAddress;
+        this.commonAddress = commonAddress;
+    }
+
     private MeasurementReportHeader(final Builder builder) {
         this.measurementType = builder.measurementType;
         this.reasonType = builder.reasonType;

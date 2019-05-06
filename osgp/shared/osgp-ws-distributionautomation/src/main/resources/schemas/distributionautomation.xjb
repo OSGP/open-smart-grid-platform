@@ -17,4 +17,19 @@
     </jxb:schemaBindings>
   </jxb:bindings>
 
+  <jxb:bindings schemaLocation="distributionautomation.xsd"
+    node="/xs:schema/xs:complexType[@name='MeasurementGroups']/xs:sequence/xs:element[@name='MeasurementGroup']">
+    <jxb:property name="MeasurementGroupList"/>
+  </jxb:bindings>
+
+  <jxb:bindings schemaLocation="distributionautomation.xsd"
+    node="/xs:schema/xs:complexType[@name='Measurements']/xs:sequence/xs:element[@name='Measurement']">
+    <jxb:property name="MeasurementList"/>
+  </jxb:bindings>
+
+  <jxb:bindings schemaLocation="distributionautomation.xsd"
+    node="/xs:schema/xs:complexType[@name='MeasurementElements']/xs:sequence/xs:choice">
+    <jxb:property name="MeasurementElementList"/>
+  </jxb:bindings>
+
 </jxb:bindings>
