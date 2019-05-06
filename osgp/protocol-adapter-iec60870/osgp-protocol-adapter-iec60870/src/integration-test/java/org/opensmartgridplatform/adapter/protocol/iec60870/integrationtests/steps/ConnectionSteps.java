@@ -10,7 +10,6 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.ste
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.TestDefaults.DEFAULT_DEVICE_IDENTIFICATION;
@@ -26,6 +25,7 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.Clien
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientAsduHandlerRegistry;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionCache;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionEventListener;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ConnectionParameters;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceConnection;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DomainInfo;
@@ -44,6 +44,9 @@ public class ConnectionSteps {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConnectionSteps.class);
 
     @Autowired
+    private ClientConnectionService clientConnectionService;
+
+    @Autowired
     private ClientConnectionCache connectionCacheSpy;
 
     @Autowired
@@ -59,7 +62,7 @@ public class ConnectionSteps {
     @Before
     public void setup() {
         // Make sure there is no connection in the cache
-        reset(this.connectionCacheSpy);
+        this.clientConnectionService.closeAllConnections();
 
         this.connectionParameters = new ConnectionParameters.Builder().commonAddress(0)
                 .deviceIdentification(DEFAULT_DEVICE_IDENTIFICATION).ipAddress("localhost").port(2404).build();
