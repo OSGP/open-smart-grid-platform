@@ -69,7 +69,7 @@ public class DeviceRequestMessageListener implements SessionAwareMessageListener
 
             processor.processMessage(objectMessage);
 
-        } catch (final IllegalArgumentException e) {
+        } catch (final IllegalArgumentException | JMSException e) {
             LOGGER.error("Unexpected exception for message [correlationUid={}]", messageMetadata.getCorrelationUid(),
                     e);
             this.sendNotSupportedException(objectMessage, messageMetadata);

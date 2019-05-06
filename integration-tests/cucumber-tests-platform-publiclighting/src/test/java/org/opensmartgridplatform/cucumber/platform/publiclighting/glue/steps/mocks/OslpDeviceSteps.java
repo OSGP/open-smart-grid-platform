@@ -28,6 +28,8 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTimeZone;
 import org.junit.Assert;
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities.OslpDevice;
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.repositories.OslpDeviceRepository;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -92,6 +94,9 @@ public class OslpDeviceSteps {
 
     @Autowired
     private MockOslpServer oslpMockServer;
+
+    @Autowired
+    private OslpDeviceRepository oslpDeviceRepository;
 
     /**
      * Verify that a get configuration OSLP message is sent to the device.
@@ -958,7 +963,7 @@ public class OslpDeviceSteps {
 
     @Given("^the device sends a register device request to the platform over \"([^\"]*)\"$")
     public void theDeviceSendsARegisterDeviceRequestToThePlatform(final String protocol,
-            final Map<String, String> settings) throws IOException, DeviceSimulatorException {
+            final Map<String, String> settings) throws DeviceSimulatorException {
 
         try {
             final OslpEnvelope request = this
@@ -990,7 +995,37 @@ public class OslpDeviceSteps {
         } catch (final IOException | IllegalArgumentException e) {
             ScenarioContext.current().put("Error", e);
         }
+    }
 
+    @Given("^the device sends a confirm register device request to the platform over \"([^\"]*)\"$")
+    public void theDeviceSendsAConfirmRegisterDeviceRequestToThePlatform(final String protocol,
+            final Map<String, String> settings) throws DeviceSimulatorException {
+
+        try {
+            final String deviceIdentification = getString(settings,
+                    PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION,
+                    PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION);
+
+            final String deviceUid = getString(settings, PlatformPubliclightingKeys.KEY_DEVICE_UID,
+                    PlatformPubliclightingDefaults.DEVICE_UID);
+
+            final OslpDevice oslpDevice = this.oslpDeviceRepository.findByDeviceIdentification(deviceIdentification);
+            final int randomDevice = oslpDevice.getRandomDevice();
+            final int randomPlatform = oslpDevice.getRandomPlatform();
+
+            final Oslp.ConfirmRegisterDeviceRequest confirmRegisterDeviceRequest = Oslp.ConfirmRegisterDeviceRequest
+                    .newBuilder().setRandomDevice(randomDevice).setRandomPlatform(randomPlatform).build();
+
+            final Message message = Message.newBuilder().setConfirmRegisterDeviceRequest(confirmRegisterDeviceRequest)
+                    .build();
+
+            final OslpEnvelope request = this.createEnvelopeBuilder(deviceUid, this.oslpMockServer.getSequenceNumber())
+                    .withPayloadMessage(message).build();
+
+            this.send(request, settings);
+        } catch (final IOException | IllegalArgumentException e) {
+            ScenarioContext.current().put("Error", e);
+        }
     }
 
     @Given("^the device sends an event notification request to the platform over \"([^\"]*)\"$")

@@ -18,6 +18,7 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 public class CsvWriter {
 
@@ -112,6 +113,10 @@ public class CsvWriter {
     }
 
     private String escapeText(final String text) {
+        if (StringUtils.isEmpty(text)) {
+            return "";
+        }
+
         return text.replaceAll("\\r\\n|\\r|\\n|,", "");
     }
 }

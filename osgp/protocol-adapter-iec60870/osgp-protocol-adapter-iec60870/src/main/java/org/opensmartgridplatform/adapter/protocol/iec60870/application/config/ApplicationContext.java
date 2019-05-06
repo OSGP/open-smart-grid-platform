@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @ComponentScan(basePackages = { "org.opensmartgridplatform.adapter.protocol.iec60870",
         "org.opensmartgridplatform.shared.domain.services" })
 @EnableTransactionManagement()
-@Import({ MessagingConfig.class, Iec60870Config.class })
+@Import({ Iec60870MessagingConfig.class, Iec60870Config.class })
 @PropertySource("classpath:osgp-adapter-protocol-iec60870.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/AdapterProtocolIec60870/config}", ignoreResourceNotFound = true)
