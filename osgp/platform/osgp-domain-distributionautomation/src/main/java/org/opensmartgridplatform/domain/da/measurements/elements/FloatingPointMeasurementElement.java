@@ -37,6 +37,6 @@ public class FloatingPointMeasurementElement implements MeasurementElement {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.value);
+        return Objects.hash(Float.floatToIntBits(this.value));
     }
 }
