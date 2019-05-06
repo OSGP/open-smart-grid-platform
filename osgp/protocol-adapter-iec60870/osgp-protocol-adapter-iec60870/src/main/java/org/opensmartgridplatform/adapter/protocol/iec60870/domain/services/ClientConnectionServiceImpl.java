@@ -110,7 +110,12 @@ public class ClientConnectionServiceImpl implements ClientConnectionService {
         try {
             this.connectionCache.addConnection(requestMetadata.getDeviceIdentification(), newDeviceConnection);
         } catch (final ClientConnectionAlreadyInCacheException e) {
-            LOGGER.warn("Client connection already exists. Closing new connection and returning existing connection");
+            final String deviceIdentification = e.getClientConnection().getConnectionParameters()
+                    .getDeviceIdentification();
+            LOGGER.warn(
+                    "Client connection for device {} already exists. Closing new connection and returning existing connection",
+                    deviceIdentification);
+            LOGGER.debug("Exception: ", e);
             newDeviceConnection.getConnection().close();
             return e.getClientConnection();
         }
