@@ -10,24 +10,25 @@
 package org.opensmartgridplatform.adapter.domain.da.application.services;
 
 import org.opensmartgridplatform.adapter.domain.da.application.mapping.DomainDistributionAutomationMapper;
+import org.opensmartgridplatform.domain.core.entities.Device;
+import org.opensmartgridplatform.domain.da.measurements.MeasurementReport;
 import org.opensmartgridplatform.domain.da.valueobjects.GetPQValuesPeriodicRequest;
 import org.opensmartgridplatform.domain.da.valueobjects.GetPQValuesRequest;
 import org.opensmartgridplatform.domain.da.valueobjects.GetPQValuesResponse;
 import org.opensmartgridplatform.dto.da.GetPQValuesPeriodicRequestDto;
 import org.opensmartgridplatform.dto.da.GetPQValuesRequestDto;
 import org.opensmartgridplatform.dto.da.GetPQValuesResponseDto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import org.opensmartgridplatform.domain.core.entities.Device;
+import org.opensmartgridplatform.dto.da.measurements.MeasurementReportDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service(value = "domainDistributionAutomationMonitoringService")
 @Transactional(value = "transactionManager")
@@ -112,10 +113,44 @@ public class MonitoringService extends BaseService {
             actualCorrelationUid = getCorrelationId("DeviceGenerated", deviceIdentification);
         }
 
-        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
                 .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(osgpException)
                 .withDataObject(getPQValuesResponse).build();
+        this.webServiceResponseMessageSender.send(responseMessage, messageType);
+    }
+
+    public void handleGetMeasurementReportResponse(final MeasurementReportDto measurementReportDto,
+            final String deviceIdentification, final String organisationIdentification, final String correlationUid,
+            final String messageType, final ResponseMessageResultType responseMessageResultType,
+            final OsgpException osgpException) {
+
+        LOGGER.info("handleResponse for MessageType: {}", messageType);
+
+        ResponseMessageResultType result = ResponseMessageResultType.OK;
+        MeasurementReport measurementReport = null;
+        OsgpException exception = null;
+
+        try {
+            if (responseMessageResultType == ResponseMessageResultType.NOT_OK || osgpException != null) {
+                LOGGER.error("Device Response not ok.", osgpException);
+                throw osgpException;
+            }
+
+            this.handleResponseMessageReceived(LOGGER, deviceIdentification);
+
+            measurementReport = this.mapper.map(measurementReportDto, MeasurementReport.class);
+
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected Exception", e);
+            result = ResponseMessageResultType.NOT_OK;
+            exception = this.ensureOsgpException(e, "Exception occurred while receiving Measurement Report");
+        }
+
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
+                .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(exception)
+                .withDataObject(measurementReport).build();
         this.webServiceResponseMessageSender.send(responseMessage, messageType);
     }
 }
