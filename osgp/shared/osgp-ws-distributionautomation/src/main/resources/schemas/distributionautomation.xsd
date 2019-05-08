@@ -265,7 +265,7 @@
     <xsd:element name="GetMeasurementReportRequest">
         <xsd:complexType>
             <xsd:sequence>
-                <xsd:element name="DeviceIdentification" type="common:Identification"/>
+                <xsd:element name="CorrelationUid" type="common:CorrelationUid"/>
             </xsd:sequence>
         </xsd:complexType>
     </xsd:element>
