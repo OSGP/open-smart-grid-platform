@@ -11,8 +11,6 @@ import org.opensmartgridplatform.adapter.ws.da.application.exceptionhandling.Res
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.common.AsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.common.OsgpResultType;
-import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.BitmaskMeasurementElement;
-import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.FloatingPointMeasurementElement;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.GetMeasurementReportRequest;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.GetMeasurementReportResponse;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.GetPQValuesAsyncRequest;
@@ -23,15 +21,7 @@ import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generi
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.GetPQValuesPeriodicResponse;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.GetPQValuesRequest;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.GetPQValuesResponse;
-import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.Measurement;
-import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.MeasurementElements;
-import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.MeasurementGroup;
-import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.MeasurementGroups;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.MeasurementReport;
-import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.MeasurementReportHeader;
-import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.MeasurementType;
-import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.Measurements;
-import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.ReasonType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -158,55 +148,28 @@ public class MonitoringEndpoint extends GenericDistributionAutomationEndPoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final GetMeasurementReportRequest request) throws OsgpException {
 
-        LOGGER.info("Get Measurement Report Request received from organisation: {} for device: {}.",
-                organisationIdentification, request.getDeviceIdentification());
+        LOGGER.info("Get Measurement Report Request received from organisation: {} for correlationUid: {}.",
+                organisationIdentification, request.getCorrelationUid());
 
-        // TODO: code voor ophalen measurement report maken.
-        final MeasurementReport mr = this.createDummyMeasurementReport();
-        final GetMeasurementReportResponse gmrr = new GetMeasurementReportResponse();
-        gmrr.setMeasurementReport(mr);
-        gmrr.setResult(OsgpResultType.OK);
+        final GetMeasurementReportResponse response = new GetMeasurementReportResponse();
+        try {
+            final org.opensmartgridplatform.domain.da.measurements.MeasurementReport dataResponse = this.service
+                    .dequeueMeasurementReport(request.getCorrelationUid());
+            if (dataResponse != null) {
+                final MeasurementReport report = this.mapper.map(dataResponse, MeasurementReport.class);
+                response.setMeasurementReport(report);
+                response.setResult(OsgpResultType.OK);
+            } else {
+                response.setResult(OsgpResultType.NOT_FOUND);
+            }
+        } catch (final ResponseNotFoundException e) {
+            LOGGER.warn("ResponseNotFoundException for getMeasurementReport", e);
+            response.setResult(OsgpResultType.NOT_FOUND);
+        } catch (final Exception e) {
+            this.handleException(LOGGER, e);
+        }
 
-        return gmrr;
-    }
-
-    private MeasurementReport createDummyMeasurementReport() {
-        final FloatingPointMeasurementElement fpme = new FloatingPointMeasurementElement();
-        fpme.setValue(70f);
-
-        final BitmaskMeasurementElement bme = new BitmaskMeasurementElement();
-        bme.setValue((byte) 64);
-
-        final MeasurementElements mes = new MeasurementElements();
-        mes.getMeasurementElementList().add(fpme);
-        mes.getMeasurementElementList().add(bme);
-
-        final Measurement m = new Measurement();
-
-        final BitmaskMeasurementElement bme2 = new BitmaskMeasurementElement();
-        bme2.setValue((byte) 71);
-
-        m.setMeasurementElements(mes);
-
-        final MeasurementGroup mg = new MeasurementGroup();
-        mg.setMeasurementGroupIdentifier(7);
-        mg.setMeasurements(new Measurements());
-        mg.getMeasurements().getMeasurementList().add(m);
-
-        final MeasurementReportHeader mrh = new MeasurementReportHeader();
-        mrh.setCommonAddress(3);
-        mrh.setMeasurementType(MeasurementType.MEASURED_SHORT_FLOAT_WITH_TIME_TAG);
-        mrh.setOriginatorAddress(83);
-        mrh.setReasonType(ReasonType.SPONTANEOUS);
-
-        final MeasurementReport mr = new MeasurementReport();
-        final MeasurementGroups mgs = new MeasurementGroups();
-        mgs.getMeasurementGroupList().add(mg);
-
-        mr.setMeasurementGroups(mgs);
-        mr.setMeasurementReportHeader(mrh);
-
-        return mr;
+        return response;
     }
 
 }

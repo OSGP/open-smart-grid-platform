@@ -62,7 +62,7 @@ public class DistributionAutomationMapperTest {
     public void testFloatingPointMeasurementElementMapping() {
         // Arrange
         final FloatingPointMeasurementElement expected = WSMeasurementsFactory.floatingPointFrom(83.4999f);
-        final org.opensmartgridplatform.domain.da.measurements.elements.FloatingPointMeasurementElement domainMeasurementElement = new org.opensmartgridplatform.domain.da.measurements.elements.FloatingPointMeasurementElement(
+        final org.opensmartgridplatform.domain.da.measurements.elements.FloatMeasurementElement domainMeasurementElement = new org.opensmartgridplatform.domain.da.measurements.elements.FloatMeasurementElement(
                 83.4999f);
 
         // Act

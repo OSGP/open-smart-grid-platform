@@ -72,7 +72,7 @@ public class DistributionAutomationMapper extends ConfigurableMapper {
                 .byDefault().register();
         mapperFactory
                 .classMap(FloatingPointMeasurementElement.class,
-                        org.opensmartgridplatform.domain.da.measurements.elements.FloatingPointMeasurementElement.class)
+                        org.opensmartgridplatform.domain.da.measurements.elements.FloatMeasurementElement.class)
                 .byDefault().register();
         mapperFactory
                 .classMap(TimestampMeasurementElement.class,

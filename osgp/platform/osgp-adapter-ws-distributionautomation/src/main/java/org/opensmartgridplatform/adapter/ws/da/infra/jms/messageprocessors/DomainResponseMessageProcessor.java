@@ -37,6 +37,9 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(DomainResponseMessageProcessor.class);
 
     @Autowired
+    private String webserviceNotificationOrganisation;
+
+    @Autowired
     private NotificationService notificationService;
 
     @Autowired
@@ -96,15 +99,15 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
             this.handleMessage(ids, messageType, resultType, resultDescription, dataObject);
 
             // Send notification indicating data is available.
-            this.notificationService.sendNotification(organisationIdentification, deviceIdentification,
+            this.notificationService.sendNotification(this.webserviceNotificationOrganisation, deviceIdentification,
                     resultType.name(), correlationUid, notificationMessage, notificationType);
 
-        } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, notificationType);
+        } catch (final RuntimeException e) {
+            this.handleError(e, correlationUid, notificationType);
         }
     }
 
-    protected void handleMessage(final CorrelationIds ids, final String messageType,
+    private void handleMessage(final CorrelationIds ids, final String messageType,
             final ResponseMessageResultType resultType, final String resultDescription, final Serializable dataObject) {
 
         final short numberOfNotificationsSent = 0;
@@ -128,19 +131,14 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
      *            The exception.
      * @param correlationUid
      *            The correlation UID.
-     * @param organisationIdentification
-     *            The organisation identification.
-     * @param deviceIdentification
-     *            The device identification.
      * @param notificationType
      *            The message type.
      */
-    protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
-            final String deviceIdentification, final NotificationType notificationType) {
+    private void handleError(final RuntimeException e, final String correlationUid,
+            final NotificationType notificationType) {
 
-        LOGGER.info("handling error: {} for notification type: {}", e.getMessage(), notificationType);
-        this.notificationService.sendNotification(organisationIdentification, deviceIdentification, "NOT_OK",
-                correlationUid, e.getMessage(), notificationType);
+        LOGGER.warn("Error '{}' occurred while trying to send notification type: {} with correlationUid: {}",
+                e.getMessage(), notificationType, correlationUid, e);
     }
 
     /**
