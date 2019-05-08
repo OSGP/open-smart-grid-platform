@@ -18,6 +18,7 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.R
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * ASDU Handler for ASDUs with type identification C_IC_NA_1:.
@@ -25,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * <li>Interrogation Command</li>
  * </ul>
  */
+@Component
 public class InterrogationAsduHandler extends ClientAsduHandlerImpl {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InterrogationAsduHandler.class);
