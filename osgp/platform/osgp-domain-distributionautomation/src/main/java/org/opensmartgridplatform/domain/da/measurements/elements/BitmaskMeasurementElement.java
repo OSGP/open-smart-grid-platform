@@ -7,13 +7,16 @@
  */
 package org.opensmartgridplatform.domain.da.measurements.elements;
 
+import java.io.Serializable;
 import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Set;
 
 import org.opensmartgridplatform.domain.da.measurements.MeasurementElement;
 
-public class BitmaskMeasurementElement implements MeasurementElement {
+public class BitmaskMeasurementElement implements MeasurementElement, Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private Byte value;
 
@@ -56,6 +59,11 @@ public class BitmaskMeasurementElement implements MeasurementElement {
         return Objects.hash(this.value);
     }
 
+    @Override
+    public String toString() {
+        return "Bitmask: " + this.value;
+    }
+
     public enum BitmaskFlag {
         FLAG_1(1 << 0), // 1
         FLAG_2(1 << 1), // 2
@@ -76,4 +84,5 @@ public class BitmaskMeasurementElement implements MeasurementElement {
             return this.value;
         }
     }
+
 }

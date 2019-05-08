@@ -7,27 +7,30 @@
  */
 package org.opensmartgridplatform.domain.da.measurements;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
-public class MeasurementReport {
+public class MeasurementReport implements Serializable {
 
-    private MeasurementReportHeader measurementReportHeader;
+    private static final long serialVersionUID = 1L;
+
+    private MeasurementReportHeader reportHeader;
     private List<MeasurementGroup> measurementGroups;
 
     private MeasurementReport(final Builder builder) {
-        this.measurementReportHeader = builder.measurementReportHeader;
+        this.reportHeader = builder.reportHeader;
         this.measurementGroups = builder.measurementGroups;
     }
 
-    public MeasurementReport(final MeasurementReportHeader measurementReportHeader,
+    public MeasurementReport(final MeasurementReportHeader reportHeader,
             final List<MeasurementGroup> measurementGroups) {
-        this.measurementReportHeader = measurementReportHeader;
+        this.reportHeader = reportHeader;
         this.measurementGroups = measurementGroups;
     }
 
-    public MeasurementReportHeader getMeasurementReportHeader() {
-        return this.measurementReportHeader;
+    public MeasurementReportHeader getReportHeader() {
+        return this.reportHeader;
     }
 
     public List<MeasurementGroup> getMeasurementGroups() {
@@ -45,21 +48,27 @@ public class MeasurementReport {
         }
 
         final MeasurementReport that = (MeasurementReport) obj;
-        return Objects.equals(this.measurementReportHeader, that.measurementReportHeader)
+        return Objects.equals(this.reportHeader, that.reportHeader)
                 && Objects.equals(this.measurementGroups, that.measurementGroups);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.measurementReportHeader, this.measurementGroups);
+        return Objects.hash(this.reportHeader, this.measurementGroups);
+    }
+
+    @Override
+    public String toString() {
+        return "MeasurementReport [reportHeader=" + this.reportHeader + ", measurementGroups=" + this.measurementGroups
+                + "]";
     }
 
     public static class Builder {
-        private MeasurementReportHeader measurementReportHeader;
+        private MeasurementReportHeader reportHeader;
         private List<MeasurementGroup> measurementGroups;
 
-        public Builder withMeasurementReportHeader(final MeasurementReportHeader measurementReportHeader) {
-            this.measurementReportHeader = measurementReportHeader;
+        public Builder withMeasurementReportHeader(final MeasurementReportHeader reportHeader) {
+            this.reportHeader = reportHeader;
             return this;
         }
 
@@ -72,4 +81,5 @@ public class MeasurementReport {
             return new MeasurementReport(this);
         }
     }
+
 }

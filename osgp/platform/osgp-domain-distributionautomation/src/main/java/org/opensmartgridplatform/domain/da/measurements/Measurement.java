@@ -7,12 +7,16 @@
  */
 package org.opensmartgridplatform.domain.da.measurements;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public class Measurement {
+public class Measurement implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     private List<MeasurementElement> measurementElements = new ArrayList<>();
 
     public Measurement(final List<MeasurementElement> measurementElements) {
@@ -44,5 +48,10 @@ public class Measurement {
     @Override
     public int hashCode() {
         return Objects.hash(this.measurementElements);
+    }
+
+    @Override
+    public String toString() {
+        return "Measurement [measurementElements=" + this.measurementElements + "]";
     }
 }

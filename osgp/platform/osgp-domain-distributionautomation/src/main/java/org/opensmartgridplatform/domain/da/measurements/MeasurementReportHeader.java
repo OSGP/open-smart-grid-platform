@@ -7,9 +7,13 @@
  */
 package org.opensmartgridplatform.domain.da.measurements;
 
+import java.io.Serializable;
+
 import com.google.common.base.Objects;
 
-public class MeasurementReportHeader {
+public class MeasurementReportHeader implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private MeasurementType measurementType;
     private ReasonType reasonType;
@@ -68,6 +72,12 @@ public class MeasurementReportHeader {
         return Objects.hashCode(this.measurementType, this.reasonType, this.originatorAddress, this.commonAddress);
     }
 
+    @Override
+    public String toString() {
+        return "MeasurementReportHeader [measurementType=" + this.measurementType + ", reasonType=" + this.reasonType
+                + ", originatorAddress=" + this.originatorAddress + ", commonAddress=" + this.commonAddress + "]";
+    }
+
     public static class Builder {
         private MeasurementType measurementType;
         private ReasonType reasonType;
@@ -98,4 +108,5 @@ public class MeasurementReportHeader {
             return new MeasurementReportHeader(this);
         }
     }
+
 }
