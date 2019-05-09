@@ -218,8 +218,6 @@ public class PlatformKeys extends Keys {
     public static final String KEY_STATUS = "Status";
     public static final String KEY_STREET = "containerStreet";
 
-    public static final String KEY_SUBSTATION_ROOMNUMBER = "RoomNumber";
-
     public static final String KEY_SYSTEM_ID = "SystemId";
     public static final String KEY_SYSTEM_TYPE = "SystemType";
     public static final String KEY_TECHNICAL_INSTALLATION_DATE = "TechnicalInstallationDate";
