@@ -6,7 +6,9 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig;
+package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model;
+
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 
 public class DlmsRegister extends DlmsObject {
 
@@ -46,5 +48,9 @@ public class DlmsRegister extends DlmsObject {
 
     public int getScalerUnitAttributeId() {
         return SCALER_UNIT_ATTRIBUTE_ID;
+    }
+
+    public boolean mediumMatches(Medium medium) {
+        return medium == null || this.medium == medium;
     }
 }

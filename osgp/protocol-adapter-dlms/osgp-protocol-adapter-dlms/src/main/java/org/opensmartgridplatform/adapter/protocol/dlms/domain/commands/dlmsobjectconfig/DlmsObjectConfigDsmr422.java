@@ -18,19 +18,25 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dl
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.INTERVAL_VALUES;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.MBUS_MASTER_VALUE;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.MONTHLY_BILLING_VALUES;
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.Medium.COMBINED;
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.Medium.ELECTRICITY;
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.Medium.GAS;
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.ProfileCaptureTime.DAY;
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.ProfileCaptureTime.MONTH;
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.ProfileCaptureTime.QUARTER_HOUR;
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.RegisterUnit.M3;
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.RegisterUnit.WH;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.Medium.COMBINED;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.Medium.ELECTRICITY;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.Medium.GAS;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.ProfileCaptureTime.DAY;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.ProfileCaptureTime.MONTH;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.ProfileCaptureTime.QUARTER_HOUR;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.RegisterUnit.M3;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.RegisterUnit.WH;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsClock;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsData;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsExtendedRegister;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsObject;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsProfile;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsRegister;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 
 public class DlmsObjectConfigDsmr422 extends DlmsObjectConfig {

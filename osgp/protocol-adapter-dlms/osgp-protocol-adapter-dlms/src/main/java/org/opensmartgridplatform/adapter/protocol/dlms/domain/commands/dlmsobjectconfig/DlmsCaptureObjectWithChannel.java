@@ -8,6 +8,8 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig;
 
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsObject;
+
 public class DlmsCaptureObjectWithChannel extends DlmsCaptureObject {
     private final int channel;
 

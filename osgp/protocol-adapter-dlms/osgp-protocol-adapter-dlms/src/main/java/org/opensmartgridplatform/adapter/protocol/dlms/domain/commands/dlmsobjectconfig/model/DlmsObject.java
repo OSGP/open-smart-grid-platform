@@ -6,7 +6,9 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig;
+package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model;
+
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 
 public class DlmsObject {
     private static final int DEFAULT_ATTRIBUTE_ID = 2;
@@ -35,5 +37,9 @@ public class DlmsObject {
 
     public int getDefaultAttributeId() {
         return DEFAULT_ATTRIBUTE_ID;
+    }
+
+    public boolean mediumMatches(Medium medium) {
+        return true;
     }
 }

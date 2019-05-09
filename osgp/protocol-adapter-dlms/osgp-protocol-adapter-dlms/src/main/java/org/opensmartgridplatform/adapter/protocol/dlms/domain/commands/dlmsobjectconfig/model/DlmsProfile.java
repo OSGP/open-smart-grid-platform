@@ -6,9 +6,12 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig;
+package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model;
 
 import java.util.List;
+
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsCaptureObject;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 
 public class DlmsProfile extends DlmsObject {
 

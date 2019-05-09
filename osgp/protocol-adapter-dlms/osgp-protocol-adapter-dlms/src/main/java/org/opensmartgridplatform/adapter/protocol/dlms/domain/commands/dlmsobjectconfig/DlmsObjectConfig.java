@@ -11,6 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobje
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 
 public abstract class DlmsObjectConfig {
