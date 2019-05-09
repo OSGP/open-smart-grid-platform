@@ -75,7 +75,7 @@
             <xsd:documentation>Report containing measurements sent by a device and the related metadata.</xsd:documentation>
         </xsd:annotation>
         <xsd:sequence>
-            <xsd:element name="MeasurementReportHeader" type="da:MeasurementReportHeader"/>
+            <xsd:element name="ReportHeader" type="da:MeasurementReportHeader"/>
             <xsd:sequence>
                 <xsd:element name="MeasurementGroups" type="da:MeasurementGroups"/>
             </xsd:sequence>
@@ -132,7 +132,7 @@
 
     <xsd:complexType name="MeasurementGroup">
         <xsd:sequence>
-            <xsd:element name="MeasurementGroupIdentifier" type="xsd:int"/>
+            <xsd:element name="Identification" type="xsd:string"/>
             <xsd:sequence>
                 <xsd:element name="Measurements" type="da:Measurements"/>
             </xsd:sequence>
@@ -154,7 +154,7 @@
     <xsd:complexType name="MeasurementElements">
         <xsd:sequence>
             <xsd:choice minOccurs="1" maxOccurs="unbounded">
-                 <xsd:element name="FloatingPointMeasurementElement" type="da:FloatingPointMeasurementElement"></xsd:element>
+                 <xsd:element name="FloatMeasurementElement" type="da:FloatMeasurementElement"></xsd:element>
                  <xsd:element name="BitmaskMeasurementElement" type="da:BitmaskMeasurementElement"></xsd:element>
                  <xsd:element name="TimestampMeasurementElement" type="da:TimestampMeasurementElement"></xsd:element>
             </xsd:choice>
@@ -171,7 +171,7 @@
         </xsd:complexContent>
     </xsd:complexType>
 
-    <xsd:complexType name="FloatingPointMeasurementElement">
+    <xsd:complexType name="FloatMeasurementElement">
         <xsd:complexContent>
             <xsd:extension base="da:MeasurementElement">
                 <xsd:attribute name="value" type="xsd:float"/>

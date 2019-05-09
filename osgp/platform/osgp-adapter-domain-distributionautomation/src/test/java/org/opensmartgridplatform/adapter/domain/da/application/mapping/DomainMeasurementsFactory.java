@@ -65,14 +65,14 @@ public class DomainMeasurementsFactory {
                 .withReasonType(org.opensmartgridplatform.domain.da.measurements.ReasonType.SPONTANEOUS).build();
     }
 
-    public static MeasurementGroup gasFlowMeasurementGroup(final int groupIdentifier,
+    public static MeasurementGroup gasFlowMeasurementGroup(final String groupIdentification,
             final float[] gasFlowMeasurements) {
         final List<Measurement> measurements = new ArrayList<>();
         for (final float gasFlowMeasurement : gasFlowMeasurements) {
             measurements.add(DomainMeasurementsFactory.gasFlowMeasurement(gasFlowMeasurement));
         }
 
-        return new MeasurementGroup(groupIdentifier, measurements);
+        return new MeasurementGroup(groupIdentification, measurements);
     }
 
 }

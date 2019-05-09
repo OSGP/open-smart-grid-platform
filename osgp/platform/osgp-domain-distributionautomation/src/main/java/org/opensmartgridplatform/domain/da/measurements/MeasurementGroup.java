@@ -16,15 +16,15 @@ public class MeasurementGroup implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private int identification;
+    private String identification;
     private List<Measurement> measurements;
 
-    public MeasurementGroup(final int identification, final List<Measurement> measurements) {
+    public MeasurementGroup(final String identification, final List<Measurement> measurements) {
         this.identification = identification;
         this.measurements = new ArrayList<>(measurements);
     }
 
-    public int getIdentification() {
+    public String getIdentification() {
         return this.identification;
     }
 

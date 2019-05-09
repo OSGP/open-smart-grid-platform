@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.BitmaskMeasurementElement;
-import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.FloatingPointMeasurementElement;
+import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.FloatMeasurementElement;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.Measurement;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.MeasurementElement;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.MeasurementElements;
@@ -37,8 +37,8 @@ public class WSMeasurementsFactory {
         return element;
     }
 
-    public static FloatingPointMeasurementElement floatingPointFrom(final float value) {
-        final FloatingPointMeasurementElement element = new FloatingPointMeasurementElement();
+    public static FloatMeasurementElement floatingPointFrom(final float value) {
+        final FloatMeasurementElement element = new FloatMeasurementElement();
         element.setValue(value);
 
         return element;
@@ -73,7 +73,7 @@ public class WSMeasurementsFactory {
         final BitmaskMeasurementElement flags = WSMeasurementsFactory.bitmaskFrom((byte) 96);
         final TimestampMeasurementElement from = WSMeasurementsFactory.timestampFrom(1546800000501l);
         final TimestampMeasurementElement until = WSMeasurementsFactory.timestampFrom(1546700000444l);
-        final FloatingPointMeasurementElement cubicMeters = WSMeasurementsFactory.floatingPointFrom(gasFlow);
+        final FloatMeasurementElement cubicMeters = WSMeasurementsFactory.floatingPointFrom(gasFlow);
 
         final MeasurementElement[] wsElements = { flags, from, until, cubicMeters };
 
@@ -91,10 +91,10 @@ public class WSMeasurementsFactory {
         return spontaneousReportHeader;
     }
 
-    public static MeasurementGroup gasFlowMeasurementGroup(final int groupIdentifier,
+    public static MeasurementGroup gasFlowMeasurementGroup(final String groupIdentification,
             final float[] gasFlowMeasurements) {
         final MeasurementGroup gasFlowGroup = new MeasurementGroup();
-        gasFlowGroup.setMeasurementGroupIdentifier(groupIdentifier);
+        gasFlowGroup.setIdentification(groupIdentification);
 
         final Measurements wsMeasurements = new Measurements();
         for (final float gasFlowMeasurement : gasFlowMeasurements) {
@@ -106,10 +106,10 @@ public class WSMeasurementsFactory {
         return gasFlowGroup;
     }
 
-    public static MeasurementGroups gasFlowMeasurementGroups(final int groupIdentifier,
+    public static MeasurementGroups gasFlowMeasurementGroups(final String groupIdentification,
             final float[] gasFlowMeasurements) {
         final MeasurementGroups gasFlowGroups = new MeasurementGroups();
-        gasFlowGroups.getMeasurementGroupList().add(gasFlowMeasurementGroup(groupIdentifier, gasFlowMeasurements));
+        gasFlowGroups.getMeasurementGroupList().add(gasFlowMeasurementGroup(groupIdentification, gasFlowMeasurements));
 
         return gasFlowGroups;
     }

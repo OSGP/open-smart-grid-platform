@@ -13,7 +13,7 @@ import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.BitmaskMeasurementElement;
-import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.FloatingPointMeasurementElement;
+import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.FloatMeasurementElement;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.GetHealthStatusResponse;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.HealthStatusType;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.Measurement;
@@ -61,13 +61,12 @@ public class DistributionAutomationMapperTest {
     @Test
     public void testFloatingPointMeasurementElementMapping() {
         // Arrange
-        final FloatingPointMeasurementElement expected = WSMeasurementsFactory.floatingPointFrom(83.4999f);
+        final FloatMeasurementElement expected = WSMeasurementsFactory.floatingPointFrom(83.4999f);
         final org.opensmartgridplatform.domain.da.measurements.elements.FloatMeasurementElement domainMeasurementElement = new org.opensmartgridplatform.domain.da.measurements.elements.FloatMeasurementElement(
                 83.4999f);
 
         // Act
-        final FloatingPointMeasurementElement actual = this.mapper.map(domainMeasurementElement,
-                FloatingPointMeasurementElement.class);
+        final FloatMeasurementElement actual = this.mapper.map(domainMeasurementElement, FloatMeasurementElement.class);
 
         // Assert
         Assertions.assertThat(actual.getValue()).isEqualTo(expected.getValue());
@@ -106,13 +105,13 @@ public class DistributionAutomationMapperTest {
     @Test
     public void testMeasurementGroupMapping() {
         // Arrange
-        final int groupIdentifier = 215;
+        final String groupIdentification = "215";
         final float[] gasFlowMeasurements = { 401.70001f, 88.575f };
 
-        final MeasurementGroup expected = WSMeasurementsFactory.gasFlowMeasurementGroup(groupIdentifier,
+        final MeasurementGroup expected = WSMeasurementsFactory.gasFlowMeasurementGroup(groupIdentification,
                 gasFlowMeasurements);
         final org.opensmartgridplatform.domain.da.measurements.MeasurementGroup domainMeasurementGroup = DomainMeasurementsFactory
-                .gasFlowMeasurementGroup(groupIdentifier, gasFlowMeasurements);
+                .gasFlowMeasurementGroup(groupIdentification, gasFlowMeasurements);
 
         // Act
         final MeasurementGroup actual = this.mapper.map(domainMeasurementGroup, MeasurementGroup.class);
@@ -141,21 +140,21 @@ public class DistributionAutomationMapperTest {
     public void testMeasurementReportMapping() {
         // Arrange
         final int commonAddress = 55;
-        final int groupIdentifier = 137;
+        final String groupIdentification = "137";
         final float[] gasFlowMeasurements = { 78.733f, 21.000f };
 
         // Arrange WS
         final MeasurementReport expected = new MeasurementReport();
-        expected.setMeasurementReportHeader(WSMeasurementsFactory.spontaneousReportHeader(commonAddress));
+        expected.setReportHeader(WSMeasurementsFactory.spontaneousReportHeader(commonAddress));
 
-        final MeasurementGroups wsGroups = WSMeasurementsFactory.gasFlowMeasurementGroups(groupIdentifier,
+        final MeasurementGroups wsGroups = WSMeasurementsFactory.gasFlowMeasurementGroups(groupIdentification,
                 gasFlowMeasurements);
 
         expected.setMeasurementGroups(wsGroups);
 
         // Arrange domain
         final org.opensmartgridplatform.domain.da.measurements.MeasurementGroup domainGroup = DomainMeasurementsFactory
-                .gasFlowMeasurementGroup(groupIdentifier, gasFlowMeasurements);
+                .gasFlowMeasurementGroup(groupIdentification, gasFlowMeasurements);
         final List<org.opensmartgridplatform.domain.da.measurements.MeasurementGroup> domainGroups = new ArrayList<>();
         domainGroups.add(domainGroup);
 

@@ -71,8 +71,7 @@ public class DomainDistributionAutomationMapperTest {
         final FloatMeasurementElementDto dtoMeasurementElement = new FloatMeasurementElementDto(value);
 
         // Act
-        final FloatMeasurementElement actual = this.mapper.map(dtoMeasurementElement,
-                FloatMeasurementElement.class);
+        final FloatMeasurementElement actual = this.mapper.map(dtoMeasurementElement, FloatMeasurementElement.class);
 
         // Assert
         assertThat(actual).isEqualTo(expected);
@@ -110,13 +109,13 @@ public class DomainDistributionAutomationMapperTest {
     @Test
     public void testMeasurementGroupMapping() {
         // Arrange
-        final int groupIdentifier = 215;
+        final String groupIdentification = "215";
         final float[] gasFlowMeasurements = { 401.70001f, 88.575f };
 
-        final MeasurementGroup expected = DomainMeasurementsFactory.gasFlowMeasurementGroup(groupIdentifier,
+        final MeasurementGroup expected = DomainMeasurementsFactory.gasFlowMeasurementGroup(groupIdentification,
                 gasFlowMeasurements);
         final MeasurementGroupDto dtoMeasurementGroup = DtoMeasurementsFactory
-                .gasFlowMeasurementGroup(Integer.toString(groupIdentifier), gasFlowMeasurements);
+                .gasFlowMeasurementGroup(groupIdentification, gasFlowMeasurements);
 
         // Act
         final MeasurementGroup actual = this.mapper.map(dtoMeasurementGroup, MeasurementGroup.class);
@@ -145,11 +144,11 @@ public class DomainDistributionAutomationMapperTest {
     public void testMeasurementReportMapping() {
         // Arrange
         final int commonAddress = 55;
-        final int groupIdentifier = 137;
+        final String groupIdentification = "137";
         final float[] gasFlowMeasurements = { 78.733f, 21.000f };
 
         // Arrange domain
-        final MeasurementGroup expectedGroup = DomainMeasurementsFactory.gasFlowMeasurementGroup(groupIdentifier,
+        final MeasurementGroup expectedGroup = DomainMeasurementsFactory.gasFlowMeasurementGroup(groupIdentification,
                 gasFlowMeasurements);
         final List<MeasurementGroup> expectedGroups = new ArrayList<>();
         expectedGroups.add(expectedGroup);
@@ -159,8 +158,8 @@ public class DomainDistributionAutomationMapperTest {
 
         // Arrange DTO
         final MeasurementReportHeaderDto dtoHeader = DtoMeasurementsFactory.spontaneousReportHeader(commonAddress);
-        final MeasurementGroupDto dtoGroup = DtoMeasurementsFactory
-                .gasFlowMeasurementGroup(Integer.toString(groupIdentifier), gasFlowMeasurements);
+        final MeasurementGroupDto dtoGroup = DtoMeasurementsFactory.gasFlowMeasurementGroup(groupIdentification,
+                gasFlowMeasurements);
         final List<MeasurementGroupDto> dtoGroups = new ArrayList<>();
         dtoGroups.add(dtoGroup);
         final MeasurementReportDto dtoReport = new MeasurementReportDto(dtoHeader, dtoGroups);

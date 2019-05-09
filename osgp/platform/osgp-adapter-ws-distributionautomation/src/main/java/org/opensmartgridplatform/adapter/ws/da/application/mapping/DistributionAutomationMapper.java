@@ -9,7 +9,7 @@ package org.opensmartgridplatform.adapter.ws.da.application.mapping;
 
 import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.BitmaskMeasurementElement;
-import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.FloatingPointMeasurementElement;
+import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.FloatMeasurementElement;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.Measurement;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.MeasurementGroup;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.MeasurementReport;
@@ -71,7 +71,7 @@ public class DistributionAutomationMapper extends ConfigurableMapper {
                         org.opensmartgridplatform.domain.da.measurements.elements.BitmaskMeasurementElement.class)
                 .byDefault().register();
         mapperFactory
-                .classMap(FloatingPointMeasurementElement.class,
+                .classMap(FloatMeasurementElement.class,
                         org.opensmartgridplatform.domain.da.measurements.elements.FloatMeasurementElement.class)
                 .byDefault().register();
         mapperFactory
