@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.domain.da.measurements.testutils;
+package org.opensmartgridplatform.adapter.ws.da.application.mapping;
 
 import java.util.ArrayList;
 import java.util.List;

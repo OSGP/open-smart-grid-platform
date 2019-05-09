@@ -22,8 +22,6 @@ import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generi
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.MeasurementReport;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.MeasurementReportHeader;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.TimestampMeasurementElement;
-import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.testutils.WSMeasurementsFactory;
-import org.opensmartgridplatform.domain.da.measurements.testutils.DomainMeasurementsFactory;
 
 public class DistributionAutomationMapperTest {
 
