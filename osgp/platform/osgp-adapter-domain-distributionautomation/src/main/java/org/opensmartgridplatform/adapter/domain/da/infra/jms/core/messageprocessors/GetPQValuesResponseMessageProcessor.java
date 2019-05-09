@@ -13,10 +13,11 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.da.application.services.MonitoringService;
-import org.opensmartgridplatform.shared.infra.jms.BaseNotificationMessageProcessor;
 import org.opensmartgridplatform.dto.da.GetPQValuesResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.BaseNotificationMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.NotificationResponseMessageSender;
@@ -43,8 +44,7 @@ public class GetPQValuesResponseMessageProcessor extends BaseNotificationMessage
     private MonitoringService monitoringService;
 
     @Autowired
-    protected GetPQValuesResponseMessageProcessor(
-            final NotificationResponseMessageSender responseMessageSender,
+    protected GetPQValuesResponseMessageProcessor(final NotificationResponseMessageSender responseMessageSender,
             @Qualifier("domainDistributionAutomationOsgpCoreResponseMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.GET_POWER_QUALITY_VALUES);
     }
@@ -89,9 +89,11 @@ public class GetPQValuesResponseMessageProcessor extends BaseNotificationMessage
 
             final GetPQValuesResponseDto dataResponse = (GetPQValuesResponseDto) dataObject;
 
-            this.monitoringService
-                    .handleGetPQValuesResponse(dataResponse, deviceIdentification, organisationIdentification, correlationUid, messageType,
-                            responseMessageResultType, osgpException);
+            final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification,
+                    correlationUid);
+
+            this.monitoringService.handleGetPQValuesResponse(dataResponse, ids, messageType, responseMessageResultType,
+                    osgpException);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
