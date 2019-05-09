@@ -16,18 +16,20 @@ import org.slf4j.LoggerFactory;
 public class Iec60870Server {
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec60870Server.class);
 
-    private Iec60870ServerEventListener iec60870ServerEventListener;
+    private final Iec60870ServerEventListener iec60870ServerEventListener;
     private Server server;
+    private final int port;
 
-    public Iec60870Server(final Iec60870ServerEventListener iec60870ServerEventListener) {
+    public Iec60870Server(final Iec60870ServerEventListener iec60870ServerEventListener, final int port) {
         this.iec60870ServerEventListener = iec60870ServerEventListener;
+        this.port = port;
     }
 
     public void start() {
-        this.server = new Server.Builder().build();
+        this.server = new Server.Builder().setPort(this.port).build();
 
         try {
-            LOGGER.info("Starting IEC60870 Server.");
+            LOGGER.info("Starting IEC60870 Server on port {}.", this.port);
             this.server.start(this.iec60870ServerEventListener);
             LOGGER.info("Started IEC60870 Server.");
         } catch (final IOException e) {
@@ -36,7 +38,7 @@ public class Iec60870Server {
     }
 
     public void stop() {
-        LOGGER.info("Stopping IEC60870 Server.");
+        LOGGER.info("Stopping IEC60870 Server on port {}.", this.port);
         this.server.stop();
         LOGGER.info("Stopped IEC60870 Server.");
     }
