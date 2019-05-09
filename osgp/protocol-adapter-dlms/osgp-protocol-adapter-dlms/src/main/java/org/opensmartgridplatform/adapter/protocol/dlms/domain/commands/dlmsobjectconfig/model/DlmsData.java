@@ -6,7 +6,9 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig;
+package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model;
+
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 
 public class DlmsData extends DlmsObject {
 

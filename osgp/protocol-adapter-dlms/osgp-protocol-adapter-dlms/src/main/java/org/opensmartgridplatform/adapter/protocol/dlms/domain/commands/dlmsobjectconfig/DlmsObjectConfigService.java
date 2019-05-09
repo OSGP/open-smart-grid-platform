@@ -19,6 +19,10 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsObject;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsProfile;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsRegister;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.Medium;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.GetPeriodicMeterReadsGasCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -169,7 +173,7 @@ public class DlmsObjectConfigService {
         for (final DlmsCaptureObject captureObject : profile.getCaptureObjects()) {
             final DlmsObject relatedObject = captureObject.getRelatedObject();
 
-            if (!this.mediumMatches(filterMedium, relatedObject) || !this.channelMatches(channel, captureObject)) {
+            if (!relatedObject.mediumMatches(filterMedium) || !captureObject.channelMatches(channel)) {
                 continue;
             }
 
@@ -194,15 +198,5 @@ public class DlmsObjectConfigService {
         }
 
         return objectDefinitions;
-    }
-
-    private boolean mediumMatches(final Medium filterMedium, final DlmsObject object) {
-        return filterMedium == null || !(object instanceof DlmsRegister)
-                || ((DlmsRegister) object).getMedium() == filterMedium;
-    }
-
-    private boolean channelMatches(final Integer channel, final DlmsCaptureObject captureObject) {
-        return !(captureObject instanceof DlmsCaptureObjectWithChannel)
-                || ((DlmsCaptureObjectWithChannel) captureObject).getChannel() == channel;
     }
 }

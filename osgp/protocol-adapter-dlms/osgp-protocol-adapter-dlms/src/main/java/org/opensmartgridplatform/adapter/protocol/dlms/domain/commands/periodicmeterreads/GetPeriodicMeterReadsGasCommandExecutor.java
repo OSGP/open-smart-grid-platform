@@ -11,7 +11,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodic
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -24,7 +23,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjec
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsCaptureObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.Medium;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.Medium;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.AmrProfileStatusCodeHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
@@ -306,16 +305,13 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
         final List<AttributeAddress> attributeAddresses = new ArrayList<>();
 
         // Add the attribute address for the profile
-        final Optional<AttributeAddressForProfile> attributeAddressProfileOptional =
+        final AttributeAddressForProfile attributeAddressProfile =
                 this.dlmsObjectConfigService.findAttributeAddressForProfile(
-                device, type, channel.getChannelNumber(), beginDateTime, endDateTime, Medium.GAS);
+                device, type, channel.getChannelNumber(), beginDateTime, endDateTime, Medium.GAS)
+                .orElseThrow( () -> new ProtocolAdapterException("No address found for " + type));
 
-        if (!attributeAddressProfileOptional.isPresent()) {
-            throw new ProtocolAdapterException("No address found for " + type);
-        } else {
-            attributeAddresses.add(attributeAddressProfileOptional.get());
-            selectedObjects.addAll(attributeAddressProfileOptional.get().getSelectedObjects());
-        }
+        attributeAddresses.add(attributeAddressProfile);
+        selectedObjects.addAll(attributeAddressProfile.getSelectedObjects());
 
         // Add the attribute address for the scaler units
         attributeAddresses.addAll(this.dlmsObjectConfigService.getAttributeAddressesForScalerUnit(selectedObjects,

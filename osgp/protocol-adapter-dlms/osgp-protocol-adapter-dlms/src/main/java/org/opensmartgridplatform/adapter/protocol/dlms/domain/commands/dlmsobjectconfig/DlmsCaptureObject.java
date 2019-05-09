@@ -8,13 +8,22 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig;
 
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsObject;
+
 public class DlmsCaptureObject {
     private final DlmsObject relatedObject;
     private final int attributeId;
+    private Integer channel;
 
     public DlmsCaptureObject(final DlmsObject relatedObject, final int attributeId) {
         this.relatedObject = relatedObject;
         this.attributeId = attributeId;
+    }
+
+    public DlmsCaptureObject(final DlmsObject relatedObject, final int attributeId, int channel) {
+        this.relatedObject = relatedObject;
+        this.attributeId = attributeId;
+        this.channel = channel;
     }
 
     public DlmsCaptureObject(final DlmsObject relatedObject) {
@@ -28,5 +37,9 @@ public class DlmsCaptureObject {
 
     public int getAttributeId() {
         return this.attributeId;
+    }
+
+    public boolean channelMatches(int channel) {
+        return this.channel == null || this.channel == channel;
     }
 }

@@ -6,7 +6,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig;
+package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model;
 
 public enum ProfileCaptureTime {
     QUARTER_HOUR, HOUR, DAY, MONTH
