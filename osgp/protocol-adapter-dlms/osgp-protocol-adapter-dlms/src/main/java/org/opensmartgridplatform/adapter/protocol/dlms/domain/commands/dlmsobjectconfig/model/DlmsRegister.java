@@ -12,6 +12,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjec
 
 public class DlmsRegister extends DlmsObject {
 
+    private static final int CLASS_ID_REGISTER = 3;
     private static final int SCALER_UNIT_ATTRIBUTE_ID = 3;
 
     private final int scaler;
@@ -20,7 +21,7 @@ public class DlmsRegister extends DlmsObject {
 
     public DlmsRegister(final DlmsObjectType type, final String obisCode, final int scaler, final RegisterUnit unit,
             final Medium medium) {
-        super(type, 3, obisCode);
+        super(type, CLASS_ID_REGISTER, obisCode);
         this.scaler = scaler;
         this.unit = unit;
         this.medium = medium;
@@ -50,6 +51,7 @@ public class DlmsRegister extends DlmsObject {
         return SCALER_UNIT_ATTRIBUTE_ID;
     }
 
+    @Override
     public boolean mediumMatches(Medium medium) {
         return medium == null || this.medium == medium;
     }

@@ -8,19 +8,37 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig;
 
+import java.util.Arrays;
+
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodTypeDto;
+
 // @formatter:off
 public enum DlmsObjectType {
-    AMR_STATUS,
-    AMR_STATUS_MBUS,
-    CLOCK,
-    ACTIVE_ENERGY_IMPORT,
-    ACTIVE_ENERGY_IMPORT_RATE_1,
-    ACTIVE_ENERGY_IMPORT_RATE_2,
-    ACTIVE_ENERGY_EXPORT,
-    ACTIVE_ENERGY_EXPORT_RATE_1,
-    ACTIVE_ENERGY_EXPORT_RATE_2,
-    MBUS_MASTER_VALUE,
-    INTERVAL_VALUES,
-    MONTHLY_BILLING_VALUES,
-    DAILY_LOAD_PROFILE
+    AMR_STATUS (null),
+    AMR_STATUS_MBUS (null),
+    CLOCK (null),
+    ACTIVE_ENERGY_IMPORT (null),
+    ACTIVE_ENERGY_IMPORT_RATE_1 (null),
+    ACTIVE_ENERGY_IMPORT_RATE_2 (null),
+    ACTIVE_ENERGY_EXPORT (null),
+    ACTIVE_ENERGY_EXPORT_RATE_1 (null),
+    ACTIVE_ENERGY_EXPORT_RATE_2 (null),
+    MBUS_MASTER_VALUE (null),
+    INTERVAL_VALUES (PeriodTypeDto.INTERVAL),
+    MONTHLY_BILLING_VALUES (PeriodTypeDto.MONTHLY),
+    DAILY_LOAD_PROFILE (PeriodTypeDto.DAILY);
+
+    private PeriodTypeDto relatedPeriodType;
+
+    DlmsObjectType(PeriodTypeDto relatedPeriodType) {
+        this.relatedPeriodType = relatedPeriodType;
+    }
+
+    public static DlmsObjectType getTypeForPeriodType(PeriodTypeDto periodType) throws ProtocolAdapterException {
+        return Arrays.stream(values())
+                .filter(t -> t.relatedPeriodType == periodType)
+                .findFirst()
+                .orElseThrow(() -> new ProtocolAdapterException(String.format("periodtype %s not supported", periodType)));
+    }
 }

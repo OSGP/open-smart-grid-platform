@@ -11,8 +11,9 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobje
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 
 public class DlmsData extends DlmsObject {
+    private static final int CLASS_ID_DATA = 1;
 
     public DlmsData(final DlmsObjectType type, final String obisCode) {
-        super(type, 1, obisCode);
+        super(type, CLASS_ID_DATA, obisCode);
     }
 }

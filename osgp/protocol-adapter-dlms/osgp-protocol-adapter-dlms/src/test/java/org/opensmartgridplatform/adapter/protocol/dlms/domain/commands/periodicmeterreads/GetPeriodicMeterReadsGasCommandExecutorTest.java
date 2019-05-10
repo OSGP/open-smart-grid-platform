@@ -129,7 +129,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
                 this.fromDateTime.toDate(), this.toDateTime.toDate(), channel);
 
         // SETUP - dlms objects
-        final DlmsObject dlmsClock = new DlmsClock(DlmsObjectType.CLOCK, "0.0.1.0.0.255");
+        final DlmsObject dlmsClock = new DlmsClock("0.0.1.0.0.255");
         final DlmsCaptureObject captureObject1 = new DlmsCaptureObject(dlmsClock, 2);
 
         final DlmsObject dlmsExtendedRegister = new DlmsExtendedRegister(DlmsObjectType.MBUS_MASTER_VALUE,
@@ -151,20 +151,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
                 eq(DlmsObjectType.DAILY_LOAD_PROFILE), eq(channel.getChannelNumber()), eq(this.fromDateTime),
                 eq(this.toDateTime), eq(Medium.GAS))).thenReturn(Optional.of(attributeAddressForProfile));
 
-        //        doAnswer(new Answer() {
-        //            @Override
-        //            public Object answer(final InvocationOnMock invocation) {
-        //                final Object[] args = invocation.getArguments();
-        //                ((List<DlmsCaptureObject>) args[6]).addAll(captureObjects);
-        //                return Optional.of(attributeAddress);
-        //            }
-        //        }).when(this.dlmsObjectConfigService)
-        //                .findAttributeAddress(eq(this.device), eq(DlmsObjectType.DAILY_LOAD_PROFILE),
-        //                        eq(channel.getChannelNumber()), eq(this.fromDateTime), eq(this.toDateTime), eq
-        // (Medium.GAS),
-        //                        eq(Collections.emptyList()));
-
-        when(this.dlmsObjectConfigService.getAttributeAddressesForScalerUnit(eq(captureObjects),
+        when(this.dlmsObjectConfigService.getAttributeAddressesForScalerUnit(eq(attributeAddressForProfile),
                 eq(channel.getChannelNumber()))).thenReturn(Collections.singletonList(attributeAddressScalerUnit));
 
         // SETUP - mock dlms helper to return data objects on request
@@ -186,7 +173,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
         final String expectedDescription = "retrieve periodic meter reads for " + periodType + ", channel " + channel;
         final GetResult getResult = mock(GetResult.class);
         when(this.dlmsHelper.getAndCheck(eq(this.connectionManager), eq(this.device), eq(expectedDescription),
-                eq((AttributeAddress) attributeAddressForProfile))).thenReturn(Collections.singletonList(getResult));
+                eq(attributeAddressForProfile.getAttributeAddress()))).thenReturn(Collections.singletonList(getResult));
         when(this.dlmsHelper.getAndCheck(this.connectionManager, this.device, expectedDescription,
                 attributeAddressScalerUnit)).thenReturn(Collections.singletonList(getResult));
 
@@ -239,8 +226,8 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
 
     private AttributeAddressForProfile createAttributeAddressForProfile(final DlmsObject dlmsObject,
             final List<DlmsCaptureObject> selectedObjects) {
-        return new AttributeAddressForProfile(dlmsObject.getClassId(), new ObisCode(dlmsObject.getObisCode()),
-                dlmsObject.getDefaultAttributeId(), null, selectedObjects);
+        return new AttributeAddressForProfile(new AttributeAddress(dlmsObject.getClassId(),
+                new ObisCode(dlmsObject.getObisCode()), dlmsObject.getDefaultAttributeId(), null), selectedObjects);
     }
 
     private DlmsDevice createDevice(final Protocol protocol) {

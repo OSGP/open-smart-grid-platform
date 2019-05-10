@@ -35,7 +35,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class DlmsObjectConfigService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsGasCommandExecutor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DlmsObjectConfigService.class);
 
     private final DlmsHelper dlmsHelper;
     private final List<DlmsObjectConfig> dlmsObjectConfigs;
@@ -49,7 +49,7 @@ public class DlmsObjectConfigService {
     public Optional<AttributeAddress> findAttributeAddress(final DlmsDevice device, final DlmsObjectType type,
             final Integer channel) {
         return this.findAttributeAddressForProfile(device, type, channel, null, null, null)
-                .map(addressForProfile -> (AttributeAddress) addressForProfile);
+                .map(AttributeAddressForProfile::getAttributeAddress);
     }
 
     public Optional<AttributeAddressForProfile> findAttributeAddressForProfile(final DlmsDevice device,
@@ -57,8 +57,8 @@ public class DlmsObjectConfigService {
             final Medium filterMedium) {
         return this.findDlmsObject(Protocol.withNameAndVersion(device.getProtocol(), device.getProtocolVersion()), type,
                 filterMedium)
-                .map(dlmsObject -> this.getAttributeAddressForProfile(dlmsObject, channel, from, to, filterMedium,
-                        device));
+                .map(dlmsObject -> this.getAttributeAddressForProfile(new AddressRequest(device, dlmsObject, channel,
+                        from, to, filterMedium)));
     }
 
     private Optional<DlmsObject> findDlmsObject(final Protocol protocol, final DlmsObjectType type,
@@ -66,32 +66,15 @@ public class DlmsObjectConfigService {
         return this.dlmsObjectConfigs.stream()
                 .filter(config -> config.contains(protocol))
                 .findAny()
-                .flatMap(dlmsObjectConfig -> this.findDlmsObject(dlmsObjectConfig, type, filterMedium));
+                .flatMap(dlmsObjectConfig -> dlmsObjectConfig.findObject(type, filterMedium));
     }
 
-    private Optional<DlmsObject> findDlmsObject(final DlmsObjectConfig dlmsObjectConfig, final DlmsObjectType type,
-            final Medium filterMedium) {
-        // @formatter:off
-        return dlmsObjectConfig.getObjects()
-                .filter(o1 -> o1.getType().equals(type))
-                .filter(o2 -> !(o2 instanceof DlmsProfile)
-                        || ((DlmsProfile) o2).getMedium() == Medium.COMBINED
-                        || ((DlmsProfile) o2).getMedium() == filterMedium)
-                .findAny();
-        // @formatter:on
-    }
-
-    public List<AttributeAddress> getAttributeAddressesForScalerUnit(final List<DlmsCaptureObject> selectedObjects,
+    public List<AttributeAddress> getAttributeAddressesForScalerUnit(final AttributeAddressForProfile attributeAddressForProfile,
             final Integer channel) {
         final List<AttributeAddress> attributeAddresses = new ArrayList<>();
 
         // Get all Registers from the list of selected objects for which the default attribute is captured.
-        final List<DlmsRegister> dlmsRegisters = selectedObjects.stream()
-                .filter(c -> c.getAttributeId() == c.getRelatedObject().getDefaultAttributeId())
-                .map(DlmsCaptureObject::getRelatedObject)
-                .filter(r -> r instanceof DlmsRegister)
-                .map(r -> (DlmsRegister) r)
-                .collect(Collectors.toList());
+        final List<DlmsRegister> dlmsRegisters = attributeAddressForProfile.getCaptureObjects(DlmsRegister.class, true);
 
         for (final DlmsRegister register : dlmsRegisters) {
             attributeAddresses.add(
@@ -102,17 +85,17 @@ public class DlmsObjectConfigService {
         return attributeAddresses;
     }
 
-    private AttributeAddressForProfile getAttributeAddressForProfile(final DlmsObject dlmsObject, final Integer channel,
-            final DateTime from, final DateTime to, final Medium filterMedium, final DlmsDevice device) {
+    private AttributeAddressForProfile getAttributeAddressForProfile(AddressRequest addressRequest) {
         final List<DlmsCaptureObject> selectedObjects = new ArrayList<>();
 
-        final SelectiveAccessDescription access = this.getAccessDescription(dlmsObject, from, to, channel, filterMedium,
-                device, selectedObjects);
+        final SelectiveAccessDescription access = this.getAccessDescription(addressRequest, selectedObjects);
 
-        final ObisCode obisCode = this.replaceChannel(dlmsObject.getObisCode(), channel);
+        DlmsObject dlmsObject = addressRequest.getDlmsObject();
 
-        return new AttributeAddressForProfile(dlmsObject.getClassId(), obisCode, dlmsObject.getDefaultAttributeId(),
-                access, selectedObjects);
+        final ObisCode obisCode = this.replaceChannel(dlmsObject.getObisCode(), addressRequest.getChannel());
+
+        return new AttributeAddressForProfile(new AttributeAddress(dlmsObject.getClassId(), obisCode,
+                dlmsObject.getDefaultAttributeId(), access), selectedObjects);
     }
 
     private ObisCode replaceChannel(String obisCode, final Integer channel) {
@@ -123,9 +106,14 @@ public class DlmsObjectConfigService {
         return new ObisCode(obisCode);
     }
 
-    private SelectiveAccessDescription getAccessDescription(final DlmsObject object, final DateTime from,
-            final DateTime to, final Integer channel, final Medium filterMedium, final DlmsDevice device,
+    private SelectiveAccessDescription getAccessDescription(AddressRequest addressRequest,
             final List<DlmsCaptureObject> selectedObjects) {
+
+        DlmsObject object = addressRequest.getDlmsObject();
+        DateTime from = addressRequest.getFrom();
+        DateTime to = addressRequest.getTo();
+        DlmsDevice device = addressRequest.getDevice();
+
         if (!(object instanceof DlmsProfile) || from == null || to == null) {
             return null;
         } else if (!device.isSelectiveAccessSupported()) {
@@ -135,8 +123,7 @@ public class DlmsObjectConfigService {
         } else {
             final int accessSelector = 1;
 
-            final DataObject selectedValues = this.getSelectedValues(object, channel, filterMedium,
-                    Protocol.withNameAndVersion(device.getProtocol(), device.getProtocolVersion()), selectedObjects);
+            final DataObject selectedValues = this.getSelectedValues(addressRequest, selectedObjects);
 
             final DataObject accessParameter = this.dlmsHelper.getAccessSelectionTimeRangeParameter(from, to,
                     selectedValues);
@@ -145,21 +132,24 @@ public class DlmsObjectConfigService {
         }
     }
 
-    private DataObject getSelectedValues(final DlmsObject object, final Integer channel, final Medium filterMedium,
-            final Protocol protocol, final List<DlmsCaptureObject> selectedObjects) {
+    private DataObject getSelectedValues(AddressRequest addressRequest, final List<DlmsCaptureObject> selectedObjects) {
         List<DataObject> objectDefinitions = new ArrayList<>();
+
+        DlmsObject object = addressRequest.getDlmsObject();
+        Protocol protocol = Protocol.withNameAndVersion(addressRequest.getDevice().getProtocol(),
+                addressRequest.getDevice().getProtocolVersion());
 
         if (object instanceof DlmsProfile && ((DlmsProfile) object).getCaptureObjects() != null) {
 
             final DlmsProfile profile = (DlmsProfile) object;
 
             if (!protocol.isSelectValuesInSelectiveAccessSupported()) {
-                // If all selecting values is not supported, then all values are selected (and the objectDefinitions
-                // list should be empty)
+                // If selecting values is not supported, then all values are selected (and the objectDefinitions list
+                // should be empty)
                 selectedObjects.addAll(profile.getCaptureObjects());
             } else {
-                objectDefinitions = this.getObjectDefinitions(channel, filterMedium, protocol, profile,
-                        selectedObjects);
+                objectDefinitions = this.getObjectDefinitions(addressRequest.getChannel(),
+                        addressRequest.getFilterMedium(), protocol, profile, selectedObjects);
             }
         }
 
