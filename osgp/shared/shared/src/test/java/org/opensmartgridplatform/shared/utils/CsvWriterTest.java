@@ -9,7 +9,6 @@
 package org.opensmartgridplatform.shared.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -81,21 +80,5 @@ public class CsvWriterTest {
         stringBuilder.append(this.lines.get(1)[0] + COMMA + "");
 
         return stringBuilder.toString();
-    }
-
-    @Test
-    public void createCsvFile_unableToWriteOutputFile() {
-        final String outputFilePath = File.separator + "unable-to-write-to-root.csv";
-        try {
-            this.csvWriter.writeCsvFile(outputFilePath, this.header, this.lines);
-            fail("Unexpected write to " + File.separator);
-        } catch (final IOException e) {
-            this.assertExceptionMessage(e, "Permission denied");
-        }
-    }
-
-    private void assertExceptionMessage(final Exception e, final String message) {
-        assertThat(e).isNotNull();
-        assertThat(e.getMessage()).contains(message);
     }
 }
