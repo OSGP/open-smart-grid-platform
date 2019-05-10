@@ -9,7 +9,6 @@
 package org.opensmartgridplatform.shared.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -78,31 +77,5 @@ public class FileZipperTest {
 
         final String content = stringBuilder.toString();
         assertThat(content).isEqualTo(this.lines.get(0));
-    }
-
-    @Test
-    public void createZipFile_inputFileNotFound() {
-        try {
-            this.fileZipper.compressFile("non-existent-file.txt");
-            fail("Unexpected non existent file");
-        } catch (final IOException e) {
-            this.assertExceptionMessage(e, "No such file or directory");
-        }
-    }
-
-    @Test
-    public void createZipFile_unableToWriteOutputFile() {
-        final String outputFilePath = File.separator + "unable-to-write-to-root.txt";
-        try {
-            this.fileZipper.compressFile(this.filePath, outputFilePath);
-            fail("Unexpected write to " + File.separator);
-        } catch (final IOException e) {
-            this.assertExceptionMessage(e, "Permission denied");
-        }
-    }
-
-    private void assertExceptionMessage(final Exception e, final String message) {
-        assertThat(e).isNotNull();
-        assertThat(e.getMessage()).contains(message);
     }
 }
