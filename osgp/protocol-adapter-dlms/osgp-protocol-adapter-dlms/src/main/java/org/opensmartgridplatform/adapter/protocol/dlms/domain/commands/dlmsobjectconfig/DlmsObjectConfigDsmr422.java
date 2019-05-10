@@ -53,7 +53,7 @@ public class DlmsObjectConfigDsmr422 extends DlmsObjectConfig {
         // @formatter:off
 
         // Abstract objects
-        final DlmsObject clock = new DlmsClock(CLOCK, "0.0.1.0.0.255");
+        final DlmsObject clock = new DlmsClock("0.0.1.0.0.255");
         final DlmsObject amrStatus = new DlmsData(AMR_STATUS, "0.0.96.10.2.255");
         final DlmsObject amrStatusMbus = new DlmsData(AMR_STATUS, "0.<c>.96.10.2.255");
 
@@ -77,52 +77,52 @@ public class DlmsObjectConfigDsmr422 extends DlmsObjectConfig {
 
         // Profiles
         final List<DlmsCaptureObject> captureObjectsIntervalE = Arrays.asList(
-                new DlmsCaptureObject(clock),
-                new DlmsCaptureObject(amrStatus),
-                new DlmsCaptureObject(activeEnergyImport),
-                new DlmsCaptureObject(activeEnergyExport));
+                DlmsCaptureObject.create(clock),
+                DlmsCaptureObject.create(amrStatus),
+                DlmsCaptureObject.create(activeEnergyImport),
+                DlmsCaptureObject.create(activeEnergyExport));
         objectList.add(new DlmsProfile(INTERVAL_VALUES, "1.0.99.1.0.255", captureObjectsIntervalE, QUARTER_HOUR,
                 ELECTRICITY));
 
         final List<DlmsCaptureObject> captureObjectsIntervalG = Arrays.asList(
-                new DlmsCaptureObject(clock),
-                new DlmsCaptureObject(amrStatusMbus),
-                new DlmsCaptureObject(mbusMasterValue),
-                new DlmsCaptureObject(mbusMasterValue, 5));
+                DlmsCaptureObject.create(clock),
+                DlmsCaptureObject.create(amrStatusMbus),
+                DlmsCaptureObject.create(mbusMasterValue),
+                DlmsCaptureObject.create(mbusMasterValue, 5));
         objectList.add(new DlmsProfile(INTERVAL_VALUES, "0.<c>.24.3.0.255", captureObjectsIntervalG, QUARTER_HOUR,
                 GAS));
 
         final List<DlmsCaptureObject> captureObjectsDaily = Arrays.asList(
-                new DlmsCaptureObject(clock),
-                new DlmsCaptureObject(amrStatus),
-                new DlmsCaptureObject(activeEnergyImportRate1),
-                new DlmsCaptureObject(activeEnergyImportRate2),
-                new DlmsCaptureObject(activeEnergyExportRate1),
-                new DlmsCaptureObject(activeEnergyExportRate2),
-                new DlmsCaptureObjectWithChannel(mbusMasterValue, 1),
-                new DlmsCaptureObjectWithChannel(mbusMasterValue, 1, 5),
-                new DlmsCaptureObjectWithChannel(mbusMasterValue, 2),
-                new DlmsCaptureObjectWithChannel(mbusMasterValue, 2, 5),
-                new DlmsCaptureObjectWithChannel(mbusMasterValue, 3),
-                new DlmsCaptureObjectWithChannel(mbusMasterValue, 3, 5),
-                new DlmsCaptureObjectWithChannel(mbusMasterValue, 4),
-                new DlmsCaptureObjectWithChannel(mbusMasterValue, 4, 5));
+                DlmsCaptureObject.create(clock),
+                DlmsCaptureObject.create(amrStatus),
+                DlmsCaptureObject.create(activeEnergyImportRate1),
+                DlmsCaptureObject.create(activeEnergyImportRate2),
+                DlmsCaptureObject.create(activeEnergyExportRate1),
+                DlmsCaptureObject.create(activeEnergyExportRate2),
+                DlmsCaptureObject.createWithChannel(mbusMasterValue, 1),
+                DlmsCaptureObject.createWithChannel(mbusMasterValue, 1, 5),
+                DlmsCaptureObject.createWithChannel(mbusMasterValue, 2),
+                DlmsCaptureObject.createWithChannel(mbusMasterValue, 2, 5),
+                DlmsCaptureObject.createWithChannel(mbusMasterValue, 3),
+                DlmsCaptureObject.createWithChannel(mbusMasterValue, 3, 5),
+                DlmsCaptureObject.createWithChannel(mbusMasterValue, 4),
+                DlmsCaptureObject.createWithChannel(mbusMasterValue, 4, 5));
         objectList.add(new DlmsProfile(DAILY_LOAD_PROFILE, "1.0.99.2.0.255", captureObjectsDaily, DAY, COMBINED));
 
         final List<DlmsCaptureObject> captureObjectsMonthly = Arrays.asList(
-                new DlmsCaptureObject(clock),
-                new DlmsCaptureObject(activeEnergyImportRate1),
-                new DlmsCaptureObject(activeEnergyImportRate2),
-                new DlmsCaptureObject(activeEnergyExportRate1),
-                new DlmsCaptureObject(activeEnergyExportRate2),
-                new DlmsCaptureObjectWithChannel(mbusMasterValue, 1),
-                new DlmsCaptureObjectWithChannel(mbusMasterValue, 1, 5),
-                new DlmsCaptureObjectWithChannel(mbusMasterValue, 2),
-                new DlmsCaptureObjectWithChannel(mbusMasterValue, 2, 5),
-                new DlmsCaptureObjectWithChannel(mbusMasterValue, 3),
-                new DlmsCaptureObjectWithChannel(mbusMasterValue, 3, 5),
-                new DlmsCaptureObjectWithChannel(mbusMasterValue, 4),
-                new DlmsCaptureObjectWithChannel(mbusMasterValue, 4, 5));
+                DlmsCaptureObject.create(clock),
+                DlmsCaptureObject.create(activeEnergyImportRate1),
+                DlmsCaptureObject.create(activeEnergyImportRate2),
+                DlmsCaptureObject.create(activeEnergyExportRate1),
+                DlmsCaptureObject.create(activeEnergyExportRate2),
+                DlmsCaptureObject.createWithChannel(mbusMasterValue, 1),
+                DlmsCaptureObject.createWithChannel(mbusMasterValue, 1, 5),
+                DlmsCaptureObject.createWithChannel(mbusMasterValue, 2),
+                DlmsCaptureObject.createWithChannel(mbusMasterValue, 2, 5),
+                DlmsCaptureObject.createWithChannel(mbusMasterValue, 3),
+                DlmsCaptureObject.createWithChannel(mbusMasterValue, 3, 5),
+                DlmsCaptureObject.createWithChannel(mbusMasterValue, 4),
+                DlmsCaptureObject.createWithChannel(mbusMasterValue, 4, 5));
         objectList.add(new DlmsProfile(MONTHLY_BILLING_VALUES, "0.0.98.1.0.255", captureObjectsMonthly, MONTH,
                 COMBINED));
 

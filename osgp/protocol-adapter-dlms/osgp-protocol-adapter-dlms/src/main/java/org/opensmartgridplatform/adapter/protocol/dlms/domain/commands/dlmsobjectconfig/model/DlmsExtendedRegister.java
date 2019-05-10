@@ -11,9 +11,10 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobje
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 
 public class DlmsExtendedRegister extends DlmsRegister {
+    private static final int CLASS_ID_EXTENDED_REGISTER = 4;
 
     public DlmsExtendedRegister(final DlmsObjectType type, final String obisCode, final int scaler,
             final RegisterUnit unit, final Medium medium) {
-        super(type, 4, obisCode, scaler, unit, medium);
+        super(type, CLASS_ID_EXTENDED_REGISTER, obisCode, scaler, unit, medium);
     }
 }

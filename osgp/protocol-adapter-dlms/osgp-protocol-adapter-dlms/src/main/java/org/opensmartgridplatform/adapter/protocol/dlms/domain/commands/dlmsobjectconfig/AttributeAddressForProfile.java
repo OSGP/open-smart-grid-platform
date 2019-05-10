@@ -9,21 +9,55 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.ObisCode;
-import org.openmuc.jdlms.SelectiveAccessDescription;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsRegister;
 
-public class AttributeAddressForProfile extends AttributeAddress {
+public class AttributeAddressForProfile {
+    private final AttributeAddress attributeAddress;
     private final List<DlmsCaptureObject> selectedObjects;
 
-    public AttributeAddressForProfile(final int classId, final ObisCode instanceId, final int attributeId,
-            final SelectiveAccessDescription access, final List<DlmsCaptureObject> selectedObjects) {
-        super(classId, instanceId, attributeId, access);
+    public AttributeAddressForProfile(AttributeAddress attributeAddress, List<DlmsCaptureObject> selectedObjects) {
+        this.attributeAddress = attributeAddress;
         this.selectedObjects = selectedObjects;
     }
 
-    public List<DlmsCaptureObject> getSelectedObjects() {
-        return this.selectedObjects;
+    public AttributeAddress getAttributeAddress() {
+        return attributeAddress;
+    }
+
+    List<DlmsCaptureObject> getSelectedObjects() {
+        return selectedObjects;
+    }
+
+    public Integer getIndex(final DlmsObjectType type, final Integer attributeId) {
+        int index = 0;
+
+        for (final DlmsCaptureObject object : selectedObjects) {
+            if (object.getRelatedObject().getType().equals(type) && (attributeId == null
+                    || object.getAttributeId() == attributeId)) {
+                return index;
+            }
+            index++;
+        }
+
+        return null;
+    }
+
+    public DlmsCaptureObject getCaptureObject(DlmsObjectType dlmsObjectType) {
+        return selectedObjects.stream()
+                .filter(c -> c.getRelatedObject().getType() == dlmsObjectType)
+                .collect(Collectors.toList())
+                .get(0);
+    }
+
+    public List<DlmsRegister> getCaptureObjects(Class dlmsObjectClass, boolean defaultAttributeId) {
+        return selectedObjects.stream()
+                .filter(c -> !defaultAttributeId || c.getAttributeId() == c.getRelatedObject().getDefaultAttributeId())
+                .map(DlmsCaptureObject::getRelatedObject)
+                .filter(r -> dlmsObjectClass.isInstance(r))
+                .map(r -> (DlmsRegister) r)
+                .collect(Collectors.toList());
     }
 }

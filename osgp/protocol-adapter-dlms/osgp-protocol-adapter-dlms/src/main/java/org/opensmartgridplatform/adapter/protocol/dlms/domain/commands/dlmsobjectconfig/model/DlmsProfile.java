@@ -14,6 +14,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjec
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 
 public class DlmsProfile extends DlmsObject {
+    private static final int CLASS_ID_PROFILE = 7;
 
     private final List<DlmsCaptureObject> captureObjects;
     private final ProfileCaptureTime captureTime;
@@ -21,7 +22,7 @@ public class DlmsProfile extends DlmsObject {
 
     public DlmsProfile(final DlmsObjectType type, final String obisCode, final List<DlmsCaptureObject> captureObjects,
             final ProfileCaptureTime captureTime, final Medium medium) {
-        super(type, 7, obisCode);
+        super(type, CLASS_ID_PROFILE, obisCode);
         this.captureObjects = captureObjects;
         this.captureTime = captureTime;
         this.medium = medium;

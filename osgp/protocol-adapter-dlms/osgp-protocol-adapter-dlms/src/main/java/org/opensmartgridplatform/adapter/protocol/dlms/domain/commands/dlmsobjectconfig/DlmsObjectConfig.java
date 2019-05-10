@@ -9,9 +9,12 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsObject;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsProfile;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.Medium;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 
 public abstract class DlmsObjectConfig {
@@ -35,4 +38,16 @@ public abstract class DlmsObjectConfig {
     abstract List<Protocol> initProtocols();
 
     abstract List<DlmsObject> initObjects();
+
+    public Optional<DlmsObject> findObject(final DlmsObjectType type,
+            final Medium filterMedium) {
+        // @formatter:off
+        return objects.stream()
+                .filter(o1 -> o1.getType().equals(type))
+                .filter(o2 -> !(o2 instanceof DlmsProfile)
+                        || ((DlmsProfile) o2).getMedium() == Medium.COMBINED
+                        || ((DlmsProfile) o2).getMedium() == filterMedium)
+                .findAny();
+        // @formatter:on
+    }
 }

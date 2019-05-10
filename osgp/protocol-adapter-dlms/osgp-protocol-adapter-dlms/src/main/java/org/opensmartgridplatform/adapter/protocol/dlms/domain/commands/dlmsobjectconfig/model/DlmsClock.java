@@ -11,8 +11,9 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobje
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 
 public class DlmsClock extends DlmsObject {
+    private static final int CLASS_ID_CLOCK = 8;
 
-    public DlmsClock(final DlmsObjectType type, final String obisCode) {
-        super(type, 8, obisCode);
+    public DlmsClock(final String obisCode) {
+        super(DlmsObjectType.CLOCK, CLASS_ID_CLOCK, obisCode);
     }
 }

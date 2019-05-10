@@ -51,8 +51,8 @@ public class DlmsObjectConfigServiceTest {
     private final DlmsDevice device422_noSelectiveAccess = new DlmsDevice();
     private final DlmsDevice device51 = new DlmsDevice();
 
-    private final DlmsClock clock1 = new DlmsClock(DlmsObjectType.CLOCK, "0.0.1.0.0.255");
-    private final DlmsClock clock2 = new DlmsClock(DlmsObjectType.CLOCK, "0.0.2.0.0.255");
+    private final DlmsClock clock1 = new DlmsClock("0.0.1.0.0.255");
+    private final DlmsClock clock2 = new DlmsClock("0.0.2.0.0.255");
     private final DlmsRegister register = new DlmsRegister(DlmsObjectType.ACTIVE_ENERGY_IMPORT, "1.0.1.8.1.255", 0,
             RegisterUnit.WH, Medium.ELECTRICITY);
     private final DlmsRegister registerWithChannel = new DlmsRegister(DlmsObjectType.MBUS_MASTER_VALUE,
@@ -64,7 +64,7 @@ public class DlmsObjectConfigServiceTest {
             this.captureObjectsE, ProfileCaptureTime.HOUR, Medium.ELECTRICITY);
 
     private final List<DlmsCaptureObject> captureObjectsCombined = Arrays.asList(new DlmsCaptureObject(this.clock1, 2),
-            new DlmsCaptureObject(this.register, 2), new DlmsCaptureObjectWithChannel(this.registerWithChannel, 1, 2));
+            new DlmsCaptureObject(this.register, 2), DlmsCaptureObject.createWithChannel(this.registerWithChannel, 1, 2));
     private final DlmsProfile profileCombined = new DlmsProfile(DlmsObjectType.DAILY_LOAD_PROFILE, "1.0.98.1.1.255",
             this.captureObjectsCombined, ProfileCaptureTime.HOUR, Medium.COMBINED);
 
@@ -78,16 +78,19 @@ public class DlmsObjectConfigServiceTest {
 
     @Before
     public void setUp() {
-        final List<DlmsObject> objects1 = Arrays.asList(this.clock1, this.clock2, this.register,
-                this.registerWithChannel, this.profileE, this.profileCombined);
-        final List<DlmsObject> objects2 = Arrays.asList(this.clock1, this.register, this.registerWithChannel,
-                this.profileCombined);
-
         when(this.config422.contains(Protocol.DSMR_4_2_2)).thenReturn(true);
-        when(this.config422.getObjects()).thenReturn(objects1.stream());
+        when(this.config422.findObject(DlmsObjectType.CLOCK, null)).thenReturn(Optional.of(clock1));
+        when(this.config422.findObject(DlmsObjectType.ACTIVE_ENERGY_IMPORT, null)).thenReturn(Optional.of(register));
+        when(this.config422.findObject(DlmsObjectType.MBUS_MASTER_VALUE, null)).thenReturn(Optional.of(registerWithChannel));
+        when(this.config422.findObject(DlmsObjectType.INTERVAL_VALUES, Medium.ELECTRICITY)).thenReturn(Optional.of(profileE));
+        when(this.config422.findObject(DlmsObjectType.DAILY_LOAD_PROFILE, null)).thenReturn(Optional.of(profileCombined));
+        when(this.config422.findObject(DlmsObjectType.DAILY_LOAD_PROFILE, Medium.GAS)).thenReturn(Optional.of(profileCombined));
+        when(this.config422.findObject(DlmsObjectType.DAILY_LOAD_PROFILE, Medium.ELECTRICITY)).thenReturn(Optional.of(profileCombined));
 
         when(this.config50.contains(Protocol.SMR_5_1)).thenReturn(true);
-        when(this.config50.getObjects()).thenReturn(objects2.stream());
+        when(this.config50.findObject(DlmsObjectType.AMR_STATUS, null)).thenReturn(Optional.empty());
+        when(this.config50.findObject(DlmsObjectType.INTERVAL_VALUES, null)).thenReturn(Optional.empty());
+        when(this.config50.findObject(DlmsObjectType.DAILY_LOAD_PROFILE, Medium.GAS)).thenReturn(Optional.of(profileCombined));
 
         final List<DlmsObjectConfig> configs = Arrays.asList(this.config422, this.config50);
 
@@ -172,7 +175,7 @@ public class DlmsObjectConfigServiceTest {
                 this.device422, DlmsObjectType.INTERVAL_VALUES, channel, this.from, this.to, filterMedium);
 
         // VERIFY
-        AttributeAddressAssert.is(attributeAddressForProfile.get(), expectedAddress);
+        AttributeAddressAssert.is(attributeAddressForProfile.get().getAttributeAddress(), expectedAddress);
         assertThat(attributeAddressForProfile.get().getSelectedObjects()).isEqualTo(this.captureObjectsE);
     }
 
@@ -204,7 +207,7 @@ public class DlmsObjectConfigServiceTest {
                 this.device422, DlmsObjectType.DAILY_LOAD_PROFILE, channel, this.from, this.to, filterMedium);
 
         // VERIFY
-        AttributeAddressAssert.is(attributeAddressForProfile.get(), expectedAddress);
+        AttributeAddressAssert.is(attributeAddressForProfile.get().getAttributeAddress(), expectedAddress);
         assertThat(attributeAddressForProfile.get().getSelectedObjects()).isEqualTo(expectedSelectedObjects);
     }
 
@@ -229,7 +232,7 @@ public class DlmsObjectConfigServiceTest {
                 this.device422, DlmsObjectType.DAILY_LOAD_PROFILE, channel, this.from, this.to, filterMedium);
 
         // VERIFY
-        AttributeAddressAssert.is(attributeAddressForProfile.get(), expectedAddress);
+        AttributeAddressAssert.is(attributeAddressForProfile.get().getAttributeAddress(), expectedAddress);
         assertThat(attributeAddressForProfile.get().getSelectedObjects()).isEqualTo(this.captureObjectsCombined);
     }
 
@@ -254,7 +257,7 @@ public class DlmsObjectConfigServiceTest {
                 filterMedium);
 
         // VERIFY
-        AttributeAddressAssert.is(attributeAddressForProfile.get(), expectedAddress);
+        AttributeAddressAssert.is(attributeAddressForProfile.get().getAttributeAddress(), expectedAddress);
 
         // All values should be returned.
         assertThat(attributeAddressForProfile.get().getSelectedObjects()).isEqualTo(this.captureObjectsCombined);
@@ -284,7 +287,7 @@ public class DlmsObjectConfigServiceTest {
                 this.device51, DlmsObjectType.DAILY_LOAD_PROFILE, channel, this.from, this.to, filterMedium);
 
         // VERIFY
-        AttributeAddressAssert.is(attributeAddressForProfile.get(), expectedAddress);
+        AttributeAddressAssert.is(attributeAddressForProfile.get().getAttributeAddress(), expectedAddress);
 
         // All values should be returned.
         assertThat(attributeAddressForProfile.get().getSelectedObjects()).isEqualTo(this.captureObjectsCombined);
