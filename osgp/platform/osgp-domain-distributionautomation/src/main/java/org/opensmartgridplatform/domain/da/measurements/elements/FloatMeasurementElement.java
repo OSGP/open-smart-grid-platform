@@ -7,15 +7,18 @@
  */
 package org.opensmartgridplatform.domain.da.measurements.elements;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 import org.opensmartgridplatform.domain.da.measurements.MeasurementElement;
 
-public class FloatingPointMeasurementElement implements MeasurementElement {
+public class FloatMeasurementElement implements MeasurementElement, Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private Float value;
 
-    public FloatingPointMeasurementElement(final Float value) {
+    public FloatMeasurementElement(final Float value) {
         this.value = value;
     }
 
@@ -28,15 +31,20 @@ public class FloatingPointMeasurementElement implements MeasurementElement {
         if (this == obj) {
             return true;
         }
-        if (!(obj instanceof FloatingPointMeasurementElement)) {
+        if (!(obj instanceof FloatMeasurementElement)) {
             return false;
         }
-        final FloatingPointMeasurementElement that = (FloatingPointMeasurementElement) obj;
+        final FloatMeasurementElement that = (FloatMeasurementElement) obj;
         return Float.compare(this.value, that.value) == 0;
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(Float.floatToIntBits(this.value));
+    }
+
+    @Override
+    public String toString() {
+        return "Float: " + this.value;
     }
 }

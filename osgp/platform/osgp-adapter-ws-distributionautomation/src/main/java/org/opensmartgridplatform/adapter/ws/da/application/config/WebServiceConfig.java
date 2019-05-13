@@ -77,7 +77,7 @@ public class WebServiceConfig extends AbstractConfig {
     @Value("${web.service.notification.organisation:OSGP}")
     private String webserviceNotificationOrganisation;
 
-    @Value("${web.service.notification.application.name}")
+    @Value("${web.service.notification.application.name:DISTRIBUTION_AUTOMATION}")
     private String webserviceNotificationApplicationName;
 
     // === DISTRIBUTION AUTOMATION MARSHALLERS ===
@@ -198,6 +198,16 @@ public class WebServiceConfig extends AbstractConfig {
     }
 
     @Bean
+    public String webserviceNotificationApplicationName() {
+        return this.webserviceNotificationApplicationName;
+    }
+
+    @Bean
+    public String webserviceNotificationOrganisation() {
+        return this.webserviceNotificationOrganisation;
+    }
+
+    @Bean
     public NotificationService distributionAutomationNotificationService(
             final NotificationWebServiceTemplateFactory templateFactory, final DistributionAutomationMapper mapper) {
 
@@ -205,7 +215,8 @@ public class WebServiceConfig extends AbstractConfig {
             return new NotificationServiceBlackHole();
         }
         final Class<SendNotificationRequest> notificationRequestType = SendNotificationRequest.class;
-        return new DefaultNotificationService<>(templateFactory, notificationRequestType, mapper);
+        return new DefaultNotificationService<>(templateFactory, notificationRequestType, mapper,
+                this.webserviceNotificationApplicationName);
     }
 
     @Bean

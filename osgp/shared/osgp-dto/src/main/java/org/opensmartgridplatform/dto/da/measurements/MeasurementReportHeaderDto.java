@@ -14,21 +14,21 @@ public class MeasurementReportHeaderDto implements Serializable {
 
     private static final long serialVersionUID = 1408641961558265027L;
 
-    private final String typeIdentification;
+    private final String measurementType;
     private final String reason;
     private final int originatorAddress;
     private final int commonAddress;
 
-    public MeasurementReportHeaderDto(final String typeIdentification, final String reason, final int originatorAddress,
+    public MeasurementReportHeaderDto(final String measurementType, final String reason, final int originatorAddress,
             final int commonAddress) {
-        this.typeIdentification = typeIdentification;
+        this.measurementType = measurementType;
         this.reason = reason;
         this.originatorAddress = originatorAddress;
         this.commonAddress = commonAddress;
     }
 
-    public String getTypeIdentification() {
-        return this.typeIdentification;
+    public String getMeasurementType() {
+        return this.measurementType;
     }
 
     public String getReason() {
@@ -53,20 +53,19 @@ public class MeasurementReportHeaderDto implements Serializable {
             return false;
         }
         final MeasurementReportHeaderDto that = (MeasurementReportHeaderDto) obj;
-        return Objects.equals(this.typeIdentification, that.typeIdentification)
-                && Objects.equals(this.reason, that.reason)
+        return Objects.equals(this.measurementType, that.measurementType) && Objects.equals(this.reason, that.reason)
                 && Objects.equals(this.originatorAddress, that.originatorAddress)
                 && Objects.equals(this.commonAddress, that.commonAddress);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.typeIdentification, this.reason, this.originatorAddress, this.commonAddress);
+        return Objects.hash(this.measurementType, this.reason, this.originatorAddress, this.commonAddress);
     }
 
     @Override
     public String toString() {
-        return "MeasurementReportHeaderDto [typeIdentification=" + this.typeIdentification + ", reason=" + this.reason
+        return "MeasurementReportHeaderDto [measurementType=" + this.measurementType + ", reason=" + this.reason
                 + ", originatorAddress=" + this.originatorAddress + ", commonAddress=" + this.commonAddress + "]";
     }
 }

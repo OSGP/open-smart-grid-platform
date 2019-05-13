@@ -8,7 +8,7 @@ import static org.assertj.core.api.Assertions.within;
 
 import org.junit.Test;
 
-public class FloatingPointMeasurementElementTest {
+public class FloatMeasurementElementTest {
 
     @Test
     public void getValueShouldReturnCorrectValue() {
@@ -16,7 +16,7 @@ public class FloatingPointMeasurementElementTest {
         final float expected = 10.0f;
 
         // Act
-        final FloatingPointMeasurementElement element = new FloatingPointMeasurementElement(expected);
+        final FloatMeasurementElement element = new FloatMeasurementElement(expected);
         final float actual = element.getValue();
 
         // Assert

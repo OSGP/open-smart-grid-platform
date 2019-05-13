@@ -25,6 +25,6 @@ public class MeasurementReportTypeMatcher implements ArgumentMatcher<ResponseMes
             return false;
         }
         final MeasurementReportDto dto = (MeasurementReportDto) argument.getDataObject();
-        return dto.getReportHeader().getTypeIdentification().equals(this.typeId);
+        return dto.getReportHeader().getMeasurementType().equals(this.typeId);
     }
 }

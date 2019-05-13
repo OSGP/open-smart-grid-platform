@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.domain.da.measurements.elements;
 
+import java.io.Serializable;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -14,7 +15,13 @@ import java.util.Objects;
 
 import org.opensmartgridplatform.domain.da.measurements.MeasurementElement;
 
-public class TimestampMeasurementElement implements MeasurementElement {
+/**
+ * Stores a timestamp as the number of milliseconds since the epoch of
+ * 1970-01-01T00:00:00Z.
+ */
+public class TimestampMeasurementElement implements MeasurementElement, Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private Long value;
 
@@ -49,6 +56,11 @@ public class TimestampMeasurementElement implements MeasurementElement {
     @Override
     public int hashCode() {
         return Objects.hash(this.value);
+    }
+
+    @Override
+    public String toString() {
+        return "Timestamp: " + this.value;
     }
 
 }
