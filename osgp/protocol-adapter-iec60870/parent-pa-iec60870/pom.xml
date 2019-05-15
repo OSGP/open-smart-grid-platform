@@ -48,7 +48,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <spring.version>4.3.18.RELEASE</spring.version>
     <spring.ws.version>2.4.0.RELEASE</spring.ws.version>
-    <spring.data.version>1.11.6.RELEASE</spring.data.version>
+    <spring.data.version>1.11.21.RELEASE</spring.data.version>
     <spring.data.key.version>1.2.16.RELEASE</spring.data.key.version>
     <servlet.version>3.0.1</servlet.version>
     <hibernate.version>4.2.16.Final</hibernate.version>
