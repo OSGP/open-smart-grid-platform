@@ -12,6 +12,9 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.Map;
 
+import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringmanagement.AbstractFindEventsReads;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PeriodType;
@@ -29,6 +32,8 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 public class PeriodicMeterReadsGasSteps {
+
+    protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractFindEventsReads.class);
 
     @Autowired
     private SmartMeteringMonitoringRequestClient<PeriodicMeterReadsGasAsyncResponse, PeriodicMeterReadsGasRequest> requestClient;
@@ -53,6 +58,9 @@ public class PeriodicMeterReadsGasSteps {
 
         final PeriodicMeterReadsGasAsyncRequest asyncRequest = PeriodicMeterReadsGasRequestFactory
                 .fromScenarioContext();
+
+        LOGGER.warn("Asyncrequest: {} ", asyncRequest);
+
         final PeriodicMeterReadsGasResponse response = this.responseClient.getResponse(asyncRequest);
 
         assertNotNull("PeriodicMeterReadsGasResponse should not be null", response);
