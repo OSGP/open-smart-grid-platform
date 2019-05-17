@@ -81,5 +81,31 @@ public class Iec60870ASduFactory {
                         new InformationElement[][] { { DEFAULT_IE_QUALIFIER_OF_INTERROGATION } }) })
                 .build();
     }
+
+    public ASdu createShortFloatingPointMeasurementAsdu() {
+        final ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
+        final long timestamp = now.toInstant().toEpochMilli();
+        final float hour = now.getHour();
+        final float minute = now.getMinute();
+
+        return new Iec60870ASduBuilder().withTypeId(TypeId.M_ME_TF_1).withSequenceOfElements(false)
+                .withCauseOfTransmission(CauseOfTransmission.SPONTANEOUS)
+                .withInformationObjects(new InformationObject[] {
+                        new InformationObject(
+                                IOA_9127,
+                                new InformationElement[][] { {
+                                    new IeShortFloat(hour),
+                                    new IeQuality(false, false, false, false, false),
+                                    new IeTime56(timestamp) } }),
+                        new InformationObject(
+                                IOA_9128,
+                                new InformationElement[][] { {
+                                    new IeShortFloat(minute),
+                                    new IeQuality(false, false, false, false, false),
+                                    new IeTime56(timestamp) } })
+                })
+                .build();
+
+    }
     // @formatter:on
 }
