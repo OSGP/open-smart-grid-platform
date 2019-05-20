@@ -61,6 +61,8 @@ public class Iec60870SimulatorConfig {
     @ConditionalOnProperty("job.asdu.generator.enabled")
     public Iec60870AsduGeneratorService asduGeneratorService(
             final Iec60870ConnectionRegistry iec60870ConnectionRegistry) {
+        LOGGER.info("ASDU generator in simulator is enabled");
+
         return new Iec60870AsduGeneratorService(iec60870ConnectionRegistry);
     }
 }
