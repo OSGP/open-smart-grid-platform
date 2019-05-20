@@ -15,6 +15,7 @@ import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870Asdu
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -54,11 +55,10 @@ public class Iec60870SimulatorConfig {
     /**
      * Bean used to generate measurement reports for testing purposes. By
      * default no measurement reports will be generated. To activate generation,
-     * add job.measurement.report.generator.enabled to the application's
-     * properties.
+     * add job.asdu.generator.enabled to the application's properties.
      */
     @Bean
-    // @ConditionalOnProperty("job.asdu.generator.enabled")
+    @ConditionalOnProperty("job.asdu.generator.enabled")
     public Iec60870AsduGeneratorService asduGeneratorService(
             final Iec60870ConnectionRegistry iec60870ConnectionRegistry) {
         return new Iec60870AsduGeneratorService(iec60870ConnectionRegistry);
