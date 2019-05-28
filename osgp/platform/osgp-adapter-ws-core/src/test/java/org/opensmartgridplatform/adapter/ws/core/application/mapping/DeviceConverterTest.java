@@ -11,6 +11,7 @@ import java.net.UnknownHostException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -26,11 +27,11 @@ public class DeviceConverterTest {
     @Mock
     private SsldRepository ssldRepository;
 
+    @InjectMocks
     private DeviceManagementMapper deviceManagementMapper;
 
     @Before
     public void initMapper() {
-        this.deviceManagementMapper = new TestableDeviceManagementMapper(this.ssldRepository);
         this.deviceManagementMapper.initialize();
     }
 

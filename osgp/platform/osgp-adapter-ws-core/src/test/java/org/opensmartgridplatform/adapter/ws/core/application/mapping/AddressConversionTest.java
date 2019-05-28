@@ -29,7 +29,7 @@ public class AddressConversionTest {
     private static final String STREET = "Street";
 
     @InjectMocks
-    private DeviceManagementMapper mapper = new DeviceManagementMapper();
+    private DeviceManagementMapper mapper;
 
     @Mock
     private SsldRepository ssldRepository;
