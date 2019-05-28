@@ -119,7 +119,7 @@ public class Device implements Serializable {
             @AttributeOverride(name = "street", column = @Column(name = "container_street")),
             @AttributeOverride(name = "postalCode", column = @Column(name = "container_postal_code")),
             @AttributeOverride(name = "number", column = @Column(name = "container_number")),
-            @AttributeOverride(name = "number_addition", column = @Column(name = "container_number_addition")),
+            @AttributeOverride(name = "numberAddition", column = @Column(name = "container_number_addition")),
             @AttributeOverride(name = "municipality", column = @Column(name = "container_municipality")) })
     protected Address containerAddress;
 
