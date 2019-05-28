@@ -11,6 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opensmartgridplatform.adapter.ws.schema.core.common.Address;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.Device;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
 
@@ -21,7 +22,7 @@ public class DeviceInstallationMapperTest {
     private final static String CITY = "city";
     private final static String POSTAL_CODE = "postal_code";
     private final static String STREET = "street";
-    private final static String NUMBER = "number";
+    private final static int NUMBER = 83;
     private final static String MUNICIPALITY = "municipality";
     private final static float GPS_LATITUDE = 50f;
     private final static float GPS_LONGITUDE = 5f;
@@ -57,14 +58,20 @@ public class DeviceInstallationMapperTest {
         final Device device = new Device();
         device.setDeviceIdentification(DEVICE_IDENTIFICATION);
         device.setAlias(ALIAS);
-        device.setContainerCity(CITY);
-        device.setContainerPostalCode(POSTAL_CODE);
-        device.setContainerStreet(STREET);
-        device.setContainerNumber(NUMBER);
-        device.setContainerMunicipality(MUNICIPALITY);
+        device.setContainerAddress(this.createAddress());
         device.setGpsLatitude(GPS_LATITUDE);
         device.setGpsLongitude(GPS_LONGITUDE);
         device.setPublicKeyPresent(PUBLIC_KEY_PRESENT);
         return device;
+    }
+
+    private Address createAddress() {
+        final Address address = new Address();
+        address.setCity(CITY);
+        address.setPostalCode(POSTAL_CODE);
+        address.setStreet(STREET);
+        address.setNumber(NUMBER);
+        address.setMunicipality(MUNICIPALITY);
+        return address;
     }
 }

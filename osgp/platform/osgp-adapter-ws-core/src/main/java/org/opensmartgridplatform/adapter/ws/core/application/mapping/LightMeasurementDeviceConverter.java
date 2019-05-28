@@ -19,7 +19,7 @@ public class LightMeasurementDeviceConverter extends
         BidirectionalConverter<LightMeasurementDevice, org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device> {
 
     private final DeviceConverterHelper<LightMeasurementDevice> helper = new DeviceConverterHelper<>(
-            LightMeasurementDevice.class);
+            LightMeasurementDevice.class, this.mapperFacade);
 
     /*
      * (non-Javadoc)

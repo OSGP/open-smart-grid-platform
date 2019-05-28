@@ -30,8 +30,7 @@ class WsInstallationDeviceToSsldConverter extends CustomConverter<Device, Ssld> 
 
         final String deviceIdentification = source.getDeviceIdentification();
         final String alias = source.getAlias();
-        final Address containerAddress = new Address(source.getContainerCity(), source.getContainerPostalCode(),
-                source.getContainerStreet(), source.getContainerNumber(), source.getContainerMunicipality());
+        final Address containerAddress = this.mapperFacade.map(source.getContainerAddress(), Address.class);
         final GpsCoordinates gpsCoordinates = new GpsCoordinates(source.getGpsLatitude(), source.getGpsLongitude());
         final Ssld ssld = new Ssld(deviceIdentification, alias, containerAddress, gpsCoordinates, null);
         ssld.setPublicKeyPresent(source.isPublicKeyPresent());

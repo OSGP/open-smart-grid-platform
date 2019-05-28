@@ -18,7 +18,8 @@ import ma.glasnost.orika.metadata.Type;
 
 class SmartMeterConverter extends BidirectionalConverter<SmartMeter, Device> {
 
-    private final DeviceConverterHelper<SmartMeter> helper = new DeviceConverterHelper<>(SmartMeter.class);
+    private final DeviceConverterHelper<SmartMeter> helper = new DeviceConverterHelper<>(SmartMeter.class,
+            this.mapperFacade);
 
     @Override
     public SmartMeter convertFrom(final org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device source,

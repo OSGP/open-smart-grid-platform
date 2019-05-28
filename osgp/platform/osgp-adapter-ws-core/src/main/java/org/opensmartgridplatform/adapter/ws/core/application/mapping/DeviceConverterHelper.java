@@ -30,20 +30,24 @@ import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ma.glasnost.orika.MapperFacade;
+
 class DeviceConverterHelper<T extends org.opensmartgridplatform.domain.core.entities.Device> {
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceConverterHelper.class);
 
     private final Class<T> clazz;
+    private final MapperFacade mapper;
 
-    public DeviceConverterHelper(final Class<T> clazz) {
+    public DeviceConverterHelper(final Class<T> clazz, final MapperFacade mapper) {
         this.clazz = clazz;
+        this.mapper = mapper;
     }
 
     @SuppressWarnings("unchecked")
     T initEntity(final Device source) {
         T destination;
-        final Address containerAddress = new Address(source.getContainerCity(), source.getContainerPostalCode(),
-                source.getContainerStreet(), source.getContainerNumber(), source.getContainerMunicipality());
+
+        final Address containerAddress = this.mapper.map(source.getContainerAddress(), Address.class);
 
         GpsCoordinates gpsCoordinates = null;
         if (source.getGpsLatitude() != null && source.getGpsLongitude() != null) {
@@ -91,14 +95,10 @@ class DeviceConverterHelper<T extends org.opensmartgridplatform.domain.core.enti
         destination.setDeviceLifecycleStatus(
                 org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.DeviceLifecycleStatus
                         .valueOf(source.getDeviceLifecycleStatus().name()));
-        if (!Objects.isNull(source.getContainerAddress())) {
-            final Address containerAddress = source.getContainerAddress();
-            destination.setContainerCity(containerAddress.getCity());
-            destination.setContainerNumber(containerAddress.getNumber());
-            destination.setContainerPostalCode(containerAddress.getPostalCode());
-            destination.setContainerStreet(containerAddress.getStreet());
-            destination.setContainerMunicipality(containerAddress.getMunicipality());
-        }
+
+        destination.setContainerAddress(this.mapper.map(source.getContainerAddress(),
+                org.opensmartgridplatform.adapter.ws.schema.core.common.Address.class));
+
         destination.setDeviceIdentification(source.getDeviceIdentification());
         destination.setDeviceType(source.getDeviceType());
         destination.setTechnicalInstallationDate(

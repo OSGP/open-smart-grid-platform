@@ -28,7 +28,7 @@ import ma.glasnost.orika.metadata.Type;
 
 class SsldConverter extends BidirectionalConverter<Ssld, Device> {
     private static final Logger LOGGER = LoggerFactory.getLogger(SsldConverter.class);
-    private final DeviceConverterHelper<Ssld> helper = new DeviceConverterHelper<>(Ssld.class);
+    private final DeviceConverterHelper<Ssld> helper = new DeviceConverterHelper<>(Ssld.class, this.mapperFacade);
 
     private final SsldRepository ssldRepository;
 
@@ -96,9 +96,7 @@ class SsldConverter extends BidirectionalConverter<Ssld, Device> {
 
         for (final org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting deviceOutputSetting : source
                 .getOutputSettings()) {
-            org.opensmartgridplatform.domain.core.entities.DeviceOutputSetting newDeviceOutputSetting = new org.opensmartgridplatform.domain.core.entities.DeviceOutputSetting();
-
-            newDeviceOutputSetting = new org.opensmartgridplatform.domain.core.entities.DeviceOutputSetting(
+            final org.opensmartgridplatform.domain.core.entities.DeviceOutputSetting newDeviceOutputSetting = new org.opensmartgridplatform.domain.core.entities.DeviceOutputSetting(
                     deviceOutputSetting.getInternalId(), deviceOutputSetting.getExternalId(),
                     deviceOutputSetting.getRelayType() == null ? null
                             : org.opensmartgridplatform.domain.core.valueobjects.RelayType
