@@ -9,6 +9,7 @@ package org.opensmartgridplatform.adapter.ws.core.application.mapping;
 
 import java.util.Objects;
 
+import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
@@ -17,7 +18,13 @@ class DeviceConverter extends
         BidirectionalConverter<org.opensmartgridplatform.domain.core.entities.Device, org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device> {
 
     private final DeviceConverterHelper<org.opensmartgridplatform.domain.core.entities.Device> helper = new DeviceConverterHelper<>(
-            org.opensmartgridplatform.domain.core.entities.Device.class, this.mapperFacade);
+            org.opensmartgridplatform.domain.core.entities.Device.class);
+
+    @Override
+    public void setMapperFacade(final MapperFacade mapper) {
+        super.setMapperFacade(mapper);
+        this.helper.setMapperFacade(mapper);
+    }
 
     @Override
     public org.opensmartgridplatform.domain.core.entities.Device convertFrom(

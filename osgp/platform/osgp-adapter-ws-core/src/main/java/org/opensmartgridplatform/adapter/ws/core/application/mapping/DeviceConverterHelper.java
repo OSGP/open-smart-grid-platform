@@ -36,10 +36,13 @@ class DeviceConverterHelper<T extends org.opensmartgridplatform.domain.core.enti
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceConverterHelper.class);
 
     private final Class<T> clazz;
-    private final MapperFacade mapper;
+    private MapperFacade mapper;
 
-    public DeviceConverterHelper(final Class<T> clazz, final MapperFacade mapper) {
+    public DeviceConverterHelper(final Class<T> clazz) {
         this.clazz = clazz;
+    }
+
+    public void setMapperFacade(final MapperFacade mapper) {
         this.mapper = mapper;
     }
 

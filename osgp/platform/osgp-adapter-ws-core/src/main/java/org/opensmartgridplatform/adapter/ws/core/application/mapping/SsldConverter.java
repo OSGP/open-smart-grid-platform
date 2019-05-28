@@ -22,19 +22,26 @@ import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
 class SsldConverter extends BidirectionalConverter<Ssld, Device> {
     private static final Logger LOGGER = LoggerFactory.getLogger(SsldConverter.class);
-    private final DeviceConverterHelper<Ssld> helper = new DeviceConverterHelper<>(Ssld.class, this.mapperFacade);
+    private final DeviceConverterHelper<Ssld> helper = new DeviceConverterHelper<>(Ssld.class);
 
     private final SsldRepository ssldRepository;
 
     public SsldConverter(final SsldRepository ssldRepository) {
         super();
         this.ssldRepository = ssldRepository;
+    }
+
+    @Override
+    public void setMapperFacade(final MapperFacade mapper) {
+        super.setMapperFacade(mapper);
+        this.helper.setMapperFacade(mapper);
     }
 
     @Override

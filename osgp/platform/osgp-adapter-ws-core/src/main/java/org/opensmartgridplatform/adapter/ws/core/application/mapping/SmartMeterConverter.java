@@ -12,14 +12,20 @@ import java.util.Objects;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 
+import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
 class SmartMeterConverter extends BidirectionalConverter<SmartMeter, Device> {
 
-    private final DeviceConverterHelper<SmartMeter> helper = new DeviceConverterHelper<>(SmartMeter.class,
-            this.mapperFacade);
+    private final DeviceConverterHelper<SmartMeter> helper = new DeviceConverterHelper<>(SmartMeter.class);
+
+    @Override
+    public void setMapperFacade(final MapperFacade mapper) {
+        super.setMapperFacade(mapper);
+        this.helper.setMapperFacade(mapper);
+    }
 
     @Override
     public SmartMeter convertFrom(final org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device source,
