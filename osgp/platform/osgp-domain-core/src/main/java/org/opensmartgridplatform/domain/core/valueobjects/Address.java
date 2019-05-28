@@ -24,8 +24,10 @@ public class Address implements Serializable {
     private String postalCode;
     @Column(length = 255)
     private String street;
+    @Column()
+    private Integer number;
     @Column(length = 10)
-    private String number;
+    private String numberAddition;
     @Column(length = 255)
     private String municipality;
 
@@ -33,12 +35,13 @@ public class Address implements Serializable {
         // Default constructor for hibernate
     }
 
-    public Address(final String city, final String postalCode, final String street, final String number,
-            final String municipality) {
+    public Address(final String city, final String postalCode, final String street, final Integer number,
+            final String numberAddition, final String municipality) {
         this.city = city;
         this.postalCode = postalCode;
         this.street = street;
         this.number = number;
+        this.numberAddition = numberAddition;
         this.municipality = municipality;
     }
 
@@ -54,8 +57,12 @@ public class Address implements Serializable {
         return this.street;
     }
 
-    public String getNumber() {
+    public Integer getNumber() {
         return this.number;
+    }
+
+    public String getNumberAddition() {
+        return this.numberAddition;
     }
 
     public String getMunicipality() {
@@ -65,12 +72,14 @@ public class Address implements Serializable {
     @Override
     public String toString() {
         return "Address [city=" + this.city + ", postalCode=" + this.postalCode + ", street=" + this.street
-                + ", number=" + this.number + ", municipality=" + this.municipality + "]";
+                + ", number=" + this.number + ", numberAddition=" + this.numberAddition + ", municipality="
+                + this.municipality + "]";
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.city, this.postalCode, this.street, this.number, this.municipality);
+        return Objects.hash(this.city, this.postalCode, this.street, this.number, this.numberAddition,
+                this.municipality);
     }
 
     @Override
@@ -86,6 +95,7 @@ public class Address implements Serializable {
         final Address other = (Address) obj;
         return Objects.equals(this.city, other.city) && Objects.equals(this.postalCode, other.postalCode)
                 && Objects.equals(this.street, other.street) && Objects.equals(this.number, other.number)
+                && Objects.equals(this.numberAddition, other.numberAddition)
                 && Objects.equals(this.municipality, other.municipality);
     }
 }
