@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.core.devicemanagement;
 
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getInteger;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getShort;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
@@ -34,25 +35,33 @@ public class DeviceSteps extends GlueBase {
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_CITY)) {
-            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_CITY), actualDevice.getContainerCity());
+            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_CITY),
+                    actualDevice.getContainerAddress().getCity());
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_MUNICIPALITY)) {
             Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_MUNICIPALITY),
-                    actualDevice.getContainerMunicipality());
+                    actualDevice.getContainerAddress().getMunicipality());
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_NUMBER)) {
-            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_NUMBER), actualDevice.getContainerNumber());
+            Assert.assertEquals(getInteger(expectedDevice, PlatformKeys.KEY_NUMBER),
+                    actualDevice.getContainerAddress().getNumber());
+        }
+
+        if (expectedDevice.containsKey(PlatformKeys.KEY_NUMBER_ADDITION)) {
+            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_NUMBER_ADDITION),
+                    actualDevice.getContainerAddress().getNumberAddition());
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_POSTCODE)) {
             Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_POSTCODE),
-                    actualDevice.getContainerPostalCode());
+                    actualDevice.getContainerAddress().getPostalCode());
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_STREET)) {
-            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_STREET), actualDevice.getContainerStreet());
+            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_STREET),
+                    actualDevice.getContainerAddress().getStreet());
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_DEVICE_TYPE)) {

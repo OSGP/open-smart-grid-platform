@@ -11,6 +11,7 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBool
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getDate;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getFloat;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getInteger;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getLong;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getShort;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
@@ -129,13 +130,14 @@ public abstract class BaseDeviceSteps extends GlueBase {
             device.addOrganisation(getString(settings, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
                     PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
         }
-        device.updateMetaData(getString(settings, PlatformKeys.ALIAS, PlatformDefaults.DEFAULT_ALIAS),
-                new Address(getString(settings, PlatformKeys.KEY_CITY, PlatformDefaults.DEFAULT_CONTAINER_CITY),
-                        getString(settings, PlatformKeys.KEY_POSTCODE, PlatformDefaults.DEFAULT_CONTAINER_POSTALCODE),
-                        getString(settings, PlatformKeys.KEY_STREET, PlatformDefaults.DEFAULT_CONTAINER_STREET),
-                        getString(settings, PlatformKeys.KEY_NUMBER, PlatformDefaults.DEFAULT_CONTAINER_NUMBER),
-                        getString(settings, PlatformKeys.KEY_MUNICIPALITY,
-                                PlatformDefaults.DEFAULT_CONTAINER_MUNICIPALITY)),
+        device.updateMetaData(getString(settings, PlatformKeys.ALIAS, PlatformDefaults.DEFAULT_ALIAS), new Address(
+                getString(settings, PlatformKeys.KEY_CITY, PlatformDefaults.DEFAULT_CONTAINER_CITY),
+                getString(settings, PlatformKeys.KEY_POSTCODE, PlatformDefaults.DEFAULT_CONTAINER_POSTALCODE),
+                getString(settings, PlatformKeys.KEY_STREET, PlatformDefaults.DEFAULT_CONTAINER_STREET),
+                getInteger(settings, PlatformKeys.KEY_NUMBER, PlatformDefaults.DEFAULT_CONTAINER_NUMBER),
+                getString(settings, PlatformKeys.KEY_NUMBER_ADDITION,
+                        PlatformDefaults.DEFAULT_CONTAINER_NUMBER_ADDITION),
+                getString(settings, PlatformKeys.KEY_MUNICIPALITY, PlatformDefaults.DEFAULT_CONTAINER_MUNICIPALITY)),
                 new GpsCoordinates(
                         (settings.containsKey(PlatformKeys.KEY_LATITUDE)
                                 && !settings.get(PlatformKeys.KEY_LATITUDE).isEmpty())
