@@ -2,7 +2,10 @@ DO
 $$
 BEGIN
 
-  IF NOT EXISTS(SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema AND table_name = 'device' AND column_name = 'number_addition')
+  IF NOT EXISTS(SELECT 1 FROM information_schema.columns
+                WHERE table_schema = current_schema
+                AND table_name = 'device'
+                AND column_name = 'container_number_addition')
   THEN
     ALTER TABLE device RENAME COLUMN container_number TO original_container_number;
     
