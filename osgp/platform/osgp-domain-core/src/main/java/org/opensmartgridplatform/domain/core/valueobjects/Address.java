@@ -93,9 +93,12 @@ public class Address implements Serializable {
         }
 
         final Address other = (Address) obj;
-        return Objects.equals(this.city, other.city) && Objects.equals(this.postalCode, other.postalCode)
-                && Objects.equals(this.street, other.street) && Objects.equals(this.number, other.number)
-                && Objects.equals(this.numberAddition, other.numberAddition)
-                && Objects.equals(this.municipality, other.municipality);
+        boolean result = Objects.equals(this.city, other.city);
+        result &= Objects.equals(this.postalCode, other.postalCode);
+        result &= Objects.equals(this.street, other.street);
+        result &= Objects.equals(this.number, other.number);
+        result &= Objects.equals(this.numberAddition, other.numberAddition);
+        result &= Objects.equals(this.municipality, other.municipality);
+        return result;
     }
 }
