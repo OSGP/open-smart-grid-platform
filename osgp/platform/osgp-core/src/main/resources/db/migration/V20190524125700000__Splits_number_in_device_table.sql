@@ -19,8 +19,6 @@ BEGIN
     SET
         container_number = CAST(SUBSTRING(TRIM(original_container_number) FROM '^[\d]+') AS INT),
         container_number_addition = TRIM(SUBSTRING(TRIM(original_container_number) FROM '[^\d]+.*$'));
-
-    -- ALTER TABLE device DROP COLUMN original_container_number;
   END IF;
 
 END;

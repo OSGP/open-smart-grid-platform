@@ -11,9 +11,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.opensmartgridplatform.adapter.ws.schema.core.common.Address;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.Device;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
+import org.opensmartgridplatform.domain.core.valueobjects.Address;
+import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
 
 public class DeviceInstallationMapperTest {
 
@@ -23,6 +24,7 @@ public class DeviceInstallationMapperTest {
     private final static String POSTAL_CODE = "postal_code";
     private final static String STREET = "street";
     private final static int NUMBER = 83;
+    private final static String NUMBER_ADDITION = "D";
     private final static String MUNICIPALITY = "municipality";
     private final static float GPS_LATITUDE = 50f;
     private final static float GPS_LONGITUDE = 5f;
@@ -36,41 +38,49 @@ public class DeviceInstallationMapperTest {
     }
 
     @Test
-    public void shouldConvertWsDeviceToSsld() {
-        // given
-        final Device device = this.createDevice();
+    public void testConversionFromWsDeviceToSsld() {
+        // Arrange
+        final Device device = this.createWsDevice();
+        final Ssld expected = this.createSsld();
 
-        // when
-        final Ssld ssld = this.mapper.map(device, Ssld.class);
+        // Act
+        final Ssld actual = this.mapper.map(device, Ssld.class);
 
-        // then
-        assertThat(ssld.getDeviceIdentification()).isEqualTo(DEVICE_IDENTIFICATION);
-        assertThat(ssld.getAlias()).isEqualTo(ALIAS);
-        assertThat(ssld.getContainerAddress()).isNotNull();
-        assertThat(ssld.getContainerAddress().getCity()).isEqualTo(CITY);
-        assertThat(ssld.getContainerAddress().getPostalCode()).isEqualTo(POSTAL_CODE);
-        assertThat(ssld.getGpsCoordinates().getLatitude()).isEqualTo(GPS_LATITUDE);
-        assertThat(ssld.getGpsCoordinates().getLongitude()).isEqualTo(GPS_LONGITUDE);
-        assertThat(ssld.isPublicKeyPresent()).isEqualTo(PUBLIC_KEY_PRESENT);
+        // Assert
+        assertThat(actual).isEqualToIgnoringGivenFields(expected, "creationTime", "modificationTime");
     }
 
-    private Device createDevice() {
+    private Ssld createSsld() {
+        final Address containerAddress = this.createAddress();
+        final GpsCoordinates gps = new GpsCoordinates(GPS_LATITUDE, GPS_LONGITUDE);
+
+        final Ssld ssld = new Ssld(DEVICE_IDENTIFICATION, ALIAS, containerAddress, gps, null);
+        ssld.setPublicKeyPresent(PUBLIC_KEY_PRESENT);
+        return ssld;
+    }
+
+    private Address createAddress() {
+        return new Address(CITY, POSTAL_CODE, STREET, NUMBER, NUMBER_ADDITION, MUNICIPALITY);
+    }
+
+    private Device createWsDevice() {
         final Device device = new Device();
         device.setDeviceIdentification(DEVICE_IDENTIFICATION);
         device.setAlias(ALIAS);
-        device.setContainerAddress(this.createAddress());
+        device.setContainerAddress(this.createWsAddress());
         device.setGpsLatitude(GPS_LATITUDE);
         device.setGpsLongitude(GPS_LONGITUDE);
         device.setPublicKeyPresent(PUBLIC_KEY_PRESENT);
         return device;
     }
 
-    private Address createAddress() {
-        final Address address = new Address();
+    private org.opensmartgridplatform.adapter.ws.schema.core.common.Address createWsAddress() {
+        final org.opensmartgridplatform.adapter.ws.schema.core.common.Address address = new org.opensmartgridplatform.adapter.ws.schema.core.common.Address();
         address.setCity(CITY);
         address.setPostalCode(POSTAL_CODE);
         address.setStreet(STREET);
         address.setNumber(NUMBER);
+        address.setNumberAddition(NUMBER_ADDITION);
         address.setMunicipality(MUNICIPALITY);
         return address;
     }
