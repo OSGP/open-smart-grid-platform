@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 
 import org.joda.time.DateTime;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -27,6 +26,8 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigConfiguration;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.DlmsConnectionManagerStub;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.DlmsConnectionStub;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.testutil.AttributeAddressAssert;
@@ -45,6 +46,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
 
     private DlmsHelper dlmsHelper;
     private AmrProfileStatusCodeHelper amrProfileStatusCodeHelper;
+    private DlmsObjectConfigService dlmsObjectConfigService;
 
     private DlmsConnectionManagerStub connectionManagerStub;
     private DlmsConnectionStub connectionStub;
@@ -96,8 +98,12 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     public void setUp() {
         this.dlmsHelper = new DlmsHelper();
         this.amrProfileStatusCodeHelper = new AmrProfileStatusCodeHelper();
+        final DlmsObjectConfigConfiguration dlmsObjectConfigConfiguration = new DlmsObjectConfigConfiguration();
+        this.dlmsObjectConfigService = new DlmsObjectConfigService(this.dlmsHelper,
+                dlmsObjectConfigConfiguration.getDlmsObjectConfigs());
 
-        this.executor = new GetPeriodicMeterReadsGasCommandExecutor(this.dlmsHelper, this.amrProfileStatusCodeHelper);
+        this.executor = new GetPeriodicMeterReadsGasCommandExecutor(this.dlmsHelper, this.amrProfileStatusCodeHelper,
+                this.dlmsObjectConfigService);
         this.connectionStub = new DlmsConnectionStub();
         this.connectionManagerStub = new DlmsConnectionManagerStub(this.connectionStub);
 
@@ -111,7 +117,6 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
         }
     }
 
-    @Ignore // To be implemented
     @Test
     public void testExecuteSmr5_0() throws Exception {
         for (final PeriodTypeDto type : PeriodTypeDto.values()) {
@@ -119,7 +124,6 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
         }
     }
 
-    @Ignore // To be implemented
     @Test
     public void testExecuteSmr5_1() throws Exception {
         for (final PeriodTypeDto type : PeriodTypeDto.values()) {
@@ -150,10 +154,12 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
 
         // There should be 1 request to the buffer (id = 2) of a profile (class-id = 7)
         final AttributeAddress actualAttributeAddressProfile = requestedAttributeAddresses.stream()
-                .filter(a -> a.getClassId() == this.CLASS_ID_PROFILE).collect(Collectors.toList()).get(0);
+                .filter(a -> a.getClassId() == this.CLASS_ID_PROFILE)
+                .collect(Collectors.toList())
+                .get(0);
 
-        final AttributeAddress expectedAttributeAddressProfile = this
-                .createAttributeAddress(protocol, type, timeFrom, timeTo);
+        final AttributeAddress expectedAttributeAddressProfile = this.createAttributeAddress(protocol, type, timeFrom,
+                timeTo);
         AttributeAddressAssert.is(actualAttributeAddressProfile, expectedAttributeAddressProfile);
 
         // There should be 1 request to the scaler_unit (id = 3) of the meter value in the register (class-id = 3)
@@ -201,8 +207,8 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     // DSMR4
 
     private AttributeAddress createAttributeAddressDsmr4Daily(final DataObject from, final DataObject to) {
-        final SelectiveAccessDescription expectedSelectiveAccess = this
-                .createSelectiveAccessDescriptionDsmr4Daily(from, to);
+        final SelectiveAccessDescription expectedSelectiveAccess = this.createSelectiveAccessDescriptionDsmr4Daily(from,
+                to);
         return new AttributeAddress(this.CLASS_ID_PROFILE, this.OBIS_DAILY_DSMR4, this.ATTR_ID_BUFFER,
                 expectedSelectiveAccess);
     }
@@ -210,18 +216,18 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     private SelectiveAccessDescription createSelectiveAccessDescriptionDsmr4Daily(final DataObject from,
             final DataObject to) {
 
-        final DataObject selectedValues = DataObject
-                .newArrayData(Arrays.asList(this.CLOCK, this.STATUS, this.GAS_VALUE, this.GAS_CAPTURE_TIME));
+        final DataObject selectedValues = DataObject.newArrayData(
+                Arrays.asList(this.CLOCK, this.STATUS, this.GAS_VALUE, this.GAS_CAPTURE_TIME));
 
-        final DataObject expectedAccessParam = DataObject
-                .newStructureData(Arrays.asList(this.CLOCK, from, to, selectedValues));
+        final DataObject expectedAccessParam = DataObject.newStructureData(
+                Arrays.asList(this.CLOCK, from, to, selectedValues));
 
         return new SelectiveAccessDescription(1, expectedAccessParam);
     }
 
     private AttributeAddress createAttributeAddressDsmr4Monthly(final DataObject from, final DataObject to) {
-        final SelectiveAccessDescription expectedSelectiveAccess = this
-                .createSelectiveAccessDescriptionDsmr4Monthly(from, to);
+        final SelectiveAccessDescription expectedSelectiveAccess = this.createSelectiveAccessDescriptionDsmr4Monthly(
+                from, to);
         return new AttributeAddress(this.CLASS_ID_PROFILE, this.OBIS_MONTHLY_DSMR4, this.ATTR_ID_BUFFER,
                 expectedSelectiveAccess);
     }
@@ -229,18 +235,18 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     private SelectiveAccessDescription createSelectiveAccessDescriptionDsmr4Monthly(final DataObject from,
             final DataObject to) {
 
-        final DataObject selectedValues = DataObject
-                .newArrayData(Arrays.asList(this.CLOCK, this.GAS_VALUE, this.GAS_CAPTURE_TIME));
+        final DataObject selectedValues = DataObject.newArrayData(
+                Arrays.asList(this.CLOCK, this.GAS_VALUE, this.GAS_CAPTURE_TIME));
 
-        final DataObject expectedAccessParam = DataObject
-                .newStructureData(Arrays.asList(this.CLOCK, from, to, selectedValues));
+        final DataObject expectedAccessParam = DataObject.newStructureData(
+                Arrays.asList(this.CLOCK, from, to, selectedValues));
 
         return new SelectiveAccessDescription(1, expectedAccessParam);
     }
 
     private AttributeAddress createAttributeAddressDsmr4Interval(final DataObject from, final DataObject to) {
-        final SelectiveAccessDescription expectedSelectiveAccess = this
-                .createSelectiveAccessDescriptionDsmr4Interval(from, to);
+        final SelectiveAccessDescription expectedSelectiveAccess = this.createSelectiveAccessDescriptionDsmr4Interval(
+                from, to);
         return new AttributeAddress(this.CLASS_ID_PROFILE, this.OBIS_INTERVAL_DSMR4, this.ATTR_ID_BUFFER,
                 expectedSelectiveAccess);
     }
@@ -250,8 +256,8 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
 
         final DataObject selectedValues = DataObject.newArrayData(Collections.emptyList());
 
-        final DataObject expectedAccessParam = DataObject
-                .newStructureData(Arrays.asList(this.CLOCK, from, to, selectedValues));
+        final DataObject expectedAccessParam = DataObject.newStructureData(
+                Arrays.asList(this.CLOCK, from, to, selectedValues));
 
         return new SelectiveAccessDescription(1, expectedAccessParam);
     }
@@ -281,8 +287,8 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
 
         final DataObject selectedValues = DataObject.newArrayData(Collections.emptyList());
 
-        final DataObject expectedAccessParam = DataObject
-                .newStructureData(Arrays.asList(this.CLOCK, from, to, selectedValues));
+        final DataObject expectedAccessParam = DataObject.newStructureData(
+                Arrays.asList(this.CLOCK, from, to, selectedValues));
 
         return new SelectiveAccessDescription(1, expectedAccessParam);
     }
