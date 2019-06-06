@@ -51,7 +51,7 @@
     <osgp.iec61850.simulator.version>${project.version}</osgp.iec61850.simulator.version>
     <spring.version>4.3.18.RELEASE</spring.version>
     <spring.ws.version>2.4.0.RELEASE</spring.ws.version>
-    <spring.data.version>1.11.21.RELEASE</spring.data.version>
+    <spring.data.version>1.11.22.RELEASE</spring.data.version>
     <spring.data.key.version>1.2.16.RELEASE</spring.data.key.version>
     <spring.data.commons.version>1.13.16.RELEASE</spring.data.commons.version>
     <spring.security.version>4.2.12.RELEASE</spring.security.version>
