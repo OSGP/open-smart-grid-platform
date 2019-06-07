@@ -43,7 +43,8 @@ public class PlatformDefaults {
     public static final Short DEFAULT_CHANNEL = (short) 1;
     public static final String DEFAULT_CONTAINER_CITY = "StandardCity";
     public static final String DEFAULT_CONTAINER_MUNICIPALITY = "GreaterStandardArea";
-    public static final String DEFAULT_CONTAINER_NUMBER = "123";
+    public static final Integer DEFAULT_CONTAINER_NUMBER = 123;
+    public static final String DEFAULT_CONTAINER_NUMBER_ADDITION = "A";
     public static final String DEFAULT_CONTAINER_POSTALCODE = "6546KM";
     public static final String DEFAULT_CONTAINER_STREET = "StandardStreet";
     public static final String DEFAULT_DC_LIGHTS = "0";

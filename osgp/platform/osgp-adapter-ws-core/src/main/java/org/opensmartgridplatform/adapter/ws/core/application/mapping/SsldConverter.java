@@ -22,6 +22,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
@@ -35,6 +36,12 @@ class SsldConverter extends BidirectionalConverter<Ssld, Device> {
     public SsldConverter(final SsldRepository ssldRepository) {
         super();
         this.ssldRepository = ssldRepository;
+    }
+
+    @Override
+    public void setMapperFacade(final MapperFacade mapper) {
+        super.setMapperFacade(mapper);
+        this.helper.setMapperFacade(mapper);
     }
 
     @Override
@@ -96,9 +103,7 @@ class SsldConverter extends BidirectionalConverter<Ssld, Device> {
 
         for (final org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting deviceOutputSetting : source
                 .getOutputSettings()) {
-            org.opensmartgridplatform.domain.core.entities.DeviceOutputSetting newDeviceOutputSetting = new org.opensmartgridplatform.domain.core.entities.DeviceOutputSetting();
-
-            newDeviceOutputSetting = new org.opensmartgridplatform.domain.core.entities.DeviceOutputSetting(
+            final org.opensmartgridplatform.domain.core.entities.DeviceOutputSetting newDeviceOutputSetting = new org.opensmartgridplatform.domain.core.entities.DeviceOutputSetting(
                     deviceOutputSetting.getInternalId(), deviceOutputSetting.getExternalId(),
                     deviceOutputSetting.getRelayType() == null ? null
                             : org.opensmartgridplatform.domain.core.valueobjects.RelayType
