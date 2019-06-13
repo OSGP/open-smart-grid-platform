@@ -7,9 +7,9 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.responses.from.core.processors;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -21,18 +21,18 @@ import javax.jms.ObjectMessage;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.FirmwareService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
-import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDeviceBuilder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHelper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
-import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsLogItemRequestMessageSender;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.RetryHeaderFactory;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareFileDto;
@@ -44,22 +44,16 @@ import org.opensmartgridplatform.shared.infra.jms.ObjectMessageBuilder;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 
+@RunWith(MockitoJUnitRunner.class)
 public class GetFirmwareFileResponseMessageProcessorTest {
+    @Mock
+    protected DlmsConnectionHelper connectionHelper;
 
     @Mock
     protected DeviceResponseMessageSender responseMessageSender;
 
     @Mock
-    protected DlmsLogItemRequestMessageSender dlmsLogItemRequestMessageSender;
-
-    @Mock
-    protected OsgpExceptionConverter osgpExceptionConverter;
-
-    @Mock
     protected DomainHelperService domainHelperService;
-
-    @Mock
-    protected DlmsConnectionFactory dlmsConnectionFactory;
 
     @Mock
     protected DlmsMessageListener dlmsMessageListenerMock;
@@ -71,17 +65,16 @@ public class GetFirmwareFileResponseMessageProcessorTest {
     private FirmwareService firmwareService;
 
     @Mock
-    private DlmsConnectionHolder dlmsConnectionHolderMock;
+    private DlmsConnectionManager dlmsConnectionManagerMock;
 
-    @Mock
-    private DlmsDevice dlmsDeviceMock;
+    private DlmsDevice dlmsDevice;
 
     @InjectMocks
     private GetFirmwareFileResponseMessageProcessor getFirmwareFileResponseMessageProcessor;
 
     @Before
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
+    public void setUp() {
+        this.dlmsDevice = new DlmsDeviceBuilder().withHls5Active(true).build();
     }
 
     @Test
@@ -98,12 +91,11 @@ public class GetFirmwareFileResponseMessageProcessorTest {
         final ArgumentCaptor<ResponseMessage> responseMessageArgumentCaptor = ArgumentCaptor
                 .forClass(ResponseMessage.class);
 
-        when(this.domainHelperService.findDlmsDevice(any(MessageMetadata.class))).thenReturn(this.dlmsDeviceMock);
-        when(this.dlmsConnectionFactory.getConnection(this.dlmsDeviceMock, null))
-                .thenReturn(this.dlmsConnectionHolderMock);
-        when(this.dlmsConnectionHolderMock.getDlmsMessageListener()).thenReturn(this.dlmsMessageListenerMock);
-        when(this.dlmsDeviceMock.isInDebugMode()).thenReturn(false);
-        when(this.firmwareService.updateFirmware(this.dlmsConnectionHolderMock, this.dlmsDeviceMock, firmwareFileDto))
+        when(this.domainHelperService.findDlmsDevice(any(MessageMetadata.class))).thenReturn(this.dlmsDevice);
+        when(this.dlmsConnectionManagerMock.getDlmsMessageListener()).thenReturn(this.dlmsMessageListenerMock);
+        when(this.connectionHelper.createConnectionForDevice(same(this.dlmsDevice), any(DlmsMessageListener.class)))
+                .thenReturn(this.dlmsConnectionManagerMock);
+        when(this.firmwareService.updateFirmware(this.dlmsConnectionManagerMock, this.dlmsDevice, firmwareFileDto))
                 .thenReturn(updateFirmwareResponseDto);
 
         // act
@@ -112,11 +104,11 @@ public class GetFirmwareFileResponseMessageProcessorTest {
         // assert
         verify(this.responseMessageSender, times(1)).send(responseMessageArgumentCaptor.capture());
 
-        assertThat(responseMessageArgumentCaptor.getValue().getDataObject(), is(updateFirmwareResponseDto));
-        assertThat(responseMessageArgumentCaptor.getValue().getResult(), is(ResponseMessageResultType.OK));
+        assertThat(responseMessageArgumentCaptor.getValue().getDataObject()).isSameAs(updateFirmwareResponseDto);
+        assertThat(responseMessageArgumentCaptor.getValue().getResult()).isSameAs(ResponseMessageResultType.OK);
     }
 
-    // @Test
+    @Test
     public void handleMessageShouldCallUpdateFirmware()
             throws OsgpException {
         // arrange
@@ -124,11 +116,11 @@ public class GetFirmwareFileResponseMessageProcessorTest {
         final ResponseMessage responseMessage = this.setupResponseMessage(firmwareFileDto);
 
         // act
-        this.getFirmwareFileResponseMessageProcessor.handleMessage(this.dlmsConnectionHolderMock, this.dlmsDeviceMock,
+        this.getFirmwareFileResponseMessageProcessor.handleMessage(this.dlmsConnectionManagerMock, this.dlmsDevice,
                 responseMessage);
 
         // assert
-        verify(this.firmwareService, times(1)).updateFirmware(this.dlmsConnectionHolderMock, this.dlmsDeviceMock,
+        verify(this.firmwareService, times(1)).updateFirmware(this.dlmsConnectionManagerMock, this.dlmsDevice,
                 firmwareFileDto);
     }
 

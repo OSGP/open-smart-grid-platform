@@ -13,13 +13,13 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.da.application.services.MonitoringService;
-import org.opensmartgridplatform.shared.infra.jms.BaseNotificationMessageProcessor;
 import org.opensmartgridplatform.domain.da.valueobjects.GetPQValuesPeriodicRequest;
+import org.opensmartgridplatform.shared.infra.jms.BaseNotificationMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.NotificationResponseMessageSender;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +41,7 @@ public class GetPQValuesPeriodicRequestMessageProcessor extends BaseNotification
     private MonitoringService monitoringService;
 
     @Autowired
-    public GetPQValuesPeriodicRequestMessageProcessor(
-            final NotificationResponseMessageSender responseMessageSender,
+    public GetPQValuesPeriodicRequestMessageProcessor(final NotificationResponseMessageSender responseMessageSender,
             @Qualifier("domainDistributionAutomationWebServiceRequestMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.GET_POWER_QUALITY_VALUES_PERIODIC);
     }
@@ -79,8 +78,10 @@ public class GetPQValuesPeriodicRequestMessageProcessor extends BaseNotification
         try {
             LOGGER.info("Calling application service function: {}", messageType);
 
-            this.monitoringService.getPQValuesPeriodic(organisationIdentification, deviceIdentification, correlationUid,
-                    messageType, getPQValuesPeriodicRequest);
+            final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification,
+                    correlationUid);
+
+            this.monitoringService.getPQValuesPeriodic(ids, messageType, getPQValuesPeriodicRequest);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);

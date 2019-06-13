@@ -20,7 +20,6 @@ public class ProtocolResponseMessage extends ResponseMessage {
 
     private final String domain;
     private final String domainVersion;
-    private final String messageType;
     private final boolean scheduled;
 
     private final int retryCount;
@@ -30,7 +29,6 @@ public class ProtocolResponseMessage extends ResponseMessage {
         super(builder.superBuilder);
         this.domain = builder.domain;
         this.domainVersion = builder.domainVersion;
-        this.messageType = builder.messageType;
         this.scheduled = builder.scheduled;
         this.retryCount = builder.retryCount;
         this.retryHeader = builder.retryHeader;
@@ -42,14 +40,17 @@ public class ProtocolResponseMessage extends ResponseMessage {
 
         private String domain;
         private String domainVersion;
-        private String messageType;
         private boolean scheduled;
         private int retryCount;
         private RetryHeader retryHeader;
 
         public Builder deviceMessageMetadata(final DeviceMessageMetadata deviceMessageMetadata) {
             this.superBuilder.withDeviceMessageMetadata(deviceMessageMetadata);
-            this.messageType = deviceMessageMetadata.getMessageType();
+            return this;
+        }
+
+        public Builder correlationUid(final String correlationUid) {
+            this.superBuilder.withCorrelationUid(correlationUid);
             return this;
         }
 
@@ -112,10 +113,6 @@ public class ProtocolResponseMessage extends ResponseMessage {
 
     public String getDomainVersion() {
         return this.domainVersion;
-    }
-
-    public String getMessageType() {
-        return this.messageType;
     }
 
     public boolean isScheduled() {

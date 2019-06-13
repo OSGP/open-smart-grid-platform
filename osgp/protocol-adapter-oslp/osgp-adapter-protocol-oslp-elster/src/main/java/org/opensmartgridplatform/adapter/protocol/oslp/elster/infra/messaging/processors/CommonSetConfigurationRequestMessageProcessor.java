@@ -65,7 +65,7 @@ public class CommonSetConfigurationRequestMessageProcessor extends DeviceRequest
                     DeviceRequest.newBuilder().messageMetaData(messageMetadata), configuration);
 
             this.deviceService.setConfiguration(deviceRequest);
-        } catch (final Exception e) {
+        } catch (final RuntimeException e) {
             this.handleError(e, messageMetadata);
         }
     }
@@ -98,9 +98,7 @@ public class CommonSetConfigurationRequestMessageProcessor extends DeviceRequest
             @Override
             public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                 CommonSetConfigurationRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(deviceResponse,
-                        t, unsignedOslpEnvelopeDto.getExtraData(),
-                        CommonSetConfigurationRequestMessageProcessor.this.responseMessageSender, deviceResponse,
-                        domain, domainVersion, messageType, isScheduled, retryCount);
+                        t, domain, domainVersion, messageType, isScheduled, retryCount);
             }
         };
 

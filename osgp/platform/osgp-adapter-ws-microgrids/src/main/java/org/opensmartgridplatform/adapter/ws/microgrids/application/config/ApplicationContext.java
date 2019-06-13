@@ -7,6 +7,8 @@
  */
 package org.opensmartgridplatform.adapter.ws.microgrids.application.config;
 
+import org.opensmartgridplatform.shared.application.config.AbstractConfig;
+import org.opensmartgridplatform.ws.microgrids.config.MicroGridsWebServiceConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -17,17 +19,15 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
-import org.opensmartgridplatform.shared.application.config.AbstractConfig;
-import org.opensmartgridplatform.ws.microgrids.config.MicroGridsWebServiceConfig;
-
 /**
  * An application context Java configuration class. The usage of Java
  * configuration requires Spring Framework 3.0
  */
 @Configuration
-@ComponentScan(basePackages = {"org.opensmartgridplatform.domain.microgrids", "org.opensmartgridplatform.adapter.ws.microgrids",
+@ComponentScan(basePackages = { "org.opensmartgridplatform.shared.domain.services",
+        "org.opensmartgridplatform.domain.microgrids", "org.opensmartgridplatform.adapter.ws.microgrids",
         "org.opensmartgridplatform.domain.logging", "org.opensmartgridplatform.domain.core.services",
-        "org.opensmartgridplatform.adapter.ws.shared.services"})
+        "org.opensmartgridplatform.adapter.ws.shared.services", "org.opensmartgridplatform.shared.application.config" })
 @ImportResource("classpath:applicationContext.xml")
 @Import({ MicroGridsWebServiceConfig.class })
 @PropertySource("classpath:osgp-adapter-ws-microgrids.properties")

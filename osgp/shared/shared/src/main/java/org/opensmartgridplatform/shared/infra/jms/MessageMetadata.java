@@ -34,6 +34,7 @@ public class MessageMetadata implements Serializable {
     private Long scheduleTime;
     private boolean bypassRetry;
     private int retryCount;
+    private int jmsxDeliveryCount;
 
     private MessageMetadata() {
         // Default private constructor.
@@ -52,6 +53,7 @@ public class MessageMetadata implements Serializable {
         this.scheduleTime = builder.scheduleTime;
         this.bypassRetry = builder.bypassRetry;
         this.retryCount = builder.retryCount;
+        this.jmsxDeliveryCount = builder.jmsxDeliveryCount;
     }
 
     public static final MessageMetadata fromMessage(final Message message) throws JMSException {
@@ -76,6 +78,7 @@ public class MessageMetadata implements Serializable {
 
         metadata.retryCount = metadata.getIntProperty(message, Constants.RETRY_COUNT, 0);
         metadata.bypassRetry = metadata.getBooleanProperty(message, Constants.BYPASS_RETRY, false);
+        metadata.jmsxDeliveryCount = metadata.getIntProperty(message, Constants.DELIVERY_COUNT, 0);
 
         return metadata;
     }
@@ -128,6 +131,10 @@ public class MessageMetadata implements Serializable {
         return this.bypassRetry;
     }
 
+    public int getJmsxDeliveryCount() {
+        return this.jmsxDeliveryCount;
+    }
+
     private String getStringProperty(final Message message, final String name, final String defaultValue)
             throws JMSException {
         return message.propertyExists(name) ? message.getStringProperty(name) : defaultValue;
@@ -166,7 +173,8 @@ public class MessageMetadata implements Serializable {
                 ", scheduled=" + this.scheduled +
                 ", scheduleTime=" + this.scheduleTime +
                 ", bypassRetry=" + this.bypassRetry +
-                ", retryCount=" + this.retryCount + "]";
+                ", retryCount=" + this.retryCount +
+                ", jmsxDeliveryCount=" + this.jmsxDeliveryCount + "]";
     }
 
     //@formatter:on
@@ -185,6 +193,7 @@ public class MessageMetadata implements Serializable {
         private boolean scheduled = false;
         private int retryCount = 0;
         private boolean bypassRetry = false;
+        private int jmsxDeliveryCount = 0;
 
         public Builder(final MessageMetadata otherMetadata) {
             this.correlationUid = otherMetadata.getCorrelationUid();
@@ -199,6 +208,7 @@ public class MessageMetadata implements Serializable {
             this.scheduleTime = otherMetadata.getScheduleTime();
             this.bypassRetry = otherMetadata.isBypassRetry();
             this.retryCount = otherMetadata.getRetryCount();
+            this.jmsxDeliveryCount = otherMetadata.getJmsxDeliveryCount();
         }
 
         public Builder(final String correlationUid, final String organisationIdentification,
@@ -266,6 +276,11 @@ public class MessageMetadata implements Serializable {
 
         public Builder withBypassRetry(final boolean bypassRetry) {
             this.bypassRetry = bypassRetry;
+            return this;
+        }
+
+        public Builder withJmsxDeliveryCount(final int jmsxDeliveryCount) {
+            this.jmsxDeliveryCount = jmsxDeliveryCount;
             return this;
         }
 

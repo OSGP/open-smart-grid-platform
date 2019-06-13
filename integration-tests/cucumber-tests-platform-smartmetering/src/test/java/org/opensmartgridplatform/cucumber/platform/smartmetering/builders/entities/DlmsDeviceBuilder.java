@@ -1,22 +1,22 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.builders.entities;
 
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getLong;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
-
 import org.opensmartgridplatform.cucumber.platform.core.builders.CucumberBuilder;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
@@ -170,7 +170,7 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
         return this;
     }
 
-    public DlmsDeviceBuilder setProtocol(ProtocolInfo protocolInfo) {
+    public DlmsDeviceBuilder setProtocol(final ProtocolInfo protocolInfo) {
         this.protocol = protocolInfo.getProtocol();
         this.protocolVersion = protocolInfo.getProtocolVersion();
         return this;
@@ -354,7 +354,8 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
         dlmsDevice.setInDebugMode(this.inDebugMode);
         dlmsDevice.setMbusIdentificationNumber(this.mbusIdentificationNumber);
         dlmsDevice.setMbusManufacturerIdentification(this.mbusManufacturerIdentification);
-        dlmsDevice.setProtocol(protocol, protocolVersion);
+        dlmsDevice.setProtocol(this.protocol, this.protocolVersion);
+        dlmsDevice.setInvocationCounter(0);
 
         /**
          * It is not ideal that the build() method for security keys is called
@@ -368,10 +369,8 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
     }
 
     private List<SecurityKeyBuilder> getEnabledKeyBuilders() {
-        return Arrays
-                .asList(this.authenticationSecurityKeyBuilder, this.encryptionSecurityKeyBuilder,
-                        this.masterSecurityKeyBuilder, this.mbusEncryptionSecurityKeyBuilder,
-                        this.mbusMasterSecurityKeyBuilder, this.passwordBuilder)
-                .stream().filter(skb -> skb.enabled()).collect(Collectors.toList());
+        return Stream.of(this.authenticationSecurityKeyBuilder, this.encryptionSecurityKeyBuilder,
+                this.masterSecurityKeyBuilder, this.mbusEncryptionSecurityKeyBuilder, this.mbusMasterSecurityKeyBuilder,
+                this.passwordBuilder).filter(skb -> skb.enabled()).collect(Collectors.toList());
     }
 }

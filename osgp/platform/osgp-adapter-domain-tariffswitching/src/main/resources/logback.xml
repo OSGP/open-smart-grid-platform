@@ -11,7 +11,7 @@
     </connectionSource>
   </appender>
   -->
-  
+
   <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
       <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS}] [${HOSTNAME}] [%thread] %level %logger{36}@%method:%line - %msg%n</pattern>
@@ -20,14 +20,12 @@
 
   <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <file>/var/log/osp/logs/osgp-adapter-domain-tariffswitching.log</file>
-    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      <!-- daily rollover -->
-      <fileNamePattern>/var/log/osp/logs/osgp-adapter-domain-tariffswitching.log.%d{yyyy-MM-dd}.log</fileNamePattern>
-
-      <!-- keep X days' worth of history -->
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <fileNamePattern>/var/log/osp/logs/osgp-adapter-domain-tariffswitching.log.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+      <maxFileSize>100MB</maxFileSize>
       <maxHistory>10</maxHistory>
+      <totalSizeCap>20GB</totalSizeCap>
     </rollingPolicy>
-
     <encoder>
       <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS}] [${HOSTNAME}] [%thread] %level %logger{36}@%method:%line - %msg%n</pattern>
     </encoder>
@@ -36,9 +34,9 @@
   <root level="INFO" additivity="false">
     <appender-ref ref="CONSOLE"/>
     <appender-ref ref="FILE"/>
-<!--
-    <appender-ref ref="DB"/>
--->
+    <!--
+        <appender-ref ref="DB"/>
+    -->
   </root>
 
 </configuration>

@@ -73,7 +73,7 @@ public class PublicLightingSetLightRequestMessageProcessor extends DeviceRequest
                     DeviceRequest.newBuilder().messageMetaData(messageMetadata), lightValueMessageDataContainer);
 
             this.deviceService.setLight(deviceRequest);
-        } catch (final Exception e) {
+        } catch (final RuntimeException e) {
             this.handleError(e, messageMetadata);
         }
     }
@@ -114,9 +114,7 @@ public class PublicLightingSetLightRequestMessageProcessor extends DeviceRequest
             @Override
             public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                 PublicLightingSetLightRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(deviceResponse,
-                        t, unsignedOslpEnvelopeDto.getExtraData(),
-                        PublicLightingSetLightRequestMessageProcessor.this.responseMessageSender, deviceResponse,
-                        domain, domainVersion, messageType, isScheduled, retryCount);
+                        t, domain, domainVersion, messageType, isScheduled, retryCount);
             }
         };
 
@@ -133,7 +131,7 @@ public class PublicLightingSetLightRequestMessageProcessor extends DeviceRequest
 
         final DeviceResponseHandler resumeScheduleDeviceResponseHandler = this.publicLightingResumeScheduleRequestMessageProcessor
                 .createResumeScheduleDeviceResponseHandler(domain, domainVersion, MessageType.RESUME_SCHEDULE.name(),
-                        retryCount, resumeScheduleMessageDataContainer, isScheduled);
+                        retryCount, isScheduled);
 
         final ResumeScheduleDeviceRequest resumeScheduleDeviceRequest = new ResumeScheduleDeviceRequest(DeviceRequest
                 .newBuilder().organisationIdentification(organisationIdentification)

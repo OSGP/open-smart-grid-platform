@@ -10,7 +10,7 @@ def branchReleaseRepo = 'master'
 pipeline {
     agent {
         node {
-            label 'master'
+            label 'buildslave'
         }
     }
 
@@ -28,14 +28,6 @@ pipeline {
     }
 
     stages {
-
-        // The pr job will clone the git repository, but nothing more. So gitmodules are not downloaded. Therefore we
-        // need to trigger this manually
-        stage ('Update Submodules') {
-            steps {
-                sh "git submodule update --remote --init"
-            }
-        }
 
         stage ('Set GitHub Status') {
             steps {
@@ -60,7 +52,7 @@ pipeline {
                                 jgivenPublisher(disabled: true),
                                 jacocoPublisher(disabled: true)
                         ]) {
-                    sh "mvn clean install -B -DskipTestJarWithDependenciesAssembly=false"
+                    sh "mvn clean install -B -T2 -DskipTestJarWithDependenciesAssembly=false"
                 }
 
                 // Collect all build wars and copy them to target/artifacts
@@ -82,6 +74,8 @@ pipeline {
                 // - The following artifacts are not in this repository
                 sh "cd release && plays/download-artifacts.yml -e artifactstodownload='{{ configuration_artifacts }}' -e deployment_type=snapshot -e osgp_version=${POMVERSION} -e tmp_artifacts_directory=../../target/artifacts"
                 sh "cd release && plays/download-artifacts.yml -e artifactstodownload='{{ dlms_simulator_artifacts }}' -e deployment_type=snapshot -e osgp_version=${POMVERSION} -e tmp_artifacts_directory=../../target/artifacts"
+                // Make sure a standalone version of the dlms device simulator is present
+                sh "cp -p target/artifacts/dlms-device-simulator-${POMVERSION}.jar target/artifacts/dlms-device-simulator-${POMVERSION}-standalone.jar"
                 // - The following artifacts are not specified in the root pom.xml, thus they should be retrieved from the artifactory.
                 sh "cd release && plays/download-artifacts.yml -e artifactstodownload='{{ distribution_automation_artifacts }}' -e deployment_type=snapshot -e osgp_version=${POMVERSION} -e tmp_artifacts_directory=../../target/artifacts"
                 sh "cd release && plays/download-artifacts.yml -e artifactstodownload='{{ iec61850_simulator_artifacts }}' -e deployment_type=snapshot -e osgp_version=${POMVERSION} -e tmp_artifacts_directory=../../target/artifacts"
@@ -152,13 +146,11 @@ EXTRACTED_TAGS=`echo $ghprbPullLongDescription | grep -o \'\\[@.*\\]\' | sed \'s
 echo $EXTRACTED_TAGS --tags ~@NightlyBuildOnly > "${WORKSPACE}/cucumber-tags"
 
 echo Found cucumber tags: [$EXTRACTED_TAGS]'''
-
                 sh "ssh-keygen -f \"$HOME/.ssh/known_hosts\" -R ${servername}-instance.dev.osgp.cloud"
                 sh "./runTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-common centos \"OSGP Development.pem\" \"\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
                 sh "./runPubliclightingTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-publiclighting centos \"OSGP Development.pem\" \"\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
                 sh "./runMicrogridsTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-microgrids centos \"OSGP Development.pem\" \"\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
-                // Smart metering test have been disabled due to dlms simulator problems caused by SLIM-1869.
-                //sh "./runSmartMeteringTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-smartmetering centos \"OSGP Development.pem\" \"\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
+                sh "./runSmartMeteringTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-smartmetering centos \"OSGP Development.pem\" \"\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
             }
         }
 

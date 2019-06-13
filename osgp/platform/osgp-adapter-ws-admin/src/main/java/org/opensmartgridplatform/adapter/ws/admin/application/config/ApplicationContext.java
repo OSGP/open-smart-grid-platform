@@ -7,17 +7,6 @@
  */
 package org.opensmartgridplatform.adapter.ws.admin.application.config;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.ImportResource;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
-import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
-
 import org.opensmartgridplatform.adapter.ws.infra.specifications.JpaDeviceSpecifications;
 import org.opensmartgridplatform.adapter.ws.infra.specifications.JpaEventSpecifications;
 import org.opensmartgridplatform.domain.core.specifications.DeviceSpecifications;
@@ -26,19 +15,29 @@ import org.opensmartgridplatform.logging.domain.config.ReadOnlyLoggingConfig;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.application.config.PagingSettings;
 import org.opensmartgridplatform.ws.admin.config.AdminWebServiceConfig;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.ImportResource;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
 /**
  * An application context Java configuration class.
  */
 @Configuration
-@ComponentScan(basePackages = {"org.opensmartgridplatform.domain.core", "org.opensmartgridplatform.adapter.ws.admin",
-        "org.opensmartgridplatform.logging.domain"})
+@ComponentScan(basePackages = { "org.opensmartgridplatform.shared.domain.services",
+        "org.opensmartgridplatform.domain.core", "org.opensmartgridplatform.adapter.ws.admin",
+        "org.opensmartgridplatform.logging.domain" })
 @ImportResource("classpath:applicationContext.xml")
 @Import({ MessagingConfig.class, PersistenceConfig.class, WebServiceConfig.class, ReadOnlyLoggingConfig.class,
         AdminWebServiceConfig.class })
-@PropertySources({ @PropertySource("classpath:osgp-adapter-ws-admin.properties"),
-        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:${osgp/AdapterWsAdmin/config}", ignoreResourceNotFound = true), })
+@PropertySource("classpath:osgp-adapter-ws-admin.properties")
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/AdapterWsAdmin/config}", ignoreResourceNotFound = true)
 public class ApplicationContext extends AbstractConfig {
 
     private static final String PROPERTY_NAME_DEFAULT_PROTOCOL = "default.protocol";

@@ -123,6 +123,11 @@ public class Constants {
     public static final String IEC61850_LOG_ITEM_REQUEST = "IEC61850_LOG_ITEM";
 
     /**
+     * JMS constant for message field: IEC60870_LOG_ITEM.
+     */
+    public static final String IEC60870_LOG_ITEM_REQUEST = "IEC60870_LOG_ITEM";
+
+    /**
      * JMS constant for message field: OSLP_LOG_ITEM.
      */
     public static final String OSLP_LOG_ITEM_REQUEST = "OSLP_LOG_ITEM";
@@ -196,6 +201,11 @@ public class Constants {
      * JMS constant for message group.
      */
     public static final String MESSAGE_GROUP = "JMSXGroupID";
+
+    /**
+     * JMS constant for delivery count of the message.
+     */
+    public static final String DELIVERY_COUNT = "JMSXDeliveryCount";
 
     // === DEPRECATED ===
 

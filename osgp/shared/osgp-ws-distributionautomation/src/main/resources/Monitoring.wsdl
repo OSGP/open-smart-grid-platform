@@ -68,6 +68,18 @@
     
     <!-- 
     ################################################################################
+    ## Measurements
+    ################################################################################
+    -->
+    <wsdl:message name="GetMeasurementReportRequest">
+        <wsdl:part element="da:GetMeasurementReportRequest" name="GetMeasurementReportRequest"/>
+    </wsdl:message>
+    <wsdl:message name="GetMeasurementReportResponse">
+        <wsdl:part element="da:GetMeasurementReportResponse" name="GetMeasurementReportResponse"/>
+    </wsdl:message>
+
+    <!-- 
+    ################################################################################
     ## Operations
     ################################################################################
     -->
@@ -87,6 +99,10 @@
         <wsdl:operation name="GetPQValuesPeriodicAsync">
             <wsdl:input message="tns:GetPQValuesPeriodicAsyncRequest" name="GetPQValuesPeriodicAsyncRequest"/>
             <wsdl:output message="tns:GetPQValuesPeriodicResponse" name="GetPQValuesPeriodicResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="GetMeasurementReport">
+            <wsdl:input message="tns:GetMeasurementReportRequest" name="GetMeasurementReportRequest"/>
+            <wsdl:output message="tns:GetMeasurementReportResponse" name="GetMeasurementReportResponse"/>
         </wsdl:operation>
     </wsdl:portType>
     
@@ -124,6 +140,7 @@
                 <soap:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
+
         <wsdl:operation name="GetPQValuesPeriodic">
             <soap:operation soapAction=""/>
             <wsdl:input name="GetPQValuesPeriodicRequest">
@@ -136,6 +153,7 @@
                 <soap:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
+
         <wsdl:operation name="GetPQValuesPeriodicAsync">
             <soap:operation soapAction=""/>
             <wsdl:input name="GetPQValuesPeriodicAsyncRequest">
@@ -148,6 +166,20 @@
                 <soap:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
+
+        <wsdl:operation name="GetMeasurementReport">
+            <soap:operation soapAction=""/>
+            <wsdl:input name="GetMeasurementReportRequest">
+                <soap:header message="tns:GenericHeader" part="OrganisationIdentification" use="literal"/>
+                <soap:header message="tns:GenericHeader" part="UserName" use="literal"/>
+                <soap:header message="tns:GenericHeader" part="ApplicationName" use="literal"/>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="GetMeasurementReportResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
     </wsdl:binding>
     
     <!-- 

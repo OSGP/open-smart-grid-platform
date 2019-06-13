@@ -1,7 +1,6 @@
 package org.opensmartgridplatform.cucumber.platform.core;
 
-import org.springframework.util.Assert;
-
+import org.junit.Assert;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -15,16 +14,15 @@ public class CorrelationUidHelper {
      * @param organizationIdentification
      *            The organizationIdentifier used; if null or empty, the default
      *            test-org will be used.
-     * @throws Throwable
      */
     public static void saveCorrelationUidInScenarioContext(final String correlationUid,
-            String organizationIdentification) throws Throwable {
+            String organizationIdentification) {
         if (organizationIdentification == null || organizationIdentification.isEmpty()) {
             organizationIdentification = PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION;
         }
 
         // Validate the correlation-id starts with correct organization
-        Assert.isTrue(correlationUid.startsWith(organizationIdentification));
+        Assert.assertTrue(correlationUid.startsWith(organizationIdentification));
         ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, correlationUid);
     }
 

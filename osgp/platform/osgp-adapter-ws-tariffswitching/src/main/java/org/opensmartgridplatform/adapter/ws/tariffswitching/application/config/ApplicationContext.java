@@ -7,6 +7,8 @@
  */
 package org.opensmartgridplatform.adapter.ws.tariffswitching.application.config;
 
+import org.opensmartgridplatform.shared.application.config.AbstractConfig;
+import org.opensmartgridplatform.ws.tariffswitching.config.TariffSwitchingWebServiceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -15,35 +17,31 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
-
-import org.opensmartgridplatform.shared.application.config.AbstractConfig;
-import org.opensmartgridplatform.ws.tariffswitching.config.TariffSwitchingWebServiceConfig;
 
 /**
  * An application context Java configuration class. The usage of Java
  * configuration requires Spring Framework 3.0
  */
 @Configuration
-@ComponentScan(basePackages = {"org.opensmartgridplatform.domain.core", "org.opensmartgridplatform.adapter.ws.tariffswitching"})
+@ComponentScan(basePackages = { "org.opensmartgridplatform.shared.domain.services",
+        "org.opensmartgridplatform.domain.core", "org.opensmartgridplatform.adapter.ws.tariffswitching",
+        "org.opensmartgridplatform.adapter.ws.shared.services", "org.opensmartgridplatform.adapter.ws.mapping",
+        "org.opensmartgridplatform.shared.application.config" })
 @EnableTransactionManagement()
 @ImportResource("classpath:applicationContext.xml")
-@Import({ PersistenceConfig.class, MessagingConfig.class, WebServiceConfig.class,
+@Import({ PersistenceConfigCore.class, MessagingConfig.class, WebServiceConfig.class,
         TariffSwitchingWebServiceConfig.class })
-@PropertySources({ @PropertySource("classpath:osgp-adapter-ws-tariffswitching.properties"),
-        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:${osgp/AdapterWsTariffSwitching/config}", ignoreResourceNotFound = true), })
+@PropertySource("classpath:osgp-adapter-ws-tariffswitching.properties")
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/AdapterWsTariffSwitching/config}", ignoreResourceNotFound = true)
 public class ApplicationContext extends AbstractConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContext.class);
 
-    /**
-     * @return
-     */
     @Bean
     public LocalValidatorFactoryBean validator() {
         LOGGER.debug("Initializing Local Validator Factory Bean");
@@ -53,9 +51,6 @@ public class ApplicationContext extends AbstractConfig {
         return localValidatorFactoryBean;
     }
 
-    /**
-     * @return
-     */
     @Bean
     public MethodValidationPostProcessor methodValidationPostProcessor() {
         LOGGER.debug("Initializing Method Validation Post Processor Bean");

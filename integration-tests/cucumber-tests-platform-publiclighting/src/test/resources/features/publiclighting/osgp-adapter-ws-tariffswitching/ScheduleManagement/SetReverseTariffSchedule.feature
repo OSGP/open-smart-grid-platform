@@ -61,7 +61,7 @@ Feature: TariffSwitchingScheduleManagement Set Reverse Tariff Schedule
       | Time         | 18:00:00.000 |
       | TariffValues | 0,false      |
     # Note: The platform throws a TechnicalException when the status is 'FAILURE'.
-    And the platform buffers a set reverse tariff schedule response message for device "TEST1024000000001" contains soap fault
+    And the platform buffers a set reverse tariff schedule response message for device "TEST1024000000001" that contains a soap fault
       | Message | Device reports failure |
 
     Examples: 
@@ -91,7 +91,7 @@ Feature: TariffSwitchingScheduleManagement Set Reverse Tariff Schedule
       | Time         | 18:00:00.000 |
       | TariffValues | 0,false      |
     # Note: The platform throws a TechnicalException when the status is 'REJECTED'.
-    And the platform buffers a set reverse tariff schedule response message for device "TEST1024000000001" contains soap fault
+    And the platform buffers a set reverse tariff schedule response message for device "TEST1024000000001" that contains a soap fault
       | Message | Device reports rejected |
 
     Examples: 
@@ -114,7 +114,63 @@ Feature: TariffSwitchingScheduleManagement Set Reverse Tariff Schedule
       | FaultString  | VALIDATION_ERROR                                                                               |
       | InnerMessage | Validation Exception, violations: startDay may not be null when weekDay is set to ABSOLUTEDAY; |
 
-  # Note: Result is 'NOT_FOUND' because there isn't a record in the database with a CorrelationUID
+  Scenario Outline: Set reverse tariff schedule for inactive/unregistered device (device lifecycle state)
+    Given an ssld device
+      | DeviceIdentification  | TEST1024000000001       |
+      | DeviceLifecycleStatus | <DeviceLifecycleStatus> |
+    When receiving a set reverse tariff schedule request
+      | DeviceIdentification | TEST1024000000001 |
+      | WeekDay              | MONDAY            |
+      | StartDay             |                   |
+      | EndDay               |                   |
+      | Time                 | 18:00:00.000      |
+      | TariffValues         | 0,true            |
+    Then the set reverse tariff schedule response contains soap fault
+      | FaultCode    | SOAP-ENV:Server                                        |
+      | FaultString  | INACTIVE_DEVICE                                        |
+      | InnerMessage | Device TEST1024000000001 is not active in the platform |
+
+    Examples: 
+      | DeviceLifecycleStatus |
+      | NEW_IN_INVENTORY      |
+      | READY_FOR_USE         |
+      | REGISTERED            |
+      | RETURNED_TO_INVENTORY |
+      | UNDER_TEST            |
+      | DESTROYED             |
+
+  Scenario: Set reverse tariff schedule for inactive/unregistered device (is activated false)
+    Given an ssld device
+      | DeviceIdentification | TEST1024000000001 |
+      | Activated            | false             |
+    When receiving a set reverse tariff schedule request
+      | DeviceIdentification | TEST1024000000001 |
+      | WeekDay              | MONDAY            |
+      | StartDay             |                   |
+      | EndDay               |                   |
+      | Time                 | 18:00:00.000      |
+      | TariffValues         | 0,true            |
+    Then the set reverse tariff schedule response contains soap fault
+      | FaultCode    | SOAP-ENV:Server                                        |
+      | FaultString  | INACTIVE_DEVICE                                        |
+      | InnerMessage | Device TEST1024000000001 is not active in the platform |
+
+  Scenario: Set reverse tariff schedule for unregistered device (public key missing)
+    Given an ssld device
+      | DeviceIdentification | TEST1024000000001 |
+      | PublicKeyPresent     | false             |
+    When receiving a set reverse tariff schedule request
+      | DeviceIdentification | TEST1024000000001 |
+      | WeekDay              | MONDAY            |
+      | StartDay             |                   |
+      | EndDay               |                   |
+      | Time                 | 18:00:00.000      |
+      | TariffValues         | 0,true            |
+    Then the set reverse tariff schedule response contains soap fault
+      | FaultCode    | SOAP-ENV:Server                            |
+      | FaultString  | UNREGISTERED_DEVICE                        |
+      | InnerMessage | Device TEST1024000000001 is not registered |
+
   # Note: HasScheduled is set to 'false' because the response type is 'NOT_OK', but should be 'OK'
   @OslpMockServer
   Scenario Outline: Set reverse tariff schedule with 50 schedules # Success
@@ -139,8 +195,9 @@ Feature: TariffSwitchingScheduleManagement Set Reverse Tariff Schedule
       | EndDay       | 2016-12-31   |
       | Time         | 18:00:00.000 |
       | TariffValues | 0,false      |
-    And the platform buffers a set reverse tariff schedule response message for device "TEST1024000000001"
-      | Result | NOT_FOUND |
+    And the platform buffers a set reverse tariff schedule response message for device "TEST1024000000001" that contains a soap fault
+      | FaultCode   | SOAP-ENV:Server            |
+      | FaultString | CorrelationUid is unknown. |
 
     Examples: 
       | Protocol    |
@@ -159,6 +216,6 @@ Feature: TariffSwitchingScheduleManagement Set Reverse Tariff Schedule
       | TariffValues         | 0,true            |
       | ScheduledTime        | 2016-12-15        |
     Then the set reverse tariff schedule response contains soap fault
-      | FaultCode        | SOAP-ENV:Client                                                                                                                                                                                                                                                                                             |
-      | FaultString      | Validation error                                                                                                                                                                                                                                                                                            |
+      | FaultCode        | SOAP-ENV:Client                                                                                                                                                                                                                                                                                                           |
+      | FaultString      | Validation error                                                                                                                                                                                                                                                                                                          |
       | ValidationErrors | cvc-complex-type.2.4.a: Invalid content was found starting with element 'ns2:Schedules'. One of '{"http://www.opensmartgridplatform.org/schemas/tariffswitching/schedulemanagement/2014/10":Page, "http://www.opensmartgridplatform.org/schemas/tariffswitching/schedulemanagement/2014/10":scheduled_time}' is expected. |

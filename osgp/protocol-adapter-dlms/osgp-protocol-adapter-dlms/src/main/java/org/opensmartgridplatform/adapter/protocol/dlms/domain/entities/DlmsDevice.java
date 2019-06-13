@@ -96,16 +96,23 @@ public class DlmsDevice extends AbstractEntity {
     @Column(length = 3)
     private String mbusManufacturerIdentification;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
     private String protocol;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
     private String protocolVersion;
 
     // -- This comes from: Core Device.
 
     @Transient
     private String ipAddress;
+
+    // Starting value of the invocation counter for next connection, for SMR device with Hls5 connection only (for
+    // other devices the invocation counter value is never updated).
+    // This value is initialized by reading the invocation counter from the device using the public client.
+    // After each session with the device it is incremented with the number of invocations in the session.
+    @Column
+    private Integer invocationCounter = 0;
 
     public DlmsDevice() {
         // Default constructor
@@ -328,11 +335,11 @@ public class DlmsDevice extends AbstractEntity {
     }
 
     public String getProtocol() {
-        return protocol;
+        return this.protocol;
     }
 
     public String getProtocolVersion() {
-        return protocolVersion;
+        return this.protocolVersion;
     }
 
     public DlmsDevice setProtocol(final String protocol, final String protocolVersion) {
@@ -355,6 +362,29 @@ public class DlmsDevice extends AbstractEntity {
 
     public void setIpAddress(final String ipAddress) {
         this.ipAddress = ipAddress;
+    }
+
+    /**
+     * The starting value of the invocation counter for a new Hls5 connection.
+     */
+    public int getInvocationCounter() {
+        return this.invocationCounter;
+    }
+
+    public boolean isInvocationCounterInitialized() {
+        return this.invocationCounter != null;
+    }
+
+    public void setInvocationCounter(final Integer invocationCounter) {
+        this.invocationCounter = invocationCounter;
+    }
+
+    public void incrementInvocationCounter(final int amount) {
+        this.invocationCounter += amount;
+    }
+
+    public boolean needsInvocationCounter() {
+        return this.hls5Active && "SMR".equals(this.protocol);
     }
 
     /**

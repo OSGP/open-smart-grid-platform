@@ -184,6 +184,7 @@ public class PlatformKeys extends Keys {
     public static final String KEY_PAGE = "Page";
     public static final String KEY_PAGE_SIZE = "PageSize";
     public static final String KEY_PERIOD_TYPE = "PeriodType";
+    public static final String KEY_PLATFORM_FUNCTION = "PlatformFunction";
     public static final String KEY_PLATFORM_FUNCTION_GROUP = "PlatformFunctionGroup";
     public static final String KEY_POSTCODE = "containerPostalCode";
     public static final String KEY_PREFERRED_LINKTYPE = "PreferredLinkType";
@@ -217,8 +218,6 @@ public class PlatformKeys extends Keys {
     public static final String KEY_STATUS = "Status";
     public static final String KEY_STREET = "containerStreet";
 
-    public static final String KEY_SUBSTATION_ROOMNUMBER = "RoomNumber";
-
     public static final String KEY_SYSTEM_ID = "SystemId";
     public static final String KEY_SYSTEM_TYPE = "SystemType";
     public static final String KEY_TECHNICAL_INSTALLATION_DATE = "TechnicalInstallationDate";
@@ -231,7 +230,7 @@ public class PlatformKeys extends Keys {
     public static final String KEY_VERSION = "Version";
     public static final String KEY_RESPONSE_URL = "ResponseUrl";
 
-    public static final String LAST_COMMUNICATION_TIME = "LastCommunicationTime";
+    public static final String KEY_LAST_COMMUNICATION_TIME = "LastCommunicationTime";
     public static final String LOGIN_ATTEMPT_COUNT = "LoginAttemptCount";
     public static final String LONG_INTERVAL = "LongInterval";
     public static final String MANUFACTURER_CODE = "ManufacturerCode";

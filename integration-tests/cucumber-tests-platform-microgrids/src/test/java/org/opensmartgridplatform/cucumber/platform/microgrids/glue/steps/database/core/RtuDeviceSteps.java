@@ -8,18 +8,20 @@
 package org.opensmartgridplatform.cucumber.platform.microgrids.glue.steps.database.core;
 
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
+import static org.opensmartgridplatform.cucumber.platform.PlatformKeys.KEY_LAST_COMMUNICATION_TIME;
 
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-
+import org.joda.time.DateTime;
+import org.opensmartgridplatform.cucumber.core.DateTimeHelper;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.glue.steps.database.core.BaseDeviceSteps;
 import org.opensmartgridplatform.domain.core.entities.Device;
-import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.entities.RtuDevice;
+import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.RtuDeviceRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import cucumber.api.java.en.Given;
 
@@ -29,10 +31,10 @@ import cucumber.api.java.en.Given;
 public class RtuDeviceSteps extends BaseDeviceSteps {
 
     @Autowired
-    private RtuDeviceRepository rtuDeviceRespository;
+    private RtuDeviceRepository rtuDeviceRepository;
 
     @Autowired
-    private DeviceRepository deviceRespository;
+    private DeviceRepository deviceRepository;
 
     @Given("^an rtu device$")
     @Transactional("txMgrCoreMicrogrids")
@@ -40,12 +42,20 @@ public class RtuDeviceSteps extends BaseDeviceSteps {
 
         final String deviceIdentification = getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION);
         final RtuDevice rtuDevice = new RtuDevice(deviceIdentification);
-        return this.rtuDeviceRespository.save(rtuDevice);
+        rtuDevice.messageReceived(this.getLastCommunicationTime(settings).toDate());
+        return this.rtuDeviceRepository.save(rtuDevice);
     }
 
     @Transactional("txMgrCore")
     public Device updateRtuDevice(final Map<String, String> settings) throws Throwable {
-        return this.updateDevice(this.deviceRespository
+        return this.updateDevice(this.deviceRepository
                 .findByDeviceIdentification(getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION)), settings);
+    }
+
+    private DateTime getLastCommunicationTime(final Map<String, String> settings) {
+        if (settings.containsKey(KEY_LAST_COMMUNICATION_TIME)) {
+            return (DateTimeHelper.getDateTime(settings.get(KEY_LAST_COMMUNICATION_TIME)));
+        }
+        return DateTime.now();
     }
 }

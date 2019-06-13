@@ -58,7 +58,7 @@ public class AdminUpdateKeyRequestMessageProcessor extends DeviceRequestMessageP
                     messageMetadata.getDomainVersion());
 
             this.deviceManagementService.updateKey(messageMetadata, this.responseMessageSender, publicKey);
-        } catch (final Exception e) {
+        } catch (final RuntimeException e) {
             this.handleError(e, messageMetadata);
         }
     }

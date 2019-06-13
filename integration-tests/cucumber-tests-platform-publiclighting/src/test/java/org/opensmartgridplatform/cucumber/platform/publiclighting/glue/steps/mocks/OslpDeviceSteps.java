@@ -28,6 +28,8 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTimeZone;
 import org.junit.Assert;
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities.OslpDevice;
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.repositories.OslpDeviceRepository;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -92,6 +94,9 @@ public class OslpDeviceSteps {
 
     @Autowired
     private MockOslpServer oslpMockServer;
+
+    @Autowired
+    private OslpDeviceRepository oslpDeviceRepository;
 
     /**
      * Verify that a get configuration OSLP message is sent to the device.
@@ -669,6 +674,13 @@ public class OslpDeviceSteps {
                 protocol, requestParameters);
     }
 
+    @Given("^the device returns a get configuration status \"([^\"]*)\" over \"([^\"]*)\" using default values$")
+    public void theDeviceReturnsAGetConfigurationStatusWithResultOverOSLP(final String result, final String protocol)
+            throws UnknownHostException {
+        final Map<String, String> requestParameters = new HashMap<>();
+        this.theDeviceReturnsAGetConfigurationStatusWithResultOverOSLP(result, protocol, requestParameters);
+    }
+
     /**
      * Setup method to set the configuration status which should be returned by
      * the mock.
@@ -682,12 +694,13 @@ public class OslpDeviceSteps {
         // enumerations with the name MeterType, but not all of them has all
         // values the same. Some with underscore and some without.
         MeterType meterType;
-        final String sMeterType = getString(requestParameters, PlatformPubliclightingKeys.METER_TYPE);
+        final String sMeterType = getString(requestParameters, PlatformPubliclightingKeys.METER_TYPE, "");
         if (!sMeterType.contains("_") && sMeterType.equals(MeterType.P1_VALUE)) {
             final String[] sMeterTypeArray = sMeterType.split("");
             meterType = MeterType.valueOf(sMeterTypeArray[0] + "_" + sMeterTypeArray[1]);
         } else {
-            meterType = getEnum(requestParameters, PlatformPubliclightingKeys.METER_TYPE, MeterType.class);
+            meterType = getEnum(requestParameters, PlatformPubliclightingKeys.METER_TYPE, MeterType.class,
+                    PlatformPubliclightingDefaults.DEFAULT_OSLP_METER_TYPE);
         }
 
         final String osgpIpAddress = getString(requestParameters, PlatformPubliclightingKeys.OSGP_IP_ADDRESS);
@@ -699,19 +712,25 @@ public class OslpDeviceSteps {
         }
 
         this.oslpMockServer.mockGetConfigurationResponse(Enum.valueOf(Status.class, result),
-                getEnum(requestParameters, PlatformPubliclightingKeys.KEY_LIGHTTYPE, LightType.class),
+                getEnum(requestParameters, PlatformPubliclightingKeys.KEY_LIGHTTYPE, LightType.class,
+                        PlatformPubliclightingDefaults.DEFAULT_LIGHTTYPE),
                 getString(requestParameters, PlatformPubliclightingKeys.DC_LIGHTS,
                         PlatformPubliclightingDefaults.DC_LIGHTS),
-                getString(requestParameters, PlatformPubliclightingKeys.DC_MAP),
-                getString(requestParameters, PlatformPubliclightingKeys.RELAY_CONF),
-                getEnum(requestParameters, PlatformPubliclightingKeys.KEY_PREFERRED_LINKTYPE, LinkType.class),
+                getString(requestParameters, PlatformPubliclightingKeys.DC_MAP,
+                        PlatformPubliclightingDefaults.DEFAULT_DC_MAP),
+                getString(requestParameters, PlatformPubliclightingKeys.RELAY_CONF,
+                        PlatformPubliclightingDefaults.DEFAULT_RELAY_CONFIGURATION),
+                getEnum(requestParameters, PlatformPubliclightingKeys.KEY_PREFERRED_LINKTYPE, LinkType.class,
+                        PlatformPubliclightingDefaults.DEFAULT_PREFERRED_LINKTYPE),
                 meterType,
                 getInteger(requestParameters, PlatformPubliclightingKeys.SHORT_INTERVAL,
                         PlatformPubliclightingDefaults.SHORT_INTERVAL),
                 getInteger(requestParameters, PlatformPubliclightingKeys.LONG_INTERVAL,
                         PlatformPubliclightingDefaults.LONG_INTERVAL),
-                getEnum(requestParameters, PlatformPubliclightingKeys.INTERVAL_TYPE, LongTermIntervalType.class),
-                osgpIpAddressMock, getInteger(requestParameters, PlatformPubliclightingKeys.OSGP_PORT));
+                getEnum(requestParameters, PlatformPubliclightingKeys.INTERVAL_TYPE, LongTermIntervalType.class,
+                        PlatformPubliclightingDefaults.DEFAULT_INTERVAL_TYPE),
+                osgpIpAddressMock, getInteger(requestParameters, PlatformPubliclightingKeys.OSGP_PORT,
+                        PlatformPubliclightingDefaults.DEFAULT_OSLP_PORT));
     }
 
     /**
@@ -856,6 +875,21 @@ public class OslpDeviceSteps {
     }
 
     /**
+     * Setup method which combines get configuration, set configuration and set
+     * schedule mock responses. The protocol adapter component for OSLP executes
+     * these 3 steps when a light schedule is pushed to a device. In case of
+     * FAILURE response, the protocol adapter will only validate the last of the
+     * 3 steps.
+     */
+    @Given("^the device returns the responses for setting a light schedule with result \"([^\"]*)\" over \"([^\"]*)\"$")
+    public void theDeviceReturnsTheResponsesForSettingLightScheduleWithResultOverProtocol(final String result,
+            final String protocol) throws UnknownHostException {
+        this.theDeviceReturnsAGetConfigurationStatusWithResultOverOSLP(result, protocol);
+        this.theDeviceReturnsASetConfigurationStatusWithStatusOverOSLP(result, protocol);
+        this.theDeviceReturnsASetLightScheduleResponseOverOSLP(result, protocol);
+    }
+
+    /**
      * Setup method to set a reboot which should be returned by the mock.
      */
     @Given("^the device returns a set reboot response \"([^\"]*)\" over \"([^\"]*)\"$")
@@ -929,7 +963,7 @@ public class OslpDeviceSteps {
 
     @Given("^the device sends a register device request to the platform over \"([^\"]*)\"$")
     public void theDeviceSendsARegisterDeviceRequestToThePlatform(final String protocol,
-            final Map<String, String> settings) throws IOException, DeviceSimulatorException {
+            final Map<String, String> settings) throws DeviceSimulatorException {
 
         try {
             final OslpEnvelope request = this
@@ -961,7 +995,37 @@ public class OslpDeviceSteps {
         } catch (final IOException | IllegalArgumentException e) {
             ScenarioContext.current().put("Error", e);
         }
+    }
 
+    @Given("^the device sends a confirm register device request to the platform over \"([^\"]*)\"$")
+    public void theDeviceSendsAConfirmRegisterDeviceRequestToThePlatform(final String protocol,
+            final Map<String, String> settings) throws DeviceSimulatorException {
+
+        try {
+            final String deviceIdentification = getString(settings,
+                    PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION,
+                    PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION);
+
+            final String deviceUid = getString(settings, PlatformPubliclightingKeys.KEY_DEVICE_UID,
+                    PlatformPubliclightingDefaults.DEVICE_UID);
+
+            final OslpDevice oslpDevice = this.oslpDeviceRepository.findByDeviceIdentification(deviceIdentification);
+            final int randomDevice = oslpDevice.getRandomDevice();
+            final int randomPlatform = oslpDevice.getRandomPlatform();
+
+            final Oslp.ConfirmRegisterDeviceRequest confirmRegisterDeviceRequest = Oslp.ConfirmRegisterDeviceRequest
+                    .newBuilder().setRandomDevice(randomDevice).setRandomPlatform(randomPlatform).build();
+
+            final Message message = Message.newBuilder().setConfirmRegisterDeviceRequest(confirmRegisterDeviceRequest)
+                    .build();
+
+            final OslpEnvelope request = this.createEnvelopeBuilder(deviceUid, this.oslpMockServer.getSequenceNumber())
+                    .withPayloadMessage(message).build();
+
+            this.send(request, settings);
+        } catch (final IOException | IllegalArgumentException e) {
+            ScenarioContext.current().put("Error", e);
+        }
     }
 
     @Given("^the device sends an event notification request to the platform over \"([^\"]*)\"$")

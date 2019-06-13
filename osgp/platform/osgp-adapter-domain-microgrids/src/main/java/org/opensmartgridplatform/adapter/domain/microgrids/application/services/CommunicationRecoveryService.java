@@ -19,8 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import org.opensmartgridplatform.domain.core.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.entities.RtuDevice;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.GetDataRequestDto;
@@ -29,6 +27,7 @@ import org.opensmartgridplatform.dto.valueobjects.microgrids.GetDataSystemIdenti
 import org.opensmartgridplatform.dto.valueobjects.microgrids.MeasurementDto;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.MeasurementFilterDto;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.SystemFilterDto;
+import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;

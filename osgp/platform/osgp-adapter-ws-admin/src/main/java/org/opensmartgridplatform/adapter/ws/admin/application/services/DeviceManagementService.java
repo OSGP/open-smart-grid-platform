@@ -32,7 +32,6 @@ import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.EventRepository;
 import org.opensmartgridplatform.domain.core.repositories.OrganisationRepository;
 import org.opensmartgridplatform.domain.core.repositories.ProtocolInfoRepository;
-import org.opensmartgridplatform.domain.core.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.domain.core.services.DeviceDomainService;
 import org.opensmartgridplatform.domain.core.services.OrganisationDomainService;
 import org.opensmartgridplatform.domain.core.services.SecurityService;
@@ -45,6 +44,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.PlatformFunctionGroup;
 import org.opensmartgridplatform.logging.domain.entities.DeviceLogItem;
 import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemSlicingRepository;
 import org.opensmartgridplatform.shared.application.config.PagingSettings;
+import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
@@ -109,9 +109,6 @@ public class DeviceManagementService {
 
     @Autowired
     private ProtocolInfoRepository protocolRepository;
-
-    @Autowired
-    private String netManagementOrganisation;
 
     /**
      * Constructor
@@ -272,12 +269,9 @@ public class DeviceManagementService {
 
         this.isAllowed(ownerOrganisation, device, DeviceFunction.SET_DEVICE_AUTHORIZATION);
 
-        // Never remove the OWNER authorization for the net management
-        // organization.
-        if (this.netManagementOrganisation.equals(organisationIdentification)
-                && DeviceFunctionGroup.OWNER.equals(group)) {
-            LOGGER.info("Not removing DeviceFunctionGroup.OWNER for net management organisation: {}",
-                    this.netManagementOrganisation);
+        // Never remove the OWNER authorization
+        if (ownerOrganisation.equals(organisation) && DeviceFunctionGroup.OWNER.equals(group)) {
+            LOGGER.info("Not removing DeviceFunctionGroup.OWNER for organisation: {}", organisation);
             return;
         }
 
@@ -430,6 +424,7 @@ public class DeviceManagementService {
 
         final Organisation organisation = this.findOrganisation(organisationIdentification);
         this.isAllowed(organisation, PlatformFunction.UPDATE_KEY);
+        this.organisationDomainService.isOrganisationEnabled(organisation, ComponentType.WS_ADMIN);
 
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
 

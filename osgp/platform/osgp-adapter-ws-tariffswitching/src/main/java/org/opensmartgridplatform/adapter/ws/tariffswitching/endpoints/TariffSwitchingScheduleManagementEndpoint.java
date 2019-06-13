@@ -10,15 +10,7 @@ package org.opensmartgridplatform.adapter.ws.tariffswitching.endpoints;
 import org.hibernate.validator.method.MethodConstraintViolationException;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.ws.server.endpoint.annotation.Endpoint;
-import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
-import org.springframework.ws.server.endpoint.annotation.RequestPayload;
-import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
-
+import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.schema.tariffswitching.common.AsyncResponse;
@@ -27,6 +19,7 @@ import org.opensmartgridplatform.adapter.ws.schema.tariffswitching.schedulemanag
 import org.opensmartgridplatform.adapter.ws.schema.tariffswitching.schedulemanagement.SetScheduleAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.tariffswitching.schedulemanagement.SetScheduleRequest;
 import org.opensmartgridplatform.adapter.ws.schema.tariffswitching.schedulemanagement.SetScheduleResponse;
+import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataService;
 import org.opensmartgridplatform.adapter.ws.tariffswitching.application.mapping.ScheduleManagementMapper;
 import org.opensmartgridplatform.adapter.ws.tariffswitching.application.services.ScheduleManagementService;
 import org.opensmartgridplatform.domain.core.exceptions.ValidationException;
@@ -35,8 +28,15 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.ws.server.endpoint.annotation.Endpoint;
+import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
+import org.springframework.ws.server.endpoint.annotation.RequestPayload;
+import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 @Endpoint
 public class TariffSwitchingScheduleManagementEndpoint {
@@ -47,6 +47,9 @@ public class TariffSwitchingScheduleManagementEndpoint {
 
     private final ScheduleManagementService scheduleManagementService;
     private final ScheduleManagementMapper scheduleManagementMapper;
+
+    @Autowired
+    private ResponseDataService responseDataService;
 
     /**
      * Constructor.
@@ -116,10 +119,11 @@ public class TariffSwitchingScheduleManagementEndpoint {
         final SetScheduleResponse response = new SetScheduleResponse();
 
         try {
-            final ResponseMessage message = this.scheduleManagementService
-                    .dequeueSetTariffScheduleResponse(request.getAsyncRequest().getCorrelationUid());
-            if (message != null) {
-                response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
+            final ResponseData responseData = this.responseDataService
+                    .dequeue(request.getAsyncRequest().getCorrelationUid(), COMPONENT_WS_TARIFF_SWITCHING);
+            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+            if (responseData.getMessageData() instanceof String) {
+                response.setDescription((String) responseData.getMessageData());
             }
         } catch (final Exception e) {
             this.handleException(e);

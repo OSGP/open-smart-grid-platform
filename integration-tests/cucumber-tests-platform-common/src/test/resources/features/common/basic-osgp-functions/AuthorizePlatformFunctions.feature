@@ -11,11 +11,11 @@ Feature: BasicOsgpFunctions Authorizing Platform Functions
     When receiving a platform function request
       | DeviceIdentification       | TEST1024000000001      |
       | OrganizationIdentification | test-org               |
-      | OrganisationFunction       | <OrganisationFunction> |
+      | PlatformFunction           | <PlatformFunction>     |
     Then the platform function response is "<Allowed>"
 
     Examples: 
-      | OrganisationFunction   | PlatformFunctionGroup | Allowed |
+      | PlatformFunction       | PlatformFunctionGroup | Allowed |
       | CREATE_ORGANISATION    | ADMIN                 | true    |
       | CREATE_ORGANISATION    | USER                  | false   |
       | REMOVE_ORGANISATION    | ADMIN                 | true    |
@@ -25,11 +25,11 @@ Feature: BasicOsgpFunctions Authorizing Platform Functions
       | GET_ORGANISATIONS      | ADMIN                 | true    |
       | GET_ORGANISATIONS      | USER                  | true    |
       | GET_MESSAGES           | ADMIN                 | true    |
-      | GET_MESSAGES           | USER                  | false   |
+      | GET_MESSAGES           | USER                  | true    |
       | GET_DEVICE_NO_OWNER    | ADMIN                 | true    |
       | GET_DEVICE_NO_OWNER    | USER                  | false   |
       | FIND_DEVICES           | ADMIN                 | true    |
-      | FIND_DEVICES           | USER                  | false   |
+      | FIND_DEVICES           | USER                  | true    |
       | SET_OWNER              | ADMIN                 | true    |
       | SET_OWNER              | USER                  | false   |
       | UPDATE_KEY             | ADMIN                 | true    |
@@ -51,7 +51,7 @@ Feature: BasicOsgpFunctions Authorizing Platform Functions
       | UPDATE_DEVICE_PROTOCOL | ADMIN                 | true    |
       | UPDATE_DEVICE_PROTOCOL | USER                  | false   |
       | GET_DEVICE_MODELS      | ADMIN                 | true    |
-      | GET_DEVICE_MODELS      | USER                  | false   |
+      | GET_DEVICE_MODELS      | USER                  | true    |
       | CREATE_DEVICE_MODEL    | ADMIN                 | true    |
       | CREATE_DEVICE_MODEL    | USER                  | false   |
       | REMOVE_DEVICE_MODEL    | ADMIN                 | true    |
@@ -59,7 +59,7 @@ Feature: BasicOsgpFunctions Authorizing Platform Functions
       | CHANGE_DEVICE_MODEL    | ADMIN                 | true    |
       | CHANGE_DEVICE_MODEL    | USER                  | false   |
       | GET_FIRMWARE           | ADMIN                 | true    |
-      | GET_FIRMWARE           | USER                  | false   |
+      | GET_FIRMWARE           | USER                  | true    |
       | CREATE_FIRMWARE        | ADMIN                 | true    |
       | CREATE_FIRMWARE        | USER                  | false   |
       | CHANGE_FIRMWARE        | ADMIN                 | true    |

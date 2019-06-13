@@ -1,4 +1,4 @@
-@Microgrids @Platform
+@Microgrids @Platform @ResendNotifications
 Feature: Microgrids notifications - Resend notifications
   As an OSGP user
   I want the platform to resend missed notifications

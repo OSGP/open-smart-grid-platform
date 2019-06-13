@@ -15,7 +15,8 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsS
 import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceConfiguration;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
-import org.opensmartgridplatform.adapter.ws.smartmetering.domain.repositories.ResponseUrlDataRepository;
+import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseUrlDataRepository;
+import org.opensmartgridplatform.adapter.ws.smartmetering.application.ApplicationConstants;
 import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.NotificationWebServiceConfigurationBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -52,7 +53,7 @@ public class DlmsDatabase {
 
     private List<NotificationWebServiceConfiguration> notificationEndpointConfigurations() {
         final NotificationWebServiceConfigurationBuilder builder = new NotificationWebServiceConfigurationBuilder()
-                .withApplicationName("")
+                .withApplicationName(ApplicationConstants.APPLICATION_NAME)
                 .withMarshallerContextPath("org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification")
                 .withTargetUri("http://localhost:8843/notifications").withoutCircuitBreakerConfig();
         final NotificationWebServiceConfiguration testOrgConfig = builder.build();
@@ -64,7 +65,7 @@ public class DlmsDatabase {
     /**
      * Before each scenario dlms related stuff needs to be removed.
      */
-    @Transactional(transactionManager = "txMgrCore")
+    @Transactional(transactionManager = "txMgrDlms")
     public void prepareDatabaseForScenario() {
 
         this.dlmsDSecurityKeyRepo.deleteAllInBatch();

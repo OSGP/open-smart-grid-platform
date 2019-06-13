@@ -9,9 +9,8 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.CommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 
@@ -21,7 +20,7 @@ public abstract class AbstractCommandExecutorStub implements CommandExecutor<Obj
     private ProtocolAdapterException protocolAdapterException;
     private RuntimeException runtimeException;
 
-    protected ActionResponseDto doExecute(final DlmsConnectionHolder conn, final DlmsDevice device,
+    protected ActionResponseDto doExecute(final DlmsConnectionManager conn, final DlmsDevice device,
             final ActionRequestDto object) throws ProtocolAdapterException {
 
         if (this.runtimeException != null) {
@@ -60,18 +59,17 @@ public abstract class AbstractCommandExecutorStub implements CommandExecutor<Obj
     }
 
     @Override
-    public Object fromBundleRequestInput(final ActionRequestDto bundleInput) throws ProtocolAdapterException {
+    public Object fromBundleRequestInput(final ActionRequestDto bundleInput) {
         throw new AssertionError("fromBundleRequestInput(ActionRequestDto) called by " + this.getClass().getName());
     }
 
     @Override
-    public ActionResponseDto asBundleResponse(final Object executionResult) throws ProtocolAdapterException {
+    public ActionResponseDto asBundleResponse(final Object executionResult) {
         throw new AssertionError("asBundleResponse(Object) called by " + this.getClass().getName());
     }
 
     @Override
-    public Object execute(final DlmsConnectionHolder conn, final DlmsDevice device, final Object object)
-            throws ProtocolAdapterException {
+    public Object execute(final DlmsConnectionManager conn, final DlmsDevice device, final Object object) {
         throw new AssertionError("execute(DlmsConnection, DlmsDevice, Object) called by " + this.getClass().getName());
     }
 }

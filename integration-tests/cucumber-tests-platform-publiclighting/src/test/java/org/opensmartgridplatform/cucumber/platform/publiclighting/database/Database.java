@@ -1,5 +1,5 @@
 /**
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2019 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -7,27 +7,61 @@
  */
 package org.opensmartgridplatform.cucumber.platform.publiclighting.database;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceConfiguration;
+import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
+import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.NotificationWebServiceConfigurationBuilder;
+import org.opensmartgridplatform.cucumber.platform.publiclighting.glue.steps.database.ws.PublicLightingResponseDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.repositories.OslpDeviceRepository;
 
 @Component
 public class Database {
 
     @Autowired
-    private OslpDeviceRepository oslpDeviceRepository;
+    private PublicLightingResponseDataRepository publicLightingResponseDataRepository;
 
-    @Transactional
+    // @Autowired
+    // private TariffSwitchingResponseDataRepository
+    // tariffSwitchingResponseDataRepository;
+
+    @Autowired
+    private NotificationWebServiceConfigurationRepository notificationWebServiceConfigurationRepository;
+
     private void insertDefaultData() {
+        this.notificationWebServiceConfigurationRepository.save(this.notificationEndpointConfigurations());
     }
 
-    @Transactional("txMgrOslp")
-    public void prepareDatabaseForScenario() {
-        // First remove stuff from osgp_adapter_protocol_oslp
-        this.oslpDeviceRepository.deleteAllInBatch();
+    private List<NotificationWebServiceConfiguration> notificationEndpointConfigurations() {
+        final NotificationWebServiceConfigurationBuilder builder = new NotificationWebServiceConfigurationBuilder()
+                .withApplicationName("OSGP")
+                .withMarshallerContextPath("org.opensmartgridplatform.adapter.ws.schema.publiclighting.notification")
+                .withoutCircuitBreakerConfig().withoutKeyStoreConfig().withoutTrustStoreConfig();
+
+        final NotificationWebServiceConfiguration testOrgConfig = builder.withOrganisationIdentification("test-org")
+                .build();
+        final NotificationWebServiceConfiguration noOrganisationConfig = builder
+                .withOrganisationIdentification("no-organisation").build();
+
+        return Arrays.asList(testOrgConfig, noOrganisationConfig);
+    }
+
+    @Transactional("txMgrWsPublicLighting")
+    public void preparePublicLightingDatabaseForScenario() {
+        this.publicLightingResponseDataRepository.deleteAll();
+        this.notificationWebServiceConfigurationRepository.deleteAll();
 
         this.insertDefaultData();
     }
+
+    // @Transactional("txMgrWsTariffSwitching")
+    // public void prepareTariffSwitchingDatabaseForScenario() {
+    // this.tariffSwitchingResponseDataRepository.deleteAll();
+    // this.notificationWebServiceConfigurationRepository.deleteAll();
+    //
+    // this.insertDefaultData();
+    // }
 }

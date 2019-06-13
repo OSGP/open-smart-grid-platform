@@ -156,13 +156,12 @@ Feature: CoreDeviceInstallation Device Creating
       | DeviceIdentification | TEST1024000000001 |
       | Owner                | org-test          |
     Then the add device response contains soap fault
-      | FaultCode      | SOAP-ENV:Server                                                  |
-      | FaultString    | UNKNOWN_ORGANISATION                                             |
+      | FaultCode      | SOAP-ENV:Server                                                         |
+      | FaultString    | UNKNOWN_ORGANISATION                                                    |
       | InnerException | org.opensmartgridplatform.domain.core.exceptions.UnknownEntityException |
-      | InnerMessage   | Organisation with id "unknown-organization" could not be found.  |
+      | InnerMessage   | Organisation with id "unknown-organization" could not be found.         |
 
   Scenario: Allow adding an existing device if there has been no communication with the device yet
-
     Given a device model
       | ModelCode | Test Model |
       | Metered   | true       |
@@ -219,7 +218,6 @@ Feature: CoreDeviceInstallation Device Creating
       | DeviceType                 |                   |
 
   Scenario: Disallow adding an existing device if there has been communication with the device
-
     Given a device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SSLD              |
@@ -227,3 +225,12 @@ Feature: CoreDeviceInstallation Device Creating
       | DeviceIdentification | TEST1024000000001 |
     Then the add device response contains soap fault
       | Message | EXISTING_DEVICE |
+
+  Scenario: Disallow adding a device if the requesting organisation is not enabled
+    Given an organization
+      | OrganizationIdentification | test-org |
+      | Enabled                    | false    |
+    When receiving an add device request
+      | DeviceIdentification | TEST1024000000001 |
+    Then the add device response contains soap fault
+      | Message | DISABLED_ORGANISATION |

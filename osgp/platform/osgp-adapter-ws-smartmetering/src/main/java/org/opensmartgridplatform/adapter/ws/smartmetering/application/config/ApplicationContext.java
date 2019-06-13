@@ -7,6 +7,11 @@
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.config;
 
+import org.opensmartgridplatform.adapter.ws.infra.specifications.JpaEventSpecifications;
+import org.opensmartgridplatform.domain.core.specifications.EventSpecifications;
+import org.opensmartgridplatform.shared.application.config.AbstractConfig;
+import org.opensmartgridplatform.shared.application.config.PagingSettings;
+import org.opensmartgridplatform.ws.smartmetering.config.SmartmeteringWebServiceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,18 +27,14 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
-import org.opensmartgridplatform.adapter.ws.infra.specifications.JpaEventSpecifications;
-import org.opensmartgridplatform.domain.core.specifications.EventSpecifications;
-import org.opensmartgridplatform.shared.application.config.AbstractConfig;
-import org.opensmartgridplatform.shared.application.config.PagingSettings;
-import org.opensmartgridplatform.ws.smartmetering.config.SmartmeteringWebServiceConfig;
-
 /**
  * An application context Java configuration class.
  */
 @Configuration
-@ComponentScan(basePackages = {"org.opensmartgridplatform.domain.core", "org.opensmartgridplatform.adapter.ws.smartmetering",
-        "org.opensmartgridplatform.logging.domain", "org.opensmartgridplatform.adapter.ws.shared.services"})
+@ComponentScan(basePackages = { "org.opensmartgridplatform.shared.domain.services",
+        "org.opensmartgridplatform.domain.core", "org.opensmartgridplatform.adapter.ws.smartmetering",
+        "org.opensmartgridplatform.logging.domain", "org.opensmartgridplatform.adapter.ws.shared.services",
+        "org.opensmartgridplatform.adapter.ws.mapping", "org.opensmartgridplatform.shared.application.config" })
 @EnableTransactionManagement()
 @ImportResource("classpath:applicationContext.xml")
 @Import({ PersistenceConfigWs.class, PersistenceConfigCore.class, MessagingConfig.class, WebServiceConfig.class,
@@ -45,9 +46,6 @@ public class ApplicationContext extends AbstractConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContext.class);
 
-    /**
-     * @return
-     */
     @Bean
     public LocalValidatorFactoryBean validator() {
         LOGGER.debug("Initializing Local Validator Factory Bean");
@@ -57,9 +55,6 @@ public class ApplicationContext extends AbstractConfig {
         return localValidatorFactoryBean;
     }
 
-    /**
-     * @return
-     */
     @Bean
     public MethodValidationPostProcessor methodValidationPostProcessor() {
         LOGGER.debug("Initializing Method Validation Post Processor Bean");

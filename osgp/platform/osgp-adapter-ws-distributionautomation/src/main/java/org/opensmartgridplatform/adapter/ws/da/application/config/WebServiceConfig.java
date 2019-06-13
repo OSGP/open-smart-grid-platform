@@ -22,6 +22,7 @@ import org.opensmartgridplatform.adapter.ws.endpointinterceptors.CertificateAndS
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.SoapHeaderEndpointInterceptor;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.WebServiceMonitorInterceptor;
+import org.opensmartgridplatform.adapter.ws.endpointinterceptors.WebServiceMonitorInterceptorCapabilities;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.X509CertificateRdnAttributeValueEndpointInterceptor;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.notification.SendNotificationRequest;
 import org.opensmartgridplatform.adapter.ws.shared.services.DefaultNotificationService;
@@ -53,6 +54,9 @@ public class WebServiceConfig extends AbstractConfig {
 
     private static final String PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_DISTRIBUTION_AUTOMATION_GENERIC = "jaxb2.marshaller.context.path.distributionautomation.generic";
 
+    private static final String PROPERTY_NAME_SOAP_MESSAGE_LOGGING_ENABLED = "soap.message.logging.enabled";
+    private static final String PROPERTY_NAME_SOAP_MESSAGE_PRINTING_ENABLED = "soap.message.printing.enabled";
+
     private static final String ORGANISATION_IDENTIFICATION_HEADER = "OrganisationIdentification";
     private static final String ORGANISATION_IDENTIFICATION_CONTEXT = ORGANISATION_IDENTIFICATION_HEADER;
 
@@ -63,18 +67,24 @@ public class WebServiceConfig extends AbstractConfig {
     private static final String X509_RDN_ATTRIBUTE_ID = "cn";
     private static final String X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME = "CommonNameSet";
     private static final String SERVER = "SERVER";
+
     @Value("${web.service.notification.enabled}")
     private boolean webserviceNotificationEnabled;
+
     @Value("${web.service.notification.username:#{null}}")
     private String webserviceNotificationUsername;
+
     @Value("${web.service.notification.organisation:OSGP}")
     private String webserviceNotificationOrganisation;
+
+    @Value("${web.service.notification.application.name:DISTRIBUTION_AUTOMATION}")
+    private String webserviceNotificationApplicationName;
 
     // === DISTRIBUTION AUTOMATION MARSHALLERS ===
 
     /**
-     * Method for creating the Marshaller for Distribution Automation Generic (Ad
-     * Hoc Management, Device Management and Monitoring)
+     * Method for creating the Marshaller for Distribution Automation Generic
+     * (Ad Hoc Management, Device Management and Monitoring)
      *
      * @return Jaxb2Marshaller
      */
@@ -89,8 +99,8 @@ public class WebServiceConfig extends AbstractConfig {
     }
 
     /**
-     * Method for creating the Marshalling Payload Method Processor for Distribition
-     * Automation Generic
+     * Method for creating the Marshalling Payload Method Processor for
+     * Distribution Automation Generic
      *
      * @return MarshallingPayloadMethodProcessor
      */
@@ -115,7 +125,8 @@ public class WebServiceConfig extends AbstractConfig {
 
         final List<MethodArgumentResolver> methodArgumentResolvers = new ArrayList<>();
 
-        // Add Distribution Automation Marshalling Payload Method Processors to Method
+        // Add Distribution Automation Marshalling Payload Method Processors to
+        // Method
         // Argument Resolvers
         methodArgumentResolvers.add(this.distributionautomationGenericMarshallingPayloadMethodProcessor());
 
@@ -126,7 +137,8 @@ public class WebServiceConfig extends AbstractConfig {
 
         final List<MethodReturnValueHandler> methodReturnValueHandlers = new ArrayList<>();
 
-        // Add Distribution Automation Marshalling Payload Method Processors to Method
+        // Add Distribution Automation Marshalling Payload Method Processors to
+        // Method
         // Return Value Handlers
         methodReturnValueHandlers.add(this.distributionautomationGenericMarshallingPayloadMethodProcessor());
 
@@ -153,27 +165,18 @@ public class WebServiceConfig extends AbstractConfig {
 
     // === ENDPOINT INTERCEPTORS ===
 
-    /**
-     * @return
-     */
     @Bean
     public X509CertificateRdnAttributeValueEndpointInterceptor x509CertificateSubjectCnEndpointInterceptor() {
         return new X509CertificateRdnAttributeValueEndpointInterceptor(X509_RDN_ATTRIBUTE_ID,
                 X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME);
     }
 
-    /**
-     * @return
-     */
     @Bean
     public SoapHeaderEndpointInterceptor organisationIdentificationInterceptor() {
         return new SoapHeaderEndpointInterceptor(ORGANISATION_IDENTIFICATION_HEADER,
                 ORGANISATION_IDENTIFICATION_CONTEXT);
     }
 
-    /**
-     * @return
-     */
     @Bean
     public CertificateAndSoapHeaderAuthorizationEndpointInterceptor organisationIdentificationInCertificateCnEndpointInterceptor() {
         return new CertificateAndSoapHeaderAuthorizationEndpointInterceptor(
@@ -182,19 +185,38 @@ public class WebServiceConfig extends AbstractConfig {
 
     @Bean
     public WebServiceMonitorInterceptor webServiceMonitorInterceptor() {
+        final boolean soapMessageLoggingEnabled = this.environment
+                .getProperty(PROPERTY_NAME_SOAP_MESSAGE_LOGGING_ENABLED, boolean.class, false);
+        final boolean soapMessagePrintingEnabled = this.environment
+                .getProperty(PROPERTY_NAME_SOAP_MESSAGE_PRINTING_ENABLED, boolean.class, true);
+
+        final WebServiceMonitorInterceptorCapabilities capabilities = new WebServiceMonitorInterceptorCapabilities(
+                soapMessageLoggingEnabled, soapMessagePrintingEnabled);
+
         return new WebServiceMonitorInterceptor(ORGANISATION_IDENTIFICATION_HEADER, USER_NAME_HEADER,
-                APPLICATION_NAME_HEADER);
+                APPLICATION_NAME_HEADER, capabilities);
     }
 
     @Bean
-    public NotificationService notificationService(final NotificationWebServiceTemplateFactory templateFactory,
-            final DistributionAutomationMapper mapper) {
+    public String webserviceNotificationApplicationName() {
+        return this.webserviceNotificationApplicationName;
+    }
+
+    @Bean
+    public String webserviceNotificationOrganisation() {
+        return this.webserviceNotificationOrganisation;
+    }
+
+    @Bean
+    public NotificationService distributionAutomationNotificationService(
+            final NotificationWebServiceTemplateFactory templateFactory, final DistributionAutomationMapper mapper) {
 
         if (!this.webserviceNotificationEnabled) {
             return new NotificationServiceBlackHole();
         }
         final Class<SendNotificationRequest> notificationRequestType = SendNotificationRequest.class;
-        return new DefaultNotificationService<>(templateFactory, notificationRequestType, mapper);
+        return new DefaultNotificationService<>(templateFactory, notificationRequestType, mapper,
+                this.webserviceNotificationApplicationName);
     }
 
     @Bean
@@ -203,8 +225,8 @@ public class WebServiceConfig extends AbstractConfig {
 
         final ClientInterceptor addOsgpHeadersInterceptor = OrganisationIdentificationClientInterceptor.newBuilder()
                 .withOrganisationIdentification(this.webserviceNotificationOrganisation)
-                .withUserName(this.webserviceNotificationUsername).withApplicationName("DISTRIBUTION_AUTOMATION")
-                .build();
+                .withUserName(this.webserviceNotificationUsername)
+                .withApplicationName(this.webserviceNotificationApplicationName).build();
 
         return new NotificationWebServiceTemplateFactory(configRepository, this.messageFactory(),
                 Arrays.asList(addOsgpHeadersInterceptor));

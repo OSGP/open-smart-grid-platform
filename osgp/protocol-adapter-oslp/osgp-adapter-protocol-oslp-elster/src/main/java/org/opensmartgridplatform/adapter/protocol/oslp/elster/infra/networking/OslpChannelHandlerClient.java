@@ -16,16 +16,14 @@ import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
-import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.DeviceRegistrationService;
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.oslp.OslpEnvelope;
+import org.opensmartgridplatform.shared.exceptionhandling.NoDeviceResponseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.DeviceRegistrationService;
-import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.DeviceResponseMessageSender;
-import org.opensmartgridplatform.oslp.OslpEnvelope;
-import org.opensmartgridplatform.shared.exceptionhandling.NoDeviceResponseException;
 
 public class OslpChannelHandlerClient extends OslpChannelHandler {
 
@@ -65,12 +63,7 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
     }
 
     @Override
-    public void exceptionCaught(final ChannelHandlerContext ctx, final ExceptionEvent e) throws Exception {
-        super.exceptionCaught(ctx, e);
-    }
-
-    @Override
-    public void messageReceived(final ChannelHandlerContext ctx, final MessageEvent e) throws Exception {
+    public void messageReceived(final ChannelHandlerContext ctx, final MessageEvent e) {
 
         final OslpEnvelope message = (OslpEnvelope) e.getMessage();
         final Integer channelId = e.getChannel().getId();
@@ -82,12 +75,22 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
                 // Check the sequence number
                 final Integer sequenceNumber = SequenceNumberUtils
                         .convertByteArrayToInteger(message.getSequenceNumber());
-                this.deviceRegistrationService.checkSequenceNumber(message.getDeviceId(), sequenceNumber);
 
-                final OslpCallbackHandler callbackHandler = this.callbackHandlers.get(channelId);
+                final OslpResponseHandler oslpResponseHandler = this.callbackHandlers.get(channelId)
+                        .getDeviceResponseHandler();
+
+                try {
+                    this.deviceRegistrationService.checkSequenceNumber(message.getDeviceId(), sequenceNumber);
+                    oslpResponseHandler.handleResponse(message);
+                } catch (final ProtocolAdapterException exc) {
+                    // Users should not be able to see errors about sequence
+                    // numbers, replace the exception by a generic exception.
+                    LOGGER.error("An error occurred while checking the sequence number", exc);
+                    oslpResponseHandler.handleException(new NoDeviceResponseException());
+                }
+
                 this.callbackHandlers.remove(channelId);
                 e.getChannel().close();
-                callbackHandler.getDeviceResponseHandler().handleResponse(message);
 
             } else {
                 LOGGER.warn("{} Received OSLP Request, which is not expected: {}", channelId,
@@ -99,7 +102,7 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
     }
 
     public void send(final InetSocketAddress address, final OslpEnvelope request,
-            final OslpResponseHandler responseHandler, final String deviceIdentification) throws IOException {
+            final OslpResponseHandler responseHandler, final String deviceIdentification) {
         LOGGER.info("Sending OSLP request: {}", request.getPayloadMessage());
 
         // Open connection and send message.
@@ -109,11 +112,8 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
 
         channelFuture.addListener(new ChannelFutureListener() {
 
-            @Autowired
-            protected DeviceResponseMessageSender responseMessageSender;
-
             @Override
-            public void operationComplete(final ChannelFuture future) throws Exception {
+            public void operationComplete(final ChannelFuture future) throws IOException {
 
                 if (future.isSuccess()) {
                     OslpChannelHandlerClient.this.write(future, address, request);

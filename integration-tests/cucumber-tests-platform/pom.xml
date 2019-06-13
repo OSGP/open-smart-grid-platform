@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-integration-tests</artifactId>
-    <version>4.34.4</version>
+    <version>4.35.0</version>
     <relativePath>../parent-integration-tests/pom.xml</relativePath>
   </parent>
 
@@ -130,6 +130,10 @@
     <dependency>
       <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-domain-logging</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opensmartgridplatform</groupId>
+      <artifactId>osgp-adapter-ws-shared</artifactId>
     </dependency>
 
     <dependency>

@@ -11,17 +11,14 @@ import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.TcpConnectionBuilder;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class DlmsConnector {
-    static final int DLMS_PUBLIC_CLIENT_ID = 16;
-
     private static final Logger LOGGER = LoggerFactory.getLogger(DlmsConnector.class);
 
     public abstract DlmsConnection connect(final DlmsDevice device, final DlmsMessageListener dlmsMessageListener)
