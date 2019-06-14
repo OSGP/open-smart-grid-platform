@@ -9,11 +9,12 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig;
 
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.ACTIVE_ENERGY_EXPORT;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.ACTIVE_ENERGY_EXPORT_RATE_1;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.ACTIVE_ENERGY_EXPORT_RATE_2;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.ACTIVE_ENERGY_IMPORT;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.ACTIVE_ENERGY_IMPORT_RATE_1;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.ACTIVE_ENERGY_IMPORT_RATE_2;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.AMR_STATUS;
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.CLOCK;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.DAILY_LOAD_PROFILE;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.INTERVAL_VALUES;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.MBUS_MASTER_VALUE;
@@ -65,9 +66,9 @@ public class DlmsObjectConfigDsmr422 extends DlmsObjectConfig {
         final DlmsObject activeEnergyImportRate1 =
                 new DlmsRegister(ACTIVE_ENERGY_IMPORT_RATE_1, "1.0.1.8.1.255", 0, WH, ELECTRICITY);
         final DlmsObject activeEnergyImportRate2 =
-                new DlmsRegister(ACTIVE_ENERGY_EXPORT_RATE_2, "1.0.1.8.2.255", 0, WH, ELECTRICITY);
+                new DlmsRegister(ACTIVE_ENERGY_IMPORT_RATE_2, "1.0.1.8.2.255", 0, WH, ELECTRICITY);
         final DlmsObject activeEnergyExportRate1 =
-                new DlmsRegister(ACTIVE_ENERGY_IMPORT_RATE_1, "1.0.2.8.1.255", 0, WH, ELECTRICITY);
+                new DlmsRegister(ACTIVE_ENERGY_EXPORT_RATE_1, "1.0.2.8.1.255", 0, WH, ELECTRICITY);
         final DlmsObject activeEnergyExportRate2 =
                 new DlmsRegister(ACTIVE_ENERGY_EXPORT_RATE_2, "1.0.2.8.2.255", 0, WH, ELECTRICITY);
 
