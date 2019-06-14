@@ -228,7 +228,7 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
 
         AttributeAddressAssert.is(actualAttributeAddressProfile, expectedAddressProfile);
 
-        // Check the amount of requests to the scaler_units (id = 3) of the meter values in the registers (class-id = 3)
+        // Check the amount of requests to the scaler_units of the meter values in the registers
         final List<AttributeAddress> attributeAddressesScalerUnit = requestedAttributeAddresses.stream()
                 .filter(a -> a.getClassId() == this.CLASS_ID_REGISTER && a.getId() == this.ATTR_ID_SCALER_UNIT)
                 .collect(Collectors.toList());
