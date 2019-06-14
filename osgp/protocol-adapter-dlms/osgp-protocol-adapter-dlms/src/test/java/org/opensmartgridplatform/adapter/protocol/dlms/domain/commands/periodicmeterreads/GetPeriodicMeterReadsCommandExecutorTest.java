@@ -56,8 +56,8 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
     @Mock
     private DlmsHelper dlmsHelper;
 
-    @Mock
-    private AttributeAddressService attributeAddressService;
+//    @Mock
+//    private AttributeAddressService attributeAddressService;
 
     @Mock
     private AmrProfileStatusCodeHelper amrProfileStatusCodeHelper;
@@ -86,10 +86,10 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
         final String address = "0.0.1.0.0.255";
         final int id = 2;
         final AttributeAddress attributeAddress = this.createAttributeAddress(classId, address, id);
-        when(this.attributeAddressService
-                .getProfileBufferAndScalerUnitForPeriodicMeterReads(eq(periodType), argThat(new DateTimeMatcher(from)),
-                        argThat(new DateTimeMatcher(to)), eq(procotol.isSelectValuesInSelectiveAccessSupported())))
-                .thenReturn(new AttributeAddress[] { attributeAddress });
+//        when(this.attributeAddressService
+//                .getProfileBufferAndScalerUnitForPeriodicMeterReads(eq(periodType), argThat(new DateTimeMatcher(from)),
+//                        argThat(new DateTimeMatcher(to)), eq(procotol.isSelectValuesInSelectiveAccessSupported())))
+//                .thenReturn(new AttributeAddress[] { attributeAddress });
 
         final DataObject data0 = mock(DataObject.class);
         final DataObject data1 = mock(DataObject.class);
