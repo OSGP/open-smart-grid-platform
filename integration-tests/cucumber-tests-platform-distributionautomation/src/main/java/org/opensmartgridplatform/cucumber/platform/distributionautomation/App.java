@@ -5,15 +5,16 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.cucumber.platform.publiclighting;
+package org.opensmartgridplatform.cucumber.platform.distributionautomation;
 
 import org.opensmartgridplatform.cucumber.execution.AppBase;
 
 public class App extends AppBase {
 
-    public static void main(final String[] args) {
+    public static void main(final String[] args) throws Throwable {
 
-        final String[] testClasses = { "org.opensmartgridplatform.cucumber.platform.publiclighting.AcceptanceTests" };
+        final String[] testClasses = {
+                "org.opensmartgridplatform.cucumber.platform.distributionautomation.AcceptanceTests" };
         final App app = new App();
         System.exit(AppBase.run(app, testClasses, args));
 

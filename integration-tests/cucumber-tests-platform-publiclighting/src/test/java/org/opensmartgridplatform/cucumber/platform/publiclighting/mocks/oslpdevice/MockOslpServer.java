@@ -146,7 +146,7 @@ public class MockOslpServer {
         return this.channelHandler.getSequenceNumber();
     }
 
-    public void start() throws Throwable {
+    public void start() {
         this.channelHandler = new MockOslpChannelHandler(this.oslpSignature, this.oslpSignatureProvider,
                 this.connectionTimeout, this.sequenceNumberWindow, this.sequenceNumberMaximum, this.responseDelayTime,
                 this.reponseDelayRandomRange, this.privateKey(), this.clientBootstrap(), this.mockResponses,
