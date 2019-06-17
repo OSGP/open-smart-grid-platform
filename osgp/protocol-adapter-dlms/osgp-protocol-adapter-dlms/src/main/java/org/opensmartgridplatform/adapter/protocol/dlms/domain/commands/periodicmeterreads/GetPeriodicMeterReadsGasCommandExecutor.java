@@ -243,8 +243,10 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
             index++;
         }
 
-        if (scalerUnitIndex != null) {
-            return getResultList.get(scalerUnitIndex).getResultData();
+        // Get scaler unit from result list. Note: "index + 1" because the first result is the array with values
+        // and should be skipped. The first scaler unit is at index 1.
+       if (scalerUnitIndex != null) {
+            return getResultList.get(scalerUnitIndex + 1).getResultData();
         }
 
         return null;

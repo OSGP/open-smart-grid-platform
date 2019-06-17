@@ -1,12 +1,23 @@
 /**
  * Copyright 2019 Smart Society Services B.V.
- * <p>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * <p>
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.joda.time.DateTime;
 import org.junit.Before;
@@ -31,11 +42,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseItemDto;
-
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
@@ -105,6 +111,33 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
                     DataObject.newOctetStringData(this.OBIS_ACTIVE_ENERGY_EXPORT_RATE_2.bytes()),
                     DataObject.newInteger8Data(this.ATTR_ID_VALUE), DataObject.newUInteger16Data(0)));
 
+    private final Date TIME_FROM = new GregorianCalendar(2019, Calendar.JANUARY, 1).getTime();
+    private final Date TIME_TO = new GregorianCalendar(2019, Calendar.JANUARY, 5).getTime();
+    private final DataObject PERIOD_1_CLOCK = getDateAsOctetString(2019, 1, 1);
+    private final DataObject PERIOD_2_CLOCK = getDateAsOctetString(2019, 1, 2);
+    private final Date PERIOD_1_CLOCK_VALUE = new GregorianCalendar(2019, Calendar.JANUARY, 1, 1, 0).getTime();
+    private final Date PERIOD_2_CLOCK_VALUE = new GregorianCalendar(2019, Calendar.JANUARY, 2, 1, 0).getTime();
+    private final Date PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_15MIN =
+            new GregorianCalendar(2019, Calendar.JANUARY, 1, 1, 15).getTime();
+    private final Date PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_DAILY =
+            new GregorianCalendar(2019, Calendar.JANUARY, 2, 1, 0).getTime();
+    private final Date PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_MONTHLY =
+            new GregorianCalendar(2019, Calendar.FEBRUARY, 1, 1, 0).getTime();
+
+    private final int AMOUNT_OF_PERIODS = 2;
+
+    private final byte AMR_STATUS_VALUE = 8;
+    private final long PERIOD_1_LONG_VALUE_1 = 1000L;
+    private final long PERIOD_1_LONG_VALUE_2 = 2000L;
+    private final long PERIOD_1_LONG_VALUE_3 = 3000L;
+    private final long PERIOD_1_LONG_VALUE_4 = 4000L;
+    private final long PERIOD_2_LONG_VALUE_1 = 1500L;
+    private final long PERIOD_2_LONG_VALUE_2 = 2500L;
+    private final long PERIOD_2_LONG_VALUE_3 = 3500L;
+    private final long PERIOD_2_LONG_VALUE_4 = 4500L;
+
+    private final int DLMS_ENUM_VALUE_WH = 30;
+
     @Before
     public void setUp() {
         this.dlmsHelper = new DlmsHelper();
@@ -158,6 +191,8 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
 
     private void testExecute(final Protocol protocol, final PeriodTypeDto type, boolean useNullData) throws Exception {
 
+        // SETUP
+
         // Reset stub
         this.connectionStub.clearRequestedAttributeAddresses();
 
@@ -165,22 +200,21 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
         final DlmsDevice device = this.createDlmsDevice(protocol);
 
         // Create request object
-        final Date timeFrom = new GregorianCalendar(2019, Calendar.JANUARY, 1).getTime();
-        final Date timeTo = new GregorianCalendar(2019, Calendar.JANUARY, 5).getTime();
-        final PeriodicMeterReadsRequestDto request = new PeriodicMeterReadsRequestDto(type, timeFrom, timeTo);
+        final PeriodicMeterReadsRequestDto request = new PeriodicMeterReadsRequestDto(type, TIME_FROM, TIME_TO);
 
         // Get expected values
-        final AttributeAddress expectedAttributeAddressProfile = this.createAttributeAddress(protocol, type, timeFrom,
-                timeTo);
-        List<AttributeAddress> expectedScalerUnitAttributeAddresses = this.getScalerUnitAttributeAddresses(type);
-        int expectedTotalNumberOfAttributeAddresses = expectedScalerUnitAttributeAddresses.size() + 1;
+        final AttributeAddress expectedAddressProfile = this.createAttributeAddress(protocol, type, TIME_FROM, TIME_TO);
+        List<AttributeAddress> expectedScalerUnitAddresses = this.getScalerUnitAttributeAddresses(type);
+        int expectedTotalNumberOfAttributeAddresses = expectedScalerUnitAddresses.size() + 1;
 
         // Set response in stub
-        setResponseForProfile(expectedAttributeAddressProfile, protocol, type, useNullData);
-        setResponsesForScalerUnit(expectedScalerUnitAttributeAddresses);
+        setResponseForProfile(expectedAddressProfile, protocol, type, useNullData);
+        setResponsesForScalerUnit(expectedScalerUnitAddresses);
 
-        // Execute request
+        // CALL
         PeriodicMeterReadsResponseDto response = this.executor.execute(this.connectionManagerStub, device, request);
+
+        // VERIFY
 
         // Get resulting requests from connection stub
         final List<AttributeAddress> requestedAttributeAddresses = this.connectionStub.getRequestedAttributeAddresses();
@@ -192,54 +226,21 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
                 .collect(Collectors.toList())
                 .get(0);
 
-        AttributeAddressAssert.is(actualAttributeAddressProfile, expectedAttributeAddressProfile);
+        AttributeAddressAssert.is(actualAttributeAddressProfile, expectedAddressProfile);
 
-        // There should be 4 requests to the scaler_units (id = 3) of the meter values in the registers (class-id = 3)
+        // Check the amount of requests to the scaler_units of the meter values in the registers
         final List<AttributeAddress> attributeAddressesScalerUnit = requestedAttributeAddresses.stream()
                 .filter(a -> a.getClassId() == this.CLASS_ID_REGISTER && a.getId() == this.ATTR_ID_SCALER_UNIT)
                 .collect(Collectors.toList());
-        assertThat(attributeAddressesScalerUnit.size()).isEqualTo(expectedScalerUnitAttributeAddresses.size());
+        assertThat(attributeAddressesScalerUnit.size()).isEqualTo(expectedScalerUnitAddresses.size());
 
         // Check response
         assertThat(response.getPeriodType()).isEqualTo(type);
         List<PeriodicMeterReadsResponseItemDto> periodicMeterReads = response.getPeriodicMeterReads();
-        assertThat(periodicMeterReads.size()).isEqualTo(2);
-        PeriodicMeterReadsResponseItemDto periodicMeterRead1 = periodicMeterReads.get(0);
-        PeriodicMeterReadsResponseItemDto periodicMeterRead2 = periodicMeterReads.get(1);
+        assertThat(periodicMeterReads.size()).isEqualTo(AMOUNT_OF_PERIODS);
 
-        if (!useNullData) { // The timestamps should be the same as the times set in the test
-            assertThat(periodicMeterRead1.getLogTime()).isEqualTo(new GregorianCalendar(2019, Calendar.JANUARY, 1, 1, 0).getTime());
-            assertThat(periodicMeterRead2.getLogTime()).isEqualTo(new GregorianCalendar(2019, Calendar.JANUARY, 2, 1, 0).getTime());
-        } else { // The timestamps should be calculated using the periodType, starting from the time of period 1
-            assertThat(periodicMeterRead1.getLogTime()).isEqualTo(new GregorianCalendar(2019, Calendar.JANUARY, 1, 1, 0).getTime());
-
-            if (type == PeriodTypeDto.INTERVAL) {
-                assertThat(periodicMeterRead2.getLogTime()).isEqualTo(new GregorianCalendar(2019, Calendar.JANUARY, 1
-                        , 1, 15).getTime());
-            } else if (type == PeriodTypeDto.DAILY) {
-                assertThat(periodicMeterRead2.getLogTime()).isEqualTo(new GregorianCalendar(2019, Calendar.JANUARY, 2
-                        , 1, 0).getTime());
-            } else if (type == PeriodTypeDto.MONTHLY) {
-                assertThat(periodicMeterRead2.getLogTime()).isEqualTo(new GregorianCalendar(2019, Calendar.FEBRUARY, 1
-                        , 1, 0).getTime());
-            }
-        }
-
-        if (type == PeriodTypeDto.MONTHLY || type == PeriodTypeDto.DAILY) {
-            assertThat(periodicMeterRead1.getActiveEnergyImportTariffOne().getValue().longValue()).isEqualTo(1000L);
-            assertThat(periodicMeterRead1.getActiveEnergyImportTariffTwo().getValue().longValue()).isEqualTo(2000L);
-            assertThat(periodicMeterRead1.getActiveEnergyExportTariffOne().getValue().longValue()).isEqualTo(3000L);
-            assertThat(periodicMeterRead1.getActiveEnergyExportTariffTwo().getValue().longValue()).isEqualTo(4000L);
-            assertThat(periodicMeterRead2.getActiveEnergyImportTariffOne().getValue().longValue()).isEqualTo(1500L);
-            assertThat(periodicMeterRead2.getActiveEnergyImportTariffTwo().getValue().longValue()).isEqualTo(2500L);
-            assertThat(periodicMeterRead2.getActiveEnergyExportTariffOne().getValue().longValue()).isEqualTo(3500L);
-            assertThat(periodicMeterRead2.getActiveEnergyExportTariffTwo().getValue().longValue()).isEqualTo(4500L);
-        } else { // INTERVAL
-            assertThat(periodicMeterRead1.getActiveEnergyImport().getValue().longValue()).isEqualTo(1000L);
-            assertThat(periodicMeterRead1.getActiveEnergyExport().getValue().longValue()).isEqualTo(2000L);
-            assertThat(periodicMeterRead2.getActiveEnergyImport().getValue().longValue()).isEqualTo(1500L);
-            assertThat(periodicMeterRead2.getActiveEnergyExport().getValue().longValue()).isEqualTo(2500L);
-        }
+        checkClockValues(periodicMeterReads, type, useNullData);
+        checkValues(periodicMeterReads, type);
     }
 
     private DlmsDevice createDlmsDevice(final Protocol protocol) {
@@ -280,7 +281,7 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
     private List<AttributeAddress> getScalerUnitAttributeAddresses(PeriodTypeDto type) throws Exception {
         List<AttributeAddress> attributeAddresses = new ArrayList<>();
 
-        switch (type) {
+        switch(type) {
             case MONTHLY:
             case DAILY:
                 attributeAddresses.add(new AttributeAddress(this.CLASS_ID_REGISTER,
@@ -310,12 +311,12 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
 
         // PERIOD 1
 
-        DataObject period1Clock = getDateAsOctetString(2019, 1, 1);
-        DataObject period1Status = DataObject.newUInteger8Data((byte) 8);
-        DataObject period1Value1 = DataObject.newUInteger32Data(1000L);
-        DataObject period1Value2 = DataObject.newUInteger32Data(2000L);
-        DataObject period1Value3 = DataObject.newUInteger32Data(3000L);
-        DataObject period1Value4 = DataObject.newUInteger32Data(4000L);
+        DataObject period1Clock = PERIOD_1_CLOCK;
+        DataObject period1Status = DataObject.newUInteger8Data(AMR_STATUS_VALUE);
+        DataObject period1Value1 = DataObject.newUInteger32Data(PERIOD_1_LONG_VALUE_1);
+        DataObject period1Value2 = DataObject.newUInteger32Data(PERIOD_1_LONG_VALUE_2);
+        DataObject period1Value3 = DataObject.newUInteger32Data(PERIOD_1_LONG_VALUE_3);
+        DataObject period1Value4 = DataObject.newUInteger32Data(PERIOD_1_LONG_VALUE_4);
 
         DataObject periodItem1;
         if (type == PeriodTypeDto.MONTHLY && protocol == Protocol.DSMR_4_2_2) {
@@ -332,16 +333,17 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
         if (useNullData) {
             period2Clock = DataObject.newNullData();
         } else {
-            period2Clock = getDateAsOctetString(2019, 1, 2);
+            period2Clock = PERIOD_2_CLOCK;
         }
-        DataObject period2Status = DataObject.newUInteger8Data((byte) 8);
-        DataObject period2Value1 = DataObject.newUInteger32Data(1500L);
-        DataObject period2Value2 = DataObject.newUInteger32Data(2500L);
-        DataObject period2Value3 = DataObject.newUInteger32Data(3500L);
-        DataObject period2Value4 = DataObject.newUInteger32Data(4500L);
+        DataObject period2Status = DataObject.newUInteger8Data(AMR_STATUS_VALUE);
+        DataObject period2Value1 = DataObject.newUInteger32Data(PERIOD_2_LONG_VALUE_1);
+        DataObject period2Value2 = DataObject.newUInteger32Data(PERIOD_2_LONG_VALUE_2);
+        DataObject period2Value3 = DataObject.newUInteger32Data(PERIOD_2_LONG_VALUE_3);
+        DataObject period2Value4 = DataObject.newUInteger32Data(PERIOD_2_LONG_VALUE_4);
 
         DataObject periodItem2;
         if (type == PeriodTypeDto.MONTHLY && protocol == Protocol.DSMR_4_2_2) {
+            // No status for Monthly values in DSMR4.2.2
             periodItem2 = DataObject.newStructureData(Arrays.asList(period2Clock, period2Value1, period2Value2,
                     period2Value3, period2Value4));
         } else {
@@ -355,8 +357,8 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
     }
 
     private void setResponsesForScalerUnit(List<AttributeAddress> attributeAddressesForScalerUnit) {
-        DataObject responseDataObject = DataObject.newStructureData(DataObject.newInteger8Data((byte) 0),
-                DataObject.newEnumerateData(30));
+        DataObject responseDataObject = DataObject.newStructureData(DataObject.newInteger8Data((byte)0),
+                DataObject.newEnumerateData(DLMS_ENUM_VALUE_WH));
 
         for (AttributeAddress attributeAddress : attributeAddressesForScalerUnit) {
             connectionStub.addReturnValue(attributeAddress, responseDataObject);
@@ -368,6 +370,50 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
 
         return DataObject.newOctetStringData(dateTime.encode());
     }
+
+    private void checkClockValues(List<PeriodicMeterReadsResponseItemDto> periodicMeterReads, PeriodTypeDto type,
+                                  boolean useNullData) {
+
+        PeriodicMeterReadsResponseItemDto periodicMeterRead1 = periodicMeterReads.get(0);
+        assertThat(periodicMeterRead1.getLogTime()).isEqualTo(PERIOD_1_CLOCK_VALUE);
+
+        PeriodicMeterReadsResponseItemDto periodicMeterRead2 = periodicMeterReads.get(1);
+
+        if (!useNullData) { // The timestamps should be the same as the times set in the test
+            assertThat(periodicMeterRead2.getLogTime()).isEqualTo(PERIOD_2_CLOCK_VALUE);
+        } else { // The timestamps should be calculated using the periodType, starting from the time of period 1
+            if (type == PeriodTypeDto.INTERVAL) {
+                assertThat(periodicMeterRead2.getLogTime()).isEqualTo(PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_15MIN);
+            } else if (type == PeriodTypeDto.DAILY) {
+                assertThat(periodicMeterRead2.getLogTime()).isEqualTo(PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_DAILY);
+            } else if (type == PeriodTypeDto.MONTHLY) {
+                assertThat(periodicMeterRead2.getLogTime()).isEqualTo(PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_MONTHLY);
+            }
+        }
+    }
+
+    private void checkValues(List<PeriodicMeterReadsResponseItemDto> periodicMeterReads, PeriodTypeDto type) {
+
+        PeriodicMeterReadsResponseItemDto period1 = periodicMeterReads.get(0);
+        PeriodicMeterReadsResponseItemDto period2 = periodicMeterReads.get(1);
+
+        if (type == PeriodTypeDto.MONTHLY || type == PeriodTypeDto.DAILY) {
+            assertThat(period1.getActiveEnergyImportTariffOne().getValue().longValue()).isEqualTo(PERIOD_1_LONG_VALUE_1);
+            assertThat(period1.getActiveEnergyImportTariffTwo().getValue().longValue()).isEqualTo(PERIOD_1_LONG_VALUE_2);
+            assertThat(period1.getActiveEnergyExportTariffOne().getValue().longValue()).isEqualTo(PERIOD_1_LONG_VALUE_3);
+            assertThat(period1.getActiveEnergyExportTariffTwo().getValue().longValue()).isEqualTo(PERIOD_1_LONG_VALUE_4);
+            assertThat(period2.getActiveEnergyImportTariffOne().getValue().longValue()).isEqualTo(PERIOD_2_LONG_VALUE_1);
+            assertThat(period2.getActiveEnergyImportTariffTwo().getValue().longValue()).isEqualTo(PERIOD_2_LONG_VALUE_2);
+            assertThat(period2.getActiveEnergyExportTariffOne().getValue().longValue()).isEqualTo(PERIOD_2_LONG_VALUE_3);
+            assertThat(period2.getActiveEnergyExportTariffTwo().getValue().longValue()).isEqualTo(PERIOD_2_LONG_VALUE_4);
+        } else { // INTERVAL, only total values
+            assertThat(period1.getActiveEnergyImport().getValue().longValue()).isEqualTo(PERIOD_1_LONG_VALUE_1);
+            assertThat(period1.getActiveEnergyExport().getValue().longValue()).isEqualTo(PERIOD_1_LONG_VALUE_2);
+            assertThat(period2.getActiveEnergyImport().getValue().longValue()).isEqualTo(PERIOD_2_LONG_VALUE_1);
+            assertThat(period2.getActiveEnergyExport().getValue().longValue()).isEqualTo(PERIOD_2_LONG_VALUE_2);
+        }
+    }
+
 
     // DSMR4
 
@@ -431,6 +477,7 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
         return new SelectiveAccessDescription(1, expectedAccessParam);
     }
 
+
     // SMR5
 
     private AttributeAddress createAttributeAddressSmr5Daily(final DataObject from, final DataObject to) {
@@ -462,4 +509,3 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
         return new SelectiveAccessDescription(1, expectedAccessParam);
     }
 }
-
