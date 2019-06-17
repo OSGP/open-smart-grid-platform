@@ -886,13 +886,13 @@ public class DlmsHelper {
     public void validateBufferedDateTime(final DateTime bufferedDateTime, final CosemDateTimeDto cosemDateTime,
             final DateTime beginDateTime, final DateTime endDateTime) throws BufferedDateTimeValidationException {
 
-        if (bufferedDateTime == null) {
-            final DateTimeFormatter dtf = ISODateTimeFormat.dateTime();
-            throw new BufferedDateTimeValidationException(
-                    "Not using an object from capture buffer (clock=" + cosemDateTime
-                            + "), because the date does not match the given period, since it is not fully specified: ["
-                            + dtf.print(beginDateTime) + " .. " + dtf.print(endDateTime) + "].");
-        }
+//        if (bufferedDateTime == null) {
+//            final DateTimeFormatter dtf = ISODateTimeFormat.dateTime();
+//            throw new BufferedDateTimeValidationException(
+//                    "Not using an object from capture buffer (clock=" + cosemDateTime
+//                            + "), because the date does not match the given period, since it is not fully specified: ["
+//                            + dtf.print(beginDateTime) + " .. " + dtf.print(endDateTime) + "].");
+//        }
         if (bufferedDateTime.isBefore(beginDateTime) || bufferedDateTime.isAfter(endDateTime)) {
             final DateTimeFormatter dtf = ISODateTimeFormat.dateTime();
             throw new BufferedDateTimeValidationException(

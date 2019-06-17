@@ -1,23 +1,12 @@
 /**
  * Copyright 2019 Smart Society Services B.V.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import org.joda.time.DateTime;
 import org.junit.Before;
@@ -42,6 +31,11 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseItemDto;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
@@ -220,13 +214,13 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
             assertThat(periodicMeterRead1.getLogTime()).isEqualTo(new GregorianCalendar(2019, Calendar.JANUARY, 1, 1, 0).getTime());
 
             if (type == PeriodTypeDto.INTERVAL) {
-                assertThat(periodicMeterRead1.getLogTime()).isEqualTo(new GregorianCalendar(2019, Calendar.JANUARY, 1
+                assertThat(periodicMeterRead2.getLogTime()).isEqualTo(new GregorianCalendar(2019, Calendar.JANUARY, 1
                         , 1, 15).getTime());
             } else if (type == PeriodTypeDto.DAILY) {
-                assertThat(periodicMeterRead1.getLogTime()).isEqualTo(new GregorianCalendar(2019, Calendar.JANUARY, 2
+                assertThat(periodicMeterRead2.getLogTime()).isEqualTo(new GregorianCalendar(2019, Calendar.JANUARY, 2
                         , 1, 0).getTime());
             } else if (type == PeriodTypeDto.MONTHLY) {
-                assertThat(periodicMeterRead1.getLogTime()).isEqualTo(new GregorianCalendar(2019, Calendar.FEBRUARY, 1
+                assertThat(periodicMeterRead2.getLogTime()).isEqualTo(new GregorianCalendar(2019, Calendar.FEBRUARY, 1
                         , 1, 0).getTime());
             }
         }
@@ -257,7 +251,7 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
     }
 
     private AttributeAddress createAttributeAddress(final Protocol protocol, final PeriodTypeDto type,
-            final Date timeFrom, final Date timeTo) throws Exception {
+                                                    final Date timeFrom, final Date timeTo) throws Exception {
         final DataObject from = this.dlmsHelper.asDataObject(new DateTime(timeFrom));
         final DataObject to = this.dlmsHelper.asDataObject(new DateTime(timeTo));
 
@@ -286,38 +280,38 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
     private List<AttributeAddress> getScalerUnitAttributeAddresses(PeriodTypeDto type) throws Exception {
         List<AttributeAddress> attributeAddresses = new ArrayList<>();
 
-        switch(type) {
-        case MONTHLY:
-        case DAILY:
-            attributeAddresses.add(new AttributeAddress(this.CLASS_ID_REGISTER,
-                    this.OBIS_ACTIVE_ENERGY_IMPORT_RATE_1, this.ATTR_ID_SCALER_UNIT, null));
-            attributeAddresses.add(new AttributeAddress(this.CLASS_ID_REGISTER,
-                    this.OBIS_ACTIVE_ENERGY_IMPORT_RATE_2, this.ATTR_ID_SCALER_UNIT, null));
-            attributeAddresses.add(new AttributeAddress(this.CLASS_ID_REGISTER,
-                    this.OBIS_ACTIVE_ENERGY_EXPORT_RATE_1, this.ATTR_ID_SCALER_UNIT, null));
-            attributeAddresses.add(new AttributeAddress(this.CLASS_ID_REGISTER,
-                    this.OBIS_ACTIVE_ENERGY_EXPORT_RATE_2, this.ATTR_ID_SCALER_UNIT, null));
-            break;
-        case INTERVAL:
-            attributeAddresses.add(new AttributeAddress(this.CLASS_ID_REGISTER,
-                    this.OBIS_ACTIVE_ENERGY_IMPORT, this.ATTR_ID_SCALER_UNIT, null));
-            attributeAddresses.add(new AttributeAddress(this.CLASS_ID_REGISTER,
-                    this.OBIS_ACTIVE_ENERGY_EXPORT, this.ATTR_ID_SCALER_UNIT, null));
-            break;
-        default:
-            throw new Exception("Unexpected period type " + type);
+        switch (type) {
+            case MONTHLY:
+            case DAILY:
+                attributeAddresses.add(new AttributeAddress(this.CLASS_ID_REGISTER,
+                        this.OBIS_ACTIVE_ENERGY_IMPORT_RATE_1, this.ATTR_ID_SCALER_UNIT, null));
+                attributeAddresses.add(new AttributeAddress(this.CLASS_ID_REGISTER,
+                        this.OBIS_ACTIVE_ENERGY_IMPORT_RATE_2, this.ATTR_ID_SCALER_UNIT, null));
+                attributeAddresses.add(new AttributeAddress(this.CLASS_ID_REGISTER,
+                        this.OBIS_ACTIVE_ENERGY_EXPORT_RATE_1, this.ATTR_ID_SCALER_UNIT, null));
+                attributeAddresses.add(new AttributeAddress(this.CLASS_ID_REGISTER,
+                        this.OBIS_ACTIVE_ENERGY_EXPORT_RATE_2, this.ATTR_ID_SCALER_UNIT, null));
+                break;
+            case INTERVAL:
+                attributeAddresses.add(new AttributeAddress(this.CLASS_ID_REGISTER,
+                        this.OBIS_ACTIVE_ENERGY_IMPORT, this.ATTR_ID_SCALER_UNIT, null));
+                attributeAddresses.add(new AttributeAddress(this.CLASS_ID_REGISTER,
+                        this.OBIS_ACTIVE_ENERGY_EXPORT, this.ATTR_ID_SCALER_UNIT, null));
+                break;
+            default:
+                throw new Exception("Unexpected period type " + type);
 
         }
         return attributeAddresses;
     }
 
     private void setResponseForProfile(AttributeAddress attributeAddressForProfile, Protocol protocol,
-            PeriodTypeDto type, boolean useNullData) {
+                                       PeriodTypeDto type, boolean useNullData) {
 
         // PERIOD 1
 
         DataObject period1Clock = getDateAsOctetString(2019, 1, 1);
-        DataObject period1Status = DataObject.newUInteger8Data((byte)8);
+        DataObject period1Status = DataObject.newUInteger8Data((byte) 8);
         DataObject period1Value1 = DataObject.newUInteger32Data(1000L);
         DataObject period1Value2 = DataObject.newUInteger32Data(2000L);
         DataObject period1Value3 = DataObject.newUInteger32Data(3000L);
@@ -340,7 +334,7 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
         } else {
             period2Clock = getDateAsOctetString(2019, 1, 2);
         }
-        DataObject period2Status = DataObject.newUInteger8Data((byte)8);
+        DataObject period2Status = DataObject.newUInteger8Data((byte) 8);
         DataObject period2Value1 = DataObject.newUInteger32Data(1500L);
         DataObject period2Value2 = DataObject.newUInteger32Data(2500L);
         DataObject period2Value3 = DataObject.newUInteger32Data(3500L);
@@ -361,7 +355,7 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
     }
 
     private void setResponsesForScalerUnit(List<AttributeAddress> attributeAddressesForScalerUnit) {
-        DataObject responseDataObject = DataObject.newStructureData(DataObject.newInteger8Data((byte)0),
+        DataObject responseDataObject = DataObject.newStructureData(DataObject.newInteger8Data((byte) 0),
                 DataObject.newEnumerateData(30));
 
         for (AttributeAddress attributeAddress : attributeAddressesForScalerUnit) {
@@ -385,7 +379,7 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
     }
 
     private SelectiveAccessDescription createSelectiveAccessDescriptionDsmr4Daily(final DataObject from,
-            final DataObject to) {
+                                                                                  final DataObject to) {
 
         final DataObject selectedValues = DataObject.newArrayData(
                 Arrays.asList(this.CLOCK, this.STATUS, this.ACTIVE_ENERGY_IMPORT_RATE_1,
@@ -406,7 +400,7 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
     }
 
     private SelectiveAccessDescription createSelectiveAccessDescriptionDsmr4Monthly(final DataObject from,
-            final DataObject to) {
+                                                                                    final DataObject to) {
 
         final DataObject selectedValues = DataObject.newArrayData(
                 Arrays.asList(this.CLOCK, this.ACTIVE_ENERGY_IMPORT_RATE_1,
@@ -427,7 +421,7 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
     }
 
     private SelectiveAccessDescription createSelectiveAccessDescriptionDsmr4Interval(final DataObject from,
-            final DataObject to) {
+                                                                                     final DataObject to) {
 
         final DataObject selectedValues = DataObject.newArrayData(Collections.emptyList());
 
@@ -458,7 +452,7 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
     }
 
     private SelectiveAccessDescription createSelectiveAccessDescriptionSmr5(final DataObject from,
-            final DataObject to) {
+                                                                            final DataObject to) {
 
         final DataObject selectedValues = DataObject.newArrayData(Collections.emptyList());
 
