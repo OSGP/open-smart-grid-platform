@@ -18,6 +18,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjec
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.Medium;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.ProfileCaptureTime;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.AmrProfileStatusCodeHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
@@ -41,7 +42,7 @@ public class GetPeriodicMeterReadsCommandExecutor
         extends AbstractPeriodicMeterReadsCommandExecutor<PeriodicMeterReadsRequestDto, PeriodicMeterReadsResponseDto> {
 
     static final String PERIODIC_E_METER_READS = "Periodic E-Meter Reads";
-    static final String FORMAT_DESCRIPTION = "GetPeriodicMeterReads %s from %s until %s, retrieve attribute: %s";
+    private static final String FORMAT_DESCRIPTION = "GetPeriodicMeterReads %s from %s until %s, retrieve attribute: %s";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsCommandExecutor.class);
 
@@ -90,6 +91,8 @@ public class GetPeriodicMeterReadsCommandExecutor
 
         final List<AttributeAddress> scalerUnitAddresses = this.getScalerUnitAddresses(profileBufferAddress);
 
+        ProfileCaptureTime intervalTime = getProfileCaptureTime(device, this.dlmsObjectConfigService, Medium.ELECTRICITY);
+
         LOGGER.debug("Retrieving current billing period and profiles for period type: {}, from: {}, to: {}", queryPeriodType,
                 from, to);
 
@@ -121,11 +124,9 @@ public class GetPeriodicMeterReadsCommandExecutor
 
             try {
 
-                PeriodicMeterReadsResponseItemDto response = this.convertToResponseItem(periodicMeterReadsQuery, bufferedObjectValue,
-                        getResultList, profileBufferAddress, scalerUnitAddresses, periodicMeterReads);
-
                 periodicMeterReads.add(
-                        response);
+                        this.convertToResponseItem(periodicMeterReadsQuery, bufferedObjectValue,
+                                getResultList, profileBufferAddress, scalerUnitAddresses, periodicMeterReads, intervalTime));
             } catch (final BufferedDateTimeValidationException e) {
                 LOGGER.warn(e.getMessage(), e);
             }
@@ -134,21 +135,18 @@ public class GetPeriodicMeterReadsCommandExecutor
         return new PeriodicMeterReadsResponseDto(queryPeriodType, periodicMeterReads);
     }
 
-    private void determineLogTimeBasedOnPreviousObject(PeriodicMeterReadsResponseItemDto response,
-                                                       PeriodicMeterReadsResponseItemDto previousResponse) throws BufferedDateTimeValidationException {
-
-
-    }
-
     private PeriodicMeterReadsResponseItemDto convertToResponseItem(
             final PeriodicMeterReadsRequestDto periodicMeterReadsQuery, final List<DataObject> bufferedObjects,
             final List<GetResult> getResultList, final AttributeAddressForProfile attributeAddressForProfile,
-            final List<AttributeAddress> attributeAddresses, List<PeriodicMeterReadsResponseItemDto> periodicMeterReads)
+            final List<AttributeAddress> attributeAddresses,
+            final List<PeriodicMeterReadsResponseItemDto> periodicMeterReads,
+            final ProfileCaptureTime intervalTime)
             throws ProtocolAdapterException, BufferedDateTimeValidationException {
 
         LOGGER.info("Converting bufferObject with value: {} ", bufferedObjects);
 
-        final Date logTime = this.readClock(periodicMeterReadsQuery, bufferedObjects, attributeAddressForProfile, periodicMeterReads);
+        final Date previousLogTime = getPreviousLogTime(periodicMeterReads);
+        final Date logTime = readClock(periodicMeterReadsQuery, bufferedObjects, attributeAddressForProfile, previousLogTime, intervalTime, this.dlmsHelper);
 
         final AmrProfileStatusCodeDto status = this.readStatus(bufferedObjects, attributeAddressForProfile);
 
@@ -187,34 +185,14 @@ public class GetPeriodicMeterReadsCommandExecutor
         }
     }
 
-    private Date readClock(final PeriodicMeterReadsRequestDto periodicMeterReadsQuery,
-                           final List<DataObject> bufferedObjects,
-                           final AttributeAddressForProfile attributeAddressForProfile,
-                           List<PeriodicMeterReadsResponseItemDto> periodicMeterReads)
-            throws ProtocolAdapterException, BufferedDateTimeValidationException {
 
-        final PeriodTypeDto queryPeriodType = periodicMeterReadsQuery.getPeriodType();
-        final DateTime queryBeginDateTime = new DateTime(periodicMeterReadsQuery.getBeginDate());
-        final DateTime queryEndDateTime = new DateTime(periodicMeterReadsQuery.getEndDate());
+    protected Date getPreviousLogTime(final List<PeriodicMeterReadsResponseItemDto> periodicMeterReads) {
 
-        final Integer clockIndex = attributeAddressForProfile.getIndex(DlmsObjectType.CLOCK, null);
-
-        CosemDateTimeDto cosemDateTime = null;
-
-        if (clockIndex != null) {
-            cosemDateTime = this.dlmsHelper.readDateTime(bufferedObjects.get(clockIndex),
-                    "Clock from " + queryPeriodType + " buffer gas");
+        if (periodicMeterReads.isEmpty()) {
+            return null;
         }
 
-        final DateTime bufferedDateTime = cosemDateTime == null ? null : cosemDateTime.asDateTime();
-
-        if (bufferedDateTime != null) {
-            this.dlmsHelper.validateBufferedDateTime(bufferedDateTime, cosemDateTime, queryBeginDateTime, queryEndDateTime);
-            return bufferedDateTime.toDate();
-        } else {
-            // no date was given, calculate date based on last value and
-            return calculateIntervalDate(periodicMeterReadsQuery.getPeriodType(), periodicMeterReads);
-        }
+        return periodicMeterReads.get(periodicMeterReads.size() - 1).getLogTime();
     }
 
 

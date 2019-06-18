@@ -358,11 +358,11 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
             assertThat(periodicMeterRead2.getLogTime()).isEqualTo(PERIOD_2_CLOCK_VALUE);
         } else { // The timestamps should be calculated using the periodType, starting from the time of period 1
             if (type == PeriodTypeDto.INTERVAL) {
-                assertThat(periodicMeterRead1.getLogTime()).isEqualTo(PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_HOURLY);
+                assertThat(periodicMeterRead2.getLogTime()).isEqualTo(PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_HOURLY);
             } else if (type == PeriodTypeDto.DAILY) {
-                assertThat(periodicMeterRead1.getLogTime()).isEqualTo(PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_DAILY);
+                assertThat(periodicMeterRead2.getLogTime()).isEqualTo(PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_DAILY);
             } else if (type == PeriodTypeDto.MONTHLY) {
-                assertThat(periodicMeterRead1.getLogTime()).isEqualTo(PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_MONTHLY);
+                assertThat(periodicMeterRead2.getLogTime()).isEqualTo(PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_MONTHLY);
             }
         }
     }

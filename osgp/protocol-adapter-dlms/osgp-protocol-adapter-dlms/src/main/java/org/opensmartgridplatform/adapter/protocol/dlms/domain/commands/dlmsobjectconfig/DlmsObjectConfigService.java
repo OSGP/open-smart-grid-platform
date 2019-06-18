@@ -59,7 +59,7 @@ public class DlmsObjectConfigService {
                         from, to, filterMedium)));
     }
 
-    private Optional<DlmsObject> findDlmsObject(final Protocol protocol, final DlmsObjectType type,
+    public Optional<DlmsObject> findDlmsObject(final Protocol protocol, final DlmsObjectType type,
             final Medium filterMedium) {
         return this.dlmsObjectConfigs.stream()
                 .filter(config -> config.contains(protocol))
