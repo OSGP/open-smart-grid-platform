@@ -45,7 +45,6 @@ public class GetPeriodicMeterReadsCommandExecutor
     static final String PERIODIC_E_METER_READS = "Periodic E-Meter Reads";
     private static final String FORMAT_DESCRIPTION = "GetPeriodicMeterReads %s from %s until %s, retrieve attribute: %s";
 
-
     private final DlmsHelper dlmsHelper;
     private final DlmsObjectConfigService dlmsObjectConfigService;
 

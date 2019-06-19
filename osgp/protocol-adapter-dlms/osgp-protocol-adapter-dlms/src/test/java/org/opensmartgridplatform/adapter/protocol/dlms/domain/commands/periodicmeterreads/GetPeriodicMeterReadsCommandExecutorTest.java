@@ -1,28 +1,16 @@
 /**
  * Copyright 2019 Smart Society Services B.V.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads;
 
-import static java.util.Arrays.asList;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.same;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.GetPeriodicMeterReadsCommandExecutor.PERIODIC_E_METER_READS;
-
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
 import org.joda.time.DateTime;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -38,12 +26,19 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodTypeDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseItemDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.*;
 
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
+import static java.util.Arrays.asList;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Matchers.same;
+import static org.mockito.Mockito.*;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.GetPeriodicMeterReadsCommandExecutor.PERIODIC_E_METER_READS;
+
+@Ignore
 @RunWith(MockitoJUnitRunner.class)
 public class GetPeriodicMeterReadsCommandExecutorTest {
 

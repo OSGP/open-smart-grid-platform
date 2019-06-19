@@ -36,10 +36,10 @@ import java.util.Set;
 
 public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends AbstractCommandExecutor<T, R> {
 
-    final AmrProfileStatusCodeHelper amrProfileStatusCodeHelper;
+    private final AmrProfileStatusCodeHelper amrProfileStatusCodeHelper;
 
-    public AbstractPeriodicMeterReadsCommandExecutor(final Class<? extends PeriodicMeterReadsRequestDataDto> clazz,
-                                                     final AmrProfileStatusCodeHelper amrProfileStatusCodeHelper) {
+    AbstractPeriodicMeterReadsCommandExecutor(final Class<? extends PeriodicMeterReadsRequestDataDto> clazz,
+                                              final AmrProfileStatusCodeHelper amrProfileStatusCodeHelper) {
         super(clazz);
         this.amrProfileStatusCodeHelper = amrProfileStatusCodeHelper;
     }
@@ -57,12 +57,12 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends Ab
      * @throws ProtocolAdapterException
      * @throws BufferedDateTimeValidationException
      */
-    protected Date readClock(final PeriodicMeterReadsRequestDto periodicMeterReadsQuery,
-                             final List<DataObject> bufferedObjects,
-                             final AttributeAddressForProfile attributeAddressForProfile,
-                             final Date previousLogTime,
-                             final ProfileCaptureTime intervalTime,
-                             final DlmsHelper dlmsHelper)
+    Date readClock(final PeriodicMeterReadsRequestDto periodicMeterReadsQuery,
+                   final List<DataObject> bufferedObjects,
+                   final AttributeAddressForProfile attributeAddressForProfile,
+                   final Date previousLogTime,
+                   final ProfileCaptureTime intervalTime,
+                   final DlmsHelper dlmsHelper)
             throws ProtocolAdapterException, BufferedDateTimeValidationException {
 
         final PeriodTypeDto queryPeriodType = periodicMeterReadsQuery.getPeriodType();
@@ -137,7 +137,7 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends Ab
      * @param medium                  the type of device
      * @return the derived ProfileCaptureTime for this device, or null if it cannot be determined
      */
-    protected ProfileCaptureTime getProfileCaptureTime(DlmsDevice device, DlmsObjectConfigService dlmsObjectConfigService, Medium medium) {
+    ProfileCaptureTime getProfileCaptureTime(DlmsDevice device, DlmsObjectConfigService dlmsObjectConfigService, Medium medium) {
         DlmsObject dlmsObject =
                 dlmsObjectConfigService.findDlmsObject(Protocol.withNameAndVersion(device.getProtocol(),
                         device.getProtocolVersion()),
@@ -155,8 +155,8 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends Ab
         return null;
     }
 
-    protected AmrProfileStatusCodeDto readStatus(final List<DataObject> bufferedObjects,
-                                                 final AttributeAddressForProfile attributeAddressForProfile) throws ProtocolAdapterException {
+    AmrProfileStatusCodeDto readStatus(final List<DataObject> bufferedObjects,
+                                       final AttributeAddressForProfile attributeAddressForProfile) throws ProtocolAdapterException {
 
         final Integer statusIndex = attributeAddressForProfile.getIndex(DlmsObjectType.AMR_STATUS, null);
 
