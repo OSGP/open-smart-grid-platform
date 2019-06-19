@@ -1,29 +1,12 @@
 /**
  * Copyright 2019 Smart Society Services B.V.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads;
-
-import static java.util.Arrays.asList;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Fail.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
 
 import org.joda.time.DateTime;
 import org.junit.Before;
@@ -38,30 +21,26 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.AttributeAddressForProfile;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsCaptureObject;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsClock;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsExtendedRegister;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsProfile;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.Medium;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.ProfileCaptureTime;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.RegisterUnit;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.*;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemTimeDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.DlmsMeterValueDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodTypeDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadGasResponseDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsGasResponseItemDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.*;
+
+import java.util.*;
+
+import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Fail.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GetPeriodicMeterReadsGasCommandExecutorTest {
@@ -154,6 +133,10 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
         when(this.dlmsObjectConfigService.getAttributeAddressesForScalerUnit(eq(attributeAddressForProfile),
                 eq(channel.getChannelNumber()))).thenReturn(Collections.singletonList(attributeAddressScalerUnit));
 
+        DlmsObject intervalTime = mock(DlmsObject.class);
+        when(this.dlmsObjectConfigService.findDlmsObject(any(Protocol.class),
+                any(DlmsObjectType.class), any(Medium.class))).thenReturn(Optional.of(intervalTime));
+
         // SETUP - mock dlms helper to return data objects on request
         final DataObject data0 = mock(DataObject.class);
         final DataObject data1 = mock(DataObject.class);
@@ -193,6 +176,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
         when(this.dlmsHelper.getScaledMeterValue(data1, null, "gasValue")).thenReturn(meterValue1);
         when(this.dlmsHelper.getScaledMeterValue(data4, null, "gasValue")).thenReturn(meterValue2);
 
+
         // CALL
         final PeriodicMeterReadGasResponseDto result = this.executor.execute(this.connectionManager, this.device,
                 request);
@@ -205,6 +189,9 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
 
         verify(this.dlmsHelper, times(2)).validateBufferedDateTime(any(DateTime.class), any(CosemDateTimeDto.class),
                 argThat(new DateTimeMatcher(this.from)), argThat(new DateTimeMatcher(this.to)));
+
+        verify(this.dlmsObjectConfigService).findDlmsObject(any(Protocol.class),
+                any(DlmsObjectType.class), any(Medium.class));
 
         // VERIFY - the result should contain 2 values
         final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads = result.getPeriodicMeterReadsGas();
@@ -225,7 +212,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
     }
 
     private AttributeAddressForProfile createAttributeAddressForProfile(final DlmsObject dlmsObject,
-            final List<DlmsCaptureObject> selectedObjects) {
+                                                                        final List<DlmsCaptureObject> selectedObjects) {
         return new AttributeAddressForProfile(new AttributeAddress(dlmsObject.getClassId(),
                 new ObisCode(dlmsObject.getObisCode()), dlmsObject.getDefaultAttributeId(), null), selectedObjects);
     }

@@ -35,28 +35,26 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 @Component()
 public class GetPeriodicMeterReadsCommandExecutor
         extends AbstractPeriodicMeterReadsCommandExecutor<PeriodicMeterReadsRequestDto, PeriodicMeterReadsResponseDto> {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsCommandExecutor.class);
+
     static final String PERIODIC_E_METER_READS = "Periodic E-Meter Reads";
     private static final String FORMAT_DESCRIPTION = "GetPeriodicMeterReads %s from %s until %s, retrieve attribute: %s";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsCommandExecutor.class);
 
     private final DlmsHelper dlmsHelper;
     private final DlmsObjectConfigService dlmsObjectConfigService;
-    private final AmrProfileStatusCodeHelper amrProfileStatusCodeHelper;
 
     @Autowired
     public GetPeriodicMeterReadsCommandExecutor(final DlmsHelper dlmsHelper,
                                                 final AmrProfileStatusCodeHelper amrProfileStatusCodeHelper,
                                                 final DlmsObjectConfigService dlmsObjectConfigService) {
-        super(PeriodicMeterReadsRequestDataDto.class);
+        super(PeriodicMeterReadsRequestDataDto.class, amrProfileStatusCodeHelper);
         this.dlmsHelper = dlmsHelper;
-        this.amrProfileStatusCodeHelper = amrProfileStatusCodeHelper;
         this.dlmsObjectConfigService = dlmsObjectConfigService;
     }
 
@@ -82,7 +80,6 @@ public class GetPeriodicMeterReadsCommandExecutor
         }
 
         final PeriodTypeDto queryPeriodType = periodicMeterReadsQuery.getPeriodType();
-
         final DateTime from = new DateTime(periodicMeterReadsQuery.getBeginDate());
         final DateTime to = new DateTime(periodicMeterReadsQuery.getEndDate());
 
@@ -91,7 +88,7 @@ public class GetPeriodicMeterReadsCommandExecutor
 
         final List<AttributeAddress> scalerUnitAddresses = this.getScalerUnitAddresses(profileBufferAddress);
 
-        ProfileCaptureTime intervalTime = getProfileCaptureTime(device, this.dlmsObjectConfigService, Medium.ELECTRICITY);
+        final ProfileCaptureTime intervalTime = getProfileCaptureTime(device, this.dlmsObjectConfigService, Medium.ELECTRICITY);
 
         LOGGER.debug("Retrieving current billing period and profiles for period type: {}, from: {}, to: {}", queryPeriodType,
                 from, to);
@@ -123,7 +120,6 @@ public class GetPeriodicMeterReadsCommandExecutor
             final List<DataObject> bufferedObjectValue = bufferedObject.getValue();
 
             try {
-
                 periodicMeterReads.add(
                         this.convertToResponseItem(periodicMeterReadsQuery, bufferedObjectValue,
                                 getResultList, profileBufferAddress, scalerUnitAddresses, periodicMeterReads, intervalTime));
@@ -148,7 +144,7 @@ public class GetPeriodicMeterReadsCommandExecutor
         final Date previousLogTime = getPreviousLogTime(periodicMeterReads);
         final Date logTime = readClock(periodicMeterReadsQuery, bufferedObjects, attributeAddressForProfile, previousLogTime, intervalTime, this.dlmsHelper);
 
-        final AmrProfileStatusCodeDto status = this.readStatus(bufferedObjects, attributeAddressForProfile);
+        final AmrProfileStatusCodeDto status = readStatus(bufferedObjects, attributeAddressForProfile);
 
         if (periodicMeterReadsQuery.getPeriodType() == PeriodTypeDto.INTERVAL) {
             DlmsMeterValueDto importValue = this.getScaledMeterValue(bufferedObjects, getResultList,
@@ -186,7 +182,7 @@ public class GetPeriodicMeterReadsCommandExecutor
     }
 
 
-    protected Date getPreviousLogTime(final List<PeriodicMeterReadsResponseItemDto> periodicMeterReads) {
+    private Date getPreviousLogTime(final List<PeriodicMeterReadsResponseItemDto> periodicMeterReads) {
 
         if (periodicMeterReads.isEmpty()) {
             return null;
@@ -195,20 +191,6 @@ public class GetPeriodicMeterReadsCommandExecutor
         return periodicMeterReads.get(periodicMeterReads.size() - 1).getLogTime();
     }
 
-
-    private AmrProfileStatusCodeDto readStatus(final List<DataObject> bufferedObjects,
-                                               final AttributeAddressForProfile attributeAddressForProfile) throws ProtocolAdapterException {
-
-        final Integer statusIndex = attributeAddressForProfile.getIndex(DlmsObjectType.AMR_STATUS, null);
-
-        AmrProfileStatusCodeDto amrProfileStatusCode = null;
-
-        if (statusIndex != null) {
-            amrProfileStatusCode = this.readAmrProfileStatusCode(bufferedObjects.get(statusIndex));
-        }
-
-        return amrProfileStatusCode;
-    }
 
     private DlmsMeterValueDto getScaledMeterValue(final List<DataObject> bufferedObjects,
                                                   final List<GetResult> getResultList, final List<AttributeAddress> attributeAddresses,
@@ -288,23 +270,8 @@ public class GetPeriodicMeterReadsCommandExecutor
         return attributeAddresses;
     }
 
-    /**
-     * Reads AmrProfileStatusCode from DataObject holding a bitvalue in a
-     * numeric datatype.
-     *
-     * @param amrProfileStatusData AMR profile register value.
-     * @return AmrProfileStatusCode object holding status enum values.
-     * @throws ProtocolAdapterException on invalid register data.
-     */
-    private AmrProfileStatusCodeDto readAmrProfileStatusCode(final DataObject amrProfileStatusData)
-            throws ProtocolAdapterException {
-
-        if (!amrProfileStatusData.isNumber()) {
-            throw new ProtocolAdapterException("Could not read AMR profile register data. Invalid data type.");
-        }
-
-        final Set<AmrProfileStatusCodeFlagDto> flags = this.amrProfileStatusCodeHelper
-                .toAmrProfileStatusCodeFlags(amrProfileStatusData.getValue());
-        return new AmrProfileStatusCodeDto(flags);
+    @Override
+    protected Logger getLogger() {
+        return LOGGER;
     }
 }

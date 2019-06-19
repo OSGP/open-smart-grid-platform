@@ -18,28 +18,45 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjec
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsProfile;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.Medium;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.ProfileCaptureTime;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.AmrProfileStatusCodeHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.BufferedDateTimeValidationException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodTypeDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDataDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.*;
+import org.slf4j.Logger;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends AbstractCommandExecutor<T, R> {
 
-    public AbstractPeriodicMeterReadsCommandExecutor(final Class<? extends PeriodicMeterReadsRequestDataDto> clazz) {
+    final AmrProfileStatusCodeHelper amrProfileStatusCodeHelper;
+
+    public AbstractPeriodicMeterReadsCommandExecutor(final Class<? extends PeriodicMeterReadsRequestDataDto> clazz,
+                                                     final AmrProfileStatusCodeHelper amrProfileStatusCodeHelper) {
         super(clazz);
+        this.amrProfileStatusCodeHelper = amrProfileStatusCodeHelper;
     }
 
+    /**
+     * Calculates/derives the date of the read buffered DataObject.
+     *
+     * @param periodicMeterReadsQuery    the request query
+     * @param bufferedObjects            the
+     * @param attributeAddressForProfile the attribute address
+     * @param previousLogTime            the log time of the previous meter read
+     * @param intervalTime               the interval time for this device
+     * @param dlmsHelper                 dlms helper object
+     * @return the date of the buffered {@link DataObject} or null if it cannot be determined
+     * @throws ProtocolAdapterException
+     * @throws BufferedDateTimeValidationException
+     */
     protected Date readClock(final PeriodicMeterReadsRequestDto periodicMeterReadsQuery,
                              final List<DataObject> bufferedObjects,
                              final AttributeAddressForProfile attributeAddressForProfile,
@@ -49,8 +66,8 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends Ab
             throws ProtocolAdapterException, BufferedDateTimeValidationException {
 
         final PeriodTypeDto queryPeriodType = periodicMeterReadsQuery.getPeriodType();
-        final DateTime queryBeginDateTime = new DateTime(periodicMeterReadsQuery.getBeginDate());
-        final DateTime queryEndDateTime = new DateTime(periodicMeterReadsQuery.getEndDate());
+        final DateTime from = new DateTime(periodicMeterReadsQuery.getBeginDate());
+        final DateTime to = new DateTime(periodicMeterReadsQuery.getEndDate());
 
         final Integer clockIndex = attributeAddressForProfile.getIndex(DlmsObjectType.CLOCK, null);
 
@@ -64,7 +81,7 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends Ab
         final DateTime bufferedDateTime = cosemDateTime == null ? null : cosemDateTime.asDateTime();
 
         if (bufferedDateTime != null) {
-            dlmsHelper.validateBufferedDateTime(bufferedDateTime, cosemDateTime, queryBeginDateTime, queryEndDateTime);
+            dlmsHelper.validateBufferedDateTime(bufferedDateTime, cosemDateTime, from, to);
             return bufferedDateTime.toDate();
         } else {
 
@@ -83,7 +100,7 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends Ab
      */
     private Date calculateIntervalDate(final PeriodTypeDto periodTypeDto,
                                        final Date previousLogTime,
-                                       final ProfileCaptureTime intervalTime) {
+                                       final ProfileCaptureTime intervalTime) throws BufferedDateTimeValidationException {
 
         if (previousLogTime == null) {
             return null;
@@ -108,17 +125,17 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends Ab
 
                 return Date.from(previousLogTime.toInstant().plus(Duration.ofMinutes(intervalTimeMinutes)));
             default:
-                return null;
+                throw new BufferedDateTimeValidationException("Invalid PeriodTypeDto given: " + periodTypeDto);
         }
     }
 
     /**
      * Get the interval time for given device and medium.
      *
-     * @param device
-     * @param dlmsObjectConfigService
-     * @param medium
-     * @return
+     * @param device                  the device for which the interval should be determined
+     * @param dlmsObjectConfigService service which holds the configuration for this device
+     * @param medium                  the type of device
+     * @return the derived ProfileCaptureTime for this device, or null if it cannot be determined
      */
     protected ProfileCaptureTime getProfileCaptureTime(DlmsDevice device, DlmsObjectConfigService dlmsObjectConfigService, Medium medium) {
         DlmsObject dlmsObject =
@@ -131,10 +148,47 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends Ab
         if (dlmsObject instanceof DlmsProfile) {
             DlmsProfile profile = (DlmsProfile) dlmsObject;
 
+            getLogger().info("Capture time of this device is {} ", profile.getCaptureTime());
             return profile.getCaptureTime();
         }
 
         return null;
     }
+
+    protected AmrProfileStatusCodeDto readStatus(final List<DataObject> bufferedObjects,
+                                                 final AttributeAddressForProfile attributeAddressForProfile) throws ProtocolAdapterException {
+
+        final Integer statusIndex = attributeAddressForProfile.getIndex(DlmsObjectType.AMR_STATUS, null);
+
+        AmrProfileStatusCodeDto amrProfileStatusCode = null;
+
+        if (statusIndex != null) {
+            amrProfileStatusCode = this.readAmrProfileStatusCode(bufferedObjects.get(statusIndex));
+        }
+
+        return amrProfileStatusCode;
+    }
+
+    /**
+     * Reads AmrProfileStatusCode from DataObject holding a bitvalue in a numeric
+     * datatype.
+     *
+     * @param amrProfileStatusData AMR profile register value.
+     * @return AmrProfileStatusCode object holding status enum values.
+     * @throws ProtocolAdapterException on invalid register data.
+     */
+    private AmrProfileStatusCodeDto readAmrProfileStatusCode(final DataObject amrProfileStatusData)
+            throws ProtocolAdapterException {
+
+        if (!amrProfileStatusData.isNumber()) {
+            throw new ProtocolAdapterException("Could not read AMR profile register data. Invalid data type.");
+        }
+
+        final Set<AmrProfileStatusCodeFlagDto> flags = this.amrProfileStatusCodeHelper.toAmrProfileStatusCodeFlags(
+                amrProfileStatusData.getValue());
+        return new AmrProfileStatusCodeDto(flags);
+    }
+
+    protected abstract Logger getLogger();
 
 }
