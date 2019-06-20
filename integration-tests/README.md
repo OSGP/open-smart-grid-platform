@@ -1,4 +1,4 @@
-# Integration Tests for OSGP Components and Protocol Adapters. 
+# Integration Tests for OSGP Components and Protocol Adapters
 
 ### Component Description
 
@@ -10,16 +10,17 @@ Tests are written in cucumber.
   - cucumber-tests-execution: A project which contains some common classes to be used to make an executable jar, needed when we start the tests on a testsystem itself during a build.
   - cucumber-tests-platform: The core test project with basic OSGP steps
   - cucumber-tests-platform-common, The test project where all common related platform tests are put.
-  - cucumber-tests-platform-publiclighting, The test project where all publiclighting related platform tests are put.
+  - cucumber-tests-platform-distributionautomation, The test project where all distribution automation related platform tests are put.
+  - cucumber-tests-platform-publiclighting, The test project where all public lighting related platform tests are put.
   - cucumber-tests-platform-microgrids, The test project where all microgrids related platform tests are put.
-  - cucumber-tests-platform-smartmetering, The test project where all smartmetering related platform tests are put.
+  - cucumber-tests-platform-smartmetering, The test project where all smart metering related platform tests are put.
 - Shared, Platform and Protocol-Adapter-*, The components under test
 
 ##### Running Cucumber integration tests
 
-First make sure that you have OSGP running. Note that you don't need to run the web-device-simulator (OSLP simulator) because it will use the same port as the mockserver used within the test projects.
+First make sure that you have OSGP running. Note that you don't need to run the web-device-simulator (OSLP simulator) because it will use the same port as the mock server used within the test projects.
 
-You can run the automatic tests by running 
+You can run the automated tests by running 
 `mvn verify -DskipITs=false`
 from the commandline.
 
@@ -34,23 +35,22 @@ Open smart grid platform detailed documentation:
 Open smart grid platform issue tracker:
 * [Open smart grid platform Jira](https://smartsocietyservices.atlassian.net/projects/OC/issues/)
 
-## How to create and use the automatic tests.
+## How to create and use the automated tests
 
 ### Why
-Automatic tests are created in order to garantee that the software doesn't break with new functionality or corrected bugs.
-At the time of writing this readme it is not yet in place, but it is meant to have a nightly build on the development branch, which will also startup a test server during the build, deploy the latest software on it and run the automatic tests against it. Via this way, each morning it is visible if the development branch is functionally working.
-Alternatively each developer/tester can run the automatic tests on his own environment.
+Automated tests are created in order to guarantee the software doesn't break with new functionality or corrected bugs. As part of this there's a nightly job for the development branch. It creates a new test server, deploys the latest software on it and runs the automated tests against it. This shows each day if the development branch is still functionally working.
+Alternatively each developer/tester can run the automated tests on his own environment.
 
-### How to implement.
-There are a few rules on how to implement the automatic tests.
+### How to implement
+When implementing automated tests, follow these guidelines:
 
-* When writing the feature files, always meantion the Feature on top and add a little description like "As a ..., I want to ..., In order to". Via this way you think a little more about what you are going to do.
-* When writing the scenarios, keep in mind that each scenario should stand on its one. Don't ever make a scenario dependent on another.
-* When writing the scenarios, please try to write functional scenarios. A person with less technical background should be able to read those scenarios as well. Also have a look at the already created scenarios for reference.
-* When writing the scenario steps, please try to create the steps as generic and reusable as possible. e.g. use tables for parameterizing the steps.
-* Before the test run, the databases are cleared (not complete yet, but please add the necessary commands to the ScenarioHooks.java) and filled with the default data like a test organization which is used for sending the automatic test requests.
-* Before each test scenario the database is cleared as well except for the default data (provisioned in the ScenarioHooks.java).
-* Each time you implement new functionality or solve bugs, make sure you execute the automatic tests.
+* When writing the feature files, always mention the Feature at the top and add a short given-when-then description "As a ..., I want to ..., In order to". This helps to think about the scenarios to add.
+* When writing the scenarios, keep in mind each scenario should stand on its own. Don't make scenarios dependent on each other.
+* When writing the scenarios, try to write functional scenarios. A person with less technical background should be able to read them as well. Also have a look at the existing scenarios for reference.
+* When writing the scenario steps, try to make them generic and reusable. E.g. use tables for parameterizing the steps.
+* Before the test run, the databases are cleared (add the necessary commands to the ScenarioHooks.java) and filled with default data like a test organization, which is used for sending the automated test requests.
+* Before each test scenario the database is cleared as well except for the default data (provisioned in ScenarioHooks.java).
+* Each time you implement new functionality or solve bugs, make sure you execute the automated tests.
 
 ## Additional recommendations
 
@@ -58,5 +58,4 @@ There are a few rules on how to implement the automatic tests.
 * use ```mvn versions:display-dependency-updates```
 * use ```mvn versions:display-plugin-updates```
 * use ```mvn dependency:tree -DignoreNonCompile```
-
 
