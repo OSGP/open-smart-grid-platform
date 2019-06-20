@@ -21,7 +21,6 @@ import org.opensmartgridplatform.simulator.protocol.iec60870.server.handlers.Iec
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -54,12 +53,9 @@ public class ReceiveMeasurementReportSteps {
     }
 
     private Iec60870ASduHandler getInterrogationCommandASduHandler() {
-        final Iec60870InterrogationCommandASduHandler iec60870InterrogationCommandASduHandler = new Iec60870InterrogationCommandASduHandler();
         final Iec60870ASduFactory iec60870AsduFactory = new Iec60870ASduFactory();
-        ReflectionTestUtils.setField(iec60870InterrogationCommandASduHandler, "iec60870AsduFactory",
-                iec60870AsduFactory);
 
-        return iec60870InterrogationCommandASduHandler;
+        return new Iec60870InterrogationCommandASduHandler(iec60870AsduFactory);
     }
 
     @Then("^I get a measurement report for device (.+)$")

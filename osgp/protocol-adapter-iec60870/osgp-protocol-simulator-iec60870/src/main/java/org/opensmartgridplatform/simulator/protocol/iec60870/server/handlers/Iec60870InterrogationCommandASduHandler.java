@@ -24,11 +24,12 @@ public class Iec60870InterrogationCommandASduHandler extends Iec60870ASduHandler
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec60870InterrogationCommandASduHandler.class);
 
-    @Autowired
     private Iec60870ASduFactory iec60870AsduFactory;
 
-    public Iec60870InterrogationCommandASduHandler() {
+    @Autowired
+    public Iec60870InterrogationCommandASduHandler(final Iec60870ASduFactory iec60870AsduFactory) {
         super(TypeId.C_IC_NA_1);
+        this.iec60870AsduFactory = iec60870AsduFactory;
     }
 
     @Override

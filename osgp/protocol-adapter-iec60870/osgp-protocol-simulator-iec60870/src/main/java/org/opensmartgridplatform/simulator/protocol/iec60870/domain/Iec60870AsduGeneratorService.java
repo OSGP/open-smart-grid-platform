@@ -80,7 +80,7 @@ public class Iec60870AsduGeneratorService {
 
             try {
                 final ASdu asdu = this.asduFactory.getNextAsdu();
-                LOGGER.debug("Generated ASDU: {}", asdu);
+                LOGGER.info("Generated ASDU: {}", asdu);
                 for (final Connection connection : this.connectionRegistry.getAllConnections()) {
                     connection.send(asdu);
                 }
