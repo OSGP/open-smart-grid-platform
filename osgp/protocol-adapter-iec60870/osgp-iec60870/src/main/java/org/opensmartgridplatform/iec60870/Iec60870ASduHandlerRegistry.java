@@ -41,4 +41,8 @@ public class Iec60870ASduHandlerRegistry {
         this.handlers.put(typeId, handler);
     }
 
+    public void clearHandlers() {
+        this.handlers.clear();
+    }
+
 }

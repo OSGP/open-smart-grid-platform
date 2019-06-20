@@ -7,11 +7,15 @@
  */
 package org.opensmartgridplatform.simulator.protocol.iec60870;
 
+import java.util.TimeZone;
+
 import org.opensmartgridplatform.iec60870.Iec60870ASduHandlerRegistry;
 import org.opensmartgridplatform.iec60870.Iec60870ConnectionRegistry;
 import org.opensmartgridplatform.iec60870.Iec60870Server;
 import org.opensmartgridplatform.iec60870.Iec60870ServerEventListener;
+import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870ASduGenerator;
 import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870AsduGeneratorService;
+import org.opensmartgridplatform.simulator.protocol.iec60870.domain.SimpleShortFloatingPointMeasurementAsduGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +25,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.support.CronTrigger;
 
 @Configuration
 @ComponentScan(basePackageClasses = { Iec60870Server.class })
@@ -37,6 +42,9 @@ public class Iec60870SimulatorConfig {
 
     @Value("${iec60870.simulator.port:2404}")
     private int port;
+
+    @Value("${job.asdu.generator.cron:0 0/1 * * * ?}")
+    private String cronExpression;
 
     @Bean(destroyMethod = "stop")
     public Iec60870Server iec60870Server(final Iec60870ConnectionRegistry iec60870ConnectionRegistry,
@@ -63,6 +71,9 @@ public class Iec60870SimulatorConfig {
             final Iec60870ConnectionRegistry iec60870ConnectionRegistry) {
         LOGGER.info("ASDU generator in simulator is enabled");
 
-        return new Iec60870AsduGeneratorService(iec60870ConnectionRegistry);
+        final CronTrigger cronTrigger = new CronTrigger(this.cronExpression, TimeZone.getTimeZone("UTC"));
+        final Iec60870ASduGenerator generator = new SimpleShortFloatingPointMeasurementAsduGenerator();
+
+        return new Iec60870AsduGeneratorService(iec60870ConnectionRegistry, cronTrigger, generator);
     }
 }
