@@ -30,7 +30,13 @@ public class DlmsPushNotificationDecoderTest {
     private static final int COMMA_LENGTH = 1;
 
     private static final String PUSH_SCHEDULER_TRIGGER = "Push scheduler";
+    private static final String PUSH_CSD_TRIGGER = "Push csd wakeup";
+    private static final String PUSH_SMS_TRIGGER = "Push sms wakeup";
     private static final String PUSH_ALARM_TRIGGER = "Push alarm monitor";
+
+    private static final byte[] SCHEDULER_OBISCODE_BYTES = new byte[] { 0x00, 0x00, 0x0F, 0x00, 0x04, (byte) 0xFF };
+    private static final byte[] CSD_OBISCODE_BYTES = new byte[] { 0x00, 0x00, 0x02, 0x02, 0x00, (byte) 0xFF };
+    private static final byte[] SMS_OBISCODE_BYTES = new byte[] { 0x00, 0x00, 0x02, 0x03, 0x00, (byte) 0xFF };
 
     private static final String IDENTIFIER = "EXXXX123456789012";
     private static final byte COMMA = 0x2C;
@@ -44,7 +50,19 @@ public class DlmsPushNotificationDecoderTest {
     Channel channel;
 
     @Test
-    public void decodeDsmr4AlarmsWithLogicalName() throws UnknownDecodingStateException,
+    public void decodeDsmr4AlarmsWithLogicalNames() throws UnknownDecodingStateException,
+            UnrecognizedMessageDataException {
+
+        // Test the 3 possible logical names
+        decodeDsmr4AlarmsWithLogicalName(SCHEDULER_OBISCODE_BYTES, PUSH_SCHEDULER_TRIGGER);
+        decodeDsmr4AlarmsWithLogicalName(CSD_OBISCODE_BYTES, PUSH_CSD_TRIGGER);
+        decodeDsmr4AlarmsWithLogicalName(SMS_OBISCODE_BYTES, PUSH_SMS_TRIGGER);
+
+        // Any other logical name should result in an empty trigger type
+        decodeDsmr4AlarmsWithLogicalName(new byte[] { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06 }, "");
+    }
+
+    private void decodeDsmr4AlarmsWithLogicalName(byte[] logicalName, String expecterTriggerType) throws UnknownDecodingStateException,
             UnrecognizedMessageDataException {
 
         // SETUP
@@ -53,9 +71,6 @@ public class DlmsPushNotificationDecoderTest {
 
         ChannelBuffer buffer = mock(ChannelBuffer.class);
         DecodingState state = DecodingState.EQUIPMENT_IDENTIFIER;
-
-        // Set logical name of Push schedule object. (Note: for this test any logical name should work)
-        final byte[] logicalName = new byte[] { 0x00, 0x00, 0x0F, 0x00, 0x04, (byte)0xFF };
 
         byte[] bytes = setupDsmr4Buffer(buffer, IDENTIFIER, logicalName);
 
@@ -68,7 +83,7 @@ public class DlmsPushNotificationDecoderTest {
         assertThat(pushNotificationObject instanceof DlmsPushNotification).isTrue();
         DlmsPushNotification dlmsPushNotification = (DlmsPushNotification) pushNotificationObject;
         assertThat(dlmsPushNotification.getEquipmentIdentifier()).isEqualTo(IDENTIFIER);
-        assertThat(dlmsPushNotification.getTriggerType()).isEqualTo(PUSH_SCHEDULER_TRIGGER);
+        assertThat(dlmsPushNotification.getTriggerType()).isEqualTo(expecterTriggerType);
         assertThat(dlmsPushNotification.getAlarms().isEmpty()).isTrue();
         assertThat(dlmsPushNotification.toByteArray()).isEqualTo(bytes);
     }
