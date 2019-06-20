@@ -25,6 +25,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjec
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,7 +77,7 @@ public class DlmsObjectConfigService {
 
         for (final DlmsRegister register : dlmsRegisters) {
             attributeAddresses.add(
-                    new AttributeAddress(register.getClassId(), this.replaceChannel(register.getObisCode(), channel),
+                    new AttributeAddress(register.getClassId(), this.replaceChannel(register.getObisCodeAsString(), channel),
                             register.getScalerUnitAttributeId()));
         }
 
@@ -90,7 +91,7 @@ public class DlmsObjectConfigService {
 
         DlmsObject dlmsObject = addressRequest.getDlmsObject();
 
-        final ObisCode obisCode = this.replaceChannel(dlmsObject.getObisCode(), addressRequest.getChannel());
+        final ObisCode obisCode = this.replaceChannel(dlmsObject.getObisCodeAsString(), addressRequest.getChannel());
 
         return new AttributeAddressForProfile(new AttributeAddress(dlmsObject.getClassId(), obisCode,
                 dlmsObject.getDefaultAttributeId(), access), selectedObjects);
@@ -166,7 +167,7 @@ public class DlmsObjectConfigService {
             }
 
             // Create and add object definition for this capture object
-            final ObisCode obisCode = this.replaceChannel(relatedObject.getObisCode(), channel);
+            final ObisCode obisCode = this.replaceChannel(relatedObject.getObisCodeAsString(), channel);
             objectDefinitions.add(DataObject.newStructureData(
                     Arrays.asList(DataObject.newUInteger16Data(relatedObject.getClassId()),
                             DataObject.newOctetStringData(obisCode.bytes()),

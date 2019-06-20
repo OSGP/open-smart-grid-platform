@@ -12,10 +12,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.openmuc.jdlms.ObisCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsProfile;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.Medium;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
 public abstract class DlmsObjectConfig {
 
@@ -49,5 +51,21 @@ public abstract class DlmsObjectConfig {
                         || ((DlmsProfile) o2).getMedium() == filterMedium)
                 .findAny();
         // @formatter:on
+    }
+
+    public ObisCode getObisForObject(final DlmsObjectType type) throws
+            ProtocolAdapterException {
+        return getObisForObject(type, null);
+    }
+
+    public ObisCode getObisForObject(final DlmsObjectType type, final Medium filterMedium) throws
+            ProtocolAdapterException {
+        Optional<DlmsObject> dlmsObject = this.findObject(type, filterMedium);
+
+        if (dlmsObject.isPresent()) {
+            return dlmsObject.get().getObisCode();
+        } else {
+            throw new ProtocolAdapterException("Dlms object not found in config, type: " + type + ", medium: " + filterMedium);
+        }
     }
 }
