@@ -61,7 +61,9 @@ public class DlmsPushNotificationDecoder extends ReplayingDecoder<DlmsPushNotifi
      */
     private static final byte COMMA = 0x2C;
 
-    // Dlms data-types.
+    /**
+     * DLMS data types used in the SMR5 push notification
+     */
     private static final byte STRUCTURE = 0x02;
     private static final byte OCTET_STRING = 0x09;
     private static final byte DOUBLE_LONG_UNSIGNED = 0x06;
@@ -102,14 +104,14 @@ public class DlmsPushNotificationDecoder extends ReplayingDecoder<DlmsPushNotifi
          *  0F                                                       // Data-notification
          *  00 00 00 01                                              // Long-invoke-id-and-priority (can be ignored)
          *  00                                                       // Date-time (empty)
-         *  02 02                                                    // Data-value: structure with 2 elements
+         *  02 02                                                    // Structure with 2 elements
          *  09 11 45 58 58 58 58 31 32 33 34 35 36 37 38 39 30 31 32 // Equipment id EXXXX123456789012
          *  09 06 00 00 19 09 00 FF                                  // Logical name: Push setup schedule
          *
          *  0F                                                       // Data-notification
          *  00 00 00 01                                              // Long-invoke-id-and-priority (can be ignored)
          *  00                                                       // Date-time (empty)
-         *  02 03                                                    // Data-value: structure with 3 elements
+         *  02 03                                                    // Structure with 3 elements
          *  09 11 45 58 58 58 58 31 32 33 34 35 36 37 38 39 30 31 32 // Equipment id EXXXX123456789012
          *  09 06 00 01 19 09 00 FF                                  // Logical name: Push setup alarms
          *  06 00 00 00 02                                           // Alarm register, with Replace battery set
@@ -164,12 +166,14 @@ public class DlmsPushNotificationDecoder extends ReplayingDecoder<DlmsPushNotifi
         }
         this.builder.appendByte(dataLength);
 
-        boolean alarmExpected = (dataLength == 3);
+        // If the alarm contains 3 elements, then the 3rd element is the alarm register
+        boolean alarmRegisterExpected = (dataLength == 3);
 
+        // Decode elements
         decodeEquipmentIdentifierSmr5(buffer);
-        decodeLogicalNameSmr5(buffer, alarmExpected);
+        decodeLogicalNameSmr5(buffer, alarmRegisterExpected);
 
-        if (alarmExpected) {
+        if (alarmRegisterExpected) {
             decodeAlarmsSmr5(buffer);
         }
 
@@ -186,6 +190,7 @@ public class DlmsPushNotificationDecoder extends ReplayingDecoder<DlmsPushNotifi
     }
 
     private void decodeEquipmentIdentifierSmr5(final ChannelBuffer buffer) throws UnrecognizedMessageDataException {
+
         // First byte should indicate octet-string
         byte dataTypeByte = buffer.readByte();
         if (dataTypeByte != OCTET_STRING) {
@@ -201,6 +206,7 @@ public class DlmsPushNotificationDecoder extends ReplayingDecoder<DlmsPushNotifi
         }
         this.builder.appendByte(dataLength);
 
+        // Read the identifier
         final byte[] equipmentIdentifierBytes = new byte[dataLength];
         buffer.readBytes(equipmentIdentifierBytes, 0, equipmentIdentifierBytes.length);
 
@@ -224,8 +230,8 @@ public class DlmsPushNotificationDecoder extends ReplayingDecoder<DlmsPushNotifi
         }
         this.builder.appendByte(dataLength);
 
-        // Next bytes are logical name
-        decodeObisCodeData(buffer, Protocol.DSMR_4_2_2, alarmExpected);
+        // Next bytes are the logical name
+        decodeObisCodeData(buffer, Protocol.SMR_5_0, alarmExpected);
     }
 
     private void decodeAlarmsSmr5(final ChannelBuffer buffer) throws UnrecognizedMessageDataException {
@@ -290,21 +296,21 @@ public class DlmsPushNotificationDecoder extends ReplayingDecoder<DlmsPushNotifi
         }
     }
 
-    private void decodeObisCodeData(final ChannelBuffer buffer, Protocol protocol, boolean alarmExpected) throws UnrecognizedMessageDataException {
+    private void decodeObisCodeData(final ChannelBuffer buffer, Protocol protocol, boolean alarmRegisterExpected) throws UnrecognizedMessageDataException {
 
         final byte[] logicalNameBytes = new byte[NUMBER_OF_BYTES_FOR_LOGICAL_NAME];
         buffer.readBytes(logicalNameBytes, 0, NUMBER_OF_BYTES_FOR_LOGICAL_NAME);
 
         try {
-            if (!alarmExpected && isLogicalNameSmsTrigger(logicalNameBytes, protocol)) {
+            if (!alarmRegisterExpected && isLogicalNameSmsTrigger(logicalNameBytes, protocol)) {
                 this.builder.withTriggerType(PUSH_SMS_TRIGGER);
-            } else if (!alarmExpected && isLogicalNameCsdTrigger(logicalNameBytes, protocol)) {
+            } else if (!alarmRegisterExpected && isLogicalNameCsdTrigger(logicalNameBytes, protocol)) {
                 LOGGER.warn("CSD Push notification not supported");
                 this.builder.withTriggerType(PUSH_CSD_TRIGGER);
-            } else if (!alarmExpected && isLogicalNameSchedulerTrigger(logicalNameBytes, protocol)) {
+            } else if (!alarmRegisterExpected && isLogicalNameSchedulerTrigger(logicalNameBytes, protocol)) {
                 LOGGER.warn("Scheduler Push notification not supported");
                 this.builder.withTriggerType(PUSH_SCHEDULER_TRIGGER);
-            } else if (alarmExpected && isLogicalNameAlarmTrigger(logicalNameBytes, protocol)) {
+            } else if (alarmRegisterExpected && isLogicalNameAlarmTrigger(logicalNameBytes, protocol)) {
                 this.builder.withTriggerType(PUSH_ALARM_TRIGGER);
             } else {
                 LOGGER.warn("Unknown Push notification not supported. Unable to decode");
@@ -320,9 +326,11 @@ public class DlmsPushNotificationDecoder extends ReplayingDecoder<DlmsPushNotifi
 
     private boolean isLogicalNameSmsTrigger(byte[] logicalNameBytes, Protocol protocol) throws ProtocolAdapterException {
         if (protocol == Protocol.DSMR_4_2_2) {
+            // DSMR4 has specific objects for the different external trigger types for SMS and CSD
             return Arrays.equals(dlmsObjectConfigDsmr422.getObisForObject(EXTERNAL_TRIGGER_SMS).bytes(),
                     logicalNameBytes);
         } else {
+            // SMR5 has one general object for the SMS and CSD triggers
             return Arrays.equals(dlmsObjectConfigSmr50.getObisForObject(EXTERNAL_TRIGGER).bytes(),
                     logicalNameBytes);
         }
@@ -330,38 +338,36 @@ public class DlmsPushNotificationDecoder extends ReplayingDecoder<DlmsPushNotifi
 
     private boolean isLogicalNameCsdTrigger(byte[] logicalNameBytes, Protocol protocol) throws ProtocolAdapterException {
         if (protocol == Protocol.DSMR_4_2_2) {
+            // DSMR4 has specific objects for the different external trigger types for SMS and CSD
             return Arrays.equals(dlmsObjectConfigDsmr422.getObisForObject(EXTERNAL_TRIGGER_CSD).bytes(),
                     logicalNameBytes);
         } else {
+            // SMR5 has one general object for the SMS and CSD triggers
             return Arrays.equals(dlmsObjectConfigSmr50.getObisForObject(EXTERNAL_TRIGGER).bytes(),
                     logicalNameBytes);
         }
     }
 
     private boolean isLogicalNameSchedulerTrigger(byte[] logicalNameBytes, Protocol protocol) throws ProtocolAdapterException {
-        DlmsObjectConfig dlmsObjectConfig;
-
-        if (protocol == Protocol.DSMR_4_2_2) {
-            dlmsObjectConfig = dlmsObjectConfigDsmr422;
-        } else {
-            dlmsObjectConfig = dlmsObjectConfigSmr50;
-        }
+        DlmsObjectConfig dlmsObjectConfig = getDlmsObjectConfigForProtocol(protocol);
 
         return Arrays.equals(dlmsObjectConfig.getObisForObject(PUSH_SCHEDULER).bytes(), logicalNameBytes) ||
                 Arrays.equals(dlmsObjectConfig.getObisForObject(PUSH_SETUP_SCHEDULER).bytes(), logicalNameBytes);
     }
 
     private boolean isLogicalNameAlarmTrigger(byte[] logicalNameBytes, Protocol protocol) throws ProtocolAdapterException {
-        DlmsObjectConfig dlmsObjectConfig;
-
-        if (protocol == Protocol.DSMR_4_2_2) {
-            dlmsObjectConfig = dlmsObjectConfigDsmr422;
-        } else {
-            dlmsObjectConfig = dlmsObjectConfigSmr50;
-        }
+        DlmsObjectConfig dlmsObjectConfig = getDlmsObjectConfigForProtocol(protocol);
 
         return Arrays.equals(dlmsObjectConfig.getObisForObject(INTERNAL_TRIGGER_ALARM).bytes(), logicalNameBytes) ||
                 Arrays.equals(dlmsObjectConfig.getObisForObject(PUSH_SETUP_ALARM).bytes(), logicalNameBytes);
+    }
+
+    private DlmsObjectConfig getDlmsObjectConfigForProtocol(Protocol protocol) {
+        if (protocol == Protocol.DSMR_4_2_2) {
+            return dlmsObjectConfigDsmr422;
+        } else {
+            return dlmsObjectConfigSmr50;
+        }
     }
 
     private void decodeAlarmRegisterData(final ChannelBuffer buffer) {

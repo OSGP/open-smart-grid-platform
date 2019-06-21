@@ -46,6 +46,8 @@ public class DlmsPushNotificationDecoderTest {
     private static final byte[] CSD_OBISCODE_BYTES = new byte[] { 0x00, 0x00, 0x02, 0x02, 0x00, (byte) 0xFF };
     private static final byte[] SMS_OBISCODE_BYTES = new byte[] { 0x00, 0x00, 0x02, 0x03, 0x00, (byte) 0xFF };
     private static final byte[] ALARM_OBISCODE_BYTES = new byte[] { 0x00, 0x01, 0x19, 0x09, 0x00, (byte) 0xFF };
+    private static final byte[] SMR5_EXTERNAL_TRIGGER_OBISCODE_BYTES = new byte[] { 0x00, 0x00, 0x02, 0x02, 0x00,
+            (byte) 0xFF };
 
     private static final String IDENTIFIER = "EXXXX123456789012";
     private static final byte COMMA = 0x2C;
@@ -163,11 +165,10 @@ public class DlmsPushNotificationDecoderTest {
     public void decodeSmr5AlarmsWithLogicalNames() throws UnknownDecodingStateException,
             UnrecognizedMessageDataException {
 
-        // Test the 4 possible logical names (3 different trigger types)
+        // Test the 4 possible logical names (2 different trigger types)
         decodeSmr5AlarmsWithLogicalName(SCHEDULER_OBISCODE_BYTES, PUSH_SCHEDULER_TRIGGER);
         decodeSmr5AlarmsWithLogicalName(SCHEDULER_SETUP_OBISCODE_BYTES, PUSH_SCHEDULER_TRIGGER);
-        decodeSmr5AlarmsWithLogicalName(CSD_OBISCODE_BYTES, PUSH_CSD_TRIGGER);
-        decodeSmr5AlarmsWithLogicalName(SMS_OBISCODE_BYTES, PUSH_SMS_TRIGGER);
+        decodeSmr5AlarmsWithLogicalName(SMR5_EXTERNAL_TRIGGER_OBISCODE_BYTES, PUSH_SMS_TRIGGER);
 
         // Any other logical name should result in an empty trigger type
         decodeSmr5AlarmsWithLogicalName(new byte[] { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06 }, "");
