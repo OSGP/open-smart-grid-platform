@@ -124,12 +124,14 @@ public class DlmsPushNotificationDecoder extends ReplayingDecoder<DlmsPushNotifi
          *  number or a character, so it can't be ASCII code 0F.
          * */
 
+        DlmsPushNotification pushNotification;
+
         boolean smr5alarm = buffer.getByte(8) == 0x0F;
 
         LOGGER.info("Decoding state: {}, SMR5 alarm: {}", state, smr5alarm);
 
         if (smr5alarm) {
-            return decodeSmr5alarm(buffer);
+            pushNotification = decodeSmr5alarm(buffer);
         } else {
             switch (state) {
             case EQUIPMENT_IDENTIFIER:
@@ -137,14 +139,18 @@ public class DlmsPushNotificationDecoder extends ReplayingDecoder<DlmsPushNotifi
                 return this.setCheckpointAndContinueDecode(ctx, channel, buffer, DecodingState.DATA_OBJECT);
             case DATA_OBJECT:
                 this.decodeReceivedData(buffer);
-                return this.buildPushNotification();
+                pushNotification = this.buildPushNotification();
+                break;
             default:
                 throw new UnknownDecodingStateException(String.valueOf(state));
             }
         }
+
+        LOGGER.info("Decoded push notification: {}", pushNotification);
+        return pushNotification;
     }
 
-    private Object decodeSmr5alarm(final ChannelBuffer buffer) throws UnrecognizedMessageDataException {
+    private DlmsPushNotification decodeSmr5alarm(final ChannelBuffer buffer) throws UnrecognizedMessageDataException {
 
         // Skip addressing, the 0x0F byte and the invoke-id-and-priority bytes
         buffer.skipBytes(SMR5_NUMBER_OF_BYTES_FOR_ADDRESSING + 1 + SMR5_NUMBER_OF_BYTES_FOR_INVOKE_ID);

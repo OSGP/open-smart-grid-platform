@@ -52,6 +52,10 @@ public class DlmsPushNotificationDecoderTest {
     private static final String IDENTIFIER = "EXXXX123456789012";
     private static final byte COMMA = 0x2C;
 
+    private static final int STRUCTURE = 0x02;
+    private static final int OCTET_STRING = 0x09;
+    private static final int DOUBLE_LONG_UNSIGNED = 0x06;
+
     private DlmsPushNotificationDecoder decoder;
 
     @Mock
@@ -181,6 +185,43 @@ public class DlmsPushNotificationDecoderTest {
         decodeSmr5AlarmsWithLogicalName(SCHEDULER_OBISCODE_BYTES, PUSH_SCHEDULER_TRIGGER, true);
     }
 
+    @Test
+    public void decodeSmr5AlarmsWithAlarmRegister() throws UnknownDecodingStateException,
+            UnrecognizedMessageDataException {
+
+        // SETUP
+
+        decoder = new DlmsPushNotificationDecoder();
+
+        ChannelBuffer buffer = mock(ChannelBuffer.class);
+        DecodingState state = DecodingState.EQUIPMENT_IDENTIFIER;
+
+        // Create alarm register with 3 alarms: replace battery and 2 mbus alarms
+        final byte[] alarmRegister = new byte[] { 0x00, 0x18, 0x00, 0x02 };
+
+        setupSmr5BufferWithAlarm(buffer, IDENTIFIER, ALARM_OBISCODE_BYTES, alarmRegister);
+
+        // CALL
+
+        Object pushNotificationObject = decoder.decode(ctx, channel, buffer, state);
+
+        // VERIFY
+
+        assertThat(pushNotificationObject instanceof DlmsPushNotification).isTrue();
+        DlmsPushNotification dlmsPushNotification = (DlmsPushNotification) pushNotificationObject;
+        assertThat(dlmsPushNotification.getEquipmentIdentifier()).isEqualTo(IDENTIFIER);
+        assertThat(dlmsPushNotification.getTriggerType()).isEqualTo(PUSH_ALARM_TRIGGER);
+
+        Set<AlarmTypeDto> alarms = dlmsPushNotification.getAlarms();
+        assertThat(alarms.size()).isEqualTo(3);
+        assertThat(alarms.contains(REPLACE_BATTERY)).isTrue();
+        assertThat(alarms.contains(COMMUNICATION_ERROR_M_BUS_CHANNEL_4)).isTrue();
+        assertThat(alarms.contains(FRAUD_ATTEMPT_M_BUS_CHANNEL_1)).isTrue();
+
+        // Verify the addressing bytes, the 0x0F for data-notification and the invoke-id bytes were skipped
+        verify(buffer, times(1)).skipBytes(SMR5_NUMBER_OF_BYTES_FOR_ADDRESSING + 1 + SMR5_NUMBER_OF_BYTES_FOR_INVOKE_ID);
+    }
+
     private void decodeSmr5AlarmsWithLogicalName(byte[] logicalName, String expecterTriggerType) throws UnknownDecodingStateException,
             UnrecognizedMessageDataException {
         decodeSmr5AlarmsWithLogicalName(logicalName, expecterTriggerType, false);
@@ -220,64 +261,38 @@ public class DlmsPushNotificationDecoderTest {
         }
     }
 
-    @Test
-    public void decodeSmr5AlarmsWithAlarmRegister() throws UnknownDecodingStateException,
-            UnrecognizedMessageDataException {
-
-        // SETUP
-
-        decoder = new DlmsPushNotificationDecoder();
-
-        ChannelBuffer buffer = mock(ChannelBuffer.class);
-        DecodingState state = DecodingState.EQUIPMENT_IDENTIFIER;
-
-        // Create alarm register with 3 alarms: replace battery and 2 mbus alarms
-        final byte[] alarmRegister = new byte[] { 0x00, 0x18, 0x00, 0x02 };
-
-        setupSmr5BufferWithAlarm(buffer, IDENTIFIER, ALARM_OBISCODE_BYTES, alarmRegister);
-
-        // CALL
-
-        Object pushNotificationObject = decoder.decode(ctx, channel, buffer, state);
-
-        // VERIFY
-
-        assertThat(pushNotificationObject instanceof DlmsPushNotification).isTrue();
-        DlmsPushNotification dlmsPushNotification = (DlmsPushNotification) pushNotificationObject;
-        assertThat(dlmsPushNotification.getEquipmentIdentifier()).isEqualTo(IDENTIFIER);
-        assertThat(dlmsPushNotification.getTriggerType()).isEqualTo(PUSH_ALARM_TRIGGER);
-
-        Set<AlarmTypeDto> alarms = dlmsPushNotification.getAlarms();
-        assertThat(alarms.size()).isEqualTo(3);
-        assertThat(alarms.contains(REPLACE_BATTERY)).isTrue();
-        assertThat(alarms.contains(COMMUNICATION_ERROR_M_BUS_CHANNEL_4)).isTrue();
-        assertThat(alarms.contains(FRAUD_ATTEMPT_M_BUS_CHANNEL_1)).isTrue();
-
-        // Verify the addressing bytes, the 0x0F for data-notification and the invoke-id bytes were skipped
-        verify(buffer, times(1)).skipBytes(SMR5_NUMBER_OF_BYTES_FOR_ADDRESSING + 1 + SMR5_NUMBER_OF_BYTES_FOR_INVOKE_ID);
-    }
-
     private void setupSmr5Buffer(ChannelBuffer buffer, String identifier, byte[] logicalName) {
         setupSmr5Buffer(buffer, identifier, logicalName, false);
     }
 
     private void setupSmr5Buffer(ChannelBuffer buffer, String identifier, byte[] logicalName, boolean withDateTime) {
+        /**
+         * Alarm example for SMR5, without alarm register:
+         *  0F                                                       // Data-notification
+         *  00 00 00 01                                              // Long-invoke-id-and-priority (can be ignored)
+         *  00                                                       // Date-time (length 0)
+         *  02 02                                                    // Structure (0x02), 2 elements
+         *    09 11                                                  // Octetstring (0x09), length 11
+         *      45 58 58 58 58 31 32 33 34 35 36 37 38 39 30 31 32   // Equipment id EXXXX123456789012
+         *    09 06                                                  // Octetstring (0x09), length 6
+         *      00 00 19 09 00 FF                                    // Logical name: Push setup schedule
+         **/
 
         int dateTimeLength = 0;
         if (withDateTime) {
             dateTimeLength = SMR5_NUMBER_OF_BYTES_FOR_DATETIME;
         }
 
-        when(buffer.getByte(8)).thenReturn((byte)0x0F);
+        when(buffer.getByte(8)).thenReturn((byte)0x0F);        // Data-notification
 
         when(buffer.readByte())
-                .thenReturn((byte)dateTimeLength)  // Date time length
-                .thenReturn((byte)0x02)  // Data type structure
-                .thenReturn((byte)0x02)  // Length 2
-                .thenReturn((byte)0x09)  // Data type octet string
-                .thenReturn((byte)EQUIPMENT_IDENTIFIER_LENGTH)  // Length
-                .thenReturn((byte)0x09)  // Data type octet string
-                .thenReturn((byte)LOGICAL_NAME_LENGTH);  // Length
+                .thenReturn((byte)dateTimeLength)              // Date time length
+                .thenReturn((byte)STRUCTURE)                   // Data type structure
+                .thenReturn((byte)0x02)                        // Length 2
+                .thenReturn((byte)OCTET_STRING)                // Data type octet string
+                .thenReturn((byte)EQUIPMENT_IDENTIFIER_LENGTH) // Length
+                .thenReturn((byte)OCTET_STRING)                // Data type octet string
+                .thenReturn((byte)LOGICAL_NAME_LENGTH);        // Length
 
         doAnswer(invocation-> {
             byte[] outputValue = (byte[])invocation.getArguments()[0];
@@ -294,17 +309,31 @@ public class DlmsPushNotificationDecoderTest {
 
     private void setupSmr5BufferWithAlarm(ChannelBuffer buffer, String identifier, byte[] logicalName,
             byte[] alarmRegister) {
+        /**
+         * Alarm example for SMR5, with alarm register:
+         *  0F                                                       // Data-notification
+         *  00 00 00 01                                              // Long-invoke-id-and-priority (can be ignored)
+         *  00                                                       // Date-time (length 0)
+         *  02 03                                                    // Structure (0x02), 3 elements
+         *    09 11                                                  // Octetstring (0x09), length 11
+         *      45 58 58 58 58 31 32 33 34 35 36 37 38 39 30 31 32   // Equipment id EXXXX123456789012
+         *    09 06                                                  // Octetstring (0x09), length 6
+         *      00 01 19 09 00 FF                                    // Logical name: Push setup alarms
+         *    06                                                     // Double long unsigned (0x06)
+         *      00 00 00 02                                          // Alarm register, with Replace battery set
+         **/
 
-        when(buffer.getByte(8)).thenReturn((byte)0x0F);
+        when(buffer.getByte(8)).thenReturn((byte)0x0F);        // Data-notification
+
         when(buffer.readByte())
-                .thenReturn((byte)0x00)  // Date time, length 0
-                .thenReturn((byte)0x02)  // Data type structure
-                .thenReturn((byte)0x03)  // Length 3
-                .thenReturn((byte)0x09)  // Data type octet string
-                .thenReturn((byte)EQUIPMENT_IDENTIFIER_LENGTH)  // Length
-                .thenReturn((byte)0x09)  // Data type octet string
-                .thenReturn((byte)LOGICAL_NAME_LENGTH)  // Length
-                .thenReturn((byte)0x06);  // Data type double long unsigned
+                .thenReturn((byte)0x00)                        // Date time, length 0
+                .thenReturn((byte)STRUCTURE)                   // Data type structure
+                .thenReturn((byte)0x03)                        // Length 3
+                .thenReturn((byte)OCTET_STRING)                // Data type octet string
+                .thenReturn((byte)EQUIPMENT_IDENTIFIER_LENGTH) // Length
+                .thenReturn((byte)OCTET_STRING)                // Data type octet string
+                .thenReturn((byte)LOGICAL_NAME_LENGTH)         // Length
+                .thenReturn((byte)DOUBLE_LONG_UNSIGNED);       // Data type double long unsigned
 
         doAnswer(invocation-> {
             byte[] outputValue = (byte[])invocation.getArguments()[0];
@@ -324,5 +353,4 @@ public class DlmsPushNotificationDecoderTest {
             return null;
         }).when(buffer).readBytes(any(byte[].class), eq(0), eq(alarmRegister.length));
     }
-
 }
