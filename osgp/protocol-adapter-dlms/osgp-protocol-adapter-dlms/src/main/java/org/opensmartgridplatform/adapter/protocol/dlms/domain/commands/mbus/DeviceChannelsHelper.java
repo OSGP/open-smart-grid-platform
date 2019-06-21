@@ -54,8 +54,12 @@ public class DeviceChannelsHelper {
     private static final short FIRST_CHANNEL = 1;
     private static final short NR_OF_CHANNELS = 4;
 
+    final private DlmsHelper dlmsHelper;
+
     @Autowired
-    private DlmsHelper dlmsHelper;
+    public DeviceChannelsHelper(final DlmsHelper dlmsHelper) {
+        this.dlmsHelper = dlmsHelper;
+    }
 
     public List<ChannelElementValuesDto> findCandidateChannelsForDevice(final DlmsConnectionManager conn,
             final DlmsDevice device, final MbusChannelElementsDto requestDto) throws ProtocolAdapterException {
@@ -111,7 +115,7 @@ public class DeviceChannelsHelper {
             throws ProtocolAdapterException {
 
         final Long identification = this.dlmsHelper.readLong(resultList.get(index), description);
-        return IdentificationNumber.fromIdentification(identification).getLast8Digits();
+        return identification.toString();
     }
 
     private String readManufacturerIdentification(final List<GetResult> resultList, final int index,
