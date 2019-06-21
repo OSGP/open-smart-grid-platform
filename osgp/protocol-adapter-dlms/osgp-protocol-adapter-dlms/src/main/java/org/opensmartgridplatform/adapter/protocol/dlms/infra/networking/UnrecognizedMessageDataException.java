@@ -15,4 +15,8 @@ public class UnrecognizedMessageDataException extends Exception {
     public UnrecognizedMessageDataException(final String reason) {
         super(String.format(MESSAGE, reason));
     }
+
+    public UnrecognizedMessageDataException(final String reason, final Throwable cause) {
+        super(String.format(MESSAGE, reason), cause);
+    }
 }

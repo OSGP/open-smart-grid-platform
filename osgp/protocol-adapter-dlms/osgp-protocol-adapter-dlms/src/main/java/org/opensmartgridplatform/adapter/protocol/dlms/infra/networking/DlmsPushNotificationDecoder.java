@@ -323,7 +323,7 @@ public class DlmsPushNotificationDecoder extends ReplayingDecoder<DlmsPushNotifi
                 this.builder.withTriggerType("");
             }
         } catch (ProtocolAdapterException e) {
-            throw new UnrecognizedMessageDataException(e.getMessage());
+            throw new UnrecognizedMessageDataException("Error decoding logical name", e);
         }
 
         this.builder.withAlarms(null);
