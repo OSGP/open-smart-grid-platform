@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto.COMMUNICATION_ERROR_M_BUS_CHANNEL_4;
 import static org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto.FRAUD_ATTEMPT_M_BUS_CHANNEL_1;
+import static org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto.PHASE_OUTAGE_DETECTED_L1;
 import static org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto.REPLACE_BATTERY;
 
 import java.util.Set;
@@ -196,8 +197,8 @@ public class DlmsPushNotificationDecoderTest {
         ChannelBuffer buffer = mock(ChannelBuffer.class);
         DecodingState state = DecodingState.EQUIPMENT_IDENTIFIER;
 
-        // Create alarm register with 3 alarms: replace battery and 2 mbus alarms
-        final byte[] alarmRegister = new byte[] { 0x00, 0x18, 0x00, 0x02 };
+        // Create alarm register with 4 alarms: replace battery, 2 mbus alarms and phase outage detected (new in SMR5.1)
+        final byte[] alarmRegister = new byte[] { 0x10, 0x18, 0x00, 0x02 };
 
         setupSmr5BufferWithAlarm(buffer, IDENTIFIER, ALARM_OBISCODE_BYTES, alarmRegister);
 
@@ -213,10 +214,11 @@ public class DlmsPushNotificationDecoderTest {
         assertThat(dlmsPushNotification.getTriggerType()).isEqualTo(PUSH_ALARM_TRIGGER);
 
         Set<AlarmTypeDto> alarms = dlmsPushNotification.getAlarms();
-        assertThat(alarms.size()).isEqualTo(3);
+        assertThat(alarms.size()).isEqualTo(4);
         assertThat(alarms.contains(REPLACE_BATTERY)).isTrue();
         assertThat(alarms.contains(COMMUNICATION_ERROR_M_BUS_CHANNEL_4)).isTrue();
         assertThat(alarms.contains(FRAUD_ATTEMPT_M_BUS_CHANNEL_1)).isTrue();
+        assertThat(alarms.contains(PHASE_OUTAGE_DETECTED_L1)).isTrue();
 
         // Verify the addressing bytes, the 0x0F for data-notification and the invoke-id bytes were skipped
         verify(buffer, times(1)).skipBytes(SMR5_NUMBER_OF_BYTES_FOR_ADDRESSING + 1 + SMR5_NUMBER_OF_BYTES_FOR_INVOKE_ID);
