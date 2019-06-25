@@ -85,6 +85,18 @@ public class DlmsPushNotificationDecoder extends ReplayingDecoder<DlmsPushNotifi
         this.builder = new DlmsPushNotification.Builder();
     }
 
+    /**
+     * Decoded the alarm bytes in the buffer. Could be either a DSMR4 or SMR5 alarm. If there are not enough bytes
+     * while decoding, the ReplayingDecoder rewinds and tries the decoding again when there are more bytes received.
+     *
+     * @param ctx       the context from the ReplayingDecoder. Not used in decoding the alarm.
+     * @param channel   the channel from the ReplayingDecoder. Not used in decoding the alarm.
+     * @param buffer    the bytes of the alarm.
+     * @param state     the decoding state, only used for DSMR4 alarm decoding.
+     * @return the decoded DlmsPushNotification (as an Object as required by the ReplayingDecoder)
+     * @throws UnknownDecodingStateException
+     * @throws UnrecognizedMessageDataException
+     */
     @Override
     protected Object decode(final ChannelHandlerContext ctx, final Channel channel, final ChannelBuffer buffer,
             final DecodingState state) throws UnknownDecodingStateException, UnrecognizedMessageDataException {
@@ -126,6 +138,7 @@ public class DlmsPushNotificationDecoder extends ReplayingDecoder<DlmsPushNotifi
 
         DlmsPushNotification pushNotification;
 
+        // Determine whether the alarm is in DSMR4 or SMR5 format.
         boolean smr5alarm = buffer.getByte(8) == 0x0F;
 
         LOGGER.info("Decoding state: {}, SMR5 alarm: {}", state, smr5alarm);

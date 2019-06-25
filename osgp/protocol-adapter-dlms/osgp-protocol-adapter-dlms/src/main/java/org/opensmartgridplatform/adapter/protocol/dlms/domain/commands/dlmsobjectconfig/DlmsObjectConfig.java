@@ -41,8 +41,14 @@ public abstract class DlmsObjectConfig {
 
     abstract List<DlmsObject> initObjects();
 
-    public Optional<DlmsObject> findObject(final DlmsObjectType type,
-            final Medium filterMedium) {
+    /**
+     * Searches in the object config for the requested object type matching the specified medium and returns it.
+     *
+     * @param type           the object type to search for
+     * @param filterMedium   if specified, an object only matches if it has the correct medium
+     * @return the requested object or an empty Optional if it was not found.
+     */
+    public Optional<DlmsObject> findObject(final DlmsObjectType type, final Medium filterMedium) {
         // @formatter:off
         return objects.stream()
                 .filter(o1 -> o1.getType().equals(type))
@@ -53,11 +59,27 @@ public abstract class DlmsObjectConfig {
         // @formatter:on
     }
 
+    /**
+     * Searches in the object config for the requested object type and returns its obis code.
+     *
+     * @param type           the object type to search for
+     * @return the obiscode of the requested object
+     * @throws ProtocolAdapterException when no matching object is found
+     */
     public ObisCode getObisForObject(final DlmsObjectType type) throws
             ProtocolAdapterException {
         return getObisForObject(type, null);
     }
 
+    /**
+     * Searches in the object config for the requested object type matching the specified medium and returns its obis
+     * code.
+     *
+     * @param type           the object type to search for
+     * @param filterMedium   if specified, an object only matches if it has the correct medium
+     * @return the obiscode of the requested object
+     * @throws ProtocolAdapterException when no matching object is found
+     */
     public ObisCode getObisForObject(final DlmsObjectType type, final Medium filterMedium) throws
             ProtocolAdapterException {
         Optional<DlmsObject> dlmsObject = this.findObject(type, filterMedium);
