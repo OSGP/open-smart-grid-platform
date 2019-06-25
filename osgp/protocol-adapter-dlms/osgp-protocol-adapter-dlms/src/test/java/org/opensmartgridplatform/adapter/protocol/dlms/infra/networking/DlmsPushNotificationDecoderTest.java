@@ -103,6 +103,8 @@ public class DlmsPushNotificationDecoderTest {
         assertThat(dlmsPushNotification.getTriggerType()).isEqualTo(expecterTriggerType);
         assertThat(dlmsPushNotification.getAlarms().isEmpty()).isTrue();
         assertThat(dlmsPushNotification.toByteArray()).isEqualTo(bytes);
+
+        verifyDsmr4BufferCalls(buffer, logicalName);
     }
 
     @Test
@@ -138,6 +140,8 @@ public class DlmsPushNotificationDecoderTest {
         assertThat(alarms.contains(REPLACE_BATTERY)).isTrue();
         assertThat(alarms.contains(COMMUNICATION_ERROR_M_BUS_CHANNEL_4)).isTrue();
         assertThat(alarms.contains(FRAUD_ATTEMPT_M_BUS_CHANNEL_1)).isTrue();
+
+        verifyDsmr4BufferCalls(buffer, alarmRegister);
     }
 
     private byte[] setupDsmr4Buffer(ChannelBuffer buffer, String identifier, byte[] data) {
@@ -164,6 +168,13 @@ public class DlmsPushNotificationDecoderTest {
         when(buffer.readerIndex()).thenReturn(EQUIPMENT_IDENTIFIER_LENGTH + 1);
 
         return bytes;
+    }
+
+    private void verifyDsmr4BufferCalls(ChannelBuffer buffer, byte[] data) {
+        verify(buffer, times(1)).readBytes(any(byte[].class), eq(0), eq(EQUIPMENT_IDENTIFIER_LENGTH + 1));
+        verify(buffer, times(1)).readBytes(any(byte[].class), eq(0), eq(data.length));
+        verify(buffer, times(1)).writerIndex();
+        verify(buffer, times(1)).readerIndex();
     }
 
     @Test
@@ -220,6 +231,8 @@ public class DlmsPushNotificationDecoderTest {
         assertThat(alarms.contains(FRAUD_ATTEMPT_M_BUS_CHANNEL_1)).isTrue();
         assertThat(alarms.contains(PHASE_OUTAGE_DETECTED_L1)).isTrue();
 
+        verifySmr5BufferCallsWithAlarm(buffer, alarmRegister);
+
         // Verify the addressing bytes, the 0x0F for data-notification and the invoke-id bytes were skipped
         verify(buffer, times(1)).skipBytes(SMR5_NUMBER_OF_BYTES_FOR_ADDRESSING + 1 + SMR5_NUMBER_OF_BYTES_FOR_INVOKE_ID);
     }
@@ -253,6 +266,8 @@ public class DlmsPushNotificationDecoderTest {
         assertThat(dlmsPushNotification.getEquipmentIdentifier()).isEqualTo(IDENTIFIER);
         assertThat(dlmsPushNotification.getTriggerType()).isEqualTo(expecterTriggerType);
         assertThat(dlmsPushNotification.getAlarms().isEmpty()).isTrue();
+
+        verifySmr5BufferCalls(buffer);
 
         // Verify the addressing bytes, the 0x0F for data-notification and the invoke-id bytes were skipped
         verify(buffer, times(1)).skipBytes(SMR5_NUMBER_OF_BYTES_FOR_ADDRESSING + 1 + SMR5_NUMBER_OF_BYTES_FOR_INVOKE_ID);
@@ -309,6 +324,13 @@ public class DlmsPushNotificationDecoderTest {
         }).when(buffer).readBytes(any(byte[].class), eq(0), eq(LOGICAL_NAME_LENGTH));
     }
 
+    private void verifySmr5BufferCalls(ChannelBuffer buffer) {
+        verify(buffer, times(1)).getByte(8);
+        verify(buffer, times(7)).readByte();
+        verify(buffer, times(1)).readBytes(any(byte[].class), eq(0), eq(EQUIPMENT_IDENTIFIER_LENGTH ));
+        verify(buffer, times(1)).readBytes(any(byte[].class), eq(0), eq(LOGICAL_NAME_LENGTH));
+    }
+
     private void setupSmr5BufferWithAlarm(ChannelBuffer buffer, String identifier, byte[] logicalName,
             byte[] alarmRegister) {
         /**
@@ -354,5 +376,13 @@ public class DlmsPushNotificationDecoderTest {
             System.arraycopy(alarmRegister, 0, outputValue, 0, alarmRegister.length);
             return null;
         }).when(buffer).readBytes(any(byte[].class), eq(0), eq(alarmRegister.length));
+    }
+
+    private void verifySmr5BufferCallsWithAlarm(ChannelBuffer buffer, byte[] alarmRegister) {
+        verify(buffer, times(1)).getByte(8);
+        verify(buffer, times(8)).readByte();
+        verify(buffer, times(1)).readBytes(any(byte[].class), eq(0), eq(EQUIPMENT_IDENTIFIER_LENGTH ));
+        verify(buffer, times(1)).readBytes(any(byte[].class), eq(0), eq(LOGICAL_NAME_LENGTH));
+        verify(buffer, times(1)).readBytes(any(byte[].class), eq(0), eq(alarmRegister.length));
     }
 }
