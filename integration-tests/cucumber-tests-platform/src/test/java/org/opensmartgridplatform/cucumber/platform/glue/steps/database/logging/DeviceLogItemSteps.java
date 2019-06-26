@@ -57,6 +57,15 @@ public class DeviceLogItemSteps extends GlueBase {
     public void iHaveDeviceLogItems(final int number, final Map<String, String> settings) {
         for (int i = 0; i < number; i++) {
             this.iHaveADeviceLogItem(settings);
+
+            // Sleep a couple milliseconds to space out the creation /
+            // modification times of the device log item records.
+            // This ensures the messages are ordered.
+            try {
+                Thread.sleep(5);
+            } catch (final InterruptedException e) {
+                // Ignore this InterruptedException.
+            }
         }
     }
 
