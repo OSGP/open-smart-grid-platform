@@ -193,7 +193,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
         verify(this.dlmsObjectConfigService).findDlmsObject(any(Protocol.class),
                 any(DlmsObjectType.class), any(Medium.class));
 
-        // VERIFY - the result should contain 2 values
+        // ASSERT - the result should contain 2 values
         final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads = result.getPeriodicMeterReadsGas();
 
         assertThat(periodicMeterReads.size()).isEqualTo(2);

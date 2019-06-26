@@ -55,7 +55,7 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends Ab
      * @param dlmsHelper                 dlms helper object
      * @return the date of the buffered {@link DataObject} or null if it cannot be determined
      * @throws ProtocolAdapterException
-     * @throws BufferedDateTimeValidationException
+     * @throws BufferedDateTimeValidationException in case the date is invalid or null
      */
     Date readClock(final PeriodicMeterReadsRequestDto periodicMeterReadsQuery,
                    final List<DataObject> bufferedObjects,
@@ -84,8 +84,7 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends Ab
             dlmsHelper.validateBufferedDateTime(bufferedDateTime, cosemDateTime, from, to);
             return bufferedDateTime.toDate();
         } else {
-
-            // no date was returned, calculate date based on previous value
+            // no date was available, calculate date based on previous value
             return calculateIntervalDate(periodicMeterReadsQuery.getPeriodType(), previousLogTime, intervalTime);
         }
     }
@@ -103,7 +102,7 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends Ab
                                        final ProfileCaptureTime intervalTime) throws BufferedDateTimeValidationException {
 
         if (previousLogTime == null) {
-            return null;
+            throw new BufferedDateTimeValidationException("Unable to calculate interval date, previous logTime should exist, but is null.");
         }
 
         switch (periodTypeDto) {
@@ -115,7 +114,6 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends Ab
                 return Date.from(localDateTime.atZone(ZoneId.systemDefault())
                         .toInstant());
             case INTERVAL:
-
                 int intervalTimeMinutes = 0;
                 if (intervalTime == ProfileCaptureTime.QUARTER_HOUR) {
                     intervalTimeMinutes = 15;
