@@ -369,6 +369,10 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
                                   boolean useNullData) {
 
         PeriodicMeterReadsResponseItemDto periodicMeterRead1 = periodicMeterReads.get(0);
+
+        System.out.println("Date 1 = " + periodicMeterRead1.getLogTime());
+        System.out.println("Date 2 = " + PERIOD_1_CLOCK_VALUE);
+
         assertThat(periodicMeterRead1.getLogTime()).isEqualTo(PERIOD_1_CLOCK_VALUE);
 
         PeriodicMeterReadsResponseItemDto periodicMeterRead2 = periodicMeterReads.get(1);

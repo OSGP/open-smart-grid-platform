@@ -28,8 +28,8 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.*;
 import org.slf4j.Logger;
 
 import java.time.Duration;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -109,9 +109,9 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends Ab
             case DAILY:
                 return Date.from(previousLogTime.toInstant().plus(Duration.ofDays(1)));
             case MONTHLY:
-                LocalDateTime localDateTime = LocalDateTime.ofInstant(previousLogTime.toInstant(), ZoneId.of("CET")).plusMonths(1);
-
-                return Date.from(localDateTime.atZone(ZoneId.of("CET"))
+                ZonedDateTime localDateTime = ZonedDateTime.ofInstant(previousLogTime.toInstant(), ZoneId.of("CET")).plusMonths(1);
+                
+                return Date.from(localDateTime
                         .toInstant());
             case INTERVAL:
                 int intervalTimeMinutes = 0;
