@@ -109,7 +109,7 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends Ab
             case DAILY:
                 return Date.from(previousLogTime.toInstant().plus(Duration.ofDays(1)));
             case MONTHLY:
-                LocalDateTime localDateTime = LocalDateTime.ofInstant(previousLogTime.toInstant(), ZoneId.systemDefault()).plusMonths(1);
+                LocalDateTime localDateTime = LocalDateTime.ofInstant(previousLogTime.toInstant(), ZoneId.of("CET")).plusMonths(1);
 
                 return Date.from(localDateTime.atZone(ZoneId.systemDefault())
                         .toInstant());
