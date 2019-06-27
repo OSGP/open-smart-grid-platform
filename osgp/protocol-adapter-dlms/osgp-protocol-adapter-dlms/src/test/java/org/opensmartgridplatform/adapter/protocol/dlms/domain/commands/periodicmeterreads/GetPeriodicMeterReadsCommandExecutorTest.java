@@ -28,6 +28,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Dlm
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.*;
 
@@ -35,6 +36,7 @@ import java.util.*;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Fail.fail;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.*;
@@ -70,6 +72,33 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
     }
 
     @Test
+    public void testExecuteNullRequest() throws ProtocolAdapterException {
+        try {
+            this.executor.execute(this.connectionManager, this.device, null);
+            fail("Calling execute with null query should fail");
+        } catch (final IllegalArgumentException e) {
+            // expected exception
+        }
+    }
+
+    @Test
+    public void testExecuteObjectNotFound() {
+        //SETUP
+        final PeriodicMeterReadsRequestDto request = new PeriodicMeterReadsRequestDto(PeriodTypeDto.DAILY,
+                this.fromDateTime.toDate(), this.toDateTime.toDate(), ChannelDto.ONE);
+        when(this.dlmsObjectConfigService.findAttributeAddressForProfile(any(), any(), any(), any(), any(),
+                any())).thenReturn(Optional.empty());
+
+        // CALL
+        try {
+            this.executor.execute(this.connectionManager, this.device, request);
+            fail("When no matching object is found, then execute should fail");
+        } catch (final ProtocolAdapterException e) {
+            assertThat(e.getMessage()).isEqualTo("No address found for " + DlmsObjectType.DAILY_LOAD_PROFILE);
+        }
+    }
+
+    @Test
     public void testHappy() throws Exception {
 
         // SETUP
@@ -81,9 +110,6 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
         final DlmsObject dlmsClock = new DlmsClock("0.0.1.0.0.255");
         final DlmsCaptureObject captureObject1 = new DlmsCaptureObject(dlmsClock, 2);
 
-//        final DlmsObject amrStatusDailyE = new DlmsData(AMR_STATUS, "0.0.96.10.4.255");
-//        final DlmsCaptureObject captureObjectDailyE = new DlmsCaptureObject(amrStatusDailyE, 2);
-
         DlmsObject activeEnergyImportRate1 = new DlmsObject(DlmsObjectType.ACTIVE_ENERGY_IMPORT_RATE_1, 0, "1.0.1.8.1.255");
         final DlmsCaptureObject captureObject2 = new DlmsCaptureObject(activeEnergyImportRate1, 2);
         DlmsObject activeEnergyImportRate2 = new DlmsObject(DlmsObjectType.ACTIVE_ENERGY_IMPORT_RATE_2, 0, "1.0.1.8.2.255");
@@ -93,9 +119,6 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
         DlmsObject activeEnergyExportRate2 = new DlmsObject(DlmsObjectType.ACTIVE_ENERGY_EXPORT_RATE_2, 0, "1.0.2.8.2.255");
         final DlmsCaptureObject captureObject5 = new DlmsCaptureObject(activeEnergyExportRate2, 2);
 
-        final DlmsObject dlmsExtendedRegister = new DlmsExtendedRegister(DlmsObjectType.ACTIVE_ENERGY_IMPORT_RATE_1,
-                "0.0.24.0.0.255", 0, RegisterUnit.WH, Medium.ELECTRICITY);
-
         final List<DlmsCaptureObject> captureObjects = Arrays.asList(captureObject1, captureObject2, captureObject3, captureObject4, captureObject5);
 
         final DlmsProfile dlmsProfile = new DlmsProfile(DlmsObjectType.DAILY_LOAD_PROFILE, "1.0.99.2.0.255",
@@ -104,7 +127,7 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
         // SETUP - mock dlms object config to return attribute addresses
         final AttributeAddressForProfile attributeAddressForProfile = this.createAttributeAddressForProfile(dlmsProfile,
                 captureObjects);
-        final AttributeAddress attributeAddress = this.createAttributeAddress(dlmsExtendedRegister);
+        final AttributeAddress attributeAddress = this.createAttributeAddress(dlmsProfile);
 
         when(this.dlmsObjectConfigService.findAttributeAddressForProfile(eq(this.device),
                 eq(DlmsObjectType.DAILY_LOAD_PROFILE), eq(0), eq(this.fromDateTime),
@@ -130,7 +153,7 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
         final DataObject bufferedObject = mock(DataObject.class);
         when(bufferedObject.getValue()).thenReturn(asList(data0, data1, data2, data3, data4, data5));
         final DataObject resultData = mock(DataObject.class);
-        when(resultData.getValue()).thenReturn(Collections.singletonList(bufferedObject));
+        when(resultData.getValue()).thenReturn(Arrays.asList(bufferedObject, bufferedObject));
 
 
         final String expectedDescription = "retrieve periodic meter reads for " + periodType;
@@ -156,7 +179,7 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
         when(this.dlmsHelper.readDataObject(eq(getResult), any(String.class))).thenReturn(resultData);
 
         final CosemDateTimeDto cosemDateTime = mock(CosemDateTimeDto.class);
-        final String expectedDateTimeDescription = String.format("Clock from %s buffer gas", periodType);
+        final String expectedDateTimeDescription = String.format("Clock from %s buffer", periodType);
         when(this.dlmsHelper.readDateTime(data0, expectedDateTimeDescription)).thenReturn(cosemDateTime);
 
         final DateTime bufferedDateTime = DateTime.now();
@@ -165,7 +188,7 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
         final DlmsMeterValueDto meterValue1 = mock(DlmsMeterValueDto.class);
         final DlmsMeterValueDto meterValue2 = mock(DlmsMeterValueDto.class);
         when(this.dlmsHelper.getScaledMeterValue(data1, null, "positiveActiveEnergyTariff1")).thenReturn(meterValue1);
-        when(this.dlmsHelper.getScaledMeterValue(data4, null, "gasValue")).thenReturn(meterValue2);
+        when(this.dlmsHelper.getScaledMeterValue(data4, null, "positiveActiveEnergyTariff2")).thenReturn(meterValue2);
 
         // CALL
         final PeriodicMeterReadsResponseDto result = this.executor.execute(this.connectionManager, device, request);
@@ -176,19 +199,20 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
                 new DateTime(this.from), new DateTime(this.to), dlmsProfile.getClassId(), dlmsProfile.getObisCode(),
                 dlmsProfile.getDefaultAttributeId()));
 
-        verify(this.dlmsHelper).validateBufferedDateTime(same(bufferedDateTime), same(cosemDateTime),
+        verify(this.dlmsHelper, times(2)).validateBufferedDateTime(same(bufferedDateTime), same(cosemDateTime),
                 argThat(new DateTimeMatcher(from)), argThat(new DateTimeMatcher(to)));
 
         verify(this.dlmsObjectConfigService).findDlmsObject(any(Protocol.class),
                 any(DlmsObjectType.class), any(Medium.class));
 
-        // ASSERT - the result should contain 1 value
+        // ASSERT - the result should contain 2 values
         final List<PeriodicMeterReadsResponseItemDto> periodicMeterReads = result.getPeriodicMeterReads();
 
-        assertThat(periodicMeterReads.size()).isEqualTo(1);
+        assertThat(periodicMeterReads.size()).isEqualTo(2);
 
-        PeriodicMeterReadsResponseItemDto periodicMeterReadsResponseItemDto = periodicMeterReads.get(0);
-        assertThat(periodicMeterReadsResponseItemDto.getLogTime()).isNotNull();
+        periodicMeterReads.forEach(p -> {
+            assertThat(p.getLogTime()).isNotNull();
+        });
 
     }
 

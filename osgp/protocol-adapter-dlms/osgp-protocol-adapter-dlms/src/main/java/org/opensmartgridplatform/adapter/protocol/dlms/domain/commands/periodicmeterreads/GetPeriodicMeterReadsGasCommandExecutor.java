@@ -141,7 +141,8 @@ public class GetPeriodicMeterReadsGasCommandExecutor
     }
 
     private PeriodicMeterReadsGasResponseItemDto convertToResponseItem(
-            final PeriodicMeterReadsRequestDto periodicMeterReadsQuery, final List<DataObject> bufferedObjects,
+            final PeriodicMeterReadsRequestDto periodicMeterReadsQuery,
+            final List<DataObject> bufferedObjects,
             final List<GetResult> getResultList, final AttributeAddressForProfile attributeAddressForProfile,
             final List<AttributeAddress> attributeAddresses,
             final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads,

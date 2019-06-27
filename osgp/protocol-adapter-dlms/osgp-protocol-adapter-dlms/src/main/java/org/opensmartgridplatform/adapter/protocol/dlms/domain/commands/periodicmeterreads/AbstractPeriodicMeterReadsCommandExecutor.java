@@ -75,7 +75,7 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends Ab
 
         if (clockIndex != null) {
             cosemDateTime = dlmsHelper.readDateTime(bufferedObjects.get(clockIndex),
-                    "Clock from " + queryPeriodType + " buffer gas");
+                    "Clock from " + queryPeriodType + " buffer");
         }
 
         final DateTime bufferedDateTime = cosemDateTime == null ? null : cosemDateTime.asDateTime();
@@ -102,7 +102,7 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends Ab
                                        final ProfileCaptureTime intervalTime) throws BufferedDateTimeValidationException {
 
         if (previousLogTime == null) {
-            throw new BufferedDateTimeValidationException("Unable to calculate interval date, previous logTime should exist, but is null.");
+            return null;
         }
 
         switch (periodTypeDto) {

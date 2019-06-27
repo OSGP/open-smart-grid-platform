@@ -163,7 +163,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
         when(this.dlmsHelper.readDataObject(eq(getResult), any(String.class))).thenReturn(resultData);
 
         // SETUP - mock dlms helper to handle converting the data objects
-        final String expectedDateTimeDescriptionLogTime = String.format("Clock from %s buffer gas", periodType);
+        final String expectedDateTimeDescriptionLogTime = String.format("Clock from %s buffer", periodType);
         final String expectedDateTimeDescriptionCaptureTime = "Clock from mbus interval extended register";
         final CosemDateTimeDto cosemDateTime = new CosemDateTimeDto(this.fromDateTime);
         when(this.dlmsHelper.readDateTime(data0, expectedDateTimeDescriptionLogTime)).thenReturn(cosemDateTime);
@@ -223,7 +223,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
         return device;
     }
 
-    // Compares date with cosemDateTime. Note: cosemDateTime uses hundreths and not milliseconds
+    // Compares date with cosemDateTime. Note: cosemDateTime uses hundredths and not milliseconds
     private boolean areDatesEqual(final Date date, final CosemDateTimeDto cosemDateTime) {
         final DateTime dateTime = new DateTime(date);
         final CosemDateDto cosemDate = cosemDateTime.getDate();
