@@ -60,14 +60,13 @@ public class DlmsPushNotificationDecoderTest {
     private DlmsPushNotificationDecoder decoder;
 
     @Mock
-    ChannelHandlerContext ctx;
+    private ChannelHandlerContext ctx;
 
     @Mock
-    Channel channel;
+    private Channel channel;
 
     @Test
-    public void decodeDsmr4AlarmsWithLogicalNames() throws UnknownDecodingStateException,
-            UnrecognizedMessageDataException {
+    public void decodeDsmr4AlarmsWithLogicalNames() throws UnrecognizedMessageDataException {
 
         // Test the 4 possible logical names (3 different trigger types)
         decodeDsmr4AlarmsWithLogicalName(SCHEDULER_OBISCODE_BYTES, PUSH_SCHEDULER_TRIGGER);
@@ -79,8 +78,7 @@ public class DlmsPushNotificationDecoderTest {
         decodeDsmr4AlarmsWithLogicalName(new byte[] { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06 }, "");
     }
 
-    private void decodeDsmr4AlarmsWithLogicalName(byte[] logicalName, String expecterTriggerType) throws UnknownDecodingStateException,
-            UnrecognizedMessageDataException {
+    private void decodeDsmr4AlarmsWithLogicalName(byte[] logicalName, String expecterTriggerType) throws UnrecognizedMessageDataException {
 
         // SETUP
 
@@ -108,8 +106,7 @@ public class DlmsPushNotificationDecoderTest {
     }
 
     @Test
-    public void decodeDsmr4AlarmsWithAlarmRegister() throws UnknownDecodingStateException,
-            UnrecognizedMessageDataException {
+    public void decodeDsmr4AlarmsWithAlarmRegister() throws UnrecognizedMessageDataException {
 
         // SETUP
 
@@ -198,8 +195,7 @@ public class DlmsPushNotificationDecoderTest {
     }
 
     @Test
-    public void decodeSmr5AlarmsWithAlarmRegister() throws UnknownDecodingStateException,
-            UnrecognizedMessageDataException {
+    public void decodeSmr5AlarmsWithAlarmRegister() throws UnrecognizedMessageDataException {
 
         // SETUP
 
@@ -243,8 +239,7 @@ public class DlmsPushNotificationDecoderTest {
     }
 
     private void decodeSmr5AlarmsWithLogicalName(byte[] logicalName, String expecterTriggerType,
-            boolean withDateTime) throws UnknownDecodingStateException,
-            UnrecognizedMessageDataException {
+            boolean withDateTime) throws UnrecognizedMessageDataException {
 
         // SETUP
 

@@ -72,7 +72,6 @@ public class AlarmHelperService {
         map.put(AlarmTypeDto.PHASE_OUTAGE_DETECTED_L2, 29);
         map.put(AlarmTypeDto.PHASE_OUTAGE_DETECTED_L3, 30);
         map.put(AlarmTypeDto.PHASE_OUTAGE_TEST_INDICATION, 31);
-        // bits 28 to 31 are not used
 
         BYTE_REGISTER_CONVERTER = new ByteRegisterConverter<>(Collections.unmodifiableMap(map),
                 NUMBER_OF_BITS_IN_REGISTER);
