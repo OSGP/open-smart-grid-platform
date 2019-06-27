@@ -1,23 +1,12 @@
 /**
  * Copyright 2019 Smart Society Services B.V.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import org.joda.time.DateTime;
 import org.junit.Before;
@@ -42,6 +31,11 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseItemDto;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
@@ -281,7 +275,7 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
     private List<AttributeAddress> getScalerUnitAttributeAddresses(PeriodTypeDto type) throws Exception {
         List<AttributeAddress> attributeAddresses = new ArrayList<>();
 
-        switch(type) {
+        switch (type) {
             case MONTHLY:
             case DAILY:
                 attributeAddresses.add(new AttributeAddress(this.CLASS_ID_REGISTER,
@@ -357,7 +351,7 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
     }
 
     private void setResponsesForScalerUnit(List<AttributeAddress> attributeAddressesForScalerUnit) {
-        DataObject responseDataObject = DataObject.newStructureData(DataObject.newInteger8Data((byte)0),
+        DataObject responseDataObject = DataObject.newStructureData(DataObject.newInteger8Data((byte) 0),
                 DataObject.newEnumerateData(DLMS_ENUM_VALUE_WH));
 
         for (AttributeAddress attributeAddress : attributeAddressesForScalerUnit) {
