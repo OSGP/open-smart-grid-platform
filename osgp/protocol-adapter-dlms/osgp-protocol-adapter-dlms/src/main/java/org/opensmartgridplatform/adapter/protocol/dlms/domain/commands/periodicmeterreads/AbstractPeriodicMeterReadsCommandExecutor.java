@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -82,6 +83,9 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends Ab
 
         if (bufferedDateTime != null) {
             dlmsHelper.validateBufferedDateTime(bufferedDateTime, cosemDateTime, from, to);
+
+            getLogger().info("Calculated date based on COSEM date {}", bufferedDateTime.toDate());
+            getLogger().info("Timezoneless date == " + LocalDateTime.ofInstant(bufferedDateTime.toDate().toInstant(), ZoneOffset.systemDefault()));
             return bufferedDateTime.toDate();
         } else {
             // no date was available, calculate date based on previous value
