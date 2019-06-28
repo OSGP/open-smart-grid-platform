@@ -82,8 +82,11 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends Ab
         if (bufferedDateTime != null) {
             dlmsHelper.validateBufferedDateTime(bufferedDateTime, cosemDateTime, from, to);
 
-            System.out.println("returning buffered date time " + bufferedDateTime.toDate());
-            return bufferedDateTime.toDate();
+            LocalDateTime dateTime = LocalDateTime.ofInstant(bufferedDateTime.toDate().toInstant(), ZoneOffset.UTC);
+
+            System.out.println("returning buffered date time " + Date.from(dateTime.toInstant(ZoneOffset.UTC)));
+
+            return Date.from(dateTime.toInstant(ZoneOffset.UTC));
         } else {
             // no date was available, calculate date based on previous value
             return calculateIntervalDate(periodicMeterReadsQuery.getPeriodType(), previousLogTime, intervalTime);
