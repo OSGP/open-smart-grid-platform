@@ -77,17 +77,11 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends Ab
         if (clockIndex != null) {
             cosemDateTime = dlmsHelper.readDateTime(bufferedObjects.get(clockIndex),
                     "Clock from " + queryPeriodType + " buffer");
-
-            getLogger().info("CosemDateTime1 ==" + cosemDateTime.toString());
         }
 
         final DateTime bufferedDateTime = cosemDateTime == null ? null : cosemDateTime.asDateTime();
 
-
-
         if (bufferedDateTime != null) {
-
-            getLogger().info("Buffered CosemDateTime1 ==" + bufferedDateTime);
             dlmsHelper.validateBufferedDateTime(bufferedDateTime, cosemDateTime, from, to);
 
             getLogger().info("Calculated date based on COSEM date {}", bufferedDateTime.toDate());

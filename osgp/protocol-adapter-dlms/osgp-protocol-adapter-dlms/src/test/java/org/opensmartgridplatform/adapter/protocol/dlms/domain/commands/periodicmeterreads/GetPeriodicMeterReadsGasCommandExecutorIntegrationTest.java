@@ -1,24 +1,15 @@
 /**
  * Copyright 2019 Smart Society Services B.V.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,11 +28,12 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Amr
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodTypeDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadGasResponseDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsGasResponseItemDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.*;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
@@ -108,21 +100,19 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
                     DataObject.newOctetStringData(this.OBIS_GAS_VALUE_SMR5.bytes()),
                     DataObject.newInteger8Data(this.ATTR_ID_CAPTURE_TIME), DataObject.newUInteger16Data(0)));
 
-    private final Date TIME_FROM = new GregorianCalendar(2019, Calendar.JANUARY, 1).getTime();
-    private final Date TIME_TO = new GregorianCalendar(2019, Calendar.JANUARY, 5).getTime();
+    private Date TIME_FROM = new GregorianCalendar(2019, Calendar.JANUARY, 1).getTime();
+    private Date TIME_TO = new GregorianCalendar(2019, Calendar.JANUARY, 5).getTime();
     private final DataObject PERIOD_1_CLOCK = getDateAsOctetString(2019, 1, 1);
     private final DataObject PERIOD_2_CLOCK = getDateAsOctetString(2019, 1, 2);
-    private final Date PERIOD_1_CLOCK_VALUE = new GregorianCalendar(2019, Calendar.JANUARY, 1, 1, 0).getTime();
-    private final Date PERIOD_2_CLOCK_VALUE = new GregorianCalendar(2019, Calendar.JANUARY, 2, 1, 0).getTime();
-
-
-    private final Date PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_HOURLY =
+    private Date PERIOD_1_CLOCK_VALUE = new GregorianCalendar(2019, Calendar.JANUARY, 1, 1, 0).getTime();
+    private Date PERIOD_2_CLOCK_VALUE = new GregorianCalendar(2019, Calendar.JANUARY, 2, 1, 0).getTime();
+    private Date PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_HOURLY =
             new GregorianCalendar(2019, Calendar.JANUARY, 1, 2, 0).getTime();
-    private final Date PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_DAILY =
+    private Date PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_DAILY =
             new GregorianCalendar(2019, Calendar.JANUARY, 2, 1, 0).getTime();
-    private final Date PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_MONTHLY =
+    private Date PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_MONTHLY =
             new GregorianCalendar(2019, Calendar.FEBRUARY, 1, 1, 0).getTime();
-    private final CosemDateTime PERIOD_1_CAPTURE_TIME = new CosemDateTime(2018, 12, 31, 23,50, 0, 0);
+    private final CosemDateTime PERIOD_1_CAPTURE_TIME = new CosemDateTime(2018, 12, 31, 23, 50, 0, 0);
     private final CosemDateTime PERIOD_2_CAPTURE_TIME = new CosemDateTime(2019, 1, 1, 0, 7, 0, 0);
 
     private final int AMOUNT_OF_PERIODS = 2;
@@ -135,6 +125,12 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
 
     @Before
     public void setUp() {
+
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+        DateTimeZone.setDefault(DateTimeZone.UTC);
+
+        initDates();
+
         this.dlmsHelper = new DlmsHelper();
         this.amrProfileStatusCodeHelper = new AmrProfileStatusCodeHelper();
         final DlmsObjectConfigConfiguration dlmsObjectConfigConfiguration = new DlmsObjectConfigConfiguration();
@@ -147,6 +143,20 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
         this.connectionManagerStub = new DlmsConnectionManagerStub(this.connectionStub);
 
         this.connectionStub.setDefaultReturnValue(DataObject.newArrayData(Collections.emptyList()));
+    }
+
+    private void initDates() {
+
+        TIME_FROM = new GregorianCalendar(2019, Calendar.JANUARY, 1).getTime();
+        TIME_TO = new GregorianCalendar(2019, Calendar.JANUARY, 5).getTime();
+        PERIOD_1_CLOCK_VALUE = new GregorianCalendar(2019, Calendar.JANUARY, 1, 0, 0).getTime();
+        PERIOD_2_CLOCK_VALUE = new GregorianCalendar(2019, Calendar.JANUARY, 2, 0, 0).getTime();
+        PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_HOURLY =
+                new GregorianCalendar(2019, Calendar.JANUARY, 1,    1, 0).getTime();
+        PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_DAILY =
+                new GregorianCalendar(2019, Calendar.JANUARY, 2, 0, 0).getTime();
+        PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_MONTHLY =
+                new GregorianCalendar(2019, Calendar.FEBRUARY, 1, 0, 0).getTime();
     }
 
     @Test
@@ -248,7 +258,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     }
 
     private AttributeAddress createAttributeAddress(final Protocol protocol, final PeriodTypeDto type,
-            final Date timeFrom, final Date timeTo) throws Exception {
+                                                    final Date timeFrom, final Date timeTo) throws Exception {
         final DataObject from = this.dlmsHelper.asDataObject(new DateTime(timeFrom));
         final DataObject to = this.dlmsHelper.asDataObject(new DateTime(timeTo));
 
@@ -290,7 +300,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     }
 
     private void setResponseForProfile(AttributeAddress attributeAddressForProfile, Protocol protocol,
-            PeriodTypeDto type, boolean useNullData) {
+                                       PeriodTypeDto type, boolean useNullData) {
 
         // PERIOD 1
 
@@ -334,7 +344,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     }
 
     private void setResponsesForScalerUnit(List<AttributeAddress> attributeAddressesForScalerUnit) {
-        DataObject responseDataObject = DataObject.newStructureData(DataObject.newInteger8Data((byte)0),
+        DataObject responseDataObject = DataObject.newStructureData(DataObject.newInteger8Data((byte) 0),
                 DataObject.newEnumerateData(DLMS_ENUM_VALUE_M3));
 
         for (AttributeAddress attributeAddress : attributeAddressesForScalerUnit) {
@@ -349,7 +359,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     }
 
     private void checkClockValues(List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads, PeriodTypeDto type,
-            boolean useNullData) {
+                                  boolean useNullData) {
 
         PeriodicMeterReadsGasResponseItemDto periodicMeterRead1 = periodicMeterReads.get(0);
         assertThat(periodicMeterRead1.getLogTime()).isEqualTo(PERIOD_1_CLOCK_VALUE);
@@ -389,7 +399,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     }
 
     private SelectiveAccessDescription createSelectiveAccessDescriptionDsmr4Daily(final DataObject from,
-            final DataObject to) {
+                                                                                  final DataObject to) {
 
         final DataObject selectedValues = DataObject.newArrayData(
                 Arrays.asList(this.CLOCK, this.STATUS, this.GAS_VALUE_DSMR4, this.GAS_CAPTURE_TIME_DSMR4));
@@ -408,7 +418,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     }
 
     private SelectiveAccessDescription createSelectiveAccessDescriptionDsmr4Monthly(final DataObject from,
-            final DataObject to) {
+                                                                                    final DataObject to) {
 
         final DataObject selectedValues = DataObject.newArrayData(
                 Arrays.asList(this.CLOCK, this.GAS_VALUE_DSMR4, this.GAS_CAPTURE_TIME_DSMR4));
@@ -427,7 +437,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     }
 
     private SelectiveAccessDescription createSelectiveAccessDescriptionDsmr4Interval(final DataObject from,
-            final DataObject to) {
+                                                                                     final DataObject to) {
 
         final DataObject selectedValues = DataObject.newArrayData(Collections.emptyList());
 
@@ -458,7 +468,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     }
 
     private SelectiveAccessDescription createSelectiveAccessDescriptionSmr5(final DataObject from,
-            final DataObject to) {
+                                                                            final DataObject to) {
 
         final DataObject selectedValues = DataObject.newArrayData(Collections.emptyList());
 

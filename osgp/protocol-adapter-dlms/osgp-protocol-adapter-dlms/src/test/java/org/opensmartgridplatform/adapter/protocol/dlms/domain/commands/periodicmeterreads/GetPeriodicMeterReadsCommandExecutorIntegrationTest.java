@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -105,17 +106,17 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
                     DataObject.newOctetStringData(this.OBIS_ACTIVE_ENERGY_EXPORT_RATE_2.bytes()),
                     DataObject.newInteger8Data(this.ATTR_ID_VALUE), DataObject.newUInteger16Data(0)));
 
-    private final Date TIME_FROM = new GregorianCalendar(2019, Calendar.JANUARY, 1).getTime();
-    private final Date TIME_TO = new GregorianCalendar(2019, Calendar.JANUARY, 5).getTime();
-    private final DataObject PERIOD_1_CLOCK = getDateAsOctetString(2019, 1, 1);
-    private final DataObject PERIOD_2_CLOCK = getDateAsOctetString(2019, 1, 2);
-    private final Date PERIOD_1_CLOCK_VALUE = new GregorianCalendar(2019, Calendar.JANUARY, 1, 1, 0).getTime();
-    private final Date PERIOD_2_CLOCK_VALUE = new GregorianCalendar(2019, Calendar.JANUARY, 2, 1, 0).getTime();
-    private final Date PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_15MIN =
+    private Date TIME_FROM = new GregorianCalendar(2019, Calendar.JANUARY, 1).getTime();
+    private Date TIME_TO = new GregorianCalendar(2019, Calendar.JANUARY, 5).getTime();
+    private DataObject PERIOD_1_CLOCK = getDateAsOctetString(2019, 1, 1);
+    private DataObject PERIOD_2_CLOCK = getDateAsOctetString(2019, 1, 2);
+    private Date PERIOD_1_CLOCK_VALUE = new GregorianCalendar(2019, Calendar.JANUARY, 1, 1, 0).getTime();
+    private Date PERIOD_2_CLOCK_VALUE = new GregorianCalendar(2019, Calendar.JANUARY, 2, 1, 0).getTime();
+    private Date PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_15MIN =
             new GregorianCalendar(2019, Calendar.JANUARY, 1, 1, 15).getTime();
-    private final Date PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_DAILY =
+    private Date PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_DAILY =
             new GregorianCalendar(2019, Calendar.JANUARY, 2, 1, 0).getTime();
-    private final Date PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_MONTHLY =
+    private Date PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_MONTHLY =
             new GregorianCalendar(2019, Calendar.FEBRUARY, 1, 1, 0).getTime();
 
     private final int AMOUNT_OF_PERIODS = 2;
@@ -132,8 +133,29 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
 
     private final int DLMS_ENUM_VALUE_WH = 30;
 
+    private void initDates() {
+
+        TIME_FROM = new GregorianCalendar(2019, Calendar.JANUARY, 1).getTime();
+        TIME_TO = new GregorianCalendar(2019, Calendar.JANUARY, 5).getTime();
+        PERIOD_1_CLOCK = getDateAsOctetString(2019, 1, 1);
+        PERIOD_2_CLOCK = getDateAsOctetString(2019, 1, 2);
+        PERIOD_1_CLOCK_VALUE = new GregorianCalendar(2019, Calendar.JANUARY, 1, 0, 0).getTime();
+        PERIOD_2_CLOCK_VALUE = new GregorianCalendar(2019, Calendar.JANUARY, 2, 0, 0).getTime();
+        PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_15MIN =
+                new GregorianCalendar(2019, Calendar.JANUARY, 1, 0, 15).getTime();
+        PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_DAILY =
+                new GregorianCalendar(2019, Calendar.JANUARY, 2, 0, 0).getTime();
+        PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_MONTHLY =
+                new GregorianCalendar(2019, Calendar.FEBRUARY, 1, 0, 0).getTime();
+    }
+
     @Before
     public void setUp() {
+
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+        DateTimeZone.setDefault(DateTimeZone.UTC);
+        initDates();
+
         this.dlmsHelper = new DlmsHelper();
         this.amrProfileStatusCodeHelper = new AmrProfileStatusCodeHelper();
         final DlmsObjectConfigConfiguration dlmsObjectConfigConfiguration = new DlmsObjectConfigConfiguration();
@@ -146,6 +168,7 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
         this.connectionManagerStub = new DlmsConnectionManagerStub(this.connectionStub);
 
         this.connectionStub.setDefaultReturnValue(DataObject.newArrayData(Collections.emptyList()));
+
     }
 
     @Test
@@ -171,6 +194,7 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
 
     @Test
     public void testExecuteSmr5_1() throws Exception {
+
         for (final PeriodTypeDto type : PeriodTypeDto.values()) {
             this.testExecute(Protocol.SMR_5_1, type, false);
         }
@@ -367,6 +391,8 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
 
     private void checkClockValues(List<PeriodicMeterReadsResponseItemDto> periodicMeterReads, PeriodTypeDto type,
                                   boolean useNullData) {
+
+        System.out.println("Value of PERIOD_1_CLOCK_VALUE == " + PERIOD_1_CLOCK_VALUE);
 
         PeriodicMeterReadsResponseItemDto periodicMeterRead1 = periodicMeterReads.get(0);
 
