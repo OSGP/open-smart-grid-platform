@@ -68,9 +68,9 @@ public class AlarmHelperService {
         map.put(AlarmTypeDto.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_2, 25);
         map.put(AlarmTypeDto.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_3, 26);
         map.put(AlarmTypeDto.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_4, 27);
-        map.put(AlarmTypeDto.PHASE_OUTAGE_DETECTED_L1, 28);
-        map.put(AlarmTypeDto.PHASE_OUTAGE_DETECTED_L2, 29);
-        map.put(AlarmTypeDto.PHASE_OUTAGE_DETECTED_L3, 30);
+        map.put(AlarmTypeDto.PHASE_OUTAGE_DETECTED_L_1, 28);
+        map.put(AlarmTypeDto.PHASE_OUTAGE_DETECTED_L_2, 29);
+        map.put(AlarmTypeDto.PHASE_OUTAGE_DETECTED_L_3, 30);
         map.put(AlarmTypeDto.PHASE_OUTAGE_TEST_INDICATION, 31);
 
         BYTE_REGISTER_CONVERTER = new ByteRegisterConverter<>(Collections.unmodifiableMap(map),

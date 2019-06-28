@@ -10,7 +10,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto.COMMUNICATION_ERROR_M_BUS_CHANNEL_4;
 import static org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto.FRAUD_ATTEMPT_M_BUS_CHANNEL_1;
-import static org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto.PHASE_OUTAGE_DETECTED_L1;
+import static org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto.PHASE_OUTAGE_DETECTED_L_1;
 import static org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto.REPLACE_BATTERY;
 
 import java.util.Set;
@@ -225,7 +225,7 @@ public class DlmsPushNotificationDecoderTest {
         assertThat(alarms.contains(REPLACE_BATTERY)).isTrue();
         assertThat(alarms.contains(COMMUNICATION_ERROR_M_BUS_CHANNEL_4)).isTrue();
         assertThat(alarms.contains(FRAUD_ATTEMPT_M_BUS_CHANNEL_1)).isTrue();
-        assertThat(alarms.contains(PHASE_OUTAGE_DETECTED_L1)).isTrue();
+        assertThat(alarms.contains(PHASE_OUTAGE_DETECTED_L_1)).isTrue();
 
         verifySmr5BufferCallsWithAlarm(buffer, alarmRegister);
 
