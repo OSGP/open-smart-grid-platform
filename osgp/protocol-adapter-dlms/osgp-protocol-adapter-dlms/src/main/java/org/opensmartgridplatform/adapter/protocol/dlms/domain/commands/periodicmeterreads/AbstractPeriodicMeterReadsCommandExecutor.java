@@ -27,8 +27,9 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.*;
 import org.slf4j.Logger;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -81,12 +82,7 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends Ab
 
         if (bufferedDateTime != null) {
             dlmsHelper.validateBufferedDateTime(bufferedDateTime, cosemDateTime, from, to);
-
-            LocalDateTime dateTime = LocalDateTime.ofInstant(bufferedDateTime.toDate().toInstant(), ZoneOffset.UTC);
-
-            System.out.println("returning buffered date time " + Date.from(dateTime.toInstant(ZoneOffset.UTC)));
-
-            return Date.from(dateTime.toInstant(ZoneOffset.UTC));
+            return bufferedDateTime.toDate();
         } else {
             // no date was available, calculate date based on previous value
             return calculateIntervalDate(periodicMeterReadsQuery.getPeriodType(), previousLogTime, intervalTime);
@@ -111,14 +107,12 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends Ab
 
         switch (periodTypeDto) {
             case DAILY:
-
-                LocalDateTime localDateTime = LocalDateTime.ofInstant(previousLogTime.toInstant(), ZoneOffset.UTC).plusDays(1);
-                return Date.from(localDateTime.toInstant(ZoneOffset.UTC));
-
+                return Date.from(previousLogTime.toInstant().plus(Duration.ofDays(1)));
             case MONTHLY:
-                LocalDateTime localDateTime2 = LocalDateTime.ofInstant(previousLogTime.toInstant(), ZoneOffset.UTC).plusMonths(1);
+                LocalDateTime localDateTime = LocalDateTime.ofInstant(previousLogTime.toInstant(), ZoneId.systemDefault()).plusMonths(1);
 
-                return Date.from(localDateTime2.toInstant(ZoneOffset.UTC));
+                return Date.from(localDateTime.atZone(ZoneId.systemDefault())
+                        .toInstant());
             case INTERVAL:
                 int intervalTimeMinutes = 0;
                 if (intervalTime == ProfileCaptureTime.QUARTER_HOUR) {
@@ -127,9 +121,7 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends Ab
                     intervalTimeMinutes = 60;
                 }
 
-                LocalDateTime localDateTime3 = LocalDateTime.ofInstant(previousLogTime.toInstant(), ZoneOffset.UTC).plusMinutes(intervalTimeMinutes);
-
-                return Date.from(localDateTime3.toInstant(ZoneOffset.UTC));
+                return Date.from(previousLogTime.toInstant().plus(Duration.ofMinutes(intervalTimeMinutes)));
             default:
                 throw new BufferedDateTimeValidationException("Invalid PeriodTypeDto given: " + periodTypeDto);
         }
