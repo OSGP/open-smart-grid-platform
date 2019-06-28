@@ -120,8 +120,8 @@ public class GetPeriodicMeterReadsCommandExecutor
 
             try {
                 periodicMeterReads.add(
-                        this.convertToResponseItem(periodicMeterReadsQuery, bufferedObjectValue,
-                                getResultList, profileBufferAddress, scalerUnitAddresses, periodicMeterReads, intervalTime));
+                        this.convertToResponseItem(new ConversionContext(periodicMeterReadsQuery, bufferedObjectValue,
+                                getResultList, profileBufferAddress, scalerUnitAddresses, intervalTime), periodicMeterReads));
             } catch (final BufferedDateTimeValidationException e) {
                 LOGGER.warn(e.getMessage(), e);
             }
@@ -131,27 +131,23 @@ public class GetPeriodicMeterReadsCommandExecutor
     }
 
     private PeriodicMeterReadsResponseItemDto convertToResponseItem(
-            final PeriodicMeterReadsRequestDto periodicMeterReadsQuery,
-            final List<DataObject> bufferedObjects,
-            final List<GetResult> getResultList, final AttributeAddressForProfile attributeAddressForProfile,
-            final List<AttributeAddress> attributeAddresses,
-            final List<PeriodicMeterReadsResponseItemDto> periodicMeterReads,
-            final ProfileCaptureTime intervalTime)
+            final ConversionContext ctx,
+            final List<PeriodicMeterReadsResponseItemDto> periodicMeterReads)
             throws ProtocolAdapterException, BufferedDateTimeValidationException {
 
-        LOGGER.info("Converting bufferObject with value: {} ", bufferedObjects);
+        LOGGER.info("Converting bufferObject with value: {} ", ctx.bufferedObjects);
 
         final Date previousLogTime = getPreviousLogTime(periodicMeterReads);
-        final Date logTime = readClock(periodicMeterReadsQuery, bufferedObjects, attributeAddressForProfile, previousLogTime, intervalTime, this.dlmsHelper);
+        final Date logTime = readClock(ctx, previousLogTime, this.dlmsHelper);
 
-        final AmrProfileStatusCodeDto status = readStatus(bufferedObjects, attributeAddressForProfile);
+        final AmrProfileStatusCodeDto status = readStatus(ctx.bufferedObjects, ctx.attributeAddressForProfile);
 
-        if (periodicMeterReadsQuery.getPeriodType() == PeriodTypeDto.INTERVAL) {
-            DlmsMeterValueDto importValue = this.getScaledMeterValue(bufferedObjects, getResultList,
-                    attributeAddresses, attributeAddressForProfile, DlmsObjectType.ACTIVE_ENERGY_IMPORT,
+        if (ctx.periodicMeterReadsQuery.getPeriodType() == PeriodTypeDto.INTERVAL) {
+            DlmsMeterValueDto importValue = this.getScaledMeterValue(ctx.bufferedObjects, ctx.getResultList,
+                    ctx.attributeAddresses, ctx.attributeAddressForProfile, DlmsObjectType.ACTIVE_ENERGY_IMPORT,
                     "positiveActiveEnergy");
-            DlmsMeterValueDto exportValue = this.getScaledMeterValue(bufferedObjects, getResultList,
-                    attributeAddresses, attributeAddressForProfile, DlmsObjectType.ACTIVE_ENERGY_EXPORT,
+            DlmsMeterValueDto exportValue = this.getScaledMeterValue(ctx.bufferedObjects, ctx.getResultList,
+                    ctx.attributeAddresses, ctx.attributeAddressForProfile, DlmsObjectType.ACTIVE_ENERGY_EXPORT,
                     "negativeActiveEnergy");
 
             LOGGER.info("Resulting values: LogTime: {}, status: {}, importValue {}, exportValue {} ", logTime, status
@@ -159,17 +155,17 @@ public class GetPeriodicMeterReadsCommandExecutor
 
             return new PeriodicMeterReadsResponseItemDto(logTime, importValue, exportValue, status);
         } else {
-            DlmsMeterValueDto importValueRate1 = this.getScaledMeterValue(bufferedObjects, getResultList,
-                    attributeAddresses, attributeAddressForProfile, DlmsObjectType.ACTIVE_ENERGY_IMPORT_RATE_1,
+            DlmsMeterValueDto importValueRate1 = this.getScaledMeterValue(ctx.bufferedObjects, ctx.getResultList,
+                    ctx.attributeAddresses, ctx.attributeAddressForProfile, DlmsObjectType.ACTIVE_ENERGY_IMPORT_RATE_1,
                     "positiveActiveEnergyTariff1");
-            DlmsMeterValueDto importValueRate2 = this.getScaledMeterValue(bufferedObjects, getResultList,
-                    attributeAddresses, attributeAddressForProfile, DlmsObjectType.ACTIVE_ENERGY_IMPORT_RATE_2,
+            DlmsMeterValueDto importValueRate2 = this.getScaledMeterValue(ctx.bufferedObjects, ctx.getResultList,
+                    ctx.attributeAddresses, ctx.attributeAddressForProfile, DlmsObjectType.ACTIVE_ENERGY_IMPORT_RATE_2,
                     "positiveActiveEnergyTariff2");
-            DlmsMeterValueDto exportValueRate1 = this.getScaledMeterValue(bufferedObjects, getResultList,
-                    attributeAddresses, attributeAddressForProfile, DlmsObjectType.ACTIVE_ENERGY_EXPORT_RATE_1,
+            DlmsMeterValueDto exportValueRate1 = this.getScaledMeterValue(ctx.bufferedObjects, ctx.getResultList,
+                    ctx.attributeAddresses, ctx.attributeAddressForProfile, DlmsObjectType.ACTIVE_ENERGY_EXPORT_RATE_1,
                     "negativeActiveEnergyTariff1");
-            DlmsMeterValueDto exportValueRate2 = this.getScaledMeterValue(bufferedObjects, getResultList,
-                    attributeAddresses, attributeAddressForProfile, DlmsObjectType.ACTIVE_ENERGY_EXPORT_RATE_2,
+            DlmsMeterValueDto exportValueRate2 = this.getScaledMeterValue(ctx.bufferedObjects, ctx.getResultList,
+                    ctx.attributeAddresses, ctx.attributeAddressForProfile, DlmsObjectType.ACTIVE_ENERGY_EXPORT_RATE_2,
                     "negativeActiveEnergyTariff2");
 
             LOGGER.info("Resulting values: LogTime: {}, status: {}, importRate1Value {}, importRate2Value {}, "

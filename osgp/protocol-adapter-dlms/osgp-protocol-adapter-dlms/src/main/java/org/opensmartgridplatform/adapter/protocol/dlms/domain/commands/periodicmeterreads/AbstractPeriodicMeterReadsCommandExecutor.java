@@ -9,6 +9,8 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads;
 
 import org.joda.time.DateTime;
+import org.openmuc.jdlms.AttributeAddress;
+import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.AttributeAddressForProfile;
@@ -30,7 +32,6 @@ import org.slf4j.Logger;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -48,48 +49,39 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends Ab
     /**
      * Calculates/derives the date of the read buffered DataObject.
      *
-     * @param periodicMeterReadsQuery    the request query
-     * @param bufferedObjects            the
-     * @param attributeAddressForProfile the attribute address
-     * @param previousLogTime            the log time of the previous meter read
-     * @param intervalTime               the interval time for this device
-     * @param dlmsHelper                 dlms helper object
+     * @param ctx             context elements for the buffered object conversion
+     * @param previousLogTime the log time of the previous meter read
+     * @param dlmsHelper      dlms helper object
      * @return the date of the buffered {@link DataObject} or null if it cannot be determined
      * @throws ProtocolAdapterException
      * @throws BufferedDateTimeValidationException in case the date is invalid or null
      */
-    Date readClock(final PeriodicMeterReadsRequestDto periodicMeterReadsQuery,
-                   final List<DataObject> bufferedObjects,
-                   final AttributeAddressForProfile attributeAddressForProfile,
+    Date readClock(final ConversionContext ctx,
                    final Date previousLogTime,
-                   final ProfileCaptureTime intervalTime,
                    final DlmsHelper dlmsHelper)
             throws ProtocolAdapterException, BufferedDateTimeValidationException {
 
-        final PeriodTypeDto queryPeriodType = periodicMeterReadsQuery.getPeriodType();
-        final DateTime from = new DateTime(periodicMeterReadsQuery.getBeginDate());
-        final DateTime to = new DateTime(periodicMeterReadsQuery.getEndDate());
-
-        final Integer clockIndex = attributeAddressForProfile.getIndex(DlmsObjectType.CLOCK, null);
+        final PeriodTypeDto queryPeriodType = ctx.periodicMeterReadsQuery.getPeriodType();
+        final DateTime from = new DateTime(ctx.periodicMeterReadsQuery.getBeginDate());
+        final DateTime to = new DateTime(ctx.periodicMeterReadsQuery.getEndDate());
+        final Integer clockIndex = ctx.attributeAddressForProfile.getIndex(DlmsObjectType.CLOCK, null);
 
         CosemDateTimeDto cosemDateTime = null;
 
         if (clockIndex != null) {
-            cosemDateTime = dlmsHelper.readDateTime(bufferedObjects.get(clockIndex),
+            cosemDateTime = dlmsHelper.readDateTime(ctx.bufferedObjects.get(clockIndex),
                     "Clock from " + queryPeriodType + " buffer");
         }
 
         final DateTime bufferedDateTime = cosemDateTime == null ? null : cosemDateTime.asDateTime();
 
         if (bufferedDateTime != null) {
-            dlmsHelper.validateBufferedDateTime(bufferedDateTime, cosemDateTime, from, to);
+            dlmsHelper.validateBufferedDateTime(bufferedDateTime, from, to);
 
-            getLogger().info("Calculated date based on COSEM date {}", bufferedDateTime.toDate());
-            getLogger().info("Timezoneless date == " + LocalDateTime.ofInstant(bufferedDateTime.toDate().toInstant(), ZoneOffset.systemDefault()));
             return bufferedDateTime.toDate();
         } else {
             // no date was available, calculate date based on previous value
-            return calculateIntervalDate(periodicMeterReadsQuery.getPeriodType(), previousLogTime, intervalTime);
+            return calculateIntervalDate(ctx.periodicMeterReadsQuery.getPeriodType(), previousLogTime, ctx.intervalTime);
         }
     }
 
@@ -118,17 +110,20 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends Ab
                 return Date.from(localDateTime.atZone(ZoneId.systemDefault())
                         .toInstant());
             case INTERVAL:
-                int intervalTimeMinutes = 0;
-                if (intervalTime == ProfileCaptureTime.QUARTER_HOUR) {
-                    intervalTimeMinutes = 15;
-                } else if (intervalTime == ProfileCaptureTime.HOUR) {
-                    intervalTimeMinutes = 60;
-                }
-
-                return Date.from(previousLogTime.toInstant().plus(Duration.ofMinutes(intervalTimeMinutes)));
+                return Date.from(previousLogTime.toInstant().plus(Duration.ofMinutes(getIntervalTimeMinutes(intervalTime))));
             default:
                 throw new BufferedDateTimeValidationException("Invalid PeriodTypeDto given: " + periodTypeDto);
         }
+    }
+
+    private int getIntervalTimeMinutes(ProfileCaptureTime intervalTime) {
+        int intervalTimeMinutes = 0;
+        if (intervalTime == ProfileCaptureTime.QUARTER_HOUR) {
+            intervalTimeMinutes = 15;
+        } else if (intervalTime == ProfileCaptureTime.HOUR) {
+            intervalTimeMinutes = 60;
+        }
+        return intervalTimeMinutes;
     }
 
     /**
@@ -192,5 +187,31 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends Ab
     }
 
     protected abstract Logger getLogger();
+
+    /**
+     * Wrapper class with items needed to convert to PeriodicMeterRead items.
+     */
+    protected static class ConversionContext {
+
+        final PeriodicMeterReadsRequestDto periodicMeterReadsQuery;
+        final List<DataObject> bufferedObjects;
+        final List<GetResult> getResultList;
+        final AttributeAddressForProfile attributeAddressForProfile;
+        final List<AttributeAddress> attributeAddresses;
+        final ProfileCaptureTime intervalTime;
+
+        protected ConversionContext(final PeriodicMeterReadsRequestDto periodicMeterReadsQuery,
+                                    final List<DataObject> bufferedObjects,
+                                    final List<GetResult> getResultList, final AttributeAddressForProfile attributeAddressForProfile,
+                                    final List<AttributeAddress> attributeAddresses,
+                                    final ProfileCaptureTime intervalTime) {
+            this.periodicMeterReadsQuery = periodicMeterReadsQuery;
+            this.bufferedObjects = bufferedObjects;
+            this.getResultList = getResultList;
+            this.attributeAddressForProfile = attributeAddressForProfile;
+            this.attributeAddresses = attributeAddresses;
+            this.intervalTime = intervalTime;
+        }
+    }
 
 }

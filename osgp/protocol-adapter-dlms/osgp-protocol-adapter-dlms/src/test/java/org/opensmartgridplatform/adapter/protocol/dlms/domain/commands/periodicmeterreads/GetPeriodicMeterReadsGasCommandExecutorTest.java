@@ -176,7 +176,6 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
         when(this.dlmsHelper.getScaledMeterValue(data1, null, "gasValue")).thenReturn(meterValue1);
         when(this.dlmsHelper.getScaledMeterValue(data4, null, "gasValue")).thenReturn(meterValue2);
 
-
         // CALL
         final PeriodicMeterReadGasResponseDto result = this.executor.execute(this.connectionManager, this.device,
                 request);
@@ -187,7 +186,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
                 new DateTime(this.from), new DateTime(this.to), dlmsProfile.getClassId(), dlmsProfile.getObisCode(),
                 dlmsProfile.getDefaultAttributeId()));
 
-        verify(this.dlmsHelper, times(2)).validateBufferedDateTime(any(DateTime.class), any(CosemDateTimeDto.class),
+        verify(this.dlmsHelper, times(2)).validateBufferedDateTime(any(DateTime.class),
                 argThat(new DateTimeMatcher(this.from)), argThat(new DateTimeMatcher(this.to)));
 
         verify(this.dlmsObjectConfigService).findDlmsObject(any(Protocol.class),

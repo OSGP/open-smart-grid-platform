@@ -150,10 +150,12 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
         final DataObject data3 = mock(DataObject.class);
         final DataObject data4 = mock(DataObject.class);
         final DataObject data5 = mock(DataObject.class);
-        final DataObject bufferedObject = mock(DataObject.class);
-        when(bufferedObject.getValue()).thenReturn(asList(data0, data1, data2, data3, data4, data5));
+        final DataObject bufferedObject1 = mock(DataObject.class);
+        when(bufferedObject1.getValue()).thenReturn(asList(data0, data1, data2, data3, data4, data5));
+        final DataObject bufferedObject2 = mock(DataObject.class);
+        when(bufferedObject2.getValue()).thenReturn(asList(data0, data1, data2, data3, data4, data5));
         final DataObject resultData = mock(DataObject.class);
-        when(resultData.getValue()).thenReturn(Arrays.asList(bufferedObject, bufferedObject));
+        when(resultData.getValue()).thenReturn(Arrays.asList(bufferedObject1, bufferedObject2));
 
 
         final String expectedDescription = "retrieve periodic meter reads for " + periodType;
@@ -187,8 +189,12 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
 
         final DlmsMeterValueDto meterValue1 = mock(DlmsMeterValueDto.class);
         final DlmsMeterValueDto meterValue2 = mock(DlmsMeterValueDto.class);
+        final DlmsMeterValueDto meterValue3 = mock(DlmsMeterValueDto.class);
+        final DlmsMeterValueDto meterValue4 = mock(DlmsMeterValueDto.class);
         when(this.dlmsHelper.getScaledMeterValue(data1, null, "positiveActiveEnergyTariff1")).thenReturn(meterValue1);
-        when(this.dlmsHelper.getScaledMeterValue(data4, null, "positiveActiveEnergyTariff2")).thenReturn(meterValue2);
+        when(this.dlmsHelper.getScaledMeterValue(data2, null, "positiveActiveEnergyTariff2")).thenReturn(meterValue2);
+        when(this.dlmsHelper.getScaledMeterValue(data3, null, "negativeActiveEnergyTariff1")).thenReturn(meterValue3);
+        when(this.dlmsHelper.getScaledMeterValue(data4, null, "negativeActiveEnergyTariff2")).thenReturn(meterValue4);
 
         // CALL
         final PeriodicMeterReadsResponseDto result = this.executor.execute(this.connectionManager, device, request);
@@ -199,7 +205,7 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
                 new DateTime(this.from), new DateTime(this.to), dlmsProfile.getClassId(), dlmsProfile.getObisCode(),
                 dlmsProfile.getDefaultAttributeId()));
 
-        verify(this.dlmsHelper, times(2)).validateBufferedDateTime(same(bufferedDateTime), same(cosemDateTime),
+        verify(this.dlmsHelper, times(2)).validateBufferedDateTime(same(bufferedDateTime),
                 argThat(new DateTimeMatcher(from)), argThat(new DateTimeMatcher(to)));
 
         verify(this.dlmsObjectConfigService).findDlmsObject(any(Protocol.class),
@@ -212,6 +218,10 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
 
         periodicMeterReads.forEach(p -> {
             assertThat(p.getLogTime()).isNotNull();
+            assertThat(p.getActiveEnergyImportTariffOne()).isEqualTo(meterValue1);
+            assertThat(p.getActiveEnergyImportTariffTwo()).isEqualTo(meterValue2);
+            assertThat(p.getActiveEnergyExportTariffOne()).isEqualTo(meterValue3);
+            assertThat(p.getActiveEnergyExportTariffTwo()).isEqualTo(meterValue4);
         });
 
     }

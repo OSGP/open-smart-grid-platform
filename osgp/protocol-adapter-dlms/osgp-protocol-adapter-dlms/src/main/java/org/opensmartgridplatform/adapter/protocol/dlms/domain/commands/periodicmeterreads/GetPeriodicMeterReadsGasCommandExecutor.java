@@ -128,8 +128,8 @@ public class GetPeriodicMeterReadsGasCommandExecutor
 
             try {
                 periodicMeterReads.add(
-                        this.convertToResponseItem(periodicMeterReadsQuery, bufferedObjectValue,
-                                getResultList, profileBufferAddress, scalerUnitAddresses, periodicMeterReads, intervalTime));
+                        this.convertToResponseItem(new ConversionContext(periodicMeterReadsQuery, bufferedObjectValue,
+                                getResultList, profileBufferAddress, scalerUnitAddresses, intervalTime), periodicMeterReads));
             } catch (final BufferedDateTimeValidationException e) {
                 LOGGER.warn(e.getMessage(), e);
             }
@@ -141,24 +141,20 @@ public class GetPeriodicMeterReadsGasCommandExecutor
     }
 
     private PeriodicMeterReadsGasResponseItemDto convertToResponseItem(
-            final PeriodicMeterReadsRequestDto periodicMeterReadsQuery,
-            final List<DataObject> bufferedObjects,
-            final List<GetResult> getResultList, final AttributeAddressForProfile attributeAddressForProfile,
-            final List<AttributeAddress> attributeAddresses,
-            final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads,
-            final ProfileCaptureTime intervalTime)
+            final ConversionContext ctx,
+            final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads)
             throws ProtocolAdapterException, BufferedDateTimeValidationException {
 
         final Date previousLogTime = getPreviousLogTime(periodicMeterReads);
-        final Date logTime = readClock(periodicMeterReadsQuery, bufferedObjects, attributeAddressForProfile, previousLogTime, intervalTime, this.dlmsHelper);
+        final Date logTime = readClock(ctx, previousLogTime, this.dlmsHelper);
 
-        final AmrProfileStatusCodeDto status = this.readStatus(bufferedObjects, attributeAddressForProfile);
-        final DataObject gasValue = this.readValue(bufferedObjects, attributeAddressForProfile);
-        final DataObject scalerUnit = this.readScalerUnit(getResultList, attributeAddresses, attributeAddressForProfile,
-                periodicMeterReadsQuery.getChannel().getChannelNumber());
-        final Date captureTime = this.readCaptureTime(bufferedObjects, attributeAddressForProfile);
+        final AmrProfileStatusCodeDto status = this.readStatus(ctx.bufferedObjects, ctx.attributeAddressForProfile);
+        final DataObject gasValue = this.readValue(ctx.bufferedObjects, ctx.attributeAddressForProfile);
+        final DataObject scalerUnit = this.readScalerUnit(ctx.getResultList, ctx.attributeAddresses, ctx.attributeAddressForProfile,
+                ctx.periodicMeterReadsQuery.getChannel().getChannelNumber());
+        final Date captureTime = this.readCaptureTime(ctx.bufferedObjects, ctx.attributeAddressForProfile);
 
-        LOGGER.info("Converting bufferObject with value: {} ", bufferedObjects);
+        LOGGER.info("Converting bufferObject with value: {} ", ctx.bufferedObjects);
         LOGGER.info("Resulting values: LogTime: {}, status: {}, gasValue {}, scalerUnit: {}, captureTime {} ", logTime,
                 status, gasValue, scalerUnit, captureTime);
 

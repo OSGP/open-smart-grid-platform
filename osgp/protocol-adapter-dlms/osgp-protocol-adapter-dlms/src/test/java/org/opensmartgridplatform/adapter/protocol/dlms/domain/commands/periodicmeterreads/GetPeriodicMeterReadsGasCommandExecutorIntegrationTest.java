@@ -100,32 +100,29 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
                     DataObject.newOctetStringData(this.OBIS_GAS_VALUE_SMR5.bytes()),
                     DataObject.newInteger8Data(this.ATTR_ID_CAPTURE_TIME), DataObject.newUInteger16Data(0)));
 
-    private Date TIME_FROM = new GregorianCalendar(2019, Calendar.JANUARY, 1).getTime();
-    private Date TIME_TO = new GregorianCalendar(2019, Calendar.JANUARY, 5).getTime();
-    private final DataObject PERIOD_1_CLOCK = getDateAsOctetString(2019, 1, 1);
-    private final DataObject PERIOD_2_CLOCK = getDateAsOctetString(2019, 1, 2);
-    private Date PERIOD_1_CLOCK_VALUE = new GregorianCalendar(2019, Calendar.JANUARY, 1, 1, 0).getTime();
-    private Date PERIOD_2_CLOCK_VALUE = new GregorianCalendar(2019, Calendar.JANUARY, 2, 1, 0).getTime();
-    private Date PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_HOURLY =
-            new GregorianCalendar(2019, Calendar.JANUARY, 1, 2, 0).getTime();
-    private Date PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_DAILY =
-            new GregorianCalendar(2019, Calendar.JANUARY, 2, 1, 0).getTime();
-    private Date PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_MONTHLY =
-            new GregorianCalendar(2019, Calendar.FEBRUARY, 1, 1, 0).getTime();
+    private Date TIME_FROM;
+    private Date TIME_TO;
+    private DataObject PERIOD_1_CLOCK;
+    private DataObject PERIOD_2_CLOCK;
+    private Date PERIOD_1_CLOCK_VALUE;
+    private Date PERIOD_2_CLOCK_VALUE;
+    private Date PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_HOURLY;
+    private Date PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_DAILY;
+    private Date PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_MONTHLY;
+
     private final CosemDateTime PERIOD_1_CAPTURE_TIME = new CosemDateTime(2018, 12, 31, 23, 50, 0, 0);
     private final CosemDateTime PERIOD_2_CAPTURE_TIME = new CosemDateTime(2019, 1, 1, 0, 7, 0, 0);
 
-    private final int AMOUNT_OF_PERIODS = 2;
-
-    private final byte AMR_STATUS_VALUE = 8;
     private final long PERIOD_1_LONG_VALUE = 1000L;
     private final long PERIOD_2_LONG_VALUE = 1500L;
-
-    private final int DLMS_ENUM_VALUE_M3 = 14;
 
     @Before
     public void setUp() {
 
+        TimeZone defaultTimeZone = TimeZone.getDefault();
+        DateTimeZone defaultDateTimeZone = DateTimeZone.getDefault();
+
+        // all time based tests must use UTC time.
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         DateTimeZone.setDefault(DateTimeZone.UTC);
 
@@ -143,16 +140,23 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
         this.connectionManagerStub = new DlmsConnectionManagerStub(this.connectionStub);
 
         this.connectionStub.setDefaultReturnValue(DataObject.newArrayData(Collections.emptyList()));
+
+        // reset to original TimeZone
+        TimeZone.setDefault(defaultTimeZone);
+        DateTimeZone.setDefault(defaultDateTimeZone);
+
     }
 
     private void initDates() {
 
         TIME_FROM = new GregorianCalendar(2019, Calendar.JANUARY, 1).getTime();
         TIME_TO = new GregorianCalendar(2019, Calendar.JANUARY, 5).getTime();
+        PERIOD_1_CLOCK = getDateAsOctetString(2019, 1, 1);
+        PERIOD_2_CLOCK = getDateAsOctetString(2019, 1, 2);
         PERIOD_1_CLOCK_VALUE = new GregorianCalendar(2019, Calendar.JANUARY, 1, 0, 0).getTime();
         PERIOD_2_CLOCK_VALUE = new GregorianCalendar(2019, Calendar.JANUARY, 2, 0, 0).getTime();
         PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_HOURLY =
-                new GregorianCalendar(2019, Calendar.JANUARY, 1,    1, 0).getTime();
+                new GregorianCalendar(2019, Calendar.JANUARY, 1, 1, 0).getTime();
         PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_DAILY =
                 new GregorianCalendar(2019, Calendar.JANUARY, 2, 0, 0).getTime();
         PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_MONTHLY =
@@ -243,6 +247,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
         // Check response
         assertThat(response.getPeriodType()).isEqualTo(type);
         List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads = response.getPeriodicMeterReadsGas();
+        int AMOUNT_OF_PERIODS = 2;
         assertThat(periodicMeterReads.size()).isEqualTo(AMOUNT_OF_PERIODS);
 
         checkClockValues(periodicMeterReads, type, useNullData);
@@ -305,6 +310,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
         // PERIOD 1
 
         DataObject period1Clock = PERIOD_1_CLOCK;
+        byte AMR_STATUS_VALUE = 8;
         DataObject period1Status = DataObject.newUInteger8Data(AMR_STATUS_VALUE);
         DataObject period1Value = DataObject.newUInteger32Data(PERIOD_1_LONG_VALUE);
         DataObject period1CaptureTime = DataObject.newDateTimeData(PERIOD_1_CAPTURE_TIME);
@@ -344,6 +350,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     }
 
     private void setResponsesForScalerUnit(List<AttributeAddress> attributeAddressesForScalerUnit) {
+        int DLMS_ENUM_VALUE_M3 = 14;
         DataObject responseDataObject = DataObject.newStructureData(DataObject.newInteger8Data((byte) 0),
                 DataObject.newEnumerateData(DLMS_ENUM_VALUE_M3));
 

@@ -106,18 +106,15 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
                     DataObject.newOctetStringData(this.OBIS_ACTIVE_ENERGY_EXPORT_RATE_2.bytes()),
                     DataObject.newInteger8Data(this.ATTR_ID_VALUE), DataObject.newUInteger16Data(0)));
 
-    private Date TIME_FROM = new GregorianCalendar(2019, Calendar.JANUARY, 1).getTime();
-    private Date TIME_TO = new GregorianCalendar(2019, Calendar.JANUARY, 5).getTime();
-    private DataObject PERIOD_1_CLOCK = getDateAsOctetString(2019, 1, 1);
-    private DataObject PERIOD_2_CLOCK = getDateAsOctetString(2019, 1, 2);
-    private Date PERIOD_1_CLOCK_VALUE = new GregorianCalendar(2019, Calendar.JANUARY, 1, 1, 0).getTime();
-    private Date PERIOD_2_CLOCK_VALUE = new GregorianCalendar(2019, Calendar.JANUARY, 2, 1, 0).getTime();
-    private Date PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_15MIN =
-            new GregorianCalendar(2019, Calendar.JANUARY, 1, 1, 15).getTime();
-    private Date PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_DAILY =
-            new GregorianCalendar(2019, Calendar.JANUARY, 2, 1, 0).getTime();
-    private Date PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_MONTHLY =
-            new GregorianCalendar(2019, Calendar.FEBRUARY, 1, 1, 0).getTime();
+    private Date TIME_FROM;
+    private Date TIME_TO;
+    private DataObject PERIOD_1_CLOCK;
+    private DataObject PERIOD_2_CLOCK;
+    private Date PERIOD_1_CLOCK_VALUE;
+    private Date PERIOD_2_CLOCK_VALUE;
+    private Date PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_15MIN;
+    private Date PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_DAILY;
+    private Date PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_MONTHLY;
 
     private final int AMOUNT_OF_PERIODS = 2;
 
@@ -152,8 +149,13 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
     @Before
     public void setUp() {
 
+        TimeZone defaultTimeZone = TimeZone.getDefault();
+        DateTimeZone defaultDateTimeZone = DateTimeZone.getDefault();
+
+        // all time based tests must use UTC time.
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         DateTimeZone.setDefault(DateTimeZone.UTC);
+
         initDates();
 
         this.dlmsHelper = new DlmsHelper();
@@ -168,6 +170,11 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
         this.connectionManagerStub = new DlmsConnectionManagerStub(this.connectionStub);
 
         this.connectionStub.setDefaultReturnValue(DataObject.newArrayData(Collections.emptyList()));
+
+        // reset to original TimeZone
+        TimeZone.setDefault(defaultTimeZone);
+        DateTimeZone.setDefault(defaultDateTimeZone);
+
 
     }
 
@@ -392,19 +399,13 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
     private void checkClockValues(List<PeriodicMeterReadsResponseItemDto> periodicMeterReads, PeriodTypeDto type,
                                   boolean useNullData) {
 
-        System.out.println("Value of PERIOD_1_CLOCK_VALUE == " + PERIOD_1_CLOCK_VALUE);
-
         PeriodicMeterReadsResponseItemDto periodicMeterRead1 = periodicMeterReads.get(0);
 
-        String a = String.format("Comparing meterRead1 logTime %s to date 2 %s for period %s", periodicMeterRead1.getLogTime(), PERIOD_1_CLOCK_VALUE, type.name());
-        System.out.println(a);
         assertThat(periodicMeterRead1.getLogTime()).isEqualTo(PERIOD_1_CLOCK_VALUE);
 
         PeriodicMeterReadsResponseItemDto periodicMeterRead2 = periodicMeterReads.get(1);
 
         if (!useNullData) { // The timestamps should be the same as the times set in the test
-            String b = String.format("Comparing meterRead2 logTime %s to date 2 %s for period %s", periodicMeterRead2.getLogTime(), PERIOD_2_CLOCK_VALUE, type.name());
-            System.out.println(b);
             assertThat(periodicMeterRead2.getLogTime()).isEqualTo(PERIOD_2_CLOCK_VALUE);
         } else { // The timestamps should be calculated using the periodType, starting from the time of period 1
             if (type == PeriodTypeDto.INTERVAL) {
