@@ -114,6 +114,8 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     private final DataObject PERIOD_2_CLOCK = getDateAsOctetString(2019, 1, 2);
     private final Date PERIOD_1_CLOCK_VALUE = new GregorianCalendar(2019, Calendar.JANUARY, 1, 1, 0).getTime();
     private final Date PERIOD_2_CLOCK_VALUE = new GregorianCalendar(2019, Calendar.JANUARY, 2, 1, 0).getTime();
+
+
     private final Date PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_HOURLY =
             new GregorianCalendar(2019, Calendar.JANUARY, 1, 2, 0).getTime();
     private final Date PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_DAILY =

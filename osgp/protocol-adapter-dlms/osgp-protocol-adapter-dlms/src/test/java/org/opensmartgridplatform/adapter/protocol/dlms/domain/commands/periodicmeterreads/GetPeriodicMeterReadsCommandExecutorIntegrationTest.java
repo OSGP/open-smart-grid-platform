@@ -32,6 +32,9 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterRea
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseItemDto;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -105,18 +108,32 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
                     DataObject.newOctetStringData(this.OBIS_ACTIVE_ENERGY_EXPORT_RATE_2.bytes()),
                     DataObject.newInteger8Data(this.ATTR_ID_VALUE), DataObject.newUInteger16Data(0)));
 
-    private final Date TIME_FROM = new GregorianCalendar(2019, Calendar.JANUARY, 1).getTime();
-    private final Date TIME_TO = new GregorianCalendar(2019, Calendar.JANUARY, 5).getTime();
+    private final LocalDateTime timeFrom = LocalDateTime.of(2019, 1, 1, 0, 0);
+    private final Date TIME_FROM = Date.from(timeFrom.toInstant(ZoneOffset.UTC));
+
+    private final LocalDateTime timeTo = LocalDateTime.of(2019, 1, 5, 0, 0);
+    private final Date TIME_TO = Date.from(timeTo.toInstant(ZoneOffset.UTC));
+
     private final DataObject PERIOD_1_CLOCK = getDateAsOctetString(2019, 1, 1);
     private final DataObject PERIOD_2_CLOCK = getDateAsOctetString(2019, 1, 2);
-    private final Date PERIOD_1_CLOCK_VALUE = new GregorianCalendar(2019, Calendar.JANUARY, 1, 1, 0).getTime();
-    private final Date PERIOD_2_CLOCK_VALUE = new GregorianCalendar(2019, Calendar.JANUARY, 2, 1, 0).getTime();
+
+    private final LocalDateTime periodOneClockValue = LocalDateTime.of(2019, 1, 1, 1, 0, 0);
+    private final Date PERIOD_1_CLOCK_VALUE = Date.from(periodOneClockValue.toInstant(ZoneOffset.UTC));
+
+    private final LocalDateTime periodTwoClockValue = LocalDateTime.of(2019, 1, 2, 1, 0);
+    private final Date PERIOD_2_CLOCK_VALUE = Date.from(periodTwoClockValue.toInstant(ZoneOffset.UTC));
+
+    private final LocalDateTime periodTowClockValueNullDataPeriod15Min = LocalDateTime.of(2019, 1, 1, 1, 15);
     private final Date PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_15MIN =
-            new GregorianCalendar(2019, Calendar.JANUARY, 1, 1, 15).getTime();
+            Date.from(periodTowClockValueNullDataPeriod15Min.toInstant(ZoneOffset.UTC));
+
+    private final LocalDateTime periodTwoClockValueNullDataPeriodDaily = LocalDateTime.of(2019, 1, 2, 1, 0);
     private final Date PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_DAILY =
-            new GregorianCalendar(2019, Calendar.JANUARY, 2, 1, 0).getTime();
+            Date.from(periodTwoClockValueNullDataPeriodDaily.toInstant(ZoneOffset.UTC));
+
+    private final LocalDateTime periodTowClockValueNullDataPeriodMonthly = LocalDateTime.of(2019, 2, 1, 1, 0);
     private final Date PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_MONTHLY =
-            new GregorianCalendar(2019, Calendar.FEBRUARY, 1, 1, 0).getTime();
+            Date.from(periodTowClockValueNullDataPeriodMonthly.toInstant(ZoneOffset.UTC));
 
     private final int AMOUNT_OF_PERIODS = 2;
 
@@ -371,21 +388,22 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
         PeriodicMeterReadsResponseItemDto periodicMeterRead1 = periodicMeterReads.get(0);
 
         System.out.println("Date 1 = " + periodicMeterRead1.getLogTime());
-        System.out.println("Date 2 = " + PERIOD_1_CLOCK_VALUE);
+        System.out.println("Date 2 = " + periodOneClockValue);
 
-        assertThat(periodicMeterRead1.getLogTime()).isEqualTo(PERIOD_1_CLOCK_VALUE);
+        assertThat(LocalDateTime.ofInstant(periodicMeterRead1.getLogTime().toInstant(), ZoneId.systemDefault())).isEqualTo(periodOneClockValue);
+        System.out.println("assert OK");
 
         PeriodicMeterReadsResponseItemDto periodicMeterRead2 = periodicMeterReads.get(1);
 
         if (!useNullData) { // The timestamps should be the same as the times set in the test
-            assertThat(periodicMeterRead2.getLogTime()).isEqualTo(PERIOD_2_CLOCK_VALUE);
+            assertThat(LocalDateTime.ofInstant(periodicMeterRead2.getLogTime().toInstant(), ZoneId.systemDefault())).isEqualTo(periodTwoClockValue);
         } else { // The timestamps should be calculated using the periodType, starting from the time of period 1
             if (type == PeriodTypeDto.INTERVAL) {
-                assertThat(periodicMeterRead2.getLogTime()).isEqualTo(PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_15MIN);
+                assertThat(LocalDateTime.ofInstant(periodicMeterRead2.getLogTime().toInstant(), ZoneId.systemDefault())).isEqualTo(periodTowClockValueNullDataPeriod15Min);
             } else if (type == PeriodTypeDto.DAILY) {
-                assertThat(periodicMeterRead2.getLogTime()).isEqualTo(PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_DAILY);
+                assertThat(LocalDateTime.ofInstant(periodicMeterRead2.getLogTime().toInstant(), ZoneId.systemDefault())).isEqualTo(periodTwoClockValueNullDataPeriodDaily);
             } else if (type == PeriodTypeDto.MONTHLY) {
-                assertThat(periodicMeterRead2.getLogTime()).isEqualTo(PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_MONTHLY);
+                assertThat(LocalDateTime.ofInstant(periodicMeterRead2.getLogTime().toInstant(), ZoneId.systemDefault())).isEqualTo(periodTowClockValueNullDataPeriodMonthly);
             }
         }
     }

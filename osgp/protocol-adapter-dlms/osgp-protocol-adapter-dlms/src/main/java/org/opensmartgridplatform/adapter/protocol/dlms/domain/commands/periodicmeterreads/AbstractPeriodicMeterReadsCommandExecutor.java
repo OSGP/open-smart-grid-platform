@@ -27,9 +27,8 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.*;
 import org.slf4j.Logger;
 
-import java.time.Duration;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -82,6 +81,8 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends Ab
 
         if (bufferedDateTime != null) {
             dlmsHelper.validateBufferedDateTime(bufferedDateTime, cosemDateTime, from, to);
+
+            System.out.println("returning buffered date time " + bufferedDateTime.toDate());
             return bufferedDateTime.toDate();
         } else {
             // no date was available, calculate date based on previous value
@@ -107,12 +108,14 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends Ab
 
         switch (periodTypeDto) {
             case DAILY:
-                return Date.from(previousLogTime.toInstant().plus(Duration.ofDays(1)));
+
+                LocalDateTime localDateTime = LocalDateTime.ofInstant(previousLogTime.toInstant(), ZoneOffset.UTC).plusDays(1);
+                return Date.from(localDateTime.toInstant(ZoneOffset.UTC));
+
             case MONTHLY:
-                ZonedDateTime localDateTime = ZonedDateTime.ofInstant(previousLogTime.toInstant(), ZoneId.of("CET")).plusMonths(1);
-                
-                return Date.from(localDateTime
-                        .toInstant());
+                LocalDateTime localDateTime2 = LocalDateTime.ofInstant(previousLogTime.toInstant(), ZoneOffset.UTC).plusMonths(1);
+
+                return Date.from(localDateTime2.toInstant(ZoneOffset.UTC));
             case INTERVAL:
                 int intervalTimeMinutes = 0;
                 if (intervalTime == ProfileCaptureTime.QUARTER_HOUR) {
@@ -121,7 +124,9 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends Ab
                     intervalTimeMinutes = 60;
                 }
 
-                return Date.from(previousLogTime.toInstant().plus(Duration.ofMinutes(intervalTimeMinutes)));
+                LocalDateTime localDateTime3 = LocalDateTime.ofInstant(previousLogTime.toInstant(), ZoneOffset.UTC).plusMinutes(intervalTimeMinutes);
+
+                return Date.from(localDateTime3.toInstant(ZoneOffset.UTC));
             default:
                 throw new BufferedDateTimeValidationException("Invalid PeriodTypeDto given: " + periodTypeDto);
         }
