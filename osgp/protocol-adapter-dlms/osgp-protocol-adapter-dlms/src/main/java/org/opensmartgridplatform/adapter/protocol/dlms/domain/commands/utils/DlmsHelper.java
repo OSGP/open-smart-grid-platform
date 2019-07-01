@@ -1,12 +1,25 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
- * <p>
+ * Copyright 2019 Smart Society Services B.V.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * <p>
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -16,15 +29,30 @@ import org.joda.time.format.ISODateTimeFormat;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
-import org.openmuc.jdlms.datatypes.*;
+import org.openmuc.jdlms.datatypes.BitString;
+import org.openmuc.jdlms.datatypes.CosemDate;
+import org.openmuc.jdlms.datatypes.CosemDateTime;
 import org.openmuc.jdlms.datatypes.CosemDateTime.ClockStatus;
+import org.openmuc.jdlms.datatypes.CosemTime;
+import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.BufferedDateTimeValidationException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.*;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClockStatusDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemObisCodeDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemObjectDefinitionDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemTimeDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.DlmsMeterValueDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.DlmsUnitTypeDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.MessageTypeDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SendDestinationAndMethodDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.TransportServiceTypeDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.WindowElementDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
@@ -32,13 +60,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
 
 @Service(value = "dlmsHelper")
 public class DlmsHelper {
