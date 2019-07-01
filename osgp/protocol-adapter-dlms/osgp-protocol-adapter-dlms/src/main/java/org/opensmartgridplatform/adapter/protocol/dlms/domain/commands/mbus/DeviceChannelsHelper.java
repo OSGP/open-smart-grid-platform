@@ -54,7 +54,7 @@ public class DeviceChannelsHelper {
     private static final short FIRST_CHANNEL = 1;
     private static final short NR_OF_CHANNELS = 4;
 
-    final private DlmsHelper dlmsHelper;
+    private final DlmsHelper dlmsHelper;
 
     @Autowired
     public DeviceChannelsHelper(final DlmsHelper dlmsHelper) {
