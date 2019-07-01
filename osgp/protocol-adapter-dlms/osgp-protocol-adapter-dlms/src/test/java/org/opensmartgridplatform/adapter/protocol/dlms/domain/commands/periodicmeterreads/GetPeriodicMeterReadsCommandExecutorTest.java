@@ -17,7 +17,6 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
-import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.AttributeAddressForProfile;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsCaptureObject;
@@ -229,11 +228,11 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
     private AttributeAddressForProfile createAttributeAddressForProfile(final DlmsObject dlmsObject,
                                                                         final List<DlmsCaptureObject> selectedObjects) {
         return new AttributeAddressForProfile(new AttributeAddress(dlmsObject.getClassId(),
-                new ObisCode(dlmsObject.getObisCode()), dlmsObject.getDefaultAttributeId(), null), selectedObjects);
+                dlmsObject.getObisCode(), dlmsObject.getDefaultAttributeId(), null), selectedObjects);
     }
 
     private AttributeAddress createAttributeAddress(final DlmsObject dlmsObject) {
-        return new AttributeAddress(dlmsObject.getClassId(), new ObisCode(dlmsObject.getObisCode()),
+        return new AttributeAddress(dlmsObject.getClassId(), dlmsObject.getObisCode(),
                 dlmsObject.getDefaultAttributeId());
     }
 

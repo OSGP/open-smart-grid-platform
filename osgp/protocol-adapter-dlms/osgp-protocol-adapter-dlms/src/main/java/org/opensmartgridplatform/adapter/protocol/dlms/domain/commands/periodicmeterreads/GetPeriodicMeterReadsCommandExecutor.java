@@ -224,8 +224,8 @@ public class GetPeriodicMeterReadsCommandExecutor
         int index = 0;
         Integer scalerUnitIndex = null;
         for (final AttributeAddress address : attributeAddresses) {
-            final String obisCode = captureObject.getRelatedObject().getObisCode();
-            if (address.getInstanceId().equals(new ObisCode(obisCode))) {
+            final ObisCode obisCode = captureObject.getRelatedObject().getObisCode();
+            if (address.getInstanceId().equals(obisCode)) {
                 scalerUnitIndex = index;
             }
             index++;
