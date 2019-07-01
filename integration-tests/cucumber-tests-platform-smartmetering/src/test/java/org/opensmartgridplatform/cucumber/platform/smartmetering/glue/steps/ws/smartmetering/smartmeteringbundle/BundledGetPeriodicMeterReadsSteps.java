@@ -12,6 +12,7 @@ import cucumber.api.java.en.Then;
 import org.junit.Assert;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetPeriodicMeterReadsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.PeriodicMeterReadsResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.FaultResponseData;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Response;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.bundle.GetPeriodicMeterReadsRequestBuilder;
 import org.slf4j.Logger;
@@ -46,10 +47,19 @@ public class BundledGetPeriodicMeterReadsSteps extends BaseBundleSteps {
 
         final Response response = this.getNextBundleResponse();
 
+        FaultResponseData error = (FaultResponseData) response;
+
         LOGGER.info("Got PeriodicMeterReadResponse. exception == {}, result == {}", response.getException(), response.getResultString());
 
-        String errorMessage = "Not a valid response " + response.getException() + " -- result -- " + response.getResultString();
+        String errorMessage = "Not a valid response " +
+                error.getException() + " -- result -- " +
+                response.getResultString() + " -- inner exception-- " +
+                error.getInnerException() + "-- inner message -- " +
+                error.getInnerMessage() + "-- message --" +
+                error.getMessage() + " -- component -- " +
+                error.getComponent() + "-- params --" +
+                error.getParameters();
 
-       Assert.assertTrue(errorMessage, response instanceof PeriodicMeterReadsResponse);
+        Assert.assertTrue(errorMessage, response instanceof PeriodicMeterReadsResponse);
     }
 }
