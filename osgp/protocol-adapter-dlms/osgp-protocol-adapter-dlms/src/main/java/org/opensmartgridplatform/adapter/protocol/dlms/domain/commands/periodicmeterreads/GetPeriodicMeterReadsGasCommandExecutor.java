@@ -196,7 +196,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor
         int index = 0;
         Integer scalerUnitIndex = null;
         for (final AttributeAddress address : attributeAddresses) {
-            final String obisCode = captureObject.getRelatedObject().getObisCode().replace("<c>", channel.toString());
+            final String obisCode = captureObject.getRelatedObject().getObisCodeAsString().replace("<c>", channel.toString());
             if (address.getInstanceId().equals(new ObisCode(obisCode))) {
                 scalerUnitIndex = index;
             }
