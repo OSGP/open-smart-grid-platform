@@ -34,7 +34,7 @@ public class ProtocolLogItemRequestMessageListener implements MessageListener {
             final ObjectMessage objectMessage = (ObjectMessage) message;
             final String messageType = objectMessage.getJMSType();
 
-            LOGGER.info("Received protocol log item request message off type [{}]", messageType);
+            LOGGER.info("Received protocol log item request message of type [{}]", messageType);
 
             this.handleDeviceLogMessage(objectMessage);
         } catch (final JMSException e) {

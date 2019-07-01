@@ -195,6 +195,8 @@
       <xsd:enumeration value="CLOCK_INVALID" />
       <xsd:enumeration value="REPLACE_BATTERY" />
       <xsd:enumeration value="POWER_UP" />
+      <xsd:enumeration value="AUXILIARY_EVENT" />
+      <xsd:enumeration value="CONFIGURATION_CHANGED" />
       <xsd:enumeration value="PROGRAM_MEMORY_ERROR" />
       <xsd:enumeration value="RAM_ERROR" />
       <xsd:enumeration value="NV_MEMORY_ERROR" />
@@ -213,6 +215,10 @@
       <xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_2" />
       <xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_3" />
       <xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_4" />
+      <xsd:enumeration value="PHASE_OUTAGE_DETECTED_L_1" />
+      <xsd:enumeration value="PHASE_OUTAGE_DETECTED_L_2" />
+      <xsd:enumeration value="PHASE_OUTAGE_DETECTED_L_3" />
+      <xsd:enumeration value="PHASE_OUTAGE_TEST_INDICATION" />
     </xsd:restriction>
   </xsd:simpleType>
 

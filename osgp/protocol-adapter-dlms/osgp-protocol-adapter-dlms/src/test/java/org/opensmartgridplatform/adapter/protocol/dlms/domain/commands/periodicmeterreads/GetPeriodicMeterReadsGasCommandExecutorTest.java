@@ -200,7 +200,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
         // VERIFY - the right functions should be called
         verify(this.dlmsMessageListener).setDescription(String.format(
                 "GetPeriodicMeterReadsGas for channel ONE, DAILY from %s until %s, retrieve attribute: {%s,%s,%s}",
-                new DateTime(this.from), new DateTime(this.to), dlmsProfile.getClassId(), dlmsProfile.getObisCode(),
+                new DateTime(this.from), new DateTime(this.to), dlmsProfile.getClassId(), dlmsProfile.getObisCodeAsString(),
                 dlmsProfile.getDefaultAttributeId()));
 
         verify(this.dlmsHelper, times(2)).validateBufferedDateTime(any(DateTime.class), any(CosemDateTimeDto.class),
@@ -220,14 +220,14 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
     }
 
     private AttributeAddress createAttributeAddress(final DlmsObject dlmsObject) {
-        return new AttributeAddress(dlmsObject.getClassId(), new ObisCode(dlmsObject.getObisCode()),
+        return new AttributeAddress(dlmsObject.getClassId(), new ObisCode(dlmsObject.getObisCodeAsString()),
                 dlmsObject.getDefaultAttributeId());
     }
 
     private AttributeAddressForProfile createAttributeAddressForProfile(final DlmsObject dlmsObject,
             final List<DlmsCaptureObject> selectedObjects) {
         return new AttributeAddressForProfile(new AttributeAddress(dlmsObject.getClassId(),
-                new ObisCode(dlmsObject.getObisCode()), dlmsObject.getDefaultAttributeId(), null), selectedObjects);
+                new ObisCode(dlmsObject.getObisCodeAsString()), dlmsObject.getDefaultAttributeId(), null), selectedObjects);
     }
 
     private DlmsDevice createDevice(final Protocol protocol) {
