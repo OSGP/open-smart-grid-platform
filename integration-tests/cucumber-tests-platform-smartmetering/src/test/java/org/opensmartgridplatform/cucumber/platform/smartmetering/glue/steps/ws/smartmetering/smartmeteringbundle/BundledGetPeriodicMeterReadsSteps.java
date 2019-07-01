@@ -9,6 +9,7 @@ package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
+import org.junit.Assert;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetPeriodicMeterReadsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.PeriodicMeterReadsResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Response;
@@ -17,8 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
-
-import static org.junit.Assert.assertTrue;
 
 public class BundledGetPeriodicMeterReadsSteps extends BaseBundleSteps {
 
@@ -47,9 +46,10 @@ public class BundledGetPeriodicMeterReadsSteps extends BaseBundleSteps {
 
         final Response response = this.getNextBundleResponse();
 
-
         LOGGER.info("Got PeriodicMeterReadResponse. exception == {}, result == {}", response.getException(), response.getResultString());
 
-        assertTrue("Not a valid response", response instanceof PeriodicMeterReadsResponse);
+        String errorMessage = "Not a valid response " + response.getException() + " -- result -- " + response.getResultString();
+
+       Assert.assertTrue(errorMessage, response instanceof PeriodicMeterReadsResponse);
     }
 }
