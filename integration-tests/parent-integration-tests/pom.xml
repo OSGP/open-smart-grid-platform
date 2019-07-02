@@ -54,7 +54,7 @@
     <spring.data.version>1.11.22.RELEASE</spring.data.version>
     <spring.data.key.version>1.2.16.RELEASE</spring.data.key.version>
     <spring.data.commons.version>1.13.16.RELEASE</spring.data.commons.version>
-    <spring.security.version>4.2.12.RELEASE</spring.security.version>
+    <spring.security.version>4.2.13.RELEASE</spring.security.version>
     <servlet.version>3.0.1</servlet.version>
     <servlet.jstl.version>1.2</servlet.jstl.version>
     <protobuf.version>2.4.1</protobuf.version>
