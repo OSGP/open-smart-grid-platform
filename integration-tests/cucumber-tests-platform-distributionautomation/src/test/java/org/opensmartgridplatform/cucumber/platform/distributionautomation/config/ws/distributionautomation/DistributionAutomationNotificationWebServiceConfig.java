@@ -90,12 +90,6 @@ public class DistributionAutomationNotificationWebServiceConfig extends WsConfig
         return httpServer;
     }
 
-    /**
-     * Method for creating the Marshaller for DistributionAutomation
-     * notification.
-     *
-     * @return Jaxb2Marshaller
-     */
     @Bean
     public Jaxb2Marshaller distributionautomationNotificationMarshaller() {
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
@@ -105,12 +99,6 @@ public class DistributionAutomationNotificationWebServiceConfig extends WsConfig
         return marshaller;
     }
 
-    /**
-     * Method for creating the Marshalling Payload Method Processor for
-     * DistributionAutomation notification.
-     *
-     * @return MarshallingPayloadMethodProcessor
-     */
     @Bean
     public MarshallingPayloadMethodProcessor distributionautomationNotificationMarshallingPayloadMethodProcessor() {
         return new MarshallingPayloadMethodProcessor(this.distributionautomationNotificationMarshaller(),

@@ -54,13 +54,15 @@ public class Database {
     }
 
     public void prepareDatabaseForScenario() {
-        // Remove stuff from osgp_adapter_protocol_iec60870
+        // Removes all test related data from the various databases
+
+        // Remove from osgp_adapter_protocol_iec60870
         this.iec60870DeviceRepository.deleteAll();
 
-        // Remove stuff from the osgp_adapter_ws_distributionautomation
+        // Remove from osgp_adapter_ws_distributionautomation
         this.responseDataRepository.deleteAll();
 
-        // Remove all from the core.
+        // Remove from osgp_core
         this.taskRepository.deleteAll();
         this.rtuDeviceRepository.deleteAll();
 

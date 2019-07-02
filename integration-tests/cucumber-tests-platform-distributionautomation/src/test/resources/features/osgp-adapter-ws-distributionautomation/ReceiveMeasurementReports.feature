@@ -5,7 +5,7 @@ Feature: Receive measurement reports
   So I get updates about the current state of the device
 
   Scenario: Connect to an IEC 60870 device
-    Given an rtu iec60870 device
+    Given an IEC 60870 RTU
       | DeviceIdentification | TEST1024000000001 |
       | Status               | Active            |
       | Port                 |             62404 |
@@ -14,7 +14,7 @@ Feature: Receive measurement reports
     Then I get a measurement report for device TEST1024000000001
 
   Scenario: Connect to another IEC 60870 device
-    Given an rtu iec60870 device
+    Given an IEC 60870 RTU
       | DeviceIdentification | TEST1024000000002 |
       | Status               | Active            |
       | Port                 |             62404 |

@@ -31,7 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import cucumber.api.java.en.Given;
 
 /**
- * IEC60870 device specific steps.
+ * IEC 60870 device specific steps.
  */
 public class Iec60870DeviceSteps extends GlueBase {
 
@@ -39,15 +39,16 @@ public class Iec60870DeviceSteps extends GlueBase {
     private static final String DEFAULT_PROTOCOL = "60870-5-104";
     private static final String DEFAULT_PROTOCOL_VERSION = "1.0";
 
-    private static final Map<String, String> RTU_60870_DEFAULT_SETTINGS = Collections
-            .unmodifiableMap(new HashMap<String, String>() {
-                private static final long serialVersionUID = 1L;
-                {
-                    this.put(PlatformKeys.KEY_DEVICE_TYPE, DEFAULT_DEVICE_TYPE);
-                    this.put(PlatformKeys.KEY_PROTOCOL, DEFAULT_PROTOCOL);
-                    this.put(PlatformKeys.KEY_PROTOCOL_VERSION, DEFAULT_PROTOCOL_VERSION);
-                }
-            });
+    private static final Map<String, String> RTU_60870_DEFAULT_SETTINGS;
+
+    static {
+        final Map<String, String> settingsMap = new HashMap<>();
+        settingsMap.put(PlatformKeys.KEY_DEVICE_TYPE, DEFAULT_DEVICE_TYPE);
+        settingsMap.put(PlatformKeys.KEY_PROTOCOL, DEFAULT_PROTOCOL);
+        settingsMap.put(PlatformKeys.KEY_PROTOCOL_VERSION, DEFAULT_PROTOCOL_VERSION);
+
+        RTU_60870_DEFAULT_SETTINGS = Collections.unmodifiableMap(settingsMap);
+    }
 
     @Autowired
     private Iec60870DeviceRepository iec60870DeviceRepository;
@@ -59,10 +60,10 @@ public class Iec60870DeviceSteps extends GlueBase {
     private Iec60870MockServerConfig mockServerConfig;
 
     /**
-     * Creates an IEC60870 device.
+     * Creates an IEC 60870 RTU.
      */
-    @Given("^an rtu iec60870 device$")
-    public void anRtuIec60870Device(final Map<String, String> settings) {
+    @Given("^an IEC 60870 RTU$")
+    public void anIec60870Rtu(final Map<String, String> settings) {
 
         ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_IDENTIFICATION,
                 PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION);

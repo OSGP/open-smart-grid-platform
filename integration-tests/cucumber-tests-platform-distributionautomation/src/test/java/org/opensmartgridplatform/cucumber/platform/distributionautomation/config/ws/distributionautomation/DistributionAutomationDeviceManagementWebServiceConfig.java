@@ -19,7 +19,7 @@ import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadM
 public class DistributionAutomationDeviceManagementWebServiceConfig extends BaseWebServiceConfig {
 
     @Value("${web.service.template.default.uri.distributionautomation.devicemanagement}")
-    private String webserviceTemplateDefaultUriDistributionAutomationDeviceManagement;
+    private String webServiceTemplateDefaultUriDistributionAutomationDeviceManagement;
 
     @Value("${jaxb2.marshaller.context.path.distributionautomation.devicemanagement}")
     private String contextPathDistributionAutomationDeviceManagement;
@@ -30,19 +30,13 @@ public class DistributionAutomationDeviceManagementWebServiceConfig extends Base
                 .setMarshaller(this.distributionAutomationDeviceManagementMarshaller())
                 .setMessageFactory(this.messageFactory())
                 .setTargetUri(
-                        this.baseUri.concat(this.webserviceTemplateDefaultUriDistributionAutomationDeviceManagement))
+                        this.baseUri.concat(this.webServiceTemplateDefaultUriDistributionAutomationDeviceManagement))
                 .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
                 .setKeyStorePassword(this.webserviceKeystorePassword)
                 .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName(this.applicationName)
                 .build();
     }
 
-    /**
-     * Method for creating the Marshaller for Distribution Automation Device
-     * Management.
-     *
-     * @return Jaxb2Marshaller
-     */
     @Bean
     public Jaxb2Marshaller distributionAutomationDeviceManagementMarshaller() {
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
@@ -52,12 +46,6 @@ public class DistributionAutomationDeviceManagementWebServiceConfig extends Base
         return marshaller;
     }
 
-    /**
-     * Method for creating the Marshalling Payload Method Processor for
-     * Distribution Automation Device Management.
-     *
-     * @return MarshallingPayloadMethodProcessor
-     */
     @Bean
     public MarshallingPayloadMethodProcessor distributionAutomationDeviceManagementMarshallingPayloadMethodProcessor() {
         return new MarshallingPayloadMethodProcessor(this.distributionAutomationDeviceManagementMarshaller(),

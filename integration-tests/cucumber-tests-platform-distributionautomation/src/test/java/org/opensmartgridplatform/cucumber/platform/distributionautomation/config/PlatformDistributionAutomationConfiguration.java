@@ -13,9 +13,9 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 
 @Configuration
-@PropertySources({ @PropertySource("classpath:cucumber-tests-platform-distributionautomation.properties"),
-        @PropertySource(value = "file:/etc/osp/test/global-cucumber.properties", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:/etc/osp/test/cucumber-tests-platform-distributionautomation.properties", ignoreResourceNotFound = true), })
+@PropertySource("classpath:cucumber-tests-platform-distributionautomation.properties")
+@PropertySource(value = "file:/etc/osp/test/global-cucumber.properties", ignoreResourceNotFound = true)
+@PropertySource(value = "file:/etc/osp/test/cucumber-tests-platform-distributionautomation.properties", ignoreResourceNotFound = true)
 public class PlatformDistributionAutomationConfiguration extends AbstractPlatformApplicationConfiguration {
 
 }

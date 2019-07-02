@@ -42,9 +42,9 @@ public class ScenarioHooks extends GlueBase {
     /**
      * Executed before each scenario.
      *
-     * Remove all stuff from the database before each test. Each test should
-     * stand on its own. Therefore you should guarantee that the scenario is
-     * complete.
+     * Remove all test related data from the database before each test. Each
+     * test should stand on its own. Therefore you should guarantee that the
+     * scenario is independent from others.
      *
      * Order 1000 ensures this will be run as one of the first hooks before the
      * scenario.
