@@ -128,7 +128,7 @@ public class DlmsObjectConfigServiceTest {
     public void testOneMatchingObject() throws Exception {
         // SETUP
         final AttributeAddress expectedAddress = new AttributeAddress(this.register.getClassId(),
-                this.register.getObisCode(), this.register.getDefaultAttributeId(), null);
+                this.register.getObisCodeAsString(), this.register.getDefaultAttributeId(), null);
 
         // CALL
         final Optional<AttributeAddress> attributeAddress = this.service.findAttributeAddress(this.device422,
@@ -143,7 +143,7 @@ public class DlmsObjectConfigServiceTest {
         // SETUP
         final Integer channel = 1;
         final AttributeAddress expectedAddress = new AttributeAddress(this.registerWithChannel.getClassId(),
-                this.getObisCodeWithChannel(this.registerWithChannel.getObisCode(), channel),
+                this.getObisCodeWithChannel(this.registerWithChannel.getObisCodeAsString(), channel),
                 this.registerWithChannel.getDefaultAttributeId(), null);
 
         // CALL
@@ -167,7 +167,7 @@ public class DlmsObjectConfigServiceTest {
         final SelectiveAccessDescription access = new SelectiveAccessDescription(1, accessParams);
 
         final AttributeAddress expectedAddress = new AttributeAddress(this.profileE.getClassId(),
-                this.profileE.getObisCode(), this.profileE.getDefaultAttributeId(), access);
+                this.profileE.getObisCodeAsString(), this.profileE.getDefaultAttributeId(), access);
 
         // CALL
         final Optional<AttributeAddressForProfile> attributeAddressForProfile =
@@ -199,7 +199,7 @@ public class DlmsObjectConfigServiceTest {
         final SelectiveAccessDescription access = new SelectiveAccessDescription(1, accessParams);
 
         final AttributeAddress expectedAddress = new AttributeAddress(this.profileCombined.getClassId(),
-                this.profileCombined.getObisCode(), this.profileCombined.getDefaultAttributeId(), access);
+                this.profileCombined.getObisCodeAsString(), this.profileCombined.getDefaultAttributeId(), access);
 
         // CALL
         final Optional<AttributeAddressForProfile> attributeAddressForProfile =
@@ -224,7 +224,7 @@ public class DlmsObjectConfigServiceTest {
         final SelectiveAccessDescription access = new SelectiveAccessDescription(1, accessParams);
 
         final AttributeAddress expectedAddress = new AttributeAddress(this.profileCombined.getClassId(),
-                this.profileCombined.getObisCode(), this.profileCombined.getDefaultAttributeId(), access);
+                this.profileCombined.getObisCodeAsString(), this.profileCombined.getDefaultAttributeId(), access);
 
         // CALL
         final Optional<AttributeAddressForProfile> attributeAddressForProfile =
@@ -248,7 +248,7 @@ public class DlmsObjectConfigServiceTest {
         final SelectiveAccessDescription access = null;
 
         final AttributeAddress expectedAddress = new AttributeAddress(this.profileCombined.getClassId(),
-                this.profileCombined.getObisCode(), this.profileCombined.getDefaultAttributeId(), access);
+                this.profileCombined.getObisCodeAsString(), this.profileCombined.getDefaultAttributeId(), access);
 
         // CALL
         final Optional<AttributeAddressForProfile> attributeAddressForProfile =
@@ -279,7 +279,7 @@ public class DlmsObjectConfigServiceTest {
         final SelectiveAccessDescription access = new SelectiveAccessDescription(1, accessParams);
 
         final AttributeAddress expectedAddress = new AttributeAddress(this.profileCombined.getClassId(),
-                this.profileCombined.getObisCode(), this.profileCombined.getDefaultAttributeId(), access);
+                this.profileCombined.getObisCodeAsString(), this.profileCombined.getDefaultAttributeId(), access);
 
         // CALL
         final Optional<AttributeAddressForProfile> attributeAddressForProfile =
@@ -309,7 +309,7 @@ public class DlmsObjectConfigServiceTest {
 
     private DataObject getDataObject(final DlmsObject dlmsObject, final Integer channel) {
         return DataObject.newStructureData(Arrays.asList(DataObject.newUInteger16Data(dlmsObject.getClassId()),
-                DataObject.newOctetStringData(this.getObisCodeWithChannel(dlmsObject.getObisCode(), channel).bytes()),
+                DataObject.newOctetStringData(this.getObisCodeWithChannel(dlmsObject.getObisCodeAsString(), channel).bytes()),
                 DataObject.newInteger8Data((byte) dlmsObject.getDefaultAttributeId()),
                 DataObject.newUInteger16Data(0)));
     }

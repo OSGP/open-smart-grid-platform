@@ -8,6 +8,7 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model;
 
+import org.openmuc.jdlms.ObisCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 
 public class DlmsObject {
@@ -31,8 +32,12 @@ public class DlmsObject {
         return this.classId;
     }
 
-    public String getObisCode() {
+    public String getObisCodeAsString() {
         return this.obisCode;
+    }
+
+    public ObisCode getObisCode() {
+        return new ObisCode(this.obisCode);
     }
 
     public int getDefaultAttributeId() {
