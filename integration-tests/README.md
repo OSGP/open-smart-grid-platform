@@ -44,7 +44,7 @@ Alternatively each developer/tester can run the automated tests on his own envir
 ### How to implement
 When implementing automated tests, follow these guidelines:
 
-* When writing the feature files, always mention the Feature at the top and add a short user story in the form of a given-when-then ("As a ..., I want to ..., In order to"). This helps to think about the scenarios to add.
+* When writing the feature files, always mention the Feature at the top and add a short user story . This helps to think about the scenarios to add.
 * When writing the scenarios, keep in mind each scenario should stand on its own. Don't make scenarios dependent on each other.
 * When writing the scenarios, try to write functional scenarios. A person with less technical background should be able to read them as well. Also have a look at the existing scenarios for reference.
 * When writing the scenario steps, try to make them generic and reusable. E.g. use tables for parameterizing the steps.
