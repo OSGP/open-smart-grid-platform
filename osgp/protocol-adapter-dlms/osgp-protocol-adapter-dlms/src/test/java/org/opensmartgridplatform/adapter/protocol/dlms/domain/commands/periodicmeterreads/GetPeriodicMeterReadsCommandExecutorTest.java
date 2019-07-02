@@ -56,6 +56,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessa
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodTypeDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseItemDto;
@@ -114,6 +115,15 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
         } catch (final ProtocolAdapterException e) {
             assertThat(e.getMessage()).isEqualTo("No address found for " + DlmsObjectType.DAILY_LOAD_PROFILE);
         }
+    }
+
+    @Test
+    public void testBundle() throws ProtocolAdapterException {
+
+        final PeriodicMeterReadsRequestDataDto request = new PeriodicMeterReadsRequestDataDto(PeriodTypeDto.DAILY,
+                new Date(this.from), new Date(this.to));
+
+        this.executor.fromBundleRequestInput(request);
     }
 
     @Test

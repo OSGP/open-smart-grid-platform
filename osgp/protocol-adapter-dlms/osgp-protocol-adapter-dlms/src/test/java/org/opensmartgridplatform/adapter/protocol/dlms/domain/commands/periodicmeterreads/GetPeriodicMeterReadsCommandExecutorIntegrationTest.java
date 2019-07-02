@@ -113,15 +113,15 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
                     DataObject.newOctetStringData(this.OBIS_ACTIVE_ENERGY_EXPORT_RATE_2.bytes()),
                     DataObject.newInteger8Data(this.ATTR_ID_VALUE), DataObject.newUInteger16Data(0)));
 
-    private Date TIME_FROM;
-    private Date TIME_TO;
-    private DataObject PERIOD_1_CLOCK;
-    private DataObject PERIOD_2_CLOCK;
-    private Date PERIOD_1_CLOCK_VALUE;
-    private Date PERIOD_2_CLOCK_VALUE;
-    private Date PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_15MIN;
-    private Date PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_DAILY;
-    private Date PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_MONTHLY;
+    private Date timeFrom;
+    private Date timeTo;
+    private DataObject period1Clock;
+    private DataObject period2Clock;
+    private Date period1ClockValue;
+    private Date period2ClockValue;
+    private Date period2ClockValueNullDataPeriod15Min;
+    private Date period2ClockValueNullDataPeriodDaily;
+    private Date period2ClockValueNullDataPeriodMonthly;
 
     private final int AMOUNT_OF_PERIODS = 2;
 
@@ -139,18 +139,15 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
 
     private void initDates() {
 
-        this.TIME_FROM = new GregorianCalendar(2019, Calendar.JANUARY, 1).getTime();
-        this.TIME_TO = new GregorianCalendar(2019, Calendar.JANUARY, 5).getTime();
-        this.PERIOD_1_CLOCK = this.getDateAsOctetString(2019, 1, 1);
-        this.PERIOD_2_CLOCK = this.getDateAsOctetString(2019, 1, 2);
-        this.PERIOD_1_CLOCK_VALUE = new GregorianCalendar(2019, Calendar.JANUARY, 1, 0, 0).getTime();
-        this.PERIOD_2_CLOCK_VALUE = new GregorianCalendar(2019, Calendar.JANUARY, 2, 0, 0).getTime();
-        this.PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_15MIN = new GregorianCalendar(2019, Calendar.JANUARY, 1, 0,
-                15).getTime();
-        this.PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_DAILY = new GregorianCalendar(2019, Calendar.JANUARY, 2, 0,
-                0).getTime();
-        this.PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_MONTHLY = new GregorianCalendar(2019, Calendar.FEBRUARY, 1, 0,
-                0).getTime();
+        this.timeFrom = new GregorianCalendar(2019, Calendar.JANUARY, 1).getTime();
+        this.timeTo = new GregorianCalendar(2019, Calendar.JANUARY, 5).getTime();
+        this.period1Clock = this.getDateAsOctetString(2019, 1, 1);
+        this.period2Clock = this.getDateAsOctetString(2019, 1, 2);
+        this.period1ClockValue = new GregorianCalendar(2019, Calendar.JANUARY, 1, 0, 0).getTime();
+        this.period2ClockValue = new GregorianCalendar(2019, Calendar.JANUARY, 2, 0, 0).getTime();
+        this.period2ClockValueNullDataPeriod15Min = new GregorianCalendar(2019, Calendar.JANUARY, 1, 0, 15).getTime();
+        this.period2ClockValueNullDataPeriodDaily = new GregorianCalendar(2019, Calendar.JANUARY, 2, 0, 0).getTime();
+        this.period2ClockValueNullDataPeriodMonthly = new GregorianCalendar(2019, Calendar.FEBRUARY, 1, 0, 0).getTime();
     }
 
     @Before
@@ -232,12 +229,11 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
         final DlmsDevice device = this.createDlmsDevice(protocol);
 
         // Create request object
-        final PeriodicMeterReadsRequestDto request = new PeriodicMeterReadsRequestDto(type, this.TIME_FROM,
-                this.TIME_TO);
+        final PeriodicMeterReadsRequestDto request = new PeriodicMeterReadsRequestDto(type, this.timeFrom, this.timeTo);
 
         // Get expected values
-        final AttributeAddress expectedAddressProfile = this.createAttributeAddress(protocol, type, this.TIME_FROM,
-                this.TIME_TO);
+        final AttributeAddress expectedAddressProfile = this.createAttributeAddress(protocol, type, this.timeFrom,
+                this.timeTo);
         final List<AttributeAddress> expectedScalerUnitAddresses = this.getScalerUnitAttributeAddresses(type);
         final int expectedTotalNumberOfAttributeAddresses = expectedScalerUnitAddresses.size() + 1;
 
@@ -344,7 +340,7 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
 
         // PERIOD 1
 
-        final DataObject period1Clock = this.PERIOD_1_CLOCK;
+        final DataObject period1Clock = this.period1Clock;
         final DataObject period1Status = DataObject.newUInteger8Data(this.AMR_STATUS_VALUE);
         final DataObject period1Value1 = DataObject.newUInteger32Data(this.PERIOD_1_LONG_VALUE_1);
         final DataObject period1Value2 = DataObject.newUInteger32Data(this.PERIOD_1_LONG_VALUE_2);
@@ -367,7 +363,7 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
         if (useNullData) {
             period2Clock = DataObject.newNullData();
         } else {
-            period2Clock = this.PERIOD_2_CLOCK;
+            period2Clock = this.period2Clock;
         }
         final DataObject period2Status = DataObject.newUInteger8Data(this.AMR_STATUS_VALUE);
         final DataObject period2Value1 = DataObject.newUInteger32Data(this.PERIOD_2_LONG_VALUE_1);
@@ -411,20 +407,19 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
 
         final PeriodicMeterReadsResponseItemDto periodicMeterRead1 = periodicMeterReads.get(0);
 
-        assertThat(periodicMeterRead1.getLogTime()).isEqualTo(this.PERIOD_1_CLOCK_VALUE);
+        assertThat(periodicMeterRead1.getLogTime()).isEqualTo(this.period1ClockValue);
 
         final PeriodicMeterReadsResponseItemDto periodicMeterRead2 = periodicMeterReads.get(1);
 
         if (!useNullData) { // The timestamps should be the same as the times set in the test
-            assertThat(periodicMeterRead2.getLogTime()).isEqualTo(this.PERIOD_2_CLOCK_VALUE);
+            assertThat(periodicMeterRead2.getLogTime()).isEqualTo(this.period2ClockValue);
         } else { // The timestamps should be calculated using the periodType, starting from the time of period 1
             if (type == PeriodTypeDto.INTERVAL) {
-                assertThat(periodicMeterRead2.getLogTime()).isEqualTo(this.PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_15MIN);
+                assertThat(periodicMeterRead2.getLogTime()).isEqualTo(this.period2ClockValueNullDataPeriod15Min);
             } else if (type == PeriodTypeDto.DAILY) {
-                assertThat(periodicMeterRead2.getLogTime()).isEqualTo(this.PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_DAILY);
+                assertThat(periodicMeterRead2.getLogTime()).isEqualTo(this.period2ClockValueNullDataPeriodDaily);
             } else if (type == PeriodTypeDto.MONTHLY) {
-                assertThat(periodicMeterRead2.getLogTime()).isEqualTo(
-                        this.PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_MONTHLY);
+                assertThat(periodicMeterRead2.getLogTime()).isEqualTo(this.period2ClockValueNullDataPeriodMonthly);
             }
         }
     }

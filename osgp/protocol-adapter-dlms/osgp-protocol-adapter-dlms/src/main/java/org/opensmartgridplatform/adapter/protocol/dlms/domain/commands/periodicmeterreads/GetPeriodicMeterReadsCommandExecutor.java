@@ -11,6 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodic
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.AttributeAddress;
@@ -50,8 +51,8 @@ public class GetPeriodicMeterReadsCommandExecutor
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsCommandExecutor.class);
 
     static final String PERIODIC_E_METER_READS = "Periodic E-Meter Reads";
-    private static final String FORMAT_DESCRIPTION = "GetPeriodicMeterReads %s from %s until %s, retrieve attribute: "
-            + "%s";
+    private static final String FORMAT_DESCRIPTION =
+            "GetPeriodicMeterReads %s from %s until %s, retrieve attribute: " + "%s";
 
     private final DlmsHelper dlmsHelper;
     private final DlmsObjectConfigService dlmsObjectConfigService;
@@ -95,8 +96,8 @@ public class GetPeriodicMeterReadsCommandExecutor
 
         final List<AttributeAddress> scalerUnitAddresses = this.getScalerUnitAddresses(profileBufferAddress);
 
-        final ProfileCaptureTime intervalTime = this.getProfileCaptureTime(device, this.dlmsObjectConfigService,
-                Medium.ELECTRICITY);
+        final Optional<ProfileCaptureTime> intervalTime = this.getProfileCaptureTime(device,
+                this.dlmsObjectConfigService, Medium.ELECTRICITY);
 
         LOGGER.debug("Retrieving current billing period and profiles for period type: {}, from: {}, to: {}",
                 queryPeriodType, from, to);
@@ -197,8 +198,8 @@ public class GetPeriodicMeterReadsCommandExecutor
 
     private DlmsMeterValueDto getScaledMeterValue(final List<DataObject> bufferedObjects,
             final List<GetResult> getResultList, final List<AttributeAddress> attributeAddresses,
-            final AttributeAddressForProfile attributeAddressForProfile, final DlmsObjectType objectType, final String description)
-            throws ProtocolAdapterException {
+            final AttributeAddressForProfile attributeAddressForProfile, final DlmsObjectType objectType,
+            final String description) throws ProtocolAdapterException {
 
         final DataObject importValue = this.readValue(bufferedObjects, attributeAddressForProfile, objectType);
         final DataObject importScalerUnit = this.readScalerUnit(getResultList, attributeAddresses,

@@ -11,6 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodic
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.AttributeAddress;
@@ -53,8 +54,8 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
     private static final String GAS_VALUE = "gasValue";
     private static final String PERIODIC_G_METER_READS = "Periodic G-Meter Reads";
     private static final String UNEXPECTED_VALUE = "Unexpected null/unspecified value for Gas Capture Time";
-    private static final String FORMAT_DESCRIPTION = "GetPeriodicMeterReadsGas for channel %s, %s from %s until %s, "
-            + "retrieve attribute: %s";
+    private static final String FORMAT_DESCRIPTION =
+            "GetPeriodicMeterReadsGas for channel %s, %s from %s until %s, " + "retrieve attribute: %s";
 
     private final DlmsHelper dlmsHelper;
     private final DlmsObjectConfigService dlmsObjectConfigService;
@@ -100,7 +101,8 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
         final List<AttributeAddress> scalerUnitAddresses = this.getScalerUnitAddresses(
                 periodicMeterReadsQuery.getChannel(), profileBufferAddress);
 
-        final ProfileCaptureTime intervalTime = this.getProfileCaptureTime(device, this.dlmsObjectConfigService, Medium.GAS);
+        final Optional<ProfileCaptureTime> intervalTime = this.getProfileCaptureTime(device,
+                this.dlmsObjectConfigService, Medium.GAS);
 
         LOGGER.info("Retrieving current billing period and profiles for gas for period type: {}, from: " + "{}, to: {}",
                 queryPeriodType, from, to);
