@@ -144,7 +144,11 @@
         <artifactId>osgp-domain-core</artifactId>
         <version>${osgp.version}</version>
       </dependency>
-
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-domain-distributionautomation</artifactId>
+        <version>${osgp.version}</version>
+      </dependency>
       <dependency>
         <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-domain-microgrids</artifactId>
@@ -172,6 +176,12 @@
         <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-adapter-ws-shared-db</artifactId>
         <version>${osgp.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-adapter-ws-distributionautomation</artifactId>
+        <version>${osgp.version}</version>
+        <classifier>classes</classifier>
       </dependency>
       <dependency>
         <groupId>org.opensmartgridplatform</groupId>
@@ -212,6 +222,12 @@
       <dependency>
         <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-adapter-domain-core</artifactId>
+        <version>${osgp.version}</version>
+        <classifier>classes</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-adapter-domain-distributionautomation</artifactId>
         <version>${osgp.version}</version>
         <classifier>classes</classifier>
       </dependency>
@@ -288,7 +304,21 @@
 
       <dependency>
         <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-protocol-adapter-iec60870</artifactId>
+        <version>${osgp.version}</version>
+        <classifier>classes</classifier>
+      </dependency>
+
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-protocol-adapter-iec61850</artifactId>
+        <version>${osgp.version}</version>
+        <classifier>classes</classifier>
+      </dependency>
+
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-protocol-simulator-iec60870</artifactId>
         <version>${osgp.version}</version>
         <classifier>classes</classifier>
       </dependency>

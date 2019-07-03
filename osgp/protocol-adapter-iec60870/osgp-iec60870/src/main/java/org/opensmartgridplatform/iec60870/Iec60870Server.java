@@ -19,6 +19,7 @@ public class Iec60870Server {
     private final Iec60870ServerEventListener iec60870ServerEventListener;
     private Server server;
     private final int port;
+    private boolean listening = false;
 
     public Iec60870Server(final Iec60870ServerEventListener iec60870ServerEventListener, final int port) {
         this.iec60870ServerEventListener = iec60870ServerEventListener;
@@ -31,6 +32,7 @@ public class Iec60870Server {
         try {
             LOGGER.info("Starting IEC60870 Server on port {}.", this.port);
             this.server.start(this.iec60870ServerEventListener);
+            this.listening = true;
             LOGGER.info("Started IEC60870 Server.");
         } catch (final IOException e) {
             LOGGER.error("Exception occurred while starting IEC60870 server.", e);
@@ -40,10 +42,15 @@ public class Iec60870Server {
     public void stop() {
         LOGGER.info("Stopping IEC60870 Server on port {}.", this.port);
         this.server.stop();
+        this.listening = false;
         LOGGER.info("Stopped IEC60870 Server.");
     }
 
     public Iec60870ServerEventListener getIec60870ServerEventListener() {
         return this.iec60870ServerEventListener;
+    }
+
+    public boolean isListening() {
+        return this.listening;
     }
 }

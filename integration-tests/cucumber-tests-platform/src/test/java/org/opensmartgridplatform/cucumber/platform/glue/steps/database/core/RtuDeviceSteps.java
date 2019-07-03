@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.cucumber.platform.microgrids.glue.steps.database.core;
+package org.opensmartgridplatform.cucumber.platform.glue.steps.database.core;
 
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 import static org.opensmartgridplatform.cucumber.platform.PlatformKeys.KEY_LAST_COMMUNICATION_TIME;
@@ -37,8 +37,8 @@ public class RtuDeviceSteps extends BaseDeviceSteps {
     private DeviceRepository deviceRepository;
 
     @Given("^an rtu device$")
-    @Transactional("txMgrCoreMicrogrids")
-    public RtuDevice anRtuDevice(final Map<String, String> settings) throws Throwable {
+    @Transactional("txMgrCore")
+    public RtuDevice anRtuDevice(final Map<String, String> settings) {
 
         final String deviceIdentification = getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION);
         final RtuDevice rtuDevice = new RtuDevice(deviceIdentification);
@@ -47,7 +47,7 @@ public class RtuDeviceSteps extends BaseDeviceSteps {
     }
 
     @Transactional("txMgrCore")
-    public Device updateRtuDevice(final Map<String, String> settings) throws Throwable {
+    public Device updateRtuDevice(final Map<String, String> settings) {
         return this.updateDevice(this.deviceRepository
                 .findByDeviceIdentification(getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION)), settings);
     }

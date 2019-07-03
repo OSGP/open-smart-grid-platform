@@ -1,16 +1,16 @@
 /**
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2019 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.cucumber.platform.microgrids.database;
+package org.opensmartgridplatform.cucumber.platform.distributionautomation.database;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.opensmartgridplatform.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.repositories.Iec60870DeviceRepository;
 import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceConfiguration;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 public class Database {
 
     @Autowired
-    private Iec61850DeviceRepository iec61850DeviceRepository;
+    private Iec60870DeviceRepository iec60870DeviceRepository;
 
     @Autowired
     private ResponseDataRepository responseDataRepository;
@@ -44,25 +44,25 @@ public class Database {
 
     private List<NotificationWebServiceConfiguration> notificationEndpointConfigurations() {
         final NotificationWebServiceConfigurationBuilder builder = new NotificationWebServiceConfigurationBuilder()
-                .withApplicationName("ZownStream")
-                .withMarshallerContextPath("org.opensmartgridplatform.adapter.ws.schema.microgrids.notification");
+                .withApplicationName("DISTRIBUTION_AUTOMATION").withMarshallerContextPath(
+                        "org.opensmartgridplatform.adapter.ws.schema.distributionautomation.notification");
 
-        final NotificationWebServiceConfiguration testOrgConfig = builder.withOrganisationIdentification("test-org")
-                .build();
-        final NotificationWebServiceConfiguration noOrganisationConfig = builder
-                .withOrganisationIdentification("no-organisation").build();
+        final NotificationWebServiceConfiguration osgpOrganizationConfig = builder
+                .withOrganisationIdentification("OSGP").build();
 
-        return Arrays.asList(testOrgConfig, noOrganisationConfig);
+        return Arrays.asList(osgpOrganizationConfig);
     }
 
     public void prepareDatabaseForScenario() {
-        // Then remove stuff from osgp_adapter_protocol_iec61850
-        this.iec61850DeviceRepository.deleteAll();
+        // Removes all test related data from the various databases
 
-        // Then remove stuff from the osgp_adapter_ws_microgrids
+        // Remove from osgp_adapter_protocol_iec60870
+        this.iec60870DeviceRepository.deleteAll();
+
+        // Remove from osgp_adapter_ws_distributionautomation
         this.responseDataRepository.deleteAll();
 
-        // Now remove all from the core.
+        // Remove from osgp_core
         this.taskRepository.deleteAll();
         this.rtuDeviceRepository.deleteAll();
 
