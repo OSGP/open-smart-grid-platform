@@ -68,7 +68,7 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends Ab
      * @throws BufferedDateTimeValidationException
      *         in case the date is invalid or null
      */
-    Date readClock(final ConversionContext ctx, final Date previousLogTime, final DlmsHelper dlmsHelper)
+    Date readClock(final ConversionContext ctx, final Optional<Date> previousLogTime, final DlmsHelper dlmsHelper)
             throws ProtocolAdapterException, BufferedDateTimeValidationException {
 
         final Date logTime;
@@ -116,24 +116,27 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends Ab
      *
      * @return the derived date based on the previous meter read record, or null if it cannot be determined
      */
-    private Date calculateIntervalDate(final PeriodTypeDto periodTypeDto, final Date previousLogTime,
+    private Date calculateIntervalDate(final PeriodTypeDto periodTypeDto, final Optional<Date> previousLogTime,
             final Optional<ProfileCaptureTime> intervalTime) throws BufferedDateTimeValidationException {
 
-        if (previousLogTime == null) {
-            return null;
+        if (!previousLogTime.isPresent()) {
+            throw new BufferedDateTimeValidationException(
+                    "Unable to calculate next interval date, previous logTime " + "is not available");
         }
+
+        final Date prevLogTime = previousLogTime.get();
 
         switch (periodTypeDto) {
         case DAILY:
-            return Date.from(previousLogTime.toInstant().plus(Duration.ofDays(1)));
+            return Date.from(prevLogTime.toInstant().plus(Duration.ofDays(1)));
         case MONTHLY:
-            final LocalDateTime localDateTime = LocalDateTime.ofInstant(previousLogTime.toInstant(),
+            final LocalDateTime localDateTime = LocalDateTime.ofInstant(prevLogTime.toInstant(),
                     ZoneId.systemDefault()).plusMonths(1);
 
             return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
         case INTERVAL:
             return Date.from(
-                    previousLogTime.toInstant().plus(Duration.ofMinutes(this.getIntervalTimeMinutes(intervalTime))));
+                    prevLogTime.toInstant().plus(Duration.ofMinutes(this.getIntervalTimeMinutes(intervalTime))));
         default:
             throw new BufferedDateTimeValidationException("Invalid PeriodTypeDto given: " + periodTypeDto);
         }

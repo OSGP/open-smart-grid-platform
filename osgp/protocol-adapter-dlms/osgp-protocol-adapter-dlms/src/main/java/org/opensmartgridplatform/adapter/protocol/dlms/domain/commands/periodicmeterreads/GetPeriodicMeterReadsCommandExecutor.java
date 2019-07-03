@@ -146,7 +146,7 @@ public class GetPeriodicMeterReadsCommandExecutor
 
         LOGGER.info("Converting bufferObject with value: {} ", ctx.bufferedObjects);
 
-        final Date previousLogTime = this.getPreviousLogTime(periodicMeterReads);
+        final Optional<Date> previousLogTime = this.getPreviousLogTime(periodicMeterReads);
         final Date logTime = this.readClock(ctx, previousLogTime, this.dlmsHelper);
 
         final AmrProfileStatusCodeDto status = this.readStatus(ctx.bufferedObjects, ctx.attributeAddressForProfile);
@@ -187,13 +187,13 @@ public class GetPeriodicMeterReadsCommandExecutor
         }
     }
 
-    private Date getPreviousLogTime(final List<PeriodicMeterReadsResponseItemDto> periodicMeterReads) {
+    private Optional<Date> getPreviousLogTime(final List<PeriodicMeterReadsResponseItemDto> periodicMeterReads) {
 
         if (periodicMeterReads.isEmpty()) {
-            return null;
+            return Optional.empty();
         }
 
-        return periodicMeterReads.get(periodicMeterReads.size() - 1).getLogTime();
+        return Optional.of(periodicMeterReads.get(periodicMeterReads.size() - 1).getLogTime());
     }
 
     private DlmsMeterValueDto getScaledMeterValue(final List<DataObject> bufferedObjects,

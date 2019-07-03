@@ -155,7 +155,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
             final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads)
             throws ProtocolAdapterException, BufferedDateTimeValidationException {
 
-        final Date previousLogTime = this.getPreviousLogTime(periodicMeterReads);
+        final Optional<Date> previousLogTime = this.getPreviousLogTime(periodicMeterReads);
         final Date logTime = this.readClock(ctx, previousLogTime, this.dlmsHelper);
 
         final AmrProfileStatusCodeDto status = this.readStatus(ctx.bufferedObjects, ctx.attributeAddressForProfile);
@@ -172,13 +172,13 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
                 this.dlmsHelper.getScaledMeterValue(gasValue, scalerUnit, GAS_VALUE), captureTime, status);
     }
 
-    private Date getPreviousLogTime(final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads) {
+    private Optional<Date> getPreviousLogTime(final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads) {
 
         if (periodicMeterReads.isEmpty()) {
-            return null;
+            return Optional.empty();
         }
 
-        return periodicMeterReads.get(periodicMeterReads.size() - 1).getLogTime();
+        return Optional.of(periodicMeterReads.get(periodicMeterReads.size() - 1).getLogTime());
     }
 
     private DataObject readValue(final List<DataObject> bufferedObjects,
