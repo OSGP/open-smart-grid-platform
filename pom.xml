@@ -162,9 +162,10 @@
     <module>integration-tests/cucumber-tests-execution</module>
     <module>integration-tests/cucumber-tests-platform</module>
     <module>integration-tests/cucumber-tests-platform-common</module>
+    <module>integration-tests/cucumber-tests-platform-distributionautomation</module>
+    <module>integration-tests/cucumber-tests-platform-microgrids</module>
     <module>integration-tests/cucumber-tests-platform-publiclighting</module>
     <module>integration-tests/cucumber-tests-platform-smartmetering</module>
-    <module>integration-tests/cucumber-tests-platform-microgrids</module>
 
     <module>public-lighting-demo-app/parent-os-webapps</module>
     <module>public-lighting-demo-app/web-demo-app</module>
