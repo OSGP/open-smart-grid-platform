@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodic
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
@@ -39,16 +40,15 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Amr
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodTypeDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadGasResponseDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsGasResponseItemDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseItemDto;
 
 @RunWith(MockitoJUnitRunner.class)
-public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
+public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
 
-    private GetPeriodicMeterReadsGasCommandExecutor executor;
+    private GetPeriodicMeterReadsCommandExecutor executor;
 
     private DlmsHelper dlmsHelper;
     private AmrProfileStatusCodeHelper amrProfileStatusCodeHelper;
@@ -58,26 +58,29 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     private DlmsConnectionStub connectionStub;
 
     private final ObisCode OBIS_DAILY_DSMR4 = new ObisCode("1.0.99.2.0.255");
-    private final ObisCode OBIS_INTERVAL_DSMR4 = new ObisCode("0.1.24.3.0.255");
+    private final ObisCode OBIS_INTERVAL_DSMR4 = new ObisCode("1.0.99.1.0.255");
     private final ObisCode OBIS_MONTHLY_DSMR4 = new ObisCode("0.0.98.1.0.255");
 
-    private final ObisCode OBIS_DAILY_SMR5 = new ObisCode("0.1.24.3.1.255");
-    private final ObisCode OBIS_INTERVAL_SMR5 = new ObisCode("0.1.24.3.0.255");
-    private final ObisCode OBIS_MONTHLY_SMR5 = new ObisCode("0.1.24.3.2.255");
+    private final ObisCode OBIS_DAILY_SMR5 = new ObisCode("1.0.99.2.0.255");
+    private final ObisCode OBIS_INTERVAL_SMR5 = new ObisCode("1.0.99.1.0.255");
+    private final ObisCode OBIS_MONTHLY_SMR5 = new ObisCode("1.0.98.1.0.255");
 
     private final ObisCode OBIS_CLOCK = new ObisCode("0.0.1.0.0.255");
     private final ObisCode OBIS_STATUS = new ObisCode("0.0.96.10.2.255");
-    private final ObisCode OBIS_GAS_VALUE_DSMR4 = new ObisCode("0.1.24.2.1.255");
-    private final ObisCode OBIS_GAS_VALUE_SMR5 = new ObisCode("0.1.24.2.2.255");
+    private final ObisCode OBIS_ACTIVE_ENERGY_IMPORT = new ObisCode("1.0.1.8.0.255");
+    private final ObisCode OBIS_ACTIVE_ENERGY_EXPORT = new ObisCode("1.0.2.8.0.255");
+    private final ObisCode OBIS_ACTIVE_ENERGY_IMPORT_RATE_1 = new ObisCode("1.0.1.8.1.255");
+    private final ObisCode OBIS_ACTIVE_ENERGY_IMPORT_RATE_2 = new ObisCode("1.0.1.8.2.255");
+    private final ObisCode OBIS_ACTIVE_ENERGY_EXPORT_RATE_1 = new ObisCode("1.0.2.8.1.255");
+    private final ObisCode OBIS_ACTIVE_ENERGY_EXPORT_RATE_2 = new ObisCode("1.0.2.8.2.255");
 
     private final int CLASS_ID_CLOCK = 8;
     private final int CLASS_ID_DATA = 1;
-    private final int CLASS_ID_EXTENDED_REGISTER = 4;
+    private final int CLASS_ID_REGISTER = 3;
     private final int CLASS_ID_PROFILE = 7;
 
     private final byte ATTR_ID_VALUE = 2;
     private final byte ATTR_ID_BUFFER = 2;
-    private final byte ATTR_ID_CAPTURE_TIME = 5;
     private final byte ATTR_ID_SCALER_UNIT = 3;
 
     private final DataObject CLOCK = DataObject.newStructureData(
@@ -90,41 +93,62 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
                     DataObject.newOctetStringData(this.OBIS_STATUS.bytes()),
                     DataObject.newInteger8Data(this.ATTR_ID_VALUE), DataObject.newUInteger16Data(0)));
 
-    private final DataObject GAS_VALUE_DSMR4 = DataObject.newStructureData(
-            Arrays.asList(DataObject.newUInteger16Data(this.CLASS_ID_EXTENDED_REGISTER),
-                    DataObject.newOctetStringData(this.OBIS_GAS_VALUE_DSMR4.bytes()),
+    private final DataObject ACTIVE_ENERGY_IMPORT_RATE_1 = DataObject.newStructureData(
+            Arrays.asList(DataObject.newUInteger16Data(this.CLASS_ID_REGISTER),
+                    DataObject.newOctetStringData(this.OBIS_ACTIVE_ENERGY_IMPORT_RATE_1.bytes()),
                     DataObject.newInteger8Data(this.ATTR_ID_VALUE), DataObject.newUInteger16Data(0)));
 
-    private final DataObject GAS_CAPTURE_TIME_DSMR4 = DataObject.newStructureData(
-            Arrays.asList(DataObject.newUInteger16Data(this.CLASS_ID_EXTENDED_REGISTER),
-                    DataObject.newOctetStringData(this.OBIS_GAS_VALUE_DSMR4.bytes()),
-                    DataObject.newInteger8Data(this.ATTR_ID_CAPTURE_TIME), DataObject.newUInteger16Data(0)));
-
-    private final DataObject GAS_VALUE_SMR5 = DataObject.newStructureData(
-            Arrays.asList(DataObject.newUInteger16Data(this.CLASS_ID_EXTENDED_REGISTER),
-                    DataObject.newOctetStringData(this.OBIS_GAS_VALUE_SMR5.bytes()),
+    private final DataObject ACTIVE_ENERGY_IMPORT_RATE_2 = DataObject.newStructureData(
+            Arrays.asList(DataObject.newUInteger16Data(this.CLASS_ID_REGISTER),
+                    DataObject.newOctetStringData(this.OBIS_ACTIVE_ENERGY_IMPORT_RATE_2.bytes()),
                     DataObject.newInteger8Data(this.ATTR_ID_VALUE), DataObject.newUInteger16Data(0)));
 
-    private final DataObject GAS_CAPTURE_TIME_SMR5 = DataObject.newStructureData(
-            Arrays.asList(DataObject.newUInteger16Data(this.CLASS_ID_EXTENDED_REGISTER),
-                    DataObject.newOctetStringData(this.OBIS_GAS_VALUE_SMR5.bytes()),
-                    DataObject.newInteger8Data(this.ATTR_ID_CAPTURE_TIME), DataObject.newUInteger16Data(0)));
+    private final DataObject ACTIVE_ENERGY_EXPORT_RATE_1 = DataObject.newStructureData(
+            Arrays.asList(DataObject.newUInteger16Data(this.CLASS_ID_REGISTER),
+                    DataObject.newOctetStringData(this.OBIS_ACTIVE_ENERGY_EXPORT_RATE_1.bytes()),
+                    DataObject.newInteger8Data(this.ATTR_ID_VALUE), DataObject.newUInteger16Data(0)));
 
-    private Date TIME_FROM;
-    private Date TIME_TO;
-    private DataObject PERIOD_1_CLOCK;
-    private DataObject PERIOD_2_CLOCK;
-    private Date PERIOD_1_CLOCK_VALUE;
-    private Date PERIOD_2_CLOCK_VALUE;
-    private Date PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_HOURLY;
-    private Date PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_DAILY;
-    private Date PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_MONTHLY;
+    private final DataObject ACTIVE_ENERGY_EXPORT_RATE_2 = DataObject.newStructureData(
+            Arrays.asList(DataObject.newUInteger16Data(this.CLASS_ID_REGISTER),
+                    DataObject.newOctetStringData(this.OBIS_ACTIVE_ENERGY_EXPORT_RATE_2.bytes()),
+                    DataObject.newInteger8Data(this.ATTR_ID_VALUE), DataObject.newUInteger16Data(0)));
 
-    private final CosemDateTime PERIOD_1_CAPTURE_TIME = new CosemDateTime(2018, 12, 31, 23, 50, 0, 0);
-    private final CosemDateTime PERIOD_2_CAPTURE_TIME = new CosemDateTime(2019, 1, 1, 0, 7, 0, 0);
+    private Date timeFrom;
+    private Date timeTo;
+    private DataObject period1Clock;
+    private DataObject period2Clock;
+    private Date period1ClockValue;
+    private Date period2ClockValue;
+    private Date period2ClockValueNullDataPeriod15Min;
+    private Date period2ClockValueNullDataPeriodDaily;
+    private Date period2ClockValueNullDataPeriodMonthly;
 
-    private final long PERIOD_1_LONG_VALUE = 1000L;
-    private final long PERIOD_2_LONG_VALUE = 1500L;
+    private final int AMOUNT_OF_PERIODS = 2;
+
+    private final byte AMR_STATUS_VALUE = 8;
+    private final long PERIOD_1_LONG_VALUE_1 = 1000L;
+    private final long PERIOD_1_LONG_VALUE_2 = 2000L;
+    private final long PERIOD_1_LONG_VALUE_3 = 3000L;
+    private final long PERIOD_1_LONG_VALUE_4 = 4000L;
+    private final long PERIOD_2_LONG_VALUE_1 = 1500L;
+    private final long PERIOD_2_LONG_VALUE_2 = 2500L;
+    private final long PERIOD_2_LONG_VALUE_3 = 3500L;
+    private final long PERIOD_2_LONG_VALUE_4 = 4500L;
+
+    private final int DLMS_ENUM_VALUE_WH = 30;
+
+    private void initDates() {
+
+        this.timeFrom = new GregorianCalendar(2019, Calendar.JANUARY, 1).getTime();
+        this.timeTo = new GregorianCalendar(2019, Calendar.JANUARY, 5).getTime();
+        this.period1Clock = this.getDateAsOctetString(2019, 1, 1);
+        this.period2Clock = this.getDateAsOctetString(2019, 1, 2);
+        this.period1ClockValue = new GregorianCalendar(2019, Calendar.JANUARY, 1, 0, 0).getTime();
+        this.period2ClockValue = new GregorianCalendar(2019, Calendar.JANUARY, 2, 0, 0).getTime();
+        this.period2ClockValueNullDataPeriod15Min = new GregorianCalendar(2019, Calendar.JANUARY, 1, 0, 15).getTime();
+        this.period2ClockValueNullDataPeriodDaily = new GregorianCalendar(2019, Calendar.JANUARY, 2, 0, 0).getTime();
+        this.period2ClockValueNullDataPeriodMonthly = new GregorianCalendar(2019, Calendar.FEBRUARY, 1, 0, 0).getTime();
+    }
 
     @Before
     public void setUp() {
@@ -144,7 +168,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
         this.dlmsObjectConfigService = new DlmsObjectConfigService(this.dlmsHelper,
                 dlmsObjectConfigConfiguration.getDlmsObjectConfigs());
 
-        this.executor = new GetPeriodicMeterReadsGasCommandExecutor(this.dlmsHelper, this.amrProfileStatusCodeHelper,
+        this.executor = new GetPeriodicMeterReadsCommandExecutor(this.dlmsHelper, this.amrProfileStatusCodeHelper,
                 this.dlmsObjectConfigService);
         this.connectionStub = new DlmsConnectionStub();
         this.connectionManagerStub = new DlmsConnectionManagerStub(this.connectionStub);
@@ -155,22 +179,6 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
         TimeZone.setDefault(defaultTimeZone);
         DateTimeZone.setDefault(defaultDateTimeZone);
 
-    }
-
-    private void initDates() {
-
-        this.TIME_FROM = new GregorianCalendar(2019, Calendar.JANUARY, 1).getTime();
-        this.TIME_TO = new GregorianCalendar(2019, Calendar.JANUARY, 5).getTime();
-        this.PERIOD_1_CLOCK = this.getDateAsOctetString(2019, 1, 1);
-        this.PERIOD_2_CLOCK = this.getDateAsOctetString(2019, 1, 2);
-        this.PERIOD_1_CLOCK_VALUE = new GregorianCalendar(2019, Calendar.JANUARY, 1, 0, 0).getTime();
-        this.PERIOD_2_CLOCK_VALUE = new GregorianCalendar(2019, Calendar.JANUARY, 2, 0, 0).getTime();
-        this.PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_HOURLY = new GregorianCalendar(2019, Calendar.JANUARY, 1, 1,
-                0).getTime();
-        this.PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_DAILY = new GregorianCalendar(2019, Calendar.JANUARY, 2, 0,
-                0).getTime();
-        this.PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_MONTHLY = new GregorianCalendar(2019, Calendar.FEBRUARY, 1, 0,
-                0).getTime();
     }
 
     @Test
@@ -196,6 +204,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
 
     @Test
     public void testExecuteSmr5_1() throws Exception {
+
         for (final PeriodTypeDto type : PeriodTypeDto.values()) {
             this.testExecute(Protocol.SMR_5_1, type, false);
         }
@@ -220,13 +229,12 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
         final DlmsDevice device = this.createDlmsDevice(protocol);
 
         // Create request object
-        final PeriodicMeterReadsRequestDto request = new PeriodicMeterReadsRequestDto(type, this.TIME_FROM,
-                this.TIME_TO, ChannelDto.fromNumber(1));
+        final PeriodicMeterReadsRequestDto request = new PeriodicMeterReadsRequestDto(type, this.timeFrom, this.timeTo);
 
         // Get expected values
-        final AttributeAddress expectedAddressProfile = this.createAttributeAddress(protocol, type, this.TIME_FROM,
-                this.TIME_TO);
-        final List<AttributeAddress> expectedScalerUnitAddresses = this.getScalerUnitAttributeAddresses(protocol);
+        final AttributeAddress expectedAddressProfile = this.createAttributeAddress(protocol, type, this.timeFrom,
+                this.timeTo);
+        final List<AttributeAddress> expectedScalerUnitAddresses = this.getScalerUnitAttributeAddresses(type);
         final int expectedTotalNumberOfAttributeAddresses = expectedScalerUnitAddresses.size() + 1;
 
         // Set response in stub
@@ -234,14 +242,14 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
         this.setResponsesForScalerUnit(expectedScalerUnitAddresses);
 
         // CALL
-        final PeriodicMeterReadGasResponseDto response = this.executor.execute(this.connectionManagerStub, device,
+        final PeriodicMeterReadsResponseDto response = this.executor.execute(this.connectionManagerStub, device,
                 request);
 
         // VERIFY
 
         // Get resulting requests from connection stub
         final List<AttributeAddress> requestedAttributeAddresses = this.connectionStub.getRequestedAttributeAddresses();
-        assertThat(requestedAttributeAddresses.size()).isEqualTo(2);
+        assertThat(requestedAttributeAddresses.size()).isEqualTo(expectedTotalNumberOfAttributeAddresses);
 
         // There should be 1 request to the buffer (id = 2) of a profile (class-id = 7)
         final AttributeAddress actualAttributeAddressProfile = requestedAttributeAddresses.stream().filter(
@@ -249,20 +257,19 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
 
         AttributeAddressAssert.is(actualAttributeAddressProfile, expectedAddressProfile);
 
-        // Check the amount of requests to the scaler_unit of the meter value in the extended register
+        // Check the amount of requests to the scaler_units of the meter values in the registers
         final List<AttributeAddress> attributeAddressesScalerUnit = requestedAttributeAddresses.stream().filter(
-                a -> a.getClassId() == this.CLASS_ID_EXTENDED_REGISTER
-                        && a.getId() == this.ATTR_ID_SCALER_UNIT).collect(Collectors.toList());
-        assertThat(attributeAddressesScalerUnit.size()).isEqualTo(1);
+                a -> a.getClassId() == this.CLASS_ID_REGISTER && a.getId() == this.ATTR_ID_SCALER_UNIT).collect(
+                Collectors.toList());
+        assertThat(attributeAddressesScalerUnit.size()).isEqualTo(expectedScalerUnitAddresses.size());
 
         // Check response
         assertThat(response.getPeriodType()).isEqualTo(type);
-        final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads = response.getPeriodicMeterReadsGas();
-        final int AMOUNT_OF_PERIODS = 2;
-        assertThat(periodicMeterReads.size()).isEqualTo(AMOUNT_OF_PERIODS);
+        final List<PeriodicMeterReadsResponseItemDto> periodicMeterReads = response.getPeriodicMeterReads();
+        assertThat(periodicMeterReads.size()).isEqualTo(this.AMOUNT_OF_PERIODS);
 
         this.checkClockValues(periodicMeterReads, type, useNullData);
-        this.checkValues(periodicMeterReads);
+        this.checkValues(periodicMeterReads, type);
     }
 
     private DlmsDevice createDlmsDevice(final Protocol protocol) {
@@ -300,19 +307,32 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
                 "Invalid combination of protocol " + protocol.getName() + " and version " + protocol.getVersion());
     }
 
-    private List<AttributeAddress> getScalerUnitAttributeAddresses(final Protocol protocol) {
+    private List<AttributeAddress> getScalerUnitAttributeAddresses(final PeriodTypeDto type) throws Exception {
+        final List<AttributeAddress> attributeAddresses = new ArrayList<>();
 
-        final AttributeAddress attributeAddress;
+        switch (type) {
+        case MONTHLY:
+        case DAILY:
+            attributeAddresses.add(new AttributeAddress(this.CLASS_ID_REGISTER, this.OBIS_ACTIVE_ENERGY_IMPORT_RATE_1,
+                    this.ATTR_ID_SCALER_UNIT, null));
+            attributeAddresses.add(new AttributeAddress(this.CLASS_ID_REGISTER, this.OBIS_ACTIVE_ENERGY_IMPORT_RATE_2,
+                    this.ATTR_ID_SCALER_UNIT, null));
+            attributeAddresses.add(new AttributeAddress(this.CLASS_ID_REGISTER, this.OBIS_ACTIVE_ENERGY_EXPORT_RATE_1,
+                    this.ATTR_ID_SCALER_UNIT, null));
+            attributeAddresses.add(new AttributeAddress(this.CLASS_ID_REGISTER, this.OBIS_ACTIVE_ENERGY_EXPORT_RATE_2,
+                    this.ATTR_ID_SCALER_UNIT, null));
+            break;
+        case INTERVAL:
+            attributeAddresses.add(new AttributeAddress(this.CLASS_ID_REGISTER, this.OBIS_ACTIVE_ENERGY_IMPORT,
+                    this.ATTR_ID_SCALER_UNIT, null));
+            attributeAddresses.add(new AttributeAddress(this.CLASS_ID_REGISTER, this.OBIS_ACTIVE_ENERGY_EXPORT,
+                    this.ATTR_ID_SCALER_UNIT, null));
+            break;
+        default:
+            throw new Exception("Unexpected period type " + type);
 
-        if (protocol == Protocol.DSMR_4_2_2) {
-            attributeAddress = new AttributeAddress(this.CLASS_ID_EXTENDED_REGISTER, this.OBIS_GAS_VALUE_DSMR4,
-                    this.ATTR_ID_SCALER_UNIT, null);
-        } else {
-            attributeAddress = new AttributeAddress(this.CLASS_ID_EXTENDED_REGISTER, this.OBIS_GAS_VALUE_SMR5,
-                    this.ATTR_ID_SCALER_UNIT, null);
         }
-
-        return Collections.singletonList(attributeAddress);
+        return attributeAddresses;
     }
 
     private void setResponseForProfile(final AttributeAddress attributeAddressForProfile, final Protocol protocol,
@@ -320,18 +340,21 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
 
         // PERIOD 1
 
-        final DataObject period1Clock = this.PERIOD_1_CLOCK;
-        final byte AMR_STATUS_VALUE = 8;
-        final DataObject period1Status = DataObject.newUInteger8Data(AMR_STATUS_VALUE);
-        final DataObject period1Value = DataObject.newUInteger32Data(this.PERIOD_1_LONG_VALUE);
-        final DataObject period1CaptureTime = DataObject.newDateTimeData(this.PERIOD_1_CAPTURE_TIME);
+        final DataObject period1Clock = this.period1Clock;
+        final DataObject period1Status = DataObject.newUInteger8Data(this.AMR_STATUS_VALUE);
+        final DataObject period1Value1 = DataObject.newUInteger32Data(this.PERIOD_1_LONG_VALUE_1);
+        final DataObject period1Value2 = DataObject.newUInteger32Data(this.PERIOD_1_LONG_VALUE_2);
+        final DataObject period1Value3 = DataObject.newUInteger32Data(this.PERIOD_1_LONG_VALUE_3);
+        final DataObject period1Value4 = DataObject.newUInteger32Data(this.PERIOD_1_LONG_VALUE_4);
 
         final DataObject periodItem1;
         if (type == PeriodTypeDto.MONTHLY && protocol == Protocol.DSMR_4_2_2) {
-            periodItem1 = DataObject.newStructureData(Arrays.asList(period1Clock, period1Value, period1CaptureTime));
+            periodItem1 = DataObject.newStructureData(
+                    Arrays.asList(period1Clock, period1Value1, period1Value2, period1Value3, period1Value4));
         } else {
             periodItem1 = DataObject.newStructureData(
-                    Arrays.asList(period1Clock, period1Status, period1Value, period1CaptureTime));
+                    Arrays.asList(period1Clock, period1Status, period1Value1, period1Value2, period1Value3,
+                            period1Value4));
         }
 
         // PERIOD 2
@@ -340,19 +363,23 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
         if (useNullData) {
             period2Clock = DataObject.newNullData();
         } else {
-            period2Clock = this.PERIOD_2_CLOCK;
+            period2Clock = this.period2Clock;
         }
-        final DataObject period2Status = DataObject.newUInteger8Data(AMR_STATUS_VALUE);
-        final DataObject period2Value = DataObject.newUInteger32Data(this.PERIOD_2_LONG_VALUE);
-        final DataObject period2CaptureTime = DataObject.newDateTimeData(this.PERIOD_2_CAPTURE_TIME);
+        final DataObject period2Status = DataObject.newUInteger8Data(this.AMR_STATUS_VALUE);
+        final DataObject period2Value1 = DataObject.newUInteger32Data(this.PERIOD_2_LONG_VALUE_1);
+        final DataObject period2Value2 = DataObject.newUInteger32Data(this.PERIOD_2_LONG_VALUE_2);
+        final DataObject period2Value3 = DataObject.newUInteger32Data(this.PERIOD_2_LONG_VALUE_3);
+        final DataObject period2Value4 = DataObject.newUInteger32Data(this.PERIOD_2_LONG_VALUE_4);
 
         final DataObject periodItem2;
         if (type == PeriodTypeDto.MONTHLY && protocol == Protocol.DSMR_4_2_2) {
             // No status for Monthly values in DSMR4.2.2
-            periodItem2 = DataObject.newStructureData(Arrays.asList(period2Clock, period2Value, period2CaptureTime));
+            periodItem2 = DataObject.newStructureData(
+                    Arrays.asList(period2Clock, period2Value1, period2Value2, period2Value3, period2Value4));
         } else {
             periodItem2 = DataObject.newStructureData(
-                    Arrays.asList(period2Clock, period2Status, period2Value, period2CaptureTime));
+                    Arrays.asList(period2Clock, period2Status, period2Value1, period2Value2, period2Value3,
+                            period2Value4));
         }
 
         // Create returnvalue and set in stub
@@ -361,9 +388,8 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     }
 
     private void setResponsesForScalerUnit(final List<AttributeAddress> attributeAddressesForScalerUnit) {
-        final int DLMS_ENUM_VALUE_M3 = 14;
         final DataObject responseDataObject = DataObject.newStructureData(DataObject.newInteger8Data((byte) 0),
-                DataObject.newEnumerateData(DLMS_ENUM_VALUE_M3));
+                DataObject.newEnumerateData(this.DLMS_ENUM_VALUE_WH));
 
         for (final AttributeAddress attributeAddress : attributeAddressesForScalerUnit) {
             this.connectionStub.addReturnValue(attributeAddress, responseDataObject);
@@ -376,36 +402,57 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
         return DataObject.newOctetStringData(dateTime.encode());
     }
 
-    private void checkClockValues(final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads,
+    private void checkClockValues(final List<PeriodicMeterReadsResponseItemDto> periodicMeterReads,
             final PeriodTypeDto type, final boolean useNullData) {
 
-        final PeriodicMeterReadsGasResponseItemDto periodicMeterRead1 = periodicMeterReads.get(0);
-        assertThat(periodicMeterRead1.getLogTime()).isEqualTo(this.PERIOD_1_CLOCK_VALUE);
+        final PeriodicMeterReadsResponseItemDto periodicMeterRead1 = periodicMeterReads.get(0);
 
-        final PeriodicMeterReadsGasResponseItemDto periodicMeterRead2 = periodicMeterReads.get(1);
+        assertThat(periodicMeterRead1.getLogTime()).isEqualTo(this.period1ClockValue);
+
+        final PeriodicMeterReadsResponseItemDto periodicMeterRead2 = periodicMeterReads.get(1);
 
         if (!useNullData) { // The timestamps should be the same as the times set in the test
-            assertThat(periodicMeterRead2.getLogTime()).isEqualTo(this.PERIOD_2_CLOCK_VALUE);
+            assertThat(periodicMeterRead2.getLogTime()).isEqualTo(this.period2ClockValue);
         } else { // The timestamps should be calculated using the periodType, starting from the time of period 1
             if (type == PeriodTypeDto.INTERVAL) {
-                assertThat(periodicMeterRead2.getLogTime()).isEqualTo(
-                        this.PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_HOURLY);
+                assertThat(periodicMeterRead2.getLogTime()).isEqualTo(this.period2ClockValueNullDataPeriod15Min);
             } else if (type == PeriodTypeDto.DAILY) {
-                assertThat(periodicMeterRead2.getLogTime()).isEqualTo(this.PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_DAILY);
+                assertThat(periodicMeterRead2.getLogTime()).isEqualTo(this.period2ClockValueNullDataPeriodDaily);
             } else if (type == PeriodTypeDto.MONTHLY) {
-                assertThat(periodicMeterRead2.getLogTime()).isEqualTo(
-                        this.PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_MONTHLY);
+                assertThat(periodicMeterRead2.getLogTime()).isEqualTo(this.period2ClockValueNullDataPeriodMonthly);
             }
         }
     }
 
-    private void checkValues(final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads) {
+    private void checkValues(final List<PeriodicMeterReadsResponseItemDto> periodicMeterReads,
+            final PeriodTypeDto type) {
 
-        final PeriodicMeterReadsGasResponseItemDto period1 = periodicMeterReads.get(0);
-        final PeriodicMeterReadsGasResponseItemDto period2 = periodicMeterReads.get(1);
+        final PeriodicMeterReadsResponseItemDto period1 = periodicMeterReads.get(0);
+        final PeriodicMeterReadsResponseItemDto period2 = periodicMeterReads.get(1);
 
-        assertThat(period1.getConsumption().getValue().longValue()).isEqualTo(this.PERIOD_1_LONG_VALUE);
-        assertThat(period2.getConsumption().getValue().longValue()).isEqualTo(this.PERIOD_2_LONG_VALUE);
+        if (type == PeriodTypeDto.MONTHLY || type == PeriodTypeDto.DAILY) {
+            assertThat(period1.getActiveEnergyImportTariffOne().getValue().longValue()).isEqualTo(
+                    this.PERIOD_1_LONG_VALUE_1);
+            assertThat(period1.getActiveEnergyImportTariffTwo().getValue().longValue()).isEqualTo(
+                    this.PERIOD_1_LONG_VALUE_2);
+            assertThat(period1.getActiveEnergyExportTariffOne().getValue().longValue()).isEqualTo(
+                    this.PERIOD_1_LONG_VALUE_3);
+            assertThat(period1.getActiveEnergyExportTariffTwo().getValue().longValue()).isEqualTo(
+                    this.PERIOD_1_LONG_VALUE_4);
+            assertThat(period2.getActiveEnergyImportTariffOne().getValue().longValue()).isEqualTo(
+                    this.PERIOD_2_LONG_VALUE_1);
+            assertThat(period2.getActiveEnergyImportTariffTwo().getValue().longValue()).isEqualTo(
+                    this.PERIOD_2_LONG_VALUE_2);
+            assertThat(period2.getActiveEnergyExportTariffOne().getValue().longValue()).isEqualTo(
+                    this.PERIOD_2_LONG_VALUE_3);
+            assertThat(period2.getActiveEnergyExportTariffTwo().getValue().longValue()).isEqualTo(
+                    this.PERIOD_2_LONG_VALUE_4);
+        } else { // INTERVAL, only total values
+            assertThat(period1.getActiveEnergyImport().getValue().longValue()).isEqualTo(this.PERIOD_1_LONG_VALUE_1);
+            assertThat(period1.getActiveEnergyExport().getValue().longValue()).isEqualTo(this.PERIOD_1_LONG_VALUE_2);
+            assertThat(period2.getActiveEnergyImport().getValue().longValue()).isEqualTo(this.PERIOD_2_LONG_VALUE_1);
+            assertThat(period2.getActiveEnergyExport().getValue().longValue()).isEqualTo(this.PERIOD_2_LONG_VALUE_2);
+        }
     }
 
     // DSMR4
@@ -421,7 +468,9 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
             final DataObject to) {
 
         final DataObject selectedValues = DataObject.newArrayData(
-                Arrays.asList(this.CLOCK, this.STATUS, this.GAS_VALUE_DSMR4, this.GAS_CAPTURE_TIME_DSMR4));
+                Arrays.asList(this.CLOCK, this.STATUS, this.ACTIVE_ENERGY_IMPORT_RATE_1,
+                        this.ACTIVE_ENERGY_IMPORT_RATE_2, this.ACTIVE_ENERGY_EXPORT_RATE_1,
+                        this.ACTIVE_ENERGY_EXPORT_RATE_2));
 
         final DataObject expectedAccessParam = DataObject.newStructureData(
                 Arrays.asList(this.CLOCK, from, to, selectedValues));
@@ -440,7 +489,8 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
             final DataObject to) {
 
         final DataObject selectedValues = DataObject.newArrayData(
-                Arrays.asList(this.CLOCK, this.GAS_VALUE_DSMR4, this.GAS_CAPTURE_TIME_DSMR4));
+                Arrays.asList(this.CLOCK, this.ACTIVE_ENERGY_IMPORT_RATE_1, this.ACTIVE_ENERGY_IMPORT_RATE_2,
+                        this.ACTIVE_ENERGY_EXPORT_RATE_1, this.ACTIVE_ENERGY_EXPORT_RATE_2));
 
         final DataObject expectedAccessParam = DataObject.newStructureData(
                 Arrays.asList(this.CLOCK, from, to, selectedValues));
@@ -497,4 +547,3 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
         return new SelectiveAccessDescription(1, expectedAccessParam);
     }
 }
-

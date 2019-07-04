@@ -9,7 +9,7 @@ package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
 import java.util.Date;
 
-public class PeriodicMeterReadsResponseItemDto extends MeterReadsResponseDto {
+public class PeriodicMeterReadsResponseItemDto extends MeterReadsResponseDto  {
 
     private static final long serialVersionUID = 2123390296585369208L;
 

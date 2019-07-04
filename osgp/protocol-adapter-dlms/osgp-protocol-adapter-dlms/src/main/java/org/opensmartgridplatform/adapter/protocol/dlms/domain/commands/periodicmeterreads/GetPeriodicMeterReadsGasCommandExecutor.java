@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2019 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
@@ -11,7 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodic
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
+import java.util.Optional;
 
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.AttributeAddress;
@@ -23,6 +23,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjec
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.Medium;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.ProfileCaptureTime;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.AmrProfileStatusCodeHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
@@ -32,7 +33,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.BufferedDateTi
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AmrProfileStatusCodeDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.AmrProfileStatusCodeFlagDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodTypeDto;
@@ -52,19 +52,20 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsGasCommandExecutor.class);
 
     private static final String GAS_VALUE = "gasValue";
+    private static final String PERIODIC_G_METER_READS = "Periodic G-Meter Reads";
     private static final String UNEXPECTED_VALUE = "Unexpected null/unspecified value for Gas Capture Time";
+    private static final String FORMAT_DESCRIPTION =
+            "GetPeriodicMeterReadsGas for channel %s, %s from %s until %s, " + "retrieve attribute: %s";
 
     private final DlmsHelper dlmsHelper;
-    private final AmrProfileStatusCodeHelper amrProfileStatusCodeHelper;
     private final DlmsObjectConfigService dlmsObjectConfigService;
 
     @Autowired
     public GetPeriodicMeterReadsGasCommandExecutor(final DlmsHelper dlmsHelper,
             final AmrProfileStatusCodeHelper amrProfileStatusCodeHelper,
             final DlmsObjectConfigService dlmsObjectConfigService) {
-        super(PeriodicMeterReadsGasRequestDto.class);
+        super(PeriodicMeterReadsGasRequestDto.class, amrProfileStatusCodeHelper);
         this.dlmsHelper = dlmsHelper;
-        this.amrProfileStatusCodeHelper = amrProfileStatusCodeHelper;
         this.dlmsObjectConfigService = dlmsObjectConfigService;
     }
 
@@ -91,17 +92,20 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
         }
 
         final PeriodTypeDto queryPeriodType = periodicMeterReadsQuery.getPeriodType();
-        final DateTime queryBeginDateTime = new DateTime(periodicMeterReadsQuery.getBeginDate());
-        final DateTime queryEndDateTime = new DateTime(periodicMeterReadsQuery.getEndDate());
+        final DateTime from = new DateTime(periodicMeterReadsQuery.getBeginDate());
+        final DateTime to = new DateTime(periodicMeterReadsQuery.getEndDate());
 
         final AttributeAddressForProfile profileBufferAddress = this.getProfileBufferAddress(queryPeriodType,
-                periodicMeterReadsQuery.getChannel(), queryBeginDateTime, queryEndDateTime, device);
+                periodicMeterReadsQuery.getChannel(), from, to, device);
 
-        final List<AttributeAddress> scalerUnitAddresses =
-                this.getScalerUnitAddresses(periodicMeterReadsQuery.getChannel(), profileBufferAddress);
+        final List<AttributeAddress> scalerUnitAddresses = this.getScalerUnitAddresses(
+                periodicMeterReadsQuery.getChannel(), profileBufferAddress);
+
+        final Optional<ProfileCaptureTime> intervalTime = this.getProfileCaptureTime(device,
+                this.dlmsObjectConfigService, Medium.GAS);
 
         LOGGER.info("Retrieving current billing period and profiles for gas for period type: {}, from: " + "{}, to: {}",
-                queryPeriodType, queryBeginDateTime, queryEndDateTime);
+                queryPeriodType, from, to);
 
         /*
          * workaround for a problem when using with_list and retrieving a profile
@@ -115,11 +119,9 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
 
         for (final AttributeAddress address : allAttributeAddresses) {
 
-            conn.getDlmsMessageListener()
-                    .setDescription(
-                            "GetPeriodicMeterReadsGas for channel " + periodicMeterReadsQuery.getChannel() + ", "
-                                    + queryPeriodType + " from " + queryBeginDateTime + " until " + queryEndDateTime
-                                    + ", retrieve attribute: " + JdlmsObjectToStringUtil.describeAttributes(address));
+            conn.getDlmsMessageListener().setDescription(
+                    String.format(FORMAT_DESCRIPTION, periodicMeterReadsQuery.getChannel(), queryPeriodType, from, to,
+                            JdlmsObjectToStringUtil.describeAttributes(address)));
 
             getResultList.addAll(this.dlmsHelper.getAndCheck(conn, device,
                     "retrieve periodic meter reads for " + queryPeriodType + ", channel "
@@ -128,7 +130,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
 
         LOGGER.info("Received getResult: {} ", getResultList);
 
-        final DataObject resultData = this.dlmsHelper.readDataObject(getResultList.get(0), "Periodic G-Meter Reads");
+        final DataObject resultData = this.dlmsHelper.readDataObject(getResultList.get(0), PERIODIC_G_METER_READS);
         final List<DataObject> bufferedObjectsList = resultData.getValue();
 
         final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads = new ArrayList<>();
@@ -136,9 +138,9 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
             final List<DataObject> bufferedObjectValue = bufferedObject.getValue();
 
             try {
-                periodicMeterReads.add(
-                        this.convertToResponseItem(periodicMeterReadsQuery, bufferedObjectValue,
-                                getResultList, profileBufferAddress, scalerUnitAddresses));
+                periodicMeterReads.add(this.convertToResponseItem(
+                        new ConversionContext(periodicMeterReadsQuery, bufferedObjectValue, getResultList,
+                                profileBufferAddress, scalerUnitAddresses, intervalTime), periodicMeterReads));
             } catch (final BufferedDateTimeValidationException e) {
                 LOGGER.warn(e.getMessage(), e);
             }
@@ -149,20 +151,20 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
         return new PeriodicMeterReadGasResponseDto(queryPeriodType, periodicMeterReads);
     }
 
-    private PeriodicMeterReadsGasResponseItemDto convertToResponseItem(
-            final PeriodicMeterReadsRequestDto periodicMeterReadsQuery, final List<DataObject> bufferedObjects,
-            final List<GetResult> getResultList, final AttributeAddressForProfile attributeAddressForProfile,
-            final List<AttributeAddress> attributeAddresses)
+    private PeriodicMeterReadsGasResponseItemDto convertToResponseItem(final ConversionContext ctx,
+            final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads)
             throws ProtocolAdapterException, BufferedDateTimeValidationException {
 
-        final Date logTime = this.readClock(periodicMeterReadsQuery, bufferedObjects, attributeAddressForProfile);
-        final AmrProfileStatusCodeDto status = this.readStatus(bufferedObjects, attributeAddressForProfile);
-        final DataObject gasValue = this.readValue(bufferedObjects, attributeAddressForProfile);
-        final DataObject scalerUnit = this.readScalerUnit(getResultList, attributeAddresses, attributeAddressForProfile,
-                periodicMeterReadsQuery.getChannel().getChannelNumber());
-        final Date captureTime = this.readCaptureTime(bufferedObjects, attributeAddressForProfile);
+        final Optional<Date> previousLogTime = this.getPreviousLogTime(periodicMeterReads);
+        final Date logTime = this.readClock(ctx, previousLogTime, this.dlmsHelper);
 
-        LOGGER.info("Converting bufferObject with value: {} ", bufferedObjects);
+        final AmrProfileStatusCodeDto status = this.readStatus(ctx.bufferedObjects, ctx.attributeAddressForProfile);
+        final DataObject gasValue = this.readValue(ctx.bufferedObjects, ctx.attributeAddressForProfile);
+        final DataObject scalerUnit = this.readScalerUnit(ctx.getResultList, ctx.attributeAddresses,
+                ctx.attributeAddressForProfile, ctx.periodicMeterReadsQuery.getChannel().getChannelNumber());
+        final Date captureTime = this.readCaptureTime(ctx.bufferedObjects, ctx.attributeAddressForProfile);
+
+        LOGGER.info("Converting bufferObject with value: {} ", ctx.bufferedObjects);
         LOGGER.info("Resulting values: LogTime: {}, status: {}, gasValue {}, scalerUnit: {}, captureTime {} ", logTime,
                 status, gasValue, scalerUnit, captureTime);
 
@@ -170,46 +172,13 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
                 this.dlmsHelper.getScaledMeterValue(gasValue, scalerUnit, GAS_VALUE), captureTime, status);
     }
 
-    private Date readClock(final PeriodicMeterReadsRequestDto periodicMeterReadsQuery,
-            final List<DataObject> bufferedObjects, final AttributeAddressForProfile attributeAddressForProfile)
-            throws ProtocolAdapterException, BufferedDateTimeValidationException {
+    private Optional<Date> getPreviousLogTime(final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads) {
 
-        final PeriodTypeDto queryPeriodType = periodicMeterReadsQuery.getPeriodType();
-        final DateTime queryBeginDateTime = new DateTime(periodicMeterReadsQuery.getBeginDate());
-        final DateTime queryEndDateTime = new DateTime(periodicMeterReadsQuery.getEndDate());
-
-        final Integer clockIndex = attributeAddressForProfile.getIndex(DlmsObjectType.CLOCK, null);
-
-        CosemDateTimeDto cosemDateTime = null;
-
-        if (clockIndex != null) {
-            cosemDateTime = this.dlmsHelper.readDateTime(bufferedObjects.get(clockIndex),
-                    "Clock from " + queryPeriodType + " buffer gas");
+        if (periodicMeterReads.isEmpty()) {
+            return Optional.empty();
         }
 
-        final DateTime bufferedDateTime = cosemDateTime == null ? null : cosemDateTime.asDateTime();
-
-        this.dlmsHelper.validateBufferedDateTime(bufferedDateTime, cosemDateTime, queryBeginDateTime, queryEndDateTime);
-
-        if (bufferedDateTime != null) {
-            return bufferedDateTime.toDate();
-        } else {
-            return null;
-        }
-    }
-
-    private AmrProfileStatusCodeDto readStatus(final List<DataObject> bufferedObjects,
-            final AttributeAddressForProfile attributeAddressForProfile) throws ProtocolAdapterException {
-
-        final Integer statusIndex = attributeAddressForProfile.getIndex(DlmsObjectType.AMR_STATUS, null);
-
-        AmrProfileStatusCodeDto amrProfileStatusCode = null;
-
-        if (statusIndex != null) {
-            amrProfileStatusCode = this.readAmrProfileStatusCode(bufferedObjects.get(statusIndex));
-        }
-
-        return amrProfileStatusCode;
+        return Optional.of(periodicMeterReads.get(periodicMeterReads.size() - 1).getLogTime());
     }
 
     private DataObject readValue(final List<DataObject> bufferedObjects,
@@ -230,29 +199,31 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
             final List<AttributeAddress> attributeAddresses,
             final AttributeAddressForProfile attributeAddressForProfile, final Integer channel) {
 
-        final DlmsCaptureObject captureObject =
-                attributeAddressForProfile.getCaptureObject(DlmsObjectType.MBUS_MASTER_VALUE);
+        final DlmsCaptureObject captureObject = attributeAddressForProfile.getCaptureObject(
+                DlmsObjectType.MBUS_MASTER_VALUE);
 
         int index = 0;
         Integer scalerUnitIndex = null;
         for (final AttributeAddress address : attributeAddresses) {
-            final String obisCode = captureObject.getRelatedObject().getObisCodeAsString().replace("<c>", channel.toString());
+            final String obisCode = captureObject.getRelatedObject().getObisCodeAsString().replace("<c>",
+                    channel.toString());
             if (address.getInstanceId().equals(new ObisCode(obisCode))) {
                 scalerUnitIndex = index;
             }
             index++;
         }
 
+        // Get scaler unit from result list. Note: "index + 1" because the first result is the array with values
+        // and should be skipped. The first scaler unit is at index 1.
         if (scalerUnitIndex != null) {
-            return getResultList.get(scalerUnitIndex).getResultData();
+            return getResultList.get(scalerUnitIndex + 1).getResultData();
         }
 
         return null;
     }
 
     private Date readCaptureTime(final List<DataObject> bufferedObjects,
-            final AttributeAddressForProfile attributeAddressForProfile)
-            throws ProtocolAdapterException {
+            final AttributeAddressForProfile attributeAddressForProfile) throws ProtocolAdapterException {
 
         final Integer captureTimeIndex = attributeAddressForProfile.getIndex(DlmsObjectType.MBUS_MASTER_VALUE, 5);
 
@@ -273,16 +244,17 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
         return null;
     }
 
-    private AttributeAddressForProfile getProfileBufferAddress(final PeriodTypeDto periodType,
-            final ChannelDto channel, final DateTime beginDateTime, final DateTime endDateTime,
-            final DlmsDevice device) throws ProtocolAdapterException {
+    private AttributeAddressForProfile getProfileBufferAddress(final PeriodTypeDto periodType, final ChannelDto channel,
+            final DateTime beginDateTime, final DateTime endDateTime, final DlmsDevice device)
+            throws ProtocolAdapterException {
 
         final DlmsObjectType type = DlmsObjectType.getTypeForPeriodType(periodType);
 
         // Add the attribute address for the profile
-        final AttributeAddressForProfile attributeAddressProfile = this.dlmsObjectConfigService.findAttributeAddressForProfile(
-                device, type, channel.getChannelNumber(), beginDateTime, endDateTime, Medium.GAS)
-                .orElseThrow(() -> new ProtocolAdapterException("No address found for " + type));
+        final AttributeAddressForProfile attributeAddressProfile =
+                this.dlmsObjectConfigService.findAttributeAddressForProfile(
+                device, type, channel.getChannelNumber(), beginDateTime, endDateTime, Medium.GAS).orElseThrow(
+                () -> new ProtocolAdapterException("No address found for " + type));
 
         LOGGER.info("Dlms object config service returned profile buffer address {} ", attributeAddressProfile);
 
@@ -293,35 +265,17 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
             final AttributeAddressForProfile attributeAddressForProfile) {
 
         final List<AttributeAddress> attributeAddresses =
-                this.dlmsObjectConfigService.getAttributeAddressesForScalerUnit(attributeAddressForProfile,
-                        channel.getChannelNumber());
+                this.dlmsObjectConfigService.getAttributeAddressesForScalerUnit(
+                attributeAddressForProfile, channel.getChannelNumber());
 
         LOGGER.info("Dlms object config service returned scaler unit addresses {} ", attributeAddresses);
 
         return attributeAddresses;
     }
 
-    /**
-     * Reads AmrProfileStatusCode from DataObject holding a bitvalue in a numeric
-     * datatype.
-     *
-     * @param amrProfileStatusData
-     *         AMR profile register value.
-     *
-     * @return AmrProfileStatusCode object holding status enum values.
-     *
-     * @throws ProtocolAdapterException
-     *         on invalid register data.
-     */
-    private AmrProfileStatusCodeDto readAmrProfileStatusCode(final DataObject amrProfileStatusData)
-            throws ProtocolAdapterException {
-
-        if (!amrProfileStatusData.isNumber()) {
-            throw new ProtocolAdapterException("Could not read AMR profile register data. Invalid data type.");
-        }
-
-        final Set<AmrProfileStatusCodeFlagDto> flags = this.amrProfileStatusCodeHelper.toAmrProfileStatusCodeFlags(
-                amrProfileStatusData.getValue());
-        return new AmrProfileStatusCodeDto(flags);
+    @Override
+    public Logger getLogger() {
+        return LOGGER;
     }
+
 }

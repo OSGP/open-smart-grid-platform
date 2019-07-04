@@ -38,11 +38,11 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.AttributeAddressForProfile;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsCaptureObject;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsClock;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsExtendedRegister;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsObject;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsProfile;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.Medium;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.ProfileCaptureTime;
@@ -154,6 +154,10 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
         when(this.dlmsObjectConfigService.getAttributeAddressesForScalerUnit(eq(attributeAddressForProfile),
                 eq(channel.getChannelNumber()))).thenReturn(Collections.singletonList(attributeAddressScalerUnit));
 
+        final DlmsObject intervalTime = mock(DlmsObject.class);
+        when(this.dlmsObjectConfigService.findDlmsObject(any(Protocol.class), any(DlmsObjectType.class),
+                any(Medium.class))).thenReturn(Optional.of(intervalTime));
+
         // SETUP - mock dlms helper to return data objects on request
         final DataObject data0 = mock(DataObject.class);
         final DataObject data1 = mock(DataObject.class);
@@ -180,7 +184,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
         when(this.dlmsHelper.readDataObject(eq(getResult), any(String.class))).thenReturn(resultData);
 
         // SETUP - mock dlms helper to handle converting the data objects
-        final String expectedDateTimeDescriptionLogTime = String.format("Clock from %s buffer gas", periodType);
+        final String expectedDateTimeDescriptionLogTime = String.format("Clock from %s buffer", periodType);
         final String expectedDateTimeDescriptionCaptureTime = "Clock from mbus interval extended register";
         final CosemDateTimeDto cosemDateTime = new CosemDateTimeDto(this.fromDateTime);
         when(this.dlmsHelper.readDateTime(data0, expectedDateTimeDescriptionLogTime)).thenReturn(cosemDateTime);
@@ -200,13 +204,16 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
         // VERIFY - the right functions should be called
         verify(this.dlmsMessageListener).setDescription(String.format(
                 "GetPeriodicMeterReadsGas for channel ONE, DAILY from %s until %s, retrieve attribute: {%s,%s,%s}",
-                new DateTime(this.from), new DateTime(this.to), dlmsProfile.getClassId(), dlmsProfile.getObisCodeAsString(),
-                dlmsProfile.getDefaultAttributeId()));
+                new DateTime(this.from), new DateTime(this.to), dlmsProfile.getClassId(),
+                dlmsProfile.getObisCodeAsString(), dlmsProfile.getDefaultAttributeId()));
 
-        verify(this.dlmsHelper, times(2)).validateBufferedDateTime(any(DateTime.class), any(CosemDateTimeDto.class),
+        verify(this.dlmsHelper, times(2)).validateBufferedDateTime(any(DateTime.class),
                 argThat(new DateTimeMatcher(this.from)), argThat(new DateTimeMatcher(this.to)));
 
-        // VERIFY - the result should contain 2 values
+        verify(this.dlmsObjectConfigService).findDlmsObject(any(Protocol.class), any(DlmsObjectType.class),
+                any(Medium.class));
+
+        // ASSERT - the result should contain 2 values
         final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads = result.getPeriodicMeterReadsGas();
 
         assertThat(periodicMeterReads.size()).isEqualTo(2);
@@ -215,8 +222,8 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
         assertThat(
                 periodicMeterReads.stream().allMatch(r -> this.areDatesEqual(r.getLogTime(), cosemDateTime))).isEqualTo(
                 true);
-        assertThat(periodicMeterReads.stream()
-                .allMatch(r -> this.areDatesEqual(r.getCaptureTime(), cosemDateTime))).isEqualTo(true);
+        assertThat(periodicMeterReads.stream().allMatch(
+                r -> this.areDatesEqual(r.getCaptureTime(), cosemDateTime))).isEqualTo(true);
     }
 
     private AttributeAddress createAttributeAddress(final DlmsObject dlmsObject) {
@@ -226,8 +233,9 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
 
     private AttributeAddressForProfile createAttributeAddressForProfile(final DlmsObject dlmsObject,
             final List<DlmsCaptureObject> selectedObjects) {
-        return new AttributeAddressForProfile(new AttributeAddress(dlmsObject.getClassId(),
-                new ObisCode(dlmsObject.getObisCodeAsString()), dlmsObject.getDefaultAttributeId(), null), selectedObjects);
+        return new AttributeAddressForProfile(
+                new AttributeAddress(dlmsObject.getClassId(), new ObisCode(dlmsObject.getObisCodeAsString()),
+                        dlmsObject.getDefaultAttributeId(), null), selectedObjects);
     }
 
     private DlmsDevice createDevice(final Protocol protocol) {
@@ -236,7 +244,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
         return device;
     }
 
-    // Compares date with cosemDateTime. Note: cosemDateTime uses hundreths and not milliseconds
+    // Compares date with cosemDateTime. Note: cosemDateTime uses hundredths and not milliseconds
     private boolean areDatesEqual(final Date date, final CosemDateTimeDto cosemDateTime) {
         final DateTime dateTime = new DateTime(date);
         final CosemDateDto cosemDate = cosemDateTime.getDate();

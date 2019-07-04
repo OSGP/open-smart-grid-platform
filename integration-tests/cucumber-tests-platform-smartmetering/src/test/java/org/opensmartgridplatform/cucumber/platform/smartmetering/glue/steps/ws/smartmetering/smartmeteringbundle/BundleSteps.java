@@ -1,21 +1,23 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringbundle;
 
-import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ActionResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.Actions;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ActualMeterReadsResponse;
@@ -34,10 +36,8 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetConfi
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetConfigurationObjectResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetMbusEncryptionKeyStatusRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetMbusEncryptionKeyStatusResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetPeriodicMeterReadsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetProfileGenericDataRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetSpecificAttributeValueRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.PeriodicMeterReadsResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ProfileGenericDataResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ReadAlarmRegisterRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ReadAlarmRegisterResponse;
@@ -58,14 +58,12 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartme
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.ScenarioContextHelper;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.bundle.SmartMeteringBundleClient;
-
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class BundleSteps extends BaseBundleSteps {
 
-    private static Map<Class<?>, Class<?>> REQUEST_RESPONSE_MAP = new HashMap<>();
+    private static final Map<Class<?>, Class<?>> REQUEST_RESPONSE_MAP = new HashMap<>();
+
     static {
         REQUEST_RESPONSE_MAP.put(FindEventsRequest.class, FindEventsResponse.class);
         REQUEST_RESPONSE_MAP.put(GetActualMeterReadsRequest.class, ActualMeterReadsResponse.class);
@@ -73,7 +71,6 @@ public class BundleSteps extends BaseBundleSteps {
         REQUEST_RESPONSE_MAP.put(GetAllAttributeValuesRequest.class, ActionResponse.class);
         REQUEST_RESPONSE_MAP.put(GetAssociationLnObjectsRequest.class, AssociationLnObjectsResponse.class);
         REQUEST_RESPONSE_MAP.put(GetConfigurationObjectRequest.class, GetConfigurationObjectResponse.class);
-        REQUEST_RESPONSE_MAP.put(GetPeriodicMeterReadsRequest.class, PeriodicMeterReadsResponse.class);
         REQUEST_RESPONSE_MAP.put(GetProfileGenericDataRequest.class, ProfileGenericDataResponse.class);
         REQUEST_RESPONSE_MAP.put(GetSpecificAttributeValueRequest.class, ActionResponse.class);
         REQUEST_RESPONSE_MAP.put(ReadAlarmRegisterRequest.class, ReadAlarmRegisterResponse.class);
@@ -106,8 +103,8 @@ public class BundleSteps extends BaseBundleSteps {
 
     @When("^the bundle request is received$")
     public void theBundleRequestIsReceived() throws Throwable {
-        final BundleRequest request = (BundleRequest) ScenarioContext.current()
-                .get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
+        final BundleRequest request = (BundleRequest) ScenarioContext.current().get(
+                PlatformSmartmeteringKeys.BUNDLE_REQUEST);
 
         final BundleAsyncResponse asyncResponse = this.client.sendBundleRequest(request);
 
@@ -121,10 +118,10 @@ public class BundleSteps extends BaseBundleSteps {
 
         this.ensureBundleResponse();
 
-        final BundleRequest request = (BundleRequest) ScenarioContext.current()
-                .get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
-        final BundleResponse response = (BundleResponse) ScenarioContext.current()
-                .get(PlatformSmartmeteringKeys.BUNDLE_RESPONSE);
+        final BundleRequest request = (BundleRequest) ScenarioContext.current().get(
+                PlatformSmartmeteringKeys.BUNDLE_REQUEST);
+        final BundleResponse response = (BundleResponse) ScenarioContext.current().get(
+                PlatformSmartmeteringKeys.BUNDLE_RESPONSE);
 
         this.assertSameSize(request, response);
     }
@@ -135,10 +132,10 @@ public class BundleSteps extends BaseBundleSteps {
 
         this.ensureBundleResponse();
 
-        final BundleRequest request = (BundleRequest) ScenarioContext.current()
-                .get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
-        final BundleResponse response = (BundleResponse) ScenarioContext.current()
-                .get(PlatformSmartmeteringKeys.BUNDLE_RESPONSE);
+        final BundleRequest request = (BundleRequest) ScenarioContext.current().get(
+                PlatformSmartmeteringKeys.BUNDLE_REQUEST);
+        final BundleResponse response = (BundleResponse) ScenarioContext.current().get(
+                PlatformSmartmeteringKeys.BUNDLE_RESPONSE);
 
         this.assertSameSize(request, response);
         this.assertSameOrder(request, response);
@@ -150,7 +147,8 @@ public class BundleSteps extends BaseBundleSteps {
         final int responsesSize = bundleResponse.getAllResponses().getResponseList().size();
 
         assertEquals(
-                "The number of responses in the bundle responses should match the number of actions in the bundle request",
+                "The number of responses in the bundle responses should match the number of actions in the bundle "
+                        + "request",
                 actionsSize, responsesSize);
 
     }

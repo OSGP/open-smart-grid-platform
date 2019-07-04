@@ -21,7 +21,7 @@ public class DlmsProfile extends DlmsObject {
     private final Medium medium;
 
     public DlmsProfile(final DlmsObjectType type, final String obisCode, final List<DlmsCaptureObject> captureObjects,
-            final ProfileCaptureTime captureTime, final Medium medium) {
+                       final ProfileCaptureTime captureTime, final Medium medium) {
         super(type, CLASS_ID_PROFILE, obisCode);
         this.captureObjects = captureObjects;
         this.captureTime = captureTime;
