@@ -114,7 +114,7 @@ public class DeviceChannelsHelper {
     private String readIdentificationNumber(final List<GetResult> resultList, final int index, final String description)
             throws ProtocolAdapterException {
 
-        final Long identification = this.dlmsHelper.readLong(resultList.get(index), description);
+        final Long identification = this.dlmsHelper.readLongNotNull(resultList.get(index), description);
         return identification.toString();
     }
 

@@ -9,7 +9,6 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,6 +19,7 @@ import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.testutil.GetResultImpl;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementValuesDto;
 
 public class DeviceChannelsHelperTest {
@@ -55,20 +55,26 @@ public class DeviceChannelsHelperTest {
         assertThat(values.getDeviceTypeIdentification()).isEqualTo(DEVICE_TYPE);
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testMakeChannelElementValuesInvalidManufacturerId() throws Exception {
 
-        manufacturerIdentification = new GetResultImpl(DataObject.newUInteger16Data(123));
+        GetResult manufacturerIdentificationInvalid = new GetResultImpl(DataObject.newUInteger16Data(123));
 
         List<GetResult> resultList = new ArrayList<>(Arrays.asList(primaryAddress, identificationNumber,
+                manufacturerIdentificationInvalid, version, deviceType));
+
+        deviceChannelsHelper.makeChannelElementValues((short) 1, resultList);
+    }
+
+    @Test(expected = ProtocolAdapterException.class)
+    public void testMakeChannelElementValuesIdenfiticationNumberNull() throws Exception {
+
+        GetResult identificationNumberNull = new GetResultImpl(null);
+
+        List<GetResult> resultList = new ArrayList<>(Arrays.asList(primaryAddress, identificationNumberNull,
                 manufacturerIdentification, version, deviceType));
 
-        try {
-            deviceChannelsHelper.makeChannelElementValues((short) 1, resultList);
-            fail();
-        } catch (IllegalArgumentException e) {
-            // Expected exception
-        }
+        deviceChannelsHelper.makeChannelElementValues((short) 1, resultList);
     }
 }
 
