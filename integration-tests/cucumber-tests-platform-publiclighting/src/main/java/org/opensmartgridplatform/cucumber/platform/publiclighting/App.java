@@ -11,7 +11,7 @@ import org.opensmartgridplatform.cucumber.execution.AppBase;
 
 public class App extends AppBase {
 
-    public static void main(final String[] args) throws Throwable {
+    public static void main(final String[] args) {
 
         final String[] testClasses = { "org.opensmartgridplatform.cucumber.platform.publiclighting.AcceptanceTests" };
         final App app = new App();

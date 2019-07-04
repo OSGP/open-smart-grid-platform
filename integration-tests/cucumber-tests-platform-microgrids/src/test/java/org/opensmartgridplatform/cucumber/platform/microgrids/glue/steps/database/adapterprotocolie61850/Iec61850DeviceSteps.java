@@ -15,18 +15,17 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.entities.Iec61850Device;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
 import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
+import org.opensmartgridplatform.cucumber.platform.glue.steps.database.core.RtuDeviceSteps;
 import org.opensmartgridplatform.cucumber.platform.helpers.SettingsHelper;
 import org.opensmartgridplatform.cucumber.platform.microgrids.PlatformMicrogridsDefaults;
 import org.opensmartgridplatform.cucumber.platform.microgrids.PlatformMicrogridsKeys;
 import org.opensmartgridplatform.cucumber.platform.microgrids.config.Iec61850MockServerConfig;
-import org.opensmartgridplatform.cucumber.platform.microgrids.glue.steps.database.core.RtuDeviceSteps;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import cucumber.api.java.en.Given;
 
@@ -60,11 +59,9 @@ public class Iec61850DeviceSteps extends GlueBase {
 
     /**
      * Creates an IEC61850 device.
-     *
-     * @throws Throwable
      */
     @Given("^an rtu iec61850 device$")
-    public void anRtuIec61850Device(final Map<String, String> settings) throws Throwable {
+    public void anRtuIec61850Device(final Map<String, String> settings) {
 
         ScenarioContext.current().put(PlatformMicrogridsKeys.KEY_DEVICE_IDENTIFICATION,
                 PlatformMicrogridsDefaults.DEFAULT_DEVICE_IDENTIFICATION);

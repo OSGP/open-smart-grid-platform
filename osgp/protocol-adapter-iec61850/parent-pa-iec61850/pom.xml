@@ -50,7 +50,7 @@
     <spring.ws.version>2.4.0.RELEASE</spring.ws.version>
     <spring.data.version>1.11.22.RELEASE</spring.data.version>
     <spring.data.key.version>1.2.16.RELEASE</spring.data.key.version>
-    <spring.security.version>4.2.12.RELEASE</spring.security.version>
+    <spring.security.version>4.2.13.RELEASE</spring.security.version>
     <servlet.version>3.0.1</servlet.version>
     <servlet.jstl.version>1.2</servlet.jstl.version>
     <hibernate.version>4.2.16.Final</hibernate.version>
