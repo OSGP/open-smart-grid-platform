@@ -14,7 +14,6 @@ import org.openmuc.openiec61850.Fc;
 import org.openmuc.openiec61850.Report;
 import org.openmuc.openiec61850.SclParseException;
 import org.openmuc.openiec61850.ServerModel;
-import org.openmuc.openiec61850.ServiceError;
 import org.openmuc.openiec61850.internal.cli.Action;
 import org.openmuc.openiec61850.internal.cli.ActionException;
 import org.openmuc.openiec61850.internal.cli.ActionListener;
@@ -29,10 +28,7 @@ import org.openmuc.openiec61850.internal.cli.StringCliParameter;
 public class ConsoleModeClient {
     // -h 84.30.69.148
 
-    private static final String READ_MODEL_FROM_FILE_KEY = "s";
-    private static final String READ_MODEL_FROM_FILE_KEY_DESCRIPTION = "read model from file";
-
-    private static final String RETRIEVE_MODE_VALUE_KEY = "c";
+    private static final String READ_MODE_VALUE_KEY = "c";
     private static final String RETRIEVE_MODE_VALUE_KEY_DESCRIPTION = "Get current mode (local or remote)";
 
     private static final String SET_LOCAL_MODE_KEY = "l";
@@ -44,11 +40,16 @@ public class ConsoleModeClient {
     private static final byte LOCAL_MODE = (byte) 0;
     private static final byte REMOTE_MODE = (byte) 1;
 
-    private static final StringCliParameter hostParam = new CliParameterBuilder("-h")
+    private static final StringCliParameter HOST = new CliParameterBuilder("-h")
             .setDescription("The IP/domain address of the server you want to access.").setMandatory()
             .buildStringParameter("host");
-    private static final IntCliParameter portParam = new CliParameterBuilder("-p")
-            .setDescription("The port to connect to.").buildIntParameter("port", 102);
+    private static final IntCliParameter PORT = new CliParameterBuilder("-p").setDescription("The port to connect to.")
+            .buildIntParameter("port", 102);
+    private static final StringCliParameter SERVER_NAME = new CliParameterBuilder("-s")
+            .setDescription("The server name of the IEC 61850 device to connect to.")
+            .buildStringParameter("serverName", "");
+    private static final StringCliParameter MODEL_FILE_NAME = new CliParameterBuilder("-m")
+            .setDescription("The path and name of the model file to import.").buildStringParameter("modelFileName", "");
 
     private static volatile ClientAssociation association;
     private static ServerModel serverModel;
@@ -85,25 +86,8 @@ public class ConsoleModeClient {
                 case SET_REMOTE_MODE_KEY:
                     this.setRemoteMode();
                     break;
-                case READ_MODEL_FROM_FILE_KEY:
-                    System.out.println("** Reading model from file.");
-
-                    System.out.println("Enter the name of the SCL file: ");
-                    final String modelFileName = actionProcessor.getReader().readLine();
-
-                    try {
-                        serverModel = association.getModelFromSclFile(modelFileName);
-                    } catch (final SclParseException e1) {
-                        System.out.println("Error parsing SCL file: " + e1.getMessage());
-                        return;
-                    }
-
-                    System.out.println("Successfully read model");
-                    System.out.println(serverModel);
-
-                    break;
-                case RETRIEVE_MODE_VALUE_KEY:
-                    this.retrieveMode();
+                case READ_MODE_VALUE_KEY:
+                    this.readMode();
                     break;
                 default:
                     break;
@@ -113,7 +97,20 @@ public class ConsoleModeClient {
             }
         }
 
-        private void retrieveMode() throws OperationFailedException {
+        private void readModelFromFile(final String modelFileName) throws OperationFailedException {
+            System.out.println("** Reading model from file.");
+
+            try {
+                serverModel = association.getModelFromSclFile(modelFileName);
+            } catch (final SclParseException e) {
+                System.out.println("Error parsing SCL file: " + e.getMessage());
+                throw new OperationFailedException("Error reading model", e);
+            }
+
+            System.out.println("Successfully read model");
+        }
+
+        private void readMode() throws OperationFailedException {
             System.out.println("** Retrieving the mode (local or remote)");
 
             final BdaInt8 ctlVal = this.getCtlValNode();
@@ -131,30 +128,16 @@ public class ConsoleModeClient {
             // this.getCtlValNode().setValue(LOCAL_MODE);
         }
 
-        private void setRemoteMode() {
+        private void setRemoteMode() throws OperationFailedException {
             System.out.println("Set REMOTE mode");
             // this.getCtlValNode().setValue(REMOTE_MODE);
         }
 
         private BdaInt8 getCtlValNode() throws OperationFailedException {
             if (serverModel == null) {
-                this.retrieveModelFromDevice();
+                this.readModelFromFile(MODEL_FILE_NAME.getValue());
             }
-            return (BdaInt8) serverModel.findModelNode("SWDeviceGenericIO/LLN0.Mod.Oper.ctlVal", Fc.CO);
-        }
-
-        private void retrieveModelFromDevice() throws OperationFailedException {
-            System.out.println("** Retrieving model from device.");
-
-            try {
-                serverModel = association.retrieveModel();
-            } catch (final IOException | ServiceError e) {
-                System.out.println("Fatal error: " + e.getMessage());
-                throw new OperationFailedException("Retrieving model failed", e);
-            }
-
-            System.out.println("successfully read model");
-            // System.out.println(serverModel);
+            return (BdaInt8) serverModel.findModelNode(SERVER_NAME.getValue() + "/LLN0.Mod.Oper.ctlVal", Fc.CO);
         }
 
         @Override
@@ -168,8 +151,10 @@ public class ConsoleModeClient {
     public static void main(final String[] args) {
 
         final List<CliParameter> cliParameters = new ArrayList<>();
-        cliParameters.add(hostParam);
-        cliParameters.add(portParam);
+        cliParameters.add(HOST);
+        cliParameters.add(PORT);
+        cliParameters.add(SERVER_NAME);
+        cliParameters.add(MODEL_FILE_NAME);
 
         final CliParser cliParser = new CliParser("openiec61850-console-client",
                 "A client application to access IEC 61850 MMS servers.");
@@ -183,19 +168,19 @@ public class ConsoleModeClient {
             System.exit(1);
         }
 
-        InetAddress address;
+        final InetAddress address;
         try {
-            address = InetAddress.getByName(hostParam.getValue());
+            address = InetAddress.getByName(HOST.getValue());
         } catch (final UnknownHostException e) {
-            System.out.println("Unknown host: " + hostParam.getValue());
+            System.out.println("Unknown host: " + HOST.getValue());
             return;
         }
 
         final ClientSap clientSap = new ClientSap();
 
         try {
-            System.out.println("Connecting to remote host " + hostParam.getValue());
-            association = clientSap.associate(address, portParam.getValue(), null, new EventListener());
+            System.out.println("Connecting to remote host " + HOST.getValue());
+            association = clientSap.associate(address, PORT.getValue(), null, new EventListener());
         } catch (final IOException e) {
             System.out.println("Unable to connect to remote host.");
             return;
@@ -210,56 +195,11 @@ public class ConsoleModeClient {
 
         System.out.println("Successfully connected");
 
-        actionProcessor.addAction(new Action(READ_MODEL_FROM_FILE_KEY, READ_MODEL_FROM_FILE_KEY_DESCRIPTION));
-        actionProcessor.addAction(new Action(RETRIEVE_MODE_VALUE_KEY, RETRIEVE_MODE_VALUE_KEY_DESCRIPTION));
+        actionProcessor.addAction(new Action(READ_MODE_VALUE_KEY, RETRIEVE_MODE_VALUE_KEY_DESCRIPTION));
         actionProcessor.addAction(new Action(SET_LOCAL_MODE_KEY, SET_LOCAL_MODE_KEY_DESCRIPTION));
         actionProcessor.addAction(new Action(SET_REMOTE_MODE_KEY, SET_REMOTE_MODE_KEY_DESCRIPTION));
 
         actionProcessor.start();
-
-        //
-        // // example for writing a variable:
-        // FcModelNode modCtlModel = (FcModelNode)
-        // serverModel.findModelNode("ied1lDevice1/CSWI1.Mod.ctlModel", Fc.CF);
-        // association.setDataValues(modCtlModel);
-        //
-        // // example for enabling reporting
-        // Urcb urcb = serverModel.getUrcb("ied1lDevice1/LLN0.urcb1");
-        // if (urcb == null) {
-        // System.out.println("ReportControlBlock not found");
-        // }
-        // else {
-        // association.getRcbValues(urcb);
-        // System.out.println("urcb name: " + urcb.getName());
-        // System.out.println("RptId: " + urcb.getRptId());
-        // System.out.println("RptEna: " + urcb.getRptEna().getValue());
-        // association.reserveUrcb(urcb);
-        // association.enableReporting(urcb);
-        // association.startGi(urcb);
-        // association.disableReporting(urcb);
-        // association.cancelUrcbReservation(urcb);
-        // }
-        //
-        // // example for reading a variable:
-        // FcModelNode totW = (FcModelNode)
-        // serverModel.findModelNode("ied1lDevice1/MMXU1.TotW", Fc.MX);
-        // BdaFloat32 totWmag = (BdaFloat32) totW.getChild("mag").getChild("f");
-        // BdaTimestamp totWt = (BdaTimestamp) totW.getChild("t");
-        // BdaQuality totWq = (BdaQuality) totW.getChild("q");
-        //
-        // while (true) {
-        // association.getDataValues(totW);
-        // System.out.println("got totW: mag " + totWmag.getFloat() + ", time "
-        // + totWt.getDate() + ", quality "
-        // + totWq.getValidity());
-        //
-        // try {
-        // Thread.sleep(5000);
-        // } catch (InterruptedException e) {
-        // }
-        //
-        // }
-
     }
 
 }

@@ -2,6 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>osgp-mode-cli-iec61850</artifactId>
+  <packaging>jar</packaging>
   <version>0.0.1-SNAPSHOT</version>
   <name>osgp-mode-cli-iec61850</name>
   <description>CLI (command line interface) to manipulate the mode (local/remote) of a device.</description>
