@@ -1,0 +1,38 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opensmartgridplatform</groupId>
+  <artifactId>osgp-mode-cli-iec61850</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>osgp-mode-cli-iec61850</name>
+  <description>CLI (command line interface) to manipulate the mode (local/remote) of a device.</description>
+  <build>
+    <sourceDirectory>src</sourceDirectory>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.0</version>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  
+  <dependencies>
+    <!-- OpenIEC61850 -->
+    <dependency>
+      <groupId>org.openmuc</groupId>
+      <artifactId>openiec61850</artifactId>
+      <version>1.6.0</version>
+    </dependency>
+
+    <!-- Testing dependencies -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.11</version>
+    </dependency>
+  </dependencies>
+  
+</project>
