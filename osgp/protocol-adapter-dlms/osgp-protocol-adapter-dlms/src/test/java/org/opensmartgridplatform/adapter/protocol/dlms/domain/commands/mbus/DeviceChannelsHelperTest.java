@@ -66,7 +66,7 @@ public class DeviceChannelsHelperTest {
         deviceChannelsHelper.makeChannelElementValues((short) 1, resultList);
     }
 
-    @Test(expected = ProtocolAdapterException.class)
+    @Test
     public void testMakeChannelElementValuesIdenfiticationNumberNull() throws Exception {
 
         GetResult identificationNumberNull = new GetResultImpl(null);
@@ -74,7 +74,9 @@ public class DeviceChannelsHelperTest {
         List<GetResult> resultList = new ArrayList<>(Arrays.asList(primaryAddress, identificationNumberNull,
                 manufacturerIdentification, version, deviceType));
 
-        deviceChannelsHelper.makeChannelElementValues((short) 1, resultList);
+        ChannelElementValuesDto values = deviceChannelsHelper.makeChannelElementValues((short) 1, resultList);
+
+        assertThat(values.getIdentificationNumber()).isEqualTo(null);
     }
 }
 

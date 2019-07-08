@@ -241,7 +241,7 @@ Feature: SmartMetering Installation - Couple M-Bus Device
     And the M-Bus device "TESTG101205673101" is coupled to device "TEST1024000000001" on M-Bus channel "1" with PrimaryAddress "3"
     And the values for classid 72 obiscode "0-1:24.1.0" on device simulator "TEST1024000000001" are
       | 5 | unsigned             |         3 |
-      | 6 | double-long-unsigned | 302343985 |
+      | 6 | double-long-unsigned |  12056731 |
       | 7 | long-unsigned        |     12514 |
       | 8 | unsigned             |        66 |
       | 9 | unsigned             |         3 |
@@ -311,7 +311,7 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | 9 | unsigned             |         3 |
     And the values for classid 72 obiscode "0-2:24.1.0" on device simulator "TEST1024000000001" are
       | 5 | unsigned             |         3 |
-      | 6 | double-long-unsigned | 302343985 |
+      | 6 | double-long-unsigned |  12056731 |
       | 7 | long-unsigned        |     12514 |
       | 8 | unsigned             |        66 |
       | 9 | unsigned             |         3 |
