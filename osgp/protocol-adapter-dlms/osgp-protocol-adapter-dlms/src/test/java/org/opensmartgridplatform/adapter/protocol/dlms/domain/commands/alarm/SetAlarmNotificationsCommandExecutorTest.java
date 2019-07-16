@@ -28,20 +28,19 @@ import static org.junit.Assert.assertEquals;
 public class SetAlarmNotificationsCommandExecutorTest {
     private DlmsDevice device;
     private CommandExecutor<AlarmNotificationsDto, AccessResultCode> executor;
+    private List<SetParameter> setParametersReceived;
+    private DlmsConnectionManager connMgr;
 
     @Before
     public void setUp() {
+        this.setParametersReceived = new ArrayList<>();
+        this.device = new DlmsDevice("SuperAwesomeHeroicRockstarDevice");
+
         final DlmsObjectConfigConfiguration dlmsObjectConfigConfiguration = new DlmsObjectConfigConfiguration();
         final DlmsObjectConfigService dlmsObjectConfigService =
                 new DlmsObjectConfigService(new DlmsHelper(), dlmsObjectConfigConfiguration.getDlmsObjectConfigs());
-
-        this.device = new DlmsDevice("SuperAwesomeHeroicRockstarDevice");
         this.executor = new SetAlarmNotificationsCommandExecutor(dlmsObjectConfigService);
-    }
 
-    @Test
-    public void testSetAlarmNotificationsCommandIsSent() throws OsgpException {
-        final List<SetParameter> setParametersReceived = new ArrayList<>();
         final DlmsConnectionStub conn = new DlmsConnectionStub() {
             @Override
             public AccessResultCode set(final SetParameter setParameter) {
@@ -49,44 +48,54 @@ public class SetAlarmNotificationsCommandExecutorTest {
                 return AccessResultCode.SUCCESS;
             }
         };
+
+        this.connMgr = new DlmsConnectionManagerStub(conn);
+
         // Set the return value to 10 (0b1010):
         // REPLACE_BATTERY enabled, AUXILIARY_EVENT enabled.
         conn.addReturnValue(
                 new AttributeAddress(1, "0.0.97.98.10.255", 2),
                 DataObject.newInteger32Data(10));
-        final DlmsConnectionManager connMgr = new DlmsConnectionManagerStub(conn);
+    }
 
+    @Test
+    public void testSetSettingThatIsAlreadySet() throws OsgpException {
         // Setting notifications that are not different from what is on the meter already,
         // should always be successful.
-        AccessResultCode res1 = this.execute(connMgr,
+        AccessResultCode res = this.execute(
                 new AlarmNotificationDto(AlarmTypeDto.REPLACE_BATTERY, true));
-        assertEquals(AccessResultCode.SUCCESS, res1);
+        assertEquals(AccessResultCode.SUCCESS, res);
         // Since nothing changed, not a single message should have been sent to the meter.
         assertEquals(0, setParametersReceived.size());
+    }
 
+    @Test
+    public void testSetSettingEnabled() throws OsgpException {
         // Now we enable something: CLOCK_INVALID to enabled.
-        AccessResultCode res2 = this.execute(connMgr,
+        AccessResultCode res = this.execute(
                 new AlarmNotificationDto(AlarmTypeDto.CLOCK_INVALID, true));
-        assertEquals(AccessResultCode.SUCCESS, res2);
+        assertEquals(AccessResultCode.SUCCESS, res);
         assertEquals(1, setParametersReceived.size());
         // Expecting 11 (0b1011).
-        assertEquals(11, (long)setParametersReceived.get(0).getData().getValue());
-        setParametersReceived.clear();
+        assertEquals(11, (long) setParametersReceived.get(0).getData().getValue());
+    }
 
+    @Test
+    public void testSetSettingEnabledAndDisabled() throws OsgpException {
         // Now we enable and disable something: CLOCK_INVALID to enabled and REPLACE_BATTERY to disabled.
-        AccessResultCode res3 = this.execute(connMgr,
+        AccessResultCode res = this.execute(
                 new AlarmNotificationDto(AlarmTypeDto.CLOCK_INVALID, true),
                 new AlarmNotificationDto(AlarmTypeDto.REPLACE_BATTERY, false));
-        assertEquals(AccessResultCode.SUCCESS, res2);
+        assertEquals(AccessResultCode.SUCCESS, res);
         assertEquals(1, setParametersReceived.size());
         // Expecting 9 (0b1001).
         assertEquals(9, (long)setParametersReceived.get(0).getData().getValue());
     }
 
-    private AccessResultCode execute(final DlmsConnectionManager connMgr, AlarmNotificationDto... alarmNotificationDtos)
+    private AccessResultCode execute(final AlarmNotificationDto... alarmNotificationDtos)
             throws OsgpException {
         final Set<AlarmNotificationDto> alarmNotificationDtoSet = new HashSet<>(Arrays.asList(alarmNotificationDtos));
         final AlarmNotificationsDto alarmNotificationsDto = new AlarmNotificationsDto(alarmNotificationDtoSet);
-        return executor.execute(connMgr, this.device, alarmNotificationsDto);
+        return executor.execute(this.connMgr, this.device, alarmNotificationsDto);
     }
 }
