@@ -7,8 +7,11 @@
  */
 package org.opensmartgridplatform.adapter.domain.publiclighting.application.config;
 
+import java.util.TimeZone;
 import java.util.concurrent.Executor;
 
+import org.opensmartgridplatform.adapter.domain.publiclighting.application.tasks.EventRetrievalScheduledTask;
+import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,9 +24,6 @@ import org.springframework.scheduling.config.CronTask;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.scheduling.support.CronTrigger;
 
-import org.opensmartgridplatform.adapter.domain.publiclighting.application.tasks.EventRetrievalScheduledTask;
-import org.opensmartgridplatform.shared.application.config.AbstractConfig;
-
 @EnableScheduling
 @Configuration
 @PropertySources({ @PropertySource("classpath:osgp-adapter-domain-publiclighting.properties"),
@@ -32,6 +32,7 @@ import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 public class SchedulingConfigForEventRetrievalScheduledTask extends AbstractConfig implements SchedulingConfigurer {
 
     private static final String PROPERTY_NAME_SCHEDULING_TASK_EVENT_RETRIEVAL_CRON_EXPRESSION = "scheduling.task.event.retrieval.cron.expression";
+    private static final String PROPERTY_NAME_SCHEDULING_TASK_EVENT_RETRIEVAL_CRON_TIMEZONE = "scheduling.task.event.retrieval.cron.timezone";
     private static final String PROPERTY_NAME_SCHEDULING_TASK_EVENT_RETRIEVAL_POOL_SIZE = "scheduling.task.event.retrieval.pool.size";
     private static final String PROPERTY_NAME_SCHEDULING_TASK_EVENT_RETRIEVAL_MANUFACTURER_NAME = "scheduling.task.event.retrieval.manufacturer.name";
     private static final String PROPERTY_NAME_SCHEDULING_TASK_EVENT_RETRIEVAL_MAX_ALLOWED_AGE = "scheduling.task.event.retrieval.max.allowed.age";
@@ -49,7 +50,10 @@ public class SchedulingConfigForEventRetrievalScheduledTask extends AbstractConf
     public CronTrigger eventRetrievalScheduledTaskCronTrigger() {
         final String cron = this.environment
                 .getRequiredProperty(PROPERTY_NAME_SCHEDULING_TASK_EVENT_RETRIEVAL_CRON_EXPRESSION);
-        return new CronTrigger(cron);
+        final String timezone = this.environment
+                .getRequiredProperty(PROPERTY_NAME_SCHEDULING_TASK_EVENT_RETRIEVAL_CRON_TIMEZONE);
+
+        return new CronTrigger(cron, TimeZone.getTimeZone(timezone));
     }
 
     @Bean(destroyMethod = "shutdown")
