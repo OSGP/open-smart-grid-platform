@@ -14,7 +14,7 @@
 
   <artifactId>parent-shared</artifactId>
   <groupId>org.opensmartgridplatform</groupId>
-  <version>4.35.1</version>
+  <version>4.36.0</version>
   <packaging>pom</packaging>
   <name>parent-shared</name>
   <!-- Description, Organization, Licences, URL and Distribution Management 
@@ -46,13 +46,13 @@
 
   <properties>
     <module.baseUri>${project.baseUri}/../</module.baseUri>
-    <osgp.version>4.35.1</osgp.version>
+    <osgp.version>4.36.0</osgp.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <spring.version>4.3.18.RELEASE</spring.version>
     <spring.ws.version>2.4.0.RELEASE</spring.ws.version>
-    <spring.data.version>1.11.21.RELEASE</spring.data.version>
-    <spring.security.version>4.2.12.RELEASE</spring.security.version>
+    <spring.data.version>1.11.22.RELEASE</spring.data.version>
+    <spring.security.version>4.2.13.RELEASE</spring.security.version>
     <servlet.version>3.0.1</servlet.version>
     <servlet.jstl.version>1.2</servlet.jstl.version>
     <hibernate.version>4.2.16.Final</hibernate.version>
@@ -64,7 +64,7 @@
     <slf4j.version>1.7.7</slf4j.version>
     <apache.commons.lang.version>3.3.2</apache.commons.lang.version>
     <apache.httpcomponents.version>4.3.6</apache.httpcomponents.version>
-    <jackson.version>2.9.8</jackson.version>
+    <jackson.version>2.9.9</jackson.version>
     <commons.codec.version>1.9</commons.codec.version>
     <orika.version>1.5.1</orika.version>
     <jxr.version>2.5</jxr.version>

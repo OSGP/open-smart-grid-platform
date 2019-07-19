@@ -120,7 +120,7 @@ public class DlmsHelper {
      * number of attribute addresses provided.
      */
     public List<GetResult> getAndCheck(final DlmsConnectionManager conn, final DlmsDevice device,
-            final String description, final AttributeAddress... params) throws ProtocolAdapterException {
+                                       final String description, final AttributeAddress... params) throws ProtocolAdapterException {
         final List<GetResult> getResults = this.getWithList(conn, device, params);
         this.checkResultList(getResults, params.length, description);
         return getResults;
@@ -145,7 +145,7 @@ public class DlmsHelper {
      *         or when the one and only result is erroneous.
      */
     public void checkResultList(final List<GetResult> getResultList, final int expectedResults,
-            final String description) throws ProtocolAdapterException {
+                                final String description) throws ProtocolAdapterException {
         if (getResultList.isEmpty()) {
             throw new ProtocolAdapterException("No GetResult received: " + description);
         } else if (getResultList.size() == 1 && AccessResultCode.SUCCESS != getResultList.get(0).getResultCode()) {
@@ -159,7 +159,7 @@ public class DlmsHelper {
     }
 
     public List<GetResult> getWithList(final DlmsConnectionManager conn, final DlmsDevice device,
-            final AttributeAddress... params) throws ProtocolAdapterException {
+                                       final AttributeAddress... params) throws ProtocolAdapterException {
         try {
             if (device.isWithListSupported()) {
                 return conn.getConnection().get(Arrays.asList(params));
@@ -178,7 +178,7 @@ public class DlmsHelper {
     }
 
     public DataObject getAccessSelectionTimeRangeParameter(final DateTime from, final DateTime to,
-            final DataObject selectedValues) {
+                                                           final DataObject selectedValues) {
 
         /*
          * Define the clock object {8,0-0:1.0.0.255,2,0} to be used as
@@ -202,12 +202,12 @@ public class DlmsHelper {
      *         {@link #readLong(GetResult, String)} is null
      */
     public DlmsMeterValueDto getScaledMeterValue(final GetResult value, final GetResult scalerUnit,
-            final String description) throws ProtocolAdapterException {
+                                                 final String description) throws ProtocolAdapterException {
         return this.getScaledMeterValue(value.getResultData(), scalerUnit.getResultData(), description);
     }
 
     public DlmsMeterValueDto getScaledMeterValue(final DataObject value, final DataObject scalerUnitObject,
-            final String description) throws ProtocolAdapterException {
+                                                 final String description) throws ProtocolAdapterException {
         LOGGER.debug(this.getDebugInfo(value));
         LOGGER.debug(this.getDebugInfo(scalerUnitObject));
         final Long rawValue = this.readLong(value, description);
@@ -468,13 +468,13 @@ public class DlmsHelper {
     }
 
     public List<CosemObjectDefinitionDto> readListOfObjectDefinition(final GetResult getResult,
-            final String description) throws ProtocolAdapterException {
+                                                                     final String description) throws ProtocolAdapterException {
         this.checkResultCode(getResult, description);
         return this.readListOfObjectDefinition(getResult.getResultData(), description);
     }
 
     public List<CosemObjectDefinitionDto> readListOfObjectDefinition(final DataObject resultData,
-            final String description) throws ProtocolAdapterException {
+                                                                     final String description) throws ProtocolAdapterException {
         final List<DataObject> listOfObjectDefinition = this.readList(resultData, description);
         if (listOfObjectDefinition == null) {
             return Collections.emptyList();
@@ -523,7 +523,7 @@ public class DlmsHelper {
     }
 
     public SendDestinationAndMethodDto readSendDestinationAndMethod(final DataObject resultData,
-            final String description) throws ProtocolAdapterException {
+                                                                    final String description) throws ProtocolAdapterException {
         final List<DataObject> sendDestinationAndMethodElements = this.readList(resultData, description);
         if (sendDestinationAndMethodElements == null) {
             return null;
@@ -570,18 +570,18 @@ public class DlmsHelper {
         final MessageTypeDto message;
         final int enumValue = number.intValue();
         switch (enumValue) {
-        case 0:
-            message = MessageTypeDto.A_XDR_ENCODED_X_DLMS_APDU;
-            break;
-        case 1:
-            message = MessageTypeDto.XML_ENCODED_X_DLMS_APDU;
-            break;
-        default:
-            if (enumValue < 128 || enumValue > 255) {
-                LOGGER.error("Unexpected Enum value for MessageType: {}", enumValue);
-                throw new ProtocolAdapterException("Unknown Enum value for MessageType: " + enumValue);
-            }
-            message = MessageTypeDto.MANUFACTURER_SPECIFIC;
+            case 0:
+                message = MessageTypeDto.A_XDR_ENCODED_X_DLMS_APDU;
+                break;
+            case 1:
+                message = MessageTypeDto.XML_ENCODED_X_DLMS_APDU;
+                break;
+            default:
+                if (enumValue < 128 || enumValue > 255) {
+                    LOGGER.error("Unexpected Enum value for MessageType: {}", enumValue);
+                    throw new ProtocolAdapterException("Unknown Enum value for MessageType: " + enumValue);
+                }
+                message = MessageTypeDto.MANUFACTURER_SPECIFIC;
         }
         return message;
     }
@@ -615,7 +615,7 @@ public class DlmsHelper {
     }
 
     private WindowElementDto buildWindowElementFromDataObjects(final List<DataObject> elements,
-            final String description) throws ProtocolAdapterException {
+                                                               final String description) throws ProtocolAdapterException {
         if (elements.size() != 2) {
             LOGGER.error("Unexpected number of ResultData elements for WindowElement value: {}", elements.size());
             throw new ProtocolAdapterException(
@@ -883,16 +883,9 @@ public class DlmsHelper {
                         + resultDataType);
     }
 
-    public void validateBufferedDateTime(final DateTime bufferedDateTime, final CosemDateTimeDto cosemDateTime,
-            final DateTime beginDateTime, final DateTime endDateTime) throws BufferedDateTimeValidationException {
+    public void validateBufferedDateTime(final DateTime bufferedDateTime,
+                                         final DateTime beginDateTime, final DateTime endDateTime) throws BufferedDateTimeValidationException {
 
-        if (bufferedDateTime == null) {
-            final DateTimeFormatter dtf = ISODateTimeFormat.dateTime();
-            throw new BufferedDateTimeValidationException(
-                    "Not using an object from capture buffer (clock=" + cosemDateTime
-                            + "), because the date does not match the given period, since it is not fully specified: ["
-                            + dtf.print(beginDateTime) + " .. " + dtf.print(endDateTime) + "].");
-        }
         if (bufferedDateTime.isBefore(beginDateTime) || bufferedDateTime.isAfter(endDateTime)) {
             final DateTimeFormatter dtf = ISODateTimeFormat.dateTime();
             throw new BufferedDateTimeValidationException(

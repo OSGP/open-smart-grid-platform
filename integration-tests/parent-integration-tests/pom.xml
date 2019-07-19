@@ -14,7 +14,7 @@
 
   <artifactId>parent-integration-tests</artifactId>
   <groupId>org.opensmartgridplatform</groupId>
-  <version>4.35.1</version>
+  <version>4.36.0</version>
   <packaging>pom</packaging>
   <name>parent-integration-tests</name>
   <!-- Description, Organization, Licences, URL and Distribution Management 
@@ -51,10 +51,10 @@
     <osgp.iec61850.simulator.version>${project.version}</osgp.iec61850.simulator.version>
     <spring.version>4.3.18.RELEASE</spring.version>
     <spring.ws.version>2.4.0.RELEASE</spring.ws.version>
-    <spring.data.version>1.11.21.RELEASE</spring.data.version>
+    <spring.data.version>1.11.22.RELEASE</spring.data.version>
     <spring.data.key.version>1.2.16.RELEASE</spring.data.key.version>
     <spring.data.commons.version>1.13.16.RELEASE</spring.data.commons.version>
-    <spring.security.version>4.2.12.RELEASE</spring.security.version>
+    <spring.security.version>4.2.13.RELEASE</spring.security.version>
     <servlet.version>3.0.1</servlet.version>
     <servlet.jstl.version>1.2</servlet.jstl.version>
     <protobuf.version>2.4.1</protobuf.version>
@@ -70,7 +70,7 @@
     <apache.commons.lang.version>3.3.2</apache.commons.lang.version>
     <apache.httpcomponents.version>4.3.6</apache.httpcomponents.version>
     <apache.httpcomponents.httpcore.version>4.4.6</apache.httpcomponents.httpcore.version>
-    <jackson.version>2.9.8</jackson.version>
+    <jackson.version>2.9.9</jackson.version>
     <commons.codec.version>1.9</commons.codec.version>
     <orika.version>1.5.1</orika.version>
     <netty.version>3.9.4.Final</netty.version>
@@ -144,7 +144,11 @@
         <artifactId>osgp-domain-core</artifactId>
         <version>${osgp.version}</version>
       </dependency>
-
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-domain-distributionautomation</artifactId>
+        <version>${osgp.version}</version>
+      </dependency>
       <dependency>
         <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-domain-microgrids</artifactId>
@@ -172,6 +176,12 @@
         <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-adapter-ws-shared-db</artifactId>
         <version>${osgp.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-adapter-ws-distributionautomation</artifactId>
+        <version>${osgp.version}</version>
+        <classifier>classes</classifier>
       </dependency>
       <dependency>
         <groupId>org.opensmartgridplatform</groupId>
@@ -212,6 +222,12 @@
       <dependency>
         <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-adapter-domain-core</artifactId>
+        <version>${osgp.version}</version>
+        <classifier>classes</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-adapter-domain-distributionautomation</artifactId>
         <version>${osgp.version}</version>
         <classifier>classes</classifier>
       </dependency>
@@ -288,7 +304,21 @@
 
       <dependency>
         <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-protocol-adapter-iec60870</artifactId>
+        <version>${osgp.version}</version>
+        <classifier>classes</classifier>
+      </dependency>
+
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-protocol-adapter-iec61850</artifactId>
+        <version>${osgp.version}</version>
+        <classifier>classes</classifier>
+      </dependency>
+
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-protocol-simulator-iec60870</artifactId>
         <version>${osgp.version}</version>
         <classifier>classes</classifier>
       </dependency>

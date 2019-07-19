@@ -65,9 +65,9 @@ public class SmartMeterBuilder extends BaseDeviceBuilder<SmartMeterBuilder> impl
 
     @Override
     public SmartMeter build() {
-        final SmartMeter device = new SmartMeter(
-                this.deviceIdentification, this.alias, new Address(this.containerCity, this.containerPostalCode,
-                        this.containerStreet, this.containerNumber, this.containerMunicipality),
+        final SmartMeter device = new SmartMeter(this.deviceIdentification, this.alias,
+                new Address(this.containerCity, this.containerPostalCode, this.containerStreet, this.containerNumber,
+                        this.containerNumberAddition, this.containerMunicipality),
                 new GpsCoordinates(this.gpsLatitude, this.gpsLongitude));
 
         device.setActivated(this.isActivated);

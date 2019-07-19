@@ -31,9 +31,9 @@ public class DeviceBuilder extends BaseDeviceBuilder<DeviceBuilder> implements C
 
     @Override
     public Device build() {
-        final Device device = new Device(
-                this.deviceIdentification, this.alias, new Address(this.containerCity, this.containerPostalCode,
-                        this.containerStreet, this.containerNumber, this.containerMunicipality),
+        final Device device = new Device(this.deviceIdentification, this.alias,
+                new Address(this.containerCity, this.containerPostalCode, this.containerStreet, this.containerNumber,
+                        this.containerNumberAddition, this.containerMunicipality),
                 new GpsCoordinates(this.gpsLatitude, this.gpsLongitude), null);
 
         device.updateProtocol(this.protocolInfo);
