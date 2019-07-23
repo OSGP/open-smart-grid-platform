@@ -25,7 +25,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Arrays;
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 public class SetAlarmNotificationsCommandExecutorTest {
@@ -75,9 +75,9 @@ public class SetAlarmNotificationsCommandExecutorTest {
         // should always be successful.
         AccessResultCode res = this.execute(
                 new AlarmNotificationDto(AlarmTypeDto.REPLACE_BATTERY, true));
-        assertEquals(AccessResultCode.SUCCESS, res);
+        assertThat(res).isEqualTo(AccessResultCode.SUCCESS);
         // Since nothing changed, not a single message should have been sent to the meter.
-        assertEquals(0, setParametersReceived.size());
+        assertThat(setParametersReceived.size()).isEqualTo(0);
     }
 
     @Test
@@ -85,10 +85,10 @@ public class SetAlarmNotificationsCommandExecutorTest {
         // Now we enable something: CLOCK_INVALID to enabled.
         AccessResultCode res = this.execute(
                 new AlarmNotificationDto(AlarmTypeDto.CLOCK_INVALID, true));
-        assertEquals(AccessResultCode.SUCCESS, res);
-        assertEquals(1, setParametersReceived.size());
+        assertThat(res).isEqualTo(AccessResultCode.SUCCESS);
+        assertThat(setParametersReceived.size()).isEqualTo(1);
         // Expecting 11 (0b1011).
-        assertEquals(11, (long) setParametersReceived.get(0).getData().getValue());
+        assertThat((long) setParametersReceived.get(0).getData().getValue()).isEqualTo(11);
     }
 
     @Test
@@ -97,10 +97,10 @@ public class SetAlarmNotificationsCommandExecutorTest {
         AccessResultCode res = this.execute(
                 new AlarmNotificationDto(AlarmTypeDto.CLOCK_INVALID, true),
                 new AlarmNotificationDto(AlarmTypeDto.REPLACE_BATTERY, false));
-        assertEquals(AccessResultCode.SUCCESS, res);
-        assertEquals(1, setParametersReceived.size());
+        assertThat(res).isEqualTo(AccessResultCode.SUCCESS);
+        assertThat(setParametersReceived.size()).isEqualTo(1);
         // Expecting 9 (0b1001).
-        assertEquals(9, (long)setParametersReceived.get(0).getData().getValue());
+        assertThat((long)setParametersReceived.get(0).getData().getValue()).isEqualTo(9);
     }
 
     private AccessResultCode execute(final AlarmNotificationDto... alarmNotificationDtos)
