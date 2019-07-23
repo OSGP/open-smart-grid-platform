@@ -27,8 +27,12 @@ public class DataObjectToEventListConverter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataObjectToEventListConverter.class);
 
+    private final DlmsHelper dlmsHelper;
+
     @Autowired
-    private DlmsHelper dlmsHelper;
+    public DataObjectToEventListConverter(final DlmsHelper dlmsHelper) {
+        this.dlmsHelper = dlmsHelper;
+    }
 
     public List<EventDto> convert(final DataObject source, final EventLogCategoryDto eventLogCategory)
             throws ProtocolAdapterException {

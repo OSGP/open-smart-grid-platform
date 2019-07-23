@@ -53,11 +53,8 @@ public class RetrieveEventsCommandExecutor extends AbstractCommandExecutor<FindE
 
     private static final int ACCESS_SELECTOR_RANGE_DESCRIPTOR = 1;
 
-    @Autowired
     DataObjectToEventListConverter dataObjectToEventListConverter;
-
-    @Autowired
-    private DlmsHelper dlmsHelper;
+    private final DlmsHelper dlmsHelper;
 
     // @formatter:off
     private static final EnumMap<EventLogCategoryDto, ObisCode> EVENT_LOG_CATEGORY_OBISCODE_MAP = new EnumMap<>(
@@ -70,9 +67,12 @@ public class RetrieveEventsCommandExecutor extends AbstractCommandExecutor<FindE
         EVENT_LOG_CATEGORY_OBISCODE_MAP.put(EventLogCategoryDto.POWER_QUALITY_EVENT_LOG,   new ObisCode("0.0.99.98.5.255"));
     }
     // @formatter:on
-
-    public RetrieveEventsCommandExecutor() {
+    @Autowired
+    public RetrieveEventsCommandExecutor(final DlmsHelper dlmsHelper,
+            final DataObjectToEventListConverter dataObjectToEventListConverter) {
         super(FindEventsRequestDto.class);
+        this.dlmsHelper = dlmsHelper;
+        this.dataObjectToEventListConverter = dataObjectToEventListConverter;
     }
 
     @Override
