@@ -13,5 +13,6 @@ public enum EventLogCategory implements Serializable {
     STANDARD_EVENT_LOG,
     FRAUD_DETECTION_LOG,
     COMMUNICATION_SESSION_LOG,
-    M_BUS_EVENT_LOG
+    M_BUS_EVENT_LOG,
+    POWER_QUALITY_EVENT_LOG
 }
