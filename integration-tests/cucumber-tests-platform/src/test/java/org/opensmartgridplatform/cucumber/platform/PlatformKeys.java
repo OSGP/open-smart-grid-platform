@@ -66,6 +66,7 @@ public class PlatformKeys extends Keys {
     public static final String HISTORY_TERM_TYPE = "HistoryTermType";
     public static final String INTERVAL_TYPE = "IntervalType";
     public static final String KEY_ACTIVATED = "Activated";
+    public static final String KEY_ALIAS = "Alias";
 
     public static final String KEY_DEVICE_LIFECYCLE_STATUS = "DeviceLifecycleStatus";
     public static final String KEY_ACTUAL_LINKTYPE = "ActualLinkType";
@@ -80,6 +81,12 @@ public class PlatformKeys extends Keys {
     public static final String KEY_CITY = "containerCity";
 
     public static final String KEY_COMM_METHOD = "CommunicationMethod";
+    public static final String KEY_CONTAINER_CITY = "ContainerCity";
+    public static final String KEY_CONTAINER_MUNICIPALITY = "ContainerMunicipality";
+    public static final String KEY_CONTAINER_NUMBER = "ContainerNumber";
+    public static final String KEY_CONTAINER_NUMBER_ADDITION = "ContainerNumberAddition";
+    public static final String KEY_CONTAINER_POSTALCODE = "ContainerPostalCode";
+    public static final String KEY_CONTAINER_STREET = "ContainerStreet";
     public static final String KEY_CORRELATION_UID = "CorrelationUid";
     public static final String KEY_CREATION_TIME = "CreationTime";
     public static final String KEY_MODIFICATION_TIME = "ModificationTime";
@@ -103,6 +110,7 @@ public class PlatformKeys extends Keys {
     public static final String ALIAS = "Alias";
     public static final String CONTAINER_STREET = "ContainerStreet";
     public static final String CONTAINER_NUMBER = "ContainerNumber";
+    public static final String CONTAINER_NUMBER_ADDITION = "ContainerNumberAddition";
     public static final String CONTAINER_POSTALCODE = "ContainerPostalCode";
     public static final String CONTAINER_CITY = "ContainerCity";
     public static final String CONTAINER_MUNICIPALITY = "ContainerMunicipality";
@@ -138,6 +146,8 @@ public class PlatformKeys extends Keys {
     public static final String KEY_FIRMWARE_MODULE_TYPE = "FirmwareModuleType";
     public static final String KEY_FIRMWARE_MODULE_VERSION = "FirmwareModuleVersion";
     public static final String KEY_GATEWAY_DEVICE_ID = "GatewayDeviceIdentification";
+    public static final String KEY_GPS_LATITUDE = "GpsLatitude";
+    public static final String KEY_GPS_LONGITUDE = "GpsLongitude";
     public static final String KEY_HAS_SCHEDULE = "HasSchedule";
     public static final String KEY_HAS_TECHNICAL_INSTALLATION = "HasTechnicalInstallation";
     public static final String KEY_INDEBUGMODE = "InDebugMode";
@@ -167,6 +177,7 @@ public class PlatformKeys extends Keys {
     public static final String KEY_NEW_ORGANIZATION_IDENTIFICATION = "NewOrganizationIdentification";
     public static final String KEY_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP = "NewPlatformFunctionGroup";
     public static final String KEY_NUMBER = "containerNumber";
+    public static final String KEY_NUMBER_ADDITION = "ContainerNumberAddition";
     public static final String KEY_NUMBER_OF_MEASUREMENTS = "NumberOfMeasurements";
     public static final String KEY_NUMBER_OF_PROFILE_ENTRIES = "NumberOfProfileEntries";
     public static final String KEY_NUMBER_OF_PROFILES = "NumberOfProfiles";
@@ -218,8 +229,7 @@ public class PlatformKeys extends Keys {
     public static final String KEY_STATUS = "Status";
     public static final String KEY_STREET = "containerStreet";
 
-    public static final String KEY_SUBSTATION_ROOMNUMBER = "RoomNumber";
-
+    public static final String KEY_SUPPLIER = "Supplier";
     public static final String KEY_SYSTEM_ID = "SystemId";
     public static final String KEY_SYSTEM_TYPE = "SystemType";
     public static final String KEY_TECHNICAL_INSTALLATION_DATE = "TechnicalInstallationDate";

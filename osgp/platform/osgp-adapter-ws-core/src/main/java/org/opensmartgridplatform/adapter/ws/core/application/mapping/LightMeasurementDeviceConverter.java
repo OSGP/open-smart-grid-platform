@@ -11,6 +11,7 @@ import java.util.Objects;
 
 import org.opensmartgridplatform.domain.core.entities.LightMeasurementDevice;
 
+import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
@@ -20,6 +21,12 @@ public class LightMeasurementDeviceConverter extends
 
     private final DeviceConverterHelper<LightMeasurementDevice> helper = new DeviceConverterHelper<>(
             LightMeasurementDevice.class);
+
+    @Override
+    public void setMapperFacade(final MapperFacade mapper) {
+        super.setMapperFacade(mapper);
+        this.helper.setMapperFacade(mapper);
+    }
 
     /*
      * (non-Javadoc)

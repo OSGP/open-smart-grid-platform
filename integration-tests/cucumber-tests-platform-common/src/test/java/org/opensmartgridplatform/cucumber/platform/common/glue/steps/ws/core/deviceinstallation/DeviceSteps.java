@@ -45,11 +45,11 @@ public class DeviceSteps {
 
         checkAndAssert(PlatformKeys.KEY_DEVICE_IDENTIFICATION, actualDevice.getDeviceIdentification());
         checkAndAssert(PlatformKeys.ALIAS, actualDevice.getAlias());
-        checkAndAssert(PlatformKeys.KEY_CITY, actualDevice.getContainerCity());
-        checkAndAssert(PlatformKeys.KEY_MUNICIPALITY, actualDevice.getContainerMunicipality());
-        checkAndAssert(PlatformKeys.KEY_NUMBER, actualDevice.getContainerNumber());
-        checkAndAssert(PlatformKeys.KEY_POSTCODE, actualDevice.getContainerPostalCode());
-        checkAndAssert(PlatformKeys.KEY_STREET, actualDevice.getContainerStreet());
+        checkAndAssert(PlatformKeys.KEY_CITY, actualDevice.getContainerAddress().getCity());
+        checkAndAssert(PlatformKeys.KEY_MUNICIPALITY, actualDevice.getContainerAddress().getMunicipality());
+        checkAndAssert(PlatformKeys.KEY_NUMBER, actualDevice.getContainerAddress().getNumber());
+        checkAndAssert(PlatformKeys.KEY_POSTCODE, actualDevice.getContainerAddress().getPostalCode());
+        checkAndAssert(PlatformKeys.KEY_STREET, actualDevice.getContainerAddress().getStreet());
         checkAndAssert(PlatformKeys.KEY_DEVICE_UID, actualDevice.getDeviceUid());
         checkAndAssert(PlatformKeys.KEY_LATITUDE, actualDevice.getGpsLatitude());
         checkAndAssert(PlatformKeys.KEY_LONGITUDE, actualDevice.getGpsLongitude());
@@ -74,25 +74,33 @@ public class DeviceSteps {
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_CITY)) {
-            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_CITY), actualDevice.getContainerCity());
+            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_CITY),
+                    actualDevice.getContainerAddress().getCity());
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_MUNICIPALITY)) {
             Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_MUNICIPALITY),
-                    actualDevice.getContainerMunicipality());
+                    actualDevice.getContainerAddress().getMunicipality());
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_NUMBER)) {
-            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_NUMBER), actualDevice.getContainerNumber());
+            Assert.assertEquals(getInteger(expectedDevice, PlatformKeys.KEY_NUMBER),
+                    actualDevice.getContainerAddress().getNumber());
+        }
+
+        if (expectedDevice.containsKey(PlatformKeys.KEY_NUMBER_ADDITION)) {
+            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_NUMBER_ADDITION),
+                    actualDevice.getContainerAddress().getNumberAddition());
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_POSTCODE)) {
             Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_POSTCODE),
-                    actualDevice.getContainerPostalCode());
+                    actualDevice.getContainerAddress().getPostalCode());
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_STREET)) {
-            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_STREET), actualDevice.getContainerStreet());
+            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_STREET),
+                    actualDevice.getContainerAddress().getStreet());
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_DEVICE_UID)) {

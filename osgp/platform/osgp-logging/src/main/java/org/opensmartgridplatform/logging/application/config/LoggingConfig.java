@@ -69,8 +69,6 @@ public class LoggingConfig extends AbstractConfig {
 
     /**
      * Method for creating the Data Source.
-     *
-     * @return DataSource
      */
     public DataSource getDataSource() {
         if (this.dataSource == null) {
@@ -108,8 +106,6 @@ public class LoggingConfig extends AbstractConfig {
 
     /**
      * Method for creating the Transaction Manager.
-     *
-     * @return JpaTransactionManager
      */
     @Bean
     public JpaTransactionManager transactionManager() {
@@ -127,9 +123,6 @@ public class LoggingConfig extends AbstractConfig {
         return transactionManager;
     }
 
-    /**
-     * @return
-     */
     @Bean(initMethod = "migrate")
     public Flyway loggingFlyway() {
         final Flyway flyway = new Flyway();
@@ -149,8 +142,6 @@ public class LoggingConfig extends AbstractConfig {
 
     /**
      * Method for creating the Entity Manager Factory Bean.
-     *
-     * @return LocalContainerEntityManagerFactoryBean
      */
     @Bean
     @DependsOn("loggingFlyway")

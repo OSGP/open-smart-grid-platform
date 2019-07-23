@@ -27,7 +27,8 @@ public class PlatformSmartmeteringDefaults extends org.opensmartgridplatform.cuc
     public static final String COMMUNICATION_PROVIDER = "KPN";
     public static final String CONTAINER_CITY = null;
     public static final String CONTAINER_MUNICIPALITY = null;
-    public static final String CONTAINER_NUMBER = null;
+    public static final Integer CONTAINER_NUMBER = null;
+    public static final String CONTAINER_NUMBER_ADDITION = null;
     public static final String CONTAINER_POSTAL_CODE = null;
     public static final String CONTAINER_STREET = null;
     public static final String DEVICE_IDENTIFICATION = null;

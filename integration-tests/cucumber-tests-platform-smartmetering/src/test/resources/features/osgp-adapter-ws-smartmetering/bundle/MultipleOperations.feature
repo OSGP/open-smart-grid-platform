@@ -20,11 +20,9 @@ Feature: SmartMetering Bundle - Multiple Operations
     And the bundle request contains a find events action
     And the bundle request contains a set special days action
     And the bundle request contains a get specific attribute value action
-    And the bundle request contains a read alarm register action
     And the bundle request contains a set administrative status action
     And the bundle request contains a get actual meter reads action
     And the bundle request contains a get administrative status action
-    And the bundle request contains a get periodic meter reads action
     And the bundle request contains a get M-Bus encryption key status action
     And the bundle request contains a set activity calendar action
     And the bundle request contains a get configuration object action

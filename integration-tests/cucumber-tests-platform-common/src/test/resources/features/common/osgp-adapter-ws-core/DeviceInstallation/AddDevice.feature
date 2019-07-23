@@ -9,44 +9,46 @@ Feature: CoreDeviceInstallation Device Creating
       | ModelCode | <ModelCode> |
       | Metered   | <Metered>   |
     When receiving an add device request
-      | DeviceUid              | <DeviceUid>             |
-      | DeviceIdentification   | <DeviceIdentification>  |
-      | Alias                  | <Alias>                 |
-      | Owner                  | <Owner>                 |
-      | containerPostalCode    | <ContainerPostalCode>   |
-      | containerCity          | <ContainerCity>         |
-      | containerStreet        | <ContainerStreet>       |
-      | containerNumber        | <ContainerNumber>       |
-      | containerMunicipality  | <ContainerMunicipality> |
-      | gpsLatitude            | <GpsLatitude>           |
-      | gpsLongitude           | <GpsLongitude>          |
-      | HasSchedule            | <HasSchedule>           |
-      | PublicKeyPresent       | <PublicKeyPresent>      |
-      | Manufacturer           | <Manufacturer>          |
-      | DeviceModelCode        | <ModelCode>             |
-      | DeviceModelDescription | <Description>           |
-      | Metered                | <Metered>               |
+      | DeviceUid               | <DeviceUid>               |
+      | DeviceIdentification    | <DeviceIdentification>    |
+      | Alias                   | <Alias>                   |
+      | Owner                   | <Owner>                   |
+      | containerPostalCode     | <ContainerPostalCode>     |
+      | containerCity           | <ContainerCity>           |
+      | containerStreet         | <ContainerStreet>         |
+      | containerNumber         | <ContainerNumber>         |
+      | containerNumberAddition | <ContainerNumberAddition> |
+      | containerMunicipality   | <ContainerMunicipality>   |
+      | gpsLatitude             | <GpsLatitude>             |
+      | gpsLongitude            | <GpsLongitude>            |
+      | HasSchedule             | <HasSchedule>             |
+      | PublicKeyPresent        | <PublicKeyPresent>        |
+      | Manufacturer            | <Manufacturer>            |
+      | DeviceModelCode         | <ModelCode>               |
+      | DeviceModelDescription  | <Description>             |
+      | Metered                 | <Metered>                 |
     Then the add device response is successful
     And the device exists
-      | DeviceIdentification       | <DeviceIdentification>  |
-      | Alias                      | <Alias>                 |
-      | OrganizationIdentification | <Owner>                 |
-      | containerPostalCode        | <ContainerPostalCode>   |
-      | containerCity              | <ContainerCity>         |
-      | containerStreet            | <ContainerStreet>       |
-      | containerNumber            | <ContainerNumber>       |
-      | containerMunicipality      | <ContainerMunicipality> |
-      | gpsLatitude                | <GpsLatitude>           |
-      | gpsLongitude               | <GpsLongitude>          |
-      | Activated                  | false                   |
-      | HasSchedule                | <HasSchedule>           |
-      | PublicKeyPresent           | <PublicKeyPresent>      |
-      | DeviceModel                | <ModelCode>             |
+      | DeviceIdentification       | <DeviceIdentification>    |
+      | Alias                      | <Alias>                   |
+      | OrganizationIdentification | <Owner>                   |
+      | containerPostalCode        | <ContainerPostalCode>     |
+      | containerCity              | <ContainerCity>           |
+      | containerStreet            | <ContainerStreet>         |
+      | containerNumber            | <ContainerNumber>         |
+      | containerNumberAddition    | <ContainerNumberAddition> |
+      | containerMunicipality      | <ContainerMunicipality>   |
+      | gpsLatitude                | <GpsLatitude>             |
+      | gpsLongitude               | <GpsLongitude>            |
+      | Activated                  | false                     |
+      | HasSchedule                | <HasSchedule>             |
+      | PublicKeyPresent           | <PublicKeyPresent>        |
+      | DeviceModel                | <ModelCode>               |
 
     Examples: 
-      | DeviceUid  | DeviceIdentification                     | Alias | Owner    | ContainerPostalCode | ContainerCity | ContainerStreet | ContainerNumber | ContainerMunicipality | GpsLatitude | GpsLongitude | HasSchedule | PublicKeyPresent | Manufacturer | ModelCode  | Description | Metered |
-      | 1234567890 | TEST1024000000001                        |       | test-org | 1234AA              | Maastricht    | Stationsstraat  |              12 |                       |           0 |            0 | false       | false            | Test         | Test Model | Test        | true    |
-      | 3456789012 | 0123456789012345678901234567890123456789 |       | test-org | 1234AA              | Maastricht    | Stationsstraat  |              12 |                       |           0 |            0 | false       | false            | Test         | Test Model | Test        | true    |
+      | DeviceUid  | DeviceIdentification                     | Alias | Owner    | ContainerPostalCode | ContainerCity | ContainerStreet | ContainerNumber | ContainerNumberAddition | ContainerMunicipality | GpsLatitude | GpsLongitude | HasSchedule | PublicKeyPresent | Manufacturer | ModelCode  | Description | Metered |
+      | 1234567890 | TEST1024000000001                        |       | test-org | 1234AA              | Maastricht    | Stationsstraat  |              12 | A                       |                       |           0 |            0 | false       | false            | Test         | Test Model | Test        | true    |
+      | 3456789012 | 0123456789012345678901234567890123456789 |       | test-org | 1234AA              | Maastricht    | Stationsstraat  |              12 |                         |                       |           0 |            0 | false       | false            | Test         | Test Model | Test        | true    |
 
   Scenario Outline: Add a device with an incorrect device identification
     Given a device model
@@ -156,13 +158,12 @@ Feature: CoreDeviceInstallation Device Creating
       | DeviceIdentification | TEST1024000000001 |
       | Owner                | org-test          |
     Then the add device response contains soap fault
-      | FaultCode      | SOAP-ENV:Server                                                  |
-      | FaultString    | UNKNOWN_ORGANISATION                                             |
+      | FaultCode      | SOAP-ENV:Server                                                         |
+      | FaultString    | UNKNOWN_ORGANISATION                                                    |
       | InnerException | org.opensmartgridplatform.domain.core.exceptions.UnknownEntityException |
-      | InnerMessage   | Organisation with id "unknown-organization" could not be found.  |
+      | InnerMessage   | Organisation with id "unknown-organization" could not be found.         |
 
   Scenario: Allow adding an existing device if there has been no communication with the device yet
-
     Given a device model
       | ModelCode | Test Model |
       | Metered   | true       |
@@ -219,7 +220,6 @@ Feature: CoreDeviceInstallation Device Creating
       | DeviceType                 |                   |
 
   Scenario: Disallow adding an existing device if there has been communication with the device
-
     Given a device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SSLD              |
@@ -227,3 +227,12 @@ Feature: CoreDeviceInstallation Device Creating
       | DeviceIdentification | TEST1024000000001 |
     Then the add device response contains soap fault
       | Message | EXISTING_DEVICE |
+
+  Scenario: Disallow adding a device if the requesting organisation is not enabled
+    Given an organization
+      | OrganizationIdentification | test-org |
+      | Enabled                    | false    |
+    When receiving an add device request
+      | DeviceIdentification | TEST1024000000001 |
+    Then the add device response contains soap fault
+      | Message | DISABLED_ORGANISATION |

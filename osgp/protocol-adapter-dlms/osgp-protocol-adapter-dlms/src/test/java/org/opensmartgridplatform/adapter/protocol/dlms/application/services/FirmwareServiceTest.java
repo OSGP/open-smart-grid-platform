@@ -1,9 +1,10 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
@@ -18,8 +19,8 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.GetFirmwareVersionsCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.UpdateFirmwareCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.GetFirmwareVersionsCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.UpdateFirmwareCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.FirmwareFileCachingRepository;
@@ -57,8 +58,8 @@ public class FirmwareServiceTest {
         this.firmwareService.getFirmwareVersions(this.dlmsConnectionManagerMock, this.dlmsDeviceMock);
 
         // Assert
-        verify(this.getFirmwareVersionsCommandExecutor, times(1)).execute(this.dlmsConnectionManagerMock,
-                this.dlmsDeviceMock, null);
+        verify(this.getFirmwareVersionsCommandExecutor, times(1))
+                .execute(this.dlmsConnectionManagerMock, this.dlmsDeviceMock, null);
     }
 
     @Test
@@ -70,11 +71,12 @@ public class FirmwareServiceTest {
         when(this.firmwareFileCachingRepository.retrieve(firmwareIdentification)).thenReturn(firmwareFile);
 
         // Act
-        this.firmwareService.updateFirmware(this.dlmsConnectionManagerMock, this.dlmsDeviceMock, firmwareIdentification);
+        this.firmwareService
+                .updateFirmware(this.dlmsConnectionManagerMock, this.dlmsDeviceMock, firmwareIdentification);
 
         // Assert
-        verify(this.updateFirmwareCommandExecutor, times(1)).execute(this.dlmsConnectionManagerMock, this.dlmsDeviceMock,
-                firmwareIdentification);
+        verify(this.updateFirmwareCommandExecutor, times(1))
+                .execute(this.dlmsConnectionManagerMock, this.dlmsDeviceMock, firmwareIdentification);
     }
 
     @Test(expected = ProtocolAdapterException.class)
@@ -84,7 +86,8 @@ public class FirmwareServiceTest {
         when(this.firmwareFileCachingRepository.retrieve(firmwareIdentification)).thenReturn(null);
 
         // Act
-        this.firmwareService.updateFirmware(this.dlmsConnectionManagerMock, this.dlmsDeviceMock, firmwareIdentification);
+        this.firmwareService
+                .updateFirmware(this.dlmsConnectionManagerMock, this.dlmsDeviceMock, firmwareIdentification);
 
         // Assert
         // Nothing to do, as exception will be thrown;
@@ -98,15 +101,15 @@ public class FirmwareServiceTest {
 
         // Act
         try {
-            this.firmwareService.updateFirmware(this.dlmsConnectionManagerMock, this.dlmsDeviceMock,
-                    firmwareIdentification);
+            this.firmwareService
+                    .updateFirmware(this.dlmsConnectionManagerMock, this.dlmsDeviceMock, firmwareIdentification);
         } catch (final ProtocolAdapterException e) {
             e.printStackTrace();
         }
 
         // Assert
-        verify(this.updateFirmwareCommandExecutor, never()).execute(this.dlmsConnectionManagerMock, this.dlmsDeviceMock,
-                firmwareIdentification);
+        verify(this.updateFirmwareCommandExecutor, never())
+                .execute(this.dlmsConnectionManagerMock, this.dlmsDeviceMock, firmwareIdentification);
     }
 
     @Test
@@ -123,8 +126,8 @@ public class FirmwareServiceTest {
 
         // Assert
         verify(this.firmwareFileCachingRepository, times(1)).store(firmwareIdentification, firmwareFile);
-        verify(this.updateFirmwareCommandExecutor, times(1)).execute(this.dlmsConnectionManagerMock, this.dlmsDeviceMock,
-                firmwareIdentification);
+        verify(this.updateFirmwareCommandExecutor, times(1))
+                .execute(this.dlmsConnectionManagerMock, this.dlmsDeviceMock, firmwareIdentification);
     }
 
     @Test

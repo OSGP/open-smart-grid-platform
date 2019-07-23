@@ -14,7 +14,7 @@
 
   <artifactId>parent-platform</artifactId>
   <groupId>org.opensmartgridplatform</groupId>
-  <version>4.35.0-SNAPSHOT</version>
+  <version>4.37.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>parent-platform</name>
   <!-- Description, Organization, Licences, URL and Distribution Management 
@@ -44,7 +44,7 @@
   <properties>
     <module.baseUri>${project.baseUri}/../</module.baseUri>
     <osgp.version>${project.version}</osgp.version>
-    <shared.version>4.35.0-SNAPSHOT</shared.version>
+    <shared.version>4.37.0-SNAPSHOT</shared.version>
     <java.version>1.8</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -558,6 +558,12 @@
         <groupId>org.assertj</groupId>
         <artifactId>assertj-core</artifactId>
         <version>${assertj.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <version>${mockito.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>

@@ -26,6 +26,7 @@ import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonDefaults;
 import org.opensmartgridplatform.cucumber.platform.common.support.ws.core.CoreDeviceInstallationClient;
+import org.opensmartgridplatform.cucumber.platform.core.builders.AddressBuilder;
 import org.opensmartgridplatform.cucumber.platform.glue.steps.ws.GenericResponseSteps;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,16 +99,7 @@ public class CreateDeviceSteps {
 
         final Device device = new Device();
         device.setAlias(getString(settings, PlatformKeys.ALIAS, PlatformCommonDefaults.DEFAULT_ALIAS));
-        device.setContainerCity(
-                getString(settings, PlatformKeys.KEY_CITY, PlatformCommonDefaults.DEFAULT_CONTAINER_CITY));
-        device.setContainerMunicipality(getString(settings, PlatformKeys.KEY_MUNICIPALITY,
-                PlatformCommonDefaults.DEFAULT_CONTAINER_MUNICIPALITY));
-        device.setContainerNumber(
-                getString(settings, PlatformKeys.KEY_NUMBER, PlatformCommonDefaults.DEFAULT_CONTAINER_NUMBER));
-        device.setContainerPostalCode(
-                getString(settings, PlatformKeys.KEY_POSTCODE, PlatformCommonDefaults.DEFAULT_CONTAINER_POSTALCODE));
-        device.setContainerStreet(
-                getString(settings, PlatformKeys.KEY_STREET, PlatformCommonDefaults.DEFAULT_CONTAINER_STREET));
+        device.setContainerAddress(new AddressBuilder().withSettings(settings).build());
         device.setDeviceIdentification(getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
                 PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
         final DeviceModel deviceModel = new DeviceModel();

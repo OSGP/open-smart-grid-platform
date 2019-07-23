@@ -22,6 +22,7 @@ import org.opensmartgridplatform.adapter.ws.endpointinterceptors.CertificateAndS
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.SoapHeaderEndpointInterceptor;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.WebServiceMonitorInterceptor;
+import org.opensmartgridplatform.adapter.ws.endpointinterceptors.WebServiceMonitorInterceptorCapabilities;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.X509CertificateRdnAttributeValueEndpointInterceptor;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.notification.SendNotificationRequest;
 import org.opensmartgridplatform.adapter.ws.shared.services.DefaultNotificationService;
@@ -53,6 +54,9 @@ public class WebServiceConfig extends AbstractConfig {
 
     private static final String PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_DISTRIBUTION_AUTOMATION_GENERIC = "jaxb2.marshaller.context.path.distributionautomation.generic";
 
+    private static final String PROPERTY_NAME_SOAP_MESSAGE_LOGGING_ENABLED = "soap.message.logging.enabled";
+    private static final String PROPERTY_NAME_SOAP_MESSAGE_PRINTING_ENABLED = "soap.message.printing.enabled";
+
     private static final String ORGANISATION_IDENTIFICATION_HEADER = "OrganisationIdentification";
     private static final String ORGANISATION_IDENTIFICATION_CONTEXT = ORGANISATION_IDENTIFICATION_HEADER;
 
@@ -73,7 +77,7 @@ public class WebServiceConfig extends AbstractConfig {
     @Value("${web.service.notification.organisation:OSGP}")
     private String webserviceNotificationOrganisation;
 
-    @Value("${web.service.notification.application.name}")
+    @Value("${web.service.notification.application.name:DISTRIBUTION_AUTOMATION}")
     private String webserviceNotificationApplicationName;
 
     // === DISTRIBUTION AUTOMATION MARSHALLERS ===
@@ -181,8 +185,26 @@ public class WebServiceConfig extends AbstractConfig {
 
     @Bean
     public WebServiceMonitorInterceptor webServiceMonitorInterceptor() {
+        final boolean soapMessageLoggingEnabled = this.environment
+                .getProperty(PROPERTY_NAME_SOAP_MESSAGE_LOGGING_ENABLED, boolean.class, false);
+        final boolean soapMessagePrintingEnabled = this.environment
+                .getProperty(PROPERTY_NAME_SOAP_MESSAGE_PRINTING_ENABLED, boolean.class, true);
+
+        final WebServiceMonitorInterceptorCapabilities capabilities = new WebServiceMonitorInterceptorCapabilities(
+                soapMessageLoggingEnabled, soapMessagePrintingEnabled);
+
         return new WebServiceMonitorInterceptor(ORGANISATION_IDENTIFICATION_HEADER, USER_NAME_HEADER,
-                APPLICATION_NAME_HEADER);
+                APPLICATION_NAME_HEADER, capabilities);
+    }
+
+    @Bean
+    public String webserviceNotificationApplicationName() {
+        return this.webserviceNotificationApplicationName;
+    }
+
+    @Bean
+    public String webserviceNotificationOrganisation() {
+        return this.webserviceNotificationOrganisation;
     }
 
     @Bean
@@ -193,7 +215,8 @@ public class WebServiceConfig extends AbstractConfig {
             return new NotificationServiceBlackHole();
         }
         final Class<SendNotificationRequest> notificationRequestType = SendNotificationRequest.class;
-        return new DefaultNotificationService<>(templateFactory, notificationRequestType, mapper);
+        return new DefaultNotificationService<>(templateFactory, notificationRequestType, mapper,
+                this.webserviceNotificationApplicationName);
     }
 
     @Bean

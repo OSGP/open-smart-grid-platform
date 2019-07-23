@@ -25,6 +25,7 @@ import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonDefaults;
 import org.opensmartgridplatform.cucumber.platform.common.support.ws.core.CoreDeviceManagementClient;
+import org.opensmartgridplatform.cucumber.platform.core.builders.AddressBuilder;
 import org.opensmartgridplatform.cucumber.platform.glue.steps.ws.GenericResponseSteps;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,16 +66,7 @@ public class UpdateDeviceSettingsSteps {
 
         final Device device = new Device();
         device.setAlias(getString(settings, PlatformKeys.ALIAS, PlatformCommonDefaults.DEFAULT_ALIAS));
-        device.setContainerCity(
-                getString(settings, PlatformKeys.KEY_CITY, PlatformCommonDefaults.DEFAULT_CONTAINER_CITY));
-        device.setContainerMunicipality(getString(settings, PlatformKeys.KEY_MUNICIPALITY,
-                PlatformCommonDefaults.DEFAULT_CONTAINER_MUNICIPALITY));
-        device.setContainerNumber(
-                getString(settings, PlatformKeys.KEY_NUMBER, PlatformCommonDefaults.DEFAULT_CONTAINER_NUMBER));
-        device.setContainerPostalCode(
-                getString(settings, PlatformKeys.KEY_POSTCODE, PlatformCommonDefaults.DEFAULT_CONTAINER_POSTALCODE));
-        device.setContainerStreet(
-                getString(settings, PlatformKeys.KEY_STREET, PlatformCommonDefaults.DEFAULT_CONTAINER_STREET));
+        device.setContainerAddress(new AddressBuilder().withSettings(settings).build());
         device.setDeviceIdentification(getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
                 PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
@@ -82,14 +74,7 @@ public class UpdateDeviceSettingsSteps {
         deviceModel.setDescription(getString(settings, PlatformKeys.KEY_DEVICE_MODEL_DESCRIPTION,
                 PlatformCommonDefaults.DEFAULT_DEVICE_MODEL_DESCRIPTION));
 
-        final Manufacturer manufacturer = new Manufacturer();
-        manufacturer.setName(
-                getString(settings, PlatformKeys.MANUFACTURER_NAME, PlatformDefaults.DEFAULT_MANUFACTURER_NAME));
-        manufacturer.setManufacturerId(getString(settings, PlatformKeys.KEY_DEVICE_MODEL_MANUFACTURER,
-                PlatformCommonDefaults.DEFAULT_DEVICE_MODEL_MANUFACTURER));
-        manufacturer.setUsePrefix(
-                getBoolean(settings, PlatformKeys.USE_PREFIX, PlatformDefaults.DEFAULT_MANUFACTURER_USE_PREFIX));
-        deviceModel.setManufacturer(manufacturer);
+        deviceModel.setManufacturer(this.createManufacturer(settings));
 
         deviceModel.setMetered(getBoolean(settings, PlatformKeys.KEY_DEVICE_MODEL_METERED,
                 PlatformCommonDefaults.DEFAULT_DEVICE_MODEL_METERED));
@@ -109,6 +94,17 @@ public class UpdateDeviceSettingsSteps {
         device.setActivated(getBoolean(settings, PlatformKeys.KEY_ACTIVATED, PlatformCommonDefaults.DEFAULT_ACTIVATED));
 
         return device;
+    }
+
+    private Manufacturer createManufacturer(final Map<String, String> settings) {
+        final Manufacturer manufacturer = new Manufacturer();
+        manufacturer.setName(
+                getString(settings, PlatformKeys.MANUFACTURER_NAME, PlatformDefaults.DEFAULT_MANUFACTURER_NAME));
+        manufacturer.setManufacturerId(getString(settings, PlatformKeys.KEY_DEVICE_MODEL_MANUFACTURER,
+                PlatformCommonDefaults.DEFAULT_DEVICE_MODEL_MANUFACTURER));
+        manufacturer.setUsePrefix(
+                getBoolean(settings, PlatformKeys.USE_PREFIX, PlatformDefaults.DEFAULT_MANUFACTURER_USE_PREFIX));
+        return manufacturer;
     }
 
     @Then("^the device management update device response is successful$")

@@ -7,11 +7,15 @@
  */
 package org.opensmartgridplatform.simulator.protocol.iec60870.domain;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.CauseOfTransmission;
 import org.openmuc.j60870.IeQualifierOfInterrogation;
 import org.openmuc.j60870.IeQuality;
-import org.openmuc.j60870.IeScaledValue;
+import org.openmuc.j60870.IeShortFloat;
+import org.openmuc.j60870.IeTime56;
 import org.openmuc.j60870.InformationElement;
 import org.openmuc.j60870.InformationObject;
 import org.openmuc.j60870.TypeId;
@@ -20,33 +24,88 @@ import org.springframework.stereotype.Component;
 @Component
 public class Iec60870ASduFactory {
 
-    private IeQualifierOfInterrogation defaultIeQualifierOfInterrogation = new IeQualifierOfInterrogation(20);
-    private IeQuality defaultIeQuality = new IeQuality(true, true, true, true, true);
+    private static final int IOA_9127 = 9127;
+    private static final int IOA_9128 = 9128;
+    private static final float VALUE_9127 = 10.0f;
+    private static final float VALUE_9128 = 20.5f;
 
-    public ASdu createInterrogationCommandASdu() {
+    // @formatter:off
+    private static final IeQualifierOfInterrogation DEFAULT_IE_QUALIFIER_OF_INTERROGATION =
+            new IeQualifierOfInterrogation(20);
+
+    public ASdu createInterrogationCommandAsdu() {
         return new Iec60870ASduBuilder().withTypeId(TypeId.C_IC_NA_1)
                 .withCauseOfTransmission(CauseOfTransmission.ACTIVATION)
                 .withInformationObjects(new InformationObject[] { new InformationObject(0,
-                        new InformationElement[][] { { this.defaultIeQualifierOfInterrogation } }) })
+                        new InformationElement[][] { { DEFAULT_IE_QUALIFIER_OF_INTERROGATION } }) })
                 .build();
     }
 
-    public ASdu createInterrogationCommandResponseASdu() {
-        return new Iec60870ASduBuilder().withTypeId(TypeId.M_ME_NB_1).withSequenceOfElements(true)
+    public ASdu createInterrogationCommandResponseAsdu() {
+        final long timestamp = ZonedDateTime.now(ZoneOffset.UTC).toInstant().toEpochMilli();
+        return this.createInterrogationCommandResponseAsdu(timestamp);
+    }
+
+    public ASdu createInterrogationCommandResponseAsdu(final long timestamp) {
+        return new Iec60870ASduBuilder().withTypeId(TypeId.M_ME_TF_1).withSequenceOfElements(false)
                 .withCauseOfTransmission(CauseOfTransmission.SPONTANEOUS)
-                .withInformationObjects(new InformationObject[] { new InformationObject(1,
-                        new InformationElement[][] { { new IeScaledValue(-32768), this.defaultIeQuality },
-                                { new IeScaledValue(10), this.defaultIeQuality },
-                                { new IeScaledValue(-5), this.defaultIeQuality } }) })
+                .withInformationObjects(new InformationObject[] {
+                        new InformationObject(
+                                IOA_9127,
+                                new InformationElement[][] { {
+                                    new IeShortFloat(VALUE_9127),
+                                    new IeQuality(false, false, false, false, false),
+                                    new IeTime56(timestamp) } }),
+                        new InformationObject(
+                                IOA_9128,
+                                new InformationElement[][] { {
+                                    new IeShortFloat(VALUE_9128),
+                                    new IeQuality(false, false, false, false, false),
+                                    new IeTime56(timestamp) } })
+                })
                 .build();
     }
 
-    public ASdu createSingleCommandASdu() {
+    public ASdu createActivationTerminationResponseAsdu() {
+        return new Iec60870ASduBuilder().withTypeId(TypeId.C_IC_NA_1).withSequenceOfElements(false)
+                .withCauseOfTransmission(CauseOfTransmission.ACTIVATION_TERMINATION)
+                .withInformationObjects(new InformationObject[] { new InformationObject(0,
+                        new InformationElement[][] { { DEFAULT_IE_QUALIFIER_OF_INTERROGATION } }) })
+                .build();
+    }
+
+    public ASdu createSingleCommandAsdu() {
         return new Iec60870ASduBuilder().withTypeId(TypeId.C_SC_NA_1)
                 .withCauseOfTransmission(CauseOfTransmission.SPONTANEOUS)
                 .withInformationObjects(new InformationObject[] { new InformationObject(0,
-                        new InformationElement[][] { { this.defaultIeQualifierOfInterrogation } }) })
+                        new InformationElement[][] { { DEFAULT_IE_QUALIFIER_OF_INTERROGATION } }) })
                 .build();
     }
 
+    public ASdu createShortFloatingPointMeasurementAsdu() {
+        final ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
+        final long timestamp = now.toInstant().toEpochMilli();
+        final float hour = now.getHour();
+        final float minute = now.getMinute();
+
+        return new Iec60870ASduBuilder().withTypeId(TypeId.M_ME_TF_1).withSequenceOfElements(false)
+                .withCauseOfTransmission(CauseOfTransmission.SPONTANEOUS)
+                .withInformationObjects(new InformationObject[] {
+                        new InformationObject(
+                                IOA_9127,
+                                new InformationElement[][] { {
+                                    new IeShortFloat(hour),
+                                    new IeQuality(false, false, false, false, false),
+                                    new IeTime56(timestamp) } }),
+                        new InformationObject(
+                                IOA_9128,
+                                new InformationElement[][] { {
+                                    new IeShortFloat(minute),
+                                    new IeQuality(false, false, false, false, false),
+                                    new IeTime56(timestamp) } })
+                })
+                .build();
+
+    }
+    // @formatter:on
 }

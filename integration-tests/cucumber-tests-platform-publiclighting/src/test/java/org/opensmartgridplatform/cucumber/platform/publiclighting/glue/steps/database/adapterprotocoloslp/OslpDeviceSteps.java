@@ -60,6 +60,11 @@ public class OslpDeviceSteps {
         this.oslpDeviceRepository.save(device);
     }
 
+    @Given("^a single ssld oslp device$")
+    public void ssldOslpDevice(final Map<String, String> settings) {
+        this.ssldOslpDevices(1, settings);
+    }
+
     @Given("^(\\d++) ssld oslp devices$")
     public void ssldOslpDevices(final int numberOfDevices, final Map<String, String> settings) {
 

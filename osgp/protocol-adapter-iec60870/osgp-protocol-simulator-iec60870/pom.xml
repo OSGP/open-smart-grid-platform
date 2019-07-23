@@ -24,7 +24,7 @@
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>osgp-protocol-simulator-iec60870</artifactId>
-  <version>4.35.0-SNAPSHOT</version>
+  <version>4.37.0-SNAPSHOT</version>
   <packaging>war</packaging>
   <name>osgp-protocol-simulator-iec60870</name>
   <description>Simulator for IEC60870-5-104 protocol</description>
@@ -54,6 +54,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>1.8</java.version>
     <openmuc.j60870.version>1.2.1</openmuc.j60870.version>
+    <osgp.version>${project.version}</osgp.version>
 
     <jxr.version>3.0.0</jxr.version>
     <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
@@ -62,11 +63,11 @@
   </properties>
 
   <dependencies>
-    <!-- j60870 -->
+    <!-- iec60870 -->
     <dependency>
-      <groupId>org.openmuc</groupId>
-      <artifactId>j60870</artifactId>
-      <version>${openmuc.j60870.version}</version>
+      <groupId>org.opensmartgridplatform</groupId>
+      <artifactId>osgp-iec60870</artifactId>
+      <version>${osgp.version}</version>
     </dependency>
 
     <!-- Spring Boot dependencies -->
@@ -80,6 +81,7 @@
       <artifactId>spring-boot-starter-tomcat</artifactId>
       <scope>provided</scope>
     </dependency>
+
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>

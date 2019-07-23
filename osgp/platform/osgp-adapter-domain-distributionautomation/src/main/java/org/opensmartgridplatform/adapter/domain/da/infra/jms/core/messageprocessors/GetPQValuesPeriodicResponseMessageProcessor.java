@@ -89,11 +89,11 @@ public class GetPQValuesPeriodicResponseMessageProcessor extends BaseNotificatio
 
             final GetPQValuesResponseDto dataResponse = (GetPQValuesResponseDto) dataObject;
 
-            final CorrelationIds correlationIds = new CorrelationIds(organisationIdentification, deviceIdentification,
+            final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification,
                     correlationUid);
 
-            this.monitoringService.handleGetPQValuesResponse(dataResponse, correlationIds, messageType,
-                    responseMessageResultType, osgpException);
+            this.monitoringService.handleGetPQValuesResponse(dataResponse, ids, messageType, responseMessageResultType,
+                    osgpException);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);

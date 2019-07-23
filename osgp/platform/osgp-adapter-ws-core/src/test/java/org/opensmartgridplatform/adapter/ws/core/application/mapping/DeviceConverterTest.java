@@ -11,6 +11,7 @@ import java.net.UnknownHostException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -26,17 +27,17 @@ public class DeviceConverterTest {
     @Mock
     private SsldRepository ssldRepository;
 
+    @InjectMocks
     private DeviceManagementMapper deviceManagementMapper;
 
     @Before
     public void initMapper() {
-        this.deviceManagementMapper = new TestableDeviceManagementMapper(this.ssldRepository);
         this.deviceManagementMapper.initialize();
     }
 
     @Test
     public void testDeviceConversion() throws UnknownHostException {
-        final Device device = new Device("id", "alias", new Address("city", "postal", "street", "nr", "munic"),
+        final Device device = new Device("id", "alias", new Address("city", "postal", "street", 42, "nr", "munic"),
                 new GpsCoordinates(12f, 13f), null);
         device.updateRegistrationData(InetAddress.getByName("localhost"), "type");
 
@@ -45,11 +46,12 @@ public class DeviceConverterTest {
 
         assertEquals("id", jaxbDevice.getDeviceIdentification());
         assertEquals("alias", jaxbDevice.getAlias());
-        assertEquals("city", jaxbDevice.getContainerCity());
-        assertEquals("postal", jaxbDevice.getContainerPostalCode());
-        assertEquals("street", jaxbDevice.getContainerStreet());
-        assertEquals("nr", jaxbDevice.getContainerNumber());
-        assertEquals("munic", jaxbDevice.getContainerMunicipality());
+        assertEquals("city", jaxbDevice.getContainerAddress().getCity());
+        assertEquals("postal", jaxbDevice.getContainerAddress().getPostalCode());
+        assertEquals("street", jaxbDevice.getContainerAddress().getStreet());
+        assertEquals(new Integer(42), jaxbDevice.getContainerAddress().getNumber());
+        assertEquals("nr", jaxbDevice.getContainerAddress().getNumberAddition());
+        assertEquals("munic", jaxbDevice.getContainerAddress().getMunicipality());
         assertEquals("12.0", jaxbDevice.getGpsLatitude());
         assertEquals("13.0", jaxbDevice.getGpsLongitude());
         assertEquals("localhost/127.0.0.1", jaxbDevice.getNetworkAddress());
@@ -62,7 +64,8 @@ public class DeviceConverterTest {
         assertEquals("city", mappedBack.getContainerAddress().getCity());
         assertEquals("postal", mappedBack.getContainerAddress().getPostalCode());
         assertEquals("street", mappedBack.getContainerAddress().getStreet());
-        assertEquals("nr", mappedBack.getContainerAddress().getNumber());
+        assertEquals(new Integer(42), mappedBack.getContainerAddress().getNumber());
+        assertEquals("nr", mappedBack.getContainerAddress().getNumberAddition());
         assertEquals("munic", mappedBack.getContainerAddress().getMunicipality());
         assertTrue(12 == mappedBack.getGpsCoordinates().getLatitude());
         assertTrue(13 == mappedBack.getGpsCoordinates().getLongitude());
@@ -74,7 +77,7 @@ public class DeviceConverterTest {
 
     @Test
     public void testSmartMeterConversion() throws UnknownHostException {
-        final Device device = new SmartMeter("id", "alias", new Address("city", "postal", "street", "nr", "munic"),
+        final Device device = new SmartMeter("id", "alias", new Address("city", "postal", "street", 42, "nr", "munic"),
                 new GpsCoordinates(12f, 13f));
         device.updateRegistrationData(InetAddress.getByName("localhost"), "type");
 
@@ -83,11 +86,12 @@ public class DeviceConverterTest {
 
         assertEquals("id", jaxbDevice.getDeviceIdentification());
         assertEquals("alias", jaxbDevice.getAlias());
-        assertEquals("city", jaxbDevice.getContainerCity());
-        assertEquals("postal", jaxbDevice.getContainerPostalCode());
-        assertEquals("street", jaxbDevice.getContainerStreet());
-        assertEquals("nr", jaxbDevice.getContainerNumber());
-        assertEquals("munic", jaxbDevice.getContainerMunicipality());
+        assertEquals("city", jaxbDevice.getContainerAddress().getCity());
+        assertEquals("postal", jaxbDevice.getContainerAddress().getPostalCode());
+        assertEquals("street", jaxbDevice.getContainerAddress().getStreet());
+        assertEquals(new Integer(42), jaxbDevice.getContainerAddress().getNumber());
+        assertEquals("nr", jaxbDevice.getContainerAddress().getNumberAddition());
+        assertEquals("munic", jaxbDevice.getContainerAddress().getMunicipality());
         assertEquals("12.0", jaxbDevice.getGpsLatitude());
         assertEquals("13.0", jaxbDevice.getGpsLongitude());
         assertEquals("localhost/127.0.0.1", jaxbDevice.getNetworkAddress());
@@ -100,7 +104,8 @@ public class DeviceConverterTest {
         assertEquals("city", mappedBack.getContainerAddress().getCity());
         assertEquals("postal", mappedBack.getContainerAddress().getPostalCode());
         assertEquals("street", mappedBack.getContainerAddress().getStreet());
-        assertEquals("nr", mappedBack.getContainerAddress().getNumber());
+        assertEquals(new Integer(42), mappedBack.getContainerAddress().getNumber());
+        assertEquals("nr", mappedBack.getContainerAddress().getNumberAddition());
         assertEquals("munic", mappedBack.getContainerAddress().getMunicipality());
         assertTrue(12 == mappedBack.getGpsCoordinates().getLatitude());
         assertTrue(13 == mappedBack.getGpsCoordinates().getLongitude());
@@ -112,7 +117,7 @@ public class DeviceConverterTest {
 
     @Test
     public void testSsldConversion() throws UnknownHostException {
-        final Ssld device = new Ssld("id", "alias", new Address("city", "postal", "street", "nr", "munic"),
+        final Ssld device = new Ssld("id", "alias", new Address("city", "postal", "street", 42, "nr", "munic"),
                 new GpsCoordinates(12f, 13f), null);
         device.updateRegistrationData(InetAddress.getByName("localhost"), Ssld.SSLD_TYPE);
         device.getOutputSettings();
@@ -124,11 +129,12 @@ public class DeviceConverterTest {
 
         assertEquals("id", jaxbDevice.getDeviceIdentification());
         assertEquals("alias", jaxbDevice.getAlias());
-        assertEquals("city", jaxbDevice.getContainerCity());
-        assertEquals("postal", jaxbDevice.getContainerPostalCode());
-        assertEquals("street", jaxbDevice.getContainerStreet());
-        assertEquals("nr", jaxbDevice.getContainerNumber());
-        assertEquals("munic", jaxbDevice.getContainerMunicipality());
+        assertEquals("city", jaxbDevice.getContainerAddress().getCity());
+        assertEquals("postal", jaxbDevice.getContainerAddress().getPostalCode());
+        assertEquals("street", jaxbDevice.getContainerAddress().getStreet());
+        assertEquals(new Integer(42), jaxbDevice.getContainerAddress().getNumber());
+        assertEquals("nr", jaxbDevice.getContainerAddress().getNumberAddition());
+        assertEquals("munic", jaxbDevice.getContainerAddress().getMunicipality());
         assertEquals("12.0", jaxbDevice.getGpsLatitude());
         assertEquals("13.0", jaxbDevice.getGpsLongitude());
         assertEquals("localhost/127.0.0.1", jaxbDevice.getNetworkAddress());
@@ -147,7 +153,8 @@ public class DeviceConverterTest {
         assertEquals("city", mappedBack.getContainerAddress().getCity());
         assertEquals("postal", mappedBack.getContainerAddress().getPostalCode());
         assertEquals("street", mappedBack.getContainerAddress().getStreet());
-        assertEquals("nr", mappedBack.getContainerAddress().getNumber());
+        assertEquals(new Integer(42), mappedBack.getContainerAddress().getNumber());
+        assertEquals("nr", mappedBack.getContainerAddress().getNumberAddition());
         assertEquals("munic", mappedBack.getContainerAddress().getMunicipality());
         assertTrue(12 == mappedBack.getGpsCoordinates().getLatitude());
         assertTrue(13 == mappedBack.getGpsCoordinates().getLongitude());

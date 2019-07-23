@@ -1,19 +1,20 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
 import java.io.Serializable;
 
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.ClearAlarmRegisterCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.GetActualMeterReadsCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.GetActualMeterReadsGasCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.GetProfileGenericDataCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.ReadAlarmRegisterCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm.ClearAlarmRegisterCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm.ReadAlarmRegisterCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.GetActualMeterReadsCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.GetActualMeterReadsGasCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.GetProfileGenericDataCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.GetPeriodicMeterReadsCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.GetPeriodicMeterReadsGasCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;

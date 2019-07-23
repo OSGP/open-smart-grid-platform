@@ -8,13 +8,37 @@
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.core;
 
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getFloat;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getInteger;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getShort;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
+import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.DEFAULT_ALIAS;
+import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.DEFAULT_CHANNEL;
+import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.DEFAULT_CONTAINER_CITY;
+import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.DEFAULT_CONTAINER_MUNICIPALITY;
+import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.DEFAULT_CONTAINER_NUMBER;
+import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.DEFAULT_CONTAINER_NUMBER_ADDITION;
+import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.DEFAULT_CONTAINER_POSTALCODE;
+import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.DEFAULT_CONTAINER_STREET;
+import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION;
+import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.DEFAULT_LATITUDE;
+import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.DEFAULT_LONGITUDE;
+import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.DEFAULT_SUPPLIER;
+import static org.opensmartgridplatform.cucumber.platform.PlatformKeys.KEY_ALIAS;
+import static org.opensmartgridplatform.cucumber.platform.PlatformKeys.KEY_CHANNEL;
+import static org.opensmartgridplatform.cucumber.platform.PlatformKeys.KEY_CONTAINER_CITY;
+import static org.opensmartgridplatform.cucumber.platform.PlatformKeys.KEY_CONTAINER_MUNICIPALITY;
+import static org.opensmartgridplatform.cucumber.platform.PlatformKeys.KEY_CONTAINER_NUMBER;
+import static org.opensmartgridplatform.cucumber.platform.PlatformKeys.KEY_CONTAINER_NUMBER_ADDITION;
+import static org.opensmartgridplatform.cucumber.platform.PlatformKeys.KEY_CONTAINER_POSTALCODE;
+import static org.opensmartgridplatform.cucumber.platform.PlatformKeys.KEY_CONTAINER_STREET;
+import static org.opensmartgridplatform.cucumber.platform.PlatformKeys.KEY_DEVICE_IDENTIFICATION;
+import static org.opensmartgridplatform.cucumber.platform.PlatformKeys.KEY_GATEWAY_DEVICE_ID;
+import static org.opensmartgridplatform.cucumber.platform.PlatformKeys.KEY_GPS_LATITUDE;
+import static org.opensmartgridplatform.cucumber.platform.PlatformKeys.KEY_GPS_LONGITUDE;
+import static org.opensmartgridplatform.cucumber.platform.PlatformKeys.KEY_SUPPLIER;
 
 import java.util.Map;
 
-import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
-import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.glue.steps.database.core.BaseDeviceSteps;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
@@ -42,24 +66,25 @@ public class SmartMeterSteps extends BaseDeviceSteps {
     @Transactional("txMgrCore")
     public Device aSmartMeter(final Map<String, String> settings) {
 
-        final String deviceIdentification = getString(settings, "DeviceIdentification",
-                PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION);
+        final String deviceIdentification = getString(settings, KEY_DEVICE_IDENTIFICATION,
+                DEFAULT_DEVICE_IDENTIFICATION);
         final SmartMeter smartMeter = new SmartMeter(deviceIdentification,
-                getString(settings, "Alias", PlatformDefaults.DEFAULT_ALIAS),
-                new Address(getString(settings, "ContainerCity", PlatformDefaults.DEFAULT_CONTAINER_CITY),
-                        getString(settings, "ContainerPostalCode", PlatformDefaults.DEFAULT_CONTAINER_POSTALCODE),
-                        getString(settings, "ContainerStreet", PlatformDefaults.DEFAULT_CONTAINER_STREET),
-                        getString(settings, "ContainerNumber", PlatformDefaults.DEFAULT_CONTAINER_NUMBER),
-                        getString(settings, "ContainerMunicipality", PlatformDefaults.DEFAULT_CONTAINER_MUNICIPALITY)),
-                new GpsCoordinates(getFloat(settings, "GPSLatitude", PlatformDefaults.DEFAULT_LATITUDE),
-                        getFloat(settings, "GPSLongitude", PlatformDefaults.DEFAULT_LONGITUDE)));
+                getString(settings, KEY_ALIAS, DEFAULT_ALIAS),
+                new Address(getString(settings, KEY_CONTAINER_CITY, DEFAULT_CONTAINER_CITY),
+                        getString(settings, KEY_CONTAINER_POSTALCODE, DEFAULT_CONTAINER_POSTALCODE),
+                        getString(settings, KEY_CONTAINER_STREET, DEFAULT_CONTAINER_STREET),
+                        getInteger(settings, KEY_CONTAINER_NUMBER, DEFAULT_CONTAINER_NUMBER),
+                        getString(settings, KEY_CONTAINER_NUMBER_ADDITION, DEFAULT_CONTAINER_NUMBER_ADDITION),
+                        getString(settings, KEY_CONTAINER_MUNICIPALITY, DEFAULT_CONTAINER_MUNICIPALITY)),
+                new GpsCoordinates(getFloat(settings, KEY_GPS_LATITUDE, DEFAULT_LATITUDE),
+                        getFloat(settings, KEY_GPS_LONGITUDE, DEFAULT_LONGITUDE)));
 
-        smartMeter.setSupplier(getString(settings, PlatformKeys.SUPPLIER, PlatformDefaults.DEFAULT_SUPPLIER));
+        smartMeter.setSupplier(getString(settings, KEY_SUPPLIER, DEFAULT_SUPPLIER));
 
-        if (settings.containsKey(PlatformKeys.KEY_GATEWAY_DEVICE_ID)) {
-            smartMeter.setChannel(getShort(settings, PlatformKeys.KEY_CHANNEL, PlatformDefaults.DEFAULT_CHANNEL));
+        if (settings.containsKey(KEY_GATEWAY_DEVICE_ID)) {
+            smartMeter.setChannel(getShort(settings, KEY_CHANNEL, DEFAULT_CHANNEL));
             final Device smartEMeter = this.deviceRepository
-                    .findByDeviceIdentification(settings.get(PlatformKeys.KEY_GATEWAY_DEVICE_ID));
+                    .findByDeviceIdentification(settings.get(KEY_GATEWAY_DEVICE_ID));
             smartMeter.updateGatewayDevice(smartEMeter);
         }
 

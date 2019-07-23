@@ -44,14 +44,8 @@ public class WsInstallationDeviceToDeviceConverter
             destination.setDeviceIdentification(source.getDeviceIdentification());
             destination.setAlias(source.getAlias());
 
-            if (!Objects.isNull(source.getContainerAddress())) {
-                final Address container = source.getContainerAddress();
-                destination.setContainerCity(container.getCity());
-                destination.setContainerPostalCode(container.getPostalCode());
-                destination.setContainerStreet(container.getStreet());
-                destination.setContainerNumber(container.getNumber());
-                destination.setContainerMunicipality(container.getMunicipality());
-            }
+            destination.setContainerAddress(this.mapperFacade.map(source.getContainerAddress(),
+                    org.opensmartgridplatform.adapter.ws.schema.core.common.Address.class));
 
             if (!Objects.isNull(source.getGpsCoordinates())) {
                 final GpsCoordinates gpsCoordinates = source.getGpsCoordinates();
@@ -75,12 +69,10 @@ public class WsInstallationDeviceToDeviceConverter
         org.opensmartgridplatform.domain.core.entities.Device destination = null;
 
         if (source != null) {
+            final Address address = this.mapperFacade.map(source.getContainerAddress(), Address.class);
             destination = new org.opensmartgridplatform.domain.core.entities.Device(source.getDeviceIdentification(),
-                    source.getAlias(),
-                    new Address(source.getContainerCity(), source.getContainerPostalCode(),
-                            source.getContainerStreet(), source.getContainerNumber(),
-                            source.getContainerMunicipality()),
-                    new GpsCoordinates(source.getGpsLatitude(), source.getGpsLongitude()), null);
+                    source.getAlias(), address, new GpsCoordinates(source.getGpsLatitude(), source.getGpsLongitude()),
+                    null);
 
             /*
              * Model code does not uniquely identify a device model, which is

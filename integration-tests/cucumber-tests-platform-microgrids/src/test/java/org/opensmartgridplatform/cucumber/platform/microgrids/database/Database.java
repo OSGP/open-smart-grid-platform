@@ -19,7 +19,6 @@ import org.opensmartgridplatform.domain.core.repositories.RtuDeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class Database {
@@ -56,7 +55,6 @@ public class Database {
         return Arrays.asList(testOrgConfig, noOrganisationConfig);
     }
 
-    @Transactional("txMgrCoreMicrogrids")
     public void prepareDatabaseForScenario() {
         // Then remove stuff from osgp_adapter_protocol_iec61850
         this.iec61850DeviceRepository.deleteAll();

@@ -24,7 +24,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.DlmsHelperService;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDeviceBuilder;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
@@ -41,15 +41,14 @@ public class InvocationCounterManagerTest {
     private DlmsConnectionFactory connectionFactory;
 
     @Mock
-    private DlmsHelperService dlmsHelperService;
+    private DlmsHelper dlmsHelper;
 
     @Mock
     private DlmsDeviceRepository deviceRepository;
 
     @Before
     public void setUp() {
-        this.manager = new InvocationCounterManager(this.connectionFactory, this.dlmsHelperService,
-                this.deviceRepository);
+        this.manager = new InvocationCounterManager(this.connectionFactory, this.dlmsHelper, this.deviceRepository);
     }
 
     @Test
@@ -60,7 +59,7 @@ public class InvocationCounterManagerTest {
         when(this.connectionFactory.getPublicClientConnection(device, null)).thenReturn(connectionManager);
 
         final DataObject dataObject = DataObject.newInteger32Data(123);
-        when(this.dlmsHelperService
+        when(this.dlmsHelper
                 .getAttributeValue(eq(connectionManager), refEq(ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE)))
                 .thenReturn(dataObject);
 

@@ -9,8 +9,9 @@ package org.opensmartgridplatform.simulator.protocol.iec60870;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 
-@SpringBootApplication
+@SpringBootApplication(exclude = { DataSourceAutoConfiguration.class })
 public class Iec60870SimulatorApplication {
 
     public static void main(final String[] args) {

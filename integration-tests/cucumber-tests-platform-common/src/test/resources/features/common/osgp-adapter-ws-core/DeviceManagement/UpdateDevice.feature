@@ -30,22 +30,24 @@ Feature: CoreDeviceManagement Device Updating
       | DeviceIdentification | TEST1024000000001 |
       | Alias                | Alias             |
     When receiving a device management update device request
-      | DeviceIdentification  | TEST1024000000001 |
-      | Alias                 | Updated Alias     |
-      | containerPostalCode   | newCode           |
-      | containerCity         | newCity           |
-      | containerStreet       | newStreet         |
-      | containerNumber       | newNumber         |
-      | containerMunicipality | newMunicipality   |
+      | DeviceIdentification    | TEST1024000000001 |
+      | Alias                   | Updated Alias     |
+      | containerPostalCode     | newCode           |
+      | containerCity           | newCity           |
+      | containerStreet         | newStreet         |
+      | containerNumber         | 83                |
+      | containerNumberAddition | ABC               |
+      | containerMunicipality   | newMunicipality   |
     Then the device management update device response is successful
     And the device exists
-      | DeviceIdentification  | TEST1024000000001 |
-      | Alias                 | Updated Alias     |
-      | containerPostalCode   | newCode           |
-      | containerCity         | newCity           |
-      | containerStreet       | newStreet         |
-      | containerNumber       | newNumber         |
-      | containerMunicipality | newMunicipality   |
+      | DeviceIdentification    | TEST1024000000001 |
+      | Alias                   | Updated Alias     |
+      | containerPostalCode     | newCode           |
+      | containerCity           | newCity           |
+      | containerStreet         | newStreet         |
+      | containerNumber         | 83                |
+      | containerNumberAddition | ABC               |
+      | containerMunicipality   | newMunicipality   |
 
   Scenario: Updating a non existing device
     When receiving a device management update device request

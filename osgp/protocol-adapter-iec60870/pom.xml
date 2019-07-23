@@ -14,7 +14,7 @@
 
   <artifactId>protocol-adapter-iec60870</artifactId>
   <groupId>org.opensmartgridplatform</groupId>
-  <version>4.35.0-SNAPSHOT</version>
+  <version>4.37.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>protocol-adapter-iec60870</name>
   <properties>
@@ -90,6 +90,7 @@
     <module>parent-pa-iec60870</module>
     <module>../shared/shared</module>
     <module>../shared/osgp-dto</module>
+    <module>osgp-iec60870</module>
 
     <!-- Protocol Adapter IEC60870 -->
     <module>osgp-protocol-adapter-iec60870</module>

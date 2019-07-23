@@ -12,9 +12,6 @@ import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.inputparsers.DateInputParser;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
@@ -22,6 +19,8 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartme
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
 import org.opensmartgridplatform.domain.core.entities.ProtocolInfo;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("unchecked")
 public abstract class BaseDeviceBuilder<T extends BaseDeviceBuilder<T>> {
@@ -34,7 +33,8 @@ public abstract class BaseDeviceBuilder<T extends BaseDeviceBuilder<T>> {
     Float gpsLatitude = PlatformSmartmeteringDefaults.GPS_LATITUDE;
     Float gpsLongitude = PlatformSmartmeteringDefaults.GPS_LONGITUDE;
     String containerPostalCode = PlatformSmartmeteringDefaults.CONTAINER_POSTAL_CODE;
-    String containerNumber = PlatformSmartmeteringDefaults.CONTAINER_NUMBER;
+    Integer containerNumber = PlatformSmartmeteringDefaults.CONTAINER_NUMBER;
+    String containerNumberAddition = PlatformSmartmeteringDefaults.DEFAULT_CONTAINER_NUMBER_ADDITION;
     ProtocolInfo protocolInfo = null;
     InetAddress networkAddress = PlatformSmartmeteringDefaults.NETWORK_ADDRESS;
     String containerMunicipality = PlatformSmartmeteringDefaults.CONTAINER_MUNICIPALITY;
@@ -92,8 +92,13 @@ public abstract class BaseDeviceBuilder<T extends BaseDeviceBuilder<T>> {
         return (T) this;
     }
 
-    public T setContainerNumber(final String containerNumber) {
+    public T setContainerNumber(final Integer containerNumber) {
         this.containerNumber = containerNumber;
+        return (T) this;
+    }
+
+    public T setContainerNumberAddition(final String containerNumberAddition) {
+        this.containerNumberAddition = containerNumberAddition;
         return (T) this;
     }
 
@@ -172,7 +177,7 @@ public abstract class BaseDeviceBuilder<T extends BaseDeviceBuilder<T>> {
             this.setContainerPostalCode(inputSettings.get(PlatformSmartmeteringKeys.CONTAINER_POSTAL_CODE));
         }
         if (inputSettings.containsKey(PlatformSmartmeteringKeys.CONTAINER_NUMBER)) {
-            this.setContainerNumber(inputSettings.get(PlatformSmartmeteringKeys.CONTAINER_NUMBER));
+            this.setContainerNumber(Integer.valueOf(inputSettings.get(PlatformSmartmeteringKeys.CONTAINER_NUMBER)));
         }
         if (inputSettings.containsKey(PlatformSmartmeteringKeys.CONTAINER_MUNICIPALITY)) {
             this.setContainerMunicipality(inputSettings.get(PlatformSmartmeteringKeys.CONTAINER_MUNICIPALITY));

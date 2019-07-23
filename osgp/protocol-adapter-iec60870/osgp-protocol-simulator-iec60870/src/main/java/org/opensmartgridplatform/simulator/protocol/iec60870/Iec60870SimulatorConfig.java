@@ -7,18 +7,29 @@
  */
 package org.opensmartgridplatform.simulator.protocol.iec60870;
 
-import org.opensmartgridplatform.simulator.protocol.iec60870.server.Iec60870ASduHandlerRegistry;
-import org.opensmartgridplatform.simulator.protocol.iec60870.server.Iec60870ServerEventListener;
-import org.opensmartgridplatform.simulator.protocol.iec60870.server.Iec60870Simulator;
+import java.util.TimeZone;
+
+import org.opensmartgridplatform.iec60870.Iec60870ASduHandlerRegistry;
+import org.opensmartgridplatform.iec60870.Iec60870ConnectionRegistry;
+import org.opensmartgridplatform.iec60870.Iec60870Server;
+import org.opensmartgridplatform.iec60870.Iec60870ServerEventListener;
+import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870ASduGenerator;
+import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870AsduGeneratorService;
+import org.opensmartgridplatform.simulator.protocol.iec60870.domain.SimpleShortFloatingPointMeasurementAsduGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.support.CronTrigger;
 
 @Configuration
+@ComponentScan(basePackageClasses = { Iec60870Server.class })
+@EnableScheduling
 @PropertySource(value = "classpath:application.properties", ignoreResourceNotFound = false)
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/SimulatorProtocolIec60870/config}", ignoreResourceNotFound = true)
@@ -26,25 +37,43 @@ public class Iec60870SimulatorConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec60870SimulatorConfig.class);
 
-    @Autowired
-    private Iec60870ASduHandlerRegistry iec60870ASduHandlerRegistry;
-
     @Value("${iec60870.simulator.connection.timeout}")
     private int connectionTimeout;
 
+    @Value("${iec60870.simulator.port:2404}")
+    private int port;
+
+    @Value("${job.asdu.generator.cron:0 0/1 * * * ?}")
+    private String cronExpression;
+
     @Bean(destroyMethod = "stop")
-    public Iec60870Simulator iec60870Simulator() {
+    public Iec60870Server iec60870Server(final Iec60870ConnectionRegistry iec60870ConnectionRegistry,
+            final Iec60870ASduHandlerRegistry iec60870ASduHandlerRegistry) {
         LOGGER.debug("Creating IEC60870 Simulator Bean.");
-        final Iec60870Simulator simulator = new Iec60870Simulator(this.iec60870ServerEventListener());
+
+        final Iec60870Server server = new Iec60870Server(new Iec60870ServerEventListener(iec60870ConnectionRegistry,
+                iec60870ASduHandlerRegistry, this.connectionTimeout), this.port);
 
         LOGGER.debug("Starting IEC60870 Simulator.");
-        simulator.start();
+        server.start();
 
-        return simulator;
+        return server;
     }
 
+    /**
+     * Bean used to generate measurement reports for testing purposes. By
+     * default no measurement reports will be generated. To activate generation,
+     * add job.asdu.generator.enabled to the application's properties.
+     */
     @Bean
-    public Iec60870ServerEventListener iec60870ServerEventListener() {
-        return new Iec60870ServerEventListener(this.iec60870ASduHandlerRegistry, this.connectionTimeout);
+    @ConditionalOnProperty("job.asdu.generator.enabled")
+    public Iec60870AsduGeneratorService asduGeneratorService(
+            final Iec60870ConnectionRegistry iec60870ConnectionRegistry) {
+        LOGGER.info("ASDU generator in simulator is enabled");
+
+        final CronTrigger cronTrigger = new CronTrigger(this.cronExpression, TimeZone.getTimeZone("UTC"));
+        final Iec60870ASduGenerator generator = new SimpleShortFloatingPointMeasurementAsduGenerator();
+
+        return new Iec60870AsduGeneratorService(iec60870ConnectionRegistry, cronTrigger, generator);
     }
 }

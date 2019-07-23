@@ -13,7 +13,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>integration-tests</artifactId>
-  <version>4.35.0-SNAPSHOT</version>
+  <version>4.37.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <properties>
@@ -74,10 +74,17 @@
     <module>../osgp/shared/osgp-dto</module>
     <module>../osgp/shared/osgp-ws-core</module>
     <module>../osgp/shared/osgp-ws-admin</module>
+    <module>../osgp/shared/osgp-ws-distributionautomation</module>
     <module>../osgp/shared/osgp-ws-microgrids</module>
     <module>../osgp/shared/osgp-ws-publiclighting</module>
     <module>../osgp/shared/osgp-ws-tariffswitching</module>
     <module>../osgp/shared/osgp-ws-smartmetering</module>
+
+    <!-- Protocol-Adapter-IEC60870 -->
+    <module>../osgp/protocol-adapter-iec60870/parent-pa-iec60870</module>
+    <module>../osgp/protocol-adapter-iec60870/osgp-iec60870</module>
+    <module>../osgp/protocol-adapter-iec60870/osgp-protocol-adapter-iec60870</module>
+    <module>../osgp/protocol-adapter-iec60870/osgp-protocol-simulator-iec60870/</module>
 
     <!-- Protocol-Adapter-IEC61850 -->
     <module>../osgp/protocol-adapter-iec61850/parent-pa-iec61850</module>
@@ -103,6 +110,7 @@
     <!-- Platform -->
     <module>../osgp/platform/parent-platform</module>
     <module>../osgp/platform/osgp-domain-core</module>
+    <module>../osgp/platform/osgp-domain-distributionautomation</module>
     <module>../osgp/platform/osgp-domain-logging</module>
     <module>../osgp/platform/osgp-domain-microgrids</module>
 
@@ -110,6 +118,7 @@
 
     <module>../osgp/platform/osgp-adapter-domain-admin</module>
     <module>../osgp/platform/osgp-adapter-domain-core</module>
+    <module>../osgp/platform/osgp-adapter-domain-distributionautomation</module>
     <module>../osgp/platform/osgp-adapter-domain-microgrids</module>
     <module>../osgp/platform/osgp-adapter-domain-publiclighting</module>
     <module>../osgp/platform/osgp-adapter-domain-tariffswitching</module>
@@ -120,6 +129,7 @@
 
     <module>../osgp/platform/osgp-adapter-ws-core</module>
     <module>../osgp/platform/osgp-adapter-ws-admin</module>
+    <module>../osgp/platform/osgp-adapter-ws-distributionautomation</module>
     <module>../osgp/platform/osgp-adapter-ws-publiclighting</module>
     <module>../osgp/platform/osgp-adapter-ws-tariffswitching</module>
     <module>../osgp/platform/osgp-adapter-ws-smartmetering</module>
@@ -133,6 +143,7 @@
     <module>cucumber-tests-execution</module>
     <module>cucumber-tests-platform</module>
     <module>cucumber-tests-platform-common</module>
+    <module>cucumber-tests-platform-distributionautomation</module>
     <module>cucumber-tests-platform-publiclighting</module>
     <module>cucumber-tests-platform-smartmetering</module>
     <module>cucumber-tests-platform-microgrids</module>
