@@ -9,6 +9,7 @@ import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.CommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigConfiguration;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.DlmsConnectionManagerStub;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.DlmsConnectionStub;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
@@ -19,11 +20,13 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmNotificatio
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Arrays;
 import static org.junit.Assert.assertEquals;
+
 
 public class SetAlarmNotificationsCommandExecutorTest {
     private DlmsDevice device;
@@ -37,8 +40,16 @@ public class SetAlarmNotificationsCommandExecutorTest {
         this.device = new DlmsDevice("SuperAwesomeHeroicRockstarDevice");
 
         final DlmsObjectConfigConfiguration dlmsObjectConfigConfiguration = new DlmsObjectConfigConfiguration();
-        final DlmsObjectConfigService dlmsObjectConfigService =
-                new DlmsObjectConfigService(new DlmsHelper(), dlmsObjectConfigConfiguration.getDlmsObjectConfigs());
+        final DlmsObjectConfigService dlmsObjectConfigService = new DlmsObjectConfigService
+                (new DlmsHelper(), dlmsObjectConfigConfiguration.getDlmsObjectConfigs()) {
+            @Override
+            public Optional<AttributeAddress> findAttributeAddress(
+                    final DlmsDevice device,
+                    final DlmsObjectType type,
+                    final Integer channel) {
+                return Optional.of(new AttributeAddress(40, "0.0.97.98.10.255", 2));
+            }
+        };
         this.executor = new SetAlarmNotificationsCommandExecutor(dlmsObjectConfigService);
 
         final DlmsConnectionStub conn = new DlmsConnectionStub() {
@@ -49,13 +60,13 @@ public class SetAlarmNotificationsCommandExecutorTest {
             }
         };
 
-        this.connMgr = new DlmsConnectionManagerStub(conn);
-
         // Set the return value to 10 (0b1010):
         // REPLACE_BATTERY enabled, AUXILIARY_EVENT enabled.
         conn.addReturnValue(
                 new AttributeAddress(1, "0.0.97.98.10.255", 2),
                 DataObject.newInteger32Data(10));
+
+        this.connMgr = new DlmsConnectionManagerStub(conn);
     }
 
     @Test
@@ -96,6 +107,6 @@ public class SetAlarmNotificationsCommandExecutorTest {
             throws OsgpException {
         final Set<AlarmNotificationDto> alarmNotificationDtoSet = new HashSet<>(Arrays.asList(alarmNotificationDtos));
         final AlarmNotificationsDto alarmNotificationsDto = new AlarmNotificationsDto(alarmNotificationDtoSet);
-        return executor.execute(this.connMgr, this.device, alarmNotificationsDto);
+        return this.executor.execute(this.connMgr, this.device, alarmNotificationsDto);
     }
 }
