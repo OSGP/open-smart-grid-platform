@@ -53,7 +53,7 @@ public class RetrieveEventsCommandExecutor extends AbstractCommandExecutor<FindE
 
     private static final int ACCESS_SELECTOR_RANGE_DESCRIPTOR = 1;
 
-    DataObjectToEventListConverter dataObjectToEventListConverter;
+    private final DataObjectToEventListConverter dataObjectToEventListConverter;
     private final DlmsHelper dlmsHelper;
 
     // @formatter:off
