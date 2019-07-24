@@ -4,6 +4,8 @@
 <jxb:bindings version="2.0" xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
   xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
+  <jxb:globalBindings typesafeEnumMemberName="generateName"/>
+
   <jxb:bindings schemaLocation="common.xsd">
     <jxb:schemaBindings>
       <jxb:package
@@ -24,6 +26,44 @@
       <jxb:package
         name="org.opensmartgridplatform.adapter.ws.schema.smartmetering.management"></jxb:package>
     </jxb:schemaBindings>
+    <!-- the following bindings are needed because the XJC transformer will change L1 to L_1 etc -->
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='UNDER_VOLTAGE_L1']">
+        <jxb:typesafeEnumMember name="UNDER_VOLTAGE_L1"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='UNDER_VOLTAGE_L2']">
+            <jxb:typesafeEnumMember name="UNDER_VOLTAGE_L2"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='UNDER_VOLTAGE_L3']">
+          <jxb:typesafeEnumMember name="UNDER_VOLTAGE_L3"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='OVER_VOLTAGE_L1']">
+        <jxb:typesafeEnumMember name="OVER_VOLTAGE_L1"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='OVER_VOLTAGE_L2']">
+            <jxb:typesafeEnumMember name="OVER_VOLTAGE_L2"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='OVER_VOLTAGE_L3']">
+          <jxb:typesafeEnumMember name="OVER_VOLTAGE_L3"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='VOLTAGE_L1_NORMAL']">
+        <jxb:typesafeEnumMember name="VOLTAGE_L1_NORMAL"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='VOLTAGE_L2_NORMAL']">
+            <jxb:typesafeEnumMember name="VOLTAGE_L2_NORMAL"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='VOLTAGE_L3_NORMAL']">
+          <jxb:typesafeEnumMember name="VOLTAGE_L3_NORMAL"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='PHASE_OUTAGE_L1']">
+        <jxb:typesafeEnumMember name="PHASE_OUTAGE_L1"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='PHASE_OUTAGE_L2']">
+            <jxb:typesafeEnumMember name="PHASE_OUTAGE_L2"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='PHASE_OUTAGE_L3']">
+          <jxb:typesafeEnumMember name="PHASE_OUTAGE_L3"/>
+    </jxb:bindings>
   </jxb:bindings>
+
 
 </jxb:bindings>
