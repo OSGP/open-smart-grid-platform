@@ -71,6 +71,7 @@
     <apache.activemq.version>5.15.9</apache.activemq.version>
     <commons.pool.version>1.6</commons.pool.version>
     <jackson.version>2.9.9</jackson.version>
+    <jackson-databind.version>2.9.9.1</jackson-databind.version>
     <proton-jms.version>0.7</proton-jms.version>
     <logback.version>1.2.3</logback.version>
     <logback.ext.version>0.1.4</logback.ext.version>

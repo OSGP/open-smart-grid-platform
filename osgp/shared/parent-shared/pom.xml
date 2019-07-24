@@ -65,6 +65,7 @@
     <apache.commons.lang.version>3.3.2</apache.commons.lang.version>
     <apache.httpcomponents.version>4.3.6</apache.httpcomponents.version>
     <jackson.version>2.9.9</jackson.version>
+    <jackson-databind.version>2.9.9.1</jackson-databind.version>
     <commons.codec.version>1.9</commons.codec.version>
     <orika.version>1.5.1</orika.version>
     <jxr.version>2.5</jxr.version>
@@ -261,7 +262,7 @@
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
-        <version>${jackson.version}</version>
+        <version>${jackson-databind.version}</version>
       </dependency>
 
       <!-- Jakarta commons codec -->

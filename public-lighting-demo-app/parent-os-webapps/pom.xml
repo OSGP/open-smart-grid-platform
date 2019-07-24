@@ -63,7 +63,6 @@
     <jxr.version>2.5</jxr.version>
     <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
     <maven.site.plugin>3.7.1</maven.site.plugin>
-    <jackson.jaxrs.version>2.8.6</jackson.jaxrs.version>
     <maven.compiler.plugin.version>3.2</maven.compiler.plugin.version>
     <license.maven.plugin>2.11</license.maven.plugin>
     <maven.javadoc.version>2.10.4</maven.javadoc.version>
