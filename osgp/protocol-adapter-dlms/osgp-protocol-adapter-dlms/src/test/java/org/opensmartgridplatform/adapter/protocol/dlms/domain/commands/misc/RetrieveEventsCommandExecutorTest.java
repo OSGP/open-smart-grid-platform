@@ -1,5 +1,6 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import org.joda.time.DateTime;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -57,16 +59,25 @@ public class RetrieveEventsCommandExecutorTest {
     @Mock
     private DlmsConnection dlmsConnection;
 
-    @Test
-    public void testThis() throws ProtocolAdapterException, IOException {
+    @Mock
+    private DataObject resultData;
+
+    @Mock
+    private GetResult getResult;
+
+    private FindEventsRequestDto findEventsRequestDto;
+    private DataObjectToEventListConverter dataObjectToEventListConverter;
+
+    @Before
+    public void before() throws ProtocolAdapterException, IOException {
 
         final DataObject fromDate = mock(DataObject.class);
         final DataObject toDate = mock(DataObject.class);
-        final GetResult getResult = mock(GetResult.class);
-        final DataObject resultData = mock(DataObject.class);
 
-        final FindEventsRequestDto findEventsRequestDto = new FindEventsRequestDto(
-                EventLogCategoryDto.POWER_QUALITY_EVENT_LOG, DateTime.now().minusDays(70), DateTime.now());
+        findEventsRequestDto = new FindEventsRequestDto(EventLogCategoryDto.POWER_QUALITY_EVENT_LOG,
+                DateTime.now().minusDays(70), DateTime.now());
+
+        dataObjectToEventListConverter = new DataObjectToEventListConverter(this.dlmsHelper);
 
         when(this.dlmsHelper.asDataObject(findEventsRequestDto.getFrom())).thenReturn(fromDate);
         when(this.dlmsHelper.asDataObject(findEventsRequestDto.getUntil())).thenReturn(toDate);
@@ -74,22 +85,45 @@ public class RetrieveEventsCommandExecutorTest {
         when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
         when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
         when(this.dlmsConnection.get(any(AttributeAddress.class))).thenReturn(getResult);
+    }
+
+    @Test
+    public void testRetrievalOfPowerQualityEvents() throws ProtocolAdapterException {
+
         when(getResult.getResultCode()).thenReturn(AccessResultCode.SUCCESS);
         when(getResult.getResultData()).thenReturn(resultData);
         when(resultData.getValue()).thenReturn(this.generateDataObjects());
-
-        final DataObjectToEventListConverter dataObjectToEventListConverter = new DataObjectToEventListConverter(
-                this.dlmsHelper);
 
         final RetrieveEventsCommandExecutor executor = new RetrieveEventsCommandExecutor(this.dlmsHelper,
                 dataObjectToEventListConverter);
 
         final List<EventDto> events = executor.execute(this.conn, this.dlmsDevice, findEventsRequestDto);
 
+        assertThat(events.size()).isEqualTo(13);
+
+        int firstEventCode = 77;
         for (final EventDto event : events) {
-            System.out.println("Got event " + event.getEventCode());
+            assertThat(event.getEventCode()).isEqualTo(firstEventCode++);
         }
 
+    }
+
+    @Test(expected = ProtocolAdapterException.class)
+    public void testOtherReasonResult() throws ProtocolAdapterException {
+
+        when(getResult.getResultCode()).thenReturn(AccessResultCode.OTHER_REASON);
+
+        new RetrieveEventsCommandExecutor(this.dlmsHelper, dataObjectToEventListConverter).execute(this.conn,
+                this.dlmsDevice, findEventsRequestDto);
+    }
+
+    @Test(expected = ProtocolAdapterException.class)
+    public void testEmptyGetResult() throws ProtocolAdapterException, IOException {
+
+        when(this.dlmsConnection.get(any(AttributeAddress.class))).thenReturn(null);
+
+        new RetrieveEventsCommandExecutor(this.dlmsHelper, dataObjectToEventListConverter).execute(this.conn,
+                this.dlmsDevice, findEventsRequestDto);
     }
 
     private List<DataObject> generateDataObjects() {
