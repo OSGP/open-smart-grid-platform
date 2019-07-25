@@ -91,7 +91,7 @@ public enum EventType {
 
     private int value;
 
-    private static final Map<Integer, EventType> lookup = new HashMap<Integer, EventType>();
+    private static final Map<Integer, EventType> lookup = new HashMap<>();
 
     static {
         for (final EventType e : EnumSet.allOf(EventType.class)) {
