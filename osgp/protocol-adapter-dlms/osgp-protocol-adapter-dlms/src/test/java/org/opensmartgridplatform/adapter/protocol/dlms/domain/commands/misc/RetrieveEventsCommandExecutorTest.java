@@ -6,8 +6,8 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import org.joda.time.DateTime;
 import org.junit.Test;
@@ -64,7 +64,6 @@ public class RetrieveEventsCommandExecutorTest {
         final DataObject toDate = mock(DataObject.class);
         final GetResult getResult = mock(GetResult.class);
         final DataObject resultData = mock(DataObject.class);
-        final List<DataObject> resultList = new ArrayList<>();
 
         final FindEventsRequestDto findEventsRequestDto = new FindEventsRequestDto(
                 EventLogCategoryDto.POWER_QUALITY_EVENT_LOG, DateTime.now().minusDays(70), DateTime.now());
@@ -95,12 +94,20 @@ public class RetrieveEventsCommandExecutorTest {
 
     private List<DataObject> generateDataObjects() {
 
-        final DataObject eventCode = DataObject.newInteger16Data((short) 86);
-        final DataObject eventTime = DataObject.newDateTimeData(new CosemDateTime(2018, 12, 31, 23, 50, 0, 0));
+        final List<DataObject> dataObjects = new ArrayList<>();
 
-        final DataObject struct = DataObject.newStructureData(eventTime, eventCode);
+        IntStream.rangeClosed(77, 89).forEach(code -> {
+            final DataObject eventCode = DataObject.newInteger16Data((short) code);
+            final DataObject eventTime = DataObject.newDateTimeData(
+                    new CosemDateTime(2018, 12, 31, 23, code - 60, 0, 0));
 
-        return Arrays.asList(struct);
+            final DataObject struct = DataObject.newStructureData(eventTime, eventCode);
+
+            dataObjects.add(struct);
+
+        });
+
+        return dataObjects;
     }
 
 }
