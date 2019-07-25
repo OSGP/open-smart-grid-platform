@@ -47,6 +47,19 @@ public enum EventType {
     RETRIEVE_METER_READINGS_G(74),
     RETRIEVE_INTERVAL_DATA_E(75),
     RETRIEVE_INTERVAL_DATA_G(76),
+    UNDER_VOLTAGE_L1(77),
+    UNDER_VOLTAGE_L2(78),
+    UNDER_VOLTAGE_L3(79),
+    OVER_VOLTAGE_L1(80),
+    OVER_VOLTAGE_L2(81),
+    OVER_VOLTAGE_L3(82),
+    VOLTAGE_L1_NORMAL(83),
+    VOLTAGE_L2_NORMAL(84),
+    VOLTAGE_L3_NORMAL(85),
+    PHASE_OUTAGE_L1(86),
+    PHASE_OUTAGE_L2(87),
+    PHASE_OUTAGE_L3(88),
+    PHASE_OUTAGE_TEST(89),
     COMMUNICATION_ERROR_M_BUS_CHANNEL_1(100),
     COMMUNICATION_OK_M_BUS_CHANNEL_1(101),
     REPLACE_BATTERY_M_BUS_CHANNEL_1(102),
@@ -76,9 +89,9 @@ public enum EventType {
     NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_4(135),
     PERMANENT_ERROR_FROM_M_BUS_DEVICE_CHANNEL_4(136);
 
-    private int value;
+    private final int value;
 
-    private static final Map<Integer, EventType> lookup = new HashMap<Integer, EventType>();
+    private static final Map<Integer, EventType> lookup = new HashMap<>();
 
     static {
         for (final EventType e : EnumSet.allOf(EventType.class)) {
