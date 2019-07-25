@@ -97,9 +97,10 @@ public enum EventType {
     NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_4(135),
     PERMANENT_ERROR_FROM_M_BUS_DEVICE_CHANNEL_4(136);
 
-    private int value;
-
+    private static final EventType[] VALUES = EventType.values();
     private static final Map<Integer, EventType> lookup = new HashMap<>();
+
+    private int value;
 
     static {
         for (final EventType e : EnumSet.allOf(EventType.class)) {
@@ -107,14 +108,12 @@ public enum EventType {
         }
     }
 
-    public static EventType getValue(final int intValue) {
-        return lookup.get(intValue);
-    }
-
-    private static final EventType[] VALUES = EventType.values();
-
     EventType(final int value) {
         this.value = value;
+    }
+
+    public static EventType getValue(final int intValue) {
+        return lookup.get(intValue);
     }
 
     public static EventType[] getValues() {
