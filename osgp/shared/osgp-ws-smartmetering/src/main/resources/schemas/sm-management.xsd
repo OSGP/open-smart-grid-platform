@@ -382,6 +382,16 @@
       <xsd:enumeration value="UNDER_VOLTAGE_L2"/>
       <!-- 79 - Indicates that under-voltage occurred on at least L3 phase -->
       <xsd:enumeration value="UNDER_VOLTAGE_L3"/>
+
+      <!-- SMR4.2 / SMR4.3 EventTypes -->
+      <xsd:enumeration value="PV_VOLTAGE_SAG_L1"/>
+      <xsd:enumeration value="PV_VOLTAGE_SAG_L2"/>
+      <xsd:enumeration value="PV_VOLTAGE_SAG_L3"/>
+      <xsd:enumeration value="PV_VOLTAGE_SWELL_L1"/>
+      <xsd:enumeration value="PV_VOLTAGE_SWELL_L2"/>
+      <xsd:enumeration value="PV_VOLTAGE_SWELL_L3"/>
+
+      <!-- SMR5 EventTypes -->
       <!-- 80 - Indicates that over-voltage occurred on at least L1 phase -->
       <xsd:enumeration value="OVER_VOLTAGE_L1"/>
       <!-- 81 - Indicates that over-voltage occurred on at least L2 phase -->

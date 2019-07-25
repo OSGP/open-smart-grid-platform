@@ -63,7 +63,24 @@
     <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='PHASE_OUTAGE_L3']">
           <jxb:typesafeEnumMember name="PHASE_OUTAGE_L3"/>
     </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='PV_VOLTAGE_SAG_L1']">
+        <jxb:typesafeEnumMember name="PV_VOLTAGE_SAG_L1"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='PV_VOLTAGE_SAG_L2']">
+            <jxb:typesafeEnumMember name="PV_VOLTAGE_SAG_L2"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='PV_VOLTAGE_SAG_L3']">
+          <jxb:typesafeEnumMember name="PV_VOLTAGE_SAG_L3"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='PV_VOLTAGE_SWELL_L1']">
+        <jxb:typesafeEnumMember name="PV_VOLTAGE_SWELL_L1"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='PV_VOLTAGE_SWELL_L2']">
+          <jxb:typesafeEnumMember name="PV_VOLTAGE_SWELL_L2"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='PV_VOLTAGE_SWELL_L3']">
+          <jxb:typesafeEnumMember name="PV_VOLTAGE_SWELL_L3"/>
+    </jxb:bindings>
   </jxb:bindings>
-
 
 </jxb:bindings>

@@ -50,6 +50,14 @@ public enum EventType {
     UNDER_VOLTAGE_L1(77),
     UNDER_VOLTAGE_L2(78),
     UNDER_VOLTAGE_L3(79),
+    // DSMR 4.2 / DSMR 4.3
+    PV_VOLTAGE_SAG_L1(80),
+    PV_VOLTAGE_SAG_L2(81),
+    PV_VOLTAGE_SAG_L3(82),
+    PV_VOLTAGE_SWELL_L1(83),
+    PV_VOLTAGE_SWELL_L2(84),
+    PV_VOLTAGE_SWELL_L3(85),
+    // SMR 5
     OVER_VOLTAGE_L1(80),
     OVER_VOLTAGE_L2(81),
     OVER_VOLTAGE_L3(82),
@@ -115,5 +123,9 @@ public enum EventType {
 
     public int getValue() {
         return this.value;
+    }
+
+    public static void main(String[] args){
+        System.out.println(EventType.getValue(80));
     }
 }
