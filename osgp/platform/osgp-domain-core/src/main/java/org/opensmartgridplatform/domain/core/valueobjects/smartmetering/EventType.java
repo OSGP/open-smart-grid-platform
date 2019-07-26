@@ -47,6 +47,27 @@ public enum EventType {
     RETRIEVE_METER_READINGS_G(74),
     RETRIEVE_INTERVAL_DATA_E(75),
     RETRIEVE_INTERVAL_DATA_G(76),
+    UNDER_VOLTAGE_L1(77),
+    UNDER_VOLTAGE_L2(78),
+    UNDER_VOLTAGE_L3(79),
+    // DSMR 4.2 / DSMR 4.3
+    PV_VOLTAGE_SAG_L1(80),
+    PV_VOLTAGE_SAG_L2(81),
+    PV_VOLTAGE_SAG_L3(82),
+    PV_VOLTAGE_SWELL_L1(83),
+    PV_VOLTAGE_SWELL_L2(84),
+    PV_VOLTAGE_SWELL_L3(85),
+    // SMR 5
+    OVER_VOLTAGE_L1(80),
+    OVER_VOLTAGE_L2(81),
+    OVER_VOLTAGE_L3(82),
+    VOLTAGE_L1_NORMAL(83),
+    VOLTAGE_L2_NORMAL(84),
+    VOLTAGE_L3_NORMAL(85),
+    PHASE_OUTAGE_L1(86),
+    PHASE_OUTAGE_L2(87),
+    PHASE_OUTAGE_L3(88),
+    PHASE_OUTAGE_TEST(89),
     COMMUNICATION_ERROR_M_BUS_CHANNEL_1(100),
     COMMUNICATION_OK_M_BUS_CHANNEL_1(101),
     REPLACE_BATTERY_M_BUS_CHANNEL_1(102),
@@ -76,9 +97,10 @@ public enum EventType {
     NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_4(135),
     PERMANENT_ERROR_FROM_M_BUS_DEVICE_CHANNEL_4(136);
 
-    private int value;
+    private static final EventType[] VALUES = EventType.values();
+    private static final Map<Integer, EventType> lookup = new HashMap<>();
 
-    private static final Map<Integer, EventType> lookup = new HashMap<Integer, EventType>();
+    private int value;
 
     static {
         for (final EventType e : EnumSet.allOf(EventType.class)) {
@@ -86,14 +108,12 @@ public enum EventType {
         }
     }
 
-    public static EventType getValue(final int intValue) {
-        return lookup.get(intValue);
-    }
-
-    private static final EventType[] VALUES = EventType.values();
-
     EventType(final int value) {
         this.value = value;
+    }
+
+    public static EventType getValue(final int intValue) {
+        return lookup.get(intValue);
     }
 
     public static EventType[] getValues() {
@@ -103,4 +123,5 @@ public enum EventType {
     public int getValue() {
         return this.value;
     }
+
 }
