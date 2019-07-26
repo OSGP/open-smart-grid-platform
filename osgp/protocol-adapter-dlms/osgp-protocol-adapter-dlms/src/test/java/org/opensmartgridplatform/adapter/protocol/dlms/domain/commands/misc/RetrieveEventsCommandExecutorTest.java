@@ -3,6 +3,8 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -11,6 +13,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import org.joda.time.DateTime;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -87,6 +90,15 @@ public class RetrieveEventsCommandExecutorTest {
         when(this.dlmsConnection.get(any(AttributeAddress.class))).thenReturn(getResult);
     }
 
+    @After
+    public void after() throws ProtocolAdapterException, IOException {
+        verify(this.dlmsHelper).asDataObject(findEventsRequestDto.getFrom());
+        verify(this.dlmsHelper).asDataObject(findEventsRequestDto.getUntil());
+        verify(this.conn).getDlmsMessageListener();
+        verify(this.conn).getConnection();
+        verify(this.dlmsConnection).get(any(AttributeAddress.class));
+    }
+
     @Test
     public void testRetrievalOfPowerQualityEvents() throws ProtocolAdapterException {
 
@@ -106,6 +118,7 @@ public class RetrieveEventsCommandExecutorTest {
             assertThat(event.getEventCode()).isEqualTo(firstEventCode++);
         }
 
+        verify(this.dlmsHelper, times(events.size())).convertDataObjectToDateTime(any(DataObject.class));
     }
 
     @Test(expected = ProtocolAdapterException.class)
