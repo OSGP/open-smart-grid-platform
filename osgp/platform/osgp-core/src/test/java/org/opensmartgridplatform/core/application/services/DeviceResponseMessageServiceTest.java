@@ -20,17 +20,13 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opensmartgridplatform.core.domain.model.domain.DomainResponseService;
-import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.ScheduledTask;
-import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
-import org.opensmartgridplatform.domain.core.repositories.ScheduledTaskRepository;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
@@ -45,13 +41,16 @@ import org.opensmartgridplatform.shared.infra.jms.RetryHeader;
 public class DeviceResponseMessageServiceTest {
 
     @Mock
-    private DeviceRepository deviceRepository;
+    private DeviceService deviceService;
 
     @Mock
     private DomainResponseService domainResponseMessageSender;
 
     @Mock
-    private ScheduledTaskRepository scheduledTaskRepository;
+    private ScheduledTaskService scheduledTaskService;
+
+    @Mock
+    private DeviceCommunicationInformationService deviceCommunicationInformationService;
 
     @InjectMocks
     private DeviceResponseMessageService deviceResponseMessageService;
@@ -64,15 +63,6 @@ public class DeviceResponseMessageServiceTest {
     private static final String DATA_OBJECT = "data object";
     private static final Timestamp SCHEDULED_TIME = new Timestamp(Calendar.getInstance().getTime().getTime());
 
-    @Before
-    public void setUpDeviceRepository() {
-        final Device device = new Device(DEVICE_ID);
-        device.setFailedConnectionCount(0);
-        when(this.deviceRepository.findByDeviceIdentification(anyString())).thenReturn(device);
-        when(this.deviceRepository.save(device)).thenReturn(device);
-        when(this.deviceRepository.saveAndFlush(device)).thenReturn(device);
-    }
-
     /**
      * test processMessage with a scheduled task that has been successful
      */
@@ -84,12 +74,12 @@ public class DeviceResponseMessageServiceTest {
         final ScheduledTask scheduledTask = new ScheduledTask(DEVICE_MESSAGE_DATA, DOMAIN, DOMAIN, DATA_OBJECT,
                 SCHEDULED_TIME);
         scheduledTask.setPending();
-        when(this.scheduledTaskRepository.findByCorrelationUid(anyString())).thenReturn(scheduledTask);
+        when(this.scheduledTaskService.findByCorrelationUid(anyString())).thenReturn(scheduledTask);
         this.deviceResponseMessageService.processMessage(message);
 
         // check if message is send and task is deleted
         verify(this.domainResponseMessageSender).send(message);
-        verify(this.scheduledTaskRepository).delete(scheduledTask);
+        verify(this.scheduledTaskService).deleteScheduledTask(scheduledTask);
     }
 
     /**
@@ -131,12 +121,12 @@ public class DeviceResponseMessageServiceTest {
         final ScheduledTask scheduledTask = new ScheduledTask(DEVICE_MESSAGE_DATA, DOMAIN, DOMAIN, DATA_OBJECT,
                 SCHEDULED_TIME);
 
-        when(this.scheduledTaskRepository.findByCorrelationUid(anyString())).thenReturn(scheduledTask);
+        when(this.scheduledTaskService.findByCorrelationUid(anyString())).thenReturn(scheduledTask);
         this.deviceResponseMessageService.processMessage(message);
 
         // check if message is send and task is deleted
         verify(this.domainResponseMessageSender).send(message);
-        verify(this.scheduledTaskRepository).delete(scheduledTask);
+        verify(this.scheduledTaskService).deleteScheduledTask(scheduledTask);
     }
 
     private void testProcessScheduledMessageRetry(final String exceptionMessage, final String expectedMessage) {
@@ -157,13 +147,13 @@ public class DeviceResponseMessageServiceTest {
         final ScheduledTask scheduledTask = new ScheduledTask(DEVICE_MESSAGE_DATA, DOMAIN, DOMAIN, DATA_OBJECT,
                 SCHEDULED_TIME);
 
-        when(this.scheduledTaskRepository.findByCorrelationUid(anyString())).thenReturn(scheduledTask);
+        when(this.scheduledTaskService.findByCorrelationUid(anyString())).thenReturn(scheduledTask);
         this.deviceResponseMessageService.processMessage(message);
 
         // check if the message is not send and the task is not deleted
         verify(this.domainResponseMessageSender, never()).send(message);
-        verify(this.scheduledTaskRepository, never()).delete(scheduledTask);
-        verify(this.scheduledTaskRepository).save(scheduledTask);
+        verify(this.scheduledTaskService, never()).deleteScheduledTask(scheduledTask);
+        verify(this.scheduledTaskService).saveScheduledTask(scheduledTask);
 
         // check if the scheduled time is updated to the message retry time
         assertEquals(new Timestamp(scheduledRetryTime.getTime()), scheduledTask.getscheduledTime());
