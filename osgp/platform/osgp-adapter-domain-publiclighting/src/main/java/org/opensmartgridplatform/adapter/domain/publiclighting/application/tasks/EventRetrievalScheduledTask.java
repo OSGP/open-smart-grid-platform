@@ -7,19 +7,21 @@
  */
 package org.opensmartgridplatform.adapter.domain.publiclighting.application.tasks;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.config.SchedulingConfigForEventRetrievalScheduledTask;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
 import org.opensmartgridplatform.domain.core.entities.Manufacturer;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Periodic task to fetch events from devices of a manufacturer in case the
@@ -40,6 +42,12 @@ public class EventRetrievalScheduledTask extends BaseTask implements Runnable {
     @Autowired
     private int eventRetrievalScheduledTaskMaximumAllowedAge;
 
+    @Autowired
+    private int eventRetrievalScheduledTaskDefaultWaitTime;
+
+    @Autowired
+    private int eventRetrievalScheduledTaskMaxBackoff;
+
     @Override
     public void run() {
         try {
@@ -58,15 +66,61 @@ public class EventRetrievalScheduledTask extends BaseTask implements Runnable {
                 return;
             }
 
-            final List<Device> devicesToContact = this.findDevicesToContact(devices,
+            List<Device> devicesToContact = this.findDevicesToContact(devices,
                     this.eventRetrievalScheduledTaskMaximumAllowedAge);
             if (devicesToContact == null || devicesToContact.isEmpty()) {
                 return;
             }
 
-            this.contactDevices(devicesToContact, DeviceFunction.GET_STATUS);
+            devicesToContact = this.filter(devicesToContact);
+
+            this.contactDevices(devicesToContact, DeviceFunction.GET_LIGHT_STATUS);
         } catch (final Exception e) {
             LOGGER.error("Exception caught during EventRetrievalScheduledTask.run()", e);
         }
+    }
+
+    private List<Device> filter(final List<Device> devicesToFilter) {
+
+        final List<Device> devicesToContact = new ArrayList<>();
+
+        for (final Device device : devicesToFilter) {
+            final String deviceIdentification = device.getDeviceIdentification();
+
+            if (!device.hasConnectionFailures()) {
+                LOGGER.info("Device: {} has no connection failures, last successful connection timestamp: {}.",
+                        deviceIdentification, device.getLastSuccessfulConnectionTimestamp());
+                devicesToContact.add(device);
+                continue;
+            }
+
+            final Integer failedConnectionCount = device.getFailedConnectionCount();
+            final Integer multiplier = (int) Math.pow(2, failedConnectionCount);
+            final Integer waitTimeInMinutes = this.eventRetrievalScheduledTaskDefaultWaitTime * multiplier;
+            final DateTime threshold = DateTime.now(DateTimeZone.UTC).minusMinutes(waitTimeInMinutes);
+            final DateTime lastFailedConnectionTimestamp = new DateTime(device.getLastFailedConnectionTimestamp())
+                    .withZone(DateTimeZone.UTC);
+            final DateTime maxThreshold = DateTime.now(DateTimeZone.UTC)
+                    .minusHours(this.eventRetrievalScheduledTaskMaxBackoff);
+
+            if (lastFailedConnectionTimestamp.isBefore(maxThreshold)) {
+                LOGGER.info(
+                        "Device: {} has last failed connection timestamp: {} which is before max threshold: {}. Contacting this device.",
+                        deviceIdentification, lastFailedConnectionTimestamp, maxThreshold);
+                devicesToContact.add(device);
+            } else if (lastFailedConnectionTimestamp.isBefore(threshold)) {
+                LOGGER.info(
+                        "Device: {} has last failed connection timestamp: {} which is before threshold: {}. Contacting this device.",
+                        deviceIdentification, lastFailedConnectionTimestamp, threshold);
+                devicesToContact.add(device);
+            } else {
+                LOGGER.info(
+                        "Device: {} has last failed connection timestamp: {} which is after threshold: {}. Not contacting this device.",
+                        deviceIdentification, lastFailedConnectionTimestamp, threshold);
+                continue;
+            }
+        }
+
+        return devicesToContact;
     }
 }

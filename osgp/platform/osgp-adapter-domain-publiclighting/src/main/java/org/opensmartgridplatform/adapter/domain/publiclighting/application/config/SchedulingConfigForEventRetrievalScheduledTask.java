@@ -37,6 +37,9 @@ public class SchedulingConfigForEventRetrievalScheduledTask extends AbstractConf
     private static final String PROPERTY_NAME_SCHEDULING_TASK_EVENT_RETRIEVAL_MANUFACTURER_NAME = "scheduling.task.event.retrieval.manufacturer.name";
     private static final String PROPERTY_NAME_SCHEDULING_TASK_EVENT_RETRIEVAL_MAX_ALLOWED_AGE = "scheduling.task.event.retrieval.max.allowed.age";
 
+    private static final String PROPERTY_NAME_SCHEDULING_TASK_EVENT_RETRIEVAL_DEFAULT_WAIT_TIME = "scheduling.task.event.retrieval.default.wait.time";
+    private static final String PROPERTY_NAME_SCHEDULING_TASK_EVENT_RETRIEVAL_MAX_BACKOFF = "scheduling.task.event.retrieval.max.backoff";
+
     @Autowired
     private EventRetrievalScheduledTask eventRetrievalScheduledTask;
 
@@ -75,5 +78,17 @@ public class SchedulingConfigForEventRetrievalScheduledTask extends AbstractConf
     public int eventRetrievalScheduledTaskMaximumAllowedAge() {
         return Integer.parseInt(
                 this.environment.getRequiredProperty(PROPERTY_NAME_SCHEDULING_TASK_EVENT_RETRIEVAL_MAX_ALLOWED_AGE));
+    }
+
+    @Bean
+    public int eventRetrievalScheduledTaskDefaultWaitTime() {
+        return Integer.parseInt(
+                this.environment.getRequiredProperty(PROPERTY_NAME_SCHEDULING_TASK_EVENT_RETRIEVAL_DEFAULT_WAIT_TIME));
+    }
+
+    @Bean
+    public int eventRetrievalScheduledTaskMaxBackoff() {
+        return Integer.parseInt(
+                this.environment.getRequiredProperty(PROPERTY_NAME_SCHEDULING_TASK_EVENT_RETRIEVAL_MAX_BACKOFF));
     }
 }

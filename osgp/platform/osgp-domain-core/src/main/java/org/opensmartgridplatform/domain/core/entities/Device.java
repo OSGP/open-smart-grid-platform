@@ -180,6 +180,15 @@ public class Device extends AbstractEntity {
     @Sort(type = SortType.NATURAL)
     private final SortedSet<DeviceFirmwareModule> deviceFirmwareModules = new TreeSet<>();
 
+    @Column
+    private Date lastSuccessfulConnectionTimestamp;
+
+    @Column
+    private Date lastFailedConnectionTimestamp;
+
+    @Column(nullable = false)
+    private Integer failedConnectionCount;
+
     public Device() {
         // Default constructor
     }
@@ -450,5 +459,43 @@ public class Device extends AbstractEntity {
 
     public void setDeviceLifecycleStatus(final DeviceLifecycleStatus deviceLifecycleStatus) {
         this.deviceLifecycleStatus = deviceLifecycleStatus;
+    }
+
+    public Date getLastSuccessfulConnectionTimestamp() {
+        return this.lastSuccessfulConnectionTimestamp;
+    }
+
+    public void setLastSuccessfulConnectionTimestamp(final Date lastSuccessfulConnectionTimestamp) {
+        this.lastSuccessfulConnectionTimestamp = lastSuccessfulConnectionTimestamp;
+    }
+
+    public Date getLastFailedConnectionTimestamp() {
+        return this.lastFailedConnectionTimestamp;
+    }
+
+    public void setLastFailedConnectionTimestamp(final Date lastFailedConnectionTimestamp) {
+        this.lastFailedConnectionTimestamp = lastFailedConnectionTimestamp;
+    }
+
+    public Integer getFailedConnectionCount() {
+        return this.failedConnectionCount;
+    }
+
+    public void setFailedConnectionCount(final Integer failedConnectionCount) {
+        this.failedConnectionCount = failedConnectionCount;
+    }
+
+    public void updateConnectionDetailsToSuccess() {
+        this.failedConnectionCount = 0;
+        this.lastSuccessfulConnectionTimestamp = new Date();
+    }
+
+    public void updateConnectionDetailsToFailure() {
+        this.failedConnectionCount++;
+        this.lastFailedConnectionTimestamp = new Date();
+    }
+
+    public boolean hasConnectionFailures() {
+        return this.failedConnectionCount != 0;
     }
 }

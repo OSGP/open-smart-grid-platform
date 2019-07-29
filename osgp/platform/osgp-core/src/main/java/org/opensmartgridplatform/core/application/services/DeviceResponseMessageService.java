@@ -12,12 +12,6 @@ import java.sql.Timestamp;
 
 import javax.jms.JMSException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import org.opensmartgridplatform.core.domain.model.domain.DomainResponseService;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.ScheduledTask;
@@ -30,6 +24,11 @@ import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolRequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
@@ -68,6 +67,8 @@ public class DeviceResponseMessageService {
                 LOGGER.info("Handling protocol response message.");
                 this.handleProtocolResponseMessage(message);
             }
+
+            this.updateDeviceConnectionInformation(message);
         } catch (JMSException | FunctionalException e) {
             LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
         }
@@ -215,5 +216,27 @@ public class DeviceResponseMessageService {
         task.retryOn(scheduleTimeStamp);
 
         return task;
+    }
+
+    private void updateDeviceConnectionInformation(final ProtocolResponseMessage message) {
+        final String deviceIdentification = message.getDeviceIdentification();
+        Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+        final ResponseMessageResultType result = message.getResult();
+
+        if (ResponseMessageResultType.OK == result) {
+            device.updateConnectionDetailsToSuccess();
+        } else if (ResponseMessageResultType.NOT_OK == result) {
+            device.updateConnectionDetailsToFailure();
+        } else {
+            LOGGER.warn("Unexpected result type: {}, connection information not updated for device: ", result,
+                    deviceIdentification);
+            return;
+        }
+
+        device = this.deviceRepository.save(device);
+        LOGGER.info(
+                "Updated connection information for device: {}, last successful connection timestamp: {}, last failed connection timestamp: {}, connection failure count: {} based on result type: {}",
+                deviceIdentification, device.getLastSuccessfulConnectionTimestamp(),
+                device.getLastFailedConnectionTimestamp(), device.getFailedConnectionCount(), result.name());
     }
 }
