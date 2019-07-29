@@ -187,7 +187,7 @@ public class Device extends AbstractEntity {
     private Date lastFailedConnectionTimestamp;
 
     @Column(nullable = false)
-    private Integer failedConnectionCount;
+    private Integer failedConnectionCount = 0;
 
     public Device() {
         // Default constructor

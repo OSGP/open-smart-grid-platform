@@ -151,8 +151,6 @@ public abstract class BaseDeviceSteps extends GlueBase {
                                         : null));
 
         device.setActivated(getBoolean(settings, PlatformKeys.KEY_ACTIVATED, PlatformDefaults.DEFAULT_ACTIVATED));
-        device.setFailedConnectionCount(getInteger(settings, PlatformKeys.KEY_FAILED_CONNECTION_COUNT,
-                PlatformDefaults.DEFAULT_FAILED_CONNECTION_COUNT));
 
         device = this.deviceRepository.save(device);
 
