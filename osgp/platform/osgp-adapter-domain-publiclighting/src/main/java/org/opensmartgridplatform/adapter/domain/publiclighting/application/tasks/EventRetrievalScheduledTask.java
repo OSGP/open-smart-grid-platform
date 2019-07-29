@@ -72,7 +72,7 @@ public class EventRetrievalScheduledTask extends BaseTask implements Runnable {
                 return;
             }
 
-            devicesToContact = this.filter(devicesToContact);
+            devicesToContact = this.filterByExponentialBackOff(devicesToContact);
 
             this.contactDevices(devicesToContact, DeviceFunction.GET_LIGHT_STATUS);
         } catch (final Exception e) {
@@ -80,7 +80,19 @@ public class EventRetrievalScheduledTask extends BaseTask implements Runnable {
         }
     }
 
-    private List<Device> filter(final List<Device> devicesToFilter) {
+    /**
+     * Using the connection details of a device, determine if the device should
+     * be contacted. Devices without connection error included in the returned
+     * list. Device with connection errors will be included in the returned list
+     * if the exponential back off period has elapsed.
+     *
+     * @param devicesToFilter
+     *            List of devices.
+     *
+     * @return Filtered list of devices based on the exponential back off
+     *         calculations.
+     */
+    private List<Device> filterByExponentialBackOff(final List<Device> devicesToFilter) {
 
         final List<Device> devicesToContact = new ArrayList<>();
 
@@ -94,6 +106,8 @@ public class EventRetrievalScheduledTask extends BaseTask implements Runnable {
                 continue;
             }
 
+            // waitTimeInMinutes = 2 ^ failedConnectionCount *
+            // eventRetrievalScheduledTaskDefaultWaitTime
             final Integer failedConnectionCount = device.getFailedConnectionCount();
             final Integer multiplier = (int) Math.pow(2, failedConnectionCount);
             final Integer waitTimeInMinutes = this.eventRetrievalScheduledTaskDefaultWaitTime * multiplier;
