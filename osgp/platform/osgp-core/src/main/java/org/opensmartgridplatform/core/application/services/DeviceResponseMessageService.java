@@ -59,7 +59,9 @@ public class DeviceResponseMessageService {
         LOGGER.info("Processing protocol response message with correlation uid [{}]", message.getCorrelationUid());
 
         try {
-            this.deviceCommunicationInformationService.updateDeviceConnectionInformation(message);
+            synchronized (this) {
+                this.deviceCommunicationInformationService.updateDeviceConnectionInformation(message);
+            }
 
             if (message.isScheduled() && !message.bypassRetry()) {
                 LOGGER.info("Handling scheduled protocol response message.");
