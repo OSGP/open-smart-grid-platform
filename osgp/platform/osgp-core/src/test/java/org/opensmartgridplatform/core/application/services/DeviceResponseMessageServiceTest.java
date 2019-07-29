@@ -70,6 +70,7 @@ public class DeviceResponseMessageServiceTest {
         device.setFailedConnectionCount(0);
         when(this.deviceRepository.findByDeviceIdentification(anyString())).thenReturn(device);
         when(this.deviceRepository.save(device)).thenReturn(device);
+        when(this.deviceRepository.saveAndFlush(device)).thenReturn(device);
     }
 
     /**

@@ -233,7 +233,7 @@ public class DeviceResponseMessageService {
             return;
         }
 
-        device = this.deviceRepository.save(device);
+        device = this.deviceRepository.saveAndFlush(device);
         LOGGER.info(
                 "Updated connection information for device: {}, last successful connection timestamp: {}, last failed connection timestamp: {}, connection failure count: {} based on result type: {}",
                 deviceIdentification, device.getLastSuccessfulConnectionTimestamp(),
