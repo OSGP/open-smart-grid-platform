@@ -164,13 +164,11 @@ public class DeviceRegistrationService {
     protected void enableReporting(final DeviceConnection deviceConnection) throws NodeException {
         try {
             if (this.isBufferedReportingEnabled) {
-                new Iec61850EnableReportingCommand().enableBufferedReportingOnDeviceWithoutUsingSequenceNumber(
-                        DeviceRegistrationService.this.iec61850DeviceConnectionService.getIec61850Client(),
-                        deviceConnection);
+                new Iec61850EnableReportingCommand()
+                        .enableBufferedReportingOnDeviceWithoutUsingSequenceNumber(deviceConnection);
             } else {
-                new Iec61850EnableReportingCommand().enableUnbufferedReportingOnDeviceWithoutUsingSequenceNumber(
-                        DeviceRegistrationService.this.iec61850DeviceConnectionService.getIec61850Client(),
-                        deviceConnection);
+                new Iec61850EnableReportingCommand()
+                        .enableUnbufferedReportingOnDeviceWithoutUsingSequenceNumber(deviceConnection);
             }
             // Don't disconnect now! The device should be able to send
             // reports.

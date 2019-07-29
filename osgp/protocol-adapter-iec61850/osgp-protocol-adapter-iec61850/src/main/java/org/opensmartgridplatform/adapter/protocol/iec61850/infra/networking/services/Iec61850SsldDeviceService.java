@@ -624,10 +624,10 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
         // Enabling device reporting.
         if (this.isBufferedReportingEnabled) {
             new Iec61850EnableReportingCommand()
-                    .enableBufferedReportingOnDeviceWithoutUsingSequenceNumber(this.iec61850Client, deviceConnection);
+                    .enableBufferedReportingOnDeviceWithoutUsingSequenceNumber(deviceConnection);
         } else {
             new Iec61850EnableReportingCommand()
-                    .enableUnbufferedReportingOnDeviceWithoutUsingSequenceNumber(this.iec61850Client, deviceConnection);
+                    .enableUnbufferedReportingOnDeviceWithoutUsingSequenceNumber(deviceConnection);
         }
 
         // Don't disconnect now! The device should be able to send reports.

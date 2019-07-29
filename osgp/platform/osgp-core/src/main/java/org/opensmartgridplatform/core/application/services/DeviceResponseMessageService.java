@@ -10,8 +10,6 @@ package org.opensmartgridplatform.core.application.services;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
-import javax.jms.JMSException;
-
 import org.opensmartgridplatform.core.domain.model.domain.DomainResponseService;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.ScheduledTask;
@@ -70,7 +68,7 @@ public class DeviceResponseMessageService {
                 LOGGER.info("Handling protocol response message.");
                 this.handleProtocolResponseMessage(message);
             }
-        } catch (JMSException | FunctionalException e) {
+        } catch (final FunctionalException e) {
             LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
         }
     }
@@ -170,8 +168,7 @@ public class DeviceResponseMessageService {
         }
     }
 
-    private void handleProtocolResponseMessage(final ProtocolResponseMessage message)
-            throws FunctionalException, JMSException {
+    private void handleProtocolResponseMessage(final ProtocolResponseMessage message) throws FunctionalException {
         if (this.mustBeRetried(message)) {
             // Create scheduled task for retries.
             LOGGER.info("Creating a scheduled retry task for message of type {} for device {}.",
@@ -191,8 +188,7 @@ public class DeviceResponseMessageService {
         }
     }
 
-    private ProtocolRequestMessage createProtocolRequestMessage(final ProtocolResponseMessage message)
-            throws JMSException {
+    private ProtocolRequestMessage createProtocolRequestMessage(final ProtocolResponseMessage message) {
         final Device device = this.deviceService.findByDeviceIdentification(message.getDeviceIdentification());
 
         final Serializable messageData = message.getDataObject();
@@ -204,7 +200,7 @@ public class DeviceResponseMessageService {
                 .request(messageData).scheduled(message.isScheduled()).retryCount(message.getRetryCount() + 1).build();
     }
 
-    private ScheduledTask createScheduledRetryTask(final ProtocolResponseMessage message) throws JMSException {
+    private ScheduledTask createScheduledRetryTask(final ProtocolResponseMessage message) {
 
         final Serializable messageData = message.getDataObject();
         final Timestamp scheduleTimeStamp = new Timestamp(message.getRetryHeader().getScheduledRetryTime().getTime());

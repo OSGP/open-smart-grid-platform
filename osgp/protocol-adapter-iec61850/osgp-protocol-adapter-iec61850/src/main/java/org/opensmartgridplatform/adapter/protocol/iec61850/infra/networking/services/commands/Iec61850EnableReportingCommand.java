@@ -65,8 +65,8 @@ public class Iec61850EnableReportingCommand {
      *             In case writing of data-attributes fails.
      *
      */
-    public void enableBufferedReportingOnDeviceWithoutUsingSequenceNumber(final Iec61850Client iec61850Client,
-            final DeviceConnection deviceConnection) throws NodeException {
+    public void enableBufferedReportingOnDeviceWithoutUsingSequenceNumber(final DeviceConnection deviceConnection)
+            throws NodeException {
         final NodeContainer reporting = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
                 LogicalNode.LOGICAL_NODE_ZERO, DataAttribute.REPORTING, Fc.BR);
 
@@ -79,8 +79,8 @@ public class Iec61850EnableReportingCommand {
                 deviceConnection.getDeviceIdentification());
     }
 
-    public void enableUnbufferedReportingOnDeviceWithoutUsingSequenceNumber(final Iec61850Client iec61850Client,
-            final DeviceConnection deviceConnection) throws NodeException {
+    public void enableUnbufferedReportingOnDeviceWithoutUsingSequenceNumber(final DeviceConnection deviceConnection)
+            throws NodeException {
         final NodeContainer reporting = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
                 LogicalNode.LOGICAL_NODE_ZERO, DataAttribute.REPORTING, Fc.RP);
 
