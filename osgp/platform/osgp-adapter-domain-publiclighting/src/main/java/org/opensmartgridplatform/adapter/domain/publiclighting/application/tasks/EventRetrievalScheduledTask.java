@@ -131,7 +131,6 @@ public class EventRetrievalScheduledTask extends BaseTask implements Runnable {
                 LOGGER.info(
                         "Device: {} has last failed connection timestamp: {} which is after threshold: {}. Not contacting this device.",
                         deviceIdentification, lastFailedConnectionTimestamp, threshold);
-                continue;
             }
         }
 

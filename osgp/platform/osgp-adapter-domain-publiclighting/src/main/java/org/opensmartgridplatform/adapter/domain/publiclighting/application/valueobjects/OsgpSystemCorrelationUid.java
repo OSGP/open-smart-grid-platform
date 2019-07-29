@@ -9,6 +9,10 @@ package org.opensmartgridplatform.adapter.domain.publiclighting.application.valu
 
 public class OsgpSystemCorrelationUid {
 
+    private OsgpSystemCorrelationUid() {
+        // Prevent instantiating this class.
+    }
+
     /**
      * Correlation UID used by the system. When sending system messages, this
      * UID is used. Responses for this UID are not sent to the other layer(s) of
