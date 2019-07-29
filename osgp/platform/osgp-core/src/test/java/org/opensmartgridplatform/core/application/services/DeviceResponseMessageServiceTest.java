@@ -20,14 +20,16 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
 import org.opensmartgridplatform.core.domain.model.domain.DomainResponseService;
+import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.ScheduledTask;
+import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.ScheduledTaskRepository;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
@@ -43,6 +45,9 @@ import org.opensmartgridplatform.shared.infra.jms.RetryHeader;
 public class DeviceResponseMessageServiceTest {
 
     @Mock
+    private DeviceRepository deviceRepository;
+
+    @Mock
     private DomainResponseService domainResponseMessageSender;
 
     @Mock
@@ -51,15 +56,24 @@ public class DeviceResponseMessageServiceTest {
     @InjectMocks
     private DeviceResponseMessageService deviceResponseMessageService;
 
-    private static final DeviceMessageMetadata DEVICE_MESSAGE_DATA = new DeviceMessageMetadata("deviceId",
+    private static final String DEVICE_ID = "deviceId";
+    private static final DeviceMessageMetadata DEVICE_MESSAGE_DATA = new DeviceMessageMetadata(DEVICE_ID,
             "organisationId", "correlationId", "messageType", 4);
     private static final String DOMAIN = "Domain";
     private static final String DOMAIN_VERSION = "1.0";
     private static final String DATA_OBJECT = "data object";
     private static final Timestamp SCHEDULED_TIME = new Timestamp(Calendar.getInstance().getTime().getTime());
 
+    @Before
+    public void setUpDeviceRepository() {
+        final Device device = new Device(DEVICE_ID);
+        device.setFailedConnectionCount(0);
+        when(this.deviceRepository.findByDeviceIdentification(anyString())).thenReturn(device);
+        when(this.deviceRepository.save(device)).thenReturn(device);
+    }
+
     /**
-     * test processMessage with a scheduled task that has been successfull
+     * test processMessage with a scheduled task that has been successful
      */
     @Test
     public void testProcessScheduledMessageSuccess() {
@@ -87,7 +101,8 @@ public class DeviceResponseMessageServiceTest {
     }
 
     /**
-     * test processMessage with a scheduled task that must be retried with an error message longer than 255 characters
+     * test processMessage with a scheduled task that must be retried with an
+     * error message longer than 255 characters
      */
     @Test
     public void testProcessScheduledMessageRetryWithTruncatedError() {
@@ -153,4 +168,5 @@ public class DeviceResponseMessageServiceTest {
         assertEquals(new Timestamp(scheduledRetryTime.getTime()), scheduledTask.getscheduledTime());
         assertTrue(scheduledTask.getErrorLog().contains(expectedMessage));
     }
+
 }
