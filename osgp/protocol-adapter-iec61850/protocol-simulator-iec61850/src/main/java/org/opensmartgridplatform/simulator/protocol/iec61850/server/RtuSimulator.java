@@ -27,10 +27,6 @@ import org.openmuc.openiec61850.ServerEventListener;
 import org.openmuc.openiec61850.ServerModel;
 import org.openmuc.openiec61850.ServerSap;
 import org.openmuc.openiec61850.ServiceError;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Scheduled;
-
 import org.opensmartgridplatform.simulator.protocol.iec61850.server.eventproducers.ServerSapEventProducer;
 import org.opensmartgridplatform.simulator.protocol.iec61850.server.logicaldevices.Battery;
 import org.opensmartgridplatform.simulator.protocol.iec61850.server.logicaldevices.Boiler;
@@ -46,7 +42,11 @@ import org.opensmartgridplatform.simulator.protocol.iec61850.server.logicaldevic
 import org.opensmartgridplatform.simulator.protocol.iec61850.server.logicaldevices.Pq;
 import org.opensmartgridplatform.simulator.protocol.iec61850.server.logicaldevices.Pv;
 import org.opensmartgridplatform.simulator.protocol.iec61850.server.logicaldevices.Rtu;
+import org.opensmartgridplatform.simulator.protocol.iec61850.server.logicaldevices.SwitchDevice;
 import org.opensmartgridplatform.simulator.protocol.iec61850.server.logicaldevices.Wind;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
 
 public class RtuSimulator implements ServerEventListener {
 
@@ -149,6 +149,7 @@ public class RtuSimulator implements ServerEventListener {
         this.addWindDevices(serverModel);
         this.addLightMeasurementDevice(serverModel);
         this.addPqDevices(serverModel);
+        this.addSwitchDevices(serverModel);
     }
 
     private void addRtuDevices(final ServerModel serverModel) {
@@ -302,6 +303,16 @@ public class RtuSimulator implements ServerEventListener {
             // Light Measurement RTU found in the server model.
             LOGGER.info("Adding lmRtu " + logicalDeviceName);
             this.logicalDevices.add(new LightMeasurementRtu(this.getDeviceName(), logicalDeviceName, serverModel));
+        }
+    }
+
+    private void addSwitchDevices(final ServerModel serverModel) {
+        final String logicalDeviceName = "IO";
+        final ModelNode switchDevice = serverModel.getChild(this.getDeviceName() + logicalDeviceName);
+
+        if (switchDevice != null) {
+            LOGGER.info("Adding switchDevice " + this.getDeviceName());
+            this.logicalDevices.add(new SwitchDevice(this.getDeviceName(), logicalDeviceName, serverModel));
         }
     }
 
