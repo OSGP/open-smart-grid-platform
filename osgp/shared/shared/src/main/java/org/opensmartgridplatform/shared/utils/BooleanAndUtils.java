@@ -23,9 +23,9 @@ public class BooleanAndUtils {
         return this;
     }
 
-    public BooleanAndUtils andCompare(final Object expressionA, final Object expressionB) {
+    public BooleanAndUtils andCompare(final Object objectA, final Object objectB) {
         if (this.result) {
-            this.result &= Objects.equals(expressionA, expressionB);
+            this.result &= Objects.equals(objectA, objectB);
         }
 
         return this;
