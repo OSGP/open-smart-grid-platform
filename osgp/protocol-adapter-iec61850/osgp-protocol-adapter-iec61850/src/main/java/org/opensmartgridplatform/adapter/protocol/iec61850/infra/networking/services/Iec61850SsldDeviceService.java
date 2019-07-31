@@ -356,20 +356,7 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
             LOGGER.info("Fetching and checking the devicestatus");
 
             // Checking to see if all light relays have the correct state.
-            for (final LightValueDto lightValue : deviceStatus.getLightValues()) {
-                for (final LightValueDto lightValueDto : relaysWithInternalIdToSwitch) {
-                    LOGGER.info(
-                            "relaysWithInternalIdToSwitch.getIndex().equals(lightValue.getIndex()): {} for lightValue.getIndex(): {} and lightValueDto.getIndex(): {}",
-                            lightValue.getIndex().equals(lightValueDto.getIndex()), lightValue.getIndex(),
-                            lightValueDto.getIndex());
-
-                    if (lightValue.getIndex().equals(lightValueDto.getIndex()) && lightValue.isOn() != startOfTest) {
-                        // One the the light relays is not in the correct state,
-                        // request failed.
-                        throw new ProtocolAdapterException("not all relays are ".concat(startOfTest ? "on" : "off"));
-                    }
-                }
-            }
+            this.checkLightRelaysState(startOfTest, relaysWithInternalIdToSwitch, deviceStatus);
 
             LOGGER.info("All lights relays are {}, returning OK", startOfTest ? "on" : "off");
 
@@ -396,6 +383,25 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
             LOGGER.error("An InterruptedException occurred during the device selftest timeout.", e);
             throw new TechnicalException(ComponentType.PROTOCOL_IEC61850,
                     "An error occurred during the device selftest timeout.");
+        }
+    }
+
+    private void checkLightRelaysState(final boolean startOfTest,
+            final List<LightValueDto> relaysWithInternalIdToSwitch, final DeviceStatusDto deviceStatus)
+            throws ProtocolAdapterException {
+        for (final LightValueDto lightValue : deviceStatus.getLightValues()) {
+            for (final LightValueDto lightValueDto : relaysWithInternalIdToSwitch) {
+                LOGGER.info(
+                        "relaysWithInternalIdToSwitch.getIndex().equals(lightValue.getIndex()): {} for lightValue.getIndex(): {} and lightValueDto.getIndex(): {}",
+                        lightValue.getIndex().equals(lightValueDto.getIndex()), lightValue.getIndex(),
+                        lightValueDto.getIndex());
+
+                if (lightValue.getIndex().equals(lightValueDto.getIndex()) && lightValue.isOn() != startOfTest) {
+                    // One the the light relays is not in the correct state,
+                    // request failed.
+                    throw new ProtocolAdapterException("not all relays are ".concat(startOfTest ? "on" : "off"));
+                }
+            }
         }
     }
 

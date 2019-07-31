@@ -397,18 +397,21 @@ public class RtuSimulator implements ServerEventListener {
         // Get a new model copy to see values that have been set on the server.
         logicalDevice.refreshServerModel(this.server.getModelCopy());
         final ModelNode actual = logicalDevice.getBasicDataAttribute(LogicalDeviceNode.fromDescription(node));
+
+        final String onLogicalDevice = "\" on logical device \"";
+
         if (actual == null) {
-            throw new AssertionError("RTU Simulator does not have expected node \"" + node + "\" on logical device \""
+            throw new AssertionError("RTU Simulator does not have expected node \"" + node + onLogicalDevice
                     + logicalDeviceName + "\".");
         }
         if (!(actual instanceof BasicDataAttribute)) {
-            throw new AssertionError("RTU Simulator value has node \"" + node + "\" on logical device \""
-                    + logicalDeviceName + "\", but it is not a BasicDataAttribute: " + actual.getClass().getName());
+            throw new AssertionError("RTU Simulator value has node \"" + node + onLogicalDevice + logicalDeviceName
+                    + "\", but it is not a BasicDataAttribute: " + actual.getClass().getName());
         }
         final BasicDataAttribute expected = this.getCopyWithNewValue((BasicDataAttribute) actual, value);
         if (!BasicDataAttributesHelper.attributesEqual(expected, (BasicDataAttribute) actual)) {
-            throw new AssertionError("RTU Simulator attribute for node \"" + node + "\" on logical device \""
-                    + logicalDeviceName + "\" - expected: [" + expected + "], actual: [" + actual + "]");
+            throw new AssertionError("RTU Simulator attribute for node \"" + node + onLogicalDevice + logicalDeviceName
+                    + "\" - expected: [" + expected + "], actual: [" + actual + "]");
         }
     }
 
