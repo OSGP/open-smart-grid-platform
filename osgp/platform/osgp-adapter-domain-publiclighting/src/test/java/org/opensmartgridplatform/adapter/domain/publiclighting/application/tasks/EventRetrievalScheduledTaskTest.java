@@ -17,25 +17,24 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.MockitoAnnotations;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 
+@RunWith(MockitoJUnitRunner.class)
 public class EventRetrievalScheduledTaskTest {
 
     @InjectMocks
-    private EventRetrievalScheduledTask eventRetrievalScheduledTask;
+    private EventRetrievalScheduledTask task;
 
     @Before
     public void initMocksAndSetProperties() {
-        MockitoAnnotations.initMocks(this);
-
-        ReflectionTestUtils.setField(this.eventRetrievalScheduledTask, "eventRetrievalScheduledTaskBaseNumber", 2);
-        ReflectionTestUtils.setField(this.eventRetrievalScheduledTask, "eventRetrievalScheduledTaskDefaultWaitTime",
-                30);
-        ReflectionTestUtils.setField(this.eventRetrievalScheduledTask, "eventRetrievalScheduledTaskMaxBackoff", 1440);
+        ReflectionTestUtils.setField(this.task, "eventRetrievalScheduledTaskBackOffMultiplier", 2);
+        ReflectionTestUtils.setField(this.task, "eventRetrievalScheduledTaskDefaultWaitTime", 30);
+        ReflectionTestUtils.setField(this.task, "eventRetrievalScheduledTaskMaxBackoff", 1440);
     }
 
     /*
@@ -47,7 +46,7 @@ public class EventRetrievalScheduledTaskTest {
         final List<Device> devices = new ArrayList<>();
         devices.add(this.createDevice("device-01", DateTime.now(DateTimeZone.UTC).minusDays(15).toDate(), 0));
 
-        final List<Device> filteredList = this.eventRetrievalScheduledTask.filterByExponentialBackOff(devices);
+        final List<Device> filteredList = this.task.filterByExponentialBackOff(devices);
 
         assertThat(filteredList.size()).isEqualTo(1);
     }
@@ -62,7 +61,7 @@ public class EventRetrievalScheduledTaskTest {
         final List<Device> devices = new ArrayList<>();
         devices.add(this.createDevice("device-02", DateTime.now(DateTimeZone.UTC).minusDays(2).toDate(), 100));
 
-        final List<Device> filteredList = this.eventRetrievalScheduledTask.filterByExponentialBackOff(devices);
+        final List<Device> filteredList = this.task.filterByExponentialBackOff(devices);
 
         assertThat(filteredList.size()).isEqualTo(1);
     }
@@ -77,7 +76,7 @@ public class EventRetrievalScheduledTaskTest {
         final List<Device> devices = new ArrayList<>();
         devices.add(this.createDevice("device-03", DateTime.now(DateTimeZone.UTC).minusHours(23).toDate(), 1));
 
-        final List<Device> filteredList = this.eventRetrievalScheduledTask.filterByExponentialBackOff(devices);
+        final List<Device> filteredList = this.task.filterByExponentialBackOff(devices);
 
         assertThat(filteredList.size()).isEqualTo(1);
     }
@@ -92,7 +91,7 @@ public class EventRetrievalScheduledTaskTest {
         final List<Device> devices = new ArrayList<>();
         devices.add(this.createDevice("device-04", DateTime.now(DateTimeZone.UTC).minusMinutes(61).toDate(), 1));
 
-        final List<Device> filteredList = this.eventRetrievalScheduledTask.filterByExponentialBackOff(devices);
+        final List<Device> filteredList = this.task.filterByExponentialBackOff(devices);
 
         assertThat(filteredList.size()).isEqualTo(1);
     }
@@ -107,7 +106,7 @@ public class EventRetrievalScheduledTaskTest {
         final List<Device> devices = new ArrayList<>();
         devices.add(this.createDevice("device-05", DateTime.now(DateTimeZone.UTC).minusMinutes(59).toDate(), 1));
 
-        final List<Device> filteredList = this.eventRetrievalScheduledTask.filterByExponentialBackOff(devices);
+        final List<Device> filteredList = this.task.filterByExponentialBackOff(devices);
 
         assertThat(filteredList.size()).isEqualTo(0);
     }
@@ -122,7 +121,7 @@ public class EventRetrievalScheduledTaskTest {
         final List<Device> devices = new ArrayList<>();
         devices.add(this.createDevice("device-06", DateTime.now(DateTimeZone.UTC).minusHours(1).toDate(), 2));
 
-        final List<Device> filteredList = this.eventRetrievalScheduledTask.filterByExponentialBackOff(devices);
+        final List<Device> filteredList = this.task.filterByExponentialBackOff(devices);
 
         assertThat(filteredList.size()).isEqualTo(0);
     }
@@ -137,7 +136,7 @@ public class EventRetrievalScheduledTaskTest {
         final List<Device> devices = new ArrayList<>();
         devices.add(this.createDevice("device-07", DateTime.now(DateTimeZone.UTC).minusHours(2).toDate(), 1));
 
-        final List<Device> filteredList = this.eventRetrievalScheduledTask.filterByExponentialBackOff(devices);
+        final List<Device> filteredList = this.task.filterByExponentialBackOff(devices);
 
         assertThat(filteredList.size()).isEqualTo(1);
     }
@@ -153,22 +152,22 @@ public class EventRetrievalScheduledTaskTest {
         devices.add(this.createDevice("device-08", DateTime.now(DateTimeZone.UTC).minusHours(2).plusMinutes(1).toDate(),
                 2));
 
-        final List<Device> filteredList = this.eventRetrievalScheduledTask.filterByExponentialBackOff(devices);
+        final List<Device> filteredList = this.task.filterByExponentialBackOff(devices);
 
         assertThat(filteredList.size()).isEqualTo(0);
     }
 
     /*
-     * Device with failed communication time stamp older than 2 hours and 2
-     * connection failure should be excluded from the resulting list ( threshold
-     * is 2^3*30=240 ).
+     * Device with failed communication time stamp older than 2 hours and 3
+     * connection failures should be excluded from the resulting list (
+     * threshold is 2^3*30=240 ).
      */
     @Test
     public void applyExponentialBackOffToListOfDevicesWithCommunicationTimestampYoungerThan2HoursAnd3ConnectionFailures() {
         final List<Device> devices = new ArrayList<>();
         devices.add(this.createDevice("device-09", DateTime.now(DateTimeZone.UTC).minusHours(2).toDate(), 3));
 
-        final List<Device> filteredList = this.eventRetrievalScheduledTask.filterByExponentialBackOff(devices);
+        final List<Device> filteredList = this.task.filterByExponentialBackOff(devices);
 
         assertThat(filteredList.size()).isEqualTo(0);
     }

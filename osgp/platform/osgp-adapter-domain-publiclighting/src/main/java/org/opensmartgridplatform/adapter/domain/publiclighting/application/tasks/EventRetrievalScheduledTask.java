@@ -50,10 +50,10 @@ public class EventRetrievalScheduledTask extends BaseTask implements Runnable {
     private int eventRetrievalScheduledTaskMaximumAllowedAge;
 
     /**
-     * Base number for exponential back off calculation.
+     * Multiplier for exponential back off calculation.
      */
     @Autowired
-    private int eventRetrievalScheduledTaskBaseNumber;
+    private int eventRetrievalScheduledTaskBackOffMultiplier;
 
     /**
      * Wait time in minutes for exponential back off.
@@ -153,7 +153,7 @@ public class EventRetrievalScheduledTask extends BaseTask implements Runnable {
 
     private int calculateDeviceBackOff(final int failedConnectionCount) {
 
-        return ((int) Math.pow(this.eventRetrievalScheduledTaskBaseNumber, failedConnectionCount))
+        return ((int) Math.pow(this.eventRetrievalScheduledTaskBackOffMultiplier, failedConnectionCount))
                 * this.eventRetrievalScheduledTaskDefaultWaitTime;
     }
 
