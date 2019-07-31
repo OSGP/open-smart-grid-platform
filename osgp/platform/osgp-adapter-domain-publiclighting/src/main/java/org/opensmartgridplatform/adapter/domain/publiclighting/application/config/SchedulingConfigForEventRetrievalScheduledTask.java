@@ -96,6 +96,6 @@ public class SchedulingConfigForEventRetrievalScheduledTask extends AbstractConf
     @Bean
     public int eventRetrievalScheduledTaskMaxBackoff() {
         return Integer.parseInt(
-                this.environment.getRequiredProperty(PROPERTY_NAME_SCHEDULING_TASK_EVENT_RETRIEVAL_MAX_BACKOFF));
+                this.environment.getRequiredProperty(PROPERTY_NAME_SCHEDULING_TASK_EVENT_RETRIEVAL_MAX_BACKOFF)) * 60;
     }
 }

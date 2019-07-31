@@ -7,8 +7,9 @@
  */
 package org.opensmartgridplatform.adapter.domain.publiclighting.application.tasks;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -36,18 +37,33 @@ public class EventRetrievalScheduledTask extends BaseTask implements Runnable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EventRetrievalScheduledTask.class);
 
+    /**
+     * Name of the manufacturer used to search for devices.
+     */
     @Autowired
     private String eventRetrievalScheduledTaskManufacturerName;
 
+    /**
+     * Maximum age in hours for events of devices.
+     */
     @Autowired
     private int eventRetrievalScheduledTaskMaximumAllowedAge;
 
+    /**
+     * Base number for exponential back off calculation.
+     */
     @Autowired
     private int eventRetrievalScheduledTaskBaseNumber;
 
+    /**
+     * Wait time in minutes for exponential back off.
+     */
     @Autowired
     private int eventRetrievalScheduledTaskDefaultWaitTime;
 
+    /**
+     * Maximum wait time in minutes for exponential back off.
+     */
     @Autowired
     private int eventRetrievalScheduledTaskMaxBackoff;
 
@@ -89,7 +105,7 @@ public class EventRetrievalScheduledTask extends BaseTask implements Runnable {
      * <ul>
      * <li>Devices without connection error will always be included in the
      * returned list.</li>
-     * <li>Device with connection errors will only be included in the returned
+     * <li>Devices with connection errors will only be included in the returned
      * list if the exponential back off period has elapsed. The exponential back
      * off period will be calculated using the failed connection counter.</li>
      *
@@ -101,45 +117,44 @@ public class EventRetrievalScheduledTask extends BaseTask implements Runnable {
      */
     public List<Device> filterByExponentialBackOff(final List<Device> devicesToFilter) {
 
-        final List<Device> devicesToContact = new ArrayList<>();
+        final Predicate<Device> hasNoConnectionFailure = d -> !d.hasConnectionFailures();
 
-        for (final Device device : devicesToFilter) {
-            final String deviceIdentification = device.getDeviceIdentification();
+        final Predicate<Device> hasLastConnectionFailureBeforeThreshold = d -> this.calculateThresholdForDevice(d);
 
-            if (!device.hasConnectionFailures()) {
-                LOGGER.info("Device: {} has no connection failures, last successful connection timestamp: {}.",
-                        deviceIdentification, device.getLastSuccessfulConnectionTimestamp());
-                devicesToContact.add(device);
-                continue;
-            }
+        return devicesToFilter.stream().filter(hasNoConnectionFailure.or(hasLastConnectionFailureBeforeThreshold))
+                .collect(Collectors.<Device> toList());
+    }
 
-            // waitTimeInMinutes = eventRetrievalScheduledTaskBaseNumber
-            // ^ failedConnectionCount *
-            // eventRetrievalScheduledTaskDefaultWaitTime
-            final Integer failedConnectionCount = device.getFailedConnectionCount();
-            final Integer multiplier = (int) Math.pow(this.eventRetrievalScheduledTaskBaseNumber,
-                    failedConnectionCount);
-            final Integer calculatedWaitTimeInMinutes = this.eventRetrievalScheduledTaskDefaultWaitTime * multiplier;
-            final Integer maxWaitTimeInMinutes = this.eventRetrievalScheduledTaskMaxBackoff * 60;
+    private boolean calculateThresholdForDevice(final Device device) {
+        final DateTime threshold = this.determineMinimalDeviceThreshold(device.getFailedConnectionCount());
 
-            final Integer waitTime = Math.min(calculatedWaitTimeInMinutes, maxWaitTimeInMinutes);
-            final DateTime threshold = DateTime.now(DateTimeZone.UTC).minusMinutes(waitTime);
+        final boolean isBefore = new DateTime(device.getLastFailedConnectionTimestamp()).withZone(DateTimeZone.UTC)
+                .isBefore(threshold);
 
-            final DateTime lastFailedConnectionTimestamp = new DateTime(device.getLastFailedConnectionTimestamp())
-                    .withZone(DateTimeZone.UTC);
-
-            if (lastFailedConnectionTimestamp.isBefore(threshold)) {
-                LOGGER.info(
-                        "Device: {} has last failed connection timestamp: {} which is before threshold: {}. Contacting this device.",
-                        deviceIdentification, lastFailedConnectionTimestamp, threshold);
-                devicesToContact.add(device);
-            } else {
-                LOGGER.info(
-                        "Device: {} has last failed connection timestamp: {} which is after threshold: {}. Not contacting this device.",
-                        deviceIdentification, lastFailedConnectionTimestamp, threshold);
-            }
+        if (isBefore) {
+            LOGGER.info(
+                    "Device: {} has last failed connection timestamp: {} which is before threshold: {}. Contacting this device.",
+                    device.getDeviceIdentification(), device.getLastFailedConnectionTimestamp(), threshold);
+        } else {
+            LOGGER.info(
+                    "Device: {} has last failed connection timestamp: {} which is after threshold: {}. Not contacting this device.",
+                    device.getDeviceIdentification(), device.getLastFailedConnectionTimestamp(), threshold);
         }
 
-        return devicesToContact;
+        return isBefore;
     }
+
+    private DateTime determineMinimalDeviceThreshold(final int failedConnectionCount) {
+        final int waitTime = Math.min(this.calculateDeviceBackOff(failedConnectionCount),
+                this.eventRetrievalScheduledTaskMaxBackoff);
+
+        return DateTime.now(DateTimeZone.UTC).minusMinutes(waitTime);
+    }
+
+    private int calculateDeviceBackOff(final int failedConnectionCount) {
+
+        return ((int) Math.pow(this.eventRetrievalScheduledTaskBaseNumber, failedConnectionCount))
+                * this.eventRetrievalScheduledTaskDefaultWaitTime;
+    }
+
 }
