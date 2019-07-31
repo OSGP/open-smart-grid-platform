@@ -6,11 +6,7 @@ BEGIN
   THEN
     ALTER TABLE device ADD COLUMN last_successful_connection_timestamp timestamp without time zone;
     ALTER TABLE device ADD COLUMN last_failed_connection_timestamp timestamp without time zone;
-    ALTER TABLE device ADD COLUMN failed_connection_count INT;
-    
-    UPDATE device SET failed_connection_count = 0;
-    
-    ALTER TABLE device ALTER COLUMN failed_connection_count SET NOT NULL;
+    ALTER TABLE device ADD COLUMN failed_connection_count INT NOT NULL DEFAULT 0;
 
     COMMENT ON COLUMN device.last_successful_connection_timestamp IS 'Timestamp which indicates the last successful connection with this device.';
     COMMENT ON COLUMN device.last_failed_connection_timestamp IS 'Timestamp which indicates the last failed connection attempt for this device.';
