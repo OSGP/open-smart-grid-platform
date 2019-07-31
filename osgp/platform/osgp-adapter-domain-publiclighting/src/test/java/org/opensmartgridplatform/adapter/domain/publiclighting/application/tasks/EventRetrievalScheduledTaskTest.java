@@ -35,7 +35,7 @@ public class EventRetrievalScheduledTaskTest {
         ReflectionTestUtils.setField(this.eventRetrievalScheduledTask, "eventRetrievalScheduledTaskBaseNumber", 2);
         ReflectionTestUtils.setField(this.eventRetrievalScheduledTask, "eventRetrievalScheduledTaskDefaultWaitTime",
                 30);
-        ReflectionTestUtils.setField(this.eventRetrievalScheduledTask, "eventRetrievalScheduledTaskMaxBackoff", 24);
+        ReflectionTestUtils.setField(this.eventRetrievalScheduledTask, "eventRetrievalScheduledTaskMaxBackoff", 1440);
     }
 
     /*
