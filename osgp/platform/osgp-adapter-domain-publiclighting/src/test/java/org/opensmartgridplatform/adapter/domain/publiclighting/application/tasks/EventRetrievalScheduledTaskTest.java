@@ -31,7 +31,7 @@ public class EventRetrievalScheduledTaskTest {
     private EventRetrievalScheduledTask task;
 
     @Before
-    public void initMocksAndSetProperties() {
+    public void initProperties() {
         ReflectionTestUtils.setField(this.task, "eventRetrievalScheduledTaskBackOffMultiplier", 2);
         ReflectionTestUtils.setField(this.task, "eventRetrievalScheduledTaskDefaultWaitTime", 30);
         ReflectionTestUtils.setField(this.task, "eventRetrievalScheduledTaskMaxBackoff", 1440);
