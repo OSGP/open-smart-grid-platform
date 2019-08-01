@@ -14,11 +14,6 @@ import java.util.TimerTask;
 
 import javax.jms.JMSException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.adapter.protocol.iec61850.application.mapping.Iec61850Mapper;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceMessageStatus;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceRequest;
@@ -74,6 +69,10 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
 public class Iec61850SsldDeviceService implements SsldDeviceService {
@@ -98,6 +97,9 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
 
     @Autowired
     private int disconnectDelay;
+
+    @Autowired
+    private Boolean isBufferedReportingEnabled;
 
     @Override
     public void getStatus(final DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler)
@@ -354,20 +356,7 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
             LOGGER.info("Fetching and checking the devicestatus");
 
             // Checking to see if all light relays have the correct state.
-            for (final LightValueDto lightValue : deviceStatus.getLightValues()) {
-                for (final LightValueDto lightValueDto : relaysWithInternalIdToSwitch) {
-                    LOGGER.info(
-                            "relaysWithInternalIdToSwitch.getIndex().equals(lightValue.getIndex()): {} for lightValue.getIndex(): {} and lightValueDto.getIndex(): {}",
-                            lightValue.getIndex().equals(lightValueDto.getIndex()), lightValue.getIndex(),
-                            lightValueDto.getIndex());
-
-                    if (lightValue.getIndex().equals(lightValueDto.getIndex()) && lightValue.isOn() != startOfTest) {
-                        // One the the light relays is not in the correct state,
-                        // request failed.
-                        throw new ProtocolAdapterException("not all relays are ".concat(startOfTest ? "on" : "off"));
-                    }
-                }
-            }
+            this.checkLightRelaysState(startOfTest, relaysWithInternalIdToSwitch, deviceStatus);
 
             LOGGER.info("All lights relays are {}, returning OK", startOfTest ? "on" : "off");
 
@@ -394,6 +383,25 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
             LOGGER.error("An InterruptedException occurred during the device selftest timeout.", e);
             throw new TechnicalException(ComponentType.PROTOCOL_IEC61850,
                     "An error occurred during the device selftest timeout.");
+        }
+    }
+
+    private void checkLightRelaysState(final boolean startOfTest,
+            final List<LightValueDto> relaysWithInternalIdToSwitch, final DeviceStatusDto deviceStatus)
+            throws ProtocolAdapterException {
+        for (final LightValueDto lightValue : deviceStatus.getLightValues()) {
+            for (final LightValueDto lightValueDto : relaysWithInternalIdToSwitch) {
+                LOGGER.info(
+                        "relaysWithInternalIdToSwitch.getIndex().equals(lightValue.getIndex()): {} for lightValue.getIndex(): {} and lightValueDto.getIndex(): {}",
+                        lightValue.getIndex().equals(lightValueDto.getIndex()), lightValue.getIndex(),
+                        lightValueDto.getIndex());
+
+                if (lightValue.getIndex().equals(lightValueDto.getIndex()) && lightValue.isOn() != startOfTest) {
+                    // One the the light relays is not in the correct state,
+                    // request failed.
+                    throw new ProtocolAdapterException("not all relays are ".concat(startOfTest ? "on" : "off"));
+                }
+            }
         }
     }
 
@@ -620,14 +628,24 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
     private void enableReporting(final DeviceConnection deviceConnection, final DeviceRequest deviceRequest)
             throws NodeException {
         // Enabling device reporting.
-        new Iec61850EnableReportingCommand().enableReportingOnDeviceWithoutUsingSequenceNumber(this.iec61850Client,
-                deviceConnection);
+        if (this.isBufferedReportingEnabled) {
+            new Iec61850EnableReportingCommand()
+                    .enableBufferedReportingOnDeviceWithoutUsingSequenceNumber(deviceConnection);
+        } else {
+            new Iec61850EnableReportingCommand()
+                    .enableUnbufferedReportingOnDeviceWithoutUsingSequenceNumber(deviceConnection);
+        }
+
         // Don't disconnect now! The device should be able to send reports.
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
                 try {
-                    new Iec61850ClearReportCommand().clearReportOnDevice(deviceConnection);
+                    if (Iec61850SsldDeviceService.this.isBufferedReportingEnabled) {
+                        new Iec61850ClearReportCommand().clearBufferedReportOnDevice(deviceConnection);
+                    } else {
+                        new Iec61850ClearReportCommand().disableUnbufferedReportOnDevice(deviceConnection);
+                    }
                 } catch (final ProtocolAdapterException e) {
                     LOGGER.error("Unable to clear report for device: " + deviceRequest.getDeviceIdentification(), e);
                 }

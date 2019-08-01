@@ -73,6 +73,7 @@ public class PlatformDefaults {
     public static final String DEFAULT_EVENTNOTIFICATIONS = "";
     public static final String DEFAULT_EVENTNOTIFICATIONTYPES = "";
     public static final Integer DEFAULT_EXTERNALID = 0;
+    public static final Integer DEFAULT_FAILED_CONNECTION_COUNT = 0;
     public static final Boolean DEFAULT_FILESTORAGE = true;
 
     public static final String DEFAULT_FIRMWARE_IDENTIFICATION = "";

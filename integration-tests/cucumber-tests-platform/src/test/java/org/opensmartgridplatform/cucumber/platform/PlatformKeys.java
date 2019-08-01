@@ -140,6 +140,7 @@ public class PlatformKeys extends Keys {
     public static final String KEY_EVENTS_NODELIST_EXPECTED = "event-nodelist-expected";
     public static final String KEY_EXACT_MATCH = "ExactMatch";
     public static final String KEY_EXTERNALID = "ExternalId";
+    public static final String KEY_FAILED_CONNECTION_COUNT = "FailedConnectionCount";
     public static final String KEY_FAULTCODE = "FaultCode";
     public static final String KEY_FAULTSTRING = "FaultString";
     public static final String KEY_FIRMWARE_IDENTIFICATION = "FirmwareIdentification";

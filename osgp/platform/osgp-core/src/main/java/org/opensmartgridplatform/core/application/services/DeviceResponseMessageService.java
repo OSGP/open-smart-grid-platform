@@ -10,19 +10,9 @@ package org.opensmartgridplatform.core.application.services;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
-import javax.jms.JMSException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import org.opensmartgridplatform.core.domain.model.domain.DomainResponseService;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.ScheduledTask;
-import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
-import org.opensmartgridplatform.domain.core.repositories.ScheduledTaskRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.ScheduledTaskStatusType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
@@ -30,9 +20,12 @@ import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolRequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
-@Transactional
 public class DeviceResponseMessageService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceResponseMessageService.class);
@@ -43,16 +36,19 @@ public class DeviceResponseMessageService {
             "Connection closed by remote host while waiting for association response" };
 
     @Autowired
+    private DeviceService deviceService;
+
+    @Autowired
     private DomainResponseService domainResponseMessageSender;
 
     @Autowired
-    private ScheduledTaskRepository scheduledTaskRepository;
+    private ScheduledTaskService scheduledTaskService;
 
     @Autowired
     private DeviceRequestMessageService deviceRequestMessageService;
 
     @Autowired
-    private DeviceRepository deviceRepository;
+    private DeviceCommunicationInformationService deviceCommunicationInformationService;
 
     @Autowired
     private int getMaxRetryCount;
@@ -61,6 +57,10 @@ public class DeviceResponseMessageService {
         LOGGER.info("Processing protocol response message with correlation uid [{}]", message.getCorrelationUid());
 
         try {
+            synchronized (this) {
+                this.deviceCommunicationInformationService.updateDeviceConnectionInformation(message);
+            }
+
             if (message.isScheduled() && !message.bypassRetry()) {
                 LOGGER.info("Handling scheduled protocol response message.");
                 this.handleScheduledTask(message);
@@ -68,7 +68,7 @@ public class DeviceResponseMessageService {
                 LOGGER.info("Handling protocol response message.");
                 this.handleProtocolResponseMessage(message);
             }
-        } catch (JMSException | FunctionalException e) {
+        } catch (final FunctionalException e) {
             LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
         }
     }
@@ -116,8 +116,7 @@ public class DeviceResponseMessageService {
     }
 
     private void handleScheduledTask(final ProtocolResponseMessage message) {
-        final ScheduledTask scheduledTask = this.scheduledTaskRepository
-                .findByCorrelationUid(message.getCorrelationUid());
+        final ScheduledTask scheduledTask = this.scheduledTaskService.findByCorrelationUid(message.getCorrelationUid());
 
         if (scheduledTask == null) {
             LOGGER.error("Scheduled task for device [{}] with correlation uid [{}] not found",
@@ -127,7 +126,7 @@ public class DeviceResponseMessageService {
 
         if (this.messageIsSuccessful(message, scheduledTask)) {
             this.domainResponseMessageSender.send(message);
-            this.scheduledTaskRepository.delete(scheduledTask);
+            this.scheduledTaskService.deleteScheduledTask(scheduledTask);
         } else {
 
             this.handleUnsuccessfulScheduledTask(message, scheduledTask);
@@ -140,14 +139,14 @@ public class DeviceResponseMessageService {
             this.handleMessageRetry(message, scheduledTask);
         } else {
             this.domainResponseMessageSender.send(message);
-            this.scheduledTaskRepository.delete(scheduledTask);
+            this.scheduledTaskService.deleteScheduledTask(scheduledTask);
         }
     }
 
     private void handleMessageRetry(final ProtocolResponseMessage message, final ScheduledTask scheduledTask) {
         scheduledTask.setFailed(this.determineErrorMessage(message));
         scheduledTask.retryOn(message.getRetryHeader().getScheduledRetryTime());
-        this.scheduledTaskRepository.save(scheduledTask);
+        this.scheduledTaskService.saveScheduledTask(scheduledTask);
     }
 
     private boolean mustBeRetried(final ProtocolResponseMessage message) {
@@ -169,14 +168,13 @@ public class DeviceResponseMessageService {
         }
     }
 
-    private void handleProtocolResponseMessage(final ProtocolResponseMessage message)
-            throws FunctionalException, JMSException {
+    private void handleProtocolResponseMessage(final ProtocolResponseMessage message) throws FunctionalException {
         if (this.mustBeRetried(message)) {
             // Create scheduled task for retries.
             LOGGER.info("Creating a scheduled retry task for message of type {} for device {}.",
                     message.getMessageType(), message.getDeviceIdentification());
             final ScheduledTask task = this.createScheduledRetryTask(message);
-            this.scheduledTaskRepository.save(task);
+            this.scheduledTaskService.saveScheduledTask(task);
         } else if (this.shouldRetryBasedOnMessage(message)) {
             // Immediate retry based on error message. Should be deprecated.
             LOGGER.info("Retrying: {} for device {} for {} time", message.getMessageType(),
@@ -190,9 +188,8 @@ public class DeviceResponseMessageService {
         }
     }
 
-    private ProtocolRequestMessage createProtocolRequestMessage(final ProtocolResponseMessage message)
-            throws JMSException {
-        final Device device = this.deviceRepository.findByDeviceIdentification(message.getDeviceIdentification());
+    private ProtocolRequestMessage createProtocolRequestMessage(final ProtocolResponseMessage message) {
+        final Device device = this.deviceService.findByDeviceIdentification(message.getDeviceIdentification());
 
         final Serializable messageData = message.getDataObject();
 
@@ -203,7 +200,7 @@ public class DeviceResponseMessageService {
                 .request(messageData).scheduled(message.isScheduled()).retryCount(message.getRetryCount() + 1).build();
     }
 
-    private ScheduledTask createScheduledRetryTask(final ProtocolResponseMessage message) throws JMSException {
+    private ScheduledTask createScheduledRetryTask(final ProtocolResponseMessage message) {
 
         final Serializable messageData = message.getDataObject();
         final Timestamp scheduleTimeStamp = new Timestamp(message.getRetryHeader().getScheduledRetryTime().getTime());
@@ -216,4 +213,5 @@ public class DeviceResponseMessageService {
 
         return task;
     }
+
 }

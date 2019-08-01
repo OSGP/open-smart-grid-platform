@@ -11,12 +11,13 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.AdHocManagementService;
+import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.OsgpSystemCorrelationUid;
 import org.opensmartgridplatform.dto.valueobjects.DeviceStatusDto;
-import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
@@ -45,8 +46,8 @@ public class PublicLightingGetStatusResponseMessageProcessor extends BaseMessage
 
     @Autowired
     protected PublicLightingGetStatusResponseMessageProcessor(
-            ResponseMessageSender webServiceResponseMessageSender,
-            @Qualifier("domainPublicLightingOsgpCoreResponseMessageProcessorMap") MessageProcessorMap osgpCoreResponseMessageProcessorMap) {
+            final ResponseMessageSender webServiceResponseMessageSender,
+            @Qualifier("domainPublicLightingOsgpCoreResponseMessageProcessorMap") final MessageProcessorMap osgpCoreResponseMessageProcessorMap) {
         super(webServiceResponseMessageSender, osgpCoreResponseMessageProcessorMap, MessageType.GET_LIGHT_STATUS,
                 ComponentType.DOMAIN_PUBLIC_LIGHTING);
     }
@@ -87,6 +88,12 @@ public class PublicLightingGetStatusResponseMessageProcessor extends BaseMessage
             LOGGER.debug("responseMessageResultType: {}", responseMessageResultType);
             LOGGER.debug("deviceIdentification: {}", deviceIdentification);
             LOGGER.debug("osgpException: {}", osgpException);
+            return;
+        }
+
+        if (OsgpSystemCorrelationUid.CORRELATION_UID.equals(correlationUid)) {
+            LOGGER.info("Received message of type: {} with correlation UID: {} and result: {}.", messageType,
+                    correlationUid, responseMessageResultType.name());
             return;
         }
 

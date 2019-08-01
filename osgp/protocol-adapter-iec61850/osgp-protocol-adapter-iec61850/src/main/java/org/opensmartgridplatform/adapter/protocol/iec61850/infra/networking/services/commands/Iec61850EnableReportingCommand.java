@@ -10,9 +10,6 @@ package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.ser
 import org.apache.commons.lang3.StringUtils;
 import org.openmuc.openiec61850.Fc;
 import org.openmuc.openiec61850.FcModelNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.NodeException;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
@@ -23,6 +20,8 @@ import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.help
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.NodeContainer;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.reporting.Iec61850ClientBaseEventListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Iec61850EnableReportingCommand {
 
@@ -57,7 +56,7 @@ public class Iec61850EnableReportingCommand {
     }
 
     /**
-     * Enable reporting so the device can send reports. This version of the
+     * Enable reporting so the SSLD can send reports. This version of the
      * function does not use the 'sequence number' to filter incoming reports.
      * When using the {@link Iec61850ClearReportCommand} the 'sequence number'
      * will always be reset to 0.
@@ -66,8 +65,8 @@ public class Iec61850EnableReportingCommand {
      *             In case writing of data-attributes fails.
      *
      */
-    public void enableReportingOnDeviceWithoutUsingSequenceNumber(final Iec61850Client iec61850Client,
-            final DeviceConnection deviceConnection) throws NodeException {
+    public void enableBufferedReportingOnDeviceWithoutUsingSequenceNumber(final DeviceConnection deviceConnection)
+            throws NodeException {
         final NodeContainer reporting = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
                 LogicalNode.LOGICAL_NODE_ZERO, DataAttribute.REPORTING, Fc.BR);
 
@@ -76,7 +75,22 @@ public class Iec61850EnableReportingCommand {
 
         reportListener.setSqNum(0);
         reporting.writeBoolean(SubDataAttribute.ENABLE_REPORTING, true);
-        LOGGER.info("Allowing device {} to send reports containing events", deviceConnection.getDeviceIdentification());
+        LOGGER.info("Allowing device {} to send buffered reports containing events",
+                deviceConnection.getDeviceIdentification());
+    }
+
+    public void enableUnbufferedReportingOnDeviceWithoutUsingSequenceNumber(final DeviceConnection deviceConnection)
+            throws NodeException {
+        final NodeContainer reporting = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
+                LogicalNode.LOGICAL_NODE_ZERO, DataAttribute.REPORTING, Fc.RP);
+
+        final Iec61850ClientBaseEventListener reportListener = deviceConnection.getConnection()
+                .getIec61850ClientAssociation().getReportListener();
+
+        reportListener.setSqNum(0);
+        reporting.writeBoolean(SubDataAttribute.ENABLE_REPORTING, true);
+        LOGGER.info("Allowing device {} to send unbuffered reports containing events",
+                deviceConnection.getDeviceIdentification());
     }
 
     public void enableBufferedReportingOnLightMeasurementDevice(final Iec61850Client iec61850Client,
