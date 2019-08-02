@@ -92,8 +92,8 @@ public class PublicLightingGetStatusResponseMessageProcessor extends BaseMessage
         }
 
         if (OsgpSystemCorrelationUid.CORRELATION_UID.equals(correlationUid)) {
-            LOGGER.info("Received message of type: {} with correlation UID: {} and result: {}.", messageType,
-                    correlationUid, responseMessageResultType.name());
+            LOGGER.info("Received message for device: {} of type: {} with correlation UID: {} and result: {}.",
+                    deviceIdentification, messageType, correlationUid, responseMessageResultType.name());
             return;
         }
 
