@@ -40,6 +40,7 @@ public class SchedulingConfigForEventRetrievalScheduledTask extends AbstractConf
     private static final String PROPERTY_NAME_SCHEDULING_TASK_EVENT_RETRIEVAL_BACK_OFF_MULTIPLIER = "scheduling.task.event.retrieval.back.off.multiplier";
     private static final String PROPERTY_NAME_SCHEDULING_TASK_EVENT_RETRIEVAL_DEFAULT_WAIT_TIME = "scheduling.task.event.retrieval.default.wait.time";
     private static final String PROPERTY_NAME_SCHEDULING_TASK_EVENT_RETRIEVAL_MAX_BACKOFF = "scheduling.task.event.retrieval.max.backoff";
+    private static final String PROPERTY_NAME_SCHEDULING_TASK_EVENT_RETRIEVAL_HYSTERESIS = "scheduling.task.event.retrieval.hysteresis";
 
     @Autowired
     private EventRetrievalScheduledTask eventRetrievalScheduledTask;
@@ -97,5 +98,11 @@ public class SchedulingConfigForEventRetrievalScheduledTask extends AbstractConf
     public int eventRetrievalScheduledTaskMaxBackoff() {
         return Integer.parseInt(
                 this.environment.getRequiredProperty(PROPERTY_NAME_SCHEDULING_TASK_EVENT_RETRIEVAL_MAX_BACKOFF)) * 60;
+    }
+
+    @Bean
+    public int eventRetrievalScheduledTaskHysteresis() {
+        return Integer.parseInt(
+                this.environment.getRequiredProperty(PROPERTY_NAME_SCHEDULING_TASK_EVENT_RETRIEVAL_HYSTERESIS));
     }
 }

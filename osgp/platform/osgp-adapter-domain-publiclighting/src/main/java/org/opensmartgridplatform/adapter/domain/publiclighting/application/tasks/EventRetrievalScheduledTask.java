@@ -67,6 +67,12 @@ public class EventRetrievalScheduledTask extends BaseTask implements Runnable {
     @Autowired
     private int eventRetrievalScheduledTaskMaxBackoff;
 
+    /**
+     * Hysteresis in minutes for the exponential back off calculation.
+     */
+    @Autowired
+    private int eventRetrievalScheduledTaskHysteresis;
+
     @Override
     public void run() {
         try {
@@ -126,7 +132,7 @@ public class EventRetrievalScheduledTask extends BaseTask implements Runnable {
     }
 
     private boolean calculateThresholdForDevice(final Device device) {
-        final DateTime threshold = this.determineMinimalDeviceThreshold(device.getFailedConnectionCount());
+        final DateTime threshold = this.determineMinimalDeviceThreshold(device);
 
         final boolean isBefore = new DateTime(device.getLastFailedConnectionTimestamp()).withZone(DateTimeZone.UTC)
                 .isBefore(threshold);
@@ -144,11 +150,20 @@ public class EventRetrievalScheduledTask extends BaseTask implements Runnable {
         return isBefore;
     }
 
-    private DateTime determineMinimalDeviceThreshold(final int failedConnectionCount) {
+    private DateTime determineMinimalDeviceThreshold(final Device device) {
+        final int failedConnectionCount = device.getFailedConnectionCount();
+
         final int waitTime = Math.min(this.calculateDeviceBackOff(failedConnectionCount),
                 this.eventRetrievalScheduledTaskMaxBackoff);
 
-        return DateTime.now(DateTimeZone.UTC).minusMinutes(waitTime);
+        final DateTime threshold = DateTime.now(DateTimeZone.UTC).minusMinutes(waitTime)
+                .minusMinutes(this.eventRetrievalScheduledTaskHysteresis);
+
+        LOGGER.info("Determined threshold: {} for device: {} based on failed connection count: {} and hysteresis: {}",
+                threshold, device.getDeviceIdentification(), failedConnectionCount,
+                this.eventRetrievalScheduledTaskHysteresis);
+
+        return threshold;
     }
 
     private int calculateDeviceBackOff(final int failedConnectionCount) {
