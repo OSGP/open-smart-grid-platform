@@ -23,7 +23,7 @@ Feature: SmartMetering Management - Set Device Lifecycle Status by Channel
       | MbusDeviceTypeIdentification   |                 3 |
     And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.0" and attributes
       |  5 | unsigned             |         9 |
-      |  6 | double-long-unsigned | 302343985 |
+      |  6 | double-long-unsigned |  12056731 |
       |  7 | long-unsigned        |     12514 |
       |  8 | unsigned             |        66 |
       |  9 | unsigned             |         3 |
