@@ -10,7 +10,6 @@ package org.opensmartgridplatform.adapter.domain.publiclighting.application.task
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -167,12 +166,8 @@ public class BaseTask {
 
         final List<Device> devicesToContact = this.deviceRepository.findAll(map.keySet());
         LOGGER.info("devicesToContact.size(): {}", devicesToContact.size());
-        devicesToContact.sort(new Comparator<Device>() {
-            @Override
-            public int compare(final Device a, final Device b) {
-                return a.getDeviceIdentification().compareTo(b.getDeviceIdentification());
-            }
-        });
+        devicesToContact.sort((a, b) -> a.getDeviceIdentification().compareTo(b.getDeviceIdentification()));
+
         for (final Device device : devicesToContact) {
             LOGGER.info("device: {}, id: {}", device.getDeviceIdentification(), device.getId());
         }
