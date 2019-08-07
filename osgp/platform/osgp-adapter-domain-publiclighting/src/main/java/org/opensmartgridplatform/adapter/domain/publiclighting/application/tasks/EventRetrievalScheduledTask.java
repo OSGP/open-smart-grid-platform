@@ -157,7 +157,7 @@ public class EventRetrievalScheduledTask extends BaseTask implements Runnable {
                 this.eventRetrievalScheduledTaskMaxBackoff);
 
         final DateTime threshold = DateTime.now(DateTimeZone.UTC).minusMinutes(waitTime)
-                .minusMinutes(this.eventRetrievalScheduledTaskHysteresis).withMillisOfSecond(0);
+                .plusMinutes(this.eventRetrievalScheduledTaskHysteresis).withMillisOfSecond(0);
 
         LOGGER.info("Determined threshold: {} for device: {} based on failed connection count: {} and hysteresis: {}",
                 threshold, device.getDeviceIdentification(), failedConnectionCount,
