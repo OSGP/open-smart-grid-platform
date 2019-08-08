@@ -504,6 +504,8 @@
         the M_BUS device. The Permanent error can be a self-check error, or any other 
         fatal device error that requires a service action -->
       <xsd:enumeration value="PERMANENT_ERROR_FROM_M_BUS_DEVICE_CHANNEL_4"/>
+      <!-- 231 - Indicates a manufacturer specific code -->
+      <xsd:enumeration value="MANUFACTURER_SPECIFIC_231"/>
 
     </xsd:restriction>
   </xsd:simpleType>

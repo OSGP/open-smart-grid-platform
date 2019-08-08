@@ -54,7 +54,8 @@ public class ListEventMappingTest {
                     new Event(DateTime.now(), EventType.FIRMWARE_READY_FOR_ACTIVATION.getValue(), null),
                     new Event(DateTime.now(), EventType.FIRMWARE_ACTIVATED.getValue(), null),
                     new Event(DateTime.now(), EventType.PASSIVE_TARIFF_UPDATED.getValue(), null),
-                    new Event(DateTime.now(), EventType.SUCCESSFUL_SELFCHECK_AFTER_FIRMWARE_UPDATE.getValue(), null));
+                    new Event(DateTime.now(), EventType.SUCCESSFUL_SELFCHECK_AFTER_FIRMWARE_UPDATE.getValue(), null),
+                    new Event(DateTime.now(), EventType.MANUFACTURER_SPECIFIC_231.getValue(), null));
 
     private static final List<Event> FRAUD_DETECTION_EVENTS = Arrays.asList(
             new Event(DateTime.now(), EventType.TERMINAL_COVER_REMOVED.getValue(), null),

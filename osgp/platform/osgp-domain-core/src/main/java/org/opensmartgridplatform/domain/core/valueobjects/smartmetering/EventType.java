@@ -95,7 +95,8 @@ public enum EventType {
     FRAUD_ATTEMPT_M_BUS_CHANNEL_4(133),
     CLOCK_ADJUSTED_M_BUS_CHANNEL_4(134),
     NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_4(135),
-    PERMANENT_ERROR_FROM_M_BUS_DEVICE_CHANNEL_4(136);
+    PERMANENT_ERROR_FROM_M_BUS_DEVICE_CHANNEL_4(136),
+    MANUFACTURER_SPECIFIC_231(231);
 
     private static final EventType[] VALUES = EventType.values();
     private static final Map<Integer, EventType> lookup = new HashMap<>();
