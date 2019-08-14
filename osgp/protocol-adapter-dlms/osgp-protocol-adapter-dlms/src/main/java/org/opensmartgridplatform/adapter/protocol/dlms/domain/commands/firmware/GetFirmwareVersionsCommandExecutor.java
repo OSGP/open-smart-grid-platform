@@ -11,6 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware
 import static java.util.Arrays.asList;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.openmuc.jdlms.AttributeAddress;
@@ -52,10 +53,12 @@ public class GetFirmwareVersionsCommandExecutor extends AbstractCommandExecutor<
             new AttributeAddress(CLASS_ID, OBIS_CODE_COMMUNICATION_MODULE_ACTIVE_FIRMWARE_VERSION, ATTRIBUTE_ID),
             new AttributeAddress(CLASS_ID, OBIS_CODE_MBUS_DRIVER_ACTIVE_FIRMWARE_VERSION, ATTRIBUTE_ID));
 
-    private static final AttributeAddress[] FOR_DSMR_4_2_2 = ALL_ATTRIBUTE_ADDRESSES.subList(0, 3)
-            .toArray(new AttributeAddress[3]);
-    private static final AttributeAddress[] FOR_SMR_5_1 = ALL_ATTRIBUTE_ADDRESSES.subList(0, 4)
-            .toArray(new AttributeAddress[4]);
+    private static final AttributeAddress[] FOR_DSMR_4_2_2 = ALL_ATTRIBUTE_ADDRESSES.subList(0, 3).toArray(
+            new AttributeAddress[3]);
+    private static final AttributeAddress[] FOR_SMR_5 = ALL_ATTRIBUTE_ADDRESSES.subList(0, 4).toArray(
+            new AttributeAddress[4]);
+
+    private static final List<String> SMR_5_PROTOCOL_VERSIONS = Arrays.asList("5.0", "5.1");
 
     private final DlmsHelper dlmsHelper;
 
@@ -81,13 +84,13 @@ public class GetFirmwareVersionsCommandExecutor extends AbstractCommandExecutor<
     public List<FirmwareVersionDto> execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final Void useless) throws ProtocolAdapterException {
         if (this.isAnSmr51Device(device)) {
-            return this.getFirmwareVersions(conn, device, FOR_SMR_5_1);
+            return this.getFirmwareVersions(conn, device, FOR_SMR_5);
         }
         return this.getFirmwareVersions(conn, device, FOR_DSMR_4_2_2);
     }
 
     private boolean isAnSmr51Device(final DlmsDevice device) {
-        return "SMR".equals(device.getProtocol()) && "5.1".equals(device.getProtocolVersion());
+        return "SMR".equals(device.getProtocol()) && SMR_5_PROTOCOL_VERSIONS.contains(device.getProtocolVersion());
     }
 
     private List<FirmwareVersionDto> getFirmwareVersions(final DlmsConnectionManager conn, final DlmsDevice device,
@@ -95,8 +98,8 @@ public class GetFirmwareVersionsCommandExecutor extends AbstractCommandExecutor<
         conn.getDlmsMessageListener().setDescription(
                 "GetFirmwareVersions, retrieve attributes: " + JdlmsObjectToStringUtil.describeAttributes(attributes));
 
-        final List<GetResult> results = this.dlmsHelper
-                .getAndCheck(conn, device, "retrieve firmware versions", attributes);
+        final List<GetResult> results = this.dlmsHelper.getAndCheck(conn, device, "retrieve firmware versions",
+                attributes);
 
         final List<FirmwareVersionDto> firmwareVersionDtos = new ArrayList<>();
         for (int i = 0; i < attributes.length; i++) {
