@@ -30,8 +30,8 @@ public class ListEventMappingTest {
     private static final String TIMESTAMP_WITH_MAPPING_OF = "timestamp with mapping of ";
 
     private ManagementMapper managementMapper = new ManagementMapper();
-    private static final Integer EVENTCODE = new Integer(10);
-    private static final Integer EVENTCOUNTER = new Integer(1);
+    private static final Integer EVENT_CODE = 10;
+    private static final Integer EVENT_COUNTER = 1;
 
     private static final List<Event> STANDARD_EVENTS = Arrays
             .asList(new Event(DateTime.now(), EventType.EVENTLOG_CLEARED.getValue(), null),
@@ -55,7 +55,25 @@ public class ListEventMappingTest {
                     new Event(DateTime.now(), EventType.FIRMWARE_ACTIVATED.getValue(), null),
                     new Event(DateTime.now(), EventType.PASSIVE_TARIFF_UPDATED.getValue(), null),
                     new Event(DateTime.now(), EventType.SUCCESSFUL_SELFCHECK_AFTER_FIRMWARE_UPDATE.getValue(), null),
-                    new Event(DateTime.now(), EventType.MANUFACTURER_SPECIFIC_231.getValue(), null));
+                    new Event(DateTime.now(), EventType.MANUFACTURER_SPECIFIC_231.getValue(), null),
+                    new Event(DateTime.now(), EventType.MANUFACTURER_SPECIFIC_232.getValue(), null),
+                    new Event(DateTime.now(), EventType.MANUFACTURER_SPECIFIC_233.getValue(), null),
+                    new Event(DateTime.now(), EventType.MANUFACTURER_SPECIFIC_234.getValue(), null),
+                    new Event(DateTime.now(), EventType.MANUFACTURER_SPECIFIC_235.getValue(), null),
+                    new Event(DateTime.now(), EventType.MANUFACTURER_SPECIFIC_236.getValue(), null),
+                    new Event(DateTime.now(), EventType.MANUFACTURER_SPECIFIC_237.getValue(), null),
+                    new Event(DateTime.now(), EventType.MANUFACTURER_SPECIFIC_238.getValue(), null),
+                    new Event(DateTime.now(), EventType.MANUFACTURER_SPECIFIC_239.getValue(), null),
+                    new Event(DateTime.now(), EventType.MANUFACTURER_SPECIFIC_240.getValue(), null),
+                    new Event(DateTime.now(), EventType.MANUFACTURER_SPECIFIC_241.getValue(), null),
+                    new Event(DateTime.now(), EventType.MANUFACTURER_SPECIFIC_242.getValue(), null),
+                    new Event(DateTime.now(), EventType.MANUFACTURER_SPECIFIC_243.getValue(), null),
+                    new Event(DateTime.now(), EventType.MANUFACTURER_SPECIFIC_244.getValue(), null),
+                    new Event(DateTime.now(), EventType.MANUFACTURER_SPECIFIC_245.getValue(), null),
+                    new Event(DateTime.now(), EventType.MANUFACTURER_SPECIFIC_246.getValue(), null),
+                    new Event(DateTime.now(), EventType.MANUFACTURER_SPECIFIC_247.getValue(), null),
+                    new Event(DateTime.now(), EventType.MANUFACTURER_SPECIFIC_248.getValue(), null),
+                    new Event(DateTime.now(), EventType.MANUFACTURER_SPECIFIC_249.getValue(), null));
 
     private static final List<Event> FRAUD_DETECTION_EVENTS = Arrays.asList(
             new Event(DateTime.now(), EventType.TERMINAL_COVER_REMOVED.getValue(), null),
@@ -213,7 +231,7 @@ public class ListEventMappingTest {
 
         // build test data
         final DateTime timestamp = new DateTime();
-        final Event event = new Event(timestamp, EVENTCODE, EVENTCOUNTER);
+        final Event event = new Event(timestamp, EVENT_CODE, EVENT_COUNTER);
         final List<Event> listOriginal = new ArrayList<>();
         listOriginal.add(event);
 
@@ -236,9 +254,9 @@ public class ListEventMappingTest {
         assertEquals(timestamp.getMinuteOfHour(), listMapped.get(0).getTimestamp().getMinute());
         assertEquals(timestamp.getSecondOfMinute(), listMapped.get(0).getTimestamp().getSecond());
 
-        assertEquals((int) EVENTCODE, listMapped.get(0).getEventType().ordinal());
+        assertEquals((int) EVENT_CODE, listMapped.get(0).getEventType().ordinal());
 
-        assertEquals(EVENTCOUNTER, listMapped.get(0).getEventCounter());
+        assertEquals(EVENT_COUNTER, listMapped.get(0).getEventCounter());
     }
 
     /**
