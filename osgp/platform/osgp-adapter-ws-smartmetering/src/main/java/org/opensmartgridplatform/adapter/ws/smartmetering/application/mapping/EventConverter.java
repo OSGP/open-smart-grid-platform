@@ -61,7 +61,7 @@ public class EventConverter
 
         final DateTime timestamp = new DateTime(source.getTimestamp().toGregorianCalendar().getTime());
         final Integer eventCode = org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventType
-                .valueOf(source.getEventType().toString()).getValue();
+                .valueOf(source.getEventType().toString()).getEventCode();
         return new Event(timestamp, eventCode, source.getEventCounter());
     }
 }

@@ -112,16 +112,16 @@ public enum EventType {
     MANUFACTURER_SPECIFIC_248(248),
     MANUFACTURER_SPECIFIC_249(249);
 
-    private int value;
+    private int eventCode;
 
-    EventType(final int value) {
-        this.value = value;
+    EventType(final int eventCode) {
+        this.eventCode = eventCode;
     }
 
     public static EventType getByEventCode(final int eventCode) {
 
        for(EventType eventType : EventType.values()){
-           if(eventType.value == eventCode){
+           if(eventType.eventCode == eventCode){
                return eventType;
            }
        }
@@ -129,8 +129,8 @@ public enum EventType {
        throw new IllegalArgumentException(String.format("EventType with eventCode %d does not exist.", eventCode));
     }
 
-    public int getValue() {
-        return this.value;
+    public int getEventCode() {
+        return this.eventCode;
     }
-    
+
 }
