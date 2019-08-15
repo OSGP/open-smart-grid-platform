@@ -1,9 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
@@ -30,8 +31,8 @@ public class Event implements Serializable {
     @Override
     public String toString() {
         return String.format("Event[time=%s, code=%s, type=%s%s]", this.timestamp, this.eventCode,
-                this.eventCode == null ? null : EventType.getValue(this.eventCode.intValue()),
-                        this.eventCounter == null ? "" : ", counter=" + this.eventCounter);
+                this.eventCode == null ? null : EventType.getByEventCode(this.eventCode),
+                this.eventCounter == null ? "" : ", counter=" + this.eventCounter);
     }
 
     public DateTime getTimestamp() {

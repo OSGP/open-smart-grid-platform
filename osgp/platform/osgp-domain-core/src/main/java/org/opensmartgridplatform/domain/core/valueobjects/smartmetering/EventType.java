@@ -7,10 +7,6 @@
  */
 package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map;
-
 public enum EventType {
     EVENTLOG_CLEARED(255),
     POWER_FAILURE(1),
@@ -116,30 +112,25 @@ public enum EventType {
     MANUFACTURER_SPECIFIC_248(248),
     MANUFACTURER_SPECIFIC_249(249);
 
-    private static final Map<Integer, EventType> eventCodes = new HashMap<>();
-
     private int value;
-
-    static {
-        for (final EventType e : EnumSet.allOf(EventType.class)) {
-            eventCodes.put(e.getValue(), e);
-        }
-    }
 
     EventType(final int value) {
         this.value = value;
     }
 
-    public static EventType getValue(final int intValue) {
-        return eventCodes.get(intValue);
-    }
+    public static EventType getByEventCode(final int eventCode) {
 
-    public static EventType[] getValues() {
-        return EventType.values();
+       for(EventType eventType : EventType.values()){
+           if(eventType.value == eventCode){
+               return eventType;
+           }
+       }
+
+       throw new IllegalArgumentException(String.format("EventType with eventCode %d does not exist.", eventCode));
     }
 
     public int getValue() {
         return this.value;
     }
-
+    
 }

@@ -37,7 +37,7 @@ public class EventConverter
 
         try {
             final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventType eventType = org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventType
-                    .getValue(source.getEventCode());
+                    .getByEventCode(source.getEventCode());
             final XMLGregorianCalendar timestamp = DatatypeFactory.newInstance()
                     .newXMLGregorianCalendar(source.getTimestamp().toGregorianCalendar());
             final org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event event = new org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event();
