@@ -47,4 +47,9 @@ public enum Protocol {
         // This is preferred because the adapter is a general DLMS adapter.
         return OTHER_PROTOCOL;
     }
+
+    public static boolean isSMR5(final String protocolName, final String protocolVersion) {
+        Protocol deviceProtocol = Protocol.withNameAndVersion(protocolName, protocolVersion);
+        return deviceProtocol == Protocol.SMR_5_0 || deviceProtocol == Protocol.SMR_5_1;
+    }
 }

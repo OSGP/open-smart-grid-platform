@@ -29,4 +29,13 @@ public class ProtocolTest {
         assertThat(Protocol.SMR_5_1.isSelectValuesInSelectiveAccessSupported()).isEqualTo(false);
         assertThat(Protocol.OTHER_PROTOCOL.isSelectValuesInSelectiveAccessSupported()).isEqualTo(true);
     }
+
+    @Test
+    public void testIsSMR5() {
+        assertThat(Protocol.isSMR5("HTTP", "1.1")).isEqualTo(false);
+        assertThat(Protocol.isSMR5("SMR", "5.0")).isEqualTo(true);
+        assertThat(Protocol.isSMR5("SMR", "5.1")).isEqualTo(true);
+        assertThat(Protocol.isSMR5("SMR", "5.2")).isEqualTo(false);
+        assertThat(Protocol.isSMR5("DMR", "5.0")).isEqualTo(false);
+    }
 }
