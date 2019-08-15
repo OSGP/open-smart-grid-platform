@@ -11,7 +11,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware
 import static java.util.Arrays.asList;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.openmuc.jdlms.AttributeAddress;
@@ -21,6 +20,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractC
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareModuleType;
@@ -58,8 +58,6 @@ public class GetFirmwareVersionsCommandExecutor extends AbstractCommandExecutor<
     private static final AttributeAddress[] FOR_SMR_5 = ALL_ATTRIBUTE_ADDRESSES.subList(0, 4).toArray(
             new AttributeAddress[4]);
 
-    private static final List<String> SMR_5_PROTOCOL_VERSIONS = Arrays.asList("5.0", "5.1");
-
     private final DlmsHelper dlmsHelper;
 
     @Autowired
@@ -83,14 +81,10 @@ public class GetFirmwareVersionsCommandExecutor extends AbstractCommandExecutor<
     @Override
     public List<FirmwareVersionDto> execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final Void useless) throws ProtocolAdapterException {
-        if (this.isAnSmr51Device(device)) {
+        if (Protocol.isSMR5(device.getProtocol(), device.getProtocolVersion())) {
             return this.getFirmwareVersions(conn, device, FOR_SMR_5);
         }
         return this.getFirmwareVersions(conn, device, FOR_DSMR_4_2_2);
-    }
-
-    private boolean isAnSmr51Device(final DlmsDevice device) {
-        return "SMR".equals(device.getProtocol()) && SMR_5_PROTOCOL_VERSIONS.contains(device.getProtocolVersion());
     }
 
     private List<FirmwareVersionDto> getFirmwareVersions(final DlmsConnectionManager conn, final DlmsDevice device,
