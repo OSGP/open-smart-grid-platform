@@ -7,10 +7,6 @@
  */
 package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map;
-
 public enum EventType {
     EVENTLOG_CLEARED(255),
     POWER_FAILURE(1),
@@ -96,33 +92,45 @@ public enum EventType {
     CLOCK_ADJUSTED_M_BUS_CHANNEL_4(134),
     NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_4(135),
     PERMANENT_ERROR_FROM_M_BUS_DEVICE_CHANNEL_4(136),
-    MANUFACTURER_SPECIFIC_231(231);
+    MANUFACTURER_SPECIFIC_231(231),
+    MANUFACTURER_SPECIFIC_232(232),
+    MANUFACTURER_SPECIFIC_233(233),
+    MANUFACTURER_SPECIFIC_234(234),
+    MANUFACTURER_SPECIFIC_235(235),
+    MANUFACTURER_SPECIFIC_236(236),
+    MANUFACTURER_SPECIFIC_237(237),
+    MANUFACTURER_SPECIFIC_238(238),
+    MANUFACTURER_SPECIFIC_239(239),
+    MANUFACTURER_SPECIFIC_240(240),
+    MANUFACTURER_SPECIFIC_241(241),
+    MANUFACTURER_SPECIFIC_242(242),
+    MANUFACTURER_SPECIFIC_243(243),
+    MANUFACTURER_SPECIFIC_244(244),
+    MANUFACTURER_SPECIFIC_245(245),
+    MANUFACTURER_SPECIFIC_246(246),
+    MANUFACTURER_SPECIFIC_247(247),
+    MANUFACTURER_SPECIFIC_248(248),
+    MANUFACTURER_SPECIFIC_249(249);
 
-    private static final EventType[] VALUES = EventType.values();
-    private static final Map<Integer, EventType> lookup = new HashMap<>();
+    private int eventCode;
 
-    private int value;
-
-    static {
-        for (final EventType e : EnumSet.allOf(EventType.class)) {
-            lookup.put(e.getValue(), e);
-        }
+    EventType(final int eventCode) {
+        this.eventCode = eventCode;
     }
 
-    EventType(final int value) {
-        this.value = value;
+    public static EventType getByEventCode(final int eventCode) {
+
+       for(EventType eventType : EventType.values()){
+           if(eventType.eventCode == eventCode){
+               return eventType;
+           }
+       }
+
+       throw new IllegalArgumentException(String.format("EventType with eventCode %d does not exist.", eventCode));
     }
 
-    public static EventType getValue(final int intValue) {
-        return lookup.get(intValue);
-    }
-
-    public static EventType[] getValues() {
-        return VALUES;
-    }
-
-    public int getValue() {
-        return this.value;
+    public int getEventCode() {
+        return this.eventCode;
     }
 
 }

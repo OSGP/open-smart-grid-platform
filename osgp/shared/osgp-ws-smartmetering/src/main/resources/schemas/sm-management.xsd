@@ -506,6 +506,42 @@
       <xsd:enumeration value="PERMANENT_ERROR_FROM_M_BUS_DEVICE_CHANNEL_4"/>
       <!-- 231 - Indicates a manufacturer specific code -->
       <xsd:enumeration value="MANUFACTURER_SPECIFIC_231"/>
+      <!-- 232 - Indicates a manufacturer specific code -->
+      <xsd:enumeration value="MANUFACTURER_SPECIFIC_232"/>
+      <!-- 233 - Indicates a manufacturer specific code -->
+      <xsd:enumeration value="MANUFACTURER_SPECIFIC_233"/>
+      <!-- 234 - Indicates a manufacturer specific code -->
+      <xsd:enumeration value="MANUFACTURER_SPECIFIC_234"/>
+      <!-- 235 - Indicates a manufacturer specific code -->
+      <xsd:enumeration value="MANUFACTURER_SPECIFIC_235"/>
+      <!-- 236 - Indicates a manufacturer specific code -->
+      <xsd:enumeration value="MANUFACTURER_SPECIFIC_236"/>
+      <!-- 237 - Indicates a manufacturer specific code -->
+      <xsd:enumeration value="MANUFACTURER_SPECIFIC_237"/>
+      <!-- 238 - Indicates a manufacturer specific code -->
+      <xsd:enumeration value="MANUFACTURER_SPECIFIC_238"/>
+      <!-- 239 - Indicates a manufacturer specific code -->
+      <xsd:enumeration value="MANUFACTURER_SPECIFIC_239"/>
+      <!-- 240 - Indicates a manufacturer specific code -->
+      <xsd:enumeration value="MANUFACTURER_SPECIFIC_240"/>
+      <!-- 241 - Indicates a manufacturer specific code -->
+      <xsd:enumeration value="MANUFACTURER_SPECIFIC_241"/>
+      <!-- 242 - Indicates a manufacturer specific code -->
+      <xsd:enumeration value="MANUFACTURER_SPECIFIC_242"/>
+      <!-- 243 - Indicates a manufacturer specific code -->
+      <xsd:enumeration value="MANUFACTURER_SPECIFIC_243"/>
+      <!-- 244 - Indicates a manufacturer specific code -->
+      <xsd:enumeration value="MANUFACTURER_SPECIFIC_244"/>
+      <!-- 245 - Indicates a manufacturer specific code -->
+      <xsd:enumeration value="MANUFACTURER_SPECIFIC_245"/>
+      <!-- 246 - Indicates a manufacturer specific code -->
+      <xsd:enumeration value="MANUFACTURER_SPECIFIC_246"/>
+      <!-- 247 - Indicates a manufacturer specific code -->
+      <xsd:enumeration value="MANUFACTURER_SPECIFIC_247"/>
+      <!-- 248 - Indicates a manufacturer specific code -->
+      <xsd:enumeration value="MANUFACTURER_SPECIFIC_248"/>
+      <!-- 249 - Indicates a manufacturer specific code -->
+      <xsd:enumeration value="MANUFACTURER_SPECIFIC_249"/>
 
     </xsd:restriction>
   </xsd:simpleType>
