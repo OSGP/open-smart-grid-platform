@@ -181,8 +181,8 @@ public class DeviceChannelsHelper {
 
         }
         conn.getDlmsMessageListener().setDescription(
-                "Write updated MBus attributes to channel " + channel + ", set attributes: "
-                        + dataObjectExecutors.describeAttributes());
+                String.format("Write updated MBus attributes to channel %d, set attributes: %s", channel,
+                        dataObjectExecutors.describeAttributes()));
 
         dataObjectExecutors.execute(conn);
 

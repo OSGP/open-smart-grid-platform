@@ -48,6 +48,12 @@ public class IdentificationNumberFactoryTest {
         IdentificationNumberFactory.create(createDeviceContext(Protocol.DSMR_4_2_2)).fromLast8Digits("123A5678");
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testFromInvalidIdentificationDsmr4() {
+
+        IdentificationNumberFactory.create(createDeviceContext(Protocol.DSMR_4_2_2)).fromIdentification(123456789L);
+    }
+
     @Test
     public void testFromIdentificationSmr5() {
 
@@ -76,6 +82,12 @@ public class IdentificationNumberFactoryTest {
     public void testFromInvalidLast8DigitsSmr5() {
 
         IdentificationNumberFactory.create(createDeviceContext(Protocol.SMR_5_0)).fromLast8Digits("1234S678");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testFromInvalidIdentificationSmr5() {
+
+        IdentificationNumberFactory.create(createDeviceContext(Protocol.SMR_5_0)).fromIdentification(123456789100L);
     }
 
     @Test

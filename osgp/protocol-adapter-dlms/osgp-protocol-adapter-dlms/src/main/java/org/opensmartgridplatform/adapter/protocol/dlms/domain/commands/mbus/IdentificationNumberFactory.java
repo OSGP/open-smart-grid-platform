@@ -18,8 +18,8 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.CommandEx
 class IdentificationNumberFactory {
 
     private static final int HEX_RADIX = 16;
-    private static final String IDENTIFICATION_NUMBER_REGEX_SMR4 = "\\d{1,8}";
-    private static final String IDENTIFICATION_NUMBER_REGEX_SMR5 = "[0-9A-Fa-f]{8}+";
+    private static final String IDENTIFICATION_NUMBER_REGEX_DSMR4 = "\\d{1,8}";
+    private static final String IDENTIFICATION_NUMBER_REGEX_SMR5 = "[0-9A-Fa-f]{1,8}";
     private static final long MIN_IDENTIFICATION = 0;
     private static final long MAX_IDENTIFICATION = Long.parseLong("99999999", HEX_RADIX);
 
@@ -44,7 +44,7 @@ class IdentificationNumberFactory {
         if (deviceContext.isSMR5()) {
             return last8Digits.matches(IDENTIFICATION_NUMBER_REGEX_SMR5);
         }
-        return last8Digits.matches(IDENTIFICATION_NUMBER_REGEX_SMR4);
+        return last8Digits.matches(IDENTIFICATION_NUMBER_REGEX_DSMR4);
     }
 
     IdentificationNumber fromIdentification(final Long identification) {
