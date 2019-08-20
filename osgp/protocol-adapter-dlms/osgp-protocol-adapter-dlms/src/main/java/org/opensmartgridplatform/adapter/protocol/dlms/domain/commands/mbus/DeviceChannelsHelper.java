@@ -17,6 +17,7 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.interfaceclass.InterfaceClass;
 import org.openmuc.jdlms.interfaceclass.attribute.MbusClientAttribute;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.CommandExecutorDeviceContext;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DataObjectAttrExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DataObjectAttrExecutors;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
@@ -91,22 +92,21 @@ public class DeviceChannelsHelper {
     protected List<GetResult> getMBusClientAttributeValues(final DlmsConnectionManager conn, final DlmsDevice device,
             final short channel) throws ProtocolAdapterException {
         final AttributeAddress[] attrAddresses = this.makeAttributeAddresses(channel);
-        conn.getDlmsMessageListener().setDescription(
-                "DeviceChannelsHelper, retrieve M-Bus client setup attributes: " + JdlmsObjectToStringUtil
-                        .describeAttributes(attrAddresses));
+        conn.getDlmsMessageListener().setDescription("DeviceChannelsHelper, retrieve M-Bus client setup attributes: "
+                + JdlmsObjectToStringUtil.describeAttributes(attrAddresses));
         return this.dlmsHelper.getWithList(conn, device, attrAddresses);
     }
 
     protected ChannelElementValuesDto makeChannelElementValues(final short channel, final List<GetResult> resultList)
             throws ProtocolAdapterException {
         final short primaryAddress = this.readShort(resultList, INDEX_PRIMARY_ADDRESS, "primaryAddress");
-        final String identificationNumber = this
-                .readIdentificationNumber(resultList, INDEX_IDENTIFICATION_NUMBER, "identificationNumber");
-        final String manufacturerIdentification = this
-                .readManufacturerIdentification(resultList, INDEX_MANUFACTURER_ID, "manufacturerIdentification");
+        final String identificationNumber = this.readIdentificationNumber(resultList, INDEX_IDENTIFICATION_NUMBER,
+                "identificationNumber");
+        final String manufacturerIdentification = this.readManufacturerIdentification(resultList, INDEX_MANUFACTURER_ID,
+                "manufacturerIdentification");
         final short version = this.readShort(resultList, INDEX_VERSION, "version");
-        final short deviceTypeIdentification = this
-                .readShort(resultList, INDEX_DEVICE_TYPE, "deviceTypeIdentification");
+        final short deviceTypeIdentification = this.readShort(resultList, INDEX_DEVICE_TYPE,
+                "deviceTypeIdentification");
         return new ChannelElementValuesDto(channel, primaryAddress, identificationNumber, manufacturerIdentification,
                 version, deviceTypeIdentification);
     }
@@ -161,15 +161,17 @@ public class DeviceChannelsHelper {
     }
 
     protected ChannelElementValuesDto writeUpdatedMbus(final DlmsConnectionManager conn,
-            final MbusChannelElementsDto requestDto, final short channel) throws ProtocolAdapterException {
+            final MbusChannelElementsDto requestDto, final short channel, CommandExecutorDeviceContext deviceContext)
+            throws ProtocolAdapterException {
 
         final DataObjectAttrExecutors dataObjectExecutors = new DataObjectAttrExecutors("CoupleMBusDevice").addExecutor(
                 this.getMbusAttributeExecutor(MbusClientAttribute.IDENTIFICATION_NUMBER,
-                        IdentificationNumber.fromLast8Digits(requestDto.getMbusIdentificationNumber()).asDataObject(),
-                        channel)).addExecutor(this.getMbusAttributeExecutor(MbusClientAttribute.MANUFACTURER_ID,
-                ManufacturerId.fromIdentification(requestDto.getMbusManufacturerIdentification()).asDataObject(),
-                channel)).addExecutor(this.getMbusAttributeExecutor(MbusClientAttribute.VERSION,
-                DataObject.newUInteger8Data(requestDto.getMbusVersion()), channel)).addExecutor(
+                        IdentificationNumberFactory.create(deviceContext).fromLast8Digits(
+                                requestDto.getMbusIdentificationNumber()).asDataObject(), channel)).addExecutor(
+                this.getMbusAttributeExecutor(MbusClientAttribute.MANUFACTURER_ID, ManufacturerId.fromIdentification(
+                        requestDto.getMbusManufacturerIdentification()).asDataObject(), channel)).addExecutor(
+                this.getMbusAttributeExecutor(MbusClientAttribute.VERSION,
+                        DataObject.newUInteger8Data(requestDto.getMbusVersion()), channel)).addExecutor(
                 this.getMbusAttributeExecutor(MbusClientAttribute.DEVICE_TYPE,
                         DataObject.newUInteger8Data(requestDto.getMbusDeviceTypeIdentification()), channel));
 
@@ -179,8 +181,8 @@ public class DeviceChannelsHelper {
 
         }
         conn.getDlmsMessageListener().setDescription(
-                "Write updated MBus attributes to channel " + channel + ", set attributes: " + dataObjectExecutors
-                        .describeAttributes());
+                "Write updated MBus attributes to channel " + channel + ", set attributes: "
+                        + dataObjectExecutors.describeAttributes());
 
         dataObjectExecutors.execute(conn);
 
@@ -203,8 +205,8 @@ public class DeviceChannelsHelper {
     protected ChannelElementValuesDto findEmptyChannel(final List<ChannelElementValuesDto> channelElementValuesList) {
         for (final ChannelElementValuesDto channelElementValues : channelElementValuesList) {
 
-            if (this.checkChannelIdentificationValues(channelElementValues) && this
-                    .checkChannelConfigurationValues(channelElementValues)) {
+            if (this.checkChannelIdentificationValues(channelElementValues) && this.checkChannelConfigurationValues(
+                    channelElementValues)) {
                 return channelElementValues;
             }
         }
