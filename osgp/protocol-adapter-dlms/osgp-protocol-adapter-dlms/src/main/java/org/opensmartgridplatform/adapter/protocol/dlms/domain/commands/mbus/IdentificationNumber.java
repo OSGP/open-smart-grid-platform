@@ -45,7 +45,7 @@ public class IdentificationNumber {
         return DataObject.newUInteger32Data(getIdentificationNumber());
     }
 
-    private Long getIdentificationNumber() {
+    Long getIdentificationNumber() {
         if (StringUtils.isBlank(last8Digits)) {
             return null;
         }

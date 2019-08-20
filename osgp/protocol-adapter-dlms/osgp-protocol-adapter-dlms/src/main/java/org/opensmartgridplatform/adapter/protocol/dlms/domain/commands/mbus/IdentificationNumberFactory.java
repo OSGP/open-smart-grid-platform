@@ -11,6 +11,10 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus;
 import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.CommandExecutorDeviceContext;
 
+/**
+ * Handles creation and validation of @{@link IdentificationNumber} based on either the String representation or the
+ * Number representation.
+ */
 class IdentificationNumberFactory {
 
     private static final int HEX_RADIX = 16;
@@ -32,7 +36,7 @@ class IdentificationNumberFactory {
     private void validateLast8Digits(final String last8Digits) {
         if (StringUtils.isNotBlank(last8Digits) && !matches(last8Digits)) {
             throw new IllegalArgumentException(
-                    String.format("IdentificationNumber %s did not pass " + "validation.", last8Digits));
+                    String.format("IdentificationNumber %s did not pass validation.", last8Digits));
         }
     }
 
@@ -77,7 +81,8 @@ class IdentificationNumberFactory {
              * If a String of less than 8 digits is given, make sure it is
              * prefixed with zero digits up to a length of 8.
              */
-            return String.format("%08d", Integer.valueOf(digits));
+            return StringUtils.leftPad(digits, 8);
+
         }
     }
 
