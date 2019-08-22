@@ -8,21 +8,13 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration;
 
-import java.io.IOException;
 import java.util.List;
 
-import org.openmuc.jdlms.AccessResultCode;
-import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
-import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.BitString;
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.openmuc.jdlms.interfaceclass.InterfaceClass;
-import org.openmuc.jdlms.interfaceclass.attribute.DataAttribute;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
-import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagsDto;
@@ -30,62 +22,30 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObj
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GprsOperationModeTypeDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component()
-public class GetConfigurationObjectHelper {
+@Component
+public class GetConfigurationObjectServiceDsmr4 extends GetConfigurationObjectService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetConfigurationObjectHelper.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetConfigurationObjectServiceDsmr4.class);
 
-    public static final int CLASS_ID = InterfaceClass.DATA.id();
-    public static final ObisCode OBIS_CODE = new ObisCode("0.1.94.31.3.255");
-    public static final int ATTRIBUTE_ID = DataAttribute.VALUE.attributeId();
+    private static final int NUMBER_OF_CONFIGURATION_OBJECT_ELEMENTS = 2;
+    private static final int INDEX_OF_GPRS_OPERATION_MODE = 0;
+    private static final int INDEX_OF_CONFIGURATION_FLAGS = 1;
 
-    public static final int NUMBER_OF_CONFIGURATION_OBJECT_ELEMENTS = 2;
-    public static final int INDEX_OF_GPRS_OPERATION_MODE = 0;
-    public static final int INDEX_OF_CONFIGURATION_FLAGS = 1;
+    private final DlmsHelper dlmsHelper;
 
-    @Autowired
-    private ConfigurationObjectHelperService configurationObjectHelperService;
-
-    @Autowired
-    private DlmsHelper dlmsHelper;
-
-    public ConfigurationObjectDto getConfigurationObjectDto(final DlmsConnectionManager conn)
-            throws ProtocolAdapterException {
-
-        try {
-            return this.retrieveConfigurationObject(conn);
-        } catch (final IOException e) {
-            throw new ConnectionException(e);
-        }
+    public GetConfigurationObjectServiceDsmr4(final DlmsHelper dlmsHelper) {
+        this.dlmsHelper = dlmsHelper;
     }
 
-    private ConfigurationObjectDto retrieveConfigurationObject(final DlmsConnectionManager conn)
-            throws IOException, ProtocolAdapterException {
-
-        final AttributeAddress configurationObjectValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
-
-        conn.getDlmsMessageListener().setDescription(
-                "retrieve current ConfigurationObject, attribute: " + JdlmsObjectToStringUtil
-                        .describeAttributes(configurationObjectValue));
-
-        LOGGER.info("Retrieving current configuration object by issuing get request for class id: {}, obis code: {}, "
-                + "attribute id: {}", CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
-        final GetResult getResult = conn.getConnection().get(configurationObjectValue);
-
-        if (getResult == null) {
-            throw new ProtocolAdapterException("No result received while retrieving current configuration object.");
-        } else if (getResult.getResultCode() != AccessResultCode.SUCCESS) {
-            throw new ProtocolAdapterException(
-                    "Non-sucessful result received retrieving configuration object: " + getResult.getResultCode());
-        }
-
-        return this.getConfigurationObject(getResult);
+    @Override
+    public boolean handles(final Protocol protocol) {
+        return protocol == Protocol.DSMR_4_2_2;
     }
 
-    private ConfigurationObjectDto getConfigurationObject(final GetResult result) throws ProtocolAdapterException {
+    @Override
+    ConfigurationObjectDto getConfigurationObject(final GetResult result) throws ProtocolAdapterException {
 
         final DataObject resultData = result.getResultData();
         if (resultData == null || !resultData.isComplex()) {
@@ -97,15 +57,15 @@ public class GetConfigurationObjectHelper {
 
         if (elements == null || elements.size() != NUMBER_OF_CONFIGURATION_OBJECT_ELEMENTS) {
             LOGGER.warn("Unexpected configuration object structure elements: {}", elements);
-            throw new ProtocolAdapterException("Expected configuration object result data structure to have "
-                    + NUMBER_OF_CONFIGURATION_OBJECT_ELEMENTS + " elements, but got " + (
-                    elements == null ? 0 : elements.size()));
+            throw new ProtocolAdapterException(
+                    String.format("Expected configuration object result data structure to have %d elements, but got %s",
+                            NUMBER_OF_CONFIGURATION_OBJECT_ELEMENTS, elements == null ? "null" : elements.size()));
         }
 
-        final GprsOperationModeTypeDto gprsOperationMode = this
-                .getGprsOperationModeType(elements.get(INDEX_OF_GPRS_OPERATION_MODE));
-        final ConfigurationFlagsDto configurationFlags = this
-                .getConfigurationFlags(elements.get(INDEX_OF_CONFIGURATION_FLAGS));
+        final GprsOperationModeTypeDto gprsOperationMode = this.getGprsOperationModeType(
+                elements.get(INDEX_OF_GPRS_OPERATION_MODE));
+        final ConfigurationFlagsDto configurationFlags = this.getConfigurationFlags(
+                elements.get(INDEX_OF_CONFIGURATION_FLAGS));
         return new ConfigurationObjectDto(gprsOperationMode, configurationFlags);
     }
 
@@ -145,8 +105,7 @@ public class GetConfigurationObjectHelper {
         final BitString bitString = flagsData.getValue();
         final byte[] flagByteArray = bitString.getBitString();
 
-        final List<ConfigurationFlagDto> listConfigurationFlag = this.configurationObjectHelperService
-                .toConfigurationFlags(flagByteArray);
+        final List<ConfigurationFlagDto> listConfigurationFlag = this.toConfigurationFlagDtos(flagByteArray);
 
         return new ConfigurationFlagsDto(listConfigurationFlag);
     }

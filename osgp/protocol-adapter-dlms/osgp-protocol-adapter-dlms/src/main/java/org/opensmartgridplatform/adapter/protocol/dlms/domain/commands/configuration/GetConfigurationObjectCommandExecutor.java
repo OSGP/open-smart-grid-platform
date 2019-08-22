@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configur
 
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
@@ -24,7 +25,7 @@ import org.springframework.stereotype.Component;
 public class GetConfigurationObjectCommandExecutor extends AbstractCommandExecutor<Void, ConfigurationObjectDto> {
 
     @Autowired
-    private GetConfigurationObjectHelper getConfigurationObjectHelper;
+    private GetConfigurationObjectServiceLookup serviceLookup;
 
     public GetConfigurationObjectCommandExecutor() {
         super(GetConfigurationObjectRequestDataDto.class);
@@ -45,8 +46,9 @@ public class GetConfigurationObjectCommandExecutor extends AbstractCommandExecut
     @Override
     public ConfigurationObjectDto execute(final DlmsConnectionManager conn, final DlmsDevice device, final Void object)
             throws ProtocolAdapterException {
-
-        return this.getConfigurationObjectHelper.getConfigurationObjectDto(conn);
+        final Protocol protocol = Protocol.forDevice(device);
+        final GetConfigurationObjectService service = this.serviceLookup.lookupServiceForProtocol(protocol);
+        return service.getConfigurationObjectDto(conn);
     }
 
 }
