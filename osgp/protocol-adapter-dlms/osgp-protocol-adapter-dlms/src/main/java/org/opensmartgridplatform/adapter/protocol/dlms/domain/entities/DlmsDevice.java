@@ -342,10 +342,9 @@ public class DlmsDevice extends AbstractEntity {
         return this.protocolVersion;
     }
 
-    public DlmsDevice setProtocol(final String protocol, final String protocolVersion) {
+    public void setProtocol(final String protocol, final String protocolVersion) {
         this.protocol = protocol;
         this.protocolVersion = protocolVersion;
-        return this;
     }
 
     /**

@@ -93,7 +93,8 @@ public class GetFirmwareVersionsCommandExecutorTest {
 
     @Test
     public void returns4FirmwareVersionsForSmr51Device() throws Exception {
-        final DlmsDevice device = new DlmsDevice().setProtocol("SMR", "5.1");
+        final DlmsDevice device = new DlmsDevice();
+        device.setProtocol("SMR", "5.1");
 
         final GetResult getResult1 = new GetResultBuilder().build();
         final GetResult getResult2 = new GetResultBuilder().build();
