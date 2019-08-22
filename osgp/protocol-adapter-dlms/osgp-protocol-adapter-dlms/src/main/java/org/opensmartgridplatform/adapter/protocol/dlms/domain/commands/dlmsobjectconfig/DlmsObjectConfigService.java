@@ -53,7 +53,7 @@ public class DlmsObjectConfigService {
     public Optional<AttributeAddressForProfile> findAttributeAddressForProfile(final DlmsDevice device,
             final DlmsObjectType type, final Integer channel, final DateTime from, final DateTime to,
             final Medium filterMedium) {
-        return this.findDlmsObject(Protocol.withNameAndVersion(device.getProtocol(), device.getProtocolVersion()), type,
+        return this.findDlmsObject(Protocol.forDevice(device), type,
                 filterMedium)
                 .map(dlmsObject -> this.getAttributeAddressForProfile(new AddressRequest(device, dlmsObject, channel,
                         from, to, filterMedium)));
@@ -83,12 +83,12 @@ public class DlmsObjectConfigService {
         return attributeAddresses;
     }
 
-    private AttributeAddressForProfile getAttributeAddressForProfile(AddressRequest addressRequest) {
+    private AttributeAddressForProfile getAttributeAddressForProfile(final AddressRequest addressRequest) {
         final List<DlmsCaptureObject> selectedObjects = new ArrayList<>();
 
         final SelectiveAccessDescription access = this.getAccessDescription(addressRequest, selectedObjects);
 
-        DlmsObject dlmsObject = addressRequest.getDlmsObject();
+        final DlmsObject dlmsObject = addressRequest.getDlmsObject();
 
         final ObisCode obisCode = this.replaceChannel(dlmsObject.getObisCodeAsString(), addressRequest.getChannel());
 
@@ -104,13 +104,13 @@ public class DlmsObjectConfigService {
         return new ObisCode(obisCode);
     }
 
-    private SelectiveAccessDescription getAccessDescription(AddressRequest addressRequest,
+    private SelectiveAccessDescription getAccessDescription(final AddressRequest addressRequest,
             final List<DlmsCaptureObject> selectedObjects) {
 
-        DlmsObject object = addressRequest.getDlmsObject();
-        DateTime from = addressRequest.getFrom();
-        DateTime to = addressRequest.getTo();
-        DlmsDevice device = addressRequest.getDevice();
+        final DlmsObject object = addressRequest.getDlmsObject();
+        final DateTime from = addressRequest.getFrom();
+        final DateTime to = addressRequest.getTo();
+        final DlmsDevice device = addressRequest.getDevice();
 
         if (!(object instanceof DlmsProfile) || from == null || to == null) {
             return null;
@@ -130,12 +130,11 @@ public class DlmsObjectConfigService {
         }
     }
 
-    private DataObject getSelectedValues(AddressRequest addressRequest, final List<DlmsCaptureObject> selectedObjects) {
+    private DataObject getSelectedValues(final AddressRequest addressRequest, final List<DlmsCaptureObject> selectedObjects) {
         List<DataObject> objectDefinitions = new ArrayList<>();
 
-        DlmsObject object = addressRequest.getDlmsObject();
-        Protocol protocol = Protocol.withNameAndVersion(addressRequest.getDevice().getProtocol(),
-                addressRequest.getDevice().getProtocolVersion());
+        final DlmsObject object = addressRequest.getDlmsObject();
+        final Protocol protocol = Protocol.forDevice(addressRequest.getDevice());
 
         if (object instanceof DlmsProfile && ((DlmsProfile) object).getCaptureObjects() != null) {
 
