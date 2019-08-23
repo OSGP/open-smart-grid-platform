@@ -6,7 +6,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration;
+package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service;
 
 import java.util.List;
 
@@ -30,7 +30,7 @@ public class GetConfigurationObjectServiceSmr5 extends GetConfigurationObjectSer
 
     private final DlmsHelper dlmsHelper;
 
-    public GetConfigurationObjectServiceSmr5(final DlmsHelper dlmsHelper) {
+    GetConfigurationObjectServiceSmr5(final DlmsHelper dlmsHelper) {
         this.dlmsHelper = dlmsHelper;
     }
 
@@ -53,11 +53,9 @@ public class GetConfigurationObjectServiceSmr5 extends GetConfigurationObjectSer
 
         final BitString bitString = resultData.getValue();
         final byte[] flagByteArray = bitString.getBitString();
-        final List<ConfigurationFlagDto> configurationFlagDtos = this.toConfigurationFlagDtos(flagByteArray);
+        final List<ConfigurationFlagDto> configurationFlagDtos = this.toConfigurationFlags(flagByteArray);
         final ConfigurationFlagsDto configurationFlagsDto = new ConfigurationFlagsDto(configurationFlagDtos);
-        // TODO: no GPRS operation mode for SMR5
         return new ConfigurationObjectDto(null, configurationFlagsDto);
     }
-
 
 }

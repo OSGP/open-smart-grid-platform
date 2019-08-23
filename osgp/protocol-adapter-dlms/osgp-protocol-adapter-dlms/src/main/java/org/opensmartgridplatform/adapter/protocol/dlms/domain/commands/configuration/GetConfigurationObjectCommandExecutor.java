@@ -9,6 +9,8 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service.GetConfigurationObjectService;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service.ProtocolServiceLookup;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
@@ -18,17 +20,16 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDt
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObjectDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetConfigurationObjectRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetConfigurationObjectResponseDto;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component()
 public class GetConfigurationObjectCommandExecutor extends AbstractCommandExecutor<Void, ConfigurationObjectDto> {
 
-    @Autowired
-    private GetConfigurationObjectServiceLookup serviceLookup;
+    private final ProtocolServiceLookup protocolServiceLookup;
 
-    public GetConfigurationObjectCommandExecutor() {
+    public GetConfigurationObjectCommandExecutor(final ProtocolServiceLookup protocolServiceLookup) {
         super(GetConfigurationObjectRequestDataDto.class);
+        this.protocolServiceLookup = protocolServiceLookup;
     }
 
     @Override
@@ -47,8 +48,9 @@ public class GetConfigurationObjectCommandExecutor extends AbstractCommandExecut
     public ConfigurationObjectDto execute(final DlmsConnectionManager conn, final DlmsDevice device, final Void object)
             throws ProtocolAdapterException {
         final Protocol protocol = Protocol.forDevice(device);
-        final GetConfigurationObjectService service = this.serviceLookup.lookupServiceForProtocol(protocol);
-        return service.getConfigurationObjectDto(conn);
+        final GetConfigurationObjectService service = this.protocolServiceLookup.lookupGetService(
+                protocol);
+        return service.getConfigurationObject(conn);
     }
 
 }
