@@ -12,8 +12,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.CommandExecutorDeviceContext;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 
 public class IdentificationNumberFactoryTest {
@@ -25,7 +23,7 @@ public class IdentificationNumberFactoryTest {
         Long identification = 302289504L;
 
         IdentificationNumber identificationNumber = IdentificationNumberFactory.create(
-                createDeviceContext(Protocol.DSMR_4_2_2)).fromIdentification(identification);
+                Protocol.DSMR_4_2_2).fromIdentification(identification);
 
         assertEquals(last8Digits, identificationNumber.getLast8Digits());
     }
@@ -37,7 +35,7 @@ public class IdentificationNumberFactoryTest {
         Long identification = 302289504L;
 
         IdentificationNumber identificationNumber = IdentificationNumberFactory.create(
-                createDeviceContext(Protocol.DSMR_4_2_2)).fromLast8Digits(last8Digits);
+                Protocol.DSMR_4_2_2).fromLast8Digits(last8Digits);
 
         assertEquals(identification, identificationNumber.getIdentificationNumber());
     }
@@ -45,13 +43,13 @@ public class IdentificationNumberFactoryTest {
     @Test(expected = IllegalArgumentException.class)
     public void testFromInvalidLast8DigitsDsmr4() {
 
-        IdentificationNumberFactory.create(createDeviceContext(Protocol.DSMR_4_2_2)).fromLast8Digits("123A5678");
+        IdentificationNumberFactory.create(Protocol.DSMR_4_2_2).fromLast8Digits("123A5678");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testFromInvalidIdentificationDsmr4() {
 
-        IdentificationNumberFactory.create(createDeviceContext(Protocol.DSMR_4_2_2)).fromIdentification(123456789L);
+        IdentificationNumberFactory.create(Protocol.DSMR_4_2_2).fromIdentification(123456789L);
     }
 
     @Test
@@ -61,7 +59,7 @@ public class IdentificationNumberFactoryTest {
         Long identification = 305421295L;
 
         IdentificationNumber identificationNumber = IdentificationNumberFactory.create(
-                createDeviceContext(Protocol.SMR_5_0)).fromIdentification(identification);
+                Protocol.SMR_5_0).fromIdentification(identification);
 
         assertEquals(last8Digits, identificationNumber.getLast8Digits());
     }
@@ -73,7 +71,7 @@ public class IdentificationNumberFactoryTest {
         Long identification = 305421295L;
 
         IdentificationNumber identificationNumber = IdentificationNumberFactory.create(
-                createDeviceContext(Protocol.SMR_5_0)).fromLast8Digits(last8Digits);
+                Protocol.SMR_5_0).fromLast8Digits(last8Digits);
 
         assertEquals(identification, identificationNumber.getIdentificationNumber());
     }
@@ -81,20 +79,20 @@ public class IdentificationNumberFactoryTest {
     @Test(expected = IllegalArgumentException.class)
     public void testFromInvalidLast8DigitsSmr5() {
 
-        IdentificationNumberFactory.create(createDeviceContext(Protocol.SMR_5_0)).fromLast8Digits("1234S678");
+        IdentificationNumberFactory.create(Protocol.SMR_5_0).fromLast8Digits("1234S678");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testFromInvalidIdentificationSmr5() {
 
-        IdentificationNumberFactory.create(createDeviceContext(Protocol.SMR_5_0)).fromIdentification(123456789100L);
+        IdentificationNumberFactory.create(Protocol.SMR_5_0).fromIdentification(123456789100L);
     }
 
     @Test
     public void testFromNullIdentificationSmr51() {
 
         IdentificationNumber identificationNumber = IdentificationNumberFactory.create(
-                createDeviceContext(Protocol.SMR_5_1)).fromIdentification(null);
+                Protocol.SMR_5_1).fromIdentification(null);
 
         assertNull(identificationNumber.getLast8Digits());
     }
@@ -103,14 +101,9 @@ public class IdentificationNumberFactoryTest {
     public void testFromNullLast8DigitsSmr51() {
 
         IdentificationNumber identificationNumber = IdentificationNumberFactory.create(
-                createDeviceContext(Protocol.SMR_5_1)).fromLast8Digits(null);
+                Protocol.SMR_5_1).fromLast8Digits(null);
 
         assertNull(identificationNumber.getIdentificationNumber());
     }
 
-    private CommandExecutorDeviceContext createDeviceContext(Protocol protocol) {
-        DlmsDevice dlmsDevice = new DlmsDevice();
-        dlmsDevice.setProtocol(protocol.getName(), protocol.getVersion());
-        return new CommandExecutorDeviceContext(dlmsDevice);
-    }
 }

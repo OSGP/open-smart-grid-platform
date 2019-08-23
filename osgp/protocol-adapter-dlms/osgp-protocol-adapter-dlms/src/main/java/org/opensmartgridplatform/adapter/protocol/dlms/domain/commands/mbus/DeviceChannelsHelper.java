@@ -17,13 +17,13 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.interfaceclass.InterfaceClass;
 import org.openmuc.jdlms.interfaceclass.attribute.MbusClientAttribute;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.CommandExecutorDeviceContext;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DataObjectAttrExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DataObjectAttrExecutors;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.FindMatchingChannelHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementValuesDto;
@@ -161,12 +161,12 @@ public class DeviceChannelsHelper {
     }
 
     protected ChannelElementValuesDto writeUpdatedMbus(final DlmsConnectionManager conn,
-            final MbusChannelElementsDto requestDto, final short channel, CommandExecutorDeviceContext deviceContext)
+            final MbusChannelElementsDto requestDto, final short channel, Protocol protocol)
             throws ProtocolAdapterException {
 
         final DataObjectAttrExecutors dataObjectExecutors = new DataObjectAttrExecutors("CoupleMBusDevice").addExecutor(
                 this.getMbusAttributeExecutor(MbusClientAttribute.IDENTIFICATION_NUMBER,
-                        IdentificationNumberFactory.create(deviceContext).fromLast8Digits(
+                        IdentificationNumberFactory.create(protocol).fromLast8Digits(
                                 requestDto.getMbusIdentificationNumber()).asDataObject(), channel)).addExecutor(
                 this.getMbusAttributeExecutor(MbusClientAttribute.MANUFACTURER_ID, ManufacturerId.fromIdentification(
                         requestDto.getMbusManufacturerIdentification()).asDataObject(), channel)).addExecutor(

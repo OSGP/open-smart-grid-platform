@@ -9,7 +9,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus;
 
 import org.apache.commons.lang3.StringUtils;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.CommandExecutorDeviceContext;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 
 /**
  * Handles creation and validation of @{@link IdentificationNumber} based on either the String representation or the
@@ -23,14 +23,14 @@ class IdentificationNumberFactory {
     private static final long MIN_IDENTIFICATION = 0;
     private static final long MAX_IDENTIFICATION = Long.parseLong("99999999", HEX_RADIX);
 
-    private final CommandExecutorDeviceContext deviceContext;
+    private final Protocol protocol;
 
-    private IdentificationNumberFactory(final CommandExecutorDeviceContext deviceContext) {
-        this.deviceContext = deviceContext;
+    private IdentificationNumberFactory(final Protocol protocol) {
+        this.protocol = protocol;
     }
 
-    public static IdentificationNumberFactory create(CommandExecutorDeviceContext deviceContext) {
-        return new IdentificationNumberFactory(deviceContext);
+    public static IdentificationNumberFactory create(Protocol protocol) {
+        return new IdentificationNumberFactory(protocol);
     }
 
     private void validateLast8Digits(final String last8Digits) {
@@ -41,7 +41,7 @@ class IdentificationNumberFactory {
     }
 
     private boolean matches(String last8Digits) {
-        if (deviceContext.isSMR5()) {
+        if (Protocol.isSMR5(protocol.getName(), protocol.getVersion())) {
             return last8Digits.matches(IDENTIFICATION_NUMBER_REGEX_SMR5);
         }
         return last8Digits.matches(IDENTIFICATION_NUMBER_REGEX_DSMR4);
