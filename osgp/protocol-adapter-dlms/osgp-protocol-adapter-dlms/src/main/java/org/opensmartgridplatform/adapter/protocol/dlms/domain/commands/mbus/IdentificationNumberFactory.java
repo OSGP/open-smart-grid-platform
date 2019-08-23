@@ -29,7 +29,7 @@ class IdentificationNumberFactory {
         this.protocol = protocol;
     }
 
-    public static IdentificationNumberFactory create(Protocol protocol) {
+    public static IdentificationNumberFactory create(final Protocol protocol) {
         return new IdentificationNumberFactory(protocol);
     }
 
@@ -40,7 +40,7 @@ class IdentificationNumberFactory {
         }
     }
 
-    private boolean matches(String last8Digits) {
+    private boolean matches(final String last8Digits) {
         if (Protocol.isSMR5(protocol.getName(), protocol.getVersion())) {
             return last8Digits.matches(IDENTIFICATION_NUMBER_REGEX_SMR5);
         }
@@ -73,7 +73,7 @@ class IdentificationNumberFactory {
         return String.format("%08X", identification);
     }
 
-    private String fromString(String digits) {
+    private String fromString(final String digits) {
         if (StringUtils.isBlank(digits)) {
             return null;
         } else {
