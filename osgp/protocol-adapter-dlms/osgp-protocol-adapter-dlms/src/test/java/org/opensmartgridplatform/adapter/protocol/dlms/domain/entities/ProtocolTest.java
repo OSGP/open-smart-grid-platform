@@ -18,13 +18,14 @@ public class ProtocolTest {
     public void testProtocolForDevice() {
         // SETUP
         final DlmsDevice device = new DlmsDevice();
-        device.setProtocol("DSMR", "4.2.2");
+        final Protocol protocol = Protocol.DSMR_4_2_2;
+        device.setProtocol(protocol);
 
         // CALL
         final Protocol result = Protocol.forDevice(device);
 
         // VERIFY
-        assertThat(result).isEqualTo(Protocol.DSMR_4_2_2);
+        assertThat(result).isEqualTo(protocol);
     }
 
     @Test

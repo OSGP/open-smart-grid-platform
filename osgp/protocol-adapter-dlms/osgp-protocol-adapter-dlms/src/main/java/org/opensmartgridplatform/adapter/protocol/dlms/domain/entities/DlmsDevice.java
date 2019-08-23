@@ -96,8 +96,8 @@ public class DlmsDevice extends AbstractEntity {
     @Column(length = 3)
     private String mbusManufacturerIdentification;
 
-    @Column(nullable = false)
-    private String protocol;
+    @Column(name = "protocol", nullable = false)
+    private String protocolName;
 
     @Column(nullable = false)
     private String protocolVersion;
@@ -135,11 +135,11 @@ public class DlmsDevice extends AbstractEntity {
     public String toString() {
         return String.format(
                 "DlmsDevice[deviceId=%s, lls1=%b, hls3=%b, hls4=%b, hls5=%b, ipAddress=%s, port=%s, logicalId=%s, clientId=%s, "
-                        + "debug=%b, hdlc=%b, sn=%b, mbusIdentification=%s, mbusManufacturer=%s, protocol=%s, "
+                        + "debug=%b, hdlc=%b, sn=%b, mbusIdentification=%s, mbusManufacturer=%s, protocolName=%s, "
                         + "protocolVersion=%s]",
                 this.deviceIdentification, this.lls1Active, this.hls3Active, this.hls4Active, this.hls5Active,
                 this.ipAddress, this.port, this.logicalId, this.clientId, this.inDebugMode, this.useHdlc, this.useSn,
-                this.mbusIdentificationNumber, this.mbusManufacturerIdentification, this.protocol,
+                this.mbusIdentificationNumber, this.mbusManufacturerIdentification, this.protocolName,
                 this.protocolVersion);
     }
 
@@ -334,8 +334,8 @@ public class DlmsDevice extends AbstractEntity {
         this.mbusManufacturerIdentification = mbusManufacturerIdentification;
     }
 
-    public String getProtocol() {
-        return this.protocol;
+    public String getProtocolName() {
+        return this.protocolName;
     }
 
     public String getProtocolVersion() {
@@ -343,8 +343,12 @@ public class DlmsDevice extends AbstractEntity {
     }
 
     public void setProtocol(final String protocol, final String protocolVersion) {
-        this.protocol = protocol;
+        this.protocolName = protocol;
         this.protocolVersion = protocolVersion;
+    }
+
+    public void setProtocol(final Protocol protocol) {
+        this.setProtocol(protocol.getName(), protocol.getVersion());
     }
 
     /**
@@ -383,7 +387,7 @@ public class DlmsDevice extends AbstractEntity {
     }
 
     public boolean needsInvocationCounter() {
-        return this.hls5Active && "SMR".equals(this.protocol);
+        return this.hls5Active && "SMR".equals(this.protocolName);
     }
 
     /**

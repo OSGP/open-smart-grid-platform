@@ -28,6 +28,7 @@ import org.openmuc.jdlms.ObisCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.testutil.GetResultBuilder;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareModuleType;
@@ -94,7 +95,7 @@ public class GetFirmwareVersionsCommandExecutorTest {
     @Test
     public void returns4FirmwareVersionsForSmr51Device() throws Exception {
         final DlmsDevice device = new DlmsDevice();
-        device.setProtocol("SMR", "5.1");
+        device.setProtocol(Protocol.SMR_5_1);
 
         final GetResult getResult1 = new GetResultBuilder().build();
         final GetResult getResult2 = new GetResultBuilder().build();

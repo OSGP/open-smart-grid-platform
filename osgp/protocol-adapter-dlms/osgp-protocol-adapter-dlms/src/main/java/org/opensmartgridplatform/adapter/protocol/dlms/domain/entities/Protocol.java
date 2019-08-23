@@ -38,7 +38,7 @@ public enum Protocol {
     }
 
     public static Protocol forDevice(final DlmsDevice device) {
-        return withNameAndVersion(device.getProtocol(), device.getProtocolVersion());
+        return withNameAndVersion(device.getProtocolName(), device.getProtocolVersion());
     }
 
     public static Protocol withNameAndVersion(final String protocolName, final String protocolVersion) {

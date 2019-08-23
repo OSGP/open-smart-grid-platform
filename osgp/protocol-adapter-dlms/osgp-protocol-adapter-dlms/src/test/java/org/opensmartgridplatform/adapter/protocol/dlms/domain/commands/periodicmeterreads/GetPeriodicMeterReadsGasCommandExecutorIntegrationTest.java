@@ -267,9 +267,8 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
 
     private DlmsDevice createDlmsDevice(final Protocol protocol) {
         final DlmsDevice device = new DlmsDevice();
-        device.setProtocol(protocol.getName(), protocol.getVersion());
+        device.setProtocol(protocol);
         device.setSelectiveAccessSupported(true);
-
         return device;
     }
 
