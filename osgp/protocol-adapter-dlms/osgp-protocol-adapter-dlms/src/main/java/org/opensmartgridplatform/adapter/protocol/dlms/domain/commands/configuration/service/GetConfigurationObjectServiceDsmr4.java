@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.BitString;
@@ -17,6 +18,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Dlm
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagsDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObjectDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GprsOperationModeTypeDto;
@@ -35,7 +37,7 @@ public class GetConfigurationObjectServiceDsmr4 extends GetConfigurationObjectSe
 
     private final DlmsHelper dlmsHelper;
 
-    GetConfigurationObjectServiceDsmr4(final DlmsHelper dlmsHelper) {
+    public GetConfigurationObjectServiceDsmr4(final DlmsHelper dlmsHelper) {
         this.dlmsHelper = dlmsHelper;
     }
 
@@ -106,6 +108,11 @@ public class GetConfigurationObjectServiceDsmr4 extends GetConfigurationObjectSe
         final byte[] flagBytes = bitString.getBitString();
         final List<ConfigurationFlagDto> configurationFlags = this.toConfigurationFlags(flagBytes);
         return new ConfigurationFlagsDto(configurationFlags);
+    }
+
+    @Override
+    Optional<ConfigurationFlagTypeDto> getFlagType(final int bitPosition) {
+        return ConfigurationFlagTypeDto.getDsmr4FlagType(bitPosition);
     }
 
 }

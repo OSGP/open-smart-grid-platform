@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class SetConfigurationObjectServiceSmr5 extends SetConfigurationObjectService {
 
-    SetConfigurationObjectServiceSmr5(final DlmsHelper dlmsHelper) {
+    public SetConfigurationObjectServiceSmr5(final DlmsHelper dlmsHelper) {
         super(dlmsHelper);
     }
 

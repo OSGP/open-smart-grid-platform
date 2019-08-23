@@ -10,6 +10,7 @@
 package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
 
 public enum ConfigurationFlagTypeDto {
@@ -52,11 +53,11 @@ public enum ConfigurationFlagTypeDto {
         return this.readOnly;
     }
 
-    public static Optional<ConfigurationFlagTypeDto> getSmr5FlagType(final int bitPosition) {
-        return Arrays.stream(values()).filter(v -> v.bitPositionSmr5 == bitPosition).findAny();
+    public static Optional<ConfigurationFlagTypeDto> getSmr5FlagType(final Integer bitPosition) {
+        return Arrays.stream(values()).filter(v -> Objects.equals(bitPosition, v.bitPositionSmr5)).findAny();
     }
 
-    public static Optional<ConfigurationFlagTypeDto> getDsmr4FlagType(final int bitPosition) {
-        return Arrays.stream(values()).filter(v -> v.bitPositionDsmr4 == bitPosition).findAny();
+    public static Optional<ConfigurationFlagTypeDto> getDsmr4FlagType(final Integer bitPosition) {
+        return Arrays.stream(values()).filter(v -> Objects.equals(bitPosition, v.bitPositionDsmr4)).findAny();
     }
 }

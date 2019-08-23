@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.BitString;
@@ -17,6 +18,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Dlm
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagsDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObjectDto;
 import org.slf4j.Logger;
@@ -30,7 +32,7 @@ public class GetConfigurationObjectServiceSmr5 extends GetConfigurationObjectSer
 
     private final DlmsHelper dlmsHelper;
 
-    GetConfigurationObjectServiceSmr5(final DlmsHelper dlmsHelper) {
+    public GetConfigurationObjectServiceSmr5(final DlmsHelper dlmsHelper) {
         this.dlmsHelper = dlmsHelper;
     }
 
@@ -58,4 +60,8 @@ public class GetConfigurationObjectServiceSmr5 extends GetConfigurationObjectSer
         return new ConfigurationObjectDto(null, configurationFlagsDto);
     }
 
+    @Override
+    Optional<ConfigurationFlagTypeDto> getFlagType(final int bitPosition) {
+        return ConfigurationFlagTypeDto.getSmr5FlagType(bitPosition);
+    }
 }

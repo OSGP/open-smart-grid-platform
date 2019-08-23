@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class SetConfigurationObjectServiceDsmr4 extends SetConfigurationObjectService {
 
-    SetConfigurationObjectServiceDsmr4(final DlmsHelper dlmsHelper) {
+    public SetConfigurationObjectServiceDsmr4(final DlmsHelper dlmsHelper) {
         super(dlmsHelper);
     }
 

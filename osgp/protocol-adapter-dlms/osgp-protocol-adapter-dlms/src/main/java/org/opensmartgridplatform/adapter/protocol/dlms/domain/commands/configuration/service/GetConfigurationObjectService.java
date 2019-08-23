@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
+import java.util.Optional;
 
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
@@ -66,11 +67,12 @@ public abstract class GetConfigurationObjectService implements ProtocolService {
         // create a BitSet from the long
         final BitSet bitSet = BitSet.valueOf(new long[] { ((flagBytes[0] & 0xFF) << 8) + (flagBytes[1] & 0xFF) });
         for (int index = bitSet.nextSetBit(0); index >= 0; index = bitSet.nextSetBit(index + 1)) {
-            // TODO: handle SMR5
-            ConfigurationFlagTypeDto.getDsmr4FlagType(index).ifPresent(
+            this.getFlagType(index).ifPresent(
                     configurationFlagType -> flags.add(new ConfigurationFlagDto(configurationFlagType, true)));
         }
         return flags;
     }
+
+    abstract Optional<ConfigurationFlagTypeDto> getFlagType(final int bitPosition);
 
 }

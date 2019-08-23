@@ -8,7 +8,7 @@ public class ProtocolServiceLookup {
 
     private final List<ProtocolService> protocolServices;
 
-    ProtocolServiceLookup(final List<ProtocolService> protocolServices) {
+    public ProtocolServiceLookup(final List<ProtocolService> protocolServices) {
         this.protocolServices = protocolServices;
     }
 
