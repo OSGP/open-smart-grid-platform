@@ -1,9 +1,10 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
@@ -14,11 +15,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
-
+import ma.glasnost.orika.impl.ConfigurableMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.CommonMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ManagementMapper;
@@ -106,8 +103,10 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRe
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
-
-import ma.glasnost.orika.impl.ConfigurableMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 @Service(value = "domainSmartMeteringActionMapperService")
 @Validated
@@ -139,8 +138,10 @@ public class ActionMapperService {
     private DomainHelperService domainHelperService;
 
     private static final Map<Class<? extends ActionRequest>, ConfigurableMapper> CLASS_TO_MAPPER_MAP = new HashMap<>();
-    private static final Map<Class<? extends ActionRequest>, CustomValueToDtoConverter<? extends ActionRequest, ? extends ActionRequestDto>> CUSTOM_CONVERTER_FOR_CLASS = new HashMap<>();
-    private static final Map<Class<? extends ActionRequest>, Class<? extends ActionRequestDto>> CLASS_MAP = new HashMap<>();
+    private static final Map<Class<? extends ActionRequest>, CustomValueToDtoConverter<? extends ActionRequest, ?
+            extends ActionRequestDto>> CUSTOM_CONVERTER_FOR_CLASS = new HashMap<>();
+    private static final Map<Class<? extends ActionRequest>, Class<? extends ActionRequestDto>> CLASS_MAP =
+            new HashMap<>();
 
     /**
      * Specifies to which DTO object the core object needs to be mapped.
@@ -204,7 +205,6 @@ public class ActionMapperService {
         CLASS_TO_MAPPER_MAP.put(ActivityCalendarData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(SetConfigurationObjectRequestData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(SetAlarmNotificationsRequestData.class, this.configurationMapper);
-        CLASS_TO_MAPPER_MAP.put(SetConfigurationObjectRequestData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(SetPushSetupAlarmRequestData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(SetPushSetupSmsRequestData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(SynchronizeTimeRequestData.class, this.commonMapper);
@@ -233,12 +233,13 @@ public class ActionMapperService {
 
         final List<ActionDto> actionValueObjectDtoList = new ArrayList<>();
 
-        for (ActionRequest action : bundleMessageDataContainer.getBundleList()) {
+        for (final ActionRequest action : bundleMessageDataContainer.getBundleList()) {
 
             @SuppressWarnings("unchecked")
             // suppress else the compiler will complain
-            final CustomValueToDtoConverter<ActionRequest, ActionRequestDto> customValueToDtoConverter = (CustomValueToDtoConverter<ActionRequest, ActionRequestDto>) CUSTOM_CONVERTER_FOR_CLASS
-                    .get(action.getClass());
+            final CustomValueToDtoConverter<ActionRequest, ActionRequestDto> customValueToDtoConverter =
+                    (CustomValueToDtoConverter<ActionRequest, ActionRequestDto>) CUSTOM_CONVERTER_FOR_CLASS.get(
+                    action.getClass());
 
             if (customValueToDtoConverter != null) {
                 actionValueObjectDtoList.add(new ActionDto(customValueToDtoConverter.convert(action, smartMeter)));
@@ -248,7 +249,7 @@ public class ActionMapperService {
                 if (mapper != null) {
 
                     if (action instanceof MbusActionRequest) {
-                        action = this.verifyAndFindChannelForMbusRequest((MbusActionRequest) action, smartMeter);
+                        this.verifyAndFindChannelForMbusRequest((MbusActionRequest) action, smartMeter);
                     }
 
                     actionValueObjectDtoList.add(new ActionDto(this.performDefaultMapping(action, mapper, clazz)));
@@ -268,14 +269,14 @@ public class ActionMapperService {
 
         if (actionValueObjectDto == null) {
             throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
-                    ComponentType.DOMAIN_SMART_METERING, new RuntimeException("Object: " + action.getClass().getName()
-                            + " could not be converted to " + clazz.getName()));
+                    ComponentType.DOMAIN_SMART_METERING, new RuntimeException(
+                    "Object: " + action.getClass().getName() + " could not be converted to " + clazz.getName()));
         }
         return actionValueObjectDto;
     }
 
-    private ActionRequest verifyAndFindChannelForMbusRequest(final MbusActionRequest action,
-            final SmartMeter smartMeter) throws FunctionalException {
+    private void verifyAndFindChannelForMbusRequest(final MbusActionRequest action, final SmartMeter smartMeter)
+            throws FunctionalException {
 
         final SmartMeter mbusDevice = this.domainHelperService.findSmartMeter(action.getMbusDeviceIdentification());
 
@@ -284,8 +285,6 @@ public class ActionMapperService {
         this.verifyMbusDeviceHasCorrectGatewayDevice(mbusDevice, smartMeter);
 
         action.setChannel(mbusDevice.getChannel());
-
-        return action;
     }
 
     private void verifyMbusDeviceHasChannel(final SmartMeter mbusDevice) throws FunctionalException {
