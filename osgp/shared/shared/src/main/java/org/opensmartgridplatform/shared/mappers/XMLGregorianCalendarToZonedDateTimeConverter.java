@@ -55,18 +55,16 @@ public class XMLGregorianCalendarToZonedDateTimeConverter
             return null;
         }
 
-        final ZoneId zoneId = ZoneId.of(ZoneId.SHORT_IDS.get("ETC"));
+        final ZoneId zoneId = ZoneId.of("Europe/Paris");
         return source.toGregorianCalendar().toZonedDateTime().toLocalDateTime().atZone(zoneId);
     }
 
     @Override
     public boolean canConvert(final Type<?> sourceType, final Type<?> destinationType) {
-        // The check 'this.sourceType.isAssignableFrom(sourceType)' fails for
-        // org.joda.DateTime.class.
-        // Use custom check instead.
         return Objects.equals(sourceType.getRawType().getName(), ZonedDateTime.class.getName())
                 && Objects.equals(destinationType.getRawType().getName(), XMLGregorianCalendar.class.getName())
-                || this.sourceType.isAssignableFrom(sourceType) && this.destinationType.equals(destinationType);
+                || this.sourceType.isAssignableFrom(sourceType)
+                        && this.destinationType.isAssignableFrom(destinationType);
     }
 
 }
