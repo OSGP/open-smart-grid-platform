@@ -56,12 +56,9 @@ public class SetConfigurationObjectCommandExecutor
     public AccessResultCode execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final ConfigurationObjectDto configurationToSet) throws ProtocolAdapterException {
         final Protocol protocol = Protocol.forDevice(device);
-        final GetConfigurationObjectService getService = this.protocolServiceLookup.lookupGetService(
-                protocol);
+        final GetConfigurationObjectService getService = this.protocolServiceLookup.lookupGetService(protocol);
         final ConfigurationObjectDto configurationOnDevice = getService.getConfigurationObject(conn);
-
-        final SetConfigurationObjectService setService = this.protocolServiceLookup.lookupSetService(
-                protocol);
+        final SetConfigurationObjectService setService = this.protocolServiceLookup.lookupSetService(protocol);
         return setService.setConfigurationObject(conn, configurationToSet, configurationOnDevice);
     }
 

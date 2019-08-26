@@ -2,7 +2,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configur
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,17 +59,18 @@ public abstract class GetConfigurationObjectService implements ProtocolService {
 
     List<ConfigurationFlagDto> toConfigurationFlags(final byte[] flagBytes) {
         final List<ConfigurationFlagDto> flags = new ArrayList<>();
-        // 1) convert first byte to int: b1 & 0xFF -> 0 0 0 b1
-        // 2) shift the first int 8 bits to the left: -> 0 0 b1 0
-        // 3) convert second byte to int: b2 & 0xFF -> 0 0 0 b2
-        // add the 2 ints into a long: 0 0 b1 0 + 0 0 0 b2 = 0 0 0 0 0 0 b1 b2
-        // create a BitSet from the long
-        final BitSet bitSet = BitSet.valueOf(new long[] { ((flagBytes[0] & 0xFF) << 8) + (flagBytes[1] & 0xFF) });
-        for (int index = bitSet.nextSetBit(0); index >= 0; index = bitSet.nextSetBit(index + 1)) {
-            this.getFlagType(index).ifPresent(
-                    configurationFlagType -> flags.add(new ConfigurationFlagDto(configurationFlagType, true)));
+        final String word = this.toBinary(flagBytes[0]) + this.toBinary(flagBytes[1]);
+        for (int index = 0; index < word.length(); index++) {
+            if (word.charAt(index) == '1') {
+                this.getFlagType(index).ifPresent(
+                        configurationFlagType -> flags.add(new ConfigurationFlagDto(configurationFlagType, true)));
+            }
         }
         return flags;
+    }
+
+    private String toBinary(final byte flagByte) {
+        return Integer.toBinaryString((flagByte & 0xFF) + 256).substring(1);
     }
 
     abstract Optional<ConfigurationFlagTypeDto> getFlagType(final int bitPosition);

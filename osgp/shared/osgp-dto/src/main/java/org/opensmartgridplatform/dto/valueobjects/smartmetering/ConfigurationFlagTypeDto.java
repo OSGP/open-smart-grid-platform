@@ -15,21 +15,21 @@ import java.util.Optional;
 
 public enum ConfigurationFlagTypeDto {
 
-    DISCOVER_ON_OPEN_COVER(15, null, false),
-    DISCOVER_ON_POWER_ON(14, null, false),
-    DYNAMIC_MBUS_ADDRESS(13, null, false),
-    PO_ENABLE(12, 12, true),
-    HLS_3_ON_P_3_ENABLE(11, null, true),
-    HLS_4_ON_P_3_ENABLE(10, null, true),
-    HLS_5_ON_P_3_ENABLE(9, 9, true),
-    HLS_3_ON_PO_ENABLE(8, null, true),
-    HLS_4_ON_PO_ENABLE(7, null, true),
-    HLS_5_ON_PO_ENABLE(6, 6, true),
-    DIRECT_ATTACH_AT_POWER_ON(null, 5, false),
-    HLS_6_ON_P3_ENABLE(null, 4, false),
-    HLS_7_ON_P3_ENABLE(null, 3, false),
-    HLS_6_ON_P0_ENABLE(null, 2, false),
-    HLS_7_ON_P0_ENABLE(null, 1, false);
+    DISCOVER_ON_OPEN_COVER(0, null, false),
+    DISCOVER_ON_POWER_ON(1, null, false),
+    DYNAMIC_MBUS_ADDRESS(2, null, false),
+    PO_ENABLE(3, 3, true),
+    HLS_3_ON_P_3_ENABLE(4, null, true),
+    HLS_4_ON_P_3_ENABLE(5, null, true),
+    HLS_5_ON_P_3_ENABLE(6, 6, true),
+    HLS_3_ON_PO_ENABLE(7, null, true),
+    HLS_4_ON_PO_ENABLE(8, null, true),
+    HLS_5_ON_PO_ENABLE(9, 9, true),
+    DIRECT_ATTACH_AT_POWER_ON(null, 10, false),
+    HLS_6_ON_P3_ENABLE(null, 11, false),
+    HLS_7_ON_P3_ENABLE(null, 12, false),
+    HLS_6_ON_P0_ENABLE(null, 13, false),
+    HLS_7_ON_P0_ENABLE(null, 14, false);
 
     private final Integer bitPositionDsmr4;
     private final Integer bitPositionSmr5;

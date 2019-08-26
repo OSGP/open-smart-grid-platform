@@ -2,7 +2,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configur
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.BitSet;
+import java.util.Arrays;
 import java.util.List;
 
 import org.openmuc.jdlms.AccessResultCode;
@@ -24,6 +24,7 @@ public abstract class SetConfigurationObjectService implements ProtocolService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetConfigurationObjectService.class);
     private static final int NUMBER_OF_FLAG_BITS = 16;
+    private static final int BYTE_SIZE = 8;
 
     private final DlmsHelper dlmsHelper;
 
@@ -62,7 +63,7 @@ public abstract class SetConfigurationObjectService implements ProtocolService {
         final List<ConfigurationFlagDto> flags = new ArrayList<>();
         this.addSettableFlags(configurationToSet, flags);
         this.addDeviceFlags(configurationOnDevice, flags);
-        final byte[] flagBytes = this.toByteArray(flags);
+        final byte[] flagBytes = this.toBytes(flags);
         return new BitString(flagBytes, NUMBER_OF_FLAG_BITS);
     }
 
@@ -83,20 +84,33 @@ public abstract class SetConfigurationObjectService implements ProtocolService {
         });
     }
 
-    private byte[] toByteArray(final List<ConfigurationFlagDto> flags) {
-        final BitSet bitSet = new BitSet(NUMBER_OF_FLAG_BITS);
+    private byte[] toBytes(final List<ConfigurationFlagDto> flags) {
+        return this.toBytes(this.toWord(flags));
+    }
+
+    private StringBuilder createEmptyWord() {
+        final StringBuilder word = new StringBuilder();
+        final char[] pad = new char[NUMBER_OF_FLAG_BITS];
+        Arrays.fill(pad, '0');
+        word.append(pad);
+        return word;
+    }
+
+    private String toWord(final List<ConfigurationFlagDto> flags) {
+        final StringBuilder sb = this.createEmptyWord();
         for (final ConfigurationFlagDto flag : flags) {
             if (flag.isEnabled()) {
-                final ConfigurationFlagTypeDto configurationFlagType = flag.getConfigurationFlagType();
-                bitSet.set(this.getBitPosition(configurationFlagType), true);
+                sb.setCharAt(this.getBitPosition(flag.getConfigurationFlagType()), '1');
             }
         }
-        // 16 bits is 2 bytes
-        final byte[] byteArray = bitSet.toByteArray();
-        // swap bytes to set MSB first
-        final byte tmp = byteArray[1];
-        byteArray[1] = byteArray[0];
-        byteArray[0] = tmp;
+        return sb.toString();
+    }
+
+    private byte[] toBytes(final String word) {
+        final byte[] byteArray = new byte[NUMBER_OF_FLAG_BITS / BYTE_SIZE];
+        for (int index = 0; index < word.length(); index += BYTE_SIZE) {
+            byteArray[index / BYTE_SIZE] = (byte) Integer.parseInt(word.substring(index, index + BYTE_SIZE), 2);
+        }
         return byteArray;
     }
 

@@ -9,7 +9,6 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service.GetConfigurationObjectService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service.ProtocolServiceLookup;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
@@ -47,10 +46,7 @@ public class GetConfigurationObjectCommandExecutor extends AbstractCommandExecut
     @Override
     public ConfigurationObjectDto execute(final DlmsConnectionManager conn, final DlmsDevice device, final Void object)
             throws ProtocolAdapterException {
-        final Protocol protocol = Protocol.forDevice(device);
-        final GetConfigurationObjectService service = this.protocolServiceLookup.lookupGetService(
-                protocol);
-        return service.getConfigurationObject(conn);
+        return this.protocolServiceLookup.lookupGetService(Protocol.forDevice(device)).getConfigurationObject(conn);
     }
 
 }

@@ -8,10 +8,8 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.openmuc.jdlms.AccessResultCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service.GetConfigurationObjectService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service.ProtocolServiceLookup;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service.SetConfigurationObjectService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
@@ -19,23 +17,18 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObjectDto;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SetConfigurationObjectCommandExecutorTest {
+public class GetConfigurationObjectCommandExecutorTest {
 
     @InjectMocks
-    private SetConfigurationObjectCommandExecutor instance;
+    private GetConfigurationObjectCommandExecutor instance;
     @Mock
     private ProtocolServiceLookup protocolServiceLookup;
     @Mock
     private DlmsConnectionManager conn;
     @Mock
-    private ConfigurationObjectDto configurationOnDevice;
+    private ConfigurationObjectDto configurationObjectDto;
     @Mock
     private GetConfigurationObjectService getService;
-    @Mock
-    private SetConfigurationObjectService setService;
-
-    @Mock
-    private ConfigurationObjectDto configurationToSet;
 
     @Test
     public void execute() throws ProtocolAdapterException {
@@ -46,17 +39,12 @@ public class SetConfigurationObjectCommandExecutorTest {
         device.setProtocol(protocol);
 
         when(this.protocolServiceLookup.lookupGetService(protocol)).thenReturn(this.getService);
-        when(this.getService.getConfigurationObject(this.conn)).thenReturn(this.configurationOnDevice);
-
-        when(this.protocolServiceLookup.lookupSetService(protocol)).thenReturn(this.setService);
-        final AccessResultCode accessResultCode = AccessResultCode.SUCCESS;
-        when(this.setService.setConfigurationObject(this.conn, this.configurationToSet,
-                this.configurationOnDevice)).thenReturn(accessResultCode);
+        when(this.getService.getConfigurationObject(this.conn)).thenReturn(this.configurationObjectDto);
 
         // CALL
-        final AccessResultCode result = this.instance.execute(this.conn, device, this.configurationToSet);
+        final ConfigurationObjectDto result = this.instance.execute(this.conn, device, null);
 
         // VERIFY
-        assertThat(result).isSameAs(accessResultCode);
+        assertThat(result).isSameAs(this.configurationObjectDto);
     }
 }
