@@ -189,6 +189,9 @@ public class Device extends AbstractEntity {
     @Column(nullable = false)
     private Integer failedConnectionCount = 0;
 
+    @Column
+    private Date lastSeen;
+
     public Device() {
         // Default constructor
     }
@@ -498,4 +501,8 @@ public class Device extends AbstractEntity {
     public boolean hasConnectionFailures() {
         return this.failedConnectionCount != 0;
     }
+
+    public Date getLastSeen() { return lastSeen; }
+
+    public void setLastSeen(Date lastSeen) { this.lastSeen = lastSeen; }
 }
