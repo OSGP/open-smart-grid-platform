@@ -5,7 +5,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 public interface ProtocolService {
 
     /**
-     * Indicates which protocols this service handles
+     * Indicates whether this service can handle the protocol
      */
     boolean handles(Protocol protocol);
 }

@@ -31,11 +31,8 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GprsOperationMod
 public abstract class SetConfigurationObjectCommandExecutorITBase {
 
     SetConfigurationObjectCommandExecutor instance;
-
     @Mock
     DlmsConnectionManager conn;
-    @Mock
-    DlmsMessageListener dlmsMessageListener;
     @Mock
     DlmsConnection dlmsConnection;
     @Mock
@@ -43,7 +40,11 @@ public abstract class SetConfigurationObjectCommandExecutorITBase {
     @Captor
     ArgumentCaptor<SetParameter> setParameterArgumentCaptor;
 
-    public void setUp(final GetConfigurationObjectService getService, final SetConfigurationObjectService setService) throws IOException {
+    @Mock
+    private DlmsMessageListener dlmsMessageListener;
+
+    public void setUp(final GetConfigurationObjectService getService, final SetConfigurationObjectService setService)
+            throws IOException {
         final List<ProtocolService> protocolServices = new ArrayList<>();
         protocolServices.add(getService);
         protocolServices.add(setService);
@@ -57,6 +58,16 @@ public abstract class SetConfigurationObjectCommandExecutorITBase {
         when(this.dlmsConnection.set(any(SetParameter.class))).thenReturn(AccessResultCode.SUCCESS);
     }
 
+    abstract Integer getBitPosition(final ConfigurationFlagTypeDto flag);
+
+    byte asByte(final String bits) {
+        return (byte) Integer.parseInt(bits, 2);
+    }
+
+    ConfigurationFlagDto createFlagDto(final ConfigurationFlagTypeDto flagType, final boolean enabled) {
+        return new ConfigurationFlagDto(flagType, enabled);
+    }
+
     ConfigurationObjectDto createConfigurationObjectDto(final GprsOperationModeTypeDto gprsMode,
             final ConfigurationFlagDto... configurationFlagDtos) {
         final List<ConfigurationFlagDto> flags = new ArrayList<>(Arrays.asList(configurationFlagDtos));
@@ -64,15 +75,17 @@ public abstract class SetConfigurationObjectCommandExecutorITBase {
         return new ConfigurationObjectDto(gprsMode, configurationFlags);
     }
 
-    ConfigurationFlagDto createFlagDto(final ConfigurationFlagTypeDto flagType, final boolean enabled) {
-        return new ConfigurationFlagDto(flagType, enabled);
-    }
-
     byte[] createFlagBytes(final ConfigurationFlagTypeDto... flags) {
         return this.toBytes(this.createWord(flags));
     }
 
-    abstract String createWord(final ConfigurationFlagTypeDto[] flags);
+    private String createWord(final ConfigurationFlagTypeDto[] flags) {
+        final StringBuilder sb = new StringBuilder("0000000000000000");
+        for (final ConfigurationFlagTypeDto flag : flags) {
+            sb.setCharAt(this.getBitPosition(flag), '1');
+        }
+        return sb.toString();
+    }
 
     private byte[] toBytes(final String word) {
         final byte[] byteArray = new byte[2];
@@ -81,5 +94,4 @@ public abstract class SetConfigurationObjectCommandExecutorITBase {
         }
         return byteArray;
     }
-
 }

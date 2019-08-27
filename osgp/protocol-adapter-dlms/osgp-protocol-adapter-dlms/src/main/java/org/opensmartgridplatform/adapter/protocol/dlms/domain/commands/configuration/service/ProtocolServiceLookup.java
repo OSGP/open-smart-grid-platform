@@ -3,6 +3,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configur
 import java.util.List;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
 public class ProtocolServiceLookup {
 
@@ -12,18 +13,19 @@ public class ProtocolServiceLookup {
         this.protocolServices = protocolServices;
     }
 
-    public GetConfigurationObjectService lookupGetService(final Protocol protocol) {
+    public GetConfigurationObjectService lookupGetService(final Protocol protocol) throws ProtocolAdapterException {
         return this.lookupProtocolService(GetConfigurationObjectService.class, protocol);
     }
 
-    public SetConfigurationObjectService lookupSetService(final Protocol protocol) {
+    public SetConfigurationObjectService lookupSetService(final Protocol protocol) throws ProtocolAdapterException {
         return this.lookupProtocolService(SetConfigurationObjectService.class, protocol);
     }
 
-    private <T extends ProtocolService> T lookupProtocolService(final Class<T> type, final Protocol protocol) {
+    private <T extends ProtocolService> T lookupProtocolService(final Class<T> type, final Protocol protocol)
+            throws ProtocolAdapterException {
         return this.protocolServices.stream().filter(type::isInstance).map(type::cast).filter(
-                s -> s.handles(protocol)).findAny().orElseThrow(() -> new IllegalArgumentException(
-                String.format("Cannot find %s for protocol %s", type, protocol)));
+                s -> s.handles(protocol)).findAny().orElseThrow(
+                () -> new ProtocolAdapterException(String.format("Cannot find %s for protocol %s", type, protocol)));
     }
 
 }

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
@@ -14,6 +15,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Dlm
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObjectDto;
@@ -33,7 +35,8 @@ public abstract class SetConfigurationObjectService implements ProtocolService {
     }
 
     public AccessResultCode setConfigurationObject(final DlmsConnectionManager conn,
-            final ConfigurationObjectDto configurationToSet, final ConfigurationObjectDto configurationOnDevice) {
+            final ConfigurationObjectDto configurationToSet, final ConfigurationObjectDto configurationOnDevice)
+            throws ProtocolAdapterException {
 
         final DataObject dataObject = this.buildSetParameterData(configurationToSet, configurationOnDevice);
         LOGGER.info("ConfigurationObject SetParameter Data : {}", this.dlmsHelper.getDebugInfo(dataObject));
@@ -56,35 +59,35 @@ public abstract class SetConfigurationObjectService implements ProtocolService {
     }
 
     abstract DataObject buildSetParameterData(ConfigurationObjectDto configurationToSet,
-            ConfigurationObjectDto configurationOnDevice);
+            ConfigurationObjectDto configurationOnDevice) throws ProtocolAdapterException;
 
     BitString getFlags(final ConfigurationObjectDto configurationToSet,
-            final ConfigurationObjectDto configurationOnDevice) {
-        final List<ConfigurationFlagDto> flags = new ArrayList<>();
-        this.addSettableFlags(configurationToSet, flags);
-        this.addDeviceFlags(configurationOnDevice, flags);
-        final byte[] flagBytes = this.toBytes(flags);
-        return new BitString(flagBytes, NUMBER_OF_FLAG_BITS);
+            final ConfigurationObjectDto configurationOnDevice) throws ProtocolAdapterException {
+        final List<ConfigurationFlagDto> flagsToSet = new ArrayList<>();
+        this.addSettableFlags(configurationToSet, flagsToSet);
+        this.addDeviceFlags(configurationOnDevice, flagsToSet);
+        final byte[] flagBytesToSet = this.toBytes(flagsToSet);
+        return new BitString(flagBytesToSet, NUMBER_OF_FLAG_BITS);
     }
 
     private void addSettableFlags(final ConfigurationObjectDto configurationToSet,
-            final List<ConfigurationFlagDto> flags) {
+            final List<ConfigurationFlagDto> flagsToSet) {
         configurationToSet.getConfigurationFlags().getFlags().stream().filter(
-                flag -> !flag.getConfigurationFlagType().isReadOnly()).forEach(flags::add);
+                flagToSet -> !flagToSet.getConfigurationFlagType().isReadOnly()).forEach(flagsToSet::add);
     }
 
-    // If flags are missing, use the configurationOnDevice to supplement them.
+    // Fill missing flagsToSet with flags from configurationOnDevice
     private void addDeviceFlags(final ConfigurationObjectDto configurationOnDevice,
-            final List<ConfigurationFlagDto> flags) {
+            final List<ConfigurationFlagDto> flagsToSet) {
         configurationOnDevice.getConfigurationFlags().getFlags().forEach(flagOnDevice -> {
-            if (flags.stream().noneMatch(
-                    flag -> flag.getConfigurationFlagType() == flagOnDevice.getConfigurationFlagType())) {
-                flags.add(flagOnDevice);
+            if (flagsToSet.stream().noneMatch(
+                    flagToSet -> flagToSet.getConfigurationFlagType() == flagOnDevice.getConfigurationFlagType())) {
+                flagsToSet.add(flagOnDevice);
             }
         });
     }
 
-    private byte[] toBytes(final List<ConfigurationFlagDto> flags) {
+    private byte[] toBytes(final List<ConfigurationFlagDto> flags) throws ProtocolAdapterException {
         return this.toBytes(this.toWord(flags));
     }
 
@@ -96,11 +99,15 @@ public abstract class SetConfigurationObjectService implements ProtocolService {
         return word;
     }
 
-    private String toWord(final List<ConfigurationFlagDto> flags) {
+    private String toWord(final List<ConfigurationFlagDto> flags) throws ProtocolAdapterException {
         final StringBuilder sb = this.createEmptyWord();
         for (final ConfigurationFlagDto flag : flags) {
             if (flag.isEnabled()) {
-                sb.setCharAt(this.getBitPosition(flag.getConfigurationFlagType()), '1');
+                final ConfigurationFlagTypeDto flagType = flag.getConfigurationFlagType();
+                final Integer bitPosition = this.getBitPosition(flagType).orElseThrow(
+                        () -> new ProtocolAdapterException(
+                                String.format("ConfigurationFlagTypeDto %s not known for protocol", flagType)));
+                sb.setCharAt(bitPosition, '1');
             }
         }
         return sb.toString();
@@ -114,5 +121,5 @@ public abstract class SetConfigurationObjectService implements ProtocolService {
         return byteArray;
     }
 
-    abstract Integer getBitPosition(ConfigurationFlagTypeDto type);
+    abstract Optional<Integer> getBitPosition(ConfigurationFlagTypeDto type);
 }

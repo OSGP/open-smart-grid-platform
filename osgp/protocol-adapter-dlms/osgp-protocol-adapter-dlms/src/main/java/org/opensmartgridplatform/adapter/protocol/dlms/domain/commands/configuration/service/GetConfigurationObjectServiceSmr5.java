@@ -38,7 +38,7 @@ public class GetConfigurationObjectServiceSmr5 extends GetConfigurationObjectSer
 
     @Override
     public boolean handles(final Protocol protocol) {
-        return protocol.isSmr5();
+        return protocol != null && protocol.isSmr5();
     }
 
     @Override

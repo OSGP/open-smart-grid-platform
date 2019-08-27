@@ -1,8 +1,11 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service;
 
+import java.util.Optional;
+
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObjectDto;
 import org.springframework.stereotype.Component;
@@ -16,17 +19,17 @@ public class SetConfigurationObjectServiceSmr5 extends SetConfigurationObjectSer
 
     @Override
     public boolean handles(final Protocol protocol) {
-        return protocol.isSmr5();
+        return protocol != null && protocol.isSmr5();
     }
 
     @Override
     DataObject buildSetParameterData(final ConfigurationObjectDto configurationToSet,
-            final ConfigurationObjectDto configurationOnDevice) {
+            final ConfigurationObjectDto configurationOnDevice) throws ProtocolAdapterException {
         return DataObject.newBitStringData(this.getFlags(configurationToSet, configurationOnDevice));
     }
 
     @Override
-    Integer getBitPosition(final ConfigurationFlagTypeDto type) {
+    Optional<Integer> getBitPosition(final ConfigurationFlagTypeDto type) {
         return type.getBitPositionSmr5();
     }
 }

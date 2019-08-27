@@ -58,7 +58,8 @@ public class SetConfigurationObjectCommandExecutorSmr5IT extends SetConfiguratio
                 ConfigurationFlagTypeDto.HLS_6_ON_P0_ENABLE);
 
         // result of merging configurationToSet and flagsOnDevice
-        final String expectedMergedFlags = "0000001001101010";
+        final byte firstExpectedByte = this.asByte("00000010");
+        final byte secondExpectedByte = this.asByte("01101010");
 
         final DataObject deviceData = this.createBitStringData(flagsOnDevice);
         when(this.getResult.getResultData()).thenReturn(deviceData);
@@ -75,20 +76,13 @@ public class SetConfigurationObjectCommandExecutorSmr5IT extends SetConfiguratio
         final BitString configurationFlags = this.captureSetParameterBitStringData();
         final byte[] flagsSentToDevice = configurationFlags.getBitString();
 
-        final byte firstExpectedByte = (byte) Integer.parseInt(expectedMergedFlags.substring(0, 8), 2);
-        final byte secondExpectedByte = (byte) Integer.parseInt(expectedMergedFlags.substring(8), 2);
-
         assertThat(flagsSentToDevice[0]).isEqualTo(firstExpectedByte);
         assertThat(flagsSentToDevice[1]).isEqualTo(secondExpectedByte);
     }
 
     @Override
-    String createWord(final ConfigurationFlagTypeDto[] flags) {
-        final StringBuilder sb = new StringBuilder("0000000000000000");
-        for (final ConfigurationFlagTypeDto flag : flags) {
-            sb.setCharAt(flag.getBitPositionSmr5(), '1');
-        }
-        return sb.toString();
+    Integer getBitPosition(final ConfigurationFlagTypeDto flag) {
+        return flag.getBitPositionSmr5().orElseThrow(RuntimeException::new);
     }
 
     private DataObject createBitStringData(final byte[] flags) {

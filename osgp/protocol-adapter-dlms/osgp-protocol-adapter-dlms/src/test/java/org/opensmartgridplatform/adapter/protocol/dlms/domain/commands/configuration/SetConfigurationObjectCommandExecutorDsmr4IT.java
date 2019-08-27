@@ -60,7 +60,8 @@ public class SetConfigurationObjectCommandExecutorDsmr4IT extends SetConfigurati
                 ConfigurationFlagTypeDto.HLS_4_ON_PO_ENABLE);
 
         // result of merging configurationToSet and flagsOnDevice
-        final String expectedMergedFlags = "0111101011000000";
+        final byte firstExpectedByte = this.asByte("01111010");
+        final byte secondExpectedByte = this.asByte("11000000");
 
         final GprsOperationModeTypeDto gprsModeOnDevice = GprsOperationModeTypeDto.ALWAYS_ON;
         final DataObject deviceData = this.createStructureData(flagsOnDevice, gprsModeOnDevice);
@@ -82,20 +83,13 @@ public class SetConfigurationObjectCommandExecutorDsmr4IT extends SetConfigurati
         final BitString configurationFlags = elements.get(INDEX_OF_CONFIGURATION_FLAGS).getValue();
         final byte[] flagsSentToDevice = configurationFlags.getBitString();
 
-        final byte firstExpectedByte = (byte) Integer.parseInt(expectedMergedFlags.substring(0, 8), 2);
-        final byte secondExpectedByte = (byte) Integer.parseInt(expectedMergedFlags.substring(8), 2);
-
         assertThat(flagsSentToDevice[0]).isEqualTo(firstExpectedByte);
         assertThat(flagsSentToDevice[1]).isEqualTo(secondExpectedByte);
     }
 
     @Override
-    String createWord(final ConfigurationFlagTypeDto[] flags) {
-        final StringBuilder sb = new StringBuilder("0000000000000000");
-        for (final ConfigurationFlagTypeDto flag : flags) {
-            sb.setCharAt(flag.getBitPositionDsmr4(), '1');
-        }
-        return sb.toString();
+    Integer getBitPosition(final ConfigurationFlagTypeDto flag) {
+        return flag.getBitPositionDsmr4().orElseThrow(RuntimeException::new);
     }
 
     private DataObject createStructureData(final byte[] flags, final GprsOperationModeTypeDto gprsMode) {
@@ -105,11 +99,10 @@ public class SetConfigurationObjectCommandExecutorDsmr4IT extends SetConfigurati
         return DataObject.newStructureData(gprsModeData, flagsData);
     }
 
-    List<DataObject> captureSetParameterStructureData() throws IOException {
+    private List<DataObject> captureSetParameterStructureData() throws IOException {
         verify(this.dlmsConnection).set(this.setParameterArgumentCaptor.capture());
         final SetParameter setParameter = this.setParameterArgumentCaptor.getValue();
         final DataObject setParameterData = setParameter.getData();
         return setParameterData.getValue();
     }
-
 }

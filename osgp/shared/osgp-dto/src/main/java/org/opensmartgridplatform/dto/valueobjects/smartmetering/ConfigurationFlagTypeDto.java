@@ -41,12 +41,12 @@ public enum ConfigurationFlagTypeDto {
         this.readOnly = readOnly;
     }
 
-    public Integer getBitPositionSmr5() {
-        return this.bitPositionSmr5;
+    public Optional<Integer> getBitPositionSmr5() {
+        return Optional.ofNullable(this.bitPositionSmr5);
     }
 
-    public Integer getBitPositionDsmr4() {
-        return this.bitPositionDsmr4;
+    public Optional<Integer> getBitPositionDsmr4() {
+        return Optional.ofNullable(this.bitPositionDsmr4);
     }
 
     public boolean isReadOnly() {
