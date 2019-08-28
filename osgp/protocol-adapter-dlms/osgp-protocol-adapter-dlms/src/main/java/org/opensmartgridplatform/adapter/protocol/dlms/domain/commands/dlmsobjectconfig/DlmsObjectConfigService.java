@@ -46,6 +46,7 @@ public class DlmsObjectConfigService {
 
     public Optional<AttributeAddress> findAttributeAddress(final DlmsDevice device, final DlmsObjectType type,
             final Integer channel) {
+        // Note: channel can be null.
         return this.findAttributeAddressForProfile(device, type, channel, null, null, null)
                 .map(AttributeAddressForProfile::getAttributeAddress);
     }
