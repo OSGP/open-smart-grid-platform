@@ -23,7 +23,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObj
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDataDto;
 import org.springframework.stereotype.Component;
 
-@Component()
+@Component
 public class SetConfigurationObjectCommandExecutor
         extends AbstractCommandExecutor<ConfigurationObjectDto, AccessResultCode> {
 

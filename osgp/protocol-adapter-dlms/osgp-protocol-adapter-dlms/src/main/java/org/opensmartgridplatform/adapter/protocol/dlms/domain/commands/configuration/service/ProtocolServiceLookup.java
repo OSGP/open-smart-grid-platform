@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ProtocolServiceLookup {
 
     private final List<ProtocolService> protocolServices;

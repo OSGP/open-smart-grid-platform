@@ -21,7 +21,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetConfiguration
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetConfigurationObjectResponseDto;
 import org.springframework.stereotype.Component;
 
-@Component()
+@Component
 public class GetConfigurationObjectCommandExecutor extends AbstractCommandExecutor<Void, ConfigurationObjectDto> {
 
     private final ProtocolServiceLookup protocolServiceLookup;
