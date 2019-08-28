@@ -174,7 +174,7 @@ public class SetConfigurationObjectRequestMappingTest {
         // of an equal size.
         final ConfigurationFlagsDto configurationFlagsDto = configurationObjectDto.getConfigurationFlags();
         assertNotNull(configurationFlagsDto);
-        assertEquals(configurationFlags.getConfigurationFlag().size(), configurationFlagsDto.getFlags()
+        assertEquals(configurationFlags.getFlags().size(), configurationFlagsDto.getFlags()
                 .size());
 
         // check ConfigurationObjectFlagTypeDto value.
