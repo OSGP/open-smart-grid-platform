@@ -57,7 +57,7 @@ public class GetConfigurationObjectServiceSmr5 extends GetConfigurationObjectSer
         final byte[] flagByteArray = bitString.getBitString();
         final List<ConfigurationFlagDto> configurationFlagDtos = this.toConfigurationFlags(flagByteArray);
         final ConfigurationFlagsDto configurationFlagsDto = new ConfigurationFlagsDto(configurationFlagDtos);
-        return new ConfigurationObjectDto(null, configurationFlagsDto);
+        return new ConfigurationObjectDto(configurationFlagsDto);
     }
 
     @Override

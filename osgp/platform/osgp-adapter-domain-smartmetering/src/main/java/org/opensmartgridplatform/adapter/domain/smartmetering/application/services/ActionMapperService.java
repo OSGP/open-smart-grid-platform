@@ -228,39 +228,50 @@ public class ActionMapperService {
         CLASS_TO_MAPPER_MAP.put(ScanMbusChannelsRequestData.class, this.configurationMapper);
     }
 
-    public BundleMessagesRequestDto mapAllActions(final BundleMessageRequest bundleMessageDataContainer,
+    public BundleMessagesRequestDto mapAllActions(final BundleMessageRequest bundleMessageRequest,
             final SmartMeter smartMeter) throws FunctionalException {
 
         final List<ActionDto> actionValueObjectDtoList = new ArrayList<>();
 
-        for (final ActionRequest action : bundleMessageDataContainer.getBundleList()) {
-
-            @SuppressWarnings("unchecked")
-            // suppress else the compiler will complain
-            final CustomValueToDtoConverter<ActionRequest, ActionRequestDto> customValueToDtoConverter =
-                    (CustomValueToDtoConverter<ActionRequest, ActionRequestDto>) CUSTOM_CONVERTER_FOR_CLASS.get(
-                    action.getClass());
-
-            if (customValueToDtoConverter != null) {
-                actionValueObjectDtoList.add(new ActionDto(customValueToDtoConverter.convert(action, smartMeter)));
-            } else {
-                final ConfigurableMapper mapper = CLASS_TO_MAPPER_MAP.get(action.getClass());
-                final Class<? extends ActionRequestDto> clazz = CLASS_MAP.get(action.getClass());
-                if (mapper != null) {
-
-                    if (action instanceof MbusActionRequest) {
-                        this.verifyAndFindChannelForMbusRequest((MbusActionRequest) action, smartMeter);
-                    }
-
-                    actionValueObjectDtoList.add(new ActionDto(this.performDefaultMapping(action, mapper, clazz)));
-                } else {
-                    throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
-                            ComponentType.DOMAIN_SMART_METERING,
-                            new AssertionError("No mapper defined for class: " + clazz.getName()));
-                }
-            }
+        for (final ActionRequest action : bundleMessageRequest.getBundleList()) {
+            actionValueObjectDtoList.add(this.mapActionWithMapper(smartMeter, action));
         }
         return new BundleMessagesRequestDto(actionValueObjectDtoList);
+    }
+
+    private ActionDto mapActionWithMapper(final SmartMeter smartMeter, final ActionRequest action) throws FunctionalException {
+        @SuppressWarnings("unchecked")
+        // TODO: fix this
+        final CustomValueToDtoConverter<ActionRequest, ActionRequestDto> customValueToDtoConverter =
+                (CustomValueToDtoConverter<ActionRequest, ActionRequestDto>) CUSTOM_CONVERTER_FOR_CLASS.get(
+                action.getClass());
+
+        if (customValueToDtoConverter != null) {
+            return new ActionDto(customValueToDtoConverter.convert(action, smartMeter));
+        } else {
+            return this.mapActionWithoutConverter(smartMeter, action);
+        }
+    }
+
+    private ActionDto mapActionWithoutConverter(final SmartMeter smartMeter, final ActionRequest action)
+            throws FunctionalException {
+        final Class<? extends ActionRequestDto> clazz = CLASS_MAP.get(action.getClass());
+        final ConfigurableMapper mapper = CLASS_TO_MAPPER_MAP.get(action.getClass());
+        if (mapper != null) {
+            return this.mapActionWithMapper(smartMeter, action, clazz, mapper);
+        } else {
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
+                    ComponentType.DOMAIN_SMART_METERING,
+                    new AssertionError(String.format("No mapper defined for class: %s", clazz.getName())));
+        }
+    }
+
+    private ActionDto mapActionWithMapper(final SmartMeter smartMeter, final ActionRequest action, final Class<? extends ActionRequestDto> clazz,
+            final ConfigurableMapper mapper) throws FunctionalException {
+        if (action instanceof MbusActionRequest) {
+            this.verifyAndFindChannelForMbusRequest((MbusActionRequest) action, smartMeter);
+        }
+        return new ActionDto(this.performDefaultMapping(action, mapper, clazz));
     }
 
     private ActionRequestDto performDefaultMapping(final ActionRequest action, final ConfigurableMapper mapper,
@@ -270,7 +281,8 @@ public class ActionMapperService {
         if (actionValueObjectDto == null) {
             throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
                     ComponentType.DOMAIN_SMART_METERING, new RuntimeException(
-                    "Object: " + action.getClass().getName() + " could not be converted to " + clazz.getName()));
+                    String.format("Object: %s could not be converted to %s", action.getClass().getName(),
+                            clazz.getName())));
         }
         return actionValueObjectDto;
     }

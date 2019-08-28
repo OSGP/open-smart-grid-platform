@@ -21,15 +21,11 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObjectDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDataDto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component()
 public class SetConfigurationObjectCommandExecutor
         extends AbstractCommandExecutor<ConfigurationObjectDto, AccessResultCode> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SetConfigurationObjectCommandExecutor.class);
 
     private final ProtocolServiceLookup protocolServiceLookup;
 

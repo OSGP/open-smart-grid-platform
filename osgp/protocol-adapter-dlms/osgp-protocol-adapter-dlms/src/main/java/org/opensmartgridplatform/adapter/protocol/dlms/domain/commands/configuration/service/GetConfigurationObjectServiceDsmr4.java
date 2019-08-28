@@ -72,12 +72,15 @@ public class GetConfigurationObjectServiceDsmr4 extends GetConfigurationObjectSe
 
     private ConfigurationObjectDto getConfigurationObject(final List<DataObject> elements)
             throws ProtocolAdapterException {
-        final GprsOperationModeTypeDto gprsMode = this.getGprsOperationMode(elements.get(INDEX_OF_GPRS_OPERATION_MODE));
+        final Optional<GprsOperationModeTypeDto> gprsMode = this.getGprsOperationMode(
+                elements.get(INDEX_OF_GPRS_OPERATION_MODE));
         final ConfigurationFlagsDto flags = this.getConfigurationFlags(elements.get(INDEX_OF_CONFIGURATION_FLAGS));
-        return new ConfigurationObjectDto(gprsMode, flags);
+        return gprsMode.map(c -> new ConfigurationObjectDto(c, flags)).orElseGet(
+                () -> new ConfigurationObjectDto(flags));
     }
 
-    private GprsOperationModeTypeDto getGprsOperationMode(final DataObject gprsMode) throws ProtocolAdapterException {
+    private Optional<GprsOperationModeTypeDto> getGprsOperationMode(final DataObject gprsMode)
+            throws ProtocolAdapterException {
         if (gprsMode == null || !gprsMode.isNumber()) {
             final String message = String.format(
                     "Expected ConfigurationObject gprsOperationMode as Number, but got: %s", gprsMode);
@@ -85,15 +88,7 @@ public class GetConfigurationObjectServiceDsmr4 extends GetConfigurationObjectSe
             throw new ProtocolAdapterException(message);
         }
         final Number number = gprsMode.getValue();
-        return this.getGprsOperationMode(number.intValue());
-    }
-
-    private GprsOperationModeTypeDto getGprsOperationMode(final int number) {
-        return GprsOperationModeTypeDto.forNumber(number).orElseGet(() -> {
-            LOGGER.warn("Expected GPRS operation mode value to be one of {}, but got: {}",
-                    GprsOperationModeTypeDto.values(), number);
-            return null;
-        });
+        return GprsOperationModeTypeDto.forNumber(number.intValue());
     }
 
     private ConfigurationFlagsDto getConfigurationFlags(final DataObject flags) throws ProtocolAdapterException {
