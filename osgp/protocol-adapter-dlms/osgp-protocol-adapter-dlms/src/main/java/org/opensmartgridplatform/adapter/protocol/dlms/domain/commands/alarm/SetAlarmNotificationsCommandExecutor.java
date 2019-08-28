@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm;
 
 import java.io.IOException;
 import java.util.BitSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -20,6 +21,8 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
@@ -33,6 +36,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetAlarmNotificationsRequestDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component()
@@ -40,17 +44,16 @@ public class SetAlarmNotificationsCommandExecutor
         extends AbstractCommandExecutor<AlarmNotificationsDto, AccessResultCode> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetAlarmNotificationsCommandExecutor.class);
-
-    private static final int CLASS_ID = 1;
-    private static final ObisCode OBIS_CODE = new ObisCode("0.0.97.98.10.255");
-    private static final int ATTRIBUTE_ID = 2;
-
     private static final int NUMBER_OF_BITS_IN_ALARM_FILTER = 32;
 
     private final AlarmHelperService alarmHelperService = new AlarmHelperService();
+    private final DlmsObjectConfigService dlmsObjectConfigService;
 
-    public SetAlarmNotificationsCommandExecutor() {
+    @Autowired
+    public SetAlarmNotificationsCommandExecutor(final DlmsObjectConfigService dlmsObjectConfigService) {
         super(SetAlarmNotificationsRequestDto.class);
+
+        this.dlmsObjectConfigService = dlmsObjectConfigService;
     }
 
     @Override
@@ -75,9 +78,11 @@ public class SetAlarmNotificationsCommandExecutor
     @Override
     public AccessResultCode execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final AlarmNotificationsDto alarmNotifications) throws ProtocolAdapterException {
-
         try {
-            final AlarmNotificationsDto alarmNotificationsOnDevice = this.retrieveCurrentAlarmNotifications(conn);
+            final AttributeAddress alarmFilterValue = this.getAttributeAddress(device);
+
+            final AlarmNotificationsDto alarmNotificationsOnDevice =
+                    this.retrieveCurrentAlarmNotifications(conn, alarmFilterValue);
 
             LOGGER.info("Alarm Filter on device before setting notifications: {}", alarmNotificationsOnDevice);
 
@@ -91,23 +96,20 @@ public class SetAlarmNotificationsCommandExecutor
 
             LOGGER.info("Modified Alarm Filter long value for device: {}", updatedAlarmFilterLongValue);
 
-            return this.writeUpdatedAlarmNotifications(conn, updatedAlarmFilterLongValue);
+            return this.writeUpdatedAlarmNotifications(conn, updatedAlarmFilterLongValue, alarmFilterValue);
         } catch (final IOException e) {
             throw new ConnectionException(e);
         }
     }
 
-    private AlarmNotificationsDto retrieveCurrentAlarmNotifications(final DlmsConnectionManager conn)
+    private AlarmNotificationsDto retrieveCurrentAlarmNotifications(final DlmsConnectionManager conn,
+                                                                    final AttributeAddress alarmFilterValue)
             throws IOException, ProtocolAdapterException {
-
-        final AttributeAddress alarmFilterValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
-
         conn.getDlmsMessageListener().setDescription(
                 "SetAlarmNotifications retrieve current value, retrieve attribute: " + JdlmsObjectToStringUtil
                         .describeAttributes(alarmFilterValue));
 
-        LOGGER.info("Retrieving current alarm filter by issuing get request for class id: {}, obis code: {}, attribute "
-                + "id: {}", CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
+        LOGGER.info("Retrieving current alarm filter by issuing get request for for address: {}", alarmFilterValue);
         final GetResult getResult = conn.getConnection().get(alarmFilterValue);
 
         if (getResult == null) {
@@ -118,9 +120,9 @@ public class SetAlarmNotificationsCommandExecutor
     }
 
     private AccessResultCode writeUpdatedAlarmNotifications(final DlmsConnectionManager conn,
-            final long alarmFilterLongValue) throws IOException {
-
-        final AttributeAddress alarmFilterValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
+                                                            final long alarmFilterLongValue,
+                                                            final AttributeAddress alarmFilterValue)
+            throws IOException {
         final DataObject value = DataObject.newUInteger32Data(alarmFilterLongValue);
 
         final SetParameter setParameter = new SetParameter(alarmFilterValue, value);
@@ -211,5 +213,12 @@ public class SetAlarmNotificationsCommandExecutor
         } else {
             return bitSet.toLongArray()[0];
         }
+    }
+
+    private AttributeAddress getAttributeAddress(final DlmsDevice device) throws ProtocolAdapterException {
+        final Optional<AttributeAddress> alarmFilterValueOpt =
+                this.dlmsObjectConfigService.findAttributeAddress(device, DlmsObjectType.ALARM_FILTER, null);
+        return alarmFilterValueOpt.orElseThrow(
+                () -> new ProtocolAdapterException("Could not find any configuration for " + DlmsObjectType.ALARM_FILTER));
     }
 }
