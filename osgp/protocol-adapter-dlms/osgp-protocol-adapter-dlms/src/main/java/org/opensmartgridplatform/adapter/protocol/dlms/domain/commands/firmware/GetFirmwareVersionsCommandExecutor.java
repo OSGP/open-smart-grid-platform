@@ -81,7 +81,7 @@ public class GetFirmwareVersionsCommandExecutor extends AbstractCommandExecutor<
     @Override
     public List<FirmwareVersionDto> execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final Void useless) throws ProtocolAdapterException {
-        if (Protocol.isSMR5(device.getProtocol(), device.getProtocolVersion())) {
+        if (Protocol.forDevice(device).isSmr5()) {
             return this.getFirmwareVersions(conn, device, FOR_SMR_5);
         }
         return this.getFirmwareVersions(conn, device, FOR_DSMR_4_2_2);

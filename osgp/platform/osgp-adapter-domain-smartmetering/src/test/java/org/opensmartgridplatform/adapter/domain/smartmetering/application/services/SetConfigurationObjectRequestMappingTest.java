@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
-
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ConfigurationFlag;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ConfigurationFlagType;
@@ -37,7 +36,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetConfiguration
 // Testing the mapping of ConfigurationObjectRequest objects in ConfigurationService.
 public class SetConfigurationObjectRequestMappingTest {
 
-    private ConfigurationMapper configurationMapper = new ConfigurationMapper();
+    private final ConfigurationMapper configurationMapper = new ConfigurationMapper();
 
     // Tests if mapping a SetConfigurationObjectRequest with a null
     // SetConfigurationObjectRequestData object succeeds.
@@ -93,7 +92,7 @@ public class SetConfigurationObjectRequestMappingTest {
         // build test data
         final String deviceIdentification = "nr1";
         final GprsOperationModeType gprsOperationModeType = GprsOperationModeType.ALWAYS_ON;
-        final ConfigurationFlags configurationFlags = new ConfigurationFlags(new ArrayList<ConfigurationFlag>());
+        final ConfigurationFlags configurationFlags = new ConfigurationFlags(new ArrayList<>());
         final ConfigurationObject configurationObject = new ConfigurationObject(gprsOperationModeType,
                 configurationFlags);
         final SetConfigurationObjectRequestData setConfigurationObjectRequestData = new SetConfigurationObjectRequestData(
@@ -115,7 +114,7 @@ public class SetConfigurationObjectRequestMappingTest {
         assertNotNull(configurationObjectDto);
 
         // Check if both configurationFlags instances have an empty list
-        assertTrue(configurationObjectDto.getConfigurationFlags().getConfigurationFlag().isEmpty());
+        assertTrue(configurationObjectDto.getConfigurationFlags().getFlags().isEmpty());
     }
 
     // Tests if mapping with a complete SetConfigurationObjectRequestData object
@@ -175,11 +174,11 @@ public class SetConfigurationObjectRequestMappingTest {
         // of an equal size.
         final ConfigurationFlagsDto configurationFlagsDto = configurationObjectDto.getConfigurationFlags();
         assertNotNull(configurationFlagsDto);
-        assertEquals(configurationFlags.getConfigurationFlag().size(), configurationFlagsDto.getConfigurationFlag()
+        assertEquals(configurationFlags.getFlags().size(), configurationFlagsDto.getFlags()
                 .size());
 
         // check ConfigurationObjectFlagTypeDto value.
-        final ConfigurationFlagDto configurationFlagDto = configurationFlagsDto.getConfigurationFlag().get(0);
+        final ConfigurationFlagDto configurationFlagDto = configurationFlagsDto.getFlags().get(0);
         final ConfigurationFlagTypeDto configurationFlagTypeDto = configurationFlagDto.getConfigurationFlagType();
         assertEquals(configurationFlagType.name(), configurationFlagTypeDto.name());
     }

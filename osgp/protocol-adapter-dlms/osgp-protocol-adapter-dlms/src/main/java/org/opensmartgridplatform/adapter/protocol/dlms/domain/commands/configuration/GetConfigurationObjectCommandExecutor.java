@@ -9,7 +9,9 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service.ProtocolServiceLookup;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
@@ -17,17 +19,16 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDt
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObjectDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetConfigurationObjectRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetConfigurationObjectResponseDto;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component()
+@Component
 public class GetConfigurationObjectCommandExecutor extends AbstractCommandExecutor<Void, ConfigurationObjectDto> {
 
-    @Autowired
-    private GetConfigurationObjectHelper getConfigurationObjectHelper;
+    private final ProtocolServiceLookup protocolServiceLookup;
 
-    public GetConfigurationObjectCommandExecutor() {
+    public GetConfigurationObjectCommandExecutor(final ProtocolServiceLookup protocolServiceLookup) {
         super(GetConfigurationObjectRequestDataDto.class);
+        this.protocolServiceLookup = protocolServiceLookup;
     }
 
     @Override
@@ -45,8 +46,7 @@ public class GetConfigurationObjectCommandExecutor extends AbstractCommandExecut
     @Override
     public ConfigurationObjectDto execute(final DlmsConnectionManager conn, final DlmsDevice device, final Void object)
             throws ProtocolAdapterException {
-
-        return this.getConfigurationObjectHelper.getConfigurationObjectDto(conn);
+        return this.protocolServiceLookup.lookupGetService(Protocol.forDevice(device)).getConfigurationObject(conn);
     }
 
 }

@@ -9,18 +9,25 @@
  */
 package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
+import java.util.Arrays;
+import java.util.Optional;
+
 public enum GprsOperationModeTypeDto {
 
     ALWAYS_ON(1),
     TRIGGERED(2);
 
-    private int value;
+    private final int number;
 
-    private GprsOperationModeTypeDto(final int value) {
-        this.value = value;
+    GprsOperationModeTypeDto(final int number) {
+        this.number = number;
     }
 
-    public int getValue() {
-        return this.value;
+    public int getNumber() {
+        return this.number;
+    }
+
+    public static Optional<GprsOperationModeTypeDto> forNumber(final int number) {
+        return Arrays.stream(values()).filter(v -> v.number == number).findAny();
     }
 }

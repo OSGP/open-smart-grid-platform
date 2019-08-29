@@ -110,7 +110,7 @@ public class ScanMbusChannelsCommandExecutor extends AbstractCommandExecutor<Voi
         final List<GetResult> mbusShortIdResults = this.dlmsHelper.getAndCheck(conn, device,
                 "Retrieve M-Bus Short ID attributes", SHORT_ID_ATTRIBUTE_ADDRESSES);
         final List<MbusChannelShortEquipmentIdentifierDto> channelShortIds = this.channelShortIdsFromGetResults(
-                mbusShortIdResults, Protocol.withNameAndVersion(device.getProtocol(), device.getProtocolVersion()));
+                mbusShortIdResults, Protocol.forDevice(device));
         return new ScanMbusChannelsResponseDto(channelShortIds);
     }
 

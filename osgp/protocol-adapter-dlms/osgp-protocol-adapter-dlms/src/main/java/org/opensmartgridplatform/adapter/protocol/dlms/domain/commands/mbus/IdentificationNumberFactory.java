@@ -34,29 +34,29 @@ class IdentificationNumberFactory {
     }
 
     private void validateLast8Digits(final String last8Digits) {
-        if (StringUtils.isNotBlank(last8Digits) && !matches(last8Digits)) {
+        if (StringUtils.isNotBlank(last8Digits) && !this.matches(last8Digits)) {
             throw new IllegalArgumentException(
                     String.format("IdentificationNumber %s did not pass validation.", last8Digits));
         }
     }
 
     private boolean matches(final String last8Digits) {
-        if (Protocol.isSMR5(protocol.getName(), protocol.getVersion())) {
+        if (this.protocol.isSmr5()) {
             return last8Digits.matches(IDENTIFICATION_NUMBER_REGEX_SMR5);
         }
         return last8Digits.matches(IDENTIFICATION_NUMBER_REGEX_DSMR4);
     }
 
     IdentificationNumber fromIdentification(final Long identification) {
-        final String last8Digits = fromLong(identification);
-        validateLast8Digits(last8Digits);
+        final String last8Digits = this.fromLong(identification);
+        this.validateLast8Digits(last8Digits);
 
         return new IdentificationNumber(last8Digits);
     }
 
     IdentificationNumber fromLast8Digits(final String digits) {
-        final String last8Digits = fromString(digits);
-        validateLast8Digits(last8Digits);
+        final String last8Digits = this.fromString(digits);
+        this.validateLast8Digits(last8Digits);
 
         return new IdentificationNumber(last8Digits);
     }

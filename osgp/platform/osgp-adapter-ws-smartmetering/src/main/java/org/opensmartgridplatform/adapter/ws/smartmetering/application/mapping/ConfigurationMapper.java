@@ -9,14 +9,12 @@
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
-import org.springframework.stereotype.Component;
-
+import ma.glasnost.orika.MapperFactory;
+import ma.glasnost.orika.impl.ConfigurableMapper;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ConfigureDefinableLoadProfileRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.AlarmNotifications;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.DefinableLoadProfileConfigurationData;
-
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.ConfigurableMapper;
+import org.springframework.stereotype.Component;
 
 @Component(value = "configurationMapper")
 public class ConfigurationMapper extends ConfigurableMapper {
@@ -38,6 +36,11 @@ public class ConfigurationMapper extends ConfigurableMapper {
                         org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AlarmNotifications.class)
                 .field("alarmNotification", "alarmNotificationsSet").byDefault().register();
         mapperFactory.getConverterFactory().registerConverter(new AlarmNotificationsConverter());
+
+        mapperFactory
+                .classMap(org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ConfigurationFlags.class,
+                        org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.ConfigurationFlags .class)
+                .field("flags", "configurationFlag").byDefault().register();
 
         mapperFactory.classMap(ConfigureDefinableLoadProfileRequest.class,
                 org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DefinableLoadProfileConfigurationData.class)
