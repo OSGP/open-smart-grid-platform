@@ -114,9 +114,6 @@ public class DlmsDevice extends AbstractEntity {
     @Column
     private Integer invocationCounter = 0;
 
-    @Column
-    private Date lastSeen;
-
     public DlmsDevice() {
         // Default constructor
     }
@@ -389,10 +386,6 @@ public class DlmsDevice extends AbstractEntity {
     public boolean needsInvocationCounter() {
         return this.hls5Active && "SMR".equals(this.protocol);
     }
-
-    public Date getLastSeen() { return lastSeen; }
-
-    public void setLastSeen(Date lastSeen) { this.lastSeen = lastSeen; }
 
     /**
      * Get the valid security key of the given type. This can be only one or

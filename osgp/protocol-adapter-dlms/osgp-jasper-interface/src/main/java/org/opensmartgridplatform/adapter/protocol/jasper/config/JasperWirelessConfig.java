@@ -1,12 +1,18 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.jasper.config;
 
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPException;
 
@@ -16,6 +22,7 @@ import org.opensmartgridplatform.adapter.protocol.jasper.exceptions.OsgpJasperEx
 import org.opensmartgridplatform.adapter.protocol.jasper.infra.ws.CorrelationIdProviderService;
 import org.opensmartgridplatform.adapter.protocol.jasper.infra.ws.JasperWirelessSmsClient;
 import org.opensmartgridplatform.adapter.protocol.jasper.infra.ws.JasperWirelessTerminalClient;
+import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,19 +37,16 @@ import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 import org.springframework.ws.soap.SoapVersion;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.ws.soap.security.wss4j.Wss4jSecurityInterceptor;
-
-import org.opensmartgridplatform.shared.application.config.AbstractConfig;
+import org.springframework.ws.transport.http.HttpsUrlConnectionMessageSender;
 
 /**
  * An application context Java configuration class for Jasper Wireless settings.
  */
 @Configuration
-@PropertySources({ 
-    @PropertySource("classpath:jasper-interface.properties"),
-    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-    @PropertySource(value = "file:${osgp/JasperInterface/config}", ignoreResourceNotFound = true),
-})
-@ComponentScan(basePackages = {"org.opensmartgridplatform.adapter.protocol.jasper"})
+@PropertySources({ @PropertySource("classpath:jasper-interface.properties"),
+        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:${osgp/JasperInterface/config}", ignoreResourceNotFound = true), })
+@ComponentScan(basePackages = { "org.opensmartgridplatform.adapter.protocol.jasper" })
 public class JasperWirelessConfig extends AbstractConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JasperWirelessConfig.class);
@@ -70,7 +74,7 @@ public class JasperWirelessConfig extends AbstractConfig {
 
     @Value("${jwcc.api_version}")
     private String apiVersion;
-    
+
     public JasperWirelessConfig() {
         InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
     }
@@ -104,13 +108,22 @@ public class JasperWirelessConfig extends AbstractConfig {
     }
 
     @Bean
-    public WebServiceTemplate webServiceTemplate() throws OsgpJasperException {
+    public WebServiceTemplate jasperWebServiceTemplate() throws OsgpJasperException {
+
+        LOGGER.info("Creating new webservic template");
+
         final WebServiceTemplate webServiceTemplate = new WebServiceTemplate();
         webServiceTemplate.setMarshaller(this.marshaller());
         webServiceTemplate.setUnmarshaller(this.marshaller());
         webServiceTemplate.setDefaultUri("https://kpnapi.jasperwireless.com/ws/service/Sms");
         webServiceTemplate.setInterceptors(new ClientInterceptor[] { this.wss4jSecurityInterceptorClient() });
         webServiceTemplate.setMessageFactory(this.messageFactory());
+
+        HttpsUrlConnectionMessageSender sender = new HttpsUrlConnectionMessageSender();
+        sender.setTrustManagers(new TrustManager[] { new UnTrustworthyTrustManager() });
+
+        webServiceTemplate.setMessageSender(sender);
+
         return webServiceTemplate;
     }
 
@@ -147,5 +160,17 @@ public class JasperWirelessConfig extends AbstractConfig {
     @Bean
     public int jasperGetSessionSleepBetweenRetries() {
         return Integer.parseInt(this.sleepBetweenRetries);
+    }
+
+    class UnTrustworthyTrustManager implements X509TrustManager {
+        public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
+        }
+
+        public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
+        }
+
+        public X509Certificate[] getAcceptedIssuers() {
+            return null;
+        }
     }
 }
