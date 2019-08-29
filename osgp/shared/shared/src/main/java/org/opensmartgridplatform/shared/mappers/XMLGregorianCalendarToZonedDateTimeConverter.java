@@ -38,12 +38,8 @@ public class XMLGregorianCalendarToZonedDateTimeConverter
         try {
             final GregorianCalendar gregorianCalendar = GregorianCalendar.from(source);
             return DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
-        } catch (
-            final DatatypeConfigurationException e
-        ) {
+        } catch (final DatatypeConfigurationException e) {
             LOGGER.debug("newXMLGregorianCalendar failed", e);
-            // Sonar will complain about not rethrowing the exception,
-            // but we don't want that in this case!
             return null;
         }
     }
@@ -55,7 +51,7 @@ public class XMLGregorianCalendarToZonedDateTimeConverter
             return null;
         }
 
-        final ZoneId zoneId = ZoneId.of("Europe/Paris");
+        final ZoneId zoneId = ZoneId.of("UTC");
         return source.toGregorianCalendar().toZonedDateTime().toLocalDateTime().atZone(zoneId);
     }
 
