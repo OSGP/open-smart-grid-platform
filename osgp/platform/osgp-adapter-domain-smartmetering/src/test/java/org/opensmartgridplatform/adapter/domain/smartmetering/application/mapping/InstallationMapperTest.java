@@ -15,13 +15,12 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.Date;
 
+import ma.glasnost.orika.MapperFactory;
+import ma.glasnost.orika.impl.DefaultMapperFactory;
 import org.junit.Test;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
-
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.DefaultMapperFactory;
 
 public class InstallationMapperTest {
 
@@ -35,7 +34,7 @@ public class InstallationMapperTest {
         source.setCommunicationMethod("skype");
         source.setCommunicationProvider("theInternet");
         source.setICCId("value");
-        source.setDSMRVersion("latestVersion");
+        source.setProtocolName("latestVersion");
         source.setMasterKey("masterKey".getBytes());
         source.setGlobalEncryptionUnicastKey("globalEncryptionUnicastKey".getBytes());
         source.setAuthenticationKey("authenticationKey".getBytes());
@@ -76,7 +75,7 @@ public class InstallationMapperTest {
         smartMeteringDevice.setCommunicationMethod("skype");
         smartMeteringDevice.setCommunicationProvider("theInternet");
         smartMeteringDevice.setICCId("value");
-        smartMeteringDevice.setDSMRVersion("latestVersion");
+        smartMeteringDevice.setProtocolName("latestVersion");
         smartMeteringDevice.setMasterKey("masterKey".getBytes());
         smartMeteringDevice.setGlobalEncryptionUnicastKey("globalEncryptionUnicastKey".getBytes());
         smartMeteringDevice.setAuthenticationKey("authenticationKey".getBytes());
@@ -101,7 +100,7 @@ public class InstallationMapperTest {
         assertEquals(smartMeteringDevice.getCommunicationMethod(), smartMeteringDeviceDto.getCommunicationMethod());
         assertEquals(smartMeteringDevice.getCommunicationProvider(), smartMeteringDeviceDto.getCommunicationProvider());
         assertEquals(smartMeteringDevice.getICCId(), smartMeteringDeviceDto.getICCId());
-        assertEquals(smartMeteringDevice.getDSMRVersion(), smartMeteringDeviceDto.getDSMRVersion());
+        assertEquals(smartMeteringDevice.getProtocolName(), smartMeteringDeviceDto.getDSMRVersion());
         assertArrayEquals(smartMeteringDevice.getMasterKey(), smartMeteringDeviceDto.getMasterKey());
         assertArrayEquals(smartMeteringDevice.getGlobalEncryptionUnicastKey(),
                 smartMeteringDeviceDto.getGlobalEncryptionUnicastKey());

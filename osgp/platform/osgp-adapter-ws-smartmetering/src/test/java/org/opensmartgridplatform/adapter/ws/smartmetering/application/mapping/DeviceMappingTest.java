@@ -8,8 +8,8 @@
 
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.Date;
@@ -22,13 +22,12 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.Device;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
 
 public class DeviceMappingTest {
 
-    private InstallationMapper installationMapper = new InstallationMapper();
+    private final InstallationMapper installationMapper = new InstallationMapper();
     private static final String DEVICE_IDENTIFICATION = "nr1";
     private static final String DEVICE_TYPE = "typeA";
     private static final String COMMUNICATION_METHOD = "skype";
@@ -38,7 +37,7 @@ public class DeviceMappingTest {
     private static final String SUPPLIER = "supplier1";
     private static final boolean IS_ACTIVE = true;
     private static final byte[] KEY = "key".getBytes();
-    private Date deliveryDateSmartMeteringDevice = new Date();
+    private final Date deliveryDateSmartMeteringDevice = new Date();
     private XMLGregorianCalendar deliveryDateDevice;
 
     /**
@@ -121,7 +120,7 @@ public class DeviceMappingTest {
         smartMeteringDevice.setCommunicationMethod(COMMUNICATION_METHOD);
         smartMeteringDevice.setCommunicationProvider(COMMUNICATION_PROVIDER);
         smartMeteringDevice.setICCId(ICC_ID);
-        smartMeteringDevice.setDSMRVersion(DSMR_VERSION);
+        smartMeteringDevice.setProtocolName(DSMR_VERSION);
         smartMeteringDevice.setSupplier(SUPPLIER);
         smartMeteringDevice.setHLS3Active(IS_ACTIVE);
         smartMeteringDevice.setHLS4Active(IS_ACTIVE);
@@ -175,7 +174,7 @@ public class DeviceMappingTest {
         assertEquals(COMMUNICATION_METHOD, smartMeteringDevice.getCommunicationMethod());
         assertEquals(COMMUNICATION_PROVIDER, smartMeteringDevice.getCommunicationProvider());
         assertEquals(ICC_ID, smartMeteringDevice.getICCId());
-        assertEquals(DSMR_VERSION, smartMeteringDevice.getDSMRVersion());
+        assertEquals(DSMR_VERSION, smartMeteringDevice.getProtocolName());
         assertEquals(SUPPLIER, smartMeteringDevice.getSupplier());
         assertEquals(IS_ACTIVE, smartMeteringDevice.isHLS3Active());
         assertEquals(IS_ACTIVE, smartMeteringDevice.isHLS4Active());

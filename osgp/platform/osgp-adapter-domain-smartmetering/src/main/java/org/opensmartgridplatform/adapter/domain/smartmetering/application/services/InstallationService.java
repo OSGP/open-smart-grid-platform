@@ -1,19 +1,14 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import ma.glasnost.orika.MapperFactory;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.CommonMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
@@ -48,8 +43,12 @@ import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
-
-import ma.glasnost.orika.MapperFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service(value = "domainSmartMeteringInstallationService")
 @Transactional(value = "transactionManager")
@@ -101,15 +100,16 @@ public class InstallationService {
         LOGGER.debug("addMeter for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
-        SmartMeter device = this.smartMeteringDeviceRepository
-                .findByDeviceIdentification(deviceMessageMetadata.getDeviceIdentification());
+        SmartMeter device = this.smartMeteringDeviceRepository.findByDeviceIdentification(
+                deviceMessageMetadata.getDeviceIdentification());
         final SmartMeteringDevice smartMeteringDeviceValueObject = addSmartMeterRequest.getDevice();
 
         if (device == null) {
             device = this.mapperFactory.getMapperFacade().map(smartMeteringDeviceValueObject, SmartMeter.class);
 
-            final ProtocolInfo protocolInfo = this.protocolInfoRepository.findByProtocolAndProtocolVersion("DSMR",
-                    smartMeteringDeviceValueObject.getDSMRVersion());
+            final ProtocolInfo protocolInfo = this.protocolInfoRepository.findByProtocolAndProtocolVersion(
+                    smartMeteringDeviceValueObject.getProtocolName(),
+                    smartMeteringDeviceValueObject.getProtocolVersion());
 
             if (protocolInfo == null) {
                 throw new FunctionalException(FunctionalExceptionType.UNKNOWN_PROTOCOL_NAME_OR_VERSION,
@@ -119,15 +119,15 @@ public class InstallationService {
             device.updateProtocol(protocolInfo);
 
             final DeviceModel deviceModelValueObject = addSmartMeterRequest.getDeviceModel();
-            final Manufacturer manufacturer = this.manufacturerRepository
-                    .findByCode(deviceModelValueObject.getManufacturer());
+            final Manufacturer manufacturer = this.manufacturerRepository.findByCode(
+                    deviceModelValueObject.getManufacturer());
             device.setDeviceModel(this.deviceModelRepository.findByManufacturerAndModelCode(manufacturer,
                     deviceModelValueObject.getModelCode()));
 
             device = this.smartMeteringDeviceRepository.save(device);
 
-            final Organisation organisation = this.organisationRepository
-                    .findByOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification());
+            final Organisation organisation = this.organisationRepository.findByOrganisationIdentification(
+                    deviceMessageMetadata.getOrganisationIdentification());
             final DeviceAuthorization authorization = device.addAuthorization(organisation, DeviceFunctionGroup.OWNER);
             this.deviceAuthorizationRepository.save(authorization);
 
@@ -135,15 +135,14 @@ public class InstallationService {
             throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICE, ComponentType.DOMAIN_SMART_METERING);
         }
 
-        final SmartMeteringDeviceDto smartMeteringDeviceDto = this.mapperFactory.getMapperFacade()
-                .map(smartMeteringDeviceValueObject, SmartMeteringDeviceDto.class);
+        final SmartMeteringDeviceDto smartMeteringDeviceDto = this.mapperFactory.getMapperFacade().map(
+                smartMeteringDeviceValueObject, SmartMeteringDeviceDto.class);
 
-        this.osgpCoreRequestMessageSender.send(
-                new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                         deviceMessageMetadata.getOrganisationIdentification(),
-                        deviceMessageMetadata.getDeviceIdentification(), smartMeteringDeviceDto),
-                deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
-                deviceMessageMetadata.getScheduleTime());
+                        deviceMessageMetadata.getDeviceIdentification(),
+                        smartMeteringDeviceDto), deviceMessageMetadata.getMessageType(),
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
     }
 
     /**
@@ -157,7 +156,8 @@ public class InstallationService {
         final SmartMeter device = this.smartMeteringDeviceRepository.findByDeviceIdentification(deviceIdentification);
 
         LOGGER.warn(
-                "Removing meter {} for organization {}, because adding it to the protocol database failed with correlation UID {}",
+                "Removing meter {} for organization {}, because adding it to the protocol database failed with "
+                        + "correlation UID {}",
                 deviceIdentification, deviceMessageMetadata.getOrganisationIdentification(),
                 deviceMessageMetadata.getCorrelationUid());
 
@@ -212,12 +212,12 @@ public class InstallationService {
         final CoupleMbusDeviceByChannelResponse response = this.commonMapper.map(dataObject,
                 CoupleMbusDeviceByChannelResponse.class);
 
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
-                .withResult(responseMessageResultType).withOsgpException(osgpException).withDataObject(response)
-                .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
+                deviceMessageMetadata.getCorrelationUid()).withOrganisationIdentification(
+                deviceMessageMetadata.getOrganisationIdentification()).withDeviceIdentification(
+                deviceMessageMetadata.getDeviceIdentification()).withResult(
+                responseMessageResultType).withOsgpException(osgpException).withDataObject(
+                response).withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
 
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
@@ -232,12 +232,11 @@ public class InstallationService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
-                .withOsgpException(exception).withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
-        this.webServiceResponseMessageSender.send(responseMessage,
-                deviceMessageMetadata.getMessageType());
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
+                deviceMessageMetadata.getCorrelationUid()).withOrganisationIdentification(
+                deviceMessageMetadata.getOrganisationIdentification()).withDeviceIdentification(
+                deviceMessageMetadata.getDeviceIdentification()).withResult(result).withOsgpException(
+                exception).withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 }
