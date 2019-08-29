@@ -259,7 +259,7 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
 
     private DlmsDevice createDevice(final Protocol protocol) {
         final DlmsDevice device = new DlmsDevice();
-        device.setProtocol(protocol.getName(), protocol.getVersion());
+        device.setProtocol(protocol);
         return device;
     }
 }
