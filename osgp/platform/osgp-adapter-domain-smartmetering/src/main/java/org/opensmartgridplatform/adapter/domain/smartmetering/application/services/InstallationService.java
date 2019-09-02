@@ -13,6 +13,7 @@ import org.opensmartgridplatform.adapter.domain.smartmetering.application.mappin
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
+import org.opensmartgridplatform.domain.core.entities.DeviceModel;
 import org.opensmartgridplatform.domain.core.entities.Manufacturer;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
 import org.opensmartgridplatform.domain.core.entities.ProtocolInfo;
@@ -24,7 +25,6 @@ import org.opensmartgridplatform.domain.core.repositories.OrganisationRepository
 import org.opensmartgridplatform.domain.core.repositories.ProtocolInfoRepository;
 import org.opensmartgridplatform.domain.core.repositories.SmartMeterRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceModel;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AddSmartMeterRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponse;
@@ -91,58 +91,70 @@ public class InstallationService {
     private CommonMapper commonMapper;
 
     public InstallationService() {
-        // Parameterless constructor required for transactions...
+        // No-args constructor required for transactions...
     }
 
     public void addMeter(final DeviceMessageMetadata deviceMessageMetadata,
             final AddSmartMeterRequest addSmartMeterRequest) throws FunctionalException {
+        final String organisationId = deviceMessageMetadata.getOrganisationIdentification();
+        final String deviceId = deviceMessageMetadata.getDeviceIdentification();
+        LOGGER.debug("addMeter for organisationIdentification: {} for deviceIdentification: {}", organisationId,
+                deviceId);
+        final SmartMeteringDevice smartMeteringDevice = addSmartMeterRequest.getDevice();
+        final SmartMeter smartMeter = this.getSmartMeter(deviceId, smartMeteringDevice);
+        this.addMeter(organisationId, addSmartMeterRequest, smartMeter);
+        this.osgpCoreRequestMessageSender.send(this.getRequestMessage(deviceMessageMetadata, smartMeteringDevice),
+                deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
+                deviceMessageMetadata.getScheduleTime());
+    }
 
-        LOGGER.debug("addMeter for organisationIdentification: {} for deviceIdentification: {}",
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
-
-        SmartMeter device = this.smartMeteringDeviceRepository.findByDeviceIdentification(
-                deviceMessageMetadata.getDeviceIdentification());
-        final SmartMeteringDevice smartMeteringDeviceValueObject = addSmartMeterRequest.getDevice();
-
-        if (device == null) {
-            device = this.mapperFactory.getMapperFacade().map(smartMeteringDeviceValueObject, SmartMeter.class);
-
-            final ProtocolInfo protocolInfo = this.protocolInfoRepository.findByProtocolAndProtocolVersion(
-                    smartMeteringDeviceValueObject.getProtocolName(),
-                    smartMeteringDeviceValueObject.getProtocolVersion());
-
-            if (protocolInfo == null) {
-                throw new FunctionalException(FunctionalExceptionType.UNKNOWN_PROTOCOL_NAME_OR_VERSION,
-                        ComponentType.DOMAIN_SMART_METERING);
-            }
-
-            device.updateProtocol(protocolInfo);
-
-            final DeviceModel deviceModelValueObject = addSmartMeterRequest.getDeviceModel();
-            final Manufacturer manufacturer = this.manufacturerRepository.findByCode(
-                    deviceModelValueObject.getManufacturer());
-            device.setDeviceModel(this.deviceModelRepository.findByManufacturerAndModelCode(manufacturer,
-                    deviceModelValueObject.getModelCode()));
-
-            device = this.smartMeteringDeviceRepository.save(device);
-
-            final Organisation organisation = this.organisationRepository.findByOrganisationIdentification(
-                    deviceMessageMetadata.getOrganisationIdentification());
-            final DeviceAuthorization authorization = device.addAuthorization(organisation, DeviceFunctionGroup.OWNER);
-            this.deviceAuthorizationRepository.save(authorization);
-
-        } else {
+    private SmartMeter getSmartMeter(final String deviceId, final SmartMeteringDevice smartMeteringDevice)
+            throws FunctionalException {
+        if (this.smartMeteringDeviceRepository.findByDeviceIdentification(deviceId) != null) {
             throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICE, ComponentType.DOMAIN_SMART_METERING);
         }
+        return this.mapperFactory.getMapperFacade().map(smartMeteringDevice, SmartMeter.class);
+    }
 
-        final SmartMeteringDeviceDto smartMeteringDeviceDto = this.mapperFactory.getMapperFacade().map(
-                smartMeteringDeviceValueObject, SmartMeteringDeviceDto.class);
+    private void addMeter(final String organisationIdentification, final AddSmartMeterRequest addSmartMeterRequest,
+            SmartMeter smartMeter) throws FunctionalException {
+        final SmartMeteringDevice smartMeteringDevice = addSmartMeterRequest.getDevice();
+        smartMeter.updateProtocol(this.getProtocolInfo(smartMeteringDevice));
+        smartMeter.setDeviceModel(this.getDeviceModel(addSmartMeterRequest.getDeviceModel()));
+        smartMeter = this.smartMeteringDeviceRepository.save(smartMeter);
+        this.storeAuthorization(organisationIdentification, smartMeter);
+    }
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                        deviceMessageMetadata.getOrganisationIdentification(),
-                        deviceMessageMetadata.getDeviceIdentification(),
-                        smartMeteringDeviceDto), deviceMessageMetadata.getMessageType(),
-                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+    private ProtocolInfo getProtocolInfo(final SmartMeteringDevice smartMeteringDevice) throws FunctionalException {
+        final ProtocolInfo protocolInfo = this.protocolInfoRepository.findByProtocolAndProtocolVersion(
+                smartMeteringDevice.getProtocolName(), smartMeteringDevice.getProtocolVersion());
+        if (protocolInfo == null) {
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_PROTOCOL_NAME_OR_VERSION,
+                    ComponentType.DOMAIN_SMART_METERING);
+        }
+        return protocolInfo;
+    }
+
+    private DeviceModel getDeviceModel(
+            final org.opensmartgridplatform.domain.core.valueobjects.DeviceModel deviceModel) {
+        final Manufacturer manufacturer = this.manufacturerRepository.findByCode(deviceModel.getManufacturer());
+        return this.deviceModelRepository.findByManufacturerAndModelCode(manufacturer, deviceModel.getModelCode());
+    }
+
+    private void storeAuthorization(final String organisationIdentification, final SmartMeter smartMeter) {
+        final Organisation organisation = this.organisationRepository.findByOrganisationIdentification(
+                organisationIdentification);
+        final DeviceAuthorization authorization = smartMeter.addAuthorization(organisation, DeviceFunctionGroup.OWNER);
+        this.deviceAuthorizationRepository.save(authorization);
+    }
+
+    private RequestMessage getRequestMessage(final DeviceMessageMetadata deviceMessageMetadata,
+            final SmartMeteringDevice smartMeteringDevice) {
+        return new RequestMessage(
+                deviceMessageMetadata.getCorrelationUid(),
+                deviceMessageMetadata.getOrganisationIdentification(),
+                deviceMessageMetadata.getDeviceIdentification(),
+                this.mapperFactory.getMapperFacade().map(smartMeteringDevice, SmartMeteringDeviceDto.class));
     }
 
     /**
@@ -152,13 +164,12 @@ public class InstallationService {
     @Transactional
     public void removeMeter(final DeviceMessageMetadata deviceMessageMetadata) {
 
-        final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
-        final SmartMeter device = this.smartMeteringDeviceRepository.findByDeviceIdentification(deviceIdentification);
+        final SmartMeter device = this.smartMeteringDeviceRepository.findByDeviceIdentification(
+                deviceMessageMetadata.getDeviceIdentification());
 
-        LOGGER.warn(
-                "Removing meter {} for organization {}, because adding it to the protocol database failed with "
-                        + "correlation UID {}",
-                deviceIdentification, deviceMessageMetadata.getOrganisationIdentification(),
+        LOGGER.warn("Removing meter {} for organization {}, because adding it to the protocol database failed with "
+                        + "correlation UID {}", deviceMessageMetadata.getDeviceIdentification(),
+                deviceMessageMetadata.getOrganisationIdentification(),
                 deviceMessageMetadata.getCorrelationUid());
 
         this.deviceAuthorizationRepository.delete(device.getAuthorizations());
@@ -167,7 +178,6 @@ public class InstallationService {
 
     public void handleAddMeterResponse(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType deviceResult, final OsgpException exception) {
-
         this.handleResponse("handleDefaultDeviceResponse", deviceMessageMetadata, deviceResult, exception);
     }
 
@@ -207,36 +217,44 @@ public class InstallationService {
     public void handleCoupleMbusDeviceByChannelResponse(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException,
             final CoupleMbusDeviceByChannelResponseDto dataObject) throws FunctionalException {
+
         this.mBusGatewayService.handleCoupleMbusDeviceByChannelResponse(deviceMessageMetadata, dataObject);
 
-        final CoupleMbusDeviceByChannelResponse response = this.commonMapper.map(dataObject,
-                CoupleMbusDeviceByChannelResponse.class);
-
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
-                deviceMessageMetadata.getCorrelationUid()).withOrganisationIdentification(
-                deviceMessageMetadata.getOrganisationIdentification()).withDeviceIdentification(
-                deviceMessageMetadata.getDeviceIdentification()).withResult(
-                responseMessageResultType).withOsgpException(osgpException).withDataObject(
-                response).withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(responseMessageResultType)
+                .withOsgpException(osgpException)
+                .withDataObject(this.commonMapper.map(dataObject, CoupleMbusDeviceByChannelResponse.class))
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+                .build();
 
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
     public void handleResponse(final String methodName, final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType deviceResult, final OsgpException exception) {
+
         LOGGER.debug("{} for MessageType: {}", methodName, deviceMessageMetadata.getMessageType());
 
-        ResponseMessageResultType result = deviceResult;
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(this.getResponseMessageResultType(deviceResult, exception)).withOsgpException(exception)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+                .build();
+
+        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
+    }
+
+    private ResponseMessageResultType getResponseMessageResultType(final ResponseMessageResultType deviceResult,
+            final OsgpException exception) {
         if (exception != null) {
             LOGGER.error("Device Response not ok. Unexpected Exception", exception);
-            result = ResponseMessageResultType.NOT_OK;
+            return ResponseMessageResultType.NOT_OK;
         }
-
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
-                deviceMessageMetadata.getCorrelationUid()).withOrganisationIdentification(
-                deviceMessageMetadata.getOrganisationIdentification()).withDeviceIdentification(
-                deviceMessageMetadata.getDeviceIdentification()).withResult(result).withOsgpException(
-                exception).withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
-        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
+        return deviceResult;
     }
 }
