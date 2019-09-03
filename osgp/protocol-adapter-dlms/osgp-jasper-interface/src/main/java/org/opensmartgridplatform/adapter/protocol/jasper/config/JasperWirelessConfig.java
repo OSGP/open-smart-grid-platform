@@ -103,8 +103,6 @@ public class JasperWirelessConfig extends AbstractConfig {
     @Bean
     public WebServiceTemplate jasperWebServiceTemplate() throws OsgpJasperException {
 
-        LOGGER.info("Creating new webservic template");
-
         final WebServiceTemplate webServiceTemplate = new WebServiceTemplate();
         webServiceTemplate.setMarshaller(this.marshaller());
         webServiceTemplate.setUnmarshaller(this.marshaller());
