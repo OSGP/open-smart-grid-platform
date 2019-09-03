@@ -1,9 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.networking;
 
@@ -13,15 +14,14 @@ import java.util.UUID;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.requests.to.core.OsgpRequestMessageSender;
+import org.opensmartgridplatform.dlms.DlmsPushNotification;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushNotificationAlarmDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushNotificationSmsDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import org.opensmartgridplatform.dlms.DlmsPushNotification;
-import org.opensmartgridplatform.dto.valueobjects.DeviceFunctionDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushNotificationAlarmDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushNotificationSmsDto;
-import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 
 public class DlmsChannelHandlerServer extends DlmsChannelHandler {
 
@@ -68,8 +68,8 @@ public class DlmsChannelHandlerServer extends DlmsChannelHandler {
         final RequestMessage requestMessage = new RequestMessage(correlationId, "no-organisation", deviceIdentification,
                 ipAddress, pushNotificationAlarm);
 
-        LOGGER.info("Sending push notification alarm to OSGP with correlation ID: " + correlationId);
-        this.osgpRequestMessageSender.send(requestMessage, DeviceFunctionDto.PUSH_NOTIFICATION_ALARM.name(), null);
+        LOGGER.info("Sending push notification alarm to OSGP with correlation ID: {}", correlationId);
+        this.osgpRequestMessageSender.send(requestMessage, MessageType.PUSH_NOTIFICATION_ALARM.name(), null);
     }
 
     private void processPushedSms(final DlmsPushNotification message, final String correlationId,
@@ -81,8 +81,8 @@ public class DlmsChannelHandlerServer extends DlmsChannelHandler {
         final RequestMessage requestMessage = new RequestMessage(correlationId, "no-organisation", deviceIdentification,
                 ipAddress, pushNotificationSms);
 
-        LOGGER.info("Sending push notification sms wakeup to OSGP with correlation ID: " + correlationId);
-        this.osgpRequestMessageSender.send(requestMessage, DeviceFunctionDto.PUSH_NOTIFICATION_SMS.name(), null);
+        LOGGER.info("Sending push notification sms wakeup to OSGP with correlation ID: {}", correlationId);
+        this.osgpRequestMessageSender.send(requestMessage, MessageType.PUSH_NOTIFICATION_SMS.name(), null);
     }
 
     private String retrieveIpAddress(final ChannelHandlerContext ctx, final String deviceIdentification) {

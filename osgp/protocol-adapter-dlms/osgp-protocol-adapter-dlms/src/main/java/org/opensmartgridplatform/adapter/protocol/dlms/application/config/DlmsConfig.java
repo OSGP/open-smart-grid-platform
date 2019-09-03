@@ -18,7 +18,6 @@ import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.jboss.netty.handler.logging.LoggingHandler;
@@ -77,21 +76,9 @@ public class DlmsConfig extends AbstractConfig {
 
         final ServerBootstrap bootstrap = new ServerBootstrap(factory);
 
-        bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
-            @Override
-            public ChannelPipeline getPipeline() {
-                final ChannelPipeline pipeline = DlmsConfig.this
-                        .createChannelPipeline(DlmsConfig.this.dlmsChannelHandlerServer());
-
-                LOGGER.info("Created new DLMS handler pipeline for server");
-
-                return pipeline;
-            }
-        });
-
+        bootstrap.setPipelineFactory(this::getPipeline);
         bootstrap.setOption("child.tcpNoDelay", true);
         bootstrap.setOption("child.keepAlive", false);
-
         bootstrap.bind(new InetSocketAddress(this.dlmsPortServer()));
 
         return bootstrap;
@@ -101,9 +88,7 @@ public class DlmsConfig extends AbstractConfig {
         final ChannelPipeline pipeline = Channels.pipeline();
 
         pipeline.addLast("loggingHandler", new LoggingHandler(InternalLogLevel.INFO, true));
-
         pipeline.addLast("dlmsPushNotificationDecoder", new DlmsPushNotificationDecoder());
-
         pipeline.addLast("dlmsChannelHandler", handler);
 
         return pipeline;
@@ -173,5 +158,13 @@ public class DlmsConfig extends AbstractConfig {
     public ScheduledExecutorService scheduledExecutorService(
             @Value("${executor.scheduled.poolsize}") final int poolsize) {
         return Executors.newScheduledThreadPool(poolsize);
+    }
+
+    private ChannelPipeline getPipeline() {
+        final ChannelPipeline pipeline = DlmsConfig.this.createChannelPipeline(DlmsConfig.this.dlmsChannelHandlerServer());
+
+        LOGGER.info("Created new DLMS handler pipeline for server");
+
+        return pipeline;
     }
 }

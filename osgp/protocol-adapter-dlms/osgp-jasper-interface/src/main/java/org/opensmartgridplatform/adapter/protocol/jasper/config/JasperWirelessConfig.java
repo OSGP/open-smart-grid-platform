@@ -8,11 +8,6 @@
  */
 package org.opensmartgridplatform.adapter.protocol.jasper.config;
 
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPException;
 
@@ -30,22 +25,20 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 import org.springframework.ws.soap.SoapVersion;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.ws.soap.security.wss4j.Wss4jSecurityInterceptor;
-import org.springframework.ws.transport.http.HttpsUrlConnectionMessageSender;
 
 /**
  * An application context Java configuration class for Jasper Wireless settings.
  */
 @Configuration
-@PropertySources({ @PropertySource("classpath:jasper-interface.properties"),
-        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:${osgp/JasperInterface/config}", ignoreResourceNotFound = true), })
+@PropertySource("classpath:jasper-interface.properties")
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/JasperInterface/config}", ignoreResourceNotFound = true)
 @ComponentScan(basePackages = { "org.opensmartgridplatform.adapter.protocol.jasper" })
 public class JasperWirelessConfig extends AbstractConfig {
 
@@ -87,7 +80,7 @@ public class JasperWirelessConfig extends AbstractConfig {
     }
 
     @Bean
-    public SaajSoapMessageFactory messageFactory() throws OsgpJasperException {
+    SaajSoapMessageFactory messageFactory() throws OsgpJasperException {
         SaajSoapMessageFactory saajSoapMessageFactory;
         try {
             saajSoapMessageFactory = new SaajSoapMessageFactory(MessageFactory.newInstance());
@@ -101,7 +94,7 @@ public class JasperWirelessConfig extends AbstractConfig {
     }
 
     @Bean
-    public Wss4jSecurityInterceptor wss4jSecurityInterceptorClient() {
+    Wss4jSecurityInterceptor wss4jSecurityInterceptorClient() {
         final Wss4jSecurityInterceptor wss4jSecurityInterceptor = new Wss4jSecurityInterceptor();
         wss4jSecurityInterceptor.setSecurementActions("UsernameToken");
         return wss4jSecurityInterceptor;
@@ -118,11 +111,6 @@ public class JasperWirelessConfig extends AbstractConfig {
         webServiceTemplate.setDefaultUri("https://kpnapi.jasperwireless.com/ws/service/Sms");
         webServiceTemplate.setInterceptors(new ClientInterceptor[] { this.wss4jSecurityInterceptorClient() });
         webServiceTemplate.setMessageFactory(this.messageFactory());
-
-        HttpsUrlConnectionMessageSender sender = new HttpsUrlConnectionMessageSender();
-        sender.setTrustManagers(new TrustManager[] { new UnTrustworthyTrustManager() });
-
-        webServiceTemplate.setMessageSender(sender);
 
         return webServiceTemplate;
     }
@@ -162,15 +150,4 @@ public class JasperWirelessConfig extends AbstractConfig {
         return Integer.parseInt(this.sleepBetweenRetries);
     }
 
-    class UnTrustworthyTrustManager implements X509TrustManager {
-        public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
-        }
-
-        public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
-        }
-
-        public X509Certificate[] getAcceptedIssuers() {
-            return null;
-        }
-    }
 }

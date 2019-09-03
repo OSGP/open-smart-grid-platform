@@ -1,12 +1,16 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.jasper.infra.ws;
 
+import com.jasperwireless.api.ws.service.GetSessionInfoRequest;
+import com.jasperwireless.api.ws.service.GetSessionInfoResponse;
+import com.jasperwireless.api.ws.service.ObjectFactory;
 import org.apache.ws.security.WSConstants;
 import org.opensmartgridplatform.adapter.protocol.jasper.config.JasperWirelessAccess;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,14 +19,10 @@ import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
 import org.springframework.ws.soap.security.wss4j.Wss4jSecurityInterceptor;
 
-import com.jasperwireless.api.ws.service.GetSessionInfoRequest;
-import com.jasperwireless.api.ws.service.GetSessionInfoResponse;
-import com.jasperwireless.api.ws.service.ObjectFactory;
-
 public class JasperWirelessTerminalClient {
 
     @Autowired
-    private WebServiceTemplate webServiceTemplate;
+    private WebServiceTemplate jasperWebServiceTemplate;
 
     private static final ObjectFactory WS_CLIENT_FACTORY = new ObjectFactory();
 
@@ -40,7 +40,7 @@ public class JasperWirelessTerminalClient {
         getSessionInfoRequest.setVersion(this.jasperWirelessTerminalAccess.getApiVersion());
         getSessionInfoRequest.getIccid().add(iccid);
 
-        for (final ClientInterceptor interceptor : this.webServiceTemplate.getInterceptors()) {
+        for (final ClientInterceptor interceptor : this.jasperWebServiceTemplate.getInterceptors()) {
             if (interceptor instanceof Wss4jSecurityInterceptor) {
                 setUsernameToken((Wss4jSecurityInterceptor) interceptor,
                         this.jasperWirelessTerminalAccess.getUsername(),
@@ -49,9 +49,9 @@ public class JasperWirelessTerminalClient {
         }
 
         // override default uri
-        this.webServiceTemplate.setDefaultUri(this.jasperWirelessTerminalAccess.getUri());
+        this.jasperWebServiceTemplate.setDefaultUri(this.jasperWirelessTerminalAccess.getUri());
 
-        return (GetSessionInfoResponse) this.webServiceTemplate.marshalSendAndReceive(getSessionInfoRequest,
+        return (GetSessionInfoResponse) this.jasperWebServiceTemplate.marshalSendAndReceive(getSessionInfoRequest,
                 new SoapActionCallback("http://api.jasperwireless.com/ws/service/terminal/GetSessionInfo"));
     }
 

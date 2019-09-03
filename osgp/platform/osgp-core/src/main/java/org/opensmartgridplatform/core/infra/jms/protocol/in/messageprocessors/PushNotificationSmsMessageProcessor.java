@@ -1,13 +1,15 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.core.infra.jms.protocol.in.messageprocessors;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Date;
 
 import javax.jms.JMSException;
@@ -19,7 +21,7 @@ import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.exceptions.UnknownEntityException;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushNotificationSmsDto;
-import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.slf4j.Logger;
@@ -46,12 +48,11 @@ public class PushNotificationSmsMessageProcessor extends ProtocolRequestMessageP
 
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
-        final String messageType = message.getJMSType();
-        final String organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
-        final String deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
+
+        final MessageMetadata metadata = MessageMetadata.fromMessage(message);
 
         LOGGER.info("Received message of messageType: {} organisationIdentification: {} deviceIdentification: {}",
-                messageType, organisationIdentification, deviceIdentification);
+                messageType, metadata.getOrganisationIdentification(), metadata.getDeviceIdentification());
 
         final RequestMessage requestMessage = (RequestMessage) message.getObject();
         final Object dataObject = requestMessage.getRequest();
@@ -63,30 +64,34 @@ public class PushNotificationSmsMessageProcessor extends ProtocolRequestMessageP
 
             if (pushNotificationSms.getIpAddress() != null && !"".equals(pushNotificationSms.getIpAddress())) {
 
-                LOGGER.info("Updating device {} IP address from {} to {}", deviceIdentification,
+                LOGGER.info("Updating device {} IP address from {} to {}", metadata.getDeviceIdentification(),
                         requestMessage.getIpAddress(), pushNotificationSms.getIpAddress());
 
                 // Convert the IP address from String to InetAddress.
                 final InetAddress address = InetAddress.getByName(pushNotificationSms.getIpAddress());
 
                 // Lookup device
-                final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+                final Device device = this.deviceRepository.findByDeviceIdentification(
+                        metadata.getDeviceIdentification());
                 if (device != null) {
                     device.updateRegistrationData(address, device.getDeviceType());
+                    device.updateConnectionDetailsToSuccess();
                     this.deviceRepository.save(device);
                 } else {
                     LOGGER.warn(
-                            "Device with ID = {} not found. Discard Sms notification request from ip address = {} of device",
-                            deviceIdentification, address);
+                            "Device with ID = {} not found. Discard Sms notification request from ip address = {} of "
+                                    + "device", metadata.getDeviceIdentification(), address);
                 }
             } else {
                 LOGGER.warn("Sms notification request for device = {} has no new IP address. Discard request.",
-                        deviceIdentification);
+                        metadata.getDeviceIdentification());
             }
 
-        } catch (final Exception e) {
-            LOGGER.error("Exception", e);
-            throw new JMSException(e.getMessage());
+        } catch (final UnknownHostException e) {
+            LOGGER.error("UnknownHostException", e);
+            JMSException jmsException = new JMSException(e.getMessage());
+            jmsException.setLinkedException(e);
+            throw jmsException;
         }
     }
 
