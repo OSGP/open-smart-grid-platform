@@ -4,6 +4,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Collections;
@@ -121,6 +122,8 @@ public class PushNotificationAlarmMessageProcessorTest {
         pushNotificationAlarmMessageProcessor.processMessage(message);
 
         assertNotNull(device.getLastSuccessfulConnectionTimestamp());
+
+        verify(deviceRepository).save(device);
 
     }
 

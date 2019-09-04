@@ -100,19 +100,7 @@ public class PushNotificationAlarmMessageProcessor extends ProtocolRequestMessag
                     ownerIdentification, requestMessage.getDeviceIdentification(), requestMessage.getIpAddress(),
                     pushNotificationAlarm);
 
-            /*
-             * This message processor handles messages that came in on the
-             * osgp-core.1_0.protocol-dlms.1_0.requests queue. Therefore lookup
-             * the DomainInfo for DLMS (domain: SMART_METERING) version 1.0.
-             *
-             * At some point in time there may be a cleaner solution, where the
-             * DomainInfo can be derived from information in the message or JMS
-             * metadata, but for now this will have to do.
-             */
-            final List<DomainInfo> domainInfos = this.domainInfoRepository.findAll();
-
-            Optional<DomainInfo> smartMeteringDomain = domainInfos.stream().filter(
-                    d -> "SMART_METERING".equals(d.getDomain()) && "1.0".equals(d.getDomainVersion())).findFirst();
+            Optional<DomainInfo> smartMeteringDomain = getDomainInfo();
 
             if (smartMeteringDomain.isPresent()) {
                 this.domainRequestService.send(requestWithUpdatedOrganization,
@@ -132,6 +120,22 @@ public class PushNotificationAlarmMessageProcessor extends ProtocolRequestMessag
             jmsException.setLinkedException(e);
             throw jmsException;
         }
+    }
+
+    private Optional<DomainInfo> getDomainInfo() {
+        /*
+         * This message processor handles messages that came in on the
+         * osgp-core.1_0.protocol-dlms.1_0.requests queue. Therefore lookup
+         * the DomainInfo for DLMS (domain: SMART_METERING) version 1.0.
+         *
+         * At some point in time there may be a cleaner solution, where the
+         * DomainInfo can be derived from information in the message or JMS
+         * metadata, but for now this will have to do.
+         */
+        final List<DomainInfo> domainInfos = this.domainInfoRepository.findAll();
+
+        return domainInfos.stream().filter(
+                d -> "SMART_METERING".equals(d.getDomain()) && "1.0".equals(d.getDomainVersion())).findFirst();
     }
 
     private void storeAlarmAsEvent(final PushNotificationAlarmDto pushNotificationAlarm) {
