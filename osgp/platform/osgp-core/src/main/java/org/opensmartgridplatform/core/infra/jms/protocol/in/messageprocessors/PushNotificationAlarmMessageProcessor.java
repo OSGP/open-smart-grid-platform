@@ -1,14 +1,16 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.core.infra.jms.protocol.in.messageprocessors;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
@@ -30,7 +32,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.slf4j.Logger;
@@ -55,10 +57,10 @@ public class PushNotificationAlarmMessageProcessor extends ProtocolRequestMessag
     private DomainInfoRepository domainInfoRepository;
 
     @Autowired
-    private DeviceRepository deviceRepository;
+    private DeviceAuthorizationRepository deviceAuthorizationRepository;
 
     @Autowired
-    private DeviceAuthorizationRepository deviceAuthorizationRepository;
+    private DeviceRepository deviceRepository;
 
     protected PushNotificationAlarmMessageProcessor() {
         super(MessageType.PUSH_NOTIFICATION_ALARM);
@@ -66,59 +68,78 @@ public class PushNotificationAlarmMessageProcessor extends ProtocolRequestMessag
 
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
-        final String messageType = message.getJMSType();
-        final String organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
-        final String deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
+
+        final MessageMetadata metadata = MessageMetadata.fromMessage(message);
 
         LOGGER.info("Received message of messageType: {} organisationIdentification: {} deviceIdentification: {}",
-                messageType, organisationIdentification, deviceIdentification);
+                messageType, metadata.getOrganisationIdentification(), metadata.getDeviceIdentification());
 
         final RequestMessage requestMessage = (RequestMessage) message.getObject();
         final Object dataObject = requestMessage.getRequest();
 
         try {
+
+            final Device device = getDevice(metadata.getDeviceIdentification());
+
             final PushNotificationAlarmDto pushNotificationAlarm = (PushNotificationAlarmDto) dataObject;
 
             this.storeAlarmAsEvent(pushNotificationAlarm);
 
-            final String ownerIdentification = this.getOrganisationIdentificationOfOwner(deviceIdentification);
+            final String ownerIdentification = this.getOrganisationIdentificationOfOwner(device);
+
             LOGGER.info("Matching owner {} with device {} handling {} from {}", ownerIdentification,
-                    deviceIdentification, messageType, requestMessage.getIpAddress());
-            final RequestMessage requestWithUpdatedOrganization = new RequestMessage(
-                    requestMessage.getCorrelationUid(), ownerIdentification, requestMessage.getDeviceIdentification(),
-                    requestMessage.getIpAddress(), pushNotificationAlarm);
+                    metadata.getDeviceIdentification(), messageType, requestMessage.getIpAddress());
+            final RequestMessage requestWithUpdatedOrganization = new RequestMessage(requestMessage.getCorrelationUid(),
+                    ownerIdentification, requestMessage.getDeviceIdentification(), requestMessage.getIpAddress(),
+                    pushNotificationAlarm);
 
-            /*
-             * This message processor handles messages that came in on the
-             * osgp-core.1_0.protocol-dlms.1_0.requests queue. Therefore lookup
-             * the DomainInfo for DLMS (domain: SMART_METERING) version 1.0.
-             *
-             * At some point in time there may be a cleaner solution, where the
-             * DomainInfo can be derived from information in the message or JMS
-             * metadata, but for now this will have to do.
-             */
-            final List<DomainInfo> domainInfos = this.domainInfoRepository.findAll();
-            DomainInfo smartMeteringDomain = null;
-            for (final DomainInfo di : domainInfos) {
-                if ("SMART_METERING".equals(di.getDomain()) && "1.0".equals(di.getDomainVersion())) {
-                    smartMeteringDomain = di;
-                    break;
-                }
-            }
+            Optional<DomainInfo> smartMeteringDomain = getDomainInfo();
 
-            if (smartMeteringDomain == null) {
-                LOGGER.error(
-                        "No DomainInfo found for SMART_METERING 1.0, unable to send message of message type: {} to domain adapter. RequestMessage for {} dropped.",
-                        messageType, pushNotificationAlarm);
-            } else {
+            if (smartMeteringDomain.isPresent()) {
                 this.domainRequestService.send(requestWithUpdatedOrganization,
-                        DeviceFunction.PUSH_NOTIFICATION_ALARM.name(), smartMeteringDomain);
+                        DeviceFunction.PUSH_NOTIFICATION_ALARM.name(), smartMeteringDomain.get());
+
+                device.updateConnectionDetailsToSuccess();
+                deviceRepository.save(device);
+            } else {
+                LOGGER.error(
+                        "No DomainInfo found for SMART_METERING 1.0, unable to send message of message type: {} to "
+                                + "domain adapter. RequestMessage for {} dropped.", messageType, pushNotificationAlarm);
             }
 
-        } catch (final Exception e) {
-            LOGGER.error("Exception", e);
-            throw new JMSException(e.getMessage());
+        } catch (OsgpException e) {
+            String errorMessage = String.format("%s occurred, reason: %s", e.getClass().getName(), e.getMessage());
+            LOGGER.error(errorMessage, e);
+
+            throw new JMSException(errorMessage);
         }
+    }
+
+    private Device getDevice(String deviceIdentification) throws FunctionalException {
+        final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+
+        if (device == null) {
+            LOGGER.error("No known device for deviceIdentification {} with alarm notification", deviceIdentification);
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.OSGP_CORE,
+                    new UnknownEntityException(Device.class, deviceIdentification));
+        }
+        return device;
+    }
+
+    private Optional<DomainInfo> getDomainInfo() {
+        /*
+         * This message processor handles messages that came in on the
+         * osgp-core.1_0.protocol-dlms.1_0.requests queue. Therefore lookup
+         * the DomainInfo for DLMS (domain: SMART_METERING) version 1.0.
+         *
+         * At some point in time there may be a cleaner solution, where the
+         * DomainInfo can be derived from information in the message or JMS
+         * metadata, but for now this will have to do.
+         */
+        final List<DomainInfo> domainInfos = this.domainInfoRepository.findAll();
+
+        return domainInfos.stream().filter(
+                d -> "SMART_METERING".equals(d.getDomain()) && "1.0".equals(d.getDomainVersion())).findFirst();
     }
 
     private void storeAlarmAsEvent(final PushNotificationAlarmDto pushNotificationAlarm) {
@@ -138,26 +159,20 @@ public class PushNotificationAlarmMessageProcessor extends ProtocolRequestMessag
         }
     }
 
-    private String getOrganisationIdentificationOfOwner(final String deviceIdentification) throws OsgpException {
+    private String getOrganisationIdentificationOfOwner(final Device device) throws OsgpException {
 
-        final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-
-        if (device == null) {
-            LOGGER.error("No known device for deviceIdentification {} with alarm notification", deviceIdentification);
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.OSGP_CORE,
-                    new UnknownEntityException(Device.class, deviceIdentification));
-        }
-
-        final List<DeviceAuthorization> deviceAuthorizations = this.deviceAuthorizationRepository
-                .findByDeviceAndFunctionGroup(device, DeviceFunctionGroup.OWNER);
+        final List<DeviceAuthorization> deviceAuthorizations =
+                this.deviceAuthorizationRepository.findByDeviceAndFunctionGroup(
+                device, DeviceFunctionGroup.OWNER);
 
         if (deviceAuthorizations == null || deviceAuthorizations.isEmpty()) {
             LOGGER.error("No owner authorization for deviceIdentification {} with alarm notification",
-                    deviceIdentification);
+                    device.getDeviceIdentification());
             throw new FunctionalException(FunctionalExceptionType.UNAUTHORIZED, ComponentType.OSGP_CORE,
-                    new UnknownEntityException(DeviceAuthorization.class, deviceIdentification));
+                    new UnknownEntityException(DeviceAuthorization.class, device.getDeviceIdentification()));
         }
 
         return deviceAuthorizations.get(0).getOrganisation().getOrganisationIdentification();
     }
+
 }
