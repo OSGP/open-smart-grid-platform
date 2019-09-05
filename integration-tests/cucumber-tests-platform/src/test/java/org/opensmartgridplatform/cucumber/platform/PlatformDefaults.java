@@ -142,6 +142,7 @@ public class PlatformDefaults {
     public static final Long DLMS_DEFAULT_LOGICAL_ID = 1L;
     public static final Long DLMS_DEFAULT_PORT = 1024L;
     public static final String DLMS_DEFAULT_DEVICE_DELIVERY_DATE = "2016-05-11T00:00:00.000Z";
+    public static final String DEFAULT_DEVICE_PROTOCOL_NAME = "DLMS";
     public static final String EMAIL = "someone@somewhere.nl";
     public static final Boolean EVENTS_NODELIST_EXPECTED = false;
     public static final String EXPECTED_RESULT_OK = "OK";
