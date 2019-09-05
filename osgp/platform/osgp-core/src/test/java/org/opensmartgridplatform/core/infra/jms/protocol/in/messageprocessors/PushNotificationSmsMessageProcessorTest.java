@@ -11,6 +11,7 @@ import java.util.Date;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -49,28 +50,33 @@ public class PushNotificationSmsMessageProcessorTest {
     @InjectMocks
     private PushNotificationSmsMessageProcessor pushNotificationSmsMessageProcessor;
 
+    private static final String DEVICE_IDENTIFICATION = "dvc-1";
+    private static final String IP_ADDRESS = "127.0.0.1";
+    private ObjectMessage message;
+
+    @Before
+    public void init() throws JMSException {
+        final String correlationUid = "corr-uid-1";
+        final String organisationIdentification = "test-org";
+
+        RequestMessage requestMessage = new RequestMessage(correlationUid, organisationIdentification,
+                DEVICE_IDENTIFICATION, IP_ADDRESS, pushNotificationSms);
+
+        message = new ObjectMessageBuilder().withCorrelationUid(correlationUid).withMessageType(
+                MessageType.PUSH_NOTIFICATION_SMS.name()).withDeviceIdentification(DEVICE_IDENTIFICATION).withObject(
+                requestMessage).build();
+    }
+
     @Test
     public void testProcessMessageSuccess() throws JMSException, UnknownEntityException {
 
-        final String deviceIdentification = "dvc-1";
-        final String correlationUid = "corr-uid-1";
-        final String organisationIdentification = "test-org";
-        final String ipAddress = "127.0.0.1";
-
-        RequestMessage requestMessage = new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, ipAddress, pushNotificationSms);
-
-        ObjectMessage message = new ObjectMessageBuilder().withCorrelationUid(correlationUid).withMessageType(
-                MessageType.PUSH_NOTIFICATION_SMS.name()).withDeviceIdentification(deviceIdentification).withObject(
-                requestMessage).build();
-
-        when(pushNotificationSms.getIpAddress()).thenReturn(ipAddress);
+        when(pushNotificationSms.getIpAddress()).thenReturn(IP_ADDRESS);
         doNothing().when(eventNotificationMessageService).handleEvent(any(String.class), any(Date.class),
                 any(EventType.class), any(String.class), any(Integer.class));
 
-        Device device = new Device(deviceIdentification);
+        Device device = new Device(DEVICE_IDENTIFICATION);
 
-        when(deviceRepository.findByDeviceIdentification(deviceIdentification)).thenReturn(device);
+        when(deviceRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION)).thenReturn(device);
 
         assertThat(device.getLastSuccessfulConnectionTimestamp()).isNull();
 
@@ -79,6 +85,13 @@ public class PushNotificationSmsMessageProcessorTest {
         assertThat(device.getLastSuccessfulConnectionTimestamp()).isNotNull();
 
         verify(deviceRepository).save(device);
+    }
+
+    @Test(expected = JMSException.class)
+    public void testUnknownDevice() throws JMSException {
+
+        when(deviceRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION)).thenReturn(null);
+        pushNotificationSmsMessageProcessor.processMessage(message);
     }
 
 }
