@@ -100,7 +100,7 @@ public class InstallationMapperTest {
         assertEquals(smartMeteringDevice.getCommunicationMethod(), smartMeteringDeviceDto.getCommunicationMethod());
         assertEquals(smartMeteringDevice.getCommunicationProvider(), smartMeteringDeviceDto.getCommunicationProvider());
         assertEquals(smartMeteringDevice.getICCId(), smartMeteringDeviceDto.getICCId());
-        assertEquals(smartMeteringDevice.getProtocolName(), smartMeteringDeviceDto.getDSMRVersion());
+        assertEquals(smartMeteringDevice.getProtocolVersion(), smartMeteringDeviceDto.getDSMRVersion());
         assertArrayEquals(smartMeteringDevice.getMasterKey(), smartMeteringDeviceDto.getMasterKey());
         assertArrayEquals(smartMeteringDevice.getGlobalEncryptionUnicastKey(),
                 smartMeteringDeviceDto.getGlobalEncryptionUnicastKey());
