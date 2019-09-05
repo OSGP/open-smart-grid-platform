@@ -21,6 +21,9 @@ import org.springframework.ws.soap.security.wss4j.Wss4jSecurityInterceptor;
 
 public class JasperWirelessTerminalClient {
 
+    private static final String SERVICE_SESSION_INFO = "http://api.jasperwireless"
+            + ".com/ws/service/terminal/GetSessionInfo";
+
     @Autowired
     private WebServiceTemplate jasperWebServiceTemplate;
 
@@ -52,7 +55,7 @@ public class JasperWirelessTerminalClient {
         this.jasperWebServiceTemplate.setDefaultUri(this.jasperWirelessTerminalAccess.getUri());
 
         return (GetSessionInfoResponse) this.jasperWebServiceTemplate.marshalSendAndReceive(getSessionInfoRequest,
-                new SoapActionCallback("http://api.jasperwireless.com/ws/service/terminal/GetSessionInfo"));
+                new SoapActionCallback(SERVICE_SESSION_INFO));
     }
 
     private static void setUsernameToken(final Wss4jSecurityInterceptor interceptor, final String user,

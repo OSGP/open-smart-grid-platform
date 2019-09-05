@@ -21,6 +21,9 @@ import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.exceptions.UnknownEntityException;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushNotificationSmsDto;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
@@ -58,6 +61,9 @@ public class PushNotificationSmsMessageProcessor extends ProtocolRequestMessageP
         final Object dataObject = requestMessage.getRequest();
 
         try {
+
+            final Device device = getDevice(metadata.getDeviceIdentification());
+
             final PushNotificationSmsDto pushNotificationSms = (PushNotificationSmsDto) dataObject;
 
             this.storeSmsAsEvent(pushNotificationSms);
@@ -70,29 +76,32 @@ public class PushNotificationSmsMessageProcessor extends ProtocolRequestMessageP
                 // Convert the IP address from String to InetAddress.
                 final InetAddress address = InetAddress.getByName(pushNotificationSms.getIpAddress());
 
-                // Lookup device
-                final Device device = this.deviceRepository.findByDeviceIdentification(
-                        metadata.getDeviceIdentification());
-                if (device != null) {
-                    device.updateRegistrationData(address, device.getDeviceType());
-                    device.updateConnectionDetailsToSuccess();
-                    this.deviceRepository.save(device);
-                } else {
-                    LOGGER.warn(
-                            "Device with ID = {} not found. Discard Sms notification request from ip address = {} of "
-                                    + "device", metadata.getDeviceIdentification(), address);
-                }
+                device.updateRegistrationData(address, device.getDeviceType());
+                device.updateConnectionDetailsToSuccess();
+                this.deviceRepository.save(device);
+
             } else {
                 LOGGER.warn("Sms notification request for device = {} has no new IP address. Discard request.",
                         metadata.getDeviceIdentification());
             }
 
-        } catch (final UnknownHostException e) {
-            LOGGER.error("UnknownHostException", e);
-            JMSException jmsException = new JMSException(e.getMessage());
-            jmsException.setLinkedException(e);
-            throw jmsException;
+        } catch (final UnknownHostException | FunctionalException e) {
+            String errorMessage = String.format("%s occurred, reason: %s", e.getClass().getName(), e.getMessage());
+            LOGGER.error(errorMessage, e);
+
+            throw new JMSException(errorMessage);
         }
+    }
+
+    private Device getDevice(String deviceIdentification) throws FunctionalException {
+        final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+
+        if (device == null) {
+            LOGGER.error("No known device for deviceIdentification {} with alarm notification", deviceIdentification);
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.OSGP_CORE,
+                    new UnknownEntityException(Device.class, deviceIdentification));
+        }
+        return device;
     }
 
     private void storeSmsAsEvent(final PushNotificationSmsDto pushNotificationSms) {

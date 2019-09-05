@@ -64,10 +64,10 @@ public class EventNotificationMessageProcessor extends ProtocolRequestMessagePro
             }
 
         } catch (final UnknownEntityException e) {
-            LOGGER.error("UnknownEntityException", e);
-            JMSException jmsException = new JMSException(e.getMessage());
-            jmsException.setLinkedException(e);
-            throw jmsException;
+            String errorMessage = String.format("%s occurred, reason: %s", e.getClass().getName(), e.getMessage());
+            LOGGER.error(errorMessage, e);
+
+            throw new JMSException(errorMessage);
         }
     }
 }

@@ -1,7 +1,6 @@
 package org.opensmartgridplatform.core.infra.jms.protocol.in.messageprocessors;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
@@ -73,11 +72,11 @@ public class PushNotificationSmsMessageProcessorTest {
 
         when(deviceRepository.findByDeviceIdentification(deviceIdentification)).thenReturn(device);
 
-        assertNull(device.getLastSuccessfulConnectionTimestamp());
+        assertThat(device.getLastSuccessfulConnectionTimestamp()).isNull();
 
         pushNotificationSmsMessageProcessor.processMessage(message);
 
-        assertNotNull(device.getLastSuccessfulConnectionTimestamp());
+        assertThat(device.getLastSuccessfulConnectionTimestamp()).isNotNull();
 
         verify(deviceRepository).save(device);
     }

@@ -1,7 +1,6 @@
 package org.opensmartgridplatform.core.infra.jms.protocol.in.messageprocessors;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
@@ -78,8 +77,7 @@ public class PushNotificationAlarmMessageProcessorTest {
     @InjectMocks
     private PushNotificationAlarmMessageProcessor pushNotificationAlarmMessageProcessor;
 
-    private final String deviceIdentification = "dvc-1";
-    private RequestMessage requestMessage;
+    private static final String DEVICE_IDENTIFICATION = "dvc-1";
     private ObjectMessage message;
     private Device device;
 
@@ -90,16 +88,16 @@ public class PushNotificationAlarmMessageProcessorTest {
         final String organisationIdentification = "test-org";
         final String ipAddress = "127.0.0.1";
 
-        requestMessage = new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, ipAddress,
-                pushNotificationAlarm);
+        RequestMessage requestMessage = new RequestMessage(correlationUid, organisationIdentification,
+                DEVICE_IDENTIFICATION, ipAddress, pushNotificationAlarm);
 
         message = new ObjectMessageBuilder().withCorrelationUid(correlationUid).withMessageType(
-                MessageType.PUSH_NOTIFICATION_ALARM.name()).withDeviceIdentification(deviceIdentification).withObject(
+                MessageType.PUSH_NOTIFICATION_ALARM.name()).withDeviceIdentification(DEVICE_IDENTIFICATION).withObject(
                 requestMessage).build();
 
-        device = new Device(deviceIdentification);
+        device = new Device(DEVICE_IDENTIFICATION);
 
-        when(deviceRepository.findByDeviceIdentification(deviceIdentification)).thenReturn(device);
+        when(deviceRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION)).thenReturn(device);
         when(deviceRepository.save(device)).thenAnswer((Answer<Void>) invocationOnMock -> null);
         doNothing().when(eventNotificationMessageService).handleEvent(any(String.class), any(Date.class),
                 any(EventType.class), any(String.class), any(Integer.class));
@@ -117,11 +115,11 @@ public class PushNotificationAlarmMessageProcessorTest {
     @Test
     public void testProcessMessageSuccess() throws JMSException {
 
-        assertNull(device.getLastSuccessfulConnectionTimestamp());
+        assertThat(device.getLastSuccessfulConnectionTimestamp()).isNull();
 
         pushNotificationAlarmMessageProcessor.processMessage(message);
 
-        assertNotNull(device.getLastSuccessfulConnectionTimestamp());
+        assertThat(device.getLastSuccessfulConnectionTimestamp()).isNotNull();
 
         verify(deviceRepository).save(device);
 
@@ -130,7 +128,7 @@ public class PushNotificationAlarmMessageProcessorTest {
     @Test(expected = JMSException.class)
     public void testUnknownDevice() throws JMSException {
 
-        when(deviceRepository.findByDeviceIdentification(deviceIdentification)).thenReturn(null);
+        when(deviceRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION)).thenReturn(null);
         pushNotificationAlarmMessageProcessor.processMessage(message);
     }
 

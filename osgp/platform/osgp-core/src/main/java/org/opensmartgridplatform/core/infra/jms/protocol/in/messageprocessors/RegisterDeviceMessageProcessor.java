@@ -61,10 +61,10 @@ public class RegisterDeviceMessageProcessor extends ProtocolRequestMessageProces
             this.updateRegistrationData(metadata.getDeviceIdentification(), deviceRegistrationData.getIpAddress(),
                     deviceRegistrationData.getDeviceType(), deviceRegistrationData.isHasSchedule());
         } catch (final UnknownHostException e) {
-            LOGGER.error("UnknownHostException", e);
-            JMSException jmsException = new JMSException(e.getMessage());
-            jmsException.setLinkedException(e);
-            throw jmsException;
+            String errorMessage = String.format("%s occurred, reason: %s", e.getClass().getName(), e.getMessage());
+            LOGGER.error(errorMessage, e);
+
+            throw new JMSException(errorMessage);
         }
     }
 
@@ -110,6 +110,8 @@ public class RegisterDeviceMessageProcessor extends ProtocolRequestMessageProces
 
         // Device already exists, update registration data
         device.updateRegistrationData(address, deviceType);
+        device.updateConnectionDetailsToSuccess();
+
         return this.deviceRepository.save(device);
     }
 

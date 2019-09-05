@@ -57,10 +57,10 @@ public class PushNotificationAlarmMessageProcessor extends ProtocolRequestMessag
     private DomainInfoRepository domainInfoRepository;
 
     @Autowired
-    private DeviceRepository deviceRepository;
+    private DeviceAuthorizationRepository deviceAuthorizationRepository;
 
     @Autowired
-    private DeviceAuthorizationRepository deviceAuthorizationRepository;
+    private DeviceRepository deviceRepository;
 
     protected PushNotificationAlarmMessageProcessor() {
         super(MessageType.PUSH_NOTIFICATION_ALARM);
@@ -79,14 +79,7 @@ public class PushNotificationAlarmMessageProcessor extends ProtocolRequestMessag
 
         try {
 
-            final Device device = this.deviceRepository.findByDeviceIdentification(metadata.getDeviceIdentification());
-
-            if (device == null) {
-                LOGGER.error("No known device for deviceIdentification {} with alarm notification",
-                        metadata.getDeviceIdentification());
-                throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.OSGP_CORE,
-                        new UnknownEntityException(Device.class, metadata.getDeviceIdentification()));
-            }
+            final Device device = getDevice(metadata.getDeviceIdentification());
 
             final PushNotificationAlarmDto pushNotificationAlarm = (PushNotificationAlarmDto) dataObject;
 
@@ -115,11 +108,22 @@ public class PushNotificationAlarmMessageProcessor extends ProtocolRequestMessag
             }
 
         } catch (OsgpException e) {
-            LOGGER.error("OsgpException", e);
-            JMSException jmsException = new JMSException(e.getMessage());
-            jmsException.setLinkedException(e);
-            throw jmsException;
+            String errorMessage = String.format("%s occurred, reason: %s", e.getClass().getName(), e.getMessage());
+            LOGGER.error(errorMessage, e);
+
+            throw new JMSException(errorMessage);
         }
+    }
+
+    private Device getDevice(String deviceIdentification) throws FunctionalException {
+        final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+
+        if (device == null) {
+            LOGGER.error("No known device for deviceIdentification {} with alarm notification", deviceIdentification);
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.OSGP_CORE,
+                    new UnknownEntityException(Device.class, deviceIdentification));
+        }
+        return device;
     }
 
     private Optional<DomainInfo> getDomainInfo() {
