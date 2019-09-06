@@ -18,6 +18,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionExce
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagTypeDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagsDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObjectDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,19 +73,25 @@ public abstract class SetConfigurationObjectService implements ProtocolService {
 
     private void addSettableFlags(final ConfigurationObjectDto configurationToSet,
             final List<ConfigurationFlagDto> flagsToSet) {
-        configurationToSet.getConfigurationFlags().getFlags().stream().filter(
-                flagToSet -> !flagToSet.getConfigurationFlagType().isReadOnly()).forEach(flagsToSet::add);
+        final ConfigurationFlagsDto configurationFlags = configurationToSet.getConfigurationFlags();
+        if (configurationFlags != null) {
+            configurationFlags.getFlags().stream().filter(
+                    flagToSet -> !flagToSet.getConfigurationFlagType().isReadOnly()).forEach(flagsToSet::add);
+        }
     }
 
     // Fill missing flagsToSet with flags from configurationOnDevice
     private void addDeviceFlags(final ConfigurationObjectDto configurationOnDevice,
             final List<ConfigurationFlagDto> flagsToSet) {
-        configurationOnDevice.getConfigurationFlags().getFlags().forEach(flagOnDevice -> {
-            if (flagsToSet.stream().noneMatch(
-                    flagToSet -> flagToSet.getConfigurationFlagType() == flagOnDevice.getConfigurationFlagType())) {
-                flagsToSet.add(flagOnDevice);
-            }
-        });
+        final ConfigurationFlagsDto configurationFlags = configurationOnDevice.getConfigurationFlags();
+        if (configurationFlags != null) {
+            configurationFlags.getFlags().forEach(flagOnDevice -> {
+                if (flagsToSet.stream().noneMatch(
+                        flagToSet -> flagToSet.getConfigurationFlagType() == flagOnDevice.getConfigurationFlagType())) {
+                    flagsToSet.add(flagOnDevice);
+                }
+            });
+        }
     }
 
     private byte[] toBytes(final List<ConfigurationFlagDto> flags) throws ProtocolAdapterException {

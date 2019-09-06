@@ -498,4 +498,5 @@ public class Device extends AbstractEntity {
     public boolean hasConnectionFailures() {
         return this.failedConnectionCount != 0;
     }
+
 }

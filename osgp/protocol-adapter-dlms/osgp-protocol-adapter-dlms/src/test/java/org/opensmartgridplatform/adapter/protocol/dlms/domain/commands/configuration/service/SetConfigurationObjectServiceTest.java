@@ -70,7 +70,7 @@ public class SetConfigurationObjectServiceTest {
     }
 
     @Test(expected = ConnectionException.class)
-    public void getConfigurationObjectIOException() throws Exception {
+    public void setConfigurationObjectIOException() throws Exception {
 
         // SETUP
         when(this.dlmsConnection.set(any(SetParameter.class))).thenThrow(new IOException());
@@ -80,7 +80,7 @@ public class SetConfigurationObjectServiceTest {
     }
 
     @Test(expected = ProtocolAdapterException.class)
-    public void getConfigurationObjectGetResultNull() throws Exception {
+    public void getFlagsCannotFindBitPosition() throws Exception {
 
         // SETUP
         final ArrayList<ConfigurationFlagDto> flags = new ArrayList<>();
@@ -91,6 +91,20 @@ public class SetConfigurationObjectServiceTest {
 
         // CALL
         this.instance.getFlags(this.configurationToSet, this.configurationOnDevice);
+    }
+
+    @Test
+    public void getFlagsNullConfigurationFlags() throws Exception {
+
+        // SETUP
+        when(this.configurationToSet.getConfigurationFlags()).thenReturn(null);
+        when(this.configurationOnDevice.getConfigurationFlags()).thenReturn(null);
+
+        // CALL
+        this.instance.getFlags(this.configurationToSet, this.configurationOnDevice);
+
+        // VERIFY
+        // no exception occurs
     }
 
     private ConfigurationFlagsDto emptyFlags() {

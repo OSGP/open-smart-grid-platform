@@ -1,9 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.core.infra.jms.protocol.in.messageprocessors;
 
@@ -16,7 +17,7 @@ import org.opensmartgridplatform.core.application.services.EventNotificationMess
 import org.opensmartgridplatform.core.infra.jms.protocol.in.ProtocolRequestMessageProcessor;
 import org.opensmartgridplatform.domain.core.exceptions.UnknownEntityException;
 import org.opensmartgridplatform.dto.valueobjects.EventNotificationDto;
-import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.slf4j.Logger;
@@ -38,12 +39,11 @@ public class EventNotificationMessageProcessor extends ProtocolRequestMessagePro
 
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
-        final String messageType = message.getJMSType();
-        final String organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
-        final String deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
+
+        final MessageMetadata metadata = MessageMetadata.fromMessage(message);
 
         LOGGER.info("Received message of messageType: {} organisationIdentification: {} deviceIdentification: {}",
-                messageType, organisationIdentification, deviceIdentification);
+                messageType, metadata.getOrganisationIdentification(), metadata.getDeviceIdentification());
 
         final RequestMessage requestMessage = (RequestMessage) message.getObject();
         final Object dataObject = requestMessage.getRequest();
@@ -53,18 +53,21 @@ public class EventNotificationMessageProcessor extends ProtocolRequestMessagePro
             if (dataObject instanceof EventNotificationDto) {
 
                 final EventNotificationDto eventNotification = (EventNotificationDto) dataObject;
-                this.eventNotificationMessageService.handleEvent(deviceIdentification, eventNotification);
+                this.eventNotificationMessageService.handleEvent(metadata.getDeviceIdentification(), eventNotification);
 
             } else if (dataObject instanceof List) {
 
-                @SuppressWarnings("unchecked")
-                final List<EventNotificationDto> eventNotifications = (List<EventNotificationDto>) dataObject;
-                this.eventNotificationMessageService.handleEvents(deviceIdentification, eventNotifications);
+                @SuppressWarnings("unchecked") final List<EventNotificationDto> eventNotifications =
+                        (List<EventNotificationDto>) dataObject;
+                this.eventNotificationMessageService.handleEvents(metadata.getDeviceIdentification(),
+                        eventNotifications);
             }
 
         } catch (final UnknownEntityException e) {
-            LOGGER.error("Exception", e);
-            throw new JMSException(e.getMessage());
+            String errorMessage = String.format("%s occurred, reason: %s", e.getClass().getName(), e.getMessage());
+            LOGGER.error(errorMessage, e);
+
+            throw new JMSException(errorMessage);
         }
     }
 }

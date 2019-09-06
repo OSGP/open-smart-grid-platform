@@ -46,7 +46,7 @@ public class DeviceCommunicationInformationService {
         } else if (ResponseMessageResultType.NOT_OK == result) {
             device.updateConnectionDetailsToFailure();
         } else {
-            LOGGER.warn("Unexpected result type: {}, connection information not updated for device: ", result,
+            LOGGER.warn("Unexpected result type: {}, connection information not updated for device: {}", result,
                     deviceIdentification);
             return;
         }
