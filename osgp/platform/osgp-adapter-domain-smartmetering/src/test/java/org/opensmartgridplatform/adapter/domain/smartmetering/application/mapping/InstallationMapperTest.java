@@ -1,9 +1,10 @@
 /**
  * Copyright 2014-2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping;
@@ -15,13 +16,12 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.Date;
 
+import ma.glasnost.orika.MapperFactory;
+import ma.glasnost.orika.impl.DefaultMapperFactory;
 import org.junit.Test;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
-
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.DefaultMapperFactory;
 
 public class InstallationMapperTest {
 
@@ -35,7 +35,8 @@ public class InstallationMapperTest {
         source.setCommunicationMethod("skype");
         source.setCommunicationProvider("theInternet");
         source.setICCId("value");
-        source.setDSMRVersion("latestVersion");
+        source.setProtocolName("protocolName");
+        source.setProtocolVersion("latestVersion");
         source.setMasterKey("masterKey".getBytes());
         source.setGlobalEncryptionUnicastKey("globalEncryptionUnicastKey".getBytes());
         source.setAuthenticationKey("authenticationKey".getBytes());
@@ -76,7 +77,8 @@ public class InstallationMapperTest {
         smartMeteringDevice.setCommunicationMethod("skype");
         smartMeteringDevice.setCommunicationProvider("theInternet");
         smartMeteringDevice.setICCId("value");
-        smartMeteringDevice.setDSMRVersion("latestVersion");
+        smartMeteringDevice.setProtocolName("protocolName");
+        smartMeteringDevice.setProtocolVersion("latestVersion");
         smartMeteringDevice.setMasterKey("masterKey".getBytes());
         smartMeteringDevice.setGlobalEncryptionUnicastKey("globalEncryptionUnicastKey".getBytes());
         smartMeteringDevice.setAuthenticationKey("authenticationKey".getBytes());
@@ -91,8 +93,8 @@ public class InstallationMapperTest {
         smartMeteringDevice.setMbusDeviceTypeIdentification((short) 3);
         smartMeteringDevice.setMbusDefaultKey("mbusDefaultKey".getBytes());
 
-        final SmartMeteringDeviceDto smartMeteringDeviceDto = this.mapperFactory.getMapperFacade()
-                .map(smartMeteringDevice, SmartMeteringDeviceDto.class);
+        final SmartMeteringDeviceDto smartMeteringDeviceDto = this.mapperFactory.getMapperFacade().map(
+                smartMeteringDevice, SmartMeteringDeviceDto.class);
 
         assertNotNull(smartMeteringDevice);
         assertNotNull(smartMeteringDeviceDto);
@@ -101,7 +103,8 @@ public class InstallationMapperTest {
         assertEquals(smartMeteringDevice.getCommunicationMethod(), smartMeteringDeviceDto.getCommunicationMethod());
         assertEquals(smartMeteringDevice.getCommunicationProvider(), smartMeteringDeviceDto.getCommunicationProvider());
         assertEquals(smartMeteringDevice.getICCId(), smartMeteringDeviceDto.getICCId());
-        assertEquals(smartMeteringDevice.getDSMRVersion(), smartMeteringDeviceDto.getDSMRVersion());
+        assertEquals(smartMeteringDevice.getProtocolName(), smartMeteringDeviceDto.getProtocolName());
+        assertEquals(smartMeteringDevice.getProtocolVersion(), smartMeteringDeviceDto.getProtocolVersion());
         assertArrayEquals(smartMeteringDevice.getMasterKey(), smartMeteringDeviceDto.getMasterKey());
         assertArrayEquals(smartMeteringDevice.getGlobalEncryptionUnicastKey(),
                 smartMeteringDeviceDto.getGlobalEncryptionUnicastKey());
