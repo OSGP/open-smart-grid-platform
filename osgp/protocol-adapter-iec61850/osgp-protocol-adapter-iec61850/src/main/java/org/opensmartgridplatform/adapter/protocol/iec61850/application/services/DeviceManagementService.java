@@ -1,21 +1,15 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.iec61850.application.services;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.opensmartgridplatform.dto.da.GetPQValuesResponseDto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.entities.Iec61850DeviceReportGroup;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceReportGroupRepository;
@@ -27,13 +21,19 @@ import org.opensmartgridplatform.core.db.api.iec61850.entities.LightMeasurementD
 import org.opensmartgridplatform.core.db.api.iec61850.entities.Ssld;
 import org.opensmartgridplatform.core.db.api.iec61850.repositories.LmdDataRepository;
 import org.opensmartgridplatform.core.db.api.iec61850.repositories.SsldDataRepository;
-import org.opensmartgridplatform.dto.valueobjects.DeviceFunctionDto;
+import org.opensmartgridplatform.dto.da.GetPQValuesResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.EventNotificationDto;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.GetDataResponseDto;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service(value = "iec61850DeviceManagementService")
 public class DeviceManagementService {
@@ -85,12 +85,12 @@ public class DeviceManagementService {
      * Send an event notification to OSGP Core.
      *
      * @param deviceIdentification
-     *            The identification of the device.
+     *         The identification of the device.
      * @param eventNotifications
-     *            The event notifications.
+     *         The event notifications.
      *
      * @throws ProtocolAdapterException
-     *             In case the device can not be found in the database.
+     *         In case the device can not be found in the database.
      */
     @Transactional(value = "iec61850OsgpCoreDbApiTransactionManager", readOnly = true)
     public void addEventNotifications(final String deviceIdentification,
@@ -111,19 +111,19 @@ public class DeviceManagementService {
         final RequestMessage requestMessage = new RequestMessage("no-correlationUid", "no-organisation",
                 deviceIdentification, new ArrayList<>(eventNotifications));
 
-        this.osgpRequestMessageSender.send(requestMessage, DeviceFunctionDto.ADD_EVENT_NOTIFICATION.name());
+        this.osgpRequestMessageSender.send(requestMessage, MessageType.ADD_EVENT_NOTIFICATION.name());
     }
 
     /**
      * Get the device output setting (relay configuration) for a given device.
      *
      * @param deviceIdentification
-     *            The device identification.
+     *         The device identification.
      *
      * @return The {@link DeviceOutputSetting} for the device.
      *
      * @throws ProtocolAdapterException
-     *             In case the device can not be found in the database.
+     *         In case the device can not be found in the database.
      */
     @Transactional(value = "iec61850OsgpCoreDbApiTransactionManager", readOnly = true)
     public List<DeviceOutputSetting> getDeviceOutputSettings(final String deviceIdentification)
@@ -143,22 +143,24 @@ public class DeviceManagementService {
         // Correlation ID is generated @ WS adapter, domain+version is
         // hard-coded
         // for now
-        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder().dataObject(response)
-                .deviceMessageMetadata(new DeviceMessageMetadata(deviceIdentification, "no-organisation",
-                        "no-correlationUid", DeviceFunctionDto.GET_DATA.name(), 0))
-                .result(ResponseMessageResultType.OK).domain("MICROGRIDS").domainVersion("1.0").build();
+        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder().dataObject(
+                response).deviceMessageMetadata(
+                new DeviceMessageMetadata(deviceIdentification, "no-organisation", "no-correlationUid",
+                        MessageType.GET_DATA.name(), 0)).result(ResponseMessageResultType.OK).domain(
+                "MICROGRIDS").domainVersion("1.0").build();
         this.responseSender.send(responseMessage);
     }
 
     public void sendPqValues(final String deviceIdentification, final String reportDataSet,
             final GetPQValuesResponseDto response) throws ProtocolAdapterException {
-        final Iec61850DeviceReportGroup deviceReportGroup = this.deviceReportGroupRepository
-                .findByDeviceIdentificationAndReportDataSet(deviceIdentification, reportDataSet);
-        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder().dataObject(response)
-                .deviceMessageMetadata(new DeviceMessageMetadata(deviceIdentification, "no-organisation",
-                        "no-correlationUid", DeviceFunctionDto.GET_POWER_QUALITY_VALUES.name(), 0))
-                .result(ResponseMessageResultType.OK).domain(deviceReportGroup.getDomain())
-                .domainVersion(deviceReportGroup.getDomainVersion()).build();
+        final Iec61850DeviceReportGroup deviceReportGroup =
+                this.deviceReportGroupRepository.findByDeviceIdentificationAndReportDataSet(
+                deviceIdentification, reportDataSet);
+        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder().dataObject(
+                response).deviceMessageMetadata(
+                new DeviceMessageMetadata(deviceIdentification, "no-organisation", "no-correlationUid",
+                        MessageType.GET_POWER_QUALITY_VALUES.name(), 0)).result(ResponseMessageResultType.OK).domain(
+                deviceReportGroup.getDomain()).domainVersion(deviceReportGroup.getDomainVersion()).build();
         this.responseSender.send(responseMessage);
     }
 }
