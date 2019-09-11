@@ -39,6 +39,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class DeviceManagementService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementService.class);
+    private static final String NO_ORGANISATION = "no-organisation";
+    private static final String NO_CORRELATION_UID = "no-correlationUid";
 
     @Autowired
     private SsldDataRepository ssldDataRepository;
@@ -108,7 +110,7 @@ public class DeviceManagementService {
 
         LOGGER.info("addEventNotifications called for device {}: {}", deviceIdentification, eventNotifications);
 
-        final RequestMessage requestMessage = new RequestMessage("no-correlationUid", "no-organisation",
+        final RequestMessage requestMessage = new RequestMessage(NO_CORRELATION_UID, NO_ORGANISATION,
                 deviceIdentification, new ArrayList<>(eventNotifications));
 
         this.osgpRequestMessageSender.send(requestMessage, MessageType.ADD_EVENT_NOTIFICATION.name());
@@ -138,27 +140,26 @@ public class DeviceManagementService {
         return ssldDevice.getOutputSettings();
     }
 
-    public void sendMeasurements(final String deviceIdentification, final GetDataResponseDto response)
-            throws ProtocolAdapterException {
+    public void sendMeasurements(final String deviceIdentification, final GetDataResponseDto response) {
         // Correlation ID is generated @ WS adapter, domain+version is
         // hard-coded
         // for now
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder().dataObject(
                 response).deviceMessageMetadata(
-                new DeviceMessageMetadata(deviceIdentification, "no-organisation", "no-correlationUid",
+                new DeviceMessageMetadata(deviceIdentification, NO_ORGANISATION, NO_CORRELATION_UID,
                         MessageType.GET_DATA.name(), 0)).result(ResponseMessageResultType.OK).domain(
                 "MICROGRIDS").domainVersion("1.0").build();
         this.responseSender.send(responseMessage);
     }
 
     public void sendPqValues(final String deviceIdentification, final String reportDataSet,
-            final GetPQValuesResponseDto response) throws ProtocolAdapterException {
+            final GetPQValuesResponseDto response) {
         final Iec61850DeviceReportGroup deviceReportGroup =
                 this.deviceReportGroupRepository.findByDeviceIdentificationAndReportDataSet(
                 deviceIdentification, reportDataSet);
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder().dataObject(
                 response).deviceMessageMetadata(
-                new DeviceMessageMetadata(deviceIdentification, "no-organisation", "no-correlationUid",
+                new DeviceMessageMetadata(deviceIdentification, NO_ORGANISATION, NO_CORRELATION_UID,
                         MessageType.GET_POWER_QUALITY_VALUES.name(), 0)).result(ResponseMessageResultType.OK).domain(
                 deviceReportGroup.getDomain()).domainVersion(deviceReportGroup.getDomainVersion()).build();
         this.responseSender.send(responseMessage);
