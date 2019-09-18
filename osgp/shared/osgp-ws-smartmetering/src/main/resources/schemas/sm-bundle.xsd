@@ -1,32 +1,32 @@
 <!-- Copyright 2015 Smart Society Services B.V. -->
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-  xmlns:common="http://www.opensmartgridplatform.org/schemas/common/2014/10"
-  xmlns:smman="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-management/2014/10"
-  xmlns:smconf="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-configuration/2014/10"
-  xmlns:smmon="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-monitoring/2014/10"
-  xmlns:adhoc="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-adhoc/2014/10"
-  xmlns:sminst="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-installation/2014/10"
-  xmlns:tns="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-bundle/2014/10"
-  attributeFormDefault="unqualified" elementFormDefault="qualified"
-  targetNamespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-bundle/2014/10">
+            xmlns:common="http://www.opensmartgridplatform.org/schemas/common/2014/10"
+            xmlns:smman="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-management/2014/10"
+            xmlns:smconf="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-configuration/2014/10"
+            xmlns:smmon="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-monitoring/2014/10"
+            xmlns:adhoc="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-adhoc/2014/10"
+            xmlns:sminst="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-installation/2014/10"
+            xmlns:tns="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-bundle/2014/10"
+            attributeFormDefault="unqualified" elementFormDefault="qualified"
+            targetNamespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-bundle/2014/10">
 
   <xsd:import namespace="http://www.opensmartgridplatform.org/schemas/common/2014/10"
-    schemaLocation="common.xsd" />
+              schemaLocation="common.xsd"/>
   <xsd:import
-    namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-management/2014/10"
-    schemaLocation="sm-management.xsd" />
+      namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-management/2014/10"
+      schemaLocation="sm-management.xsd"/>
   <xsd:import
-    namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-configuration/2014/10"
-    schemaLocation="sm-configuration.xsd" />
+      namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-configuration/2014/10"
+      schemaLocation="sm-configuration.xsd"/>
   <xsd:import
-    namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-monitoring/2014/10"
-    schemaLocation="sm-monitoring.xsd" />
+      namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-monitoring/2014/10"
+      schemaLocation="sm-monitoring.xsd"/>
   <xsd:import
-    namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-adhoc/2014/10"
-    schemaLocation="sm-adhoc.xsd" />
+      namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-adhoc/2014/10"
+      schemaLocation="sm-adhoc.xsd"/>
   <xsd:import
-    namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-installation/2014/10"
-    schemaLocation="sm-installation.xsd" />
+      namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-installation/2014/10"
+      schemaLocation="sm-installation.xsd"/>
 
   <!-- Requests and Responses -->
   <xsd:element name="FindEventsRequest">
@@ -103,7 +103,7 @@
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension
-          base="smconf:SetEncryptionKeyExchangeOnGMeterRequestData"></xsd:extension>
+            base="smconf:SetEncryptionKeyExchangeOnGMeterRequestData"></xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -251,7 +251,7 @@
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension
-          base="smconf:GetMbusEncryptionKeyStatusByChannelRequestData"></xsd:extension>
+            base="smconf:GetMbusEncryptionKeyStatusByChannelRequestData"></xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -259,15 +259,22 @@
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension
-          base="smman:SetDeviceLifecycleStatusByChannelRequestData"></xsd:extension>
+            base="smman:SetDeviceLifecycleStatusByChannelRequestData"></xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
-    <xsd:element name="ScanMbusChannelsRequest">
+  <xsd:element name="ScanMbusChannelsRequest">
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension
-          base="adhoc:ScanMbusChannelsRequestData"></xsd:extension>
+            base="adhoc:ScanMbusChannelsRequestData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetRandomizationSettingsRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smconf:SetRandomizationSettingsRequestData"></xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -275,40 +282,41 @@
   <xsd:complexType name="Actions">
     <xsd:sequence>
       <xsd:choice maxOccurs="unbounded">
-        <xsd:element ref="tns:FindEventsRequest" />
-        <xsd:element ref="tns:SetSpecialDaysRequest" />
-        <xsd:element ref="tns:ReadAlarmRegisterRequest" />
-        <xsd:element ref="tns:GetActualMeterReadsRequest" />
-        <xsd:element ref="tns:GetActualMeterReadsGasRequest" />
-        <xsd:element ref="tns:GetAdministrativeStatusRequest" />
-        <xsd:element ref="tns:GetPeriodicMeterReadsRequest" />
-        <xsd:element ref="tns:GetPeriodicMeterReadsGasRequest" />
-        <xsd:element ref="tns:SetAdministrativeStatusRequest" />
-        <xsd:element ref="tns:SetActivityCalendarRequest" />
-        <xsd:element ref="tns:SetEncryptionKeyExchangeOnGMeterRequest" />
-        <xsd:element ref="tns:GetMbusEncryptionKeyStatusRequest" />
-        <xsd:element ref="tns:SetAlarmNotificationsRequest" />
-        <xsd:element ref="tns:SetConfigurationObjectRequest" />
-        <xsd:element ref="tns:SetPushSetupAlarmRequest" />
-        <xsd:element ref="tns:SetPushSetupSmsRequest" />
-        <xsd:element ref="tns:SynchronizeTimeRequest" />
-        <xsd:element ref="tns:GetFirmwareVersionRequest" />
-        <xsd:element ref="tns:UpdateFirmwareRequest" />
-        <xsd:element ref="tns:GetAllAttributeValuesRequest" />
-        <xsd:element ref="tns:GetSpecificAttributeValueRequest" />
-        <xsd:element ref="tns:SetKeysRequest" />
-        <xsd:element ref="tns:GetAssociationLnObjectsRequest" />
-        <xsd:element ref="tns:SetClockConfigurationRequest" />
-        <xsd:element ref="tns:GetConfigurationObjectRequest" />
-        <xsd:element ref="tns:GetProfileGenericDataRequest" />
-        <xsd:element ref="tns:GenerateAndReplaceKeysRequest" />
-        <xsd:element ref="tns:ConfigureDefinableLoadProfileRequest" />
-        <xsd:element ref="tns:SetMbusUserKeyByChannelRequest" />
-        <xsd:element ref="tns:CoupleMbusDeviceByChannelRequest" />
-        <xsd:element ref="tns:ClearAlarmRegisterRequest" />
-        <xsd:element ref="tns:GetMbusEncryptionKeyStatusByChannelRequest" />
-        <xsd:element ref="tns:SetDeviceLifecycleStatusByChannelRequest" />
-        <xsd:element ref="tns:ScanMbusChannelsRequest" />
+        <xsd:element ref="tns:FindEventsRequest"/>
+        <xsd:element ref="tns:SetSpecialDaysRequest"/>
+        <xsd:element ref="tns:ReadAlarmRegisterRequest"/>
+        <xsd:element ref="tns:GetActualMeterReadsRequest"/>
+        <xsd:element ref="tns:GetActualMeterReadsGasRequest"/>
+        <xsd:element ref="tns:GetAdministrativeStatusRequest"/>
+        <xsd:element ref="tns:GetPeriodicMeterReadsRequest"/>
+        <xsd:element ref="tns:GetPeriodicMeterReadsGasRequest"/>
+        <xsd:element ref="tns:SetAdministrativeStatusRequest"/>
+        <xsd:element ref="tns:SetActivityCalendarRequest"/>
+        <xsd:element ref="tns:SetEncryptionKeyExchangeOnGMeterRequest"/>
+        <xsd:element ref="tns:GetMbusEncryptionKeyStatusRequest"/>
+        <xsd:element ref="tns:SetAlarmNotificationsRequest"/>
+        <xsd:element ref="tns:SetConfigurationObjectRequest"/>
+        <xsd:element ref="tns:SetPushSetupAlarmRequest"/>
+        <xsd:element ref="tns:SetPushSetupSmsRequest"/>
+        <xsd:element ref="tns:SynchronizeTimeRequest"/>
+        <xsd:element ref="tns:GetFirmwareVersionRequest"/>
+        <xsd:element ref="tns:UpdateFirmwareRequest"/>
+        <xsd:element ref="tns:GetAllAttributeValuesRequest"/>
+        <xsd:element ref="tns:GetSpecificAttributeValueRequest"/>
+        <xsd:element ref="tns:SetKeysRequest"/>
+        <xsd:element ref="tns:GetAssociationLnObjectsRequest"/>
+        <xsd:element ref="tns:SetClockConfigurationRequest"/>
+        <xsd:element ref="tns:GetConfigurationObjectRequest"/>
+        <xsd:element ref="tns:GetProfileGenericDataRequest"/>
+        <xsd:element ref="tns:GenerateAndReplaceKeysRequest"/>
+        <xsd:element ref="tns:ConfigureDefinableLoadProfileRequest"/>
+        <xsd:element ref="tns:SetMbusUserKeyByChannelRequest"/>
+        <xsd:element ref="tns:CoupleMbusDeviceByChannelRequest"/>
+        <xsd:element ref="tns:ClearAlarmRegisterRequest"/>
+        <xsd:element ref="tns:GetMbusEncryptionKeyStatusByChannelRequest"/>
+        <xsd:element ref="tns:SetDeviceLifecycleStatusByChannelRequest"/>
+        <xsd:element ref="tns:ScanMbusChannelsRequest"/>
+        <xsd:element ref="tns:SetRandomizationSettingsRequest"/>
       </xsd:choice>
     </xsd:sequence>
   </xsd:complexType>
@@ -317,9 +325,9 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"
-          minOccurs="1" maxOccurs="1" />
+                     minOccurs="1" maxOccurs="1"/>
         <xsd:element name="Actions" type="tns:Actions"
-          minOccurs="1" maxOccurs="1" />
+                     minOccurs="1" maxOccurs="1"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -470,7 +478,7 @@
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension
-          base="smconf:GetMbusEncryptionKeyStatusByChannelResponseData"></xsd:extension>
+            base="smconf:GetMbusEncryptionKeyStatusByChannelResponseData"></xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -478,7 +486,7 @@
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension
-          base="smman:SetDeviceLifecycleStatusByChannelResponseData"></xsd:extension>
+            base="smman:SetDeviceLifecycleStatusByChannelResponseData"></xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -486,39 +494,39 @@
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension
-          base="adhoc:ScanMbusChannelsResponseData"></xsd:extension>
+            base="adhoc:ScanMbusChannelsResponseData"></xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
     <xsd:unique name="UniqueBundledScanMbusChannelValues">
-      <xsd:selector xpath="adhoc:ChannelShortId" />
-      <xsd:field xpath="adhoc:Channel" />
+      <xsd:selector xpath="adhoc:ChannelShortId"/>
+      <xsd:field xpath="adhoc:Channel"/>
     </xsd:unique>
   </xsd:element>
-  
+
   <xsd:complexType name="AllResponses">
     <xsd:sequence>
       <xsd:choice maxOccurs="unbounded">
-        <xsd:element ref="tns:FindEventsResponse" />
-        <xsd:element ref="tns:ActionResponse" />
-        <xsd:element ref="tns:FaultResponse" />
-        <xsd:element ref="tns:ReadAlarmRegisterResponse" />
-        <xsd:element ref="tns:ActualMeterReadsResponse" />
-        <xsd:element ref="tns:ActualMeterReadsGasResponse" />
-        <xsd:element ref="tns:AdministrativeStatusResponse" />
-        <xsd:element ref="tns:PeriodicMeterReadsResponse" />
-        <xsd:element ref="tns:PeriodicMeterReadsGasResponse" />
-        <xsd:element ref="tns:GetMbusEncryptionKeyStatusResponse" />
-        <xsd:element ref="tns:GetAllAttributeValuesResponse" />
-        <xsd:element ref="tns:GetSpecificAttributeValueResponse" />
-        <xsd:element ref="tns:GetFirmwareVersionResponse" />
-        <xsd:element ref="tns:UpdateFirmwareResponse" />
-        <xsd:element ref="tns:AssociationLnObjectsResponse" />
-        <xsd:element ref="tns:GetConfigurationObjectResponse" />
-        <xsd:element ref="tns:ProfileGenericDataResponse" />
-        <xsd:element ref="tns:CoupleMbusDeviceByChannelResponse" />
-        <xsd:element ref="tns:GetMbusEncryptionKeyStatusByChannelResponse" />
-        <xsd:element ref="tns:SetDeviceLifecycleStatusByChannelResponse" />
-        <xsd:element ref="tns:ScanMbusChannelsResponse" />
+        <xsd:element ref="tns:FindEventsResponse"/>
+        <xsd:element ref="tns:ActionResponse"/>
+        <xsd:element ref="tns:FaultResponse"/>
+        <xsd:element ref="tns:ReadAlarmRegisterResponse"/>
+        <xsd:element ref="tns:ActualMeterReadsResponse"/>
+        <xsd:element ref="tns:ActualMeterReadsGasResponse"/>
+        <xsd:element ref="tns:AdministrativeStatusResponse"/>
+        <xsd:element ref="tns:PeriodicMeterReadsResponse"/>
+        <xsd:element ref="tns:PeriodicMeterReadsGasResponse"/>
+        <xsd:element ref="tns:GetMbusEncryptionKeyStatusResponse"/>
+        <xsd:element ref="tns:GetAllAttributeValuesResponse"/>
+        <xsd:element ref="tns:GetSpecificAttributeValueResponse"/>
+        <xsd:element ref="tns:GetFirmwareVersionResponse"/>
+        <xsd:element ref="tns:UpdateFirmwareResponse"/>
+        <xsd:element ref="tns:AssociationLnObjectsResponse"/>
+        <xsd:element ref="tns:GetConfigurationObjectResponse"/>
+        <xsd:element ref="tns:ProfileGenericDataResponse"/>
+        <xsd:element ref="tns:CoupleMbusDeviceByChannelResponse"/>
+        <xsd:element ref="tns:GetMbusEncryptionKeyStatusByChannelResponse"/>
+        <xsd:element ref="tns:SetDeviceLifecycleStatusByChannelResponse"/>
+        <xsd:element ref="tns:ScanMbusChannelsResponse"/>
       </xsd:choice>
     </xsd:sequence>
   </xsd:complexType>
@@ -527,7 +535,7 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="AllResponses" type="tns:AllResponses"
-          minOccurs="1" maxOccurs="1" />
+                     minOccurs="1" maxOccurs="1"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -537,7 +545,7 @@
   <xsd:element name="GetDevicesRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="Page" type="xsd:int" />
+        <xsd:element name="Page" type="xsd:int"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -545,7 +553,7 @@
   <xsd:element name="GetDevicesResponse">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="DevicePage" type="tns:DevicePage" />
+        <xsd:element name="DevicePage" type="tns:DevicePage"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -554,20 +562,20 @@
 
   <xsd:complexType name="Device">
     <xsd:sequence>
-      <xsd:element name="DeviceUid" type="xsd:string" />
-      <xsd:element name="DeviceIdentification" type="common:Identification" />
-      <xsd:element name="DeviceType" type="xsd:string" />
-      <xsd:element name="Activated" type="xsd:boolean" />
-      <xsd:element name="HasSchedule" type="xsd:boolean" />
-      <xsd:element name="PublicKeyPresent" type="xsd:boolean" />
+      <xsd:element name="DeviceUid" type="xsd:string"/>
+      <xsd:element name="DeviceIdentification" type="common:Identification"/>
+      <xsd:element name="DeviceType" type="xsd:string"/>
+      <xsd:element name="Activated" type="xsd:boolean"/>
+      <xsd:element name="HasSchedule" type="xsd:boolean"/>
+      <xsd:element name="PublicKeyPresent" type="xsd:boolean"/>
     </xsd:sequence>
   </xsd:complexType>
 
   <xsd:complexType name="DevicePage">
     <xsd:sequence>
-      <xsd:element name="TotalPages" type="xsd:int" />
+      <xsd:element name="TotalPages" type="xsd:int"/>
       <xsd:element maxOccurs="unbounded" name="Devices"
-        type="tns:Device" />
+                   type="tns:Device"/>
     </xsd:sequence>
   </xsd:complexType>
 
