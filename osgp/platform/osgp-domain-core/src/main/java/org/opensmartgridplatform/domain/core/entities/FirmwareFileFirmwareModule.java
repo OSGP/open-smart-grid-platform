@@ -88,7 +88,7 @@ public class FirmwareFileFirmwareModule implements Comparable<FirmwareFileFirmwa
     @MapsId("firmwareFileId")
     private FirmwareFile firmwareFile;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "firmware_module_id")
     @MapsId("firmwareModuleId")
     private FirmwareModule firmwareModule;

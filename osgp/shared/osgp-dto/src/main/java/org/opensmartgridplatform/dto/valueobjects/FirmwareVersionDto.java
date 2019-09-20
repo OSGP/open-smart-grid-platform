@@ -8,21 +8,17 @@
 package org.opensmartgridplatform.dto.valueobjects;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class FirmwareVersionDto implements Serializable {
     private static final long serialVersionUID = 4842058824665590962L;
 
-    private FirmwareModuleType firmwareModuleType;
-    private String version;
+    private final FirmwareModuleType firmwareModuleType;
+    private final String version;
 
     public FirmwareVersionDto(final FirmwareModuleType firmwareModuleType, final String version) {
         this.firmwareModuleType = firmwareModuleType;
         this.version = version;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("FirmwareVersionDto[%s => %s]", this.firmwareModuleType, this.version);
     }
 
     public FirmwareModuleType getFirmwareModuleType() {
@@ -32,4 +28,27 @@ public class FirmwareVersionDto implements Serializable {
     public String getVersion() {
         return this.version;
     }
+
+    @Override
+    public String toString() {
+        return String.format("FirmwareVersionDto[%s => %s]", this.firmwareModuleType, this.version);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.firmwareModuleType, this.version);
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (this.getClass() != obj.getClass()) {
+            return false;
+        }
+        final FirmwareVersionDto other = (FirmwareVersionDto) obj;
+        return this.firmwareModuleType == other.firmwareModuleType && Objects.equals(this.version, other.version);
+    }
+
 }
