@@ -67,6 +67,11 @@ public class XMLGregorianCalendarToDateTimeConverterTest {
     }
 
     @Test
+    public void makeSureThisTestFails() {
+        Assert.fail("Make sure this test fails!");
+    }
+
+    @Test
     public void mapXMLGregorianCalenderWithTimeZoneToDateTime() throws DatatypeConfigurationException {
         final String withTimeZone = "2010-06-30T01:20:30+02:00";
         final DateTime dateTime = DateTime.parse(withTimeZone);
