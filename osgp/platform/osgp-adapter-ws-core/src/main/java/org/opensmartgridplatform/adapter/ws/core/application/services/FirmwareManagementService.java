@@ -76,6 +76,7 @@ public class FirmwareManagementService {
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementService.class);
 
     private static final String SPACE_REPLACER = "_";
+    private static final String INSTALLER = "inserted by OSGP after mismatch when calling GetFirmwareVersion";
 
     @Autowired
     private DomainHelperService domainHelperService;
@@ -580,7 +581,7 @@ public class FirmwareManagementService {
      * Saves a {@link DeviceFirmwareFile} instance.
      */
     @Transactional(value = "writableTransactionManager")
-    public void saveCurrentDeviceFirmwareFile(final DeviceFirmwareFile deviceFirmwareFile) {
+    public void saveDeviceFirmwareFile(final DeviceFirmwareFile deviceFirmwareFile) {
         this.deviceFirmwareFileRepository.save(deviceFirmwareFile);
     }
 
@@ -802,33 +803,48 @@ public class FirmwareManagementService {
         return firmwareVersionsToCheck;
     }
 
+    @Transactional(value = "writableTransactionManager")
     public void tryToAddFirmwareVersionToHistory(final String organisationIdentification,
             final String deviceIdentification, final FirmwareVersionDto firmwareVersion) throws FunctionalException {
 
+        final FirmwareModule module = createFirmwareModule(firmwareVersion);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
-        final DeviceModel deviceModel = device.getDeviceModel();
-        final Manufacturer manufacturer = deviceModel.getManufacturer();
+        final List<FirmwareFile> firmwareFiles = this.getPossibleFirmwareFiles(organisationIdentification, device);
 
-        // find the firmware file with the version to add
-        final String description = firmwareVersion.getFirmwareModuleType()
-                .getDescription()
-                .toLowerCase(Locale.getDefault());
-        final FirmwareModule module = new FirmwareModule(description);
-        final List<FirmwareFile> firmwareFiles = this.findAllFirmwareFiles(organisationIdentification,
-                manufacturer.getCode(), deviceModel.getModelCode());
+        // check each file for the module and the version as returned by the
+        // device
         for (final FirmwareFile file : firmwareFiles) {
             final Map<FirmwareModule, String> moduleVersions = file.getModuleVersions();
             if (moduleVersions.containsKey(module) && moduleVersions.get(module).equals(firmwareVersion.getVersion())) {
-                final String INSTALLER = "inserted by OSGP after mismatch when calling GetFirmwareVersion";
+
+                // file found, insert a record into the history
                 final DeviceFirmwareFile deviceFirmwareFile = new DeviceFirmwareFile(device, file, new Date(),
                         INSTALLER);
-                this.saveCurrentDeviceFirmwareFile(deviceFirmwareFile);
+                this.saveDeviceFirmwareFile(deviceFirmwareFile);
+                LOGGER.info("Firmware version {} added to device {}", firmwareVersion.getVersion(),
+                        deviceIdentification);
             }
         }
 
     }
 
     // HELPER METHODS
+
+    private List<FirmwareFile> getPossibleFirmwareFiles(final String organisationIdentification, final Device device)
+            throws FunctionalException {
+        final DeviceModel deviceModel = device.getDeviceModel();
+        final Manufacturer manufacturer = deviceModel.getManufacturer();
+
+        return this.findAllFirmwareFiles(organisationIdentification, manufacturer.getCode(),
+                deviceModel.getModelCode());
+    }
+
+    private static FirmwareModule createFirmwareModule(final FirmwareVersionDto firmwareVersion) {
+        final String description = firmwareVersion.getFirmwareModuleType()
+                .getDescription()
+                .toLowerCase(Locale.getDefault());
+        return new FirmwareModule(description);
+    }
 
     private String getMd5Hash(final byte[] file) {
         String md5Hash;
