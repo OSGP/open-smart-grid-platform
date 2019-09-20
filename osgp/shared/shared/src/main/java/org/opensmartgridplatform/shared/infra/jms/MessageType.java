@@ -92,4 +92,5 @@ public enum MessageType {
     UPDATE_DEVICE_SSL_CERTIFICATION,
     UPDATE_FIRMWARE,
     UPDATE_KEY;
+    // keep MessageType in alphabetical order.
 }

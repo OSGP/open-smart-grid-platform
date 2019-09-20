@@ -11,13 +11,6 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.application.servi
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
@@ -68,6 +61,12 @@ import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service(value = "domainSmartMeteringConfigurationService")
 @Transactional(value = "transactionManager")
@@ -104,15 +103,17 @@ public class ConfigurationService {
         LOGGER.info("setSpecialDays for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
-        final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(
+                deviceMessageMetadata.getDeviceIdentification());
 
         final SpecialDaysRequestDto specialDaysRequestDto = this.configurationMapper.map(specialDaysRequestValueObject,
                 SpecialDaysRequestDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                smartMeteringDevice.getIpAddress(), specialDaysRequestDto), deviceMessageMetadata.getMessageType(),
+                        deviceMessageMetadata.getOrganisationIdentification(),
+                        deviceMessageMetadata.getDeviceIdentification(),
+                        smartMeteringDevice.getIpAddress(), specialDaysRequestDto),
+                deviceMessageMetadata.getMessageType(),
                 deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
     }
 
@@ -123,15 +124,16 @@ public class ConfigurationService {
         LOGGER.info("setConfigurationObject for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
-        final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(
+                deviceMessageMetadata.getDeviceIdentification());
 
-        final SetConfigurationObjectRequestDto setConfigurationObjectRequestDto = this.configurationMapper
-                .map(setConfigurationObjectRequestValueObject, SetConfigurationObjectRequestDto.class);
+        final SetConfigurationObjectRequestDto setConfigurationObjectRequestDto = this.configurationMapper.map(
+                setConfigurationObjectRequestValueObject, SetConfigurationObjectRequestDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                smartMeteringDevice.getIpAddress(), setConfigurationObjectRequestDto),
+                        deviceMessageMetadata.getOrganisationIdentification(),
+                        deviceMessageMetadata.getDeviceIdentification(),
+                        smartMeteringDevice.getIpAddress(), setConfigurationObjectRequestDto),
                 deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
                 deviceMessageMetadata.getScheduleTime());
     }
@@ -143,15 +145,16 @@ public class ConfigurationService {
         LOGGER.info("setPushSetupAlarm for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
-        final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(
+                deviceMessageMetadata.getDeviceIdentification());
 
         final PushSetupAlarmDto pushSetupAlarmDto = this.configurationMapper.map(pushSetupAlarm,
                 PushSetupAlarmDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                smartMeteringDevice.getIpAddress(), pushSetupAlarmDto), deviceMessageMetadata.getMessageType(),
+                        deviceMessageMetadata.getOrganisationIdentification(),
+                        deviceMessageMetadata.getDeviceIdentification(),
+                        smartMeteringDevice.getIpAddress(), pushSetupAlarmDto), deviceMessageMetadata.getMessageType(),
                 deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
     }
 
@@ -162,14 +165,15 @@ public class ConfigurationService {
         LOGGER.info("setPushSetupSms for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
-        final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(
+                deviceMessageMetadata.getDeviceIdentification());
 
         final PushSetupSmsDto pushSetupSmsDto = this.configurationMapper.map(pushSetupSms, PushSetupSmsDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                smartMeteringDevice.getIpAddress(), pushSetupSmsDto), deviceMessageMetadata.getMessageType(),
+                        deviceMessageMetadata.getOrganisationIdentification(),
+                        deviceMessageMetadata.getDeviceIdentification(),
+                        smartMeteringDevice.getIpAddress(), pushSetupSmsDto), deviceMessageMetadata.getMessageType(),
                 deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
     }
 
@@ -184,13 +188,12 @@ public class ConfigurationService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
-                .withOsgpException(exception).withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
-        this.webServiceResponseMessageSender.send(responseMessage,
-                deviceMessageMetadata.getMessageType());
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
+                deviceMessageMetadata.getCorrelationUid()).withOrganisationIdentification(
+                deviceMessageMetadata.getOrganisationIdentification()).withDeviceIdentification(
+                deviceMessageMetadata.getDeviceIdentification()).withResult(result).withOsgpException(
+                exception).withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
     public void setAlarmNotifications(final DeviceMessageMetadata deviceMessageMetadata,
@@ -199,15 +202,17 @@ public class ConfigurationService {
         LOGGER.info("setAlarmNotifications for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
-        final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(
+                deviceMessageMetadata.getDeviceIdentification());
 
         final AlarmNotificationsDto alarmNotificationsDto = this.configurationMapper.map(alarmNotifications,
                 AlarmNotificationsDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                smartMeteringDevice.getIpAddress(), alarmNotificationsDto), deviceMessageMetadata.getMessageType(),
+                        deviceMessageMetadata.getOrganisationIdentification(),
+                        deviceMessageMetadata.getDeviceIdentification(),
+                        smartMeteringDevice.getIpAddress(), alarmNotificationsDto),
+                deviceMessageMetadata.getMessageType(),
                 deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
     }
 
@@ -215,15 +220,16 @@ public class ConfigurationService {
             final AdministrativeStatusType administrativeStatusType) throws FunctionalException {
 
         LOGGER.info(
-                "Set Administrative Status for organisationIdentification: {} for deviceIdentification: {} to status: {}",
+                "Set Administrative Status for organisationIdentification: {} for deviceIdentification: {} to status:"
+                        + " {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 administrativeStatusType);
 
-        final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(
+                deviceMessageMetadata.getDeviceIdentification());
 
-        final AdministrativeStatusTypeDto administrativeStatusTypeDto = this.configurationMapper
-                .map(administrativeStatusType, AdministrativeStatusTypeDto.class);
+        final AdministrativeStatusTypeDto administrativeStatusTypeDto = this.configurationMapper.map(
+                administrativeStatusType, AdministrativeStatusTypeDto.class);
 
         final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
@@ -236,7 +242,7 @@ public class ConfigurationService {
             final ResponseMessageResultType deviceResult, final OsgpException exception) {
 
         LOGGER.info("handleSetAdministrativeStatusResponse for MessageType: {}, with result: {}",
-                deviceMessageMetadata.getMessageType(), deviceResult.toString());
+                deviceMessageMetadata.getMessageType(), deviceResult);
 
         ResponseMessageResultType result = deviceResult;
         if (exception != null) {
@@ -244,25 +250,25 @@ public class ConfigurationService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
-                .withOsgpException(exception).withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
-        this.webServiceResponseMessageSender.send(responseMessage,
-                deviceMessageMetadata.getMessageType());
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
+                deviceMessageMetadata.getCorrelationUid()).withOrganisationIdentification(
+                deviceMessageMetadata.getOrganisationIdentification()).withDeviceIdentification(
+                deviceMessageMetadata.getDeviceIdentification()).withResult(result).withOsgpException(
+                exception).withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
     public void getAdministrativeStatus(final DeviceMessageMetadata deviceMessageMetadata,
             final AdministrativeStatusType administrativeStatusType) throws FunctionalException {
 
         LOGGER.info(
-                "Get Administrative Status for organisationIdentification: {} for deviceIdentification: {} to status: {}",
+                "Get Administrative Status for organisationIdentification: {} for deviceIdentification: {} to status:"
+                        + " {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 administrativeStatusType);
 
-        final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(
+                deviceMessageMetadata.getDeviceIdentification());
 
         final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
@@ -278,7 +284,7 @@ public class ConfigurationService {
             final AdministrativeStatusTypeDto administrativeStatusTypeDto) {
 
         LOGGER.info("handleGetAdministrativeStatusResponse for MessageType: {}, with result: {}",
-                deviceMessageMetadata.getMessageType(), responseMessageResultType.toString());
+                deviceMessageMetadata.getMessageType(), responseMessageResultType);
 
         ResponseMessageResultType result = responseMessageResultType;
         if (osgpException != null) {
@@ -286,18 +292,16 @@ public class ConfigurationService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        final AdministrativeStatusType administrativeStatusType = this.configurationMapper
-                .map(administrativeStatusTypeDto, AdministrativeStatusType.class);
+        final AdministrativeStatusType administrativeStatusType = this.configurationMapper.map(
+                administrativeStatusTypeDto, AdministrativeStatusType.class);
 
-        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
-                .withOsgpException(osgpException).withDataObject(administrativeStatusType)
-                .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
-        this.webServiceResponseMessageSender.send(
-                responseMessage,
-                deviceMessageMetadata.getMessageType());
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
+                deviceMessageMetadata.getCorrelationUid()).withOrganisationIdentification(
+                deviceMessageMetadata.getOrganisationIdentification()).withDeviceIdentification(
+                deviceMessageMetadata.getDeviceIdentification()).withResult(result).withOsgpException(
+                osgpException).withDataObject(administrativeStatusType).withMessagePriority(
+                deviceMessageMetadata.getMessagePriority()).build();
+        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
     public void setActivityCalendar(final DeviceMessageMetadata deviceMessageMetadata,
@@ -306,15 +310,17 @@ public class ConfigurationService {
         LOGGER.info("set Activity Calendar for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
-        final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(
+                deviceMessageMetadata.getDeviceIdentification());
 
         final ActivityCalendarDto activityCalendarDto = this.configurationMapper.map(activityCalendar,
                 ActivityCalendarDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                smartMeteringDevice.getIpAddress(), activityCalendarDto), deviceMessageMetadata.getMessageType(),
+                        deviceMessageMetadata.getOrganisationIdentification(),
+                        deviceMessageMetadata.getDeviceIdentification(),
+                        smartMeteringDevice.getIpAddress(), activityCalendarDto),
+                deviceMessageMetadata.getMessageType(),
                 deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
     }
 
@@ -329,13 +335,12 @@ public class ConfigurationService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
-                .withOsgpException(exception).withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
-        this.webServiceResponseMessageSender.send(responseMessage,
-                deviceMessageMetadata.getMessageType());
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
+                deviceMessageMetadata.getCorrelationUid()).withOrganisationIdentification(
+                deviceMessageMetadata.getOrganisationIdentification()).withDeviceIdentification(
+                deviceMessageMetadata.getDeviceIdentification()).withResult(result).withOsgpException(
+                exception).withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
     public void handleSetConfigurationObjectResponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -350,13 +355,12 @@ public class ConfigurationService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
-                .withOsgpException(exception).withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
-        this.webServiceResponseMessageSender.send(responseMessage,
-                deviceMessageMetadata.getMessageType());
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
+                deviceMessageMetadata.getCorrelationUid()).withOrganisationIdentification(
+                deviceMessageMetadata.getOrganisationIdentification()).withDeviceIdentification(
+                deviceMessageMetadata.getDeviceIdentification()).withResult(result).withOsgpException(
+                exception).withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
     public void handleSetPushSetupAlarmResponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -370,13 +374,12 @@ public class ConfigurationService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
-                .withOsgpException(exception).withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
-        this.webServiceResponseMessageSender.send(responseMessage,
-                deviceMessageMetadata.getMessageType());
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
+                deviceMessageMetadata.getCorrelationUid()).withOrganisationIdentification(
+                deviceMessageMetadata.getOrganisationIdentification()).withDeviceIdentification(
+                deviceMessageMetadata.getDeviceIdentification()).withResult(result).withOsgpException(
+                exception).withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
     public void handleSetPushSetupSmsResponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -390,13 +393,12 @@ public class ConfigurationService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
-                .withOsgpException(exception).withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
-        this.webServiceResponseMessageSender.send(responseMessage,
-                deviceMessageMetadata.getMessageType());
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
+                deviceMessageMetadata.getCorrelationUid()).withOrganisationIdentification(
+                deviceMessageMetadata.getOrganisationIdentification()).withDeviceIdentification(
+                deviceMessageMetadata.getDeviceIdentification()).withResult(result).withOsgpException(
+                exception).withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
     public void handleSetActivityCalendarResponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -410,26 +412,25 @@ public class ConfigurationService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
-                .withOsgpException(exception).withDataObject(resultString)
-                .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
-        this.webServiceResponseMessageSender.send(
-                responseMessage,
-                deviceMessageMetadata.getMessageType());
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
+                deviceMessageMetadata.getCorrelationUid()).withOrganisationIdentification(
+                deviceMessageMetadata.getOrganisationIdentification()).withDeviceIdentification(
+                deviceMessageMetadata.getDeviceIdentification()).withResult(result).withOsgpException(
+                exception).withDataObject(resultString).withMessagePriority(
+                deviceMessageMetadata.getMessagePriority()).build();
+        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
     public void setEncryptionKeyExchangeOnGMeter(final DeviceMessageMetadata deviceMessageMetadata)
             throws FunctionalException {
 
         LOGGER.info(
-                "set Encryption Key Exchange On G-Meter for organisationIdentification: {} for deviceIdentification: {}",
+                "set Encryption Key Exchange On G-Meter for organisationIdentification: {} for deviceIdentification: "
+                        + "{}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
-        final SmartMeter gasDevice = this.domainHelperService
-                .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+        final SmartMeter gasDevice = this.domainHelperService.findSmartMeter(
+                deviceMessageMetadata.getDeviceIdentification());
 
         final Device gatewayDevice = gasDevice.getGatewayDevice();
         if (gatewayDevice == null) {
@@ -442,8 +443,7 @@ public class ConfigurationService {
                     ComponentType.DOMAIN_SMART_METERING, new GatewayDeviceNotSetForMbusDeviceException());
         }
 
-        this.osgpCoreRequestMessageSender.send(
-                new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                         deviceMessageMetadata.getOrganisationIdentification(), gatewayDevice.getDeviceIdentification(),
                         gatewayDevice.getIpAddress(),
                         new GMeterInfoDto(gasDevice.getChannel(), gasDevice.getDeviceIdentification())),
@@ -462,13 +462,12 @@ public class ConfigurationService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
-                .withOsgpException(exception).withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
-        this.webServiceResponseMessageSender.send(responseMessage,
-                deviceMessageMetadata.getMessageType());
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
+                deviceMessageMetadata.getCorrelationUid()).withOrganisationIdentification(
+                deviceMessageMetadata.getOrganisationIdentification()).withDeviceIdentification(
+                deviceMessageMetadata.getDeviceIdentification()).withResult(result).withOsgpException(
+                exception).withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
     public void setMbusUserKeyByChannel(final DeviceMessageMetadata deviceMessageMetadata,
@@ -477,13 +476,13 @@ public class ConfigurationService {
         LOGGER.info("Set M-Bus User Key By Channel for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
-        final SmartMeter gatewayDevice = this.domainHelperService
-                .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+        final SmartMeter gatewayDevice = this.domainHelperService.findSmartMeter(
+                deviceMessageMetadata.getDeviceIdentification());
 
-        this.osgpCoreRequestMessageSender.send(
-                new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                         deviceMessageMetadata.getOrganisationIdentification(),
-                        deviceMessageMetadata.getDeviceIdentification(), gatewayDevice.getIpAddress(),
+                        deviceMessageMetadata.getDeviceIdentification(),
+                        gatewayDevice.getIpAddress(),
                         new SetMbusUserKeyByChannelRequestDataDto(setMbusUserKeyByChannelRequestData.getChannel())),
                 deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
                 deviceMessageMetadata.getScheduleTime());
@@ -500,13 +499,12 @@ public class ConfigurationService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
-                .withOsgpException(exception).withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
-        this.webServiceResponseMessageSender.send(responseMessage,
-                deviceMessageMetadata.getMessageType());
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
+                deviceMessageMetadata.getCorrelationUid()).withOrganisationIdentification(
+                deviceMessageMetadata.getOrganisationIdentification()).withDeviceIdentification(
+                deviceMessageMetadata.getDeviceIdentification()).withResult(result).withOsgpException(
+                exception).withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
     public void replaceKeys(final DeviceMessageMetadata deviceMessageMetadata, final SetKeysRequestData keySet)
@@ -515,17 +513,16 @@ public class ConfigurationService {
         LOGGER.info("replaceKeys for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
-        final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(
+                deviceMessageMetadata.getDeviceIdentification());
 
         final SetKeysRequestDto keySetDto = this.configurationMapper.map(keySet, SetKeysRequestDto.class);
 
-        this.osgpCoreRequestMessageSender.send(
-                new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                         deviceMessageMetadata.getOrganisationIdentification(),
-                        deviceMessageMetadata.getDeviceIdentification(), smartMeteringDevice.getIpAddress(), keySetDto),
-                deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
-                deviceMessageMetadata.getScheduleTime());
+                        deviceMessageMetadata.getDeviceIdentification(),
+                        smartMeteringDevice.getIpAddress(), keySetDto), deviceMessageMetadata.getMessageType(),
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
     }
 
     public void handleReplaceKeysResponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -539,28 +536,26 @@ public class ConfigurationService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
-                .withOsgpException(exception).withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
-        this.webServiceResponseMessageSender.send(responseMessage,
-                deviceMessageMetadata.getMessageType());
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
+                deviceMessageMetadata.getCorrelationUid()).withOrganisationIdentification(
+                deviceMessageMetadata.getOrganisationIdentification()).withDeviceIdentification(
+                deviceMessageMetadata.getDeviceIdentification()).withResult(result).withOsgpException(
+                exception).withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
     public void generateAndReplaceKeys(final DeviceMessageMetadata deviceMessageMetadata) throws FunctionalException {
         LOGGER.info("Generate and replace keys for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
-        final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(
+                deviceMessageMetadata.getDeviceIdentification());
 
-        this.osgpCoreRequestMessageSender.send(
-                new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                         deviceMessageMetadata.getOrganisationIdentification(),
-                        deviceMessageMetadata.getDeviceIdentification(), smartMeteringDevice.getIpAddress(), null),
-                deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
-                deviceMessageMetadata.getScheduleTime());
+                        deviceMessageMetadata.getDeviceIdentification(),
+                        smartMeteringDevice.getIpAddress(), null), deviceMessageMetadata.getMessageType(),
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
     }
 
     public void handleGenerateAndReplaceKeysResponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -575,13 +570,12 @@ public class ConfigurationService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
-                .withOsgpException(exception).withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
-        this.webServiceResponseMessageSender.send(responseMessage,
-                deviceMessageMetadata.getMessageType());
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
+                deviceMessageMetadata.getCorrelationUid()).withOrganisationIdentification(
+                deviceMessageMetadata.getOrganisationIdentification()).withDeviceIdentification(
+                deviceMessageMetadata.getDeviceIdentification()).withResult(result).withOsgpException(
+                exception).withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
     /**
@@ -589,40 +583,39 @@ public class ConfigurationService {
      * protocol adapter layer to the core layer
      *
      * @param deviceMessageMetadata
-     *            contains the message meta data
-     * @param getFirmwareVersion
-     *            marker object to request the firmware version(s)
+     *         contains the message meta data
+     *
      * @throws FunctionalException
-     *             is thrown when the device cannot be found in the database
+     *         is thrown when the device cannot be found in the database
      */
     public void requestFirmwareVersion(final DeviceMessageMetadata deviceMessageMetadata) throws FunctionalException {
 
         LOGGER.info("requestFirmwareVersion for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
-        final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(
+                deviceMessageMetadata.getDeviceIdentification());
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                smartMeteringDevice.getIpAddress(), new GetFirmwareVersionRequestDto()),
+                        deviceMessageMetadata.getOrganisationIdentification(),
+                        deviceMessageMetadata.getDeviceIdentification(),
+                        smartMeteringDevice.getIpAddress(), new GetFirmwareVersionRequestDto()),
                 deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
                 deviceMessageMetadata.getScheduleTime());
     }
 
     /**
-     *
      * Maps the firmware Dto's to value objects and sends it back to the ws-adapter
      * layer
      *
      * @param deviceMessageMetadata
-     *            contains the message meta data
+     *         contains the message meta data
      * @param result
-     *            indicates whether the execution was successful
+     *         indicates whether the execution was successful
      * @param exception
-     *            contains the exception if one was thrown
+     *         contains the exception if one was thrown
      * @param firmwareVersionList
-     *            contains the firmware result list
+     *         contains the firmware result list
      */
     public void handleGetFirmwareVersionResponse(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType deviceResult, final OsgpException exception,
@@ -641,15 +634,13 @@ public class ConfigurationService {
 
         final FirmwareVersionResponse firmwareVersionResponse = new FirmwareVersionResponse(firmwareVersions);
 
-        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
-                .withOsgpException(exception).withDataObject(firmwareVersionResponse)
-                .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
-        this.webServiceResponseMessageSender.send(
-                responseMessage,
-                deviceMessageMetadata.getMessageType());
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
+                deviceMessageMetadata.getCorrelationUid()).withOrganisationIdentification(
+                deviceMessageMetadata.getOrganisationIdentification()).withDeviceIdentification(
+                deviceMessageMetadata.getDeviceIdentification()).withResult(result).withOsgpException(
+                exception).withDataObject(firmwareVersionResponse).withMessagePriority(
+                deviceMessageMetadata.getMessagePriority()).build();
+        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
 
         this.firmwareService.saveFirmwareVersionsReturnedFromDevice(deviceMessageMetadata.getDeviceIdentification(),
                 firmwareVersions);
@@ -661,15 +652,16 @@ public class ConfigurationService {
         LOGGER.info("requestUpdateFirmware for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
-        final SmartMeter smartMeter = this.domainHelperService
-                .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+        final SmartMeter smartMeter = this.domainHelperService.findSmartMeter(
+                deviceMessageMetadata.getDeviceIdentification());
 
         final String firmwareFileIdentifier = this.firmwareService.determineFirmwareFileIdentifier(smartMeter,
                 updateFirmwareRequestData.getVersionByModuleType());
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                smartMeter.getIpAddress(), firmwareFileIdentifier), deviceMessageMetadata.getMessageType(),
+                        deviceMessageMetadata.getOrganisationIdentification(),
+                        deviceMessageMetadata.getDeviceIdentification(),
+                        smartMeter.getIpAddress(), firmwareFileIdentifier), deviceMessageMetadata.getMessageType(),
                 deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
     }
 
@@ -685,25 +677,23 @@ public class ConfigurationService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        final List<FirmwareVersion> firmwareVersions = this.configurationMapper
-                .mapAsList(updateFirmwareResponseDto.getFirmwareVersions(), FirmwareVersion.class);
-        final SmartMeter smartMeter = this.domainHelperService
-                .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+        final List<FirmwareVersion> firmwareVersions = this.configurationMapper.mapAsList(
+                updateFirmwareResponseDto.getFirmwareVersions(), FirmwareVersion.class);
+        final SmartMeter smartMeter = this.domainHelperService.findSmartMeter(
+                deviceMessageMetadata.getDeviceIdentification());
 
         this.firmwareService.storeFirmware(smartMeter, updateFirmwareResponseDto.getFirmwareIdentification(),
                 firmwareVersions, deviceMessageMetadata.getOrganisationIdentification());
 
         final UpdateFirmwareResponse updateFirmwareResponse = new UpdateFirmwareResponse(firmwareVersions);
 
-        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
-                .withOsgpException(exception).withDataObject(updateFirmwareResponse)
-                .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
-        this.webServiceResponseMessageSender.send(
-                responseMessage,
-                deviceMessageMetadata.getMessageType());
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
+                deviceMessageMetadata.getCorrelationUid()).withOrganisationIdentification(
+                deviceMessageMetadata.getOrganisationIdentification()).withDeviceIdentification(
+                deviceMessageMetadata.getDeviceIdentification()).withResult(result).withOsgpException(
+                exception).withDataObject(updateFirmwareResponse).withMessagePriority(
+                deviceMessageMetadata.getMessagePriority()).build();
+        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
     public void setClockConfiguration(final DeviceMessageMetadata deviceMessageMetadata,
@@ -712,15 +702,16 @@ public class ConfigurationService {
         LOGGER.info("setClockConfiguration for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
-        final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(
+                deviceMessageMetadata.getDeviceIdentification());
 
-        final SetClockConfigurationRequestDto setClockConfigurationRequestDto = this.configurationMapper
-                .map(setClockConfigurationRequest, SetClockConfigurationRequestDto.class);
+        final SetClockConfigurationRequestDto setClockConfigurationRequestDto = this.configurationMapper.map(
+                setClockConfigurationRequest, SetClockConfigurationRequestDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                smartMeteringDevice.getIpAddress(), setClockConfigurationRequestDto),
+                        deviceMessageMetadata.getOrganisationIdentification(),
+                        deviceMessageMetadata.getDeviceIdentification(),
+                        smartMeteringDevice.getIpAddress(), setClockConfigurationRequestDto),
                 deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
                 deviceMessageMetadata.getScheduleTime());
     }
@@ -736,13 +727,12 @@ public class ConfigurationService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
-                .withOsgpException(exception).withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
-        this.webServiceResponseMessageSender.send(responseMessage,
-                deviceMessageMetadata.getMessageType());
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
+                deviceMessageMetadata.getCorrelationUid()).withOrganisationIdentification(
+                deviceMessageMetadata.getOrganisationIdentification()).withDeviceIdentification(
+                deviceMessageMetadata.getDeviceIdentification()).withResult(result).withOsgpException(
+                exception).withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
     public void getConfigurationObject(final DeviceMessageMetadata deviceMessageMetadata,
@@ -751,15 +741,16 @@ public class ConfigurationService {
         LOGGER.info("getConfigurationObject for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
-        final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(
+                deviceMessageMetadata.getDeviceIdentification());
 
-        final GetConfigurationObjectRequestDto getConfigurationObjectRequestDto = this.configurationMapper
-                .map(getConfigurationObjectRequest, GetConfigurationObjectRequestDto.class);
+        final GetConfigurationObjectRequestDto getConfigurationObjectRequestDto = this.configurationMapper.map(
+                getConfigurationObjectRequest, GetConfigurationObjectRequestDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                smartMeteringDevice.getIpAddress(), getConfigurationObjectRequestDto),
+                        deviceMessageMetadata.getOrganisationIdentification(),
+                        deviceMessageMetadata.getDeviceIdentification(),
+                        smartMeteringDevice.getIpAddress(), getConfigurationObjectRequestDto),
                 deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
                 deviceMessageMetadata.getScheduleTime());
     }
@@ -780,15 +771,13 @@ public class ConfigurationService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
-                .withOsgpException(exception).withDataObject(response)
-                .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
-        this.webServiceResponseMessageSender.send(
-                responseMessage,
-                deviceMessageMetadata.getMessageType());
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
+                deviceMessageMetadata.getCorrelationUid()).withOrganisationIdentification(
+                deviceMessageMetadata.getOrganisationIdentification()).withDeviceIdentification(
+                deviceMessageMetadata.getDeviceIdentification()).withResult(result).withOsgpException(
+                exception).withDataObject(response).withMessagePriority(
+                deviceMessageMetadata.getMessagePriority()).build();
+        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
     public void configureDefinableLoadProfile(final DeviceMessageMetadata deviceMessageMetadata,
@@ -798,15 +787,16 @@ public class ConfigurationService {
         LOGGER.info("configureDefinableLoadProfile for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
-        final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(
+                deviceMessageMetadata.getDeviceIdentification());
 
-        final DefinableLoadProfileConfigurationDto definableLoadProfileConfigurationDto = this.configurationMapper
-                .map(definableLoadProfileConfigurationData, DefinableLoadProfileConfigurationDto.class);
+        final DefinableLoadProfileConfigurationDto definableLoadProfileConfigurationDto = this.configurationMapper.map(
+                definableLoadProfileConfigurationData, DefinableLoadProfileConfigurationDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                smartMeteringDevice.getIpAddress(), definableLoadProfileConfigurationDto),
+                        deviceMessageMetadata.getOrganisationIdentification(),
+                        deviceMessageMetadata.getDeviceIdentification(),
+                        smartMeteringDevice.getIpAddress(), definableLoadProfileConfigurationDto),
                 deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
                 deviceMessageMetadata.getScheduleTime());
     }
@@ -823,13 +813,12 @@ public class ConfigurationService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
-                .withOsgpException(exception).withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
-        this.webServiceResponseMessageSender.send(responseMessage,
-                deviceMessageMetadata.getMessageType());
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
+                deviceMessageMetadata.getCorrelationUid()).withOrganisationIdentification(
+                deviceMessageMetadata.getOrganisationIdentification()).withDeviceIdentification(
+                deviceMessageMetadata.getDeviceIdentification()).withResult(result).withOsgpException(
+                exception).withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
     public void getMbusEncryptionKeyStatus(final DeviceMessageMetadata deviceMessageMetadata)
@@ -838,8 +827,8 @@ public class ConfigurationService {
         LOGGER.info("getMbusEncryptionKeyStatus for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
-        final SmartMeter mbusDevice = this.domainHelperService
-                .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+        final SmartMeter mbusDevice = this.domainHelperService.findSmartMeter(
+                deviceMessageMetadata.getDeviceIdentification());
 
         final Device gatewayDevice = mbusDevice.getGatewayDevice();
         if (gatewayDevice == null) {
@@ -847,14 +836,12 @@ public class ConfigurationService {
                     ComponentType.DOMAIN_SMART_METERING, new GatewayDeviceNotSetForMbusDeviceException());
         }
 
-        this.osgpCoreRequestMessageSender.send(
-                new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                         deviceMessageMetadata.getOrganisationIdentification(), gatewayDevice.getDeviceIdentification(),
                         gatewayDevice.getIpAddress(),
                         new GetMbusEncryptionKeyStatusRequestDto(mbusDevice.getDeviceIdentification(),
-                                mbusDevice.getChannel())),
-                deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
-                deviceMessageMetadata.getScheduleTime());
+                                mbusDevice.getChannel())), deviceMessageMetadata.getMessageType(),
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
     }
 
     public void handleGetMbusEncryptionKeyStatusResponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -865,18 +852,15 @@ public class ConfigurationService {
                 deviceMessageMetadata.getMessageType());
 
         final String mbusDeviceIdentification = getMbusEncryptionKeyStatusResponseDto.getMbusDeviceIdentification();
-        final EncryptionKeyStatusType encryptionKeyStatusType = EncryptionKeyStatusType
-                .valueOf(getMbusEncryptionKeyStatusResponseDto.getEncryptionKeyStatus().name());
+        final EncryptionKeyStatusType encryptionKeyStatusType = EncryptionKeyStatusType.valueOf(
+                getMbusEncryptionKeyStatusResponseDto.getEncryptionKeyStatus().name());
 
-        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                .withDeviceIdentification(mbusDeviceIdentification).withResult(resultType)
-                .withOsgpException(exception).withDataObject(encryptionKeyStatusType)
-                .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
-        this.webServiceResponseMessageSender.send(
-                responseMessage,
-                deviceMessageMetadata.getMessageType());
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
+                deviceMessageMetadata.getCorrelationUid()).withOrganisationIdentification(
+                deviceMessageMetadata.getOrganisationIdentification()).withDeviceIdentification(
+                mbusDeviceIdentification).withResult(resultType).withOsgpException(exception).withDataObject(
+                encryptionKeyStatusType).withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
     public void getMbusEncryptionKeyStatusByChannel(final DeviceMessageMetadata deviceMessageMetadata,
@@ -887,17 +871,15 @@ public class ConfigurationService {
                 "getMbusEncryptionKeyStatusByChannel for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
-        final SmartMeter gatewayDevice = this.domainHelperService
-                .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+        final SmartMeter gatewayDevice = this.domainHelperService.findSmartMeter(
+                deviceMessageMetadata.getDeviceIdentification());
 
-        this.osgpCoreRequestMessageSender.send(
-                new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                         deviceMessageMetadata.getOrganisationIdentification(), gatewayDevice.getDeviceIdentification(),
-                        gatewayDevice.getIpAddress(),
-                        new GetMbusEncryptionKeyStatusByChannelRequestDataDto(
-                                getMbusEncryptionKeyStatusByChannelRequestData.getChannel())),
-                deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
-                deviceMessageMetadata.getScheduleTime());
+                        gatewayDevice.getIpAddress(), new GetMbusEncryptionKeyStatusByChannelRequestDataDto(
+                        getMbusEncryptionKeyStatusByChannelRequestData.getChannel())),
+                deviceMessageMetadata.getMessageType(),
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
     }
 
     public void handleGetMbusEncryptionKeyStatusByChannelResponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -907,17 +889,37 @@ public class ConfigurationService {
         LOGGER.info("handleGetMbusEncryptionKeyStatusByChannelResponse for MessageType: {}",
                 deviceMessageMetadata.getMessageType());
 
-        final EncryptionKeyStatusType encryptionKeyStatusType = EncryptionKeyStatusType
-                .valueOf(getMbusEncryptionKeyStatusByChannelResponseDto.getEncryptionKeyStatus().name());
+        final EncryptionKeyStatusType encryptionKeyStatusType = EncryptionKeyStatusType.valueOf(
+                getMbusEncryptionKeyStatusByChannelResponseDto.getEncryptionKeyStatus().name());
 
-        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
-                .withResult(resultType).withOsgpException(exception).withDataObject(encryptionKeyStatusType)
-                .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
-        this.webServiceResponseMessageSender.send(
-                responseMessage,
-                deviceMessageMetadata.getMessageType());
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
+                deviceMessageMetadata.getCorrelationUid()).withOrganisationIdentification(
+                deviceMessageMetadata.getOrganisationIdentification()).withDeviceIdentification(
+                deviceMessageMetadata.getDeviceIdentification()).withResult(resultType).withOsgpException(
+                exception).withDataObject(encryptionKeyStatusType).withMessagePriority(
+                deviceMessageMetadata.getMessagePriority()).build();
+        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
+    }
+
+    public void setRandomizationSettings(final DeviceMessageMetadata deviceMessageMetadata,
+            final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomizationSettingsRequestData setRandomizationSettingsRequestData)
+            throws FunctionalException {
+
+        LOGGER.info("setRandomizationSettings for organisationIdentification: {} for deviceIdentification: {}",
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
+
+        //        final SmartMeter smartMeteringDevice = this.domainHelperService
+        //                .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+        //
+        //        final PushSetupAlarmDto pushSetupAlarmDto = this.configurationMapper.map
+        //        (setRandomizationSettingsRequestData,
+        //                PushSetupAlarmDto.class);
+        //
+        //        this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
+        //                        deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata
+        //                        .getDeviceIdentification(),
+        //                        smartMeteringDevice.getIpAddress(), pushSetupAlarmDto), deviceMessageMetadata
+        //                        .getMessageType(),
+        //                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
     }
 }
