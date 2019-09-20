@@ -7,6 +7,9 @@
  */
 package org.opensmartgridplatform.dto.valueobjects;
 
+import java.util.Arrays;
+import java.util.stream.Stream;
+
 public enum FirmwareModuleType {
 
     COMMUNICATION("COMMUNICATION_MODULE_ACTIVE_FIRMWARE"),
@@ -17,7 +20,6 @@ public enum FirmwareModuleType {
     ACTIVE_FIRMWARE("ACTIVE_FIRMWARE"),
     M_BUS_DRIVER_ACTIVE("M_BUS_DRIVER_ACTIVE_FIRMWARE");
 
-
     private final String description;
 
     FirmwareModuleType(final String description) {
@@ -26,5 +28,10 @@ public enum FirmwareModuleType {
 
     public String getDescription() {
         return this.description;
+    }
+
+    public static FirmwareModuleType getByDescription(final String description) {
+        final Stream<FirmwareModuleType> stream = Arrays.stream(FirmwareModuleType.values());
+        return stream.filter(f -> f.getDescription().equalsIgnoreCase(description)).findFirst().orElse(null);
     }
 }
