@@ -196,7 +196,6 @@ echo Found cucumber tags: [$EXTRACTED_TAGS]'''
                 body: '${DEFAULT_CONTENT}',
                 to: '${DEFAULT_RECIPIENTS}',
                 from: '${DEFAULT_REPLYTO}')
-            }
 
             step([$class: 'GitHubSetCommitStatusBuilder', contextSource: [$class: 'ManuallyEnteredCommitContextSource']])
         }
