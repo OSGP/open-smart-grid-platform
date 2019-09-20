@@ -96,7 +96,6 @@ pipeline {
                 body: '${DEFAULT_CONTENT}',
                 to: '${DEFAULT_RECIPIENTS}',
                 from: '${DEFAULT_REPLYTO}')
-            }
         }
         cleanup {
             // Delete workspace folder.
