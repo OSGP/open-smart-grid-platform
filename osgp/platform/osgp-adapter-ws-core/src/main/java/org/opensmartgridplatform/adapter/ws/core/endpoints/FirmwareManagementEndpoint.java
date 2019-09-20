@@ -119,10 +119,9 @@ public class FirmwareManagementEndpoint {
     private DeviceRepository deviceRepository;
 
     @Autowired
-    public FirmwareManagementEndpoint(@Qualifier(
-            value = "wsCoreFirmwareManagementService") final FirmwareManagementService firmwareManagementService,
-            @Qualifier(
-                    value = "coreFirmwareManagementMapper") final FirmwareManagementMapper firmwareManagementMapper) {
+    public FirmwareManagementEndpoint(
+            @Qualifier(value = "wsCoreFirmwareManagementService") final FirmwareManagementService firmwareManagementService,
+            @Qualifier(value = "coreFirmwareManagementMapper") final FirmwareManagementMapper firmwareManagementMapper) {
         this.firmwareManagementService = firmwareManagementService;
         this.firmwareManagementMapper = firmwareManagementMapper;
     }
@@ -291,17 +290,22 @@ public class FirmwareManagementEndpoint {
             this.handleException(e);
         }
         if (!firmwareVersions.isEmpty()) {
-            final List<FirmwareVersionDto> versionsNotInHistory = this.firmwareManagementService
-                    .checkFirmwareHistoryForVersion(organisationIdentification, deviceId, firmwareVersions);
-            for (final FirmwareVersionDto firmwareVersion : versionsNotInHistory) {
-                LOGGER.info("Firmware version {} is not in history of device {}, we are trying to add it",
-                        firmwareVersion, deviceId);
-                this.firmwareManagementService.tryToAddFirmwareVersionToHistory(organisationIdentification, deviceId,
-                        firmwareVersion);
-            }
+            checkFirmwareHistory(organisationIdentification, deviceId, firmwareVersions);
         }
 
         return response;
+    }
+
+    private void checkFirmwareHistory(final String organisationIdentification, final String deviceId,
+            List<FirmwareVersionDto> firmwareVersions) throws FunctionalException {
+        final List<FirmwareVersionDto> versionsNotInHistory = this.firmwareManagementService
+                .checkFirmwareHistoryForVersion(organisationIdentification, deviceId, firmwareVersions);
+        for (final FirmwareVersionDto firmwareVersion : versionsNotInHistory) {
+            LOGGER.info("Firmware version {} is not in history of device {}, we are trying to add it",
+                    firmwareVersion, deviceId);
+            this.firmwareManagementService.tryToAddFirmwareVersionToHistory(organisationIdentification, deviceId,
+                    firmwareVersion);
+        }
     }
 
     // === MANUFACTURERS LOGIC ===
@@ -320,9 +324,8 @@ public class FirmwareManagementEndpoint {
             final List<Manufacturer> manufacturers = this.firmwareManagementService
                     .findAllManufacturers(organisationIdentification);
 
-            response.getManufacturers()
-                    .addAll(this.firmwareManagementMapper.mapAsList(manufacturers,
-                            org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.Manufacturer.class));
+            response.getManufacturers().addAll(this.firmwareManagementMapper.mapAsList(manufacturers,
+                    org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.Manufacturer.class));
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
@@ -508,9 +511,8 @@ public class FirmwareManagementEndpoint {
             final List<DeviceModel> deviceModels = this.firmwareManagementService
                     .findAllDeviceModels(organisationIdentification);
 
-            response.getDeviceModels()
-                    .addAll(this.firmwareManagementMapper.mapAsList(deviceModels,
-                            org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.DeviceModel.class));
+            response.getDeviceModels().addAll(this.firmwareManagementMapper.mapAsList(deviceModels,
+                    org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.DeviceModel.class));
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("Exception find all devicemodels {}: ", e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
@@ -669,9 +671,8 @@ public class FirmwareManagementEndpoint {
             final List<FirmwareFile> firmwareFiles = this.firmwareManagementService.findAllFirmwareFiles(
                     organisationIdentification, request.getManufacturer(), request.getModelCode());
 
-            response.getFirmwares()
-                    .addAll(this.firmwareManagementMapper.mapAsList(firmwareFiles,
-                            org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.Firmware.class));
+            response.getFirmwares().addAll(this.firmwareManagementMapper.mapAsList(firmwareFiles,
+                    org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.Firmware.class));
 
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("Exception find all firmwares {}: ", e);
@@ -723,7 +724,7 @@ public class FirmwareManagementEndpoint {
                 request.getDeviceFirmware().getDeviceIdentification());
 
         try {
-            this.firmwareManagementService.saveCurrentDeviceFirmwareFile(
+            this.firmwareManagementService.saveDeviceFirmwareFile(
                     this.firmwareManagementMapper.map(request.getDeviceFirmware(), DeviceFirmwareFile.class));
 
         } catch (final MethodConstraintViolationException e) {
@@ -888,9 +889,8 @@ public class FirmwareManagementEndpoint {
                 deviceFirmwares.add(temp);
             }
 
-            output.getDeviceFirmwares()
-                    .addAll(this.firmwareManagementMapper.mapAsList(deviceFirmwares,
-                            org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.DeviceFirmware.class));
+            output.getDeviceFirmwares().addAll(this.firmwareManagementMapper.mapAsList(deviceFirmwares,
+                    org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.DeviceFirmware.class));
 
             response.setDeviceFirmwareHistory(output);
 
