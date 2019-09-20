@@ -191,7 +191,13 @@ echo Found cucumber tags: [$EXTRACTED_TAGS]'''
         }
         failure {
             // Mail everyone that the job failed
-            step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: 'kevin.smeets@cgi.com,ruud.lemmers@cgi.com,sander.van.der.heijden@cgi.com', sendToIndividuals: false])
+            emailext (
+                subject: '${DEFAULT_SUBJECT}',
+                body: '${DEFAULT_CONTENT}',
+                to: '${DEFAULT_RECIPIENTS}',
+                from: '${DEFAULT_REPLYTO}')
+            }
+
             step([$class: 'GitHubSetCommitStatusBuilder', contextSource: [$class: 'ManuallyEnteredCommitContextSource']])
         }
         cleanup {
