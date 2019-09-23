@@ -16,12 +16,16 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
 public class SetRandomizationSettingsRequestMessageProcessor extends BaseRequestMessageProcessor {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SetRandomizationSettingsRequestMessageProcessor.class);
 
     @Autowired
     @Qualifier("domainSmartMeteringConfigurationService")
@@ -36,6 +40,8 @@ public class SetRandomizationSettingsRequestMessageProcessor extends BaseRequest
     @Override
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
             throws FunctionalException {
+
+        LOGGER.info("SetRandomizationSettingsRequestMessageProcessor reached.");
 
         this.configurationService.setRandomizationSettings(deviceMessageMetadata,
                 (SetRandomizationSettingsRequestData) dataObject);

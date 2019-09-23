@@ -1,9 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms;
 
@@ -26,8 +27,7 @@ import org.slf4j.LoggerFactory;
  * MessageProcessors after dependency injection has completed.
  *
  */
-public abstract class BaseRequestMessageProcessor extends AbstractRequestMessageProcessor implements
-        MessageProcessor {
+public abstract class BaseRequestMessageProcessor extends AbstractRequestMessageProcessor implements MessageProcessor {
 
     /**
      * Logger for this class.
@@ -49,7 +49,7 @@ public abstract class BaseRequestMessageProcessor extends AbstractRequestMessage
      *
      * @param messageProcessorMap
      * @param messageType
- *            The message type a message processor can handle.
+     *            The message type a message processor can handle.
      */
     protected BaseRequestMessageProcessor(MessageProcessorMap messageProcessorMap, final MessageType messageType) {
         this.messageProcessorMap = messageProcessorMap;
@@ -94,12 +94,15 @@ public abstract class BaseRequestMessageProcessor extends AbstractRequestMessage
         try {
             LOGGER.info("Calling application service function: {}", deviceMessageMetadata.getMessageType());
             if (this.messageContainsDataObject()) {
-            this.handleMessage(deviceMessageMetadata, dataObject);
+                this.handleMessage(deviceMessageMetadata, dataObject);
             } else {
                 this.handleMessage(deviceMessageMetadata);
             }
 
         } catch (final Exception e) {
+
+            LOGGER.error("Error occurred in processMessage() ", e);
+
             this.handleError(e, deviceMessageMetadata.getCorrelationUid(),
                     deviceMessageMetadata.getOrganisationIdentification(),
                     deviceMessageMetadata.getDeviceIdentification(), deviceMessageMetadata.getMessageType(),

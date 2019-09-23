@@ -11,6 +11,7 @@ import org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.SmartMeterin
 import org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageSender;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomizationSettingsRequest;
 import org.opensmartgridplatform.shared.validation.Identification;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActivityCalendar;
@@ -622,6 +623,33 @@ public class ConfigurationService {
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(setMbusUserKeyByChannelRequestData).build();
+
+        this.smartMeteringRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
+    public String enqueueSetRandomizationSettingsRequest(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, final SetRandomizationSettingsRequest requestData,
+            final int messagePriority, final Long scheduleTime) throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_CONFIGURATION_OBJECT);
+
+        LOGGER.debug("enqueueSetConfigurationObjectRequest called with organisation {} and device {}",
+                organisationIdentification, deviceIdentification);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid, MessageType.SET_RANDOMIZATION_SETTINGS.name(),
+                messagePriority, scheduleTime);
+
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
