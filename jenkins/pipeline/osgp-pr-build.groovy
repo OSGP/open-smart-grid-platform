@@ -194,6 +194,7 @@ echo Found cucumber tags: [$EXTRACTED_TAGS]'''
             emailext (
                 subject: '${DEFAULT_SUBJECT}',
                 body: '${DEFAULT_CONTENT}',
+                recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
                 to: '${DEFAULT_RECIPIENTS}',
                 from: '${DEFAULT_REPLYTO}')
 
