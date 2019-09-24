@@ -10,7 +10,10 @@ package org.opensmartgridplatform.adapter.domain.core.application.mapping;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -22,6 +25,8 @@ import org.opensmartgridplatform.domain.core.valueobjects.DaliConfiguration;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFixedIp;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleData;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleDataBuilder;
+import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleType;
+import org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion;
 import org.opensmartgridplatform.domain.core.valueobjects.LightType;
 import org.opensmartgridplatform.domain.core.valueobjects.LinkType;
 import org.opensmartgridplatform.domain.core.valueobjects.LongTermIntervalType;
@@ -33,6 +38,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.RelayType;
 import org.opensmartgridplatform.dto.valueobjects.ConfigurationDto;
 import org.opensmartgridplatform.dto.valueobjects.DaliConfigurationDto;
 import org.opensmartgridplatform.dto.valueobjects.DeviceFixedIpDto;
+import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
 import org.opensmartgridplatform.dto.valueobjects.LightTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.LinkTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.LongTermIntervalTypeDto;
@@ -46,16 +52,36 @@ public class DomainCoreMapperTest {
     private final DomainCoreMapper mapper = new DomainCoreMapper();
 
     @Test
-    public void mapsFirmwareModuleDate() {
-        org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleData source =
-                new FirmwareModuleDataBuilder().build();
+    public void testMapFirmwareVersionDtoList() {
+        // Arrange
+        final List<FirmwareVersionDto> firmwareVersionsDto = new ArrayList<>();
+        final String version = "1";
+        firmwareVersionsDto.add(new FirmwareVersionDto(
+                org.opensmartgridplatform.dto.valueobjects.FirmwareModuleType.ACTIVE_FIRMWARE, version));
+        final List<FirmwareVersion> expected = Arrays
+                .asList(new FirmwareVersion(FirmwareModuleType.ACTIVE_FIRMWARE, version));
 
-        org.opensmartgridplatform.dto.valueobjects.FirmwareModuleData mappedValue = map(source);
-        Assertions.assertThat(this.mapper.map(source, org.opensmartgridplatform.dto.valueobjects.FirmwareModuleData.class))
+        // Act
+        final List<FirmwareVersion> firmwareVersions = this.mapper.mapAsList(firmwareVersionsDto,
+                FirmwareVersion.class);
+
+        // Assert
+        assertEquals(expected, firmwareVersions);
+    }
+
+    @Test
+    public void mapsFirmwareModuleDate() {
+        final org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleData source = new FirmwareModuleDataBuilder()
+                .build();
+
+        final org.opensmartgridplatform.dto.valueobjects.FirmwareModuleData mappedValue = this.map(source);
+        Assertions
+                .assertThat(
+                        this.mapper.map(source, org.opensmartgridplatform.dto.valueobjects.FirmwareModuleData.class))
                 .isEqualToComparingFieldByFieldRecursively(mappedValue);
     }
 
-    private org.opensmartgridplatform.dto.valueobjects.FirmwareModuleData map(FirmwareModuleData source) {
+    private org.opensmartgridplatform.dto.valueobjects.FirmwareModuleData map(final FirmwareModuleData source) {
         return new org.opensmartgridplatform.dto.valueobjects.FirmwareModuleData(source.getModuleVersionComm(),
                 source.getModuleVersionFunc(), source.getModuleVersionMa(), source.getModuleVersionMbus(),
                 source.getModuleVersionSec(), source.getModuleVersionMBusDriverActive());
@@ -73,9 +99,13 @@ public class DomainCoreMapperTest {
     private ConfigurationDto aConfigurationDto() {
         final ConfigurationDto source = new ConfigurationDto.Builder().withLightType(this.aLightTypeDto())
                 .withDaliConfiguration(this.aDaliConfigurationDto())
-                .withRelayConfiguration(this.aRelayConfigurationDto()).withShortTermHistoryIntervalMinutes(131)
-                .withLongTermHistoryInterval(132).withLongTermHysteryIntervalType(LongTermIntervalTypeDto.DAYS)
-                .withPreferredLinkType(LinkTypeDto.CDMA).withMeterType(MeterTypeDto.AUX).build();
+                .withRelayConfiguration(this.aRelayConfigurationDto())
+                .withShortTermHistoryIntervalMinutes(131)
+                .withLongTermHistoryInterval(132)
+                .withLongTermHysteryIntervalType(LongTermIntervalTypeDto.DAYS)
+                .withPreferredLinkType(LinkTypeDto.CDMA)
+                .withMeterType(MeterTypeDto.AUX)
+                .build();
         source.setTimeSyncFrequency(133);
         source.setDeviceFixedIp(new DeviceFixedIpDto("ipAddress1", "netMask1", "gateWay1"));
         source.setDhcpEnabled(true);
@@ -113,22 +143,29 @@ public class DomainCoreMapperTest {
                 .withMeterType(this.toMeterType(source.getMeterType()))
                 .withTimeSyncFrequency(source.getTimeSyncFrequency())
                 .withDeviceFixedIp(this.toDeviceFixedIp(source.getDeviceFixedIp()))
-                .withDhcpEnabled(source.isDhcpEnabled()).withTlsEnabled(source.isTlsEnabled())
-                .withTlsPortNumber(source.getTlsPortNumber()).withCommonNameString(source.getCommonNameString())
+                .withDhcpEnabled(source.isDhcpEnabled())
+                .withTlsEnabled(source.isTlsEnabled())
+                .withTlsPortNumber(source.getTlsPortNumber())
+                .withCommonNameString(source.getCommonNameString())
                 .withCommunicationTimeout(source.getCommunicationTimeout())
                 .withCommunicationNumberOfRetries(source.getCommunicationNumberOfRetries())
                 .withCommunicationPauseTimeBetweenConnectionTrials(
                         source.getCommunicationPauseTimeBetweenConnectionTrials())
-                .withOsgpIpAddress(source.getOsgpIpAddres()).withOsgpPortNumber(source.getOsgpPortNumber())
-                .withNtpHost(source.getNtpHost()).withNtpEnabled(source.getNtpEnabled())
-                .withNtpSyncInterval(source.getNtpSyncInterval()).withTestButtonEnabled(source.isTestButtonEnabled())
+                .withOsgpIpAddress(source.getOsgpIpAddres())
+                .withOsgpPortNumber(source.getOsgpPortNumber())
+                .withNtpHost(source.getNtpHost())
+                .withNtpEnabled(source.getNtpEnabled())
+                .withNtpSyncInterval(source.getNtpSyncInterval())
+                .withTestButtonEnabled(source.isTestButtonEnabled())
                 .withAutomaticSummerTimingEnabled(source.isAutomaticSummerTimingEnabled())
                 .withAstroGateSunRiseOffset(source.getAstroGateSunRiseOffset())
                 .withAstroGateSunSetOffset(source.getAstroGateSunSetOffset())
                 .withSwitchingDelays(source.getSwitchingDelays())
                 .withRelayLinking(this.toRelayLinking(source.getRelayLinking()))
-                .withRelayRefreshing(source.isRelayRefreshing()).withSummerTimeDetails(source.getSummerTimeDetails())
-                .withWinterTimeDetails(source.getWinterTimeDetails()).build();
+                .withRelayRefreshing(source.isRelayRefreshing())
+                .withSummerTimeDetails(source.getSummerTimeDetails())
+                .withWinterTimeDetails(source.getWinterTimeDetails())
+                .build();
     }
 
     private List<RelayMatrix> toRelayLinking(final List<RelayMatrixDto> relayLinking) {
@@ -156,7 +193,9 @@ public class DomainCoreMapperTest {
     }
 
     private RelayConfiguration toRelayConfiguration(final RelayConfigurationDto dto) {
-        final List<RelayMap> relayMaps = dto.getRelayMap().stream().map(relayMapDto -> this.toRelayMap(relayMapDto))
+        final List<RelayMap> relayMaps = dto.getRelayMap()
+                .stream()
+                .map(relayMapDto -> this.toRelayMap(relayMapDto))
                 .collect(toList());
         return new RelayConfiguration(relayMaps);
     }
@@ -193,4 +232,3 @@ public class DomainCoreMapperTest {
         return map;
     }
 }
-

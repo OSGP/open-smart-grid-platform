@@ -77,7 +77,6 @@ import org.opensmartgridplatform.domain.core.exceptions.ValidationException;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleData;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareUpdateMessageDataContainer;
-import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
@@ -267,11 +266,12 @@ public class FirmwareManagementEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final GetFirmwareVersionAsyncRequest request) throws OsgpException {
 
+        final String deviceId = request.getAsyncRequest().getDeviceId();
         LOGGER.info("GetFirmwareVersionResponse Request received from organisation {} for device: {}.",
-                organisationIdentification, request.getAsyncRequest().getDeviceId());
+                organisationIdentification, deviceId);
 
         final GetFirmwareVersionResponse response = new GetFirmwareVersionResponse();
-
+        List<org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion> firmwareVersions = new ArrayList<>();
         try {
             final ResponseMessage message = this.firmwareManagementService
                     .dequeueGetFirmwareResponse(request.getAsyncRequest().getCorrelationUid());
@@ -279,8 +279,9 @@ public class FirmwareManagementEndpoint {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
                 if (message.getDataObject() != null) {
                     final List<FirmwareVersion> target = response.getFirmwareVersion();
-                    target.addAll(this.firmwareManagementMapper
-                            .mapAsList((List<FirmwareVersionDto>) message.getDataObject(), FirmwareVersion.class));
+                    firmwareVersions = (List<org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion>) message
+                            .getDataObject();
+                    target.addAll(this.firmwareManagementMapper.mapAsList(firmwareVersions, FirmwareVersion.class));
                 } else {
                     LOGGER.info("Get Firmware Version firmware is null");
                 }
@@ -288,8 +289,22 @@ public class FirmwareManagementEndpoint {
         } catch (final Exception e) {
             this.handleException(e);
         }
+        this.checkFirmwareHistory(organisationIdentification, deviceId, firmwareVersions);
 
         return response;
+    }
+
+    private void checkFirmwareHistory(final String organisationIdentification, final String deviceId,
+            final List<org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion> firmwareVersions)
+            throws FunctionalException {
+        final List<org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion> versionsNotInHistory = this.firmwareManagementService
+                .checkFirmwareHistoryForVersion(organisationIdentification, deviceId, firmwareVersions);
+        for (final org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion firmwareVersion : versionsNotInHistory) {
+            LOGGER.info("Firmware version {} is not in history of device {}, we are trying to add it", firmwareVersion,
+                    deviceId);
+            this.firmwareManagementService.tryToAddFirmwareVersionToHistory(organisationIdentification, deviceId,
+                    firmwareVersion);
+        }
     }
 
     // === MANUFACTURERS LOGIC ===
@@ -708,7 +723,7 @@ public class FirmwareManagementEndpoint {
                 request.getDeviceFirmware().getDeviceIdentification());
 
         try {
-            this.firmwareManagementService.saveCurrentDeviceFirmwareFile(
+            this.firmwareManagementService.saveDeviceFirmwareFile(
                     this.firmwareManagementMapper.map(request.getDeviceFirmware(), DeviceFirmwareFile.class));
 
         } catch (final MethodConstraintViolationException e) {

@@ -10,23 +10,23 @@ package org.opensmartgridplatform.adapter.domain.core.application.services;
 import java.io.Serializable;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import org.opensmartgridplatform.domain.core.entities.Device;
-import org.opensmartgridplatform.shared.validation.Identification;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareUpdateMessageDataContainer;
+import org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
-import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.opensmartgridplatform.shared.validation.Identification;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service(value = "domainCoreFirmwareManagementService")
 @Transactional(value = "transactionManager")
@@ -55,7 +55,8 @@ public class FirmwareManagementService extends AbstractService {
         final Device device = this.findActiveDevice(ids.getDeviceIdentification());
 
         this.osgpCoreRequestMessageSender.send(
-                new RequestMessage(ids, this.domainCoreMapper.map(firmwareUpdateMessageDataContainer,
+                new RequestMessage(ids,
+                        this.domainCoreMapper.map(firmwareUpdateMessageDataContainer,
                                 org.opensmartgridplatform.dto.valueobjects.FirmwareUpdateMessageDataContainer.class)),
                 messageType, messagePriority, device.getIpAddress(), scheduleTime);
     }
@@ -77,7 +78,7 @@ public class FirmwareManagementService extends AbstractService {
                 messagePriority, device.getIpAddress());
     }
 
-    public void handleGetFirmwareVersionResponse(final List<FirmwareVersionDto> firmwareVersions,
+    public void handleGetFirmwareVersionResponse(final List<FirmwareVersionDto> firmwareVersionsDto,
             final CorrelationIds ids, final String messageType, final int messagePriority,
             final ResponseMessageResultType deviceResult, final OsgpException exception) {
 
@@ -97,10 +98,15 @@ public class FirmwareManagementService extends AbstractService {
             osgpException = new TechnicalException(ComponentType.UNKNOWN,
                     "Exception occurred while getting device firmware version", e);
         }
-
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withIds(ids)
-                .withResult(result).withOsgpException(osgpException).withDataObject((Serializable) firmwareVersions)
-                .withMessagePriority(messagePriority).build();
+        final List<FirmwareVersion> firmwareVersions = this.domainCoreMapper.mapAsList(firmwareVersionsDto,
+                FirmwareVersion.class);
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withIds(ids)
+                .withResult(result)
+                .withOsgpException(osgpException)
+                .withDataObject((Serializable) firmwareVersions)
+                .withMessagePriority(messagePriority)
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage);
     }
 
