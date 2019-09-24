@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
+import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleType;
+import org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 
 public class UpdateFirmwareRequestData implements ActionRequest {

@@ -47,10 +47,10 @@ import org.opensmartgridplatform.domain.core.exceptions.UnknownEntityException;
 import org.opensmartgridplatform.domain.core.repositories.FirmwareModuleRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleData;
+import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleType;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareUpdateMessageDataContainer;
+import org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion;
 import org.opensmartgridplatform.domain.core.valueobjects.PlatformFunction;
-import org.opensmartgridplatform.dto.valueobjects.FirmwareModuleType;
-import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
@@ -780,20 +780,23 @@ public class FirmwareManagementService {
      *         firmware history
      * @throws FunctionalException
      */
-    public List<FirmwareVersionDto> checkFirmwareHistoryForVersion(final String organisationIdentification,
-            final String deviceId, final List<FirmwareVersionDto> firmwareVersions) throws FunctionalException {
+    public List<FirmwareVersion> checkFirmwareHistoryForVersion(final String organisationIdentification,
+            final String deviceId, final List<FirmwareVersion> firmwareVersions) throws FunctionalException {
 
+        if (firmwareVersions.isEmpty()) {
+            return firmwareVersions;
+        }
         // copy input parameter
-        final List<FirmwareVersionDto> firmwareVersionsToCheck = new ArrayList<>();
+        final List<FirmwareVersion> firmwareVersionsToCheck = new ArrayList<>();
         firmwareVersionsToCheck.addAll(firmwareVersions);
 
         // get history
         final List<DeviceFirmwareFile> deviceFirmwareFiles = this.getDeviceFirmwareFiles(organisationIdentification,
                 deviceId);
-        final List<FirmwareVersionDto> firmwareVersionsInHistory = deviceFirmwareFiles.stream()
+        final List<FirmwareVersion> firmwareVersionsInHistory = deviceFirmwareFiles.stream()
                 .map(d -> d.getFirmwareFile().getModuleVersions().entrySet())
                 .flatMap(Collection::stream)
-                .map(e -> new FirmwareVersionDto(FirmwareModuleType.getByDescription(e.getKey().getDescription()),
+                .map(e -> new FirmwareVersion(FirmwareModuleType.forDescription(e.getKey().getDescription()),
                         e.getValue()))
                 .collect(Collectors.toList());
 
@@ -805,11 +808,12 @@ public class FirmwareManagementService {
 
     @Transactional(value = "writableTransactionManager")
     public void tryToAddFirmwareVersionToHistory(final String organisationIdentification,
-            final String deviceIdentification, final FirmwareVersionDto firmwareVersion) throws FunctionalException {
+            final String deviceIdentification, final FirmwareVersion firmwareVersion) throws FunctionalException {
 
         final FirmwareModule module = createFirmwareModule(firmwareVersion);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
-        final List<FirmwareFile> firmwareFiles = this.getPossibleFirmwareFiles(organisationIdentification, device);
+        final List<FirmwareFile> firmwareFiles = this
+                .getAvailableFirmwareFilesForDeviceModel(organisationIdentification, device.getDeviceModel());
 
         // check each file for the module and the version as returned by the
         // device
@@ -823,6 +827,9 @@ public class FirmwareManagementService {
                 this.saveDeviceFirmwareFile(deviceFirmwareFile);
                 LOGGER.info("Firmware version {} added to device {}", firmwareVersion.getVersion(),
                         deviceIdentification);
+
+                // we only want to add one record in history
+                return;
             }
         }
 
@@ -830,17 +837,16 @@ public class FirmwareManagementService {
 
     // HELPER METHODS
 
-    private List<FirmwareFile> getPossibleFirmwareFiles(final String organisationIdentification, final Device device)
-            throws FunctionalException {
-        final DeviceModel deviceModel = device.getDeviceModel();
+    private List<FirmwareFile> getAvailableFirmwareFilesForDeviceModel(final String organisationIdentification,
+            final DeviceModel deviceModel) throws FunctionalException {
         final Manufacturer manufacturer = deviceModel.getManufacturer();
 
         return this.findAllFirmwareFiles(organisationIdentification, manufacturer.getCode(),
                 deviceModel.getModelCode());
     }
 
-    private static FirmwareModule createFirmwareModule(final FirmwareVersionDto firmwareVersion) {
-        final String description = firmwareVersion.getFirmwareModuleType()
+    private static FirmwareModule createFirmwareModule(final FirmwareVersion firmwareVersion) {
+        final String description = firmwareVersion.getType()
                 .getDescription()
                 .toLowerCase(Locale.getDefault());
         return new FirmwareModule(description);
