@@ -271,10 +271,10 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
-  <xsd:element name="SetRandomizationSettingsRequest">
+  <xsd:element name="SetRandomisationSettingsRequest">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="smconf:SetRandomizationSettingsRequestData"></xsd:extension>
+        <xsd:extension base="smconf:SetRandomisationSettingsRequestData"></xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -316,7 +316,7 @@
         <xsd:element ref="tns:GetMbusEncryptionKeyStatusByChannelRequest"/>
         <xsd:element ref="tns:SetDeviceLifecycleStatusByChannelRequest"/>
         <xsd:element ref="tns:ScanMbusChannelsRequest"/>
-        <xsd:element ref="tns:SetRandomizationSettingsRequest"/>
+        <xsd:element ref="tns:SetRandomisationSettingsRequest"/>
       </xsd:choice>
     </xsd:sequence>
   </xsd:complexType>

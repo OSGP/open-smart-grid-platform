@@ -11,7 +11,7 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.mess
 
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.ConfigurationService;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.BaseRequestMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomizationSettingsRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomisationSettingsRequestData;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
@@ -23,27 +23,27 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SetRandomizationSettingsRequestMessageProcessor extends BaseRequestMessageProcessor {
+public class SetRandomisationSettingsRequestMessageProcessor extends BaseRequestMessageProcessor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SetRandomizationSettingsRequestMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SetRandomisationSettingsRequestMessageProcessor.class);
 
     @Autowired
     @Qualifier("domainSmartMeteringConfigurationService")
     private ConfigurationService configurationService;
 
     @Autowired
-    protected SetRandomizationSettingsRequestMessageProcessor(
+    protected SetRandomisationSettingsRequestMessageProcessor(
             @Qualifier("domainSmartMeteringWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
-        super(messageProcessorMap, MessageType.SET_RANDOMIZATION_SETTINGS);
+        super(messageProcessorMap, MessageType.SET_RANDOMISATION_SETTINGS);
     }
 
     @Override
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
             throws FunctionalException {
 
-        LOGGER.info("SetRandomizationSettingsRequestMessageProcessor reached.");
+        LOGGER.info("SetRandomisationSettingsRequestMessageProcessor reached.");
 
-        this.configurationService.setRandomizationSettings(deviceMessageMetadata,
-                (SetRandomizationSettingsRequestData) dataObject);
+        this.configurationService.setRandomisationSettings(deviceMessageMetadata,
+                (SetRandomisationSettingsRequestData) dataObject);
     }
 }

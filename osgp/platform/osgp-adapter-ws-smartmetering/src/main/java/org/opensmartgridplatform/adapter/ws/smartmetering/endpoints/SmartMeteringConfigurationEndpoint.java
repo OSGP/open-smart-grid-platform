@@ -95,10 +95,10 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.S
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupSmsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupSmsRequestData;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupSmsResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetRandomizationSettingsAsyncRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetRandomizationSettingsAsyncResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetRandomizationSettingsRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetRandomizationSettingsResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetRandomisationSettingsAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetRandomisationSettingsAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetRandomisationSettingsRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetRandomisationSettingsResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysRequest;
@@ -1246,23 +1246,23 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         return response;
     }
 
-    @PayloadRoot(localPart = "SetRandomizationSettingsRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @PayloadRoot(localPart = "SetRandomisationSettingsRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
     @ResponsePayload
-    public SetRandomizationSettingsAsyncResponse setRandomizationSettings(
+    public SetRandomisationSettingsAsyncResponse setRandomisationSettings(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetRandomizationSettingsRequest request,
+            @RequestPayload final SetRandomisationSettingsRequest request,
             @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
             @ResponseUrl final String responseUrl) throws OsgpException {
 
-        LOGGER.info("-- calling setRandomizationSettings ");
+        LOGGER.info("-- calling setRandomisationSettings ");
 
-        final SetRandomizationSettingsAsyncResponse response = new SetRandomizationSettingsAsyncResponse();
+        final SetRandomisationSettingsAsyncResponse response = new SetRandomisationSettingsAsyncResponse();
 
-        final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomizationSettingsRequest dataRequest = this.configurationMapper.map(
+        final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomisationSettingsRequest dataRequest = this.configurationMapper.map(
                 request,
-                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomizationSettingsRequest.class);
+                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomisationSettingsRequest.class);
 
-        final String correlationUid = this.configurationService.enqueueSetRandomizationSettingsRequest(
+        final String correlationUid = this.configurationService.enqueueSetRandomisationSettingsRequest(
                 organisationIdentification, dataRequest.getDeviceIdentification(), dataRequest,
                 MessagePriorityEnum.getMessagePriority(messagePriority),
                 this.configurationMapper.map(scheduleTime, Long.class));
@@ -1275,16 +1275,16 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         return response;
     }
 
-    @PayloadRoot(localPart = "SetRandomizationSettingsAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @PayloadRoot(localPart = "SetRandomisationSettingsAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
     @ResponsePayload
-    public SetRandomizationSettingsResponse getSetRandomizationSettingsResponse(
-            @RequestPayload final SetRandomizationSettingsAsyncRequest request) throws OsgpException {
+    public SetRandomisationSettingsResponse getSetRandomisationSettingsResponse(
+            @RequestPayload final SetRandomisationSettingsAsyncRequest request) throws OsgpException {
 
-        LOGGER.info("-- calling getSetRandomizationSettingsResponse ");
+        LOGGER.info("-- calling getSetRandomisationSettingsResponse ");
 
-        SetRandomizationSettingsResponse response = null;
+        SetRandomisationSettingsResponse response = null;
         try {
-            response = new SetRandomizationSettingsResponse();
+            response = new SetRandomisationSettingsResponse();
             final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
                     ComponentType.WS_SMART_METERING);
 

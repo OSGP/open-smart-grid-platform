@@ -246,25 +246,25 @@
     </wsdl:part>
   </wsdl:message>
 
-  <wsdl:message name="SetRandomizationSettingsRequest">
-    <wsdl:part element="smconf:SetRandomizationSettingsRequest"
-               name="SetRandomizationSettingsRequest">
+  <wsdl:message name="SetRandomisationSettingsRequest">
+    <wsdl:part element="smconf:SetRandomisationSettingsRequest"
+               name="SetRandomisationSettingsRequest">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="SetRandomizationSettingsAsyncResponse">
+  <wsdl:message name="SetRandomisationSettingsAsyncResponse">
     <wsdl:part element="smconf:SetConfigurationObjectAsyncResponse"
                name="SetConfigurationObjectAsyncResponse">
     </wsdl:part>
   </wsdl:message>
 
-  <wsdl:message name="SetRandomizationSettingsAsyncRequest">
-    <wsdl:part element="smconf:SetRandomizationSettingsAsyncRequest"
-               name="SetRandomizationSettingsAsyncRequest">
+  <wsdl:message name="SetRandomisationSettingsAsyncRequest">
+    <wsdl:part element="smconf:SetRandomisationSettingsAsyncRequest"
+               name="SetRandomisationSettingsAsyncRequest">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="SetRandomizationSettingsResponse">
-    <wsdl:part element="smconf:SetRandomizationSettingsResponse"
-               name="SetRandomizationSettingsResponse">
+  <wsdl:message name="SetRandomisationSettingsResponse">
+    <wsdl:part element="smconf:SetRandomisationSettingsResponse"
+               name="SetRandomisationSettingsResponse">
     </wsdl:part>
   </wsdl:message>
 

@@ -31,7 +31,7 @@ public enum PlatformFunction {
     REMOVE_ORGANISATION,
     REVOKE_KEY,
     SET_OWNER,
-    SET_RANDOMIZATION_SETTINGS,
+    SET_RANDOMISATION_SETTINGS,
     UPDATE_DEVICE_PROTOCOL,
     UPDATE_KEY
     // add new PlatformFunction in alphabetical order.

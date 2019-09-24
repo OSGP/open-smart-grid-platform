@@ -14,19 +14,19 @@ import java.io.Serializable;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 
-public class SetRandomizationSettingsRequestData implements Serializable, ActionRequest {
+public class SetRandomisationSettingsRequestData implements Serializable, ActionRequest {
 
     private static final long serialVersionUID = -381163520662276869L;
 
     private long directAttach;
-    private long randomizationStartWindow;
+    private long randomisationStartWindow;
     private long multiplicationFactor;
     private long numberOfRetries;
 
-    public SetRandomizationSettingsRequestData(final long directAttach, final long randomizationStartWindow,
+    public SetRandomisationSettingsRequestData(final long directAttach, final long randomisationStartWindow,
             final long multiplicationFactor, final long numberOfRetries) {
         this.directAttach = directAttach;
-        this.randomizationStartWindow = randomizationStartWindow;
+        this.randomisationStartWindow = randomisationStartWindow;
         this.multiplicationFactor = multiplicationFactor;
         this.numberOfRetries = numberOfRetries;
     }
@@ -40,8 +40,8 @@ public class SetRandomizationSettingsRequestData implements Serializable, Action
         return directAttach;
     }
 
-    public long getRandomizationStartWindow() {
-        return randomizationStartWindow;
+    public long getRandomisationStartWindow() {
+        return randomisationStartWindow;
     }
 
     public long getMultiplicationFactor() {
@@ -54,6 +54,6 @@ public class SetRandomizationSettingsRequestData implements Serializable, Action
 
     @Override
     public DeviceFunction getDeviceFunction() {
-        return DeviceFunction.SET_RANDOMIZATION_SETTINGS;
+        return DeviceFunction.SET_RANDOMISATION_SETTINGS;
     }
 }

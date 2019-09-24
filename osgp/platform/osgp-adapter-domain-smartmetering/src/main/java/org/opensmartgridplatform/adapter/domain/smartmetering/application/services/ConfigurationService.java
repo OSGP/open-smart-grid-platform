@@ -29,6 +29,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusE
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetClockConfigurationRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeysRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomisationSettingsRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.UpdateFirmwareRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.UpdateFirmwareResponse;
 import org.opensmartgridplatform.domain.smartmetering.exceptions.GatewayDeviceNotSetForMbusDeviceException;
@@ -901,11 +902,11 @@ public class ConfigurationService {
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
-    public void setRandomizationSettings(final DeviceMessageMetadata deviceMessageMetadata,
-            final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomizationSettingsRequestData setRandomizationSettingsRequestData)
+    public void setRandomisationSettings(final DeviceMessageMetadata deviceMessageMetadata,
+            final SetRandomisationSettingsRequestData setRandomisationSettingsRequestData)
             throws FunctionalException {
 
-        LOGGER.info("setRandomizationSettings for organisationIdentification: {} for deviceIdentification: {}",
+        LOGGER.info("setRandomisationSettings for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
         //        final SmartMeter smartMeteringDevice = this.domainHelperService

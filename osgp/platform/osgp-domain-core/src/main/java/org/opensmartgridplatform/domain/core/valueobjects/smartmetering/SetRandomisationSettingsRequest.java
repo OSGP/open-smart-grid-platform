@@ -10,25 +10,25 @@ import java.io.Serializable;
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-public class SetRandomizationSettingsRequest implements Serializable {
+public class SetRandomisationSettingsRequest implements Serializable {
 
     private static final long serialVersionUID = -8295596279285700413L;
     
     private final String deviceIdentification;
 
-    private SetRandomizationSettingsRequestData setRandomizationSettingsRequestData;
+    private SetRandomisationSettingsRequestData setRandomisationSettingsRequestData;
 
-    public SetRandomizationSettingsRequest(String deviceIdentification,
-            SetRandomizationSettingsRequestData setRandomizationSettingsRequestData) {
+    public SetRandomisationSettingsRequest(String deviceIdentification,
+            SetRandomisationSettingsRequestData setRandomisationSettingsRequestData) {
         this.deviceIdentification = deviceIdentification;
-        this.setRandomizationSettingsRequestData = setRandomizationSettingsRequestData;
+        this.setRandomisationSettingsRequestData = setRandomisationSettingsRequestData;
     }
 
     public String getDeviceIdentification() {
         return deviceIdentification;
     }
 
-    public SetRandomizationSettingsRequestData getSetRandomizationSettingsRequestData() {
-        return setRandomizationSettingsRequestData;
+    public SetRandomisationSettingsRequestData getSetRandomisationSettingsRequestData() {
+        return setRandomisationSettingsRequestData;
     }
 }

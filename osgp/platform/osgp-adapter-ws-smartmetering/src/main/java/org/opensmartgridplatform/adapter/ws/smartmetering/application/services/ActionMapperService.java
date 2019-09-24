@@ -47,7 +47,7 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetKeysR
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetMbusUserKeyByChannelRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetPushSetupAlarmRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetPushSetupSmsRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetRandomizationSettingsRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetRandomisationSettingsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetSpecialDaysRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SynchronizeTimeRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.UpdateFirmwareRequest;
@@ -88,7 +88,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeysR
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetPushSetupAlarmRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetPushSetupSmsRequestData;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomizationSettingsRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomisationSettingsRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecialDaysRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecificAttributeValueRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SynchronizeTimeRequestData;
@@ -281,9 +281,9 @@ public class ActionMapperService {
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusByChannelRequestData.class,
                 this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(
-                org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetRandomizationSettingsRequestData.class,
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetRandomisationSettingsRequestData.class,
                 this.configurationMapper);
-        CLASS_TO_MAPPER_MAP.put(SetRandomizationSettingsRequest.class, this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(SetRandomisationSettingsRequest.class, this.configurationMapper);
 
     }
 
@@ -414,7 +414,7 @@ public class ActionMapperService {
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusByChannelRequestData.class,
                 GetMbusEncryptionKeyStatusByChannelRequestData.class);
         CLASS_MAP.put(ScanMbusChannelsRequest.class, ScanMbusChannelsRequestData.class);
-        CLASS_MAP.put(SetRandomizationSettingsRequest.class, SetRandomizationSettingsRequestData.class);
+        CLASS_MAP.put(SetRandomisationSettingsRequest.class, SetRandomisationSettingsRequestData.class);
     }
 
     public List<ActionRequest> mapAllActions(final List<? extends Action> actionList) throws FunctionalException {

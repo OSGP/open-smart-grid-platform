@@ -1183,30 +1183,30 @@
     </xsd:complexContent>
   </xsd:complexType>
 
-  <xsd:element name="SetRandomizationSettingsRequest">
+  <xsd:element name="SetRandomisationSettingsRequest">
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
-        <xsd:element name="SetRandomizationSettingsData"
-                     type="tns:SetRandomizationSettingsRequestData"/>
+        <xsd:element name="SetRandomisationSettingsData"
+                     type="tns:SetRandomisationSettingsRequestData"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
-  <xsd:element name="SetRandomizationSettingsAsyncResponse">
+  <xsd:element name="SetRandomisationSettingsAsyncResponse">
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension base="common:AsyncResponse"></xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
-  <xsd:element name="SetRandomizationSettingsAsyncRequest">
+  <xsd:element name="SetRandomisationSettingsAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension base="common:AsyncRequest"></xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
-  <xsd:element name="SetRandomizationSettingsResponse">
+  <xsd:element name="SetRandomisationSettingsResponse">
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="Result" type="common:OsgpResultType"
@@ -1217,7 +1217,7 @@
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:complexType name="SetRandomizationSettingsRequestData">
+  <xsd:complexType name="SetRandomisationSettingsRequestData">
     <xsd:complexContent>
       <xsd:extension base="common:Command">
         <xsd:sequence>
@@ -1228,7 +1228,7 @@
               </xsd:documentation>
             </xsd:annotation>
           </xsd:element>
-          <xsd:element name="randomizationStartWindow" type="xsd:integer">
+          <xsd:element name="randomisationStartWindow" type="xsd:integer">
             <xsd:annotation>
               <xsd:documentation>Port number of the service listening
                 for alarm notifications over TCP.

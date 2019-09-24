@@ -54,6 +54,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetClockConfigur
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeysRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestDataDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetRandomisationSettingsRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDayDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDaysRequestDto;
@@ -377,5 +378,11 @@ public class ConfigurationService {
 
         return this.getMbusEncryptionKeyStatusByChannelCommandExecutor
                 .execute(conn, device, getMbusEncryptionKeyStatusByChannelRequest);
+    }
+
+    public void requestSetRandomizationSettings(DlmsConnectionManager conn, DlmsDevice device, SetRandomisationSettingsRequestDataDto setRandomisationSettingsRequestDataDto) {
+
+        LOGGER.info("I have arrived at the requestSetRandomizationSettings");
+
     }
 }

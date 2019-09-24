@@ -52,7 +52,7 @@ public class SecurityService {
                         PlatformFunction.GET_PROTOCOL_INFOS, PlatformFunction.REMOVE_DEVICE_MODEL,
                         PlatformFunction.REMOVE_FIRMWARE, PlatformFunction.REMOVE_MANUFACTURER,
                         PlatformFunction.REMOVE_ORGANISATION, PlatformFunction.REVOKE_KEY, PlatformFunction.SET_OWNER,
-                        PlatformFunction.SET_RANDOMIZATION_SETTINGS, PlatformFunction.UPDATE_DEVICE_PROTOCOL,
+                        PlatformFunction.SET_RANDOMISATION_SETTINGS, PlatformFunction.UPDATE_DEVICE_PROTOCOL,
                         PlatformFunction.UPDATE_KEY));
 
         platformMapping.put(PlatformFunctionGroup.USER,
