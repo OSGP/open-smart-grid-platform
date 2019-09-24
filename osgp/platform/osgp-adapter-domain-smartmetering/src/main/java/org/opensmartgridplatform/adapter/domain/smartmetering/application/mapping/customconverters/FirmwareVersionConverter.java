@@ -7,27 +7,23 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters;
 
+import org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
 
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.metadata.Type;
 
-public class FirmwareVersionConverter extends
-        CustomConverter<FirmwareVersionDto, org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FirmwareVersion> {
+public class FirmwareVersionConverter extends CustomConverter<FirmwareVersionDto, FirmwareVersion> {
 
     @Override
-    public org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FirmwareVersion convert(
-            final FirmwareVersionDto source,
-            final Type<? extends org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FirmwareVersion> destinationType,
-            final MappingContext context) {
+    public FirmwareVersion convert(final FirmwareVersionDto source,
+            final Type<? extends FirmwareVersion> destinationType, final MappingContext context) {
 
         if (source != null) {
 
-            return new org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FirmwareVersion(
-                    org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FirmwareModuleType
-                            .valueOf(source.getFirmwareModuleType().name()),
-                    source.getVersion());
+            return new FirmwareVersion(org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleType
+                    .valueOf(source.getFirmwareModuleType().name()), source.getVersion());
         }
 
         return null;

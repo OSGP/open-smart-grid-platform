@@ -26,8 +26,8 @@ import org.opensmartgridplatform.domain.core.repositories.DeviceFirmwareModuleRe
 import org.opensmartgridplatform.domain.core.repositories.FirmwareFileRepository;
 import org.opensmartgridplatform.domain.core.repositories.FirmwareModuleRepository;
 import org.opensmartgridplatform.domain.core.repositories.SmartMeterRepository;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FirmwareModuleType;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FirmwareVersion;
+import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleType;
+import org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
@@ -199,7 +199,8 @@ public class FirmwareService {
             return Collections.emptyList();
         }
 
-        final Entry<FirmwareModuleType, String> versionByModuleType = firmwareVersionByModuleType.entrySet().iterator()
+        final Entry<FirmwareModuleType, String> versionByModuleType = firmwareVersionByModuleType.entrySet()
+                .iterator()
                 .next();
         final String moduleVersion = versionByModuleType.getValue();
         final String moduleDescription;

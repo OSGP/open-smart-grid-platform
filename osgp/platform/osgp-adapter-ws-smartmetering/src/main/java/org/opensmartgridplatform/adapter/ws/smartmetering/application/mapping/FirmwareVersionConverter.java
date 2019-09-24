@@ -7,8 +7,8 @@
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FirmwareModuleType;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FirmwareVersion;
+import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleType;
+import org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion;
 
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
