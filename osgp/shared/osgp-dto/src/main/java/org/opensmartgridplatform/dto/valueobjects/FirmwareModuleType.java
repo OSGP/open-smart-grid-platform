@@ -30,7 +30,7 @@ public enum FirmwareModuleType {
         return this.description;
     }
 
-    public static FirmwareModuleType getByDescription(final String description) {
+    public static FirmwareModuleType forDescription(final String description) {
         final Stream<FirmwareModuleType> stream = Arrays.stream(FirmwareModuleType.values());
         return stream.filter(f -> f.getDescription().equalsIgnoreCase(description)).findFirst().orElse(null);
     }

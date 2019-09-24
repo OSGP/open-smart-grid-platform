@@ -9,17 +9,15 @@ package org.opensmartgridplatform.adapter.ws.core.application.mapping;
 
 import javax.annotation.PostConstruct;
 
+import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FirmwareVersion;
+import org.opensmartgridplatform.adapter.ws.shared.db.domain.repositories.writable.WritableFirmwareFileRepository;
+import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
+import org.opensmartgridplatform.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.ConfigurableMapper;
-
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FirmwareVersion;
-import org.opensmartgridplatform.adapter.ws.shared.db.domain.repositories.writable.WritableFirmwareFileRepository;
-import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
-import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
-import org.opensmartgridplatform.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
 
 @Component(value = "coreFirmwareManagementMapper")
 public class FirmwareManagementMapper extends ConfigurableMapper {
@@ -47,12 +45,18 @@ public class FirmwareManagementMapper extends ConfigurableMapper {
 
         mapperFactory.getConverterFactory()
                 .registerConverter(new DeviceFirmwareConverter(this.deviceRepository, this.firmwareFileRepository));
-        mapperFactory.classMap(FirmwareVersion.class, FirmwareVersionDto.class).byDefault().register();
+        mapperFactory
+                .classMap(FirmwareVersion.class,
+                        org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion.class)
+                .byDefault()
+                .register();
 
         mapperFactory.registerClassMap(mapperFactory
                 .classMap(org.opensmartgridplatform.domain.core.entities.DeviceModel.class,
                         org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.DeviceModel.class)
-                .field("manufacturer.code", "manufacturer").byDefault().toClassMap());
+                .field("manufacturer.code", "manufacturer")
+                .byDefault()
+                .toClassMap());
 
         mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
     }

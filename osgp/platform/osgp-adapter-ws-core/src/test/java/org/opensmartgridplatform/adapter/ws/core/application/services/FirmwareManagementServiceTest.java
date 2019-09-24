@@ -33,9 +33,9 @@ import org.opensmartgridplatform.domain.core.entities.FirmwareFile;
 import org.opensmartgridplatform.domain.core.entities.FirmwareModule;
 import org.opensmartgridplatform.domain.core.entities.Manufacturer;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
+import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleType;
+import org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion;
 import org.opensmartgridplatform.domain.core.valueobjects.PlatformFunction;
-import org.opensmartgridplatform.dto.valueobjects.FirmwareModuleType;
-import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -91,12 +91,12 @@ public class FirmwareManagementServiceTest {
     public void testCheckFirmwareHistoryForExistingVersion() throws FunctionalException {
 
         // Arrange
-        final FirmwareVersionDto firmwareVersion1 = new FirmwareVersionDto(FirmwareModuleType.SECURITY, VERSION_2);
-        final FirmwareVersionDto firmwareVersion2 = new FirmwareVersionDto(FirmwareModuleType.FUNCTIONAL, VERSION_2);
-        final List<FirmwareVersionDto> versionsOnDevice = Arrays.asList(firmwareVersion1, firmwareVersion2);
+        final FirmwareVersion firmwareVersion1 = new FirmwareVersion(FirmwareModuleType.SECURITY, VERSION_2);
+        final FirmwareVersion firmwareVersion2 = new FirmwareVersion(FirmwareModuleType.FUNCTIONAL, VERSION_2);
+        final List<FirmwareVersion> versionsOnDevice = Arrays.asList(firmwareVersion1, firmwareVersion2);
 
         // Act
-        final List<FirmwareVersionDto> versionsNotInHistory = this.firmwareManagementService
+        final List<FirmwareVersion> versionsNotInHistory = this.firmwareManagementService
                 .checkFirmwareHistoryForVersion("", "", versionsOnDevice);
 
         // Validate
@@ -108,60 +108,59 @@ public class FirmwareManagementServiceTest {
     public void testCheckFirmwareHistoryForNonExistingVersion() throws FunctionalException {
 
         // Arrange
-        final FirmwareVersionDto firmwareVersion1 = new FirmwareVersionDto(FirmwareModuleType.SECURITY, VERSION_2);
-        final FirmwareVersionDto firmwareVersion2 = new FirmwareVersionDto(FirmwareModuleType.FUNCTIONAL, VERSION_3);
-        final List<FirmwareVersionDto> versionsOnDevice = Arrays.asList(firmwareVersion1, firmwareVersion2);
+        final FirmwareVersion firmwareVersion1 = new FirmwareVersion(FirmwareModuleType.SECURITY, VERSION_2);
+        final FirmwareVersion firmwareVersion2 = new FirmwareVersion(FirmwareModuleType.FUNCTIONAL, VERSION_3);
+        final List<FirmwareVersion> versionsOnDevice = Arrays.asList(firmwareVersion1, firmwareVersion2);
 
-        final List<FirmwareVersionDto> expected = Arrays.asList(firmwareVersion2);
+        final List<FirmwareVersion> expected = Arrays.asList(firmwareVersion2);
 
         // Act
-        final List<FirmwareVersionDto> versionsNotInHistory = this.firmwareManagementService
+        final List<FirmwareVersion> versionsNotInHistory = this.firmwareManagementService
                 .checkFirmwareHistoryForVersion("", "", versionsOnDevice);
 
-        // Validate
+        // Assert
         assertEquals("Lists should be equal", expected, versionsNotInHistory);
 
     }
 
     @Test
-    public void testTryToAddFirmwareVersionToHistoryFileIsAvailable() throws FunctionalException {
+    public void testTryToAddFirmwareVersionToHistoryWhenFileIsAvailable() throws FunctionalException {
 
         // Arrange
         final FirmwareFile firmwareFile = new FirmwareFile("filename", "description", false);
-        final FirmwareModule firmwareModule = new FirmwareModule(
-                FirmwareModuleType.SECURITY.getDescription().toLowerCase());
+        final FirmwareModule firmwareModule = new FirmwareModule(FirmwareModuleType.SECURITY.getDescription().toLowerCase());
         firmwareFile.addFirmwareModule(firmwareModule, VERSION_2);
         when(this.firmwareFileRepository.findByDeviceModel(any(DeviceModel.class)))
                 .thenReturn(Arrays.asList(firmwareFile));
-        final FirmwareVersionDto firmwareVersion1 = new FirmwareVersionDto(FirmwareModuleType.SECURITY, VERSION_2);
+        final FirmwareVersion firmwareVersion = new FirmwareVersion(FirmwareModuleType.SECURITY, VERSION_2);
 
         // Act
-        this.firmwareManagementService.tryToAddFirmwareVersionToHistory("", "", firmwareVersion1);
+        this.firmwareManagementService.tryToAddFirmwareVersionToHistory("", "", firmwareVersion);
 
-        // Validate
+        // Assert
         verify(this.deviceFirmwareFileRepository, times(1)).save(any(DeviceFirmwareFile.class));
     }
 
     @Test
-    public void testTryToAddFirmwareVersionToHistoryFileIsNotAvailable() throws FunctionalException {
+    public void testTryToAddFirmwareVersionToHistoryWhenFileIsNotAvailable() throws FunctionalException {
 
         // Arrange
         final FirmwareFile firmwareFile = new FirmwareFile("filename", "description", false);
         when(this.firmwareFileRepository.findByDeviceModel(any(DeviceModel.class)))
                 .thenReturn(Arrays.asList(firmwareFile));
-        final FirmwareVersionDto firmwareVersion1 = new FirmwareVersionDto(FirmwareModuleType.SECURITY, VERSION_2);
+        final FirmwareVersion firmwareVersion1 = new FirmwareVersion(FirmwareModuleType.SECURITY, VERSION_2);
 
         // Act
         this.firmwareManagementService.tryToAddFirmwareVersionToHistory("", "", firmwareVersion1);
 
-        // Validate
+        // Assert
         verify(this.deviceFirmwareFileRepository, never()).save(any(DeviceFirmwareFile.class));
     }
 
     private FirmwareFile createFirmwareFile(final String version) {
         final FirmwareFile firmwareFile = new FirmwareFile();
         final FirmwareModule module1 = new FirmwareModule("Functional");
-        final FirmwareModule module2 = new FirmwareModule("security");
+        final FirmwareModule module2 = new FirmwareModule("Security");
         firmwareFile.addFirmwareModule(module1, version);
         firmwareFile.addFirmwareModule(module2, version);
         return firmwareFile;
