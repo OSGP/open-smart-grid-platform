@@ -25,7 +25,7 @@ public enum FirmwareModuleType {
 
     public static FirmwareModuleType forDescription(final String description) {
         for (final FirmwareModuleType firmwareModuleType : values()) {
-            if (description.equals(firmwareModuleType.getDescription())) {
+            if (description.equalsIgnoreCase(firmwareModuleType.getDescription())) {
                 return firmwareModuleType;
             }
         }
