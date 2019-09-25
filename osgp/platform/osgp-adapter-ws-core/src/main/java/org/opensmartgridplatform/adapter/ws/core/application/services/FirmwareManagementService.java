@@ -817,6 +817,8 @@ public class FirmwareManagementService {
 
         // check each file for the module and the version as returned by the
         // device
+        boolean recordAdded = false;
+
         for (final FirmwareFile file : firmwareFiles) {
             final Map<FirmwareModule, String> moduleVersions = file.getModuleVersions();
             if (moduleVersions.containsKey(module) && moduleVersions.get(module).equals(firmwareVersion.getVersion())) {
@@ -829,8 +831,13 @@ public class FirmwareManagementService {
                         deviceIdentification);
 
                 // we only want to add one record in history
-                return;
+                recordAdded = true;
+                break;
             }
+        }
+
+        if (!recordAdded) {
+            LOGGER.warn("No firmware file record found for: {} for device: {}", firmwareVersion, deviceIdentification);
         }
 
     }
