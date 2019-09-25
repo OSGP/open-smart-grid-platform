@@ -76,7 +76,7 @@ public class FirmwareManagementService {
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementService.class);
 
     private static final String SPACE_REPLACER = "_";
-    private static final String INSTALLER = "inserted by OSGP after mismatch when calling GetFirmwareVersion";
+    private static final String INSTALLER = "Inserted to match the version reported by the device.";
 
     @Autowired
     private DomainHelperService domainHelperService;
