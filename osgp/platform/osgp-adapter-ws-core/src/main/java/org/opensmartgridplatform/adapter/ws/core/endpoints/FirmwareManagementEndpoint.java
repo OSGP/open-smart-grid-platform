@@ -118,9 +118,10 @@ public class FirmwareManagementEndpoint {
     private DeviceRepository deviceRepository;
 
     @Autowired
-    public FirmwareManagementEndpoint(
-            @Qualifier(value = "wsCoreFirmwareManagementService") final FirmwareManagementService firmwareManagementService,
-            @Qualifier(value = "coreFirmwareManagementMapper") final FirmwareManagementMapper firmwareManagementMapper) {
+    public FirmwareManagementEndpoint(@Qualifier(
+            value = "wsCoreFirmwareManagementService") final FirmwareManagementService firmwareManagementService,
+            @Qualifier(
+                    value = "coreFirmwareManagementMapper") final FirmwareManagementMapper firmwareManagementMapper) {
         this.firmwareManagementService = firmwareManagementService;
         this.firmwareManagementMapper = firmwareManagementMapper;
     }

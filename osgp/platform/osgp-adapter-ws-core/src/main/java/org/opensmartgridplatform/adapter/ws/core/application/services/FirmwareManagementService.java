@@ -846,9 +846,8 @@ public class FirmwareManagementService {
     }
 
     private static FirmwareModule createFirmwareModule(final FirmwareVersion firmwareVersion) {
-        final String description = firmwareVersion.getType()
-                .getDescription()
-                .toLowerCase(Locale.getDefault());
+        final String description = firmwareVersion.getFirmwareModuleType().getDescription().toLowerCase(
+                Locale.getDefault());
         return new FirmwareModule(description);
     }
 
