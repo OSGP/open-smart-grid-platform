@@ -95,7 +95,7 @@ public class FirmwareManagementServiceTest {
 
         // Act
         final List<FirmwareVersion> versionsNotInHistory = this.firmwareManagementService
-                .checkFirmwareHistoryForVersion("", "", versionsOnDevice);
+                .checkFirmwareHistoryForVersion("", versionsOnDevice);
 
         // Validate
         assertTrue("List should be empty", versionsNotInHistory.isEmpty());
@@ -114,7 +114,7 @@ public class FirmwareManagementServiceTest {
 
         // Act
         final List<FirmwareVersion> versionsNotInHistory = this.firmwareManagementService
-                .checkFirmwareHistoryForVersion("", "", versionsOnDevice);
+                .checkFirmwareHistoryForVersion("", versionsOnDevice);
 
         // Assert
         assertEquals("Lists should be equal", expected, versionsNotInHistory);
@@ -134,7 +134,7 @@ public class FirmwareManagementServiceTest {
         final FirmwareVersion firmwareVersion = new FirmwareVersion(FirmwareModuleType.SECURITY, VERSION_2);
 
         // Act
-        this.firmwareManagementService.tryToAddFirmwareVersionToHistory("", "", firmwareVersion);
+        this.firmwareManagementService.tryToAddFirmwareVersionToHistory("", firmwareVersion);
 
         // Assert
         verify(this.deviceFirmwareFileRepository, times(1)).save(any(DeviceFirmwareFile.class));
@@ -150,7 +150,7 @@ public class FirmwareManagementServiceTest {
         final FirmwareVersion firmwareVersion1 = new FirmwareVersion(FirmwareModuleType.SECURITY, VERSION_2);
 
         // Act
-        this.firmwareManagementService.tryToAddFirmwareVersionToHistory("", "", firmwareVersion1);
+        this.firmwareManagementService.tryToAddFirmwareVersionToHistory("", firmwareVersion1);
 
         // Assert
         verify(this.deviceFirmwareFileRepository, never()).save(any(DeviceFirmwareFile.class));

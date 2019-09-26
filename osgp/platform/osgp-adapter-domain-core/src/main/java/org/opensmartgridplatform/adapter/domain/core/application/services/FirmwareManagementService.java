@@ -151,11 +151,11 @@ public class FirmwareManagementService extends AbstractService {
     private void checkFirmwareHistory(final String organisationIdentification, final String deviceId,
             final List<org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion> firmwareVersions) {
         final List<org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion> versionsNotInHistory = this
-                .checkFirmwareHistoryForVersion(organisationIdentification, deviceId, firmwareVersions);
+                .checkFirmwareHistoryForVersion(deviceId, firmwareVersions);
         for (final org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion firmwareVersion : versionsNotInHistory) {
             LOGGER.info("Firmware version {} is not in history of device {}, we are trying to add it", firmwareVersion,
                     deviceId);
-            this.tryToAddFirmwareVersionToHistory(organisationIdentification, deviceId, firmwareVersion);
+            this.tryToAddFirmwareVersionToHistory(deviceId, firmwareVersion);
         }
     }
 
@@ -171,8 +171,8 @@ public class FirmwareManagementService extends AbstractService {
      *         firmware history
      * @throws FunctionalException
      */
-    public List<FirmwareVersion> checkFirmwareHistoryForVersion(final String organisationIdentification,
-            final String deviceId, final List<FirmwareVersion> firmwareVersions) {
+    public List<FirmwareVersion> checkFirmwareHistoryForVersion(final String deviceId,
+            final List<FirmwareVersion> firmwareVersions) {
 
         if (firmwareVersions.isEmpty()) {
             return firmwareVersions;
@@ -198,13 +198,12 @@ public class FirmwareManagementService extends AbstractService {
         return firmwareVersionsToCheck;
     }
 
-    public void tryToAddFirmwareVersionToHistory(final String organisationIdentification,
-            final String deviceIdentification, final FirmwareVersion firmwareVersion) {
+    public void tryToAddFirmwareVersionToHistory(final String deviceIdentification,
+            final FirmwareVersion firmwareVersion) {
 
         final FirmwareModule module = createFirmwareModule(firmwareVersion);
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-        final List<FirmwareFile> firmwareFiles = this
-                .getAvailableFirmwareFilesForDeviceModel(organisationIdentification, device.getDeviceModel());
+        final List<FirmwareFile> firmwareFiles = this.getAvailableFirmwareFilesForDeviceModel(device.getDeviceModel());
 
         // check each file for the module and the version as returned by the
         // device
@@ -217,7 +216,6 @@ public class FirmwareManagementService extends AbstractService {
                 // file found, insert a record into the history
                 final DeviceFirmwareFile deviceFirmwareFile = new DeviceFirmwareFile(device, file, new Date(),
                         INSTALLER);
-                // this.saveDeviceFirmwareFile(deviceFirmwareFile);
                 this.deviceFirmwareFileRepository.save(deviceFirmwareFile);
                 LOGGER.info("Firmware version {} added to device {}", firmwareVersion.getVersion(),
                         deviceIdentification);
@@ -240,16 +238,13 @@ public class FirmwareManagementService extends AbstractService {
         return new FirmwareModule(description);
     }
 
-    private List<FirmwareFile> getAvailableFirmwareFilesForDeviceModel(final String organisationIdentification,
-            final DeviceModel deviceModel) {
+    private List<FirmwareFile> getAvailableFirmwareFilesForDeviceModel(final DeviceModel deviceModel) {
         final Manufacturer manufacturer = deviceModel.getManufacturer();
 
-        return this.findAllFirmwareFiles(organisationIdentification, manufacturer.getCode(),
-                deviceModel.getModelCode());
+        return this.findAllFirmwareFiles(manufacturer.getCode(), deviceModel.getModelCode());
     }
 
-    private List<FirmwareFile> findAllFirmwareFiles(final String organisationIdentification, final String manufacturer,
-            final String modelCode) {
+    private List<FirmwareFile> findAllFirmwareFiles(final String manufacturer, final String modelCode) {
         List<FirmwareFile> firmwareFiles = new ArrayList<>();
         if (manufacturer != null) {
             final Manufacturer databaseManufacturer = this.manufacturerRepository.findByCode(manufacturer);
