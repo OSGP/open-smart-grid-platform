@@ -136,7 +136,7 @@ public class FirmwareManagementService extends AbstractService {
         final List<FirmwareVersion> firmwareVersions = this.domainCoreMapper.mapAsList(firmwareVersionsDto,
                 FirmwareVersion.class);
 
-        this.checkFirmwareHistory(ids.getOrganisationIdentification(), ids.getDeviceIdentification(), firmwareVersions);
+        this.checkFirmwareHistory(ids.getDeviceIdentification(), firmwareVersions);
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withIds(ids)
@@ -148,7 +148,7 @@ public class FirmwareManagementService extends AbstractService {
         this.webServiceResponseMessageSender.send(responseMessage);
     }
 
-    private void checkFirmwareHistory(final String organisationIdentification, final String deviceId,
+    private void checkFirmwareHistory(final String deviceId,
             final List<org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion> firmwareVersions) {
         final List<org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion> versionsNotInHistory = this
                 .checkFirmwareHistoryForVersion(deviceId, firmwareVersions);
