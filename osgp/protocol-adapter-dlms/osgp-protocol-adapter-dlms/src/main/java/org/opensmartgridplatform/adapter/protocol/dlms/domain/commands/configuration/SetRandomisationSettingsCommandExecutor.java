@@ -8,12 +8,19 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration;
 
+import java.io.IOException;
+import java.util.Optional;
+
 import org.openmuc.jdlms.AccessResultCode;
-import org.openmuc.jdlms.ObisCode;
-import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ConfigurationService;
+import org.openmuc.jdlms.AttributeAddress;
+import org.openmuc.jdlms.SetParameter;
+import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
@@ -29,14 +36,12 @@ public class SetRandomisationSettingsCommandExecutor
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetRandomisationSettingsCommandExecutor.class);
 
-    private ObisCode obisCodeDirectAttach = new ObisCode("0.1.94.31.3.255");
-    private ObisCode obisCodeRandomisationObject = new ObisCode("0.1.94.31.12.255");
+    private final DlmsObjectConfigService dlmsObjectConfigService;
 
     @Autowired
-    private ConfigurationService configurationService;
-
-    public SetRandomisationSettingsCommandExecutor() {
+    public SetRandomisationSettingsCommandExecutor(DlmsObjectConfigService dlmsObjectConfigService) {
         super(SetRandomisationSettingsRequestDataDto.class);
+        this.dlmsObjectConfigService = dlmsObjectConfigService;
     }
 
     @Override
@@ -58,15 +63,61 @@ public class SetRandomisationSettingsCommandExecutor
             final SetRandomisationSettingsRequestDataDto setRandomisationSettingsRequestDataDto)
             throws ProtocolAdapterException {
 
-        LOGGER.info("Excecuting SetRandomizationSettingsCommandExecutor");
+        LOGGER.info("Excecuting SetRandomizationSettingsCommandExecutor {}, {}, {}, {} ",
+                setRandomisationSettingsRequestDataDto.getDirectAttach(),
+                setRandomisationSettingsRequestDataDto.getRandomisationStartWindow(),
+                setRandomisationSettingsRequestDataDto.getMultiplicationFactor(),
+                setRandomisationSettingsRequestDataDto.getNumberOfRetries());
 
-        setRandomisationSettingsRequestDataDto.getDirectAttach();
-        setRandomisationSettingsRequestDataDto.getRandomisationStartWindow();
-        setRandomisationSettingsRequestDataDto.getMultiplicationFactor();
-        setRandomisationSettingsRequestDataDto.getNumberOfRetries();
+        int directAttach = setRandomisationSettingsRequestDataDto.getDirectAttach();
+        int randomisationStartWindow = setRandomisationSettingsRequestDataDto.getRandomisationStartWindow();
+        int multiplicationFactor = setRandomisationSettingsRequestDataDto.getMultiplicationFactor();
+        int numberOfRetries = setRandomisationSettingsRequestDataDto.getNumberOfRetries();
+
+        AttributeAddress directAttachAddress = getAttributeAddress(device, DlmsObjectType.DIRECT_ATTACH);
+        AttributeAddress randomisationSettingsAddress = getAttributeAddress(device,
+                DlmsObjectType.RANDOMISATION_SETTINGS);
+
+        DataObject directAttachObject = DataObject.newBoolData(directAttach == 1 ? Boolean.TRUE : Boolean.FALSE);
+
+        DataObject randomisationStartWindowObject = DataObject.newUInteger32Data(randomisationStartWindow);
+        DataObject multiplicationFactorObject = DataObject.newUInteger16Data(multiplicationFactor);
+        DataObject numberOfRetriesObject = DataObject.newUInteger16Data(numberOfRetries);
+
+        DataObject randomisationSettingsObject = DataObject.newStructureData(randomisationStartWindowObject,
+                multiplicationFactorObject, numberOfRetriesObject);
+
+        final SetParameter setParameterDirectAttach = new SetParameter(directAttachAddress, directAttachObject);
+        final SetParameter setRandomisationSettings = new SetParameter(randomisationSettingsAddress,
+                randomisationSettingsObject);
+
+        writeAttribute(conn, setParameterDirectAttach, "setParameterDirectAttach");
+        writeAttribute(conn, setParameterDirectAttach, "setRandomisationSettings");
 
         return AccessResultCode.SUCCESS;
 
+    }
+
+    private void writeAttribute(final DlmsConnectionManager conn, final SetParameter parameter,
+            final String attributeName) throws ProtocolAdapterException {
+        try {
+            final AccessResultCode result = conn.getConnection().set(parameter);
+            if (!result.equals(AccessResultCode.SUCCESS)) {
+                throw new ProtocolAdapterException(String.format(
+                        "Attribute '%s' of the clock configuration was not set successfully. ResultCode: %s",
+                        attributeName, result.name()));
+            }
+        } catch (final IOException e) {
+            throw new ConnectionException(e);
+        }
+    }
+
+    private AttributeAddress getAttributeAddress(final DlmsDevice device, final DlmsObjectType dlmsObjectType)
+            throws ProtocolAdapterException {
+        final Optional<AttributeAddress> attributeAddress = this.dlmsObjectConfigService.findAttributeAddress(device,
+                DlmsObjectType.ALARM_FILTER, null);
+        return attributeAddress.orElseThrow(
+                () -> new ProtocolAdapterException("Could not find any configuration for " + dlmsObjectType));
     }
 
 }
