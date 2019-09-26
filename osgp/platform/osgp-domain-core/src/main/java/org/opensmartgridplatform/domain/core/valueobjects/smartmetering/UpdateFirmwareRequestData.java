@@ -51,7 +51,7 @@ public class UpdateFirmwareRequestData implements ActionRequest {
     public Map<FirmwareModuleType, String> getVersionByModuleType() {
         final Map<FirmwareModuleType, String> versionByModuleType = new EnumMap<>(FirmwareModuleType.class);
         for (final FirmwareVersion firmwareVersion : this.firmwareVersions) {
-            versionByModuleType.put(firmwareVersion.getType(), firmwareVersion.getVersion());
+            versionByModuleType.put(firmwareVersion.getFirmwareModuleType(), firmwareVersion.getVersion());
         }
         return versionByModuleType;
     }

@@ -12,8 +12,8 @@ import java.io.Serializable;
 public class FirmwareVersionDto implements Serializable {
     private static final long serialVersionUID = 4842058824665590962L;
 
-    private FirmwareModuleType firmwareModuleType;
-    private String version;
+    private final FirmwareModuleType firmwareModuleType;
+    private final String version;
 
     public FirmwareVersionDto(final FirmwareModuleType firmwareModuleType, final String version) {
         this.firmwareModuleType = firmwareModuleType;

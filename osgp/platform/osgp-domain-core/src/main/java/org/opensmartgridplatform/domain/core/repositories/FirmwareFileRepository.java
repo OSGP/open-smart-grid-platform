@@ -9,13 +9,12 @@ package org.opensmartgridplatform.domain.core.repositories;
 
 import java.util.List;
 
+import org.opensmartgridplatform.domain.core.entities.DeviceModel;
+import org.opensmartgridplatform.domain.core.entities.FirmwareFile;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
-import org.opensmartgridplatform.domain.core.entities.DeviceModel;
-import org.opensmartgridplatform.domain.core.entities.FirmwareFile;
 
 @Repository
 public interface FirmwareFileRepository extends JpaRepository<FirmwareFile, Long> {
@@ -60,4 +59,7 @@ public interface FirmwareFileRepository extends JpaRepository<FirmwareFile, Long
     @Query("SELECT ff FROM FirmwareFile ff JOIN FETCH ff.firmwareModules fffm JOIN FETCH fffm.firmwareModule fm "
             + "WHERE ff.identification = :identification")
     FirmwareFile findByIdentification(@Param("identification") String identification);
+
+    @Query("SELECT ff FROM FirmwareFile ff WHERE :deviceModel MEMBER OF ff.deviceModels")
+    List<FirmwareFile> findByDeviceModel(@Param("deviceModel") DeviceModel deviceModel);
 }

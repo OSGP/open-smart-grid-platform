@@ -8,6 +8,8 @@
 
 package org.opensmartgridplatform.domain.core.repositories;
 
+import java.util.List;
+
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceFirmwareFile;
 import org.opensmartgridplatform.domain.core.entities.FirmwareFile;
@@ -20,4 +22,6 @@ public interface DeviceFirmwareFileRepository
         extends JpaRepository<DeviceFirmwareFile, Long>, JpaSpecificationExecutor<DeviceFirmwareFile> {
 
     DeviceFirmwareFile findByDeviceAndFirmwareFile(Device device, FirmwareFile firmwareFile);
+
+    List<DeviceFirmwareFile> findByDeviceOrderByInstallationDateAsc(Device device);
 }

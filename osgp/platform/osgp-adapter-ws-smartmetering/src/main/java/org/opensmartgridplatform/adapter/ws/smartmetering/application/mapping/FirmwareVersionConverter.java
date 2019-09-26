@@ -30,7 +30,7 @@ public class FirmwareVersionConverter extends
         final org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.FirmwareVersion firmwareVersion = new org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.FirmwareVersion();
         firmwareVersion.setFirmwareModuleType(
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.FirmwareModuleType
-                        .valueOf(source.getType().getDescription()));
+                        .valueOf(source.getFirmwareModuleType().getDescription()));
         firmwareVersion.setVersion(source.getVersion());
 
         return firmwareVersion;
