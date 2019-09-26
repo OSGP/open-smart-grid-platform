@@ -28,9 +28,6 @@ public class DomainCoreMapper extends ConfigurableMapper {
         factory.classMap(FirmwareModuleType.class, org.opensmartgridplatform.dto.valueobjects.FirmwareModuleType.class)
                 .byDefault()
                 .register();
-        factory.classMap(FirmwareVersion.class, FirmwareVersionDto.class)
-                .field("type", "firmwareModuleType")
-                .byDefault()
-                .register();
+        factory.classMap(FirmwareVersion.class, FirmwareVersionDto.class).byDefault().register();
     }
 }

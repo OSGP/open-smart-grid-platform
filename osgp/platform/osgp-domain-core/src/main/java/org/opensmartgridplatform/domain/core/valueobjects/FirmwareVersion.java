@@ -14,21 +14,21 @@ public class FirmwareVersion implements Serializable {
 
     private static final long serialVersionUID = 892449074530829565L;
 
-    private final FirmwareModuleType type;
+    private final FirmwareModuleType firmwareModuleType;
     private final String version;
 
-    public FirmwareVersion(final FirmwareModuleType type, final String version) {
-        this.type = type;
+    public FirmwareVersion(final FirmwareModuleType firmwareModuleType, final String version) {
+        this.firmwareModuleType = firmwareModuleType;
         this.version = version;
     }
 
     @Override
     public String toString() {
-        return String.format("[%s => %s]", this.type, this.version);
+        return String.format("[%s => %s]", this.firmwareModuleType, this.version);
     }
 
-    public FirmwareModuleType getType() {
-        return this.type;
+    public FirmwareModuleType getFirmwareModuleType() {
+        return this.firmwareModuleType;
     }
 
     public String getVersion() {
@@ -37,7 +37,7 @@ public class FirmwareVersion implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.type, this.version);
+        return Objects.hash(this.firmwareModuleType, this.version);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class FirmwareVersion implements Serializable {
             return false;
         }
         final FirmwareVersion other = (FirmwareVersion) obj;
-        return this.type == other.type && Objects.equals(this.version, other.version);
+        return this.firmwareModuleType == other.firmwareModuleType && Objects.equals(this.version, other.version);
     }
 
 }

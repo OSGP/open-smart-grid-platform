@@ -80,10 +80,6 @@
     </dependency>
     <dependency>
       <groupId>org.opensmartgridplatform</groupId>
-      <artifactId>osgp-dto</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-ws-core</artifactId>
     </dependency>
     <dependency>
