@@ -15,13 +15,9 @@ import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
@@ -47,9 +43,7 @@ import org.opensmartgridplatform.domain.core.exceptions.UnknownEntityException;
 import org.opensmartgridplatform.domain.core.repositories.FirmwareModuleRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleData;
-import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleType;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareUpdateMessageDataContainer;
-import org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion;
 import org.opensmartgridplatform.domain.core.valueobjects.PlatformFunction;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
@@ -76,7 +70,6 @@ public class FirmwareManagementService {
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementService.class);
 
     private static final String SPACE_REPLACER = "_";
-    private static final String INSTALLER = "Inserted to match the version reported by the device.";
 
     @Autowired
     private DomainHelperService domainHelperService;
@@ -768,95 +761,7 @@ public class FirmwareManagementService {
         return this.commonResponseMessageFinder.findMessage(correlationUid);
     }
 
-    /**
-     * @param organisationIdentification
-     *            the organisation the device we want to check belongs to
-     * @param deviceId
-     *            the id of the device we are checking
-     * @param firmwareVersions
-     *            the list of firmware versions to check if they are in the
-     *            history of the devices firmware history
-     * @return a list of firmware versions not present in the the devices
-     *         firmware history
-     * @throws FunctionalException
-     */
-    public List<FirmwareVersion> checkFirmwareHistoryForVersion(final String organisationIdentification,
-            final String deviceId, final List<FirmwareVersion> firmwareVersions) throws FunctionalException {
-
-        if (firmwareVersions.isEmpty()) {
-            return firmwareVersions;
-        }
-        // copy input parameter
-        final List<FirmwareVersion> firmwareVersionsToCheck = new ArrayList<>();
-        firmwareVersionsToCheck.addAll(firmwareVersions);
-
-        // get history
-        final List<DeviceFirmwareFile> deviceFirmwareFiles = this.getDeviceFirmwareFiles(organisationIdentification,
-                deviceId);
-        final List<FirmwareVersion> firmwareVersionsInHistory = deviceFirmwareFiles.stream()
-                .map(d -> d.getFirmwareFile().getModuleVersions().entrySet())
-                .flatMap(Collection::stream)
-                .map(e -> new FirmwareVersion(FirmwareModuleType.forDescription(e.getKey().getDescription()),
-                        e.getValue()))
-                .collect(Collectors.toList());
-
-        // remove the history versions
-        firmwareVersionsToCheck.removeAll(firmwareVersionsInHistory);
-
-        return firmwareVersionsToCheck;
-    }
-
-    @Transactional(value = "writableTransactionManager")
-    public void tryToAddFirmwareVersionToHistory(final String organisationIdentification,
-            final String deviceIdentification, final FirmwareVersion firmwareVersion) throws FunctionalException {
-
-        final FirmwareModule module = createFirmwareModule(firmwareVersion);
-        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
-        final List<FirmwareFile> firmwareFiles = this
-                .getAvailableFirmwareFilesForDeviceModel(organisationIdentification, device.getDeviceModel());
-
-        // check each file for the module and the version as returned by the
-        // device
-        boolean recordAdded = false;
-
-        for (final FirmwareFile file : firmwareFiles) {
-            final Map<FirmwareModule, String> moduleVersions = file.getModuleVersions();
-            if (moduleVersions.containsKey(module) && moduleVersions.get(module).equals(firmwareVersion.getVersion())) {
-
-                // file found, insert a record into the history
-                final DeviceFirmwareFile deviceFirmwareFile = new DeviceFirmwareFile(device, file, new Date(),
-                        INSTALLER);
-                this.saveDeviceFirmwareFile(deviceFirmwareFile);
-                LOGGER.info("Firmware version {} added to device {}", firmwareVersion.getVersion(),
-                        deviceIdentification);
-
-                // we only want to add one record in history
-                recordAdded = true;
-                break;
-            }
-        }
-
-        if (!recordAdded) {
-            LOGGER.warn("No firmware file record found for: {} for device: {}", firmwareVersion, deviceIdentification);
-        }
-
-    }
-
     // HELPER METHODS
-
-    private List<FirmwareFile> getAvailableFirmwareFilesForDeviceModel(final String organisationIdentification,
-            final DeviceModel deviceModel) throws FunctionalException {
-        final Manufacturer manufacturer = deviceModel.getManufacturer();
-
-        return this.findAllFirmwareFiles(organisationIdentification, manufacturer.getCode(),
-                deviceModel.getModelCode());
-    }
-
-    private static FirmwareModule createFirmwareModule(final FirmwareVersion firmwareVersion) {
-        final String description = firmwareVersion.getFirmwareModuleType().getDescription().toLowerCase(
-                Locale.getDefault());
-        return new FirmwareModule(description);
-    }
 
     private String getMd5Hash(final byte[] file) {
         String md5Hash;

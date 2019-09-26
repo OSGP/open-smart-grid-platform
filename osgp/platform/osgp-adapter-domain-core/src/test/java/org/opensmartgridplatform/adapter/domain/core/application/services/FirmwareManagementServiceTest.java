@@ -1,11 +1,16 @@
-package org.opensmartgridplatform.adapter.ws.core.application.services;
+/**
+ * Copyright 2019 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
+package org.opensmartgridplatform.adapter.domain.core.application.services;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.isA;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -21,21 +26,19 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opensmartgridplatform.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceFirmwareFileRepository;
-import org.opensmartgridplatform.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceModelRepository;
-import org.opensmartgridplatform.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceRepository;
-import org.opensmartgridplatform.adapter.ws.shared.db.domain.repositories.writable.WritableFirmwareFileRepository;
-import org.opensmartgridplatform.adapter.ws.shared.db.domain.repositories.writable.WritableManufacturerRepository;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceFirmwareFile;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
 import org.opensmartgridplatform.domain.core.entities.FirmwareFile;
 import org.opensmartgridplatform.domain.core.entities.FirmwareModule;
 import org.opensmartgridplatform.domain.core.entities.Manufacturer;
-import org.opensmartgridplatform.domain.core.entities.Organisation;
+import org.opensmartgridplatform.domain.core.repositories.DeviceFirmwareFileRepository;
+import org.opensmartgridplatform.domain.core.repositories.DeviceModelRepository;
+import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
+import org.opensmartgridplatform.domain.core.repositories.FirmwareFileRepository;
+import org.opensmartgridplatform.domain.core.repositories.ManufacturerRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleType;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion;
-import org.opensmartgridplatform.domain.core.valueobjects.PlatformFunction;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -46,29 +49,25 @@ public class FirmwareManagementServiceTest {
     private static final String VERSION_3 = "R03";
 
     @Mock
-    private DomainHelperService domainHelperService;
+    private DeviceRepository deviceRepository;
 
     @Mock
-    private WritableDeviceRepository deviceRepository;
+    private DeviceFirmwareFileRepository deviceFirmwareFileRepository;
 
     @Mock
-    private WritableDeviceFirmwareFileRepository deviceFirmwareFileRepository;
+    private ManufacturerRepository manufacturerRepository;
 
     @Mock
-    private WritableManufacturerRepository manufacturerRepository;
+    private DeviceModelRepository deviceModelRepository;
 
     @Mock
-    private WritableDeviceModelRepository deviceModelRepository;
-
-    @Mock
-    private WritableFirmwareFileRepository firmwareFileRepository;
+    private FirmwareFileRepository firmwareFileRepository;
 
     @InjectMocks
     private FirmwareManagementService firmwareManagementService;
 
     @Before
     public void setUp() throws FunctionalException {
-        doNothing().when(this.domainHelperService).isAllowed(isA(Organisation.class), isA(PlatformFunction.class));
         final Manufacturer manufacturer = new Manufacturer("code", "name", false);
         final DeviceModel deviceModel = new DeviceModel(manufacturer, "modelCode", "description", false);
         final Device device = this.createDevice(deviceModel);
@@ -80,7 +79,6 @@ public class FirmwareManagementServiceTest {
         final List<DeviceFirmwareFile> deviceFirmwareFiles = Arrays.asList(deviceFirmwareFile1, deviceFirmwareFile2);
         when(this.deviceFirmwareFileRepository.findByDeviceOrderByInstallationDateAsc(any(Device.class)))
                 .thenReturn(deviceFirmwareFiles);
-        when(this.domainHelperService.findActiveDevice(anyString())).thenReturn(device);
         when(this.deviceFirmwareFileRepository.save(any(DeviceFirmwareFile.class))).thenReturn(deviceFirmwareFile1);
         when(this.manufacturerRepository.findByCode(anyString())).thenReturn(manufacturer);
         when(this.deviceModelRepository.findByManufacturerAndModelCode(any(Manufacturer.class), anyString()))
@@ -128,7 +126,8 @@ public class FirmwareManagementServiceTest {
 
         // Arrange
         final FirmwareFile firmwareFile = new FirmwareFile("filename", "description", false);
-        final FirmwareModule firmwareModule = new FirmwareModule(FirmwareModuleType.SECURITY.getDescription().toLowerCase());
+        final FirmwareModule firmwareModule = new FirmwareModule(
+                FirmwareModuleType.SECURITY.getDescription().toLowerCase());
         firmwareFile.addFirmwareModule(firmwareModule, VERSION_2);
         when(this.firmwareFileRepository.findByDeviceModel(any(DeviceModel.class)))
                 .thenReturn(Arrays.asList(firmwareFile));
