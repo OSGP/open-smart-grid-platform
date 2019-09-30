@@ -18,13 +18,13 @@ public class SetRandomisationSettingsRequestData implements Serializable, Action
 
     private static final long serialVersionUID = -381163520662276869L;
 
-    private long directAttach;
-    private long randomisationStartWindow;
-    private long multiplicationFactor;
-    private long numberOfRetries;
+    private int directAttach;
+    private int randomisationStartWindow;
+    private int multiplicationFactor;
+    private int numberOfRetries;
 
-    public SetRandomisationSettingsRequestData(final long directAttach, final long randomisationStartWindow,
-            final long multiplicationFactor, final long numberOfRetries) {
+    public SetRandomisationSettingsRequestData(final int directAttach, final int randomisationStartWindow,
+            final int multiplicationFactor, final int numberOfRetries) {
         this.directAttach = directAttach;
         this.randomisationStartWindow = randomisationStartWindow;
         this.multiplicationFactor = multiplicationFactor;
@@ -36,19 +36,19 @@ public class SetRandomisationSettingsRequestData implements Serializable, Action
         // No validation needed
     }
 
-    public long getDirectAttach() {
+    public int getDirectAttach() {
         return directAttach;
     }
 
-    public long getRandomisationStartWindow() {
+    public int getRandomisationStartWindow() {
         return randomisationStartWindow;
     }
 
-    public long getMultiplicationFactor() {
+    public int getMultiplicationFactor() {
         return multiplicationFactor;
     }
 
-    public long getNumberOfRetries() {
+    public int getNumberOfRetries() {
         return numberOfRetries;
     }
 

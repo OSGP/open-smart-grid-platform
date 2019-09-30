@@ -77,7 +77,6 @@ import org.opensmartgridplatform.domain.core.exceptions.ValidationException;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleData;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareUpdateMessageDataContainer;
-import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
@@ -119,9 +118,10 @@ public class FirmwareManagementEndpoint {
     private DeviceRepository deviceRepository;
 
     @Autowired
-    public FirmwareManagementEndpoint(
-            @Qualifier(value = "wsCoreFirmwareManagementService") final FirmwareManagementService firmwareManagementService,
-            @Qualifier(value = "coreFirmwareManagementMapper") final FirmwareManagementMapper firmwareManagementMapper) {
+    public FirmwareManagementEndpoint(@Qualifier(
+            value = "wsCoreFirmwareManagementService") final FirmwareManagementService firmwareManagementService,
+            @Qualifier(
+                    value = "coreFirmwareManagementMapper") final FirmwareManagementMapper firmwareManagementMapper) {
         this.firmwareManagementService = firmwareManagementService;
         this.firmwareManagementMapper = firmwareManagementMapper;
     }
@@ -267,11 +267,11 @@ public class FirmwareManagementEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final GetFirmwareVersionAsyncRequest request) throws OsgpException {
 
+        final String deviceId = request.getAsyncRequest().getDeviceId();
         LOGGER.info("GetFirmwareVersionResponse Request received from organisation {} for device: {}.",
-                organisationIdentification, request.getAsyncRequest().getDeviceId());
+                organisationIdentification, deviceId);
 
         final GetFirmwareVersionResponse response = new GetFirmwareVersionResponse();
-
         try {
             final ResponseMessage message = this.firmwareManagementService
                     .dequeueGetFirmwareResponse(request.getAsyncRequest().getCorrelationUid());
@@ -279,8 +279,10 @@ public class FirmwareManagementEndpoint {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
                 if (message.getDataObject() != null) {
                     final List<FirmwareVersion> target = response.getFirmwareVersion();
-                    target.addAll(this.firmwareManagementMapper
-                            .mapAsList((List<FirmwareVersionDto>) message.getDataObject(), FirmwareVersion.class));
+                    @SuppressWarnings("unchecked")
+                    final List<org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion> firmwareVersions = (List<org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion>) message
+                            .getDataObject();
+                    target.addAll(this.firmwareManagementMapper.mapAsList(firmwareVersions, FirmwareVersion.class));
                 } else {
                     LOGGER.info("Get Firmware Version firmware is null");
                 }
@@ -708,7 +710,7 @@ public class FirmwareManagementEndpoint {
                 request.getDeviceFirmware().getDeviceIdentification());
 
         try {
-            this.firmwareManagementService.saveCurrentDeviceFirmwareFile(
+            this.firmwareManagementService.saveDeviceFirmwareFile(
                     this.firmwareManagementMapper.map(request.getDeviceFirmware(), DeviceFirmwareFile.class));
 
         } catch (final MethodConstraintViolationException e) {
