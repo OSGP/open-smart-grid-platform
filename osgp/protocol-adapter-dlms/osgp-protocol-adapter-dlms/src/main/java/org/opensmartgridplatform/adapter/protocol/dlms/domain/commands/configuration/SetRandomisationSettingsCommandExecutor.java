@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 import org.openmuc.jdlms.AccessResultCode;
@@ -16,14 +17,22 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service.GetConfigurationObjectService;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service.ProtocolServiceLookup;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service.SetConfigurationObjectService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagTypeDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagsDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObjectDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetRandomisationSettingsRequestDataDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,11 +46,14 @@ public class SetRandomisationSettingsCommandExecutor
     private static final Logger LOGGER = LoggerFactory.getLogger(SetRandomisationSettingsCommandExecutor.class);
 
     private final DlmsObjectConfigService dlmsObjectConfigService;
+    private final ProtocolServiceLookup protocolServiceLookup;
 
     @Autowired
-    public SetRandomisationSettingsCommandExecutor(DlmsObjectConfigService dlmsObjectConfigService) {
+    public SetRandomisationSettingsCommandExecutor(DlmsObjectConfigService dlmsObjectConfigService,
+            ProtocolServiceLookup protocolServiceLookup) {
         super(SetRandomisationSettingsRequestDataDto.class);
         this.dlmsObjectConfigService = dlmsObjectConfigService;
+        this.protocolServiceLookup = protocolServiceLookup;
     }
 
     @Override
@@ -55,7 +67,7 @@ public class SetRandomisationSettingsCommandExecutor
     @Override
     public ActionResponseDto asBundleResponse(final AccessResultCode executionResult) throws ProtocolAdapterException {
         this.checkAccessResultCode(executionResult);
-        return new ActionResponseDto("Set Randomization Settings was successful");
+        return new ActionResponseDto("Set Randomisation Settings was successful");
     }
 
     @Override
@@ -63,22 +75,34 @@ public class SetRandomisationSettingsCommandExecutor
             final SetRandomisationSettingsRequestDataDto setRandomisationSettingsRequestDataDto)
             throws ProtocolAdapterException {
 
-        LOGGER.info("Excecuting SetRandomizationSettingsCommandExecutor {}, {}, {}, {} ",
+        LOGGER.info("Executing SetRandomisationSettingsCommandExecutor {}, {}, {}, {} ",
                 setRandomisationSettingsRequestDataDto.getDirectAttach(),
                 setRandomisationSettingsRequestDataDto.getRandomisationStartWindow(),
                 setRandomisationSettingsRequestDataDto.getMultiplicationFactor(),
                 setRandomisationSettingsRequestDataDto.getNumberOfRetries());
 
-        int directAttach = setRandomisationSettingsRequestDataDto.getDirectAttach();
+        boolean directAttach = setRandomisationSettingsRequestDataDto.getDirectAttach() == 1;
         int randomisationStartWindow = setRandomisationSettingsRequestDataDto.getRandomisationStartWindow();
         int multiplicationFactor = setRandomisationSettingsRequestDataDto.getMultiplicationFactor();
         int numberOfRetries = setRandomisationSettingsRequestDataDto.getNumberOfRetries();
 
-        AttributeAddress directAttachAddress = getAttributeAddress(device, DlmsObjectType.DIRECT_ATTACH);
-        AttributeAddress randomisationSettingsAddress = getAttributeAddress(device,
-                DlmsObjectType.RANDOMISATION_SETTINGS);
+        if (directAttach) {
+            LOGGER.info("Enabling directAttach on device {}.", device.getDeviceIdentification());
+            writeDirectAttach(conn, device, true);
+        } else {
+            LOGGER.info("Disabling directAttach and settings Randomization Settings for device {}.",
+                    device.getDeviceIdentification());
+            writeDirectAttach(conn, device, false);
+            writeRandomisationSettings(conn, device, randomisationStartWindow, multiplicationFactor, numberOfRetries);
+        }
 
-        DataObject directAttachObject = DataObject.newBoolData(directAttach == 1 ? Boolean.TRUE : Boolean.FALSE);
+        return AccessResultCode.SUCCESS;
+
+    }
+
+    private void writeRandomisationSettings(DlmsConnectionManager conn, DlmsDevice device, int randomisationStartWindow,
+            int multiplicationFactor, int numberOfRetries) throws ProtocolAdapterException {
+        AttributeAddress randomisationSettingsAddress = getAttributeAddress(device);
 
         DataObject randomisationStartWindowObject = DataObject.newUInteger32Data(randomisationStartWindow);
         DataObject multiplicationFactorObject = DataObject.newUInteger16Data(multiplicationFactor);
@@ -87,37 +111,60 @@ public class SetRandomisationSettingsCommandExecutor
         DataObject randomisationSettingsObject = DataObject.newStructureData(randomisationStartWindowObject,
                 multiplicationFactorObject, numberOfRetriesObject);
 
-        final SetParameter setParameterDirectAttach = new SetParameter(directAttachAddress, directAttachObject);
         final SetParameter setRandomisationSettings = new SetParameter(randomisationSettingsAddress,
                 randomisationSettingsObject);
-
-        writeAttribute(conn, setParameterDirectAttach, "setParameterDirectAttach");
-        writeAttribute(conn, setParameterDirectAttach, "setRandomisationSettings");
-
-        return AccessResultCode.SUCCESS;
-
+        writeAttribute(conn, setRandomisationSettings);
     }
 
-    private void writeAttribute(final DlmsConnectionManager conn, final SetParameter parameter,
-            final String attributeName) throws ProtocolAdapterException {
+    private void writeDirectAttach(DlmsConnectionManager conn, DlmsDevice device, boolean directAttach)
+            throws ProtocolAdapterException {
+
+        Protocol protocol = Protocol.forDevice(device);
+        GetConfigurationObjectService getConfigurationObjectService = protocolServiceLookup.lookupGetService(protocol);
+        ConfigurationObjectDto configurationOnDevice = getConfigurationObjectService.getConfigurationObject(conn);
+        final SetConfigurationObjectService setService = this.protocolServiceLookup.lookupSetService(protocol);
+
+        List<ConfigurationFlagDto> newConfiguration = configurationOnDevice.getConfigurationFlags().getFlags();
+
+        newConfiguration.removeIf(
+                e -> e.getConfigurationFlagType() == ConfigurationFlagTypeDto.DIRECT_ATTACH_AT_POWER_ON);
+
+        ConfigurationFlagDto directAttachAtPowerOn = new ConfigurationFlagDto(
+                ConfigurationFlagTypeDto.DIRECT_ATTACH_AT_POWER_ON, directAttach);
+
+        newConfiguration.add(directAttachAtPowerOn);
+        ConfigurationFlagsDto configurationFlagsDto = new ConfigurationFlagsDto(newConfiguration);
+        ConfigurationObjectDto configurationToSet = new ConfigurationObjectDto(configurationFlagsDto);
+
+        final AccessResultCode result = setService.setConfigurationObject(conn, configurationToSet,
+                configurationOnDevice);
+
+        checkResult(result, "directAttach");
+    }
+
+    private void writeAttribute(final DlmsConnectionManager conn, final SetParameter parameter)
+            throws ProtocolAdapterException {
         try {
             final AccessResultCode result = conn.getConnection().set(parameter);
-            if (!result.equals(AccessResultCode.SUCCESS)) {
-                throw new ProtocolAdapterException(String.format(
-                        "Attribute '%s' of the clock configuration was not set successfully. ResultCode: %s",
-                        attributeName, result.name()));
-            }
+            checkResult(result, "setRandomisationSettings");
         } catch (final IOException e) {
             throw new ConnectionException(e);
         }
     }
 
-    private AttributeAddress getAttributeAddress(final DlmsDevice device, final DlmsObjectType dlmsObjectType)
-            throws ProtocolAdapterException {
+    private void checkResult(AccessResultCode result, String attributeName) throws ProtocolAdapterException {
+        if (!result.equals(AccessResultCode.SUCCESS)) {
+            throw new ProtocolAdapterException(String.format(
+                    "Attribute '%s' of the Randomisation Settings was not set successfully. ResultCode: %s",
+                    attributeName, result.name()));
+        }
+    }
+
+    private AttributeAddress getAttributeAddress(final DlmsDevice device) throws ProtocolAdapterException {
         final Optional<AttributeAddress> attributeAddress = this.dlmsObjectConfigService.findAttributeAddress(device,
-                DlmsObjectType.ALARM_FILTER, null);
-        return attributeAddress.orElseThrow(
-                () -> new ProtocolAdapterException("Could not find any configuration for " + dlmsObjectType));
+                DlmsObjectType.RANDOMISATION_SETTINGS, null);
+        return attributeAddress.orElseThrow(() -> new ProtocolAdapterException(
+                "Could not find any configuration for DlmsObjectType.RANDOMISATION_SETTINGS"));
     }
 
 }

@@ -65,6 +65,10 @@ public abstract class SecureDlmsConnector extends Lls0Connector {
     protected DlmsConnection createConnection(final DlmsDevice device, final DlmsMessageListener dlmsMessageListener)
             throws IOException, OsgpException {
 
+        LOGGER.info("Creating DlmsConnection to {} device {} at ip-address:port {}:{}.  Provider = {}. ClientId = {}",
+                device.getCommunicationMethod(), device.getDeviceIdentification(), device.getIpAddress(),
+                device.getPort(), device.getCommunicationProvider(), this.clientId);
+
         // Setup connection to device
         final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(
                 InetAddress.getByName(device.getIpAddress())).setResponseTimeout(this.responseTimeout)
