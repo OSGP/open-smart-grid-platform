@@ -1,9 +1,10 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
@@ -27,7 +28,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.Comm
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionDtoBuilder;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
@@ -49,9 +49,8 @@ public class BundleServiceTest {
     @Spy
     private CommandExecutorMapStub bundleCommandExecutorMap = new CommandExecutorMapStub();
 
-    final String defaultMessage = "Unable to handle request";
-    final List<FaultResponseParameterDto> parameters = new ArrayList<>();
-    final ComponentType defaultComponent = ComponentType.PROTOCOL_DLMS;
+    private final List<FaultResponseParameterDto> parameters = new ArrayList<>();
+    private final ComponentType defaultComponent = ComponentType.PROTOCOL_DLMS;
 
     // ------------------
 
@@ -60,11 +59,11 @@ public class BundleServiceTest {
     }
 
     @Test
-    public void testHappyFlow() throws ProtocolAdapterException {
+    public void testHappyFlow() {
         final List<ActionDto> actionDtoList = this.makeActions();
         final BundleMessagesRequestDto dto = new BundleMessagesRequestDto(actionDtoList);
         final BundleMessagesRequestDto result = this.callExecutors(dto);
-        Assert.assertTrue(result != null);
+        assertNotNull(result);
         this.assertResult(result);
     }
 
@@ -84,7 +83,7 @@ public class BundleServiceTest {
      * restored again) the rest of the actions are executed.
      *
      * @throws ProtocolAdapterException
-     *             is not thrown in this test
+     *         is not thrown in this test
      */
     @Test
     public void testConnectionException() throws ProtocolAdapterException {
@@ -92,8 +91,8 @@ public class BundleServiceTest {
         final BundleMessagesRequestDto dto = new BundleMessagesRequestDto(actionDtoList);
 
         // Set the point where to throw the ConnectionException
-        this.getStub(FindEventsRequestDto.class)
-                .failWithRuntimeException(new ConnectionException("Connection Exception thrown!"));
+        this.getStub(FindEventsRequestDto.class).failWithRuntimeException(
+                new ConnectionException("Connection Exception thrown!"));
 
         try {
             // Execute all the actions
@@ -129,10 +128,11 @@ public class BundleServiceTest {
         this.parameters.add(new FaultResponseParameterDto("gasDeviceIdentification", "ESIMG140000000841"));
         this.parameters.add(new FaultResponseParameterDto("channel", "3"));
 
+        String defaultMessage = "Unable to handle request";
         final FaultResponseDto faultResponse = this.bundleService.faultResponseForException(exception, this.parameters,
-                this.defaultMessage);
+                defaultMessage);
 
-        this.assertResponse(faultResponse, null, this.defaultMessage, this.defaultComponent.name(),
+        this.assertResponse(faultResponse, null, defaultMessage, this.defaultComponent.name(),
                 exception.getClass().getName(), message, this.parameters);
     }
 
@@ -160,8 +160,8 @@ public class BundleServiceTest {
             assertNull("parameters", actualResponse.getFaultResponseParameters());
         } else {
             assertNotNull("parameters", actualResponse.getFaultResponseParameters());
-            final List<FaultResponseParameterDto> actualParameterList = actualResponse.getFaultResponseParameters()
-                    .getParameterList();
+            final List<FaultResponseParameterDto> actualParameterList =
+                    actualResponse.getFaultResponseParameters().getParameterList();
             assertNotNull("parameter list", actualParameterList);
             final int numberOfParameters = expectedParameterList.size();
             assertEquals("number of parameters", numberOfParameters, actualParameterList.size());

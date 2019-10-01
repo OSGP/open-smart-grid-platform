@@ -67,7 +67,7 @@ public class SetRandomisationSettingsCommandExecutor
     @Override
     public ActionResponseDto asBundleResponse(final AccessResultCode executionResult) throws ProtocolAdapterException {
         this.checkAccessResultCode(executionResult);
-        return new ActionResponseDto("Set Randomisation Settings was successful");
+        return new ActionResponseDto("Set Randomisation Settings was successful.");
     }
 
     @Override
@@ -90,7 +90,7 @@ public class SetRandomisationSettingsCommandExecutor
             LOGGER.info("Enabling directAttach on device {}.", device.getDeviceIdentification());
             writeDirectAttach(conn, device, true);
         } else {
-            LOGGER.info("Disabling directAttach and settings Randomization Settings for device {}.",
+            LOGGER.info("Disabling directAttach and setting Randomisation Settings for device {}.",
                     device.getDeviceIdentification());
             writeDirectAttach(conn, device, false);
             writeRandomisationSettings(conn, device, randomisationStartWindow, multiplicationFactor, numberOfRetries);

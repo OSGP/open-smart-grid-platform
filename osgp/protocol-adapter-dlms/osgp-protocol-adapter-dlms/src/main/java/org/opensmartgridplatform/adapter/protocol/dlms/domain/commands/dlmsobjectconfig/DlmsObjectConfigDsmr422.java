@@ -17,7 +17,6 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dl
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.ALARM_FILTER;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.AMR_STATUS;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.DAILY_LOAD_PROFILE;
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.DIRECT_ATTACH;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.EXTERNAL_TRIGGER_CSD;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.EXTERNAL_TRIGGER_SMS;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.INTERNAL_TRIGGER_ALARM;
@@ -73,11 +72,9 @@ public class DlmsObjectConfigDsmr422 extends DlmsObjectConfig {
         final DlmsObject amrStatus = new DlmsData(AMR_STATUS, "0.0.96.10.2.255");
         final DlmsObject amrStatusMbus = new DlmsData(AMR_STATUS, "0.<c>.96.10.2.255");
         final DlmsObject alarmFilter = new DlmsData(ALARM_FILTER, "0.0.97.98.10.255");
-
-        final DlmsObject directAttach = new DlmsData(DIRECT_ATTACH, "0.1.94.31.3.255");
         final DlmsObject randomisationSettings = new DlmsData(RANDOMISATION_SETTINGS, "0.1.94.31.12.255");
 
-        objectList.addAll(Arrays.asList(clock, amrStatus, amrStatusMbus, alarmFilter, directAttach, randomisationSettings));
+        objectList.addAll(Arrays.asList(clock, amrStatus, amrStatusMbus, alarmFilter, randomisationSettings));
 
         final DlmsObject pushScheduler = new DlmsSingleActionSchedule(PUSH_SCHEDULER, "0.0.15.0.4.255");
         final DlmsObject pushSetupScheduler = new DlmsPushSetup(PUSH_SETUP_SCHEDULER, "0.0.25.9.0.255");

@@ -18,8 +18,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceReq
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetRandomisationSettingsRequestDataDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -28,8 +26,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class SetRandomizationSettingsMessageProcessor extends DeviceRequestMessageProcessor {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SetRandomizationSettingsMessageProcessor.class);
 
     @Autowired
     private ConfigurationService configurationService;
@@ -41,8 +37,6 @@ public class SetRandomizationSettingsMessageProcessor extends DeviceRequestMessa
     @Override
     protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException {
-
-        LOGGER.info("Handling message in SetRandomizationSettingsMessageProcessor");
 
         this.assertRequestObjectType(SetRandomisationSettingsRequestDataDto.class, requestObject);
 

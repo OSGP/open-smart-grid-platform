@@ -119,8 +119,8 @@ public class ActionMapperService {
     @Autowired
     private InstallationMapper installationMapper;
 
-    private static Map<Class<?>, ConfigurableMapper> CLASS_TO_MAPPER_MAP = new HashMap<>();
-    private static Map<Class<?>, Class<? extends ActionRequest>> CLASS_MAP = new HashMap<>();
+    private static final Map<Class<?>, ConfigurableMapper> CLASS_TO_MAPPER_MAP = new HashMap<>();
+    private static final Map<Class<?>, Class<? extends ActionRequest>> CLASS_MAP = new HashMap<>();
 
     /**
      * Specifies which mapper to use for the ws class received.
