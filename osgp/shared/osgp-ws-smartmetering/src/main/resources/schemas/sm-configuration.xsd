@@ -1221,7 +1221,7 @@
     <xsd:complexContent>
       <xsd:extension base="common:Command">
         <xsd:sequence>
-          <xsd:element name="DirectAttach" type="xsd:positiveInteger">
+          <xsd:element name="DirectAttach" type="xsd:integer">
             <xsd:annotation>
               <xsd:documentation>IP address or DNS name of the service
                 listening for alarm notifications over TCP.
