@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,8 +50,8 @@ public class SetRandomisationSettingsCommandExecutor
     private final ProtocolServiceLookup protocolServiceLookup;
 
     @Autowired
-    public SetRandomisationSettingsCommandExecutor(DlmsObjectConfigService dlmsObjectConfigService,
-            ProtocolServiceLookup protocolServiceLookup) {
+    public SetRandomisationSettingsCommandExecutor(final DlmsObjectConfigService dlmsObjectConfigService,
+            final ProtocolServiceLookup protocolServiceLookup) {
         super(SetRandomisationSettingsRequestDataDto.class);
         this.dlmsObjectConfigService = dlmsObjectConfigService;
         this.protocolServiceLookup = protocolServiceLookup;
@@ -100,8 +101,9 @@ public class SetRandomisationSettingsCommandExecutor
 
     }
 
-    private void writeRandomisationSettings(DlmsConnectionManager conn, DlmsDevice device, int randomisationStartWindow,
-            int multiplicationFactor, int numberOfRetries) throws ProtocolAdapterException {
+    private void writeRandomisationSettings(final DlmsConnectionManager conn, final DlmsDevice device,
+            final int randomisationStartWindow, final int multiplicationFactor, final int numberOfRetries)
+            throws ProtocolAdapterException {
         AttributeAddress randomisationSettingsAddress = getAttributeAddress(device);
 
         DataObject randomisationStartWindowObject = DataObject.newUInteger32Data(randomisationStartWindow);
@@ -116,19 +118,20 @@ public class SetRandomisationSettingsCommandExecutor
         writeAttribute(conn, setRandomisationSettings);
     }
 
-    private void writeDirectAttach(DlmsConnectionManager conn, DlmsDevice device, boolean directAttach)
-            throws ProtocolAdapterException {
+    private void writeDirectAttach(final DlmsConnectionManager conn, final DlmsDevice device,
+            final boolean directAttach) throws ProtocolAdapterException {
 
         Protocol protocol = Protocol.forDevice(device);
         GetConfigurationObjectService getConfigurationObjectService = protocolServiceLookup.lookupGetService(protocol);
         ConfigurationObjectDto configurationOnDevice = getConfigurationObjectService.getConfigurationObject(conn);
-        final SetConfigurationObjectService setService = this.protocolServiceLookup.lookupSetService(protocol);
+        SetConfigurationObjectService setService = this.protocolServiceLookup.lookupSetService(protocol);
 
-        List<ConfigurationFlagDto> newConfiguration = configurationOnDevice.getConfigurationFlags().getFlags();
+        List<ConfigurationFlagDto> newConfiguration = new ArrayList<>(
+                configurationOnDevice.getConfigurationFlags().getFlags());
 
         newConfiguration.removeIf(
                 e -> e.getConfigurationFlagType() == ConfigurationFlagTypeDto.DIRECT_ATTACH_AT_POWER_ON);
-
+        
         ConfigurationFlagDto directAttachAtPowerOn = new ConfigurationFlagDto(
                 ConfigurationFlagTypeDto.DIRECT_ATTACH_AT_POWER_ON, directAttach);
 
@@ -152,7 +155,8 @@ public class SetRandomisationSettingsCommandExecutor
         }
     }
 
-    private void checkResult(AccessResultCode result, String attributeName) throws ProtocolAdapterException {
+    private void checkResult(final AccessResultCode result, final String attributeName)
+            throws ProtocolAdapterException {
         if (!result.equals(AccessResultCode.SUCCESS)) {
             throw new ProtocolAdapterException(String.format(
                     "Attribute '%s' of the Randomisation Settings was not set successfully. ResultCode: %s",

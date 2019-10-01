@@ -5,10 +5,10 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -48,25 +48,25 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetRandomisation
 public class SetRandomisationSettingsCommandExecutorTest {
 
     @Mock
-    DlmsObjectConfigService dlmsObjectConfigService;
+    private DlmsObjectConfigService dlmsObjectConfigService;
 
     @Mock
-    ProtocolServiceLookup protocolServiceLookup;
+    private ProtocolServiceLookup protocolServiceLookup;
 
     @Mock
-    GetConfigurationObjectService getConfigurationObjectService;
+    private GetConfigurationObjectService getConfigurationObjectService;
 
     @Mock
-    SetConfigurationObjectService setConfigurationObjectService;
+    private SetConfigurationObjectService setConfigurationObjectService;
 
     @InjectMocks
-    SetRandomisationSettingsCommandExecutor executor;
+    private SetRandomisationSettingsCommandExecutor executor;
 
     @Mock
-    DlmsConnection dlmsConnection;
+    private DlmsConnection dlmsConnection;
 
     @Mock
-    DlmsConnectionManager dlmsConnectionManager;
+    private DlmsConnectionManager dlmsConnectionManager;
 
     private SetRandomisationSettingsRequestDataDto dataDto;
     private DlmsDevice device;
@@ -132,7 +132,9 @@ public class SetRandomisationSettingsCommandExecutorTest {
     }
 
     @Test(expected = ProtocolAdapterException.class)
-    public void testUnknownAttribue() throws ProtocolAdapterException {
+    public void testUnknownAttribute() throws ProtocolAdapterException {
+
+        // SETUP
         when(dlmsObjectConfigService.findAttributeAddress(device, DlmsObjectType.RANDOMISATION_SETTINGS,
                 null)).thenReturn(Optional.empty());
 
@@ -149,12 +151,8 @@ public class SetRandomisationSettingsCommandExecutorTest {
 
     private List<ConfigurationFlagDto> getFlags() {
 
-        List<ConfigurationFlagDto> flags = new ArrayList<>();
+        return Arrays.stream(ConfigurationFlagTypeDto.values()).map(
+                flagType -> new ConfigurationFlagDto(flagType, true)).collect(Collectors.toList());
 
-        Arrays.asList(ConfigurationFlagTypeDto.values()).forEach(flagType -> {
-            flags.add(new ConfigurationFlagDto(flagType, false));
-        });
-
-        return flags;
     }
 }
