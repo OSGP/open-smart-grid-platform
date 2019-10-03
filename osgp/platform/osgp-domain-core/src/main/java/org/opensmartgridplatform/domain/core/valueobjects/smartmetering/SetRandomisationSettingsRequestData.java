@@ -20,15 +20,18 @@ public class SetRandomisationSettingsRequestData implements Serializable, Action
 
     private static final long serialVersionUID = -381163520662276869L;
 
-    private int directAttach;
-    private int randomisationStartWindow;
-    private int multiplicationFactor;
-    private int numberOfRetries;
+    private final int directAttach;
+    private final int randomisationStartWindow;
+    private final int multiplicationFactor;
+    private final int numberOfRetries;
 
-    static final int ZERO = 0;
-    static final int ONE = 1;
+    static final int MIN_VALUE_DIRECT_ATTACH = 0;
+    static final int MAX_VALUE_DIRECT_ATTACH = 1;
+    static final int MIN_VALUE_RANDOMIZATION_START_WINDOW = 1;
     static final int MAX_VALUE_RANDOMIZATION_START_WINDOW = 65535;
+    static final int MIN_VALUE_MULTIPLICATION_FACTOR = 1;
     static final int MAX_VALUE_MULTIPLICATION_FACTOR = 7;
+    static final int MIN_VALUE_NUMBER_OF_RETRIES = 1;
     static final int MAX_VALUE_NUMBER_OF_RETRIES = 31;
 
     SetRandomisationSettingsRequestData(final int directAttach, final int randomisationStartWindow,
@@ -42,41 +45,48 @@ public class SetRandomisationSettingsRequestData implements Serializable, Action
     @Override
     public void validate() throws FunctionalException {
 
-        if (directAttach < ZERO || directAttach > ONE) {
+        if (this.directAttach < MIN_VALUE_DIRECT_ATTACH || this.directAttach > MAX_VALUE_DIRECT_ATTACH) {
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
-                    new Exception("DirectAttach value range failed. (0-1)"));
+                    new Exception(String.format("DirectAttach value range failed. (%s-%s)", MIN_VALUE_DIRECT_ATTACH,
+                            MAX_VALUE_DIRECT_ATTACH)));
         }
 
-        if (randomisationStartWindow < ONE || randomisationStartWindow > MAX_VALUE_RANDOMIZATION_START_WINDOW) {
+        if (this.randomisationStartWindow < MIN_VALUE_RANDOMIZATION_START_WINDOW
+                || this.randomisationStartWindow > MAX_VALUE_RANDOMIZATION_START_WINDOW) {
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
-                    new Exception("RandomisationStartWindow value range failed. (1-65535)"));
+                    new Exception(String.format("RandomisationStartWindow value range failed. (%s-%s)",
+                            MIN_VALUE_RANDOMIZATION_START_WINDOW, MAX_VALUE_RANDOMIZATION_START_WINDOW)));
         }
 
-        if (multiplicationFactor < ONE || multiplicationFactor > MAX_VALUE_MULTIPLICATION_FACTOR) {
+        if (this.multiplicationFactor < MIN_VALUE_MULTIPLICATION_FACTOR
+                || this.multiplicationFactor > MAX_VALUE_MULTIPLICATION_FACTOR) {
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
-                    new Exception("MultiplicationFactor value range failed. (1-7)"));
+                    new Exception(String.format("MultiplicationFactor value range failed. (%s-%s)",
+                            MIN_VALUE_MULTIPLICATION_FACTOR, MAX_VALUE_MULTIPLICATION_FACTOR)));
         }
 
-        if (numberOfRetries < ONE || numberOfRetries > MAX_VALUE_NUMBER_OF_RETRIES) {
+        if (this.numberOfRetries < MIN_VALUE_NUMBER_OF_RETRIES || this.numberOfRetries > MAX_VALUE_NUMBER_OF_RETRIES) {
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
-                    new Exception("NumberOfRetries value range failed. (1-31)"));
+                    new Exception(
+                            String.format("NumberOfRetries value range failed. (%s-%s)", MIN_VALUE_NUMBER_OF_RETRIES,
+                                    MAX_VALUE_NUMBER_OF_RETRIES)));
         }
     }
 
     public int getDirectAttach() {
-        return directAttach;
+        return this.directAttach;
     }
 
     public int getRandomisationStartWindow() {
-        return randomisationStartWindow;
+        return this.randomisationStartWindow;
     }
 
     public int getMultiplicationFactor() {
-        return multiplicationFactor;
+        return this.multiplicationFactor;
     }
 
     public int getNumberOfRetries() {
-        return numberOfRetries;
+        return this.numberOfRetries;
     }
 
     @Override

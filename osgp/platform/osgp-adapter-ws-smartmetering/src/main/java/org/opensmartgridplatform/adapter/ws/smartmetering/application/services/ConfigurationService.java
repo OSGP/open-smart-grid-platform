@@ -61,7 +61,7 @@ public class ConfigurationService {
                 messagePriority, scheduleTime);
     }
 
-    public String enqueueSetAdministrativeStatus(@Identification final String organisationIdentification,
+    private String enqueueSetAdministrativeStatus(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification,
             @Identification final AdministrativeStatusType requestData, final int messagePriority,
             final Long scheduleTime) throws FunctionalException {
@@ -642,7 +642,7 @@ public class ConfigurationService {
 
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_CONFIGURATION_OBJECT);
 
-        LOGGER.debug("enqueueSetConfigurationObjectRequest called with organisation {} and device {}",
+        LOGGER.debug("enqueueSetRandomisationSettingsRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
 
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,

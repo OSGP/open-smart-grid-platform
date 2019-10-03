@@ -76,11 +76,8 @@ public class SetRandomisationSettingsCommandExecutor
             final SetRandomisationSettingsRequestDataDto setRandomisationSettingsRequestDataDto)
             throws ProtocolAdapterException {
 
-        LOGGER.info("Executing SetRandomisationSettingsCommandExecutor {}, {}, {}, {} ",
-                setRandomisationSettingsRequestDataDto.getDirectAttach(),
-                setRandomisationSettingsRequestDataDto.getRandomisationStartWindow(),
-                setRandomisationSettingsRequestDataDto.getMultiplicationFactor(),
-                setRandomisationSettingsRequestDataDto.getNumberOfRetries());
+        LOGGER.info("Executing SetRandomisationSettingsCommandExecutor. Data = {}",
+                setRandomisationSettingsRequestDataDto);
 
         boolean directAttach = setRandomisationSettingsRequestDataDto.getDirectAttach() == 1;
         int randomisationStartWindow = setRandomisationSettingsRequestDataDto.getRandomisationStartWindow();
@@ -122,27 +119,33 @@ public class SetRandomisationSettingsCommandExecutor
             final boolean directAttach) throws ProtocolAdapterException {
 
         Protocol protocol = Protocol.forDevice(device);
-        GetConfigurationObjectService getConfigurationObjectService = protocolServiceLookup.lookupGetService(protocol);
+        GetConfigurationObjectService getConfigurationObjectService = this.protocolServiceLookup.lookupGetService(
+                protocol);
         ConfigurationObjectDto configurationOnDevice = getConfigurationObjectService.getConfigurationObject(conn);
         SetConfigurationObjectService setService = this.protocolServiceLookup.lookupSetService(protocol);
 
-        List<ConfigurationFlagDto> newConfiguration = new ArrayList<>(
-                configurationOnDevice.getConfigurationFlags().getFlags());
-
-        newConfiguration.removeIf(
-                e -> e.getConfigurationFlagType() == ConfigurationFlagTypeDto.DIRECT_ATTACH_AT_POWER_ON);
-        
-        ConfigurationFlagDto directAttachAtPowerOn = new ConfigurationFlagDto(
-                ConfigurationFlagTypeDto.DIRECT_ATTACH_AT_POWER_ON, directAttach);
-
-        newConfiguration.add(directAttachAtPowerOn);
-        ConfigurationFlagsDto configurationFlagsDto = new ConfigurationFlagsDto(newConfiguration);
-        ConfigurationObjectDto configurationToSet = new ConfigurationObjectDto(configurationFlagsDto);
+        ConfigurationObjectDto configurationToSet = createNewConfiguration(directAttach, configurationOnDevice);
 
         final AccessResultCode result = setService.setConfigurationObject(conn, configurationToSet,
                 configurationOnDevice);
 
         checkResult(result, "directAttach");
+    }
+
+    private ConfigurationObjectDto createNewConfiguration(boolean directAttach,
+            ConfigurationObjectDto configurationOnDevice) {
+        List<ConfigurationFlagDto> newConfiguration = new ArrayList<>(
+                configurationOnDevice.getConfigurationFlags().getFlags());
+
+        newConfiguration.removeIf(
+                e -> e.getConfigurationFlagType() == ConfigurationFlagTypeDto.DIRECT_ATTACH_AT_POWER_ON);
+
+        ConfigurationFlagDto directAttachAtPowerOn = new ConfigurationFlagDto(
+                ConfigurationFlagTypeDto.DIRECT_ATTACH_AT_POWER_ON, directAttach);
+
+        newConfiguration.add(directAttachAtPowerOn);
+        ConfigurationFlagsDto configurationFlagsDto = new ConfigurationFlagsDto(newConfiguration);
+        return new ConfigurationObjectDto(configurationFlagsDto);
     }
 
     private void writeAttribute(final DlmsConnectionManager conn, final SetParameter parameter)

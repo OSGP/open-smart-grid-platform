@@ -1,9 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core;
 
@@ -25,7 +26,6 @@ import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +35,6 @@ import org.slf4j.LoggerFactory;
  * the MessageProcessor implementation can process should be passed in at
  * construction. The Singleton instance is added to the HashMap of
  * MessageProcessors after dependency injection has completed.
- *
  */
 public abstract class OsgpCoreResponseMessageProcessor implements MessageProcessor {
 
@@ -48,28 +47,29 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
      * This is the message sender needed for the message processor implementation to
      * forward response messages to web service adapter.
      */
-    protected final WebServiceResponseMessageSender webServiceResponseMessageSender;
+    private final WebServiceResponseMessageSender webServiceResponseMessageSender;
 
     /**
      * The map of message processor instances.
      */
-    protected final MessageProcessorMap osgpCoreResponseMessageProcessorMap;
+    private final MessageProcessorMap osgpCoreResponseMessageProcessorMap;
     private final ComponentType componentType;
 
     /**
      * The message types that a message processor implementation can handle.
      */
-    protected final List<MessageType> messageTypes = new ArrayList<>();
+    private final List<MessageType> messageTypes = new ArrayList<>();
 
     /**
      * Construct a message processor instance by passing in the message type.
      *
      * @param messageType
-     *            The message type a message processor can handle.
+     *         The message type a message processor can handle.
      * @param componentType
      */
     protected OsgpCoreResponseMessageProcessor(WebServiceResponseMessageSender webServiceResponseMessageSender,
-            MessageProcessorMap osgpCoreResponseMessageProcessorMap, final MessageType messageType, ComponentType componentType) {
+            MessageProcessorMap osgpCoreResponseMessageProcessorMap, final MessageType messageType,
+            ComponentType componentType) {
         this.webServiceResponseMessageSender = webServiceResponseMessageSender;
         this.osgpCoreResponseMessageProcessorMap = osgpCoreResponseMessageProcessorMap;
         this.componentType = componentType;
@@ -81,7 +81,7 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
      * message type can be added.
      *
      * @param messageType
-     *            The message type a message processor can handle.
+     *         The message type a message processor can handle.
      */
     protected void addMessageType(final MessageType messageType) {
         this.messageTypes.add(messageType);
@@ -130,8 +130,8 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
             } else {
                 LOGGER.error(
                         "No osgpException, yet dataObject ({}) is not of the regular type for handling response: {}",
-                        responseMessage.getDataObject() == null ? null
-                                : responseMessage.getDataObject().getClass().getName(),
+                        responseMessage.getDataObject()
+                                == null ? null : responseMessage.getDataObject().getClass().getName(),
                         deviceMessageMetadata.getMessageType());
 
                 this.handleError(new TechnicalException(ComponentType.DOMAIN_SMART_METERING,
@@ -157,6 +157,10 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
      * expected types of data objects.
      *
      * @param responseMessage
+     *         the response message to be handled by this processor
+     * @param responseMessage
+     *         the response message to be handled by this processor
+     *
      * @return {@code true} if {@code responseMessage} contains a {@code dataObject}
      *         that can be processed normally; {@code false} otherwise.
      */
@@ -174,11 +178,12 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
      * of defining the response at its own.
      *
      * @param e
-     *            the exception.
+     *         the exception.
      * @param deviceMessageMetadata
-     *            the device message metadata.
+     *         the device message metadata.
      * @param responseMessage
-     *            the response message.
+     *         the response message.
+     *
      * @throws FunctionalException
      */
     protected void handleError(final Exception e, final DeviceMessageMetadata deviceMessageMetadata,
@@ -195,20 +200,20 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
      * the exception to the web-service-adapter.
      *
      * @param e
-     *            the exception.
+     *         the exception.
      * @param deviceMessageMetadata
-     *            the device message metadata.
+     *         the device message metadata.
      */
     protected void handleError(final Exception e, final DeviceMessageMetadata deviceMessageMetadata) {
         LOGGER.info("handeling error: {} for message type: {}", e.getMessage(), deviceMessageMetadata.getMessageType());
         final OsgpException osgpException = this.ensureOsgpException(e);
 
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
-                .withResult(ResponseMessageResultType.NOT_OK).withOsgpException(osgpException)
-                .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
+                deviceMessageMetadata.getCorrelationUid()).withOrganisationIdentification(
+                deviceMessageMetadata.getOrganisationIdentification()).withDeviceIdentification(
+                deviceMessageMetadata.getDeviceIdentification()).withResult(
+                ResponseMessageResultType.NOT_OK).withOsgpException(osgpException).withMessagePriority(
+                deviceMessageMetadata.getMessagePriority()).build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
@@ -218,6 +223,6 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
             return (OsgpException) e;
         }
 
-        return new TechnicalException(componentType, "An unknown error occurred", e);
+        return new TechnicalException(this.componentType, "An unknown error occurred", e);
     }
 }

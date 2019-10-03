@@ -19,9 +19,10 @@ public class SetRandomisationSettingsRequestDataTest {
     public void testValidRequestData() {
 
         try {
-            new SetRandomisationSettingsRequestData(SetRandomisationSettingsRequestData.ONE,
-                    SetRandomisationSettingsRequestData.ONE, SetRandomisationSettingsRequestData.ONE,
-                    SetRandomisationSettingsRequestData.ONE).validate();
+            new SetRandomisationSettingsRequestData(SetRandomisationSettingsRequestData.MAX_VALUE_DIRECT_ATTACH,
+                    SetRandomisationSettingsRequestData.MIN_VALUE_RANDOMIZATION_START_WINDOW,
+                    SetRandomisationSettingsRequestData.MIN_VALUE_MULTIPLICATION_FACTOR,
+                    SetRandomisationSettingsRequestData.MIN_VALUE_NUMBER_OF_RETRIES).validate();
         } catch (FunctionalException e) {
             fail();
         }
@@ -29,29 +30,31 @@ public class SetRandomisationSettingsRequestDataTest {
 
     @Test(expected = FunctionalException.class)
     public void testInvalidDirectAttach() throws FunctionalException {
-        new SetRandomisationSettingsRequestData(SetRandomisationSettingsRequestData.ZERO - 1,
-                SetRandomisationSettingsRequestData.ONE, SetRandomisationSettingsRequestData.ONE,
-                SetRandomisationSettingsRequestData.ONE).validate();
+        new SetRandomisationSettingsRequestData(SetRandomisationSettingsRequestData.MIN_VALUE_DIRECT_ATTACH - 1,
+                SetRandomisationSettingsRequestData.MIN_VALUE_RANDOMIZATION_START_WINDOW,
+                SetRandomisationSettingsRequestData.MIN_VALUE_MULTIPLICATION_FACTOR,
+                SetRandomisationSettingsRequestData.MIN_VALUE_NUMBER_OF_RETRIES).validate();
     }
 
     @Test(expected = FunctionalException.class)
     public void testInvalidRandomisationStartWindow() throws FunctionalException {
-        new SetRandomisationSettingsRequestData(SetRandomisationSettingsRequestData.ZERO,
+        new SetRandomisationSettingsRequestData(SetRandomisationSettingsRequestData.MIN_VALUE_DIRECT_ATTACH,
                 SetRandomisationSettingsRequestData.MAX_VALUE_RANDOMIZATION_START_WINDOW + 1,
-                SetRandomisationSettingsRequestData.ONE, SetRandomisationSettingsRequestData.ONE).validate();
+                SetRandomisationSettingsRequestData.MIN_VALUE_MULTIPLICATION_FACTOR,
+                SetRandomisationSettingsRequestData.MIN_VALUE_NUMBER_OF_RETRIES).validate();
     }
 
     @Test(expected = FunctionalException.class)
     public void testInvalidMultiplicationFactor() throws FunctionalException {
-        new SetRandomisationSettingsRequestData(SetRandomisationSettingsRequestData.ZERO,
+        new SetRandomisationSettingsRequestData(SetRandomisationSettingsRequestData.MIN_VALUE_DIRECT_ATTACH,
                 SetRandomisationSettingsRequestData.MAX_VALUE_RANDOMIZATION_START_WINDOW,
                 SetRandomisationSettingsRequestData.MAX_VALUE_MULTIPLICATION_FACTOR + 1,
-                SetRandomisationSettingsRequestData.ONE).validate();
+                SetRandomisationSettingsRequestData.MIN_VALUE_NUMBER_OF_RETRIES).validate();
     }
 
     @Test(expected = FunctionalException.class)
     public void testInvalidNumberOfRetries() throws FunctionalException {
-        new SetRandomisationSettingsRequestData(SetRandomisationSettingsRequestData.ZERO,
+        new SetRandomisationSettingsRequestData(SetRandomisationSettingsRequestData.MIN_VALUE_DIRECT_ATTACH,
                 SetRandomisationSettingsRequestData.MAX_VALUE_RANDOMIZATION_START_WINDOW,
                 SetRandomisationSettingsRequestData.MAX_VALUE_MULTIPLICATION_FACTOR,
                 SetRandomisationSettingsRequestData.MAX_VALUE_NUMBER_OF_RETRIES + 1).validate();

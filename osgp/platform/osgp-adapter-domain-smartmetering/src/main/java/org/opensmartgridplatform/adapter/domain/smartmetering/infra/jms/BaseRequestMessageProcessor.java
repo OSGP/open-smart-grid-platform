@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
  * the MessageProcessor implementation can process should be passed in at
  * construction. The Singleton instance is added to the HashMap of
  * MessageProcessors after dependency injection has completed.
- *
  */
 public abstract class BaseRequestMessageProcessor extends AbstractRequestMessageProcessor implements MessageProcessor {
 
@@ -42,14 +41,14 @@ public abstract class BaseRequestMessageProcessor extends AbstractRequestMessage
     /**
      * The message type that a message processor implementation can handle.
      */
-    protected MessageType messageType;
+    private MessageType messageType;
 
     /**
      * Construct a message processor instance by passing in the message type.
      *
      * @param messageProcessorMap
      * @param messageType
-     *            The message type a message processor can handle.
+     *         The message type a message processor can handle.
      */
     protected BaseRequestMessageProcessor(MessageProcessorMap messageProcessorMap, final MessageType messageType) {
         this.messageProcessorMap = messageProcessorMap;
@@ -100,9 +99,6 @@ public abstract class BaseRequestMessageProcessor extends AbstractRequestMessage
             }
 
         } catch (final Exception e) {
-
-            LOGGER.error("Error occurred in processMessage() ", e);
-
             this.handleError(e, deviceMessageMetadata.getCorrelationUid(),
                     deviceMessageMetadata.getOrganisationIdentification(),
                     deviceMessageMetadata.getDeviceIdentification(), deviceMessageMetadata.getMessageType(),

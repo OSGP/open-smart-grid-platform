@@ -387,9 +387,7 @@ public class ConfigurationService {
     public void requestSetRandomizationSettings(DlmsConnectionManager conn, DlmsDevice device,
             SetRandomisationSettingsRequestDataDto setRandomisationSettingsRequestDataDto)
             throws ProtocolAdapterException {
-
-        LOGGER.info("I have arrived at the requestSetRandomizationSettings");
-
+        
         AccessResultCode accessResultCode = this.setRandomisationSettingsCommandExecutor.execute(conn, device,
                 setRandomisationSettingsRequestDataDto);
 

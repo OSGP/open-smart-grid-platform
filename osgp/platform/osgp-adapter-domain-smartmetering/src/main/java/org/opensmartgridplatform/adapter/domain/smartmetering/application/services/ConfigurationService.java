@@ -930,7 +930,7 @@ public class ConfigurationService {
     public void handleSetRandomisationSettingsResponse(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType deviceResult, final OsgpException exception) {
 
-        LOGGER.info("handle SetConfigurationObject response for MessageType: {}",
+        LOGGER.info("handle SetRandomisationSettings response for MessageType: {}",
                 deviceMessageMetadata.getMessageType());
 
         ResponseMessageResultType result = deviceResult;

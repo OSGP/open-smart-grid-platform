@@ -25,12 +25,12 @@ import org.springframework.stereotype.Component;
  * Class for processing Set Configuration Request messages
  */
 @Component
-public class SetRandomizationSettingsMessageProcessor extends DeviceRequestMessageProcessor {
+public class SetRandomisationSettingsMessageProcessor extends DeviceRequestMessageProcessor {
 
     @Autowired
     private ConfigurationService configurationService;
 
-    public SetRandomizationSettingsMessageProcessor() {
+    public SetRandomisationSettingsMessageProcessor() {
         super(MessageType.SET_RANDOMISATION_SETTINGS);
     }
 

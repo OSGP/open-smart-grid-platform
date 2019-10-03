@@ -12,11 +12,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,10 +44,10 @@ public class BundleServiceTest {
     @InjectMocks
     private BundleService bundleService;
 
-    private ActionDtoBuilder builder = new ActionDtoBuilder();
+    private final ActionDtoBuilder builder = new ActionDtoBuilder();
 
     @Spy
-    private CommandExecutorMapStub bundleCommandExecutorMap = new CommandExecutorMapStub();
+    private final CommandExecutorMapStub bundleCommandExecutorMap = new CommandExecutorMapStub();
 
     private final List<FaultResponseParameterDto> parameters = new ArrayList<>();
     private final ComponentType defaultComponent = ComponentType.PROTOCOL_DLMS;
@@ -63,7 +63,6 @@ public class BundleServiceTest {
         final List<ActionDto> actionDtoList = this.makeActions();
         final BundleMessagesRequestDto dto = new BundleMessagesRequestDto(actionDtoList);
         final BundleMessagesRequestDto result = this.callExecutors(dto);
-        assertNotNull(result);
         this.assertResult(result);
     }
 
@@ -97,12 +96,12 @@ public class BundleServiceTest {
         try {
             // Execute all the actions
             this.callExecutors(dto);
-            Assert.fail("A ConnectionException should be thrown");
+            fail("A ConnectionException should be thrown");
         } catch (final ConnectionException connectionException) {
             // The execution is stopped. The number of responses is equal to the
             // actions performed before the point the exception is thrown. See
             // also the order of the ArrayList in method 'makeActions'.
-            Assert.assertEquals(dto.getAllResponses().size(), 8);
+            assertEquals(8, dto.getAllResponses().size());
         }
 
         // Reset the point where the exception was thrown.
@@ -111,9 +110,9 @@ public class BundleServiceTest {
         try {
             // Execute the remaining actions
             this.callExecutors(dto);
-            Assert.assertEquals(dto.getAllResponses().size(), actionDtoList.size());
+            assertEquals(dto.getAllResponses().size(), actionDtoList.size());
         } catch (final ConnectionException connectionException) {
-            Assert.fail("A ConnectionException should not have been thrown.");
+            fail("A ConnectionException should not have been thrown.");
         }
 
     }
@@ -177,11 +176,11 @@ public class BundleServiceTest {
     }
 
     private void assertResult(final BundleMessagesRequestDto result) {
-        Assert.assertTrue(result != null);
-        Assert.assertNotNull(result.getActionList());
+        assertNotNull(result);
+        assertNotNull(result.getActionList());
         for (final ActionDto actionDto : result.getActionList()) {
-            Assert.assertNotNull(actionDto.getRequest());
-            Assert.assertNotNull(actionDto.getResponse());
+            assertNotNull(actionDto.getRequest());
+            assertNotNull(actionDto.getResponse());
         }
     }
 
