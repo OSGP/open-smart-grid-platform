@@ -1,9 +1,10 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.services;
 
@@ -14,10 +15,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
-
+import ma.glasnost.orika.impl.ConfigurableMapper;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ClearAlarmRegisterRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ConfigureDefinableLoadProfileRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.CoupleMbusDeviceByChannelRequest;
@@ -49,6 +47,7 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetKeysR
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetMbusUserKeyByChannelRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetPushSetupAlarmRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetPushSetupSmsRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetRandomisationSettingsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetSpecialDaysRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SynchronizeTimeRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.UpdateFirmwareRequest;
@@ -89,6 +88,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeysR
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetPushSetupAlarmRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetPushSetupSmsRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomisationSettingsRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecialDaysRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecificAttributeValueRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SynchronizeTimeRequestData;
@@ -96,8 +96,9 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.UpdateFi
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
-
-import ma.glasnost.orika.impl.ConfigurableMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 @Service(value = "wsSmartMeteringActionMapperService")
 @Validated
@@ -118,30 +119,69 @@ public class ActionMapperService {
     @Autowired
     private InstallationMapper installationMapper;
 
-    private static Map<Class<?>, ConfigurableMapper> CLASS_TO_MAPPER_MAP = new HashMap<>();
-    private static Map<Class<?>, Class<? extends ActionRequest>> CLASS_MAP = new HashMap<>();
+    private static final Map<Class<?>, ConfigurableMapper> CLASS_TO_MAPPER_MAP = new HashMap<>();
+    private static final Map<Class<?>, Class<? extends ActionRequest>> CLASS_MAP = new HashMap<>();
 
     /**
      * Specifies which mapper to use for the ws class received.
      */
     @PostConstruct
     private void postConstruct() {
+
+        mapAdHocRequestData();
+        mapConfigurationRequestData();
+        mapInstallationRequestData();
+        mapManagementRequestData();
+        mapMonitoringRequestData();
+
+    }
+
+    private void mapInstallationRequestData() {
+
+        CLASS_TO_MAPPER_MAP.put(CoupleMbusDeviceByChannelRequest.class, this.installationMapper);
         CLASS_TO_MAPPER_MAP.put(
-                org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SpecialDaysRequestData.class,
-                this.configurationMapper);
-        CLASS_TO_MAPPER_MAP.put(SetSpecialDaysRequest.class, this.configurationMapper);
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelRequestData.class,
+                this.installationMapper);
+    }
+
+    private void mapAdHocRequestData() {
+
         CLASS_TO_MAPPER_MAP.put(
-                org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterData.class,
-                this.monitoringMapper);
-        CLASS_TO_MAPPER_MAP.put(ReadAlarmRegisterRequest.class, this.monitoringMapper);
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeRequestData.class,
+                this.adhocMapper);
+        CLASS_TO_MAPPER_MAP.put(SynchronizeTimeRequest.class, this.adhocMapper);
+        CLASS_TO_MAPPER_MAP.put(
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.GetAssociationLnObjectsRequestData.class,
+                this.adhocMapper);
+        CLASS_TO_MAPPER_MAP.put(GetAssociationLnObjectsRequest.class, this.adhocMapper);
+        CLASS_TO_MAPPER_MAP.put(
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueRequestData.class,
+                this.adhocMapper);
+        CLASS_TO_MAPPER_MAP.put(GetSpecificAttributeValueRequest.class, this.adhocMapper);
+        CLASS_TO_MAPPER_MAP.put(
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.ScanMbusChannelsRequestData.class,
+                this.adhocMapper);
+        CLASS_TO_MAPPER_MAP.put(ScanMbusChannelsRequest.class, this.adhocMapper);
+    }
+
+    private void mapManagementRequestData() {
+
         CLASS_TO_MAPPER_MAP.put(
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.FindEventsRequestData.class,
                 this.managementMapper);
         CLASS_TO_MAPPER_MAP.put(FindEventsRequest.class, this.managementMapper);
+        CLASS_TO_MAPPER_MAP.put(SetDeviceLifecycleStatusByChannelRequest.class, this.managementMapper);
         CLASS_TO_MAPPER_MAP.put(
-                org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusData.class,
-                this.configurationMapper);
-        CLASS_TO_MAPPER_MAP.put(GetAdministrativeStatusRequest.class, this.configurationMapper);
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.SetDeviceLifecycleStatusByChannelRequestData.class,
+                this.managementMapper);
+    }
+
+    private void mapMonitoringRequestData() {
+
+        CLASS_TO_MAPPER_MAP.put(
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterData.class,
+                this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(ReadAlarmRegisterRequest.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequestData.class,
                 this.monitoringMapper);
@@ -158,6 +198,25 @@ public class ActionMapperService {
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasData.class,
                 this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(GetActualMeterReadsGasRequest.class, this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(ProfileGenericDataRequest.class, this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(GetProfileGenericDataRequest.class, this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ClearAlarmRegisterData.class,
+                this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(ClearAlarmRegisterRequest.class, this.monitoringMapper);
+
+    }
+
+    private void mapConfigurationRequestData() {
+
+        CLASS_TO_MAPPER_MAP.put(
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SpecialDaysRequestData.class,
+                this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(SetSpecialDaysRequest.class, this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusData.class,
+                this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(GetAdministrativeStatusRequest.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusTypeData.class,
                 this.configurationMapper);
@@ -191,10 +250,6 @@ public class ActionMapperService {
                 this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(SetPushSetupSmsRequest.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(
-                org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeRequestData.class,
-                this.adhocMapper);
-        CLASS_TO_MAPPER_MAP.put(SynchronizeTimeRequest.class, this.adhocMapper);
-        CLASS_TO_MAPPER_MAP.put(
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.GetAllAttributeValuesRequestData.class,
                 this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(GetAllAttributeValuesRequest.class, this.configurationMapper);
@@ -208,15 +263,6 @@ public class ActionMapperService {
                 this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(SetKeysRequest.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(
-                org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.GetAssociationLnObjectsRequestData.class,
-                this.adhocMapper);
-        CLASS_TO_MAPPER_MAP.put(GetAssociationLnObjectsRequest.class, this.adhocMapper);
-        CLASS_TO_MAPPER_MAP.put(
-                org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueRequestData.class,
-                this.adhocMapper);
-        CLASS_TO_MAPPER_MAP.put(GetSpecificAttributeValueRequest.class, this.adhocMapper);
-        CLASS_TO_MAPPER_MAP.put(ProfileGenericDataRequest.class, this.monitoringMapper);
-        CLASS_TO_MAPPER_MAP.put(
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetClockConfigurationRequestData.class,
                 this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(SetClockConfigurationRequest.class, this.configurationMapper);
@@ -224,40 +270,29 @@ public class ActionMapperService {
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetConfigurationObjectRequest.class,
                 this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(GetConfigurationObjectRequest.class, this.configurationMapper);
-        CLASS_TO_MAPPER_MAP.put(GetProfileGenericDataRequest.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(GenerateAndReplaceKeysRequest.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.DefinableLoadProfileConfigurationData.class,
                 this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(ConfigureDefinableLoadProfileRequest.class, this.configurationMapper);
-        CLASS_TO_MAPPER_MAP.put(CoupleMbusDeviceByChannelRequest.class, this.installationMapper);
-        CLASS_TO_MAPPER_MAP.put(
-                org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelRequestData.class,
-                this.installationMapper);
         CLASS_TO_MAPPER_MAP.put(GetMbusEncryptionKeyStatusRequest.class, this.configurationMapper);
-        CLASS_TO_MAPPER_MAP.put(
-                org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ClearAlarmRegisterData.class,
-                this.monitoringMapper);
-        CLASS_TO_MAPPER_MAP.put(SetDeviceLifecycleStatusByChannelRequest.class, this.managementMapper);
-        CLASS_TO_MAPPER_MAP.put(
-                org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.SetDeviceLifecycleStatusByChannelRequestData.class,
-                this.managementMapper);
-        CLASS_TO_MAPPER_MAP.put(ClearAlarmRegisterRequest.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(GetMbusEncryptionKeyStatusByChannelRequest.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusByChannelRequestData.class,
                 this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(
-                org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.ScanMbusChannelsRequestData.class,
-                this.adhocMapper);
-        CLASS_TO_MAPPER_MAP.put(ScanMbusChannelsRequest.class, this.adhocMapper);
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetRandomisationSettingsRequestData.class,
+                this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(SetRandomisationSettingsRequest.class, this.configurationMapper);
+
     }
 
     /**
      * Specifies to which core object the ws object needs to be mapped.
      */
     static {
-        CLASS_MAP.put(org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SpecialDaysRequestData.class,
+        CLASS_MAP.put(
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SpecialDaysRequestData.class,
                 SpecialDaysRequestData.class);
         CLASS_MAP.put(org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterData.class,
                 ReadAlarmRegisterData.class);
@@ -267,14 +302,16 @@ public class ActionMapperService {
         CLASS_MAP.put(
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusData.class,
                 GetAdministrativeStatusData.class);
-        CLASS_MAP.put(org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequestData.class,
+        CLASS_MAP.put(
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequestData.class,
                 PeriodicMeterReadsRequestData.class);
         CLASS_MAP.put(
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasRequestData.class,
                 PeriodicMeterReadsGasRequestData.class);
         CLASS_MAP.put(org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsData.class,
                 ActualMeterReadsRequestData.class);
-        CLASS_MAP.put(org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasData.class,
+        CLASS_MAP.put(
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasData.class,
                 ActualMeterReadsGasRequestData.class);
         CLASS_MAP.put(
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusTypeData.class,
@@ -297,20 +334,24 @@ public class ActionMapperService {
         CLASS_MAP.put(
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupAlarmRequestData.class,
                 SetPushSetupAlarmRequestData.class);
-        CLASS_MAP.put(org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupSmsRequestData.class,
+        CLASS_MAP.put(
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupSmsRequestData.class,
                 SetPushSetupSmsRequestData.class);
         CLASS_MAP.put(org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeRequestData.class,
                 SynchronizeTimeRequestData.class);
-        CLASS_MAP.put(org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.GetAllAttributeValuesRequestData.class,
+        CLASS_MAP.put(
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.GetAllAttributeValuesRequestData.class,
                 GetAllAttributeValuesRequestData.class);
         CLASS_MAP.put(
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionRequestData.class,
                 GetFirmwareVersionRequestData.class);
-        CLASS_MAP.put(org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareRequestData.class,
+        CLASS_MAP.put(
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareRequestData.class,
                 UpdateFirmwareRequestData.class);
         CLASS_MAP.put(org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetKeysRequestData.class,
                 SetKeysRequestData.class);
-        CLASS_MAP.put(org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.GetAssociationLnObjectsRequestData.class,
+        CLASS_MAP.put(
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.GetAssociationLnObjectsRequestData.class,
                 GetAssociationLnObjectsRequestData.class);
         CLASS_MAP.put(
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueRequestData.class,
@@ -373,6 +414,7 @@ public class ActionMapperService {
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusByChannelRequestData.class,
                 GetMbusEncryptionKeyStatusByChannelRequestData.class);
         CLASS_MAP.put(ScanMbusChannelsRequest.class, ScanMbusChannelsRequestData.class);
+        CLASS_MAP.put(SetRandomisationSettingsRequest.class, SetRandomisationSettingsRequestData.class);
     }
 
     public List<ActionRequest> mapAllActions(final List<? extends Action> actionList) throws FunctionalException {

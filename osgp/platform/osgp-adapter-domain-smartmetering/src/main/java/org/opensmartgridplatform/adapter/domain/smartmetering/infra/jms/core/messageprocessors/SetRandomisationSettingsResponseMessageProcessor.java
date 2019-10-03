@@ -23,16 +23,16 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SetConfigurationObjectResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
+public class SetRandomisationSettingsResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
     @Autowired
     @Qualifier("domainSmartMeteringConfigurationService")
     private ConfigurationService configurationService;
 
     @Autowired
-    protected SetConfigurationObjectResponseMessageProcessor(WebServiceResponseMessageSender responseMessageSender,
+    protected SetRandomisationSettingsResponseMessageProcessor(WebServiceResponseMessageSender responseMessageSender,
             @Qualifier("domainSmartMeteringOsgpCoreResponseMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
-        super(responseMessageSender, messageProcessorMap, MessageType.SET_CONFIGURATION_OBJECT,
+        super(responseMessageSender, messageProcessorMap, MessageType.SET_RANDOMISATION_SETTINGS,
                 ComponentType.DOMAIN_SMART_METERING);
     }
 
@@ -46,7 +46,7 @@ public class SetConfigurationObjectResponseMessageProcessor extends OsgpCoreResp
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessage responseMessage, final OsgpException osgpException) {
 
-        this.configurationService.handleSetConfigurationObjectResponse(deviceMessageMetadata,
+        this.configurationService.handleSetRandomisationSettingsResponse(deviceMessageMetadata,
                 responseMessage.getResult(), osgpException);
     }
 }

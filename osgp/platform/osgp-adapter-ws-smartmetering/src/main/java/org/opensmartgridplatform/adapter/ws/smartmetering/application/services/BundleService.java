@@ -1,9 +1,10 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.services;
 
@@ -64,8 +65,8 @@ public class BundleService {
                 organisationIdentification, correlationUid, MessageType.HANDLE_BUNDLED_ACTIONS.name(), messagePriority);
         deviceMessageMetadata.setBypassRetry(bypassRetry);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(new BundleMessageRequest(actionList)).build();
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
+                deviceMessageMetadata).request(new BundleMessageRequest(actionList)).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -88,9 +89,9 @@ public class BundleService {
      */
     private void checkIfBundleIsAllowed(final List<ActionRequest> actionList, final Organisation organisation,
             final Device device) throws FunctionalException {
-        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.HANDLE_BUNDLED_ACTIONS);
+        this.domainHelperService.checkAllowed(organisation, device, DeviceFunction.HANDLE_BUNDLED_ACTIONS);
         for (final ActionRequest action : actionList) {
-            this.domainHelperService.isAllowed(organisation, device, action.getDeviceFunction());
+            this.domainHelperService.checkAllowed(organisation, device, action.getDeviceFunction());
             action.validate();
         }
     }

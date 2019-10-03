@@ -1,9 +1,10 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.services;
 
@@ -24,7 +25,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
 import org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessage;
 import org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageSender;
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -50,7 +50,7 @@ public class BundleServiceTest {
     private static final int MESSAGE_PRIORITY = 1;
 
     @InjectMocks
-    BundleService bundleService;
+    private BundleService bundleService;
 
     @Mock
     private DomainHelperService domainHelperService;
@@ -89,8 +89,8 @@ public class BundleServiceTest {
                 this.actionRequestMockList, MESSAGE_PRIORITY, BYPASS_RETRY);
 
         // Verify the test
-        final ArgumentCaptor<SmartMeteringRequestMessage> message = ArgumentCaptor
-                .forClass(SmartMeteringRequestMessage.class);
+        final ArgumentCaptor<SmartMeteringRequestMessage> message = ArgumentCaptor.forClass(
+                SmartMeteringRequestMessage.class);
 
         verify(this.smartMeteringRequestMessageSender).send(message.capture());
 
@@ -120,7 +120,7 @@ public class BundleServiceTest {
         // Prepare test
         final FunctionalException fe = new FunctionalException(FunctionalExceptionType.UNAUTHORIZED,
                 ComponentType.WS_SMART_METERING);
-        doThrow(fe).when(this.domainHelperService).isAllowed(this.organisation, this.device,
+        doThrow(fe).when(this.domainHelperService).checkAllowed(this.organisation, this.device,
                 DeviceFunction.REQUEST_PERIODIC_METER_DATA);
 
         // Run the test
@@ -147,7 +147,7 @@ public class BundleServiceTest {
         final FunctionalException fe = new FunctionalException(FunctionalExceptionType.UNAUTHORIZED,
                 ComponentType.WS_SMART_METERING);
 
-        doThrow(fe).when(this.domainHelperService).isAllowed(this.organisation, this.device,
+        doThrow(fe).when(this.domainHelperService).checkAllowed(this.organisation, this.device,
                 DeviceFunction.HANDLE_BUNDLED_ACTIONS);
 
         // Run the test
