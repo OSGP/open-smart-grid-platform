@@ -184,7 +184,7 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
      *         the response message.
      */
     protected void handleError(final Exception e, final DeviceMessageMetadata deviceMessageMetadata,
-            final ResponseMessage responseMessage) {
+            final ResponseMessage responseMessage) throws FunctionalException {
         if (responseMessage != null) {
             LOGGER.debug("Handling error without using responseMessage for correlationUid: {}",
                     responseMessage.getCorrelationUid());
