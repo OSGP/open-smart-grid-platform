@@ -66,6 +66,7 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
      * @param messageType
      *         The message type a message processor can handle.
      * @param componentType
+     *         the OSGP component handling the message
      */
     protected OsgpCoreResponseMessageProcessor(WebServiceResponseMessageSender webServiceResponseMessageSender,
             MessageProcessorMap osgpCoreResponseMessageProcessorMap, final MessageType messageType,
@@ -105,7 +106,7 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(message);
 
-        ResponseMessage responseMessage = null;
+        ResponseMessage responseMessage;
         OsgpException osgpException = null;
 
         try {
@@ -114,7 +115,7 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug(deviceMessageMetadata.toString());
-            LOGGER.debug("osgpException: {}", osgpException);
+            LOGGER.debug("osgpException", osgpException);
             return;
         }
 
@@ -158,8 +159,6 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
      *
      * @param responseMessage
      *         the response message to be handled by this processor
-     * @param responseMessage
-     *         the response message to be handled by this processor
      *
      * @return {@code true} if {@code responseMessage} contains a {@code dataObject}
      *         that can be processed normally; {@code false} otherwise.
@@ -183,11 +182,9 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
      *         the device message metadata.
      * @param responseMessage
      *         the response message.
-     *
-     * @throws FunctionalException
      */
     protected void handleError(final Exception e, final DeviceMessageMetadata deviceMessageMetadata,
-            final ResponseMessage responseMessage) throws FunctionalException {
+            final ResponseMessage responseMessage) {
         if (responseMessage != null) {
             LOGGER.debug("Handling error without using responseMessage for correlationUid: {}",
                     responseMessage.getCorrelationUid());
