@@ -52,8 +52,8 @@ public abstract class AppBase {
             LOGGER.error("java -jar <...>.jar [opts] ...");
             p.printUsage(System.err);
             return -1;
-        } catch (final Throwable e) {
-            LOGGER.error("Caught Throwable", e);
+        } catch (final Exception e) {
+            LOGGER.error("Caught Exception", e);
             final int retval = 1;
             LOGGER.info(END_RETVAL, retval);
             return retval;
