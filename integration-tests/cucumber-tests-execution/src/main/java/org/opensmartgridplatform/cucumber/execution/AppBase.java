@@ -27,7 +27,9 @@ public abstract class AppBase {
     @Option(name = "-report", metaVar = "DIR", usage = "Directory to produce test reports")
     private File reportDir;
 
-    @Option(name = "-skip-xml-report", metaVar = "DIR", usage = "Suppress the JUnit XML report generation (for more logging)")
+    @Option(name = "-skip-xml-report",
+            metaVar = "DIR",
+            usage = "Suppress the JUnit XML report generation (for more logging)")
     private boolean skipXmlReport;
 
     public static int run(final AppBase app, final String[] testClasses, final String... args) {
@@ -48,6 +50,11 @@ public abstract class AppBase {
             LOGGER.error("java -jar <...>.jar [opts] ...");
             p.printUsage(System.err);
             return -1;
+        } catch (final Throwable e) {
+            LOGGER.error("Caught Throwable", e);
+            final int retval = 1;
+            LOGGER.info("Error. Retval = {}", retval);
+            return retval;
         }
     }
 
