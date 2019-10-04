@@ -24,6 +24,8 @@ public abstract class AppBase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AppBase.class);
 
+    private static final String END_RETVAL = "End. Retval = {}";
+
     @Option(name = "-report", metaVar = "DIR", usage = "Directory to produce test reports")
     private File reportDir;
 
@@ -42,7 +44,7 @@ public abstract class AppBase {
             p.parseArgument(args);
             LOGGER.info("Start");
             final int retval = app.runTests(testClasses);
-            LOGGER.info("End. Retval = {}", retval);
+            LOGGER.info(END_RETVAL, retval);
 
             return retval;
         } catch (final CmdLineException e) {
@@ -53,7 +55,7 @@ public abstract class AppBase {
         } catch (final Throwable e) {
             LOGGER.error("Caught Throwable", e);
             final int retval = 1;
-            LOGGER.info("Error. Retval = {}", retval);
+            LOGGER.info(END_RETVAL, retval);
             return retval;
         }
     }
