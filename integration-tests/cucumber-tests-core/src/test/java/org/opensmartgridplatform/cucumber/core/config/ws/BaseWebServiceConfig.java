@@ -7,13 +7,12 @@
  */
 package org.opensmartgridplatform.cucumber.core.config.ws;
 
+import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.ws.soap.security.support.KeyStoreFactoryBean;
-
-import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 
 public abstract class BaseWebServiceConfig extends AbstractConfig {
 
@@ -33,13 +32,13 @@ public abstract class BaseWebServiceConfig extends AbstractConfig {
     protected String webserviceKeystoreType;
 
     @Value("${web.service.truststore.location}")
-    private String webserviceTruststoreLocation;
+    protected String webserviceTruststoreLocation;
 
     @Value("${web.service.truststore.password}")
-    private String webserviceTruststorePassword;
+    protected String webserviceTruststorePassword;
 
     @Value("${web.service.truststore.type}")
-    private String webserviceTruststoreType;
+    protected String webserviceTruststoreType;
 
     public String getApplicationName() {
         return this.applicationName;
