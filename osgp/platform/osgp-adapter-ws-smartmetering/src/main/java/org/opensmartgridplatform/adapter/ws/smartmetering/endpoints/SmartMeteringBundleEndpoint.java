@@ -1,22 +1,14 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.endpoints;
 
 import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.ws.server.endpoint.annotation.Endpoint;
-import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
-import org.springframework.ws.server.endpoint.annotation.RequestPayload;
-import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.BypassRetry;
@@ -37,12 +29,21 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.BundleMe
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.ws.server.endpoint.annotation.Endpoint;
+import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
+import org.springframework.ws.server.endpoint.annotation.RequestPayload;
+import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 @Endpoint
 public class SmartMeteringBundleEndpoint extends SmartMeteringEndpoint {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SmartMeteringBundleEndpoint.class);
-    private static final String NAMESPACE = "http://www.opensmartgridplatform.org/schemas/smartmetering/sm-bundle/2014/10";
+    private static final String NAMESPACE = "http://www.opensmartgridplatform"
+            + ".org/schemas/smartmetering/sm-bundle/2014/10";
 
     private final BundleService bundleService;
     private final ActionMapperService actionMapperService;
@@ -64,8 +65,9 @@ public class SmartMeteringBundleEndpoint extends SmartMeteringEndpoint {
             @MessagePriority final String messagePriority, @ResponseUrl final String responseUrl,
             @BypassRetry final String bypassRetry, @RequestPayload final BundleRequest request) throws OsgpException {
 
-        LOGGER.info("Bundle request for organisation: {} and device: {}. and responseUrl: {}",
-                organisationIdentification, request.getDeviceIdentification(), responseUrl);
+        LOGGER.info("Bundle request for organisation: {} and device: {}. and responseUrl: {}. Request contains {}.",
+                organisationIdentification, request.getDeviceIdentification(), responseUrl,
+                request.getActions().getActionList());
 
         BundleAsyncResponse response = null;
         try {

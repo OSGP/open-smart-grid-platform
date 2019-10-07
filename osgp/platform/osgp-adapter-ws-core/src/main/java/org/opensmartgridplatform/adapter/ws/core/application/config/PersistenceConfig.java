@@ -1,14 +1,16 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.ws.core.application.config;
 
 import javax.sql.DataSource;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.shared.application.config.AbstractPersistenceConfig;
 import org.opensmartgridplatform.shared.infra.db.DefaultConnectionPoolFactory;
@@ -19,8 +21,6 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-
-import com.zaxxer.hikari.HikariDataSource;
 
 @EnableJpaRepositories(basePackageClasses = { DeviceRepository.class })
 @Configuration
@@ -51,9 +51,9 @@ public class PersistenceConfig extends AbstractPersistenceConfig {
 
         if (this.dataSourceCore == null) {
 
-            final DefaultConnectionPoolFactory.Builder builder = super.builder().withUsername(this.username)
-                    .withPassword(this.password).withDatabaseHost(this.databaseHost).withDatabasePort(this.databasePort)
-                    .withDatabaseName(this.databaseName);
+            final DefaultConnectionPoolFactory.Builder builder = super.builder().withUsername(
+                    this.username).withPassword(this.password).withDatabaseHost(this.databaseHost).withDatabasePort(
+                    this.databasePort).withDatabaseName(this.databaseName);
             final DefaultConnectionPoolFactory factory = builder.build();
             this.dataSourceCore = factory.getDefaultConnectionPool();
         }

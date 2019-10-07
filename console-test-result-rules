@@ -1,2 +1,4 @@
 warning /Failed scenarios/
 warning /Undefined scenarios/
+error /End. Retval = 1/
+info /End. Retval = 0/

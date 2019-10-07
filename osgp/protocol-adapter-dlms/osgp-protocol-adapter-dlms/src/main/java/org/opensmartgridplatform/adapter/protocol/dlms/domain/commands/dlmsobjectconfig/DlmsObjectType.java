@@ -35,7 +35,9 @@ public enum DlmsObjectType {
     MBUS_MASTER_VALUE (null),
     INTERVAL_VALUES (PeriodTypeDto.INTERVAL),
     MONTHLY_BILLING_VALUES (PeriodTypeDto.MONTHLY),
-    DAILY_LOAD_PROFILE (PeriodTypeDto.DAILY);
+    DAILY_LOAD_PROFILE (PeriodTypeDto.DAILY),
+    DIRECT_ATTACH(null),
+    RANDOMISATION_SETTINGS(null);
 
     private PeriodTypeDto relatedPeriodType;
 

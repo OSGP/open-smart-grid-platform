@@ -1,9 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.services;
 
@@ -13,7 +14,6 @@ import org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.SmartMeterin
 import org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageSender;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
-import org.opensmartgridplatform.shared.validation.Identification;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualMeterReadsQuery;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ClearAlarmRegisterRequest;
@@ -27,6 +27,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.CorrelationUidExceptio
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.validation.Identification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +59,7 @@ public class MonitoringService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
-        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.REQUEST_PERIODIC_METER_DATA);
+        this.domainHelperService.checkAllowed(organisation, device, DeviceFunction.REQUEST_PERIODIC_METER_DATA);
 
         LOGGER.debug("enqueuePeriodicMeterReadsRequestData called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -70,8 +71,8 @@ public class MonitoringService {
                 organisationIdentification, correlationUid, MessageType.REQUEST_PERIODIC_METER_DATA.name(),
                 messagePriority, scheduleTime);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
+                deviceMessageMetadata).request(requestData).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -85,7 +86,7 @@ public class MonitoringService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
-        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.REQUEST_ACTUAL_METER_DATA);
+        this.domainHelperService.checkAllowed(organisation, device, DeviceFunction.REQUEST_ACTUAL_METER_DATA);
 
         LOGGER.debug("enqueueActualMeterReadsRequestData called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -97,8 +98,8 @@ public class MonitoringService {
                 organisationIdentification, correlationUid, MessageType.REQUEST_ACTUAL_METER_DATA.name(),
                 messagePriority, scheduleTime);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
+                deviceMessageMetadata).request(requestData).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -112,7 +113,7 @@ public class MonitoringService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
-        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.READ_ALARM_REGISTER);
+        this.domainHelperService.checkAllowed(organisation, device, DeviceFunction.READ_ALARM_REGISTER);
 
         LOGGER.debug("enqueueReadAlarmRegisterRequestData called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -124,8 +125,8 @@ public class MonitoringService {
                 organisationIdentification, correlationUid, MessageType.READ_ALARM_REGISTER.name(), messagePriority,
                 scheduleTime);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
+                deviceMessageMetadata).request(requestData).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -139,7 +140,7 @@ public class MonitoringService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
-        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_PROFILE_GENERIC_DATA);
+        this.domainHelperService.checkAllowed(organisation, device, DeviceFunction.GET_PROFILE_GENERIC_DATA);
 
         LOGGER.debug("enqueueProfileGenericDataRequestData called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -151,8 +152,8 @@ public class MonitoringService {
                 organisationIdentification, correlationUid, MessageType.GET_PROFILE_GENERIC_DATA.name(),
                 messagePriority, scheduleTime);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
+                deviceMessageMetadata).request(requestData).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -171,7 +172,7 @@ public class MonitoringService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
-        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.CLEAR_ALARM_REGISTER);
+        this.domainHelperService.checkAllowed(organisation, device, DeviceFunction.CLEAR_ALARM_REGISTER);
 
         LOGGER.debug("Enqueue clear alarm register request data called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -183,8 +184,8 @@ public class MonitoringService {
                 organisationIdentification, correlationUid, MessageType.CLEAR_ALARM_REGISTER.name(), messagePriority,
                 scheduleTime);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
+                deviceMessageMetadata).request(requestData).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
