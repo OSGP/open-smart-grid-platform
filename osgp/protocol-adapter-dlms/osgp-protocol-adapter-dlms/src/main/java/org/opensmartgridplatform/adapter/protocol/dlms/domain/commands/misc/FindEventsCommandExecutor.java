@@ -40,9 +40,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component()
-public class RetrieveEventsCommandExecutor extends AbstractCommandExecutor<FindEventsRequestDto, List<EventDto>> {
+public class FindEventsCommandExecutor extends AbstractCommandExecutor<FindEventsRequestDto, List<EventDto>> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RetrieveEventsCommandExecutor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FindEventsCommandExecutor.class);
 
     private static final int CLASS_ID = 7;
     private static final int ATTRIBUTE_ID = 2;
@@ -68,7 +68,7 @@ public class RetrieveEventsCommandExecutor extends AbstractCommandExecutor<FindE
     }
     // @formatter:on
     @Autowired
-    public RetrieveEventsCommandExecutor(final DlmsHelper dlmsHelper,
+    FindEventsCommandExecutor(final DlmsHelper dlmsHelper,
             final DataObjectToEventListConverter dataObjectToEventListConverter) {
         super(FindEventsRequestDto.class);
         this.dlmsHelper = dlmsHelper;

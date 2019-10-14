@@ -1,9 +1,10 @@
 /**
  * Copyright 2014-2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
@@ -17,7 +18,6 @@ import java.util.ArrayList;
 
 import org.joda.time.DateTime;
 import org.junit.Test;
-
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ManagementMapper;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventMessagesResponse;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDto;
@@ -25,7 +25,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventMessageData
 
 public class EventMessageDataContainerMappingTest {
 
-    private ManagementMapper managementMapper = new ManagementMapper();
+    private final ManagementMapper managementMapper = new ManagementMapper();
 
     // Test if mapping with a null List succeeds
     @Test
@@ -33,8 +33,7 @@ public class EventMessageDataContainerMappingTest {
         // build test data
         final EventMessageDataResponseDto containerDto = new EventMessageDataResponseDto(null);
         // actual mapping
-        final EventMessagesResponse container = this.managementMapper.map(containerDto,
-                EventMessagesResponse.class);
+        final EventMessagesResponse container = this.managementMapper.map(containerDto, EventMessagesResponse.class);
         // test mapping
         assertNotNull(container);
         assertNull(container.getEvents());
@@ -47,8 +46,7 @@ public class EventMessageDataContainerMappingTest {
         // build test data
         final EventMessageDataResponseDto containerDto = new EventMessageDataResponseDto(new ArrayList<EventDto>());
         // actual mapping
-        final EventMessagesResponse container = this.managementMapper.map(containerDto,
-                EventMessagesResponse.class);
+        final EventMessagesResponse container = this.managementMapper.map(containerDto, EventMessagesResponse.class);
         // test mapping
         assertNotNull(container);
         assertNotNull(container.getEvents());
@@ -60,13 +58,12 @@ public class EventMessageDataContainerMappingTest {
     @Test
     public void testWithFilledList() {
         // build test data
-        final EventDto event = new EventDto(new DateTime(), new Integer(1), new Integer(2));
+        final EventDto event = new EventDto(new DateTime(), new Integer(1), new Integer(2), "STANDARD_EVENT_LOG");
         final ArrayList<EventDto> events = new ArrayList<EventDto>();
         events.add(event);
         final EventMessageDataResponseDto containerDto = new EventMessageDataResponseDto(events);
         // actual mapping
-        final EventMessagesResponse container = this.managementMapper.map(containerDto,
-                EventMessagesResponse.class);
+        final EventMessagesResponse container = this.managementMapper.map(containerDto, EventMessagesResponse.class);
         // test mapping
         assertNotNull(container);
         assertNotNull(container.getEvents());
