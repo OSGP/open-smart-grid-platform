@@ -70,8 +70,8 @@
     <apache.commons.lang.version>3.3.2</apache.commons.lang.version>
     <apache.httpcomponents.version>4.3.6</apache.httpcomponents.version>
     <apache.httpcomponents.httpcore.version>4.4.6</apache.httpcomponents.httpcore.version>
-    <jackson.version>2.9.10</jackson.version>
-    <jackson-databind.version>2.9.10</jackson-databind.version>
+    <jackson.version>2.10.0</jackson.version>
+    <jackson-databind.version>2.10.0</jackson-databind.version>
     <commons.codec.version>1.9</commons.codec.version>
     <orika.version>1.5.1</orika.version>
     <netty.version>3.9.4.Final</netty.version>
