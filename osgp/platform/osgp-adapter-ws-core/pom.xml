@@ -21,7 +21,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-platform</artifactId>
-    <version>4.36.0</version>
+    <version>4.37.1</version>
     <relativePath>../parent-platform/pom.xml</relativePath>
   </parent>
 
@@ -77,10 +77,6 @@
     <dependency>
       <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-adapter-ws-shared-db</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opensmartgridplatform</groupId>
-      <artifactId>osgp-dto</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opensmartgridplatform</groupId>

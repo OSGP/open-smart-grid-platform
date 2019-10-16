@@ -94,7 +94,8 @@ public class PlatformKeys extends Keys {
     public static final String KEY_DEVICE_ACTIVATED = "DeviceActivated";
     public static final String KEY_DEVICE_COMMUNICATIONMETHOD = "CommunicationMethod";
     public static final String KEY_DEVICE_COMMUNICATIONPROVIDER = "CommunicationProvider";
-    public static final String KEY_DEVICE_DSMRVERSION = "DSMR_version";
+    public static final String KEY_DEVICE_PROTOCOL_NAME = "protocolName";
+    public static final String KEY_DEVICE_PROTOCOL_VERSION = "protocolVersion";
     public static final String KEY_DEVICE_EXTERNAL_MANAGED = "DeviceExternalManaged";
     public static final String KEY_DEVICE_FUNCTION_GROUP = "DeviceFunctionGroup";
     public static final String KEY_DEVICE_HLS3ACTIVE = "HLS3_active";
@@ -140,6 +141,7 @@ public class PlatformKeys extends Keys {
     public static final String KEY_EVENTS_NODELIST_EXPECTED = "event-nodelist-expected";
     public static final String KEY_EXACT_MATCH = "ExactMatch";
     public static final String KEY_EXTERNALID = "ExternalId";
+    public static final String KEY_FAILED_CONNECTION_COUNT = "FailedConnectionCount";
     public static final String KEY_FAULTCODE = "FaultCode";
     public static final String KEY_FAULTSTRING = "FaultString";
     public static final String KEY_FIRMWARE_IDENTIFICATION = "FirmwareIdentification";

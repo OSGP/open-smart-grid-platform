@@ -14,7 +14,7 @@
 
   <artifactId>parent-shared</artifactId>
   <groupId>org.opensmartgridplatform</groupId>
-  <version>4.36.0</version>
+  <version>4.37.1</version>
   <packaging>pom</packaging>
   <name>parent-shared</name>
   <!-- Description, Organization, Licences, URL and Distribution Management 
@@ -46,7 +46,7 @@
 
   <properties>
     <module.baseUri>${project.baseUri}/../</module.baseUri>
-    <osgp.version>4.36.0</osgp.version>
+    <osgp.version>4.37.1</osgp.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <spring.version>4.3.18.RELEASE</spring.version>
@@ -65,6 +65,7 @@
     <apache.commons.lang.version>3.3.2</apache.commons.lang.version>
     <apache.httpcomponents.version>4.3.6</apache.httpcomponents.version>
     <jackson.version>2.9.9</jackson.version>
+    <jackson-databind.version>2.9.9.2</jackson-databind.version>
     <commons.codec.version>1.9</commons.codec.version>
     <orika.version>1.5.1</orika.version>
     <jxr.version>2.5</jxr.version>
@@ -261,7 +262,7 @@
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
-        <version>${jackson.version}</version>
+        <version>${jackson-databind.version}</version>
       </dependency>
 
       <!-- Jakarta commons codec -->

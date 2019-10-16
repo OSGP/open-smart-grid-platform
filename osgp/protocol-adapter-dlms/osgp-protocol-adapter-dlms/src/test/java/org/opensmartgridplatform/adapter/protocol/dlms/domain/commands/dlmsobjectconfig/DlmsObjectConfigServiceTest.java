@@ -79,28 +79,34 @@ public class DlmsObjectConfigServiceTest {
     @Before
     public void setUp() {
         when(this.config422.contains(Protocol.DSMR_4_2_2)).thenReturn(true);
-        when(this.config422.findObject(DlmsObjectType.CLOCK, null)).thenReturn(Optional.of(clock1));
-        when(this.config422.findObject(DlmsObjectType.ACTIVE_ENERGY_IMPORT, null)).thenReturn(Optional.of(register));
-        when(this.config422.findObject(DlmsObjectType.MBUS_MASTER_VALUE, null)).thenReturn(Optional.of(registerWithChannel));
-        when(this.config422.findObject(DlmsObjectType.INTERVAL_VALUES, Medium.ELECTRICITY)).thenReturn(Optional.of(profileE));
-        when(this.config422.findObject(DlmsObjectType.DAILY_LOAD_PROFILE, null)).thenReturn(Optional.of(profileCombined));
-        when(this.config422.findObject(DlmsObjectType.DAILY_LOAD_PROFILE, Medium.GAS)).thenReturn(Optional.of(profileCombined));
-        when(this.config422.findObject(DlmsObjectType.DAILY_LOAD_PROFILE, Medium.ELECTRICITY)).thenReturn(Optional.of(profileCombined));
+        when(this.config422.findObject(DlmsObjectType.CLOCK, null)).thenReturn(Optional.of(this.clock1));
+        when(this.config422.findObject(DlmsObjectType.ACTIVE_ENERGY_IMPORT, null)).thenReturn(Optional.of(this.register));
+        when(this.config422.findObject(DlmsObjectType.MBUS_MASTER_VALUE, null)).thenReturn(Optional.of(
+                this.registerWithChannel));
+        when(this.config422.findObject(DlmsObjectType.INTERVAL_VALUES, Medium.ELECTRICITY)).thenReturn(Optional.of(
+                this.profileE));
+        when(this.config422.findObject(DlmsObjectType.DAILY_LOAD_PROFILE, null)).thenReturn(Optional.of(
+                this.profileCombined));
+        when(this.config422.findObject(DlmsObjectType.DAILY_LOAD_PROFILE, Medium.GAS)).thenReturn(Optional.of(
+                this.profileCombined));
+        when(this.config422.findObject(DlmsObjectType.DAILY_LOAD_PROFILE, Medium.ELECTRICITY)).thenReturn(Optional.of(
+                this.profileCombined));
 
         when(this.config50.contains(Protocol.SMR_5_1)).thenReturn(true);
         when(this.config50.findObject(DlmsObjectType.AMR_STATUS, null)).thenReturn(Optional.empty());
         when(this.config50.findObject(DlmsObjectType.INTERVAL_VALUES, null)).thenReturn(Optional.empty());
-        when(this.config50.findObject(DlmsObjectType.DAILY_LOAD_PROFILE, Medium.GAS)).thenReturn(Optional.of(profileCombined));
+        when(this.config50.findObject(DlmsObjectType.DAILY_LOAD_PROFILE, Medium.GAS)).thenReturn(Optional.of(
+                this.profileCombined));
 
         final List<DlmsObjectConfig> configs = Arrays.asList(this.config422, this.config50);
 
         this.service = new DlmsObjectConfigService(this.dlmsHelper, configs);
 
-        this.device422.setProtocol("DSMR", "4.2.2");
+        this.device422.setProtocol(Protocol.DSMR_4_2_2);
         this.device422.setSelectiveAccessSupported(true);
-        this.device422_noSelectiveAccess.setProtocol("DSMR", "4.2.2");
+        this.device422_noSelectiveAccess.setProtocol(Protocol.DSMR_4_2_2);
         this.device422_noSelectiveAccess.setSelectiveAccessSupported(false);
-        this.device51.setProtocol("SMR", "5.1");
+        this.device51.setProtocol(Protocol.SMR_5_1);
         this.device51.setSelectiveAccessSupported(true);
     }
 

@@ -15,13 +15,17 @@ public class ConfigurationObjectDto implements Serializable {
 
     private static final long serialVersionUID = 2955060885937669868L;
 
-    private final GprsOperationModeTypeDto gprsOperationMode;
+    private GprsOperationModeTypeDto gprsOperationMode;
 
     private final ConfigurationFlagsDto configurationFlags;
 
     public ConfigurationObjectDto(final GprsOperationModeTypeDto gprsOperationMode,
             final ConfigurationFlagsDto configurationFlags) {
         this.gprsOperationMode = gprsOperationMode;
+        this.configurationFlags = configurationFlags;
+    }
+
+    public ConfigurationObjectDto(final ConfigurationFlagsDto configurationFlags) {
         this.configurationFlags = configurationFlags;
     }
 

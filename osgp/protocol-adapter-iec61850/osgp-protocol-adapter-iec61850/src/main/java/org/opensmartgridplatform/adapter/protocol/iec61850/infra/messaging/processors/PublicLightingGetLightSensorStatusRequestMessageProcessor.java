@@ -1,9 +1,10 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.processors;
 
@@ -16,7 +17,6 @@ import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.D
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.LmdDeviceRequestMessageProcessor;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.services.Iec61850DeviceResponseHandler;
-import org.opensmartgridplatform.dto.valueobjects.DeviceFunctionDto;
 import org.opensmartgridplatform.dto.valueobjects.DomainTypeDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -32,8 +32,8 @@ public class PublicLightingGetLightSensorStatusRequestMessageProcessor extends L
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(PublicLightingGetLightSensorStatusRequestMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(
+            PublicLightingGetLightSensorStatusRequestMessageProcessor.class);
 
     protected PublicLightingGetLightSensorStatusRequestMessageProcessor() {
         super(MessageType.GET_LIGHT_SENSOR_STATUS);
@@ -64,24 +64,24 @@ public class PublicLightingGetLightSensorStatusRequestMessageProcessor extends L
         // GET_LIGHT_STATUS or to GET_STATUS, depending on domain.
         String messageType = messageMetadata.getMessageType();
         if (DomainTypeDto.PUBLIC_LIGHTING.name().equals(messageMetadata.getDomain())) {
-            messageType = DeviceFunctionDto.GET_LIGHT_STATUS.name();
+            messageType = MessageType.GET_LIGHT_STATUS.name();
         } else if (DomainTypeDto.TARIFF_SWITCHING.name().equals(messageMetadata.getDomain())) {
             LOGGER.warn("Unexpected domain request received: {} for messageType: {}", messageMetadata.getDomain(),
                     messageType);
         } else {
-            messageType = DeviceFunctionDto.GET_STATUS.name();
+            messageType = MessageType.GET_STATUS.name();
         }
 
-        final RequestMessageData requestMessageData = RequestMessageData.newBuilder().messageMetadata(messageMetadata)
-                .messageType(messageType).build();
+        final RequestMessageData requestMessageData = RequestMessageData.newBuilder().messageMetadata(
+                messageMetadata).messageType(messageType).build();
 
         this.printDomainInfo(requestMessageData);
 
-        final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this
-                .createIec61850DeviceResponseHandler(requestMessageData, message);
+        final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this.createIec61850DeviceResponseHandler(
+                requestMessageData, message);
 
-        final DeviceRequest deviceRequest = DeviceRequest.newBuilder().messageMetaData(messageMetadata)
-                .messageType(messageType).build();
+        final DeviceRequest deviceRequest = DeviceRequest.newBuilder().messageMetaData(messageMetadata).messageType(
+                messageType).build();
 
         this.deviceService.getStatus(deviceRequest, iec61850DeviceResponseHandler);
     }

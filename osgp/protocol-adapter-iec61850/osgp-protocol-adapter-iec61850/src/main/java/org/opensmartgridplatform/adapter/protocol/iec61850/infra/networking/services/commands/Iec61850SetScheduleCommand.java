@@ -16,9 +16,6 @@ import java.util.Objects;
 import org.joda.time.DateTime;
 import org.openmuc.openiec61850.BdaBoolean;
 import org.openmuc.openiec61850.Fc;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.ScheduleEntry;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.ScheduleWeekday;
@@ -42,12 +39,15 @@ import org.opensmartgridplatform.core.db.api.iec61850valueobjects.RelayType;
 import org.opensmartgridplatform.dto.valueobjects.ActionTimeTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.LightValueDto;
 import org.opensmartgridplatform.dto.valueobjects.RelayTypeDto;
+import org.opensmartgridplatform.dto.valueobjects.ScheduleDto;
 import org.opensmartgridplatform.dto.valueobjects.ScheduleEntryDto;
 import org.opensmartgridplatform.dto.valueobjects.WeekDayTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.WindowTypeDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Iec61850SetScheduleCommand {
 
@@ -60,10 +60,13 @@ public class Iec61850SetScheduleCommand {
     private static final int MAX_NUMBER_OF_SCHEDULE_ENTRIES = 64;
 
     public void setScheduleOnDevice(final Iec61850Client iec61850Client, final DeviceConnection deviceConnection,
-            final RelayTypeDto relayType, final List<ScheduleEntryDto> scheduleList, final Ssld ssld,
+            final RelayTypeDto relayType, final ScheduleDto scheduleDto, final Ssld ssld,
             final SsldDataService ssldDataService) throws ProtocolAdapterException {
 
         final String tariffOrLight = relayType.equals(RelayTypeDto.LIGHT) ? "light" : "tariff";
+        final List<ScheduleEntryDto> scheduleList = scheduleDto.getScheduleList();
+        final Short astronomicalSunriseOffset = scheduleDto.getAstronomicalSunriseOffset();
+        final Short astronomicalSunsetOffset = scheduleDto.getAstronomicalSunsetOffset();
 
         try {
             // Creating a list of all Schedule entries, grouped by relay index.
@@ -74,6 +77,8 @@ public class Iec61850SetScheduleCommand {
 
                 @Override
                 public Void apply(final DeviceMessageLog deviceMessageLog) throws ProtocolAdapterException {
+
+                    this.writeAstronomicalOffsetsForSchedule(deviceMessageLog);
 
                     Iec61850SetScheduleCommand.this.disableScheduleEntries(relayType, deviceConnection, iec61850Client,
                             deviceMessageLog, ssld, ssldDataService);
@@ -118,6 +123,28 @@ public class Iec61850SetScheduleCommand {
                     DeviceMessageLoggingService.logMessage(deviceMessageLog, deviceConnection.getDeviceIdentification(),
                             deviceConnection.getOrganisationIdentification(), false);
                     return null;
+                }
+
+                private void writeAstronomicalOffsetsForSchedule(final DeviceMessageLog deviceMessageLog)
+                        throws NodeException {
+                    if (relayType.equals(RelayTypeDto.LIGHT) && astronomicalSunriseOffset != null
+                            && astronomicalSunsetOffset != null) {
+                        final NodeContainer softwareConfiguration = deviceConnection.getFcModelNode(
+                                LogicalDevice.LIGHTING, LogicalNode.STREET_LIGHT_CONFIGURATION,
+                                DataAttribute.SOFTWARE_CONFIGURATION, Fc.CF);
+
+                        softwareConfiguration.writeShort(SubDataAttribute.ASTRONOMIC_SUNRISE_OFFSET,
+                                astronomicalSunriseOffset);
+                        deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION,
+                                DataAttribute.SOFTWARE_CONFIGURATION, Fc.CF, SubDataAttribute.ASTRONOMIC_SUNRISE_OFFSET,
+                                Short.toString(astronomicalSunriseOffset));
+
+                        softwareConfiguration.writeShort(SubDataAttribute.ASTRONOMIC_SUNSET_OFFSET,
+                                astronomicalSunsetOffset);
+                        deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION,
+                                DataAttribute.SOFTWARE_CONFIGURATION, Fc.CF, SubDataAttribute.ASTRONOMIC_SUNSET_OFFSET,
+                                Short.toString(astronomicalSunsetOffset));
+                    }
                 }
 
                 private void writeScheduleEntryForRelay(final DeviceMessageLog deviceMessageLog,
@@ -372,7 +399,8 @@ public class Iec61850SetScheduleCommand {
         final TriggerType triggerType;
         if (ActionTimeTypeDto.ABSOLUTETIME.equals(schedule.getActionTime())) {
             triggerType = TriggerType.FIX;
-        } else if (org.opensmartgridplatform.dto.valueobjects.TriggerTypeDto.ASTRONOMICAL.equals(schedule.getTriggerType())) {
+        } else if (org.opensmartgridplatform.dto.valueobjects.TriggerTypeDto.ASTRONOMICAL
+                .equals(schedule.getTriggerType())) {
             triggerType = TriggerType.AUTONOME;
         } else {
             triggerType = TriggerType.SENSOR;

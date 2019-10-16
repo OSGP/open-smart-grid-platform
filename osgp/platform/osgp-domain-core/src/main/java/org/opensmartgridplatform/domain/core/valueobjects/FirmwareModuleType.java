@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
+package org.opensmartgridplatform.domain.core.valueobjects;
 
 public enum FirmwareModuleType {
 
@@ -25,7 +25,7 @@ public enum FirmwareModuleType {
 
     public static FirmwareModuleType forDescription(final String description) {
         for (final FirmwareModuleType firmwareModuleType : values()) {
-            if (description.equals(firmwareModuleType.getDescription())) {
+            if (description.equalsIgnoreCase(firmwareModuleType.getDescription())) {
                 return firmwareModuleType;
             }
         }

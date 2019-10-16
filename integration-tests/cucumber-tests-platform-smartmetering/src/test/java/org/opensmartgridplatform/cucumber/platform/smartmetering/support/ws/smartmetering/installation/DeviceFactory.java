@@ -29,8 +29,10 @@ public class DeviceFactory {
 
     public static Device fromParameterMap(final Map<String, String> requestParameters) {
 
-        final Map<String, String> settings = SettingsHelper.addDefault(requestParameters,
+        Map<String, String> settings = SettingsHelper.addDefault(requestParameters,
                 PlatformKeys.KEY_DEVICE_DELIVERY_DATE, PlatformDefaults.DLMS_DEFAULT_DEVICE_DELIVERY_DATE);
+        settings = SettingsHelper.addDefault(settings,
+                PlatformKeys.KEY_DEVICE_PROTOCOL_NAME, PlatformDefaults.DEFAULT_DEVICE_PROTOCOL_NAME);
 
         final Device device = new Device();
         device.setDeviceIdentification(getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
@@ -41,7 +43,8 @@ public class DeviceFactory {
         device.setCommunicationProvider(settings.get(PlatformKeys.KEY_DEVICE_COMMUNICATIONPROVIDER));
         device.setICCId(settings.get(PlatformKeys.KEY_DEVICE_ICCID));
 
-        device.setDSMRVersion(settings.get(PlatformKeys.KEY_DEVICE_DSMRVERSION));
+        device.setProtocolName(settings.get(PlatformKeys.KEY_DEVICE_PROTOCOL_NAME));
+        device.setProtocolVersion(settings.get(PlatformKeys.KEY_DEVICE_PROTOCOL_VERSION));
         device.setSupplier(settings.get(PlatformKeys.KEY_DEVICE_SUPPLIER));
 
         device.setHLS3Active(getBoolean(settings, PlatformKeys.KEY_DEVICE_HLS3ACTIVE, PlatformDefaults.DLMS_DEFAULT_HSL3_ACTIVE));

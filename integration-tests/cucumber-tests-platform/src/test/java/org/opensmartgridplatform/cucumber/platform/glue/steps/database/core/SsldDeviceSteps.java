@@ -168,6 +168,8 @@ public class SsldDeviceSteps extends BaseDeviceSteps {
 
         ssld.updateInMaintenance(
                 getBoolean(settings, PlatformKeys.DEVICE_IN_MAINTENANCE, PlatformDefaults.DEVICE_IN_MAINTENANCE));
+        ssld.setFailedConnectionCount(getInteger(settings, PlatformKeys.KEY_FAILED_CONNECTION_COUNT,
+                PlatformDefaults.DEFAULT_FAILED_CONNECTION_COUNT));
 
         this.ssldRepository.save(ssld);
 

@@ -6,12 +6,20 @@ Feature: FirmwareManagement get firmware
 
   # Note: All devices return multiple firmwares. How to solve this?
   @OslpMockServer
-  Scenario Outline: Get firmware version
+  Scenario Outline: Get firmware version, version returned by device is not in history
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | Status               | Active            |
       | Organization         | TestOrganization  |
       | Protocol             | <Protocol>        |
+    And a firmware
+      | DeviceIdentification      | TEST1024000000001  |
+      | FirmwareFilename          | Firmware           |
+      | FirmwarePushToNewDevices  | true               |
+      | ManufacturerName          | Test               |
+      | ModelCode                 | Test               |
+      | Description               |                    |
+      | FirmwareModuleVersionFunc | <Firmware Version> |
     And the device returns firmware version "<Firmware Version>" over "<Protocol>"
     When receiving a get firmware version request
       | DeviceIdentification | TEST1024000000001 |
@@ -22,12 +30,14 @@ Feature: FirmwareManagement get firmware
       | Result             | OK                 |
       | FirmwareVersion    | <Firmware Version> |
       | FirmwareModuleType | FUNCTIONAL         |
+    And the device firmware file exists
+      | DeviceIdentification | TEST1024000000001 |
+      | FirmwareFilename     | Firmware          |
 
     Examples: 
       | Protocol    | Firmware Version |
       | OSLP ELSTER | R01              |
       | OSLP ELSTER | R02              |
-      | OSLP ELSTER |                  |
       | OSLP ELSTER |             0123 |
 
   Scenario: Get the firmware version for an unknown device

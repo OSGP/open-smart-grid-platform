@@ -45,7 +45,7 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
     private boolean inDebugMode = PlatformSmartmeteringDefaults.IN_DEBUG_MODE;
     private Long mbusIdentificationNumber = null;
     private String mbusManufacturerIdentification = null;
-    private String protocol = PlatformSmartmeteringDefaults.PROTOCOL;
+    private String protocolName = PlatformSmartmeteringDefaults.PROTOCOL;
     private String protocolVersion = PlatformSmartmeteringDefaults.PROTOCOL_VERSION;
 
     private final SecurityKeyBuilder passwordBuilder = new SecurityKeyBuilder()
@@ -170,8 +170,8 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
         return this;
     }
 
-    public DlmsDeviceBuilder setProtocol(final ProtocolInfo protocolInfo) {
-        this.protocol = protocolInfo.getProtocol();
+    public DlmsDeviceBuilder setProtocolName(final ProtocolInfo protocolInfo) {
+        this.protocolName = protocolInfo.getProtocol();
         this.protocolVersion = protocolInfo.getProtocolVersion();
         return this;
     }
@@ -354,7 +354,7 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
         dlmsDevice.setInDebugMode(this.inDebugMode);
         dlmsDevice.setMbusIdentificationNumber(this.mbusIdentificationNumber);
         dlmsDevice.setMbusManufacturerIdentification(this.mbusManufacturerIdentification);
-        dlmsDevice.setProtocol(this.protocol, this.protocolVersion);
+        dlmsDevice.setProtocol(this.protocolName, this.protocolVersion);
         dlmsDevice.setInvocationCounter(0);
 
         /**

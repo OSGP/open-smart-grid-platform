@@ -1,9 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services;
 
@@ -15,19 +16,11 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
-
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.oslp.OslpDeviceSettingsService;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities.OslpDevice;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.DeviceResponseMessageSender;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.OsgpRequestMessageSender;
-import org.opensmartgridplatform.dto.valueobjects.DeviceFunctionDto;
 import org.opensmartgridplatform.dto.valueobjects.EventNotificationDto;
 import org.opensmartgridplatform.dto.valueobjects.EventTypeDto;
 import org.opensmartgridplatform.oslp.Oslp;
@@ -36,9 +29,16 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 @Service(value = "oslpDeviceManagementService")
 @Transactional(value = "transactionManager")
@@ -137,7 +137,7 @@ public class DeviceManagementService {
         final RequestMessage requestMessage = new RequestMessage("no-correlationUid", "no-organisation",
                 deviceIdentification, new ArrayList<>(eventNotificationDtos));
 
-        this.osgpRequestMessageSender.send(requestMessage, DeviceFunctionDto.ADD_EVENT_NOTIFICATION.name());
+        this.osgpRequestMessageSender.send(requestMessage, MessageType.ADD_EVENT_NOTIFICATION.name());
     }
 
     // === UPDATE KEY ===
@@ -151,8 +151,8 @@ public class DeviceManagementService {
                 organisationIdentification, publicKey);
 
         try {
-            OslpDevice oslpDevice = this.oslpDeviceSettingsService
-                    .getDeviceByDeviceIdentification(deviceIdentification);
+            OslpDevice oslpDevice = this.oslpDeviceSettingsService.getDeviceByDeviceIdentification(
+                    deviceIdentification);
             if (oslpDevice == null) {
                 // Device not found, create new device
                 LOGGER.debug("Device [{}] does not exist, creating new device", deviceIdentification);
@@ -185,8 +185,8 @@ public class DeviceManagementService {
                 organisationIdentification);
 
         try {
-            final OslpDevice oslpDevice = this.oslpDeviceSettingsService
-                    .getDeviceByDeviceIdentification(deviceIdentification);
+            final OslpDevice oslpDevice = this.oslpDeviceSettingsService.getDeviceByDeviceIdentification(
+                    deviceIdentification);
             if (oslpDevice == null) {
                 throw new ProtocolAdapterException(String.format("Device not found: %s", deviceIdentification));
             }
@@ -208,9 +208,9 @@ public class DeviceManagementService {
             final OsgpException osgpException, final DeviceResponseMessageSender responseMessageSender) {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(messageMetadata);
-        final ProtocolResponseMessage responseMessage = ProtocolResponseMessage.newBuilder()
-                .domain(messageMetadata.getDomain()).domainVersion(messageMetadata.getDomainVersion())
-                .deviceMessageMetadata(deviceMessageMetadata).result(result).osgpException(osgpException).build();
+        final ProtocolResponseMessage responseMessage = ProtocolResponseMessage.newBuilder().domain(
+                messageMetadata.getDomain()).domainVersion(messageMetadata.getDomainVersion()).deviceMessageMetadata(
+                deviceMessageMetadata).result(result).osgpException(osgpException).build();
 
         responseMessageSender.send(responseMessage);
     }

@@ -13,7 +13,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
-
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.ConfigurationFlag;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.ConfigurationFlagType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.ConfigurationFlags;
@@ -24,7 +23,7 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.S
 
 public class SetConfigurationObjectRequestMappingTest {
 
-    private ConfigurationMapper configurationMapper = new ConfigurationMapper();
+    private final ConfigurationMapper configurationMapper = new ConfigurationMapper();
     private static final String DEVICE_ID = "id1";
     private static final ConfigurationFlagType FLAGTYPE = ConfigurationFlagType.DISCOVER_ON_OPEN_COVER;
     private static final GprsOperationModeType GPRSTYPE = GprsOperationModeType.ALWAYS_ON;
@@ -117,15 +116,15 @@ public class SetConfigurationObjectRequestMappingTest {
         assertNotNull(requestMapped.getSetConfigurationObjectRequestData().getConfigurationObject()
                 .getConfigurationFlags());
         assertNotNull(requestMapped.getSetConfigurationObjectRequestData().getConfigurationObject()
-                .getConfigurationFlags().getConfigurationFlag());
+                .getConfigurationFlags().getFlags());
         assertNotNull(requestMapped.getSetConfigurationObjectRequestData().getConfigurationObject()
-                .getConfigurationFlags().getConfigurationFlag().get(0));
+                .getConfigurationFlags().getFlags().get(0));
         assertNotNull(requestMapped.getSetConfigurationObjectRequestData().getConfigurationObject()
-                .getConfigurationFlags().getConfigurationFlag().get(0).getConfigurationFlagType());
+                .getConfigurationFlags().getFlags().get(0).getConfigurationFlagType());
         assertEquals(GPRSTYPE.name(), requestMapped.getSetConfigurationObjectRequestData().getConfigurationObject()
                 .getGprsOperationMode().name());
         assertEquals(FLAGTYPE.name(), requestMapped.getSetConfigurationObjectRequestData().getConfigurationObject()
-                .getConfigurationFlags().getConfigurationFlag().get(0).getConfigurationFlagType().name());
+                .getConfigurationFlags().getFlags().get(0).getConfigurationFlagType().name());
 
     }
 

@@ -1,9 +1,10 @@
 /**
  * Copyright 2014-2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking;
 
@@ -13,19 +14,18 @@ import java.util.UUID;
 
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-
 import org.opensmartgridplatform.adapter.protocol.iec61850.application.services.DeviceRegistrationService;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.OsgpRequestMessageSender;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.IED;
 import org.opensmartgridplatform.core.db.api.iec61850.entities.Ssld;
-import org.opensmartgridplatform.dto.valueobjects.DeviceFunctionDto;
 import org.opensmartgridplatform.dto.valueobjects.DeviceRegistrationDataDto;
 import org.opensmartgridplatform.iec61850.RegisterDeviceRequest;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 public class Iec61850ChannelHandlerServer extends Iec61850ChannelHandler {
 
@@ -85,7 +85,7 @@ public class Iec61850ChannelHandlerServer extends Iec61850ChannelHandler {
                 ipAddress, deviceRegistrationData);
 
         LOGGER.info("Sending register device request to OSGP with correlation ID: " + correlationId);
-        this.osgpRequestMessageSender.send(requestMessage, DeviceFunctionDto.REGISTER_DEVICE.name());
+        this.osgpRequestMessageSender.send(requestMessage, MessageType.REGISTER_DEVICE.name());
 
         try {
             this.deviceRegistrationService.disableRegistration(deviceIdentification, InetAddress.getByName(ipAddress),

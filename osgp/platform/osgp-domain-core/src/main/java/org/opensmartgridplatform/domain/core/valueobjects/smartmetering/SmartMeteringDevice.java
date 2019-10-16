@@ -1,9 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
@@ -24,7 +25,8 @@ public class SmartMeteringDevice implements Serializable {
 
     private String iccId;
 
-    private String dsmrVersion;
+    private String protocolName;
+    private String protocolVersion;
 
     private byte[] masterKey;
 
@@ -84,12 +86,20 @@ public class SmartMeteringDevice implements Serializable {
         return this.iccId;
     }
 
-    public String getDSMRVersion() {
-        return this.dsmrVersion;
+    public String getProtocolName() {
+        return this.protocolName;
     }
 
-    public void setDSMRVersion(final String dsmrVersion) {
-        this.dsmrVersion = dsmrVersion;
+    public void setProtocolName(final String protcolName) {
+        this.protocolName = protcolName;
+    }
+
+    public String getProtocolVersion() {
+        return this.protocolVersion;
+    }
+
+    public void setProtocolVersion(final String protocolVersion) {
+        this.protocolVersion = protocolVersion;
     }
 
     public byte[] getMasterKey() {

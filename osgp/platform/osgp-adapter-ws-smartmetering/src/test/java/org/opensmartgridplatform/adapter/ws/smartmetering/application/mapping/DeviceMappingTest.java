@@ -1,15 +1,16 @@
 /**
  * Copyright 2014-2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.Date;
@@ -22,23 +23,23 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.Device;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
 
 public class DeviceMappingTest {
 
-    private InstallationMapper installationMapper = new InstallationMapper();
+    private final InstallationMapper installationMapper = new InstallationMapper();
     private static final String DEVICE_IDENTIFICATION = "nr1";
     private static final String DEVICE_TYPE = "typeA";
     private static final String COMMUNICATION_METHOD = "skype";
     private static final String COMMUNICATION_PROVIDER = "internet";
     private static final String ICC_ID = "iccId1";
-    private static final String DSMR_VERSION = "dsmrVersion1";
+    private static final String PROTOCOL_NAME = "test-protocol-name";
+    private static final String PROTOCOL_VERSION = "test-protocol-version";
     private static final String SUPPLIER = "supplier1";
     private static final boolean IS_ACTIVE = true;
     private static final byte[] KEY = "key".getBytes();
-    private Date deliveryDateSmartMeteringDevice = new Date();
+    private final Date deliveryDateSmartMeteringDevice = new Date();
     private XMLGregorianCalendar deliveryDateDevice;
 
     /**
@@ -98,7 +99,8 @@ public class DeviceMappingTest {
         device.setCommunicationMethod(COMMUNICATION_METHOD);
         device.setCommunicationProvider(COMMUNICATION_PROVIDER);
         device.setICCId(ICC_ID);
-        device.setDSMRVersion(DSMR_VERSION);
+        device.setProtocolName(PROTOCOL_NAME);
+        device.setProtocolVersion(PROTOCOL_VERSION);
         device.setSupplier(SUPPLIER);
         device.setHLS3Active(IS_ACTIVE);
         device.setHLS4Active(IS_ACTIVE);
@@ -121,7 +123,8 @@ public class DeviceMappingTest {
         smartMeteringDevice.setCommunicationMethod(COMMUNICATION_METHOD);
         smartMeteringDevice.setCommunicationProvider(COMMUNICATION_PROVIDER);
         smartMeteringDevice.setICCId(ICC_ID);
-        smartMeteringDevice.setDSMRVersion(DSMR_VERSION);
+        smartMeteringDevice.setProtocolName(PROTOCOL_NAME);
+        smartMeteringDevice.setProtocolVersion(PROTOCOL_VERSION);
         smartMeteringDevice.setSupplier(SUPPLIER);
         smartMeteringDevice.setHLS3Active(IS_ACTIVE);
         smartMeteringDevice.setHLS4Active(IS_ACTIVE);
@@ -145,7 +148,8 @@ public class DeviceMappingTest {
         assertEquals(COMMUNICATION_METHOD, device.getCommunicationMethod());
         assertEquals(COMMUNICATION_PROVIDER, device.getCommunicationProvider());
         assertEquals(ICC_ID, device.getICCId());
-        assertEquals(DSMR_VERSION, device.getDSMRVersion());
+        assertEquals(PROTOCOL_NAME, device.getProtocolName());
+        assertEquals(PROTOCOL_VERSION, device.getProtocolVersion());
         assertEquals(SUPPLIER, device.getSupplier());
         assertEquals(IS_ACTIVE, device.isHLS3Active());
         assertEquals(IS_ACTIVE, device.isHLS4Active());
@@ -175,7 +179,8 @@ public class DeviceMappingTest {
         assertEquals(COMMUNICATION_METHOD, smartMeteringDevice.getCommunicationMethod());
         assertEquals(COMMUNICATION_PROVIDER, smartMeteringDevice.getCommunicationProvider());
         assertEquals(ICC_ID, smartMeteringDevice.getICCId());
-        assertEquals(DSMR_VERSION, smartMeteringDevice.getDSMRVersion());
+        assertEquals(PROTOCOL_NAME, smartMeteringDevice.getProtocolName());
+        assertEquals(PROTOCOL_VERSION, smartMeteringDevice.getProtocolVersion());
         assertEquals(SUPPLIER, smartMeteringDevice.getSupplier());
         assertEquals(IS_ACTIVE, smartMeteringDevice.isHLS3Active());
         assertEquals(IS_ACTIVE, smartMeteringDevice.isHLS4Active());
