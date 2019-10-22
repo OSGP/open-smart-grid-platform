@@ -68,11 +68,13 @@ public class DataObjectToEventListConverter {
         final DateTime dateTime = this.extractDateTime(eventData);
         final Short code = this.extractCode(eventData);
         final Integer eventCounter = this.extractEventCounter(eventLogCategory, eventData);
+        final String eventLogCategoryName = eventLogCategory.name();
 
-        LOGGER.info("Event time is {}, event code is {} and event counter is {}", dateTime, code, eventCounter);
+        LOGGER.info("Event time is {}, event code is {}, event category is {} and event counter is {}", dateTime, code,
+                eventLogCategoryName, eventCounter);
 
         // build a new EventDto with those values.
-        return new EventDto(dateTime, code.intValue(), eventCounter);
+        return new EventDto(dateTime, code.intValue(), eventCounter, eventLogCategoryName);
     }
 
     private DateTime extractDateTime(final List<DataObject> eventData) throws ProtocolAdapterException {
