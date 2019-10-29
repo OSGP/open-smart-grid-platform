@@ -52,20 +52,12 @@ public class EventSteps extends GlueBase {
         final Device device = this.deviceRepository
                 .findByDeviceIdentification(getString(data, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
 
-        final Event event = new Event(device, this.getDateTime(getString(data, PlatformKeys.DATE)).toDate(),
+        final Event event = new Event(device, getDateTime2(getString(data, PlatformKeys.DATE), DateTime.now()).toDate(),
                 getEnum(data, PlatformKeys.EVENT_TYPE, EventType.class, EventType.DIAG_EVENTS_GENERAL),
                 getString(data, PlatformKeys.KEY_DESCRIPTION, ""),
                 getInteger(data, PlatformKeys.KEY_INDEX, PlatformDefaults.DEFAULT_INDEX));
 
         this.eventRepository.save(event);
-    }
-
-    private DateTime getDateTime(final String dateTime) {
-        try {
-            return getDateTime2(dateTime, DateTime.now());
-        } catch (final IllegalArgumentException e) {
-            return DateTime.parse(dateTime);
-        }
     }
 
     @Then("^the (?:event is|events are) stored$")
