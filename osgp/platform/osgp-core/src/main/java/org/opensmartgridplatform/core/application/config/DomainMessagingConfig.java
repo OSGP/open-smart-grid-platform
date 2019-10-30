@@ -63,8 +63,7 @@ public class DomainMessagingConfig extends AbstractConfig {
 
     @Bean
     public JmsConfiguration defaultDomainJmsConfiguration() {
-        return new DefaultDomainJmsConfiguration() {
-        };
+        return new DefaultDomainJmsConfiguration();
     }
 
     // === OUTGOING DOMAIN RESPONSES ===
