@@ -5,16 +5,12 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.core.infra.jms.domain;
+package org.opensmartgridplatform.core.infra.jms.domain.outgoing;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.core.MessageCreator;
 
 import org.opensmartgridplatform.core.domain.model.domain.DomainResponseService;
 import org.opensmartgridplatform.domain.core.entities.DomainInfo;
@@ -26,11 +22,14 @@ import org.opensmartgridplatform.shared.infra.jms.ProtocolRequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.MessageCreator;
 
 public class DomainResponseMessageSender implements DomainResponseService {
 
     @Autowired
-    private DomainResponseMessageJmsTemplateFactory factory;
+    private org.opensmartgridplatform.core.infra.jms.domain.outgoing.DomainResponseMessageJmsTemplateFactory factory;
 
     @Override
     public void send(final ProtocolResponseMessage protocolResponseMessage) {
@@ -39,9 +38,9 @@ public class DomainResponseMessageSender implements DomainResponseService {
                 protocolResponseMessage.getDomainVersion());
         final JmsTemplate jmsTemplate = this.factory.getJmsTemplate(key);
 
-        final ResponseMessage message = this.createResponseMessage(protocolResponseMessage);
+        final ResponseMessage message = createResponseMessage(protocolResponseMessage);
 
-        this.send(message, protocolResponseMessage.getMessageType(), jmsTemplate);
+        send(message, protocolResponseMessage.getMessageType(), jmsTemplate);
     }
 
     @Override
@@ -51,12 +50,12 @@ public class DomainResponseMessageSender implements DomainResponseService {
                 protocolRequestMessage.getDomainVersion());
         final JmsTemplate jmsTemplate = this.factory.getJmsTemplate(key);
 
-        final ResponseMessage message = this.createResponseMessage(protocolRequestMessage, e);
+        final ResponseMessage message = createResponseMessage(protocolRequestMessage, e);
 
-        this.send(message, protocolRequestMessage.getMessageType(), jmsTemplate);
+        send(message, protocolRequestMessage.getMessageType(), jmsTemplate);
     }
 
-    private void send(final ResponseMessage message, final String messageType, final JmsTemplate jmsTemplate) {
+    private static void send(final ResponseMessage message, final String messageType, final JmsTemplate jmsTemplate) {
 
         jmsTemplate.send(new MessageCreator() {
 
@@ -78,7 +77,7 @@ public class DomainResponseMessageSender implements DomainResponseService {
         });
     }
 
-    private ResponseMessage createResponseMessage(final ProtocolResponseMessage protocolResponseMessage) {
+    private static ResponseMessage createResponseMessage(final ProtocolResponseMessage protocolResponseMessage) {
 
         return ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(protocolResponseMessage.getCorrelationUid())
@@ -87,22 +86,25 @@ public class DomainResponseMessageSender implements DomainResponseService {
                 .withResult(protocolResponseMessage.getResult())
                 .withOsgpException(protocolResponseMessage.getOsgpException())
                 .withDataObject(protocolResponseMessage.getDataObject())
-                .withMessagePriority(protocolResponseMessage.getMessagePriority()).build();
+                .withMessagePriority(protocolResponseMessage.getMessagePriority())
+                .build();
     }
 
-    private ResponseMessage createResponseMessage(final ProtocolRequestMessage protocolRequestMessage,
+    private static ResponseMessage createResponseMessage(final ProtocolRequestMessage protocolRequestMessage,
             final Exception e) {
-        final OsgpException ex = this.ensureOsgpException(e);
+        final OsgpException ex = ensureOsgpException(e);
 
         return ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(protocolRequestMessage.getCorrelationUid())
                 .withOrganisationIdentification(protocolRequestMessage.getOrganisationIdentification())
                 .withDeviceIdentification(protocolRequestMessage.getDeviceIdentification())
-                .withResult(ResponseMessageResultType.NOT_OK).withOsgpException(ex)
-                .withMessagePriority(protocolRequestMessage.getMessagePriority()).build();
+                .withResult(ResponseMessageResultType.NOT_OK)
+                .withOsgpException(ex)
+                .withMessagePriority(protocolRequestMessage.getMessagePriority())
+                .build();
     }
 
-    private OsgpException ensureOsgpException(final Exception e) {
+    private static OsgpException ensureOsgpException(final Exception e) {
 
         if (e instanceof OsgpException) {
             return (OsgpException) e;

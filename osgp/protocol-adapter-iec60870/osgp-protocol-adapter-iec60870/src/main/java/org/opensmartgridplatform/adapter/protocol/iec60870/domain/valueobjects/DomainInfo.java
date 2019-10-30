@@ -9,8 +9,8 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects;
 
 public class DomainInfo {
 
-    final String domain;
-    final String domainVersion;
+    private final String domain;
+    private final String domainVersion;
 
     public DomainInfo(final String domain, final String domainVersion) {
         this.domain = domain;

@@ -7,13 +7,13 @@
  */
 package org.opensmartgridplatform.shared.application.config.messaging;
 
-import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.springframework.beans.factory.annotation.Value;
 
 /**
- * This class provides the basic components used for JMS messaging.
+ * This class provides the default configuration properties used for JMS
+ * messaging.
  */
-public class JmsDefaultConfig extends AbstractConfig {
+public class DefaultJmsConfiguration implements JmsConfiguration {
 
     @Value("${jms.default.broker.url:failover:(ssl://localhost:61617)}")
     private String jmsDefaultBrokerUrl;
@@ -79,9 +79,6 @@ public class JmsDefaultConfig extends AbstractConfig {
     @Value("${jms.default.concurrent.consumers:2}")
     private int jmsDefaultConcurrentConsumers;
 
-    // Redelivery Policy fields, default values are corresponding to the
-    // defaults in the RedeliveryPolicy class,but could be overridden by a value
-    // in the properties files
     @Value("${jms.default.use.exponential.back.off:false}")
     private boolean jmsDefaultUseExponentialBackOff;
 
@@ -100,7 +97,6 @@ public class JmsDefaultConfig extends AbstractConfig {
     @Value("${jms.default.redelivery.delay:1000}")
     private long jmsDefaultRedeliveryDelay;
 
-    // JMS Template fields
     @Value("${jms.default.delivery.persistent:true}")
     private boolean jmsDefaultDeliveryPersistent;
 
@@ -110,123 +106,153 @@ public class JmsDefaultConfig extends AbstractConfig {
     @Value("${jms.default.explicit.qos.enabled:true}")
     private boolean jmsDefaultExplicitQosEnabled;
 
-    public String getJmsDefaultBrokerUrl() {
+    @Override
+    public String getBrokerUrl() {
         return this.jmsDefaultBrokerUrl;
     }
 
-    public int getJmsDefaultConnectionPoolSize() {
+    @Override
+    public int getConnectionPoolSize() {
         return this.jmsDefaultConnectionPoolSize;
     }
 
-    public int getJmsDefaultConnectionPoolMaxActiveSessions() {
+    @Override
+    public int getConnectionPoolMaxActiveSessions() {
         return this.jmsDefaultConnectionPoolMaxActiveSessions;
     }
 
-    public boolean isJmsDefaultConnectionPoolBlockIfSessionPoolIsFull() {
+    @Override
+    public boolean isConnectionPoolBlockIfSessionPoolIsFull() {
         return this.jmsDefaultConnectionPoolBlockIfSessionPoolIsFull;
     }
 
-    public long getJmsDefaultConnectionPoolBlockIfSessionPoolIsFullTimeout() {
+    @Override
+    public long getConnectionPoolBlockIfSessionPoolIsFullTimeout() {
         return this.jmsDefaultConnectionPoolBlockIfSessionPoolIsFullTimeout;
     }
 
-    public long getJmsDefaultConnectionPoolExpiryTimeout() {
+    @Override
+    public long getConnectionPoolExpiryTimeout() {
         return this.jmsDefaultConnectionPoolExpiryTimeout;
     }
 
-    public long getJmsDefaultConnectionPoolTimeBetweenExpirationCheckMillis() {
+    @Override
+    public long getConnectionPoolTimeBetweenExpirationCheckMillis() {
         return this.jmsDefaultConnectionPoolTimeBetweenExpirationCheckMillis;
     }
 
-    public int getJmsDefaultConnectionPoolIdleTimeout() {
+    @Override
+    public int getConnectionPoolIdleTimeout() {
         return this.jmsDefaultConnectionPoolIdleTimeout;
     }
 
-    public int getJmsDefaultConnectionQueuePrefetch() {
+    @Override
+    public int getConnectionQueuePrefetch() {
         return this.jmsDefaultConnectionQueuePrefetch;
     }
 
-    public int getJmsDefaultConnectionSendTimeout() {
+    @Override
+    public int getConnectionSendTimeout() {
         return this.jmsDefaultConnectionSendTimeout;
     }
 
-    public boolean isJmsDefaultTrustAllPackages() {
+    @Override
+    public boolean isTrustAllPackages() {
         return this.jmsDefaultTrustAllPackages;
     }
 
-    public String getJmsDefaultTrustedPackages() {
+    @Override
+    public String getTrustedPackages() {
         return this.jmsDefaultTrustedPackages;
     }
 
-    public String getJmsDefaultBrokerClientKeyStore() {
+    @Override
+    public String getBrokerClientKeyStore() {
         return this.jmsDefaultBrokerClientKeyStore;
     }
 
-    public String getJmsDefaultBrokerClientKeyStorePwd() {
+    @Override
+    public String getBrokerClientKeyStorePwd() {
         return this.jmsDefaultBrokerClientKeyStorePwd;
     }
 
-    public String getJmsDefaultBrokerClientTrustStore() {
+    @Override
+    public String getBrokerClientTrustStore() {
         return this.jmsDefaultBrokerClientTrustStore;
     }
 
-    public String getJmsDefaultBrokerClientTrustStorePwd() {
+    @Override
+    public String getBrokerClientTrustStorePwd() {
         return this.jmsDefaultBrokerClientTrustStorePwd;
     }
 
-    public String getJmsDefaultBrokerUsername() {
+    @Override
+    public String getBrokerUsername() {
         return this.jmsDefaultBrokerUsername;
     }
 
-    public String getJmsDefaultBrokerPassword() {
+    @Override
+    public String getBrokerPassword() {
         return this.jmsDefaultBrokerPassword;
     }
 
-    public int getJmsDefaultMaxConcurrentConsumers() {
+    @Override
+    public int getMaxConcurrentConsumers() {
         return this.jmsDefaultMaxConcurrentConsumers;
     }
 
-    public int getJmsDefaultConcurrentConsumers() {
+    @Override
+    public int getConcurrentConsumers() {
         return this.jmsDefaultConcurrentConsumers;
     }
 
-    public boolean isJmsDefaultUseExponentialBackOff() {
+    @Override
+    public boolean isUseExponentialBackOff() {
         return this.jmsDefaultUseExponentialBackOff;
     }
 
-    public double getJmsDefaultBackOffMultiplier() {
+    @Override
+    public double getBackOffMultiplier() {
         return this.jmsDefaultBackOffMultiplier;
     }
 
-    public long getJmsDefaultMaximumRedeliveryDelay() {
+    @Override
+    public long getMaximumRedeliveryDelay() {
         return this.jmsDefaultMaximumRedeliveryDelay;
     }
 
-    public long getJmsDefaultInitialRedeliveryDelay() {
+    @Override
+    public long getInitialRedeliveryDelay() {
         return this.jmsDefaultInitialRedeliveryDelay;
     }
 
-    public int getJmsDefaultMaximumRedeliveries() {
+    @Override
+    public int getMaximumRedeliveries() {
         return this.jmsDefaultMaximumRedeliveries;
     }
 
-    public long getJmsDefaultRedeliveryDelay() {
+    @Override
+    public long getRedeliveryDelay() {
         return this.jmsDefaultRedeliveryDelay;
     }
 
-    public boolean isJmsDefaultDeliveryPersistent() {
+    @Override
+    public boolean isDeliveryPersistent() {
         return this.jmsDefaultDeliveryPersistent;
     }
 
-    public long getJmsDefaultTimeToLive() {
+    @Override
+    public long getTimeToLive() {
         return this.jmsDefaultTimeToLive;
     }
 
-    public boolean isJmsDefaultExplicitQosEnabled() {
+    @Override
+    public boolean isExplicitQosEnabled() {
         return this.jmsDefaultExplicitQosEnabled;
     }
 
-    public String getJmsDefaultQueue() {
+    @Override
+    public String getQueue() {
         return this.jmsDefaultQueue;
     }
 }

@@ -8,7 +8,8 @@
 package org.opensmartgridplatform.adapter.domain.admin.application.config;
 
 import org.opensmartgridplatform.shared.application.config.AbstractMessagingConfig;
-import org.opensmartgridplatform.shared.application.config.messaging.JmsDefaultConfig;
+import org.opensmartgridplatform.shared.application.config.messaging.JmsConfiguration;
+import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -23,8 +24,8 @@ import org.springframework.context.annotation.PropertySource;
 public class MessagingConfig extends AbstractMessagingConfig {
 
     @Bean
-    public JmsDefaultConfig defaultMessagingConfig() {
-        return new JmsDefaultConfig() {
+    public JmsConfiguration defaultJmsConfiguration() {
+        return new DefaultJmsConfiguration() {
         };
     }
 }

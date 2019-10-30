@@ -13,8 +13,8 @@ import org.apache.activemq.pool.PooledConnectionFactory;
 import org.opensmartgridplatform.adapter.domain.admin.infra.jms.OsgpCoreRequestMessageListener;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationNames;
+import org.opensmartgridplatform.shared.application.config.messaging.JmsConfiguration;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfigurationFactory;
-import org.opensmartgridplatform.shared.application.config.messaging.JmsDefaultConfig;
 import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.slf4j.Logger;
@@ -37,8 +37,8 @@ public class IncomingOsgpCoreRequestsMessagingConfig extends AbstractConfig {
     private JmsConfigurationFactory jmsConfigurationFactory;
 
     public IncomingOsgpCoreRequestsMessagingConfig(final Environment environment,
-            final JmsDefaultConfig defaultMessagingConfig) throws SSLException {
-        this.jmsConfigurationFactory = new JmsConfigurationFactory(environment, defaultMessagingConfig,
+            final JmsConfiguration defaultJmsConfiguration) throws SSLException {
+        this.jmsConfigurationFactory = new JmsConfigurationFactory(environment, defaultJmsConfiguration,
                 JmsConfigurationNames.JMS_INCOMING_OSGP_CORE_REQUESTS);
     }
 

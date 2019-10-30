@@ -40,9 +40,9 @@ public class JmsConfigurationFactory {
     private JmsPropertyReader propertyReader;
     private PooledConnectionFactory pooledConnectionFactory;
 
-    public JmsConfigurationFactory(final Environment environment, final JmsDefaultConfig defaultMessagingConfig,
+    public JmsConfigurationFactory(final Environment environment, final JmsConfiguration defaultJmsConfiguration,
             final String propertyPrefix) throws SSLException {
-        this.propertyReader = new JmsPropertyReader(environment, propertyPrefix, defaultMessagingConfig);
+        this.propertyReader = new JmsPropertyReader(environment, propertyPrefix, defaultJmsConfiguration);
         this.initPooledConnectionFactory();
     }
 

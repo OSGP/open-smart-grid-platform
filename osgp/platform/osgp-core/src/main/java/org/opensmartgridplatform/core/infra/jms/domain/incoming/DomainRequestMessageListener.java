@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.core.infra.jms.domain;
+package org.opensmartgridplatform.core.infra.jms.domain.incoming;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -15,9 +15,6 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.opensmartgridplatform.core.application.services.DeviceRequestMessageService;
 import org.opensmartgridplatform.domain.core.entities.DomainInfo;
 import org.opensmartgridplatform.domain.core.entities.ScheduledTask;
@@ -26,6 +23,8 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolRequestMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DomainRequestMessageListener implements MessageListener {
 
@@ -46,8 +45,8 @@ public class DomainRequestMessageListener implements MessageListener {
     @Override
     public void onMessage(final Message message) {
         try {
-            LOGGER.info("Received domain request message of type: {} for domain: {} and domainVersion: {}", message
-                    .getJMSType().toString(), this.domainInfo.getDomain(), this.domainInfo.getDomainVersion());
+            LOGGER.info("Received domain request message of type: {} for domain: {} and domainVersion: {}",
+                    message.getJMSType(), this.domainInfo.getDomain(), this.domainInfo.getDomainVersion());
 
             if (message.propertyExists(Constants.SCHEDULE_TIME)) {
                 final ScheduledTask scheduledTask = this.createScheduledTask(message);
@@ -72,8 +71,8 @@ public class DomainRequestMessageListener implements MessageListener {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(message);
 
-        return new ScheduledTask(deviceMessageMetadata, this.domainInfo.getDomain(),
-                this.domainInfo.getDomainVersion(), messageData, scheduleTimeStamp);
+        return new ScheduledTask(deviceMessageMetadata, this.domainInfo.getDomain(), this.domainInfo.getDomainVersion(),
+                messageData, scheduleTimeStamp);
     }
 
     public ProtocolRequestMessage createProtocolRequestMessage(final Message message) throws JMSException {
@@ -83,7 +82,10 @@ public class DomainRequestMessageListener implements MessageListener {
         final Serializable messageData = ((ObjectMessage) message).getObject();
 
         return new ProtocolRequestMessage.Builder().deviceMessageMetadata(deviceMessageMetadata)
-                .domain(this.domainInfo.getDomain()).domainVersion(this.domainInfo.getDomainVersion())
-                .ipAddress(ipAddress).request(messageData).build();
+                .domain(this.domainInfo.getDomain())
+                .domainVersion(this.domainInfo.getDomainVersion())
+                .ipAddress(ipAddress)
+                .request(messageData)
+                .build();
     }
 }

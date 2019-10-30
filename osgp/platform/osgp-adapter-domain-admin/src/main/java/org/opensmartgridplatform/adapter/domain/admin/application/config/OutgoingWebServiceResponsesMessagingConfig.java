@@ -11,8 +11,8 @@ import javax.net.ssl.SSLException;
 
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationNames;
+import org.opensmartgridplatform.shared.application.config.messaging.JmsConfiguration;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfigurationFactory;
-import org.opensmartgridplatform.shared.application.config.messaging.JmsDefaultConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -32,8 +32,8 @@ public class OutgoingWebServiceResponsesMessagingConfig {
     private JmsConfigurationFactory jmsConfigurationFactory;
 
     public OutgoingWebServiceResponsesMessagingConfig(final Environment environment,
-            final JmsDefaultConfig defaultMessagingConfig) throws SSLException {
-        this.jmsConfigurationFactory = new JmsConfigurationFactory(environment, defaultMessagingConfig,
+            final JmsConfiguration defaultJmsConfiguration) throws SSLException {
+        this.jmsConfigurationFactory = new JmsConfigurationFactory(environment, defaultJmsConfiguration,
                 JmsConfigurationNames.JMS_OUTGOING_WS_RESPONSES);
     }
 

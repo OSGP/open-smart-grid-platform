@@ -20,17 +20,15 @@ public class JmsPropertyReader {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JmsPropertyReader.class);
 
-    private static final String JMS_DEFAULT = "jms.default";
-
     private Environment environment;
     private String propertyPrefix;
-    private JmsDefaultConfig defaultMessagingConfig;
+    private JmsConfiguration defaultJmsConfiguration;
 
     public JmsPropertyReader(final Environment environment, final String propertyPrefix,
-            final JmsDefaultConfig defaultMessagingConfig) {
+            final JmsConfiguration defaultJmsConfiguration) {
         this.environment = environment;
         this.propertyPrefix = propertyPrefix;
-        this.defaultMessagingConfig = defaultMessagingConfig;
+        this.defaultJmsConfiguration = defaultJmsConfiguration;
     }
 
     public <T> T get(final String propertyName, final Class<T> targetType) {
@@ -41,7 +39,7 @@ public class JmsPropertyReader {
         if (property == null) {
             LOGGER.info("Property {} not found, trying default property.", fullPropertyName);
             property = this.getDefault(propertyName, targetType);
-            LOGGER.info("Found value {} for property {}.{}", property, JMS_DEFAULT, propertyName);
+            LOGGER.info("Found default value {} for property {}", property, propertyName);
         } else {
             LOGGER.info("Found value {} for property {}.{}", property, this.propertyPrefix, propertyName);
         }
@@ -51,15 +49,14 @@ public class JmsPropertyReader {
 
     @SuppressWarnings("unchecked")
     private <T> T getDefault(final String propertyName, final Class<T> targetType) {
-        final String fullPropertyName = JMS_DEFAULT + "." + propertyName;
         try {
             final Class<?>[] noParams = {};
             final Object[] noObjects = {};
-            final String methodName = convertPropertyNameToMethodName(fullPropertyName, targetType);
-            final Method method = JmsDefaultConfig.class.getDeclaredMethod(methodName, noParams);
-            return (T) method.invoke(this.defaultMessagingConfig, noObjects);
+            final String methodName = convertPropertyNameToMethodName(propertyName, targetType);
+            final Method method = JmsConfiguration.class.getDeclaredMethod(methodName, noParams);
+            return (T) method.invoke(this.defaultJmsConfiguration, noObjects);
         } catch (ReflectiveOperationException | SecurityException e) {
-            throw new InvalidPropertyException(this.getClass(), fullPropertyName, e.getMessage(), e);
+            throw new InvalidPropertyException(this.getClass(), propertyName, e.getMessage(), e);
         }
     }
 
