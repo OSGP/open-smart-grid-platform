@@ -32,7 +32,7 @@ public class Registry<T> {
 
     public void register(final String key, final T value) {
         this.internalMap.put(key, value);
-    };
+    }
 
     public void unregisterAll() {
         this.preUnregisterAll();
