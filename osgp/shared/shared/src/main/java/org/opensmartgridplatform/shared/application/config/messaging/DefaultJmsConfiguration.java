@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
  */
 public class DefaultJmsConfiguration implements JmsConfiguration {
 
-    @Value("${jms.default.broker.url:failover:(ssl://localhost:61617)}")
+    @Value("${jms.default.broker.url:failover:(tcp://localhost:61616)}")
     private String jmsDefaultBrokerUrl;
 
     @Value("${jms.default.queue:osgp-default}")

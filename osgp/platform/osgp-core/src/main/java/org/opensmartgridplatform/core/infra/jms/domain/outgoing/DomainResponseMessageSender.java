@@ -29,7 +29,7 @@ import org.springframework.jms.core.MessageCreator;
 public class DomainResponseMessageSender implements DomainResponseService {
 
     @Autowired
-    private org.opensmartgridplatform.core.infra.jms.domain.outgoing.DomainResponseMessageJmsTemplateFactory factory;
+    private DomainResponseMessageJmsTemplateFactory factory;
 
     @Override
     public void send(final ProtocolResponseMessage protocolResponseMessage) {

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2019 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.core.infra.jms.domain.incoming;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.net.ssl.SSLException;
@@ -44,16 +45,16 @@ public class DomainRequestMessageListenerContainerFactory implements Initializin
     private final List<DomainInfo> domainInfos;
 
     private ConnectionFactoryRegistry connectionFactoryRegistry = new ConnectionFactoryRegistry();
-    private MessageListenerContainerRegistry messageListenerRegistry = new MessageListenerContainerRegistry();
+    private MessageListenerContainerRegistry messageListenerContainerRegistry = new MessageListenerContainerRegistry();
 
     public DomainRequestMessageListenerContainerFactory(final Environment environment,
             final List<DomainInfo> domainInfos) {
-        this.domainInfos = domainInfos;
         this.environment = environment;
+        this.domainInfos = new ArrayList<>(domainInfos);
     }
 
     public DefaultMessageListenerContainer getMessageListenerContainer(final String key) {
-        return this.messageListenerRegistry.getValue(key);
+        return this.messageListenerContainerRegistry.getValue(key);
     }
 
     @Override
@@ -77,14 +78,14 @@ public class DomainRequestMessageListenerContainerFactory implements Initializin
                 this.deviceRequestMessageService, this.scheduledTaskRepository);
         final DefaultMessageListenerContainer messageListenerContainer = jmsConfigurationFactory
                 .initMessageListenerContainer(messageListener);
-        this.messageListenerRegistry.register(domainInfo.getKey(), messageListenerContainer);
+        this.messageListenerContainerRegistry.register(domainInfo.getKey(), messageListenerContainer);
         messageListenerContainer.afterPropertiesSet();
         messageListenerContainer.start();
     }
 
     @Override
     public void destroy() {
-        this.messageListenerRegistry.destroy();
+        this.messageListenerContainerRegistry.destroy();
         this.connectionFactoryRegistry.destroy();
     }
 }

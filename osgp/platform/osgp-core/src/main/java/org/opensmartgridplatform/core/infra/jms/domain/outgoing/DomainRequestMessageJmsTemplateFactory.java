@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2019 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.core.infra.jms.domain.outgoing;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.net.ssl.SSLException;
@@ -40,7 +41,7 @@ public class DomainRequestMessageJmsTemplateFactory implements InitializingBean,
 
     public DomainRequestMessageJmsTemplateFactory(final Environment environment, final List<DomainInfo> domainInfos) {
         this.environment = environment;
-        this.domainInfos = domainInfos;
+        this.domainInfos = new ArrayList<>(domainInfos);
     }
 
     public JmsTemplate getJmsTemplate(final String key) {

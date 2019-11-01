@@ -27,7 +27,7 @@ public class DomainRequestMessageSender implements DomainRequestService {
     private static final Logger LOGGER = LoggerFactory.getLogger(DomainRequestMessageSender.class);
 
     @Autowired
-    private org.opensmartgridplatform.core.infra.jms.domain.outgoing.DomainRequestMessageJmsTemplateFactory domainRequestMessageJmsTemplateFactory;
+    private DomainRequestMessageJmsTemplateFactory domainRequestMessageJmsTemplateFactory;
 
     @Override
     public void send(final RequestMessage message, final String messageType, final DomainInfo domainInfo) {

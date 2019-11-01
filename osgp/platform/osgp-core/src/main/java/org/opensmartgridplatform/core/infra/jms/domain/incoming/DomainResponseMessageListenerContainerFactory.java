@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2019 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.core.infra.jms.domain.incoming;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.net.ssl.SSLException;
@@ -47,8 +48,8 @@ public class DomainResponseMessageListenerContainerFactory implements Initializi
     public DomainResponseMessageListenerContainerFactory(final Environment environment,
             final List<DomainInfo> domainInfos, final List<ProtocolInfo> protocolInfos) {
         this.environment = environment;
-        this.domainInfos = domainInfos;
-        this.protocolInfos = protocolInfos;
+        this.domainInfos = new ArrayList<>(domainInfos);
+        this.protocolInfos = new ArrayList<>(protocolInfos);
     }
 
     public DefaultMessageListenerContainer getMessageListenerContainer(final String key) {
