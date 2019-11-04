@@ -53,7 +53,6 @@ public final class JmsPropertyNames {
     public static final String PROPERTY_NAME_EXPLICIT_QOS_ENABLED = "explicit.qos.enabled";
 
     private JmsPropertyNames() {
-        // Empty private constructor to prevent creating an instance of this
-        // utility class.
+        // Don't instantiate utility class.
     }
 }

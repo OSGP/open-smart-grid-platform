@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.InvalidPropertyException;
 import org.springframework.core.env.Environment;
 
-public class JmsPropertyReader {
+class JmsPropertyReader {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JmsPropertyReader.class);
 
