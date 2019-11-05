@@ -14,23 +14,20 @@ import javax.persistence.Entity;
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
 
 /**
- * Class containing information about a domain and the domain's destination
- * queues.
+ * Class containing information about a domain and its messaging configuration
+ * by means of property prefixes to be used for custom configuration properties.
  */
 @Entity
 public class DomainInfo extends AbstractEntity {
 
-    /**
-     * Serial Version UID.
-     */
-    private static final long serialVersionUID = 2722628660439903065L;
+    private static final long serialVersionUID = 1L;
 
     private String domain;
     private String domainVersion;
-    private String incomingDomainRequestsQueue;
-    private String outgoingDomainResponsesQueue;
-    private String outgoingDomainRequestsQueue;
-    private String incomingDomainResponsesQueue;
+    private String incomingRequestsPropertyPrefix;
+    private String outgoingResponsesPropertyPrefix;
+    private String outgoingRequestsPropertyPrefix;
+    private String incomingResponsesPropertyPrefix;
 
     @SuppressWarnings("unused")
     private DomainInfo() {
@@ -44,24 +41,28 @@ public class DomainInfo extends AbstractEntity {
      *            The name of the domain.
      * @param version
      *            The version of the domain.
-     * @param requestsQueueOut
-     *            The queue where domain requests will be routed to.
-     * @param responsesQueueOut
-     *            The queue where domain responses will be routed to.
-     * @param outgoingRequestsQueue
-     *            The queue where incoming domain requests will be routed to.
-     * @param incomingResponsesQueue
-     *            The queue where incoming domain responses will be routed to.
+     * @param incomingRequestsPropertyPrefix
+     *            The property prefix for incoming domain requests
+     *            configuration.
+     * @param outgoingResponsesPropertyPrefix
+     *            The property prefix for outgoing domain responses
+     *            configuration.
+     * @param outgoingRequestsPropertyPrefix
+     *            The property prefix for outgoing domain requests
+     *            configuration.
+     * @param incomingResponsesPropertyPrefix
+     *            The property prefix for incoming domain responses
+     *            configuration.
      */
-    public DomainInfo(final String domain, final String domainVersion, final String incomingDomainRequestsQueue,
-            final String outgoingDomainResponsesQueue, final String outgoingDomainRequestsQueue,
-            final String incomingDomainResponsesQueue) {
+    public DomainInfo(final String domain, final String domainVersion, final String incomingRequestsPropertyPrefix,
+            final String outgoingResponsesPropertyPrefix, final String outgoingRequestsPropertyPrefix,
+            final String incomingResponsesPropertyPrefix) {
         this.domain = domain;
         this.domainVersion = domainVersion;
-        this.incomingDomainRequestsQueue = incomingDomainRequestsQueue;
-        this.outgoingDomainResponsesQueue = outgoingDomainResponsesQueue;
-        this.outgoingDomainRequestsQueue = outgoingDomainRequestsQueue;
-        this.incomingDomainResponsesQueue = incomingDomainResponsesQueue;
+        this.incomingRequestsPropertyPrefix = incomingRequestsPropertyPrefix;
+        this.outgoingResponsesPropertyPrefix = outgoingResponsesPropertyPrefix;
+        this.outgoingRequestsPropertyPrefix = outgoingRequestsPropertyPrefix;
+        this.incomingResponsesPropertyPrefix = incomingResponsesPropertyPrefix;
     }
 
     public static String getKey(final String domain, final String domainVersion) {
@@ -95,43 +96,43 @@ public class DomainInfo extends AbstractEntity {
     }
 
     /**
-     * The queue where the domain request message listener will listen for
-     * received domain requests.
+     * The property prefix used for configuration of custom properties for
+     * receiving domain request messages.
      *
-     * @return The queue where incoming domain requests will be send to.
+     * @return The property prefix for incoming requests.
      */
-    public String getIncomingDomainRequestsQueue() {
-        return this.incomingDomainRequestsQueue;
+    public String getIncomingRequestsPropertyPrefix() {
+        return this.incomingRequestsPropertyPrefix;
     }
 
     /**
-     * The queue where the domain response message sender will send domain
-     * responses to.
+     * The property prefix used for configuration of custom properties for
+     * sending domain response messages.
      *
-     * @return The queue where outgoing domain responses will be send to.
+     * @return The property prefix for outgoing responses.
      */
-    public String getOutgoingDomainResponsesQueue() {
-        return this.outgoingDomainResponsesQueue;
+    public String getOutgoingResponsesPropertyPrefix() {
+        return this.outgoingResponsesPropertyPrefix;
     }
 
     /**
-     * The queue where the domain request message sender will send domain
-     * requests to.
+     * The property prefix used for configuration of custom properties for
+     * sending domain request messages.
      *
-     * @return The queue where outgoing domain requests will be send to.
+     * @return The property prefix for outgoing requests.
      */
-    public String getOutgoingDomainRequestsQueue() {
-        return this.outgoingDomainRequestsQueue;
+    public String getOutgoingRequestsPropertyPrefix() {
+        return this.outgoingRequestsPropertyPrefix;
     }
 
     /**
-     * The queue where the domain response message listener will listen for
-     * received domain responses.
+     * The property prefix used for configuration of custom properties for
+     * receiving domain response messages.
      *
-     * @return The queue where incoming domain responses will be received.
+     * @return The property prefix for incoming responses.
      */
-    public String getIncomingDomainResponsesQueue() {
-        return this.incomingDomainResponsesQueue;
+    public String getIncomingResponsesPropertyPrefix() {
+        return this.incomingResponsesPropertyPrefix;
     }
 
     @Override
@@ -149,5 +150,10 @@ public class DomainInfo extends AbstractEntity {
     @Override
     public int hashCode() {
         return Objects.hashCode(this.getKey());
+    }
+
+    @Override
+    public String toString() {
+        return "DomainInfo [domain=" + this.domain + ", domainVersion=" + this.domainVersion + "]";
     }
 }

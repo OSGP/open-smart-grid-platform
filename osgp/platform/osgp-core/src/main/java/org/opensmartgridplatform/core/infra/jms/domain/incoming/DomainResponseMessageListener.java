@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.core.infra.jms.domain.in;
+package org.opensmartgridplatform.core.infra.jms.domain.incoming;
 
 import java.util.List;
 

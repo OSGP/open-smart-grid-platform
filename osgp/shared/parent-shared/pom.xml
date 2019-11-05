@@ -60,6 +60,7 @@
     <flyway.version>4.1.2</flyway.version>
     <junit.version>4.11</junit.version>
     <assertj.version>3.11.1</assertj.version>
+    <mockito.version>1.10.19</mockito.version>
     <joda.version>2.4</joda.version>
     <slf4j.version>1.7.7</slf4j.version>
     <apache.commons.lang.version>3.3.2</apache.commons.lang.version>
@@ -366,7 +367,18 @@
         <version>${assertj.version}</version>
         <scope>test</scope>
       </dependency>
-
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <version>${mockito.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-all</artifactId>
+        <version>${mockito.version}</version>
+        <scope>test</scope>
+      </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>

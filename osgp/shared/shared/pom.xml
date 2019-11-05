@@ -194,6 +194,13 @@
       <scope>test</scope>
     </dependency>
 
+    <!-- Mockito -->
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+
     <!-- Micrometer -->
     <dependency>
       <groupId>io.micrometer</groupId>

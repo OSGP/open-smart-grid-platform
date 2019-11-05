@@ -5,25 +5,23 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.core.infra.jms.domain.in;
+package org.opensmartgridplatform.core.infra.jms.domain.outgoing;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
+import org.opensmartgridplatform.core.domain.model.domain.DomainRequestService;
+import org.opensmartgridplatform.domain.core.entities.DomainInfo;
+import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
-import org.opensmartgridplatform.core.domain.model.domain.DomainRequestService;
-import org.opensmartgridplatform.domain.core.entities.DomainInfo;
-import org.opensmartgridplatform.shared.infra.jms.Constants;
-import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
-
-// This class should send request messages to the domain incoming queue.
 public class DomainRequestMessageSender implements DomainRequestService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DomainRequestMessageSender.class);
@@ -38,10 +36,10 @@ public class DomainRequestMessageSender implements DomainRequestService {
 
         final JmsTemplate jmsTemplate = this.domainRequestMessageJmsTemplateFactory.getJmsTemplate(domainInfo.getKey());
 
-        this.sendMessage(message, messageType, jmsTemplate);
+        sendMessage(message, messageType, jmsTemplate);
     }
 
-    private void sendMessage(final RequestMessage requestMessage, final String messageType,
+    private static void sendMessage(final RequestMessage requestMessage, final String messageType,
             final JmsTemplate jmsTemplate) {
         LOGGER.info(
                 "Sending request message to incoming domain requests queue, messageType: {} organisationIdentification: {} deviceIdentification: {}",
