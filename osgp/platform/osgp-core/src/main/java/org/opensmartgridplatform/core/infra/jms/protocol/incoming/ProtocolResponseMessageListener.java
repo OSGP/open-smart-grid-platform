@@ -5,20 +5,18 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.core.infra.jms.protocol;
+package org.opensmartgridplatform.core.infra.jms.protocol.incoming;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
+import org.opensmartgridplatform.core.application.services.DeviceResponseMessageService;
+import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.opensmartgridplatform.core.application.services.DeviceResponseMessageService;
-import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
-
-// This class should fetch incoming messages from a responses queue.
 public class ProtocolResponseMessageListener implements MessageListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProtocolResponseMessageListener.class);
@@ -35,7 +33,7 @@ public class ProtocolResponseMessageListener implements MessageListener {
             LOGGER.info("Received protocol response message with correlationUid [{}] and type [{}]",
                     message.getJMSCorrelationID(), message.getJMSType());
 
-            final ProtocolResponseMessage protocolResponseMessage = this.createResponseMessage(message);
+            final ProtocolResponseMessage protocolResponseMessage = createResponseMessage(message);
 
             LOGGER.debug("OrganisationIdentification: [{}]", protocolResponseMessage.getOrganisationIdentification());
             LOGGER.debug("DeviceIdentification      : [{}]", protocolResponseMessage.getDeviceIdentification());
@@ -53,7 +51,7 @@ public class ProtocolResponseMessageListener implements MessageListener {
         }
     }
 
-    private ProtocolResponseMessage createResponseMessage(final Message message) throws JMSException {
+    private static ProtocolResponseMessage createResponseMessage(final Message message) throws JMSException {
         return (ProtocolResponseMessage) ((ObjectMessage) message).getObject();
     }
 }

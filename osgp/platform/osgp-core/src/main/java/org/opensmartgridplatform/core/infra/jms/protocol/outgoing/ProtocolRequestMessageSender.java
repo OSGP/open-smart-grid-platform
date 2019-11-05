@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.core.infra.jms.protocol;
+package org.opensmartgridplatform.core.infra.jms.protocol.outgoing;
 
 import static org.opensmartgridplatform.shared.infra.jms.MessageType.GET_POWER_USAGE_HISTORY;
 
@@ -59,8 +59,7 @@ public class ProtocolRequestMessageSender implements ProtocolRequestService {
         final JmsTemplate jmsTemplate = this.protocolRequestMessageJmsTemplateFactory.getJmsTemplate(protocolInfo);
 
         LOGGER.info("Message sender destination queue: [{}] for protocol [{}] with version [{}]",
-                protocolInfo.getOutgoingProtocolRequestsQueue(), protocolInfo.getProtocol(),
-                protocolInfo.getProtocolVersion());
+                jmsTemplate.getDefaultDestinationName(), protocolInfo.getProtocol(), protocolInfo.getProtocolVersion());
 
         this.sendMessage(message, protocolInfo, jmsTemplate);
     }

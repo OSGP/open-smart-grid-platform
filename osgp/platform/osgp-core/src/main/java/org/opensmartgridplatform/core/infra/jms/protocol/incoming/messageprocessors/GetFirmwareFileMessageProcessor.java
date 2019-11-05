@@ -5,14 +5,14 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.core.infra.jms.protocol.in.messageprocessors;
+package org.opensmartgridplatform.core.infra.jms.protocol.incoming.messageprocessors;
 
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.core.domain.model.protocol.ProtocolResponseService;
-import org.opensmartgridplatform.core.infra.jms.protocol.in.ProtocolRequestMessageProcessor;
+import org.opensmartgridplatform.core.infra.jms.protocol.incoming.AbstractProtocolRequestMessageProcessor;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.FirmwareFile;
 import org.opensmartgridplatform.domain.core.entities.ProtocolInfo;
@@ -34,7 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component("getFirmwareFileMessageProcessor")
-public class GetFirmwareFileMessageProcessor extends ProtocolRequestMessageProcessor {
+public class GetFirmwareFileMessageProcessor extends AbstractProtocolRequestMessageProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetFirmwareFileMessageProcessor.class);
 

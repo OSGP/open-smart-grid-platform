@@ -6,7 +6,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.core.infra.jms.protocol.in.messageprocessors;
+package org.opensmartgridplatform.core.infra.jms.protocol.incoming.messageprocessors;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -16,7 +16,7 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.core.application.services.EventNotificationMessageService;
-import org.opensmartgridplatform.core.infra.jms.protocol.in.ProtocolRequestMessageProcessor;
+import org.opensmartgridplatform.core.infra.jms.protocol.incoming.AbstractProtocolRequestMessageProcessor;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.exceptions.UnknownEntityException;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
@@ -35,7 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component("dlmsPushNotificationSmsMessageProcessor")
 @Transactional(value = "transactionManager")
-public class PushNotificationSmsMessageProcessor extends ProtocolRequestMessageProcessor {
+public class PushNotificationSmsMessageProcessor extends AbstractProtocolRequestMessageProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PushNotificationSmsMessageProcessor.class);
 

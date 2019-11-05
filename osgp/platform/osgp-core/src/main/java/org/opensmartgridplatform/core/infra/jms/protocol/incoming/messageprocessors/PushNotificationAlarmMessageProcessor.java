@@ -6,7 +6,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.core.infra.jms.protocol.in.messageprocessors;
+package org.opensmartgridplatform.core.infra.jms.protocol.incoming.messageprocessors;
 
 import java.util.Date;
 import java.util.List;
@@ -17,7 +17,7 @@ import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.core.application.services.EventNotificationMessageService;
 import org.opensmartgridplatform.core.domain.model.domain.DomainRequestService;
-import org.opensmartgridplatform.core.infra.jms.protocol.in.ProtocolRequestMessageProcessor;
+import org.opensmartgridplatform.core.infra.jms.protocol.incoming.AbstractProtocolRequestMessageProcessor;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
 import org.opensmartgridplatform.domain.core.entities.DomainInfo;
@@ -43,7 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component("dlmsPushNotificationAlarmMessageProcessor")
 @Transactional(value = "transactionManager")
-public class PushNotificationAlarmMessageProcessor extends ProtocolRequestMessageProcessor {
+public class PushNotificationAlarmMessageProcessor extends AbstractProtocolRequestMessageProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PushNotificationAlarmMessageProcessor.class);
 

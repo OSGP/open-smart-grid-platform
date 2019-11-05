@@ -13,8 +13,8 @@ import org.opensmartgridplatform.core.domain.model.protocol.ProtocolRequestServi
 import org.opensmartgridplatform.core.domain.model.protocol.ProtocolResponseService;
 import org.opensmartgridplatform.core.infra.jms.domain.outgoing.DomainRequestMessageSender;
 import org.opensmartgridplatform.core.infra.jms.domain.outgoing.DomainResponseMessageSender;
-import org.opensmartgridplatform.core.infra.jms.protocol.ProtocolRequestMessageSender;
-import org.opensmartgridplatform.core.infra.jms.protocol.in.ProtocolResponseMessageSender;
+import org.opensmartgridplatform.core.infra.jms.protocol.outgoing.ProtocolRequestMessageSender;
+import org.opensmartgridplatform.core.infra.jms.protocol.outgoing.ProtocolResponseMessageSender;
 import org.opensmartgridplatform.core.infra.messaging.CoreLogItemRequestMessageSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

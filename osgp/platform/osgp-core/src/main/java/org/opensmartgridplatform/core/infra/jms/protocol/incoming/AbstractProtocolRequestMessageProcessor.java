@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.core.infra.jms.protocol.in;
+package org.opensmartgridplatform.core.infra.jms.protocol.incoming;
 
 import javax.annotation.PostConstruct;
 
@@ -22,7 +22,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
  * construction. The Singleton instance is added to the HashMap of
  * MessageProcessors after dependency injection has completed.
  */
-public abstract class ProtocolRequestMessageProcessor implements MessageProcessor {
+public abstract class AbstractProtocolRequestMessageProcessor implements MessageProcessor {
 
     /**
      * The map of message processor instances.
@@ -42,7 +42,7 @@ public abstract class ProtocolRequestMessageProcessor implements MessageProcesso
      * @param messageType
      *            The message type a message processor can handle.
      */
-    protected ProtocolRequestMessageProcessor(final MessageType messageType) {
+    protected AbstractProtocolRequestMessageProcessor(final MessageType messageType) {
         this.messageType = messageType;
     }
 

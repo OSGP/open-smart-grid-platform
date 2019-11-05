@@ -6,7 +6,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.core.infra.jms.protocol.in.messageprocessors;
+package org.opensmartgridplatform.core.infra.jms.protocol.incoming.messageprocessors;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.core.application.services.EventNotificationMessageService;
-import org.opensmartgridplatform.core.infra.jms.protocol.in.ProtocolRequestMessageProcessor;
+import org.opensmartgridplatform.core.infra.jms.protocol.incoming.AbstractProtocolRequestMessageProcessor;
 import org.opensmartgridplatform.domain.core.exceptions.UnknownEntityException;
 import org.opensmartgridplatform.dto.valueobjects.EventNotificationDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -26,7 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component("oslpEventNotificationMessageProcessor")
-public class EventNotificationMessageProcessor extends ProtocolRequestMessageProcessor {
+public class EventNotificationMessageProcessor extends AbstractProtocolRequestMessageProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EventNotificationMessageProcessor.class);
 

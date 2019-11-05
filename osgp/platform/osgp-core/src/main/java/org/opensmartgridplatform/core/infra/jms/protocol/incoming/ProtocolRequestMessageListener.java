@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.core.infra.jms.protocol.in;
+package org.opensmartgridplatform.core.infra.jms.protocol.incoming;
 
 import java.util.List;
 
@@ -23,7 +23,6 @@ import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// This class should fetch request messages from protocol incoming requests queue.
 public class ProtocolRequestMessageListener implements MessageListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProtocolRequestMessageListener.class);

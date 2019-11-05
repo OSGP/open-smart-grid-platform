@@ -6,7 +6,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.core.infra.jms.protocol.in;
+package org.opensmartgridplatform.core.infra.jms.protocol.outgoing;
 
 import javax.jms.ObjectMessage;
 
@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 
-// This class sends response messages to the protocol incoming responses queue.
 public class ProtocolResponseMessageSender implements ProtocolResponseService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProtocolResponseMessageSender.class);
