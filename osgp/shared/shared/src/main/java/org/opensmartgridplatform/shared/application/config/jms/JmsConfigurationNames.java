@@ -24,6 +24,9 @@ public class JmsConfigurationNames {
 
     public static final String JMS_OUTGOING_OSGP_CORE_RESPONSES = "jms.outgoing.osgp.core.responses";
 
+    public static final String JMS_SIGNING_SERVER_REQUESTS = "jms.signing.server.requests";
+    public static final String JMS_SIGNING_SERVER_RESPONSES = "jms.signing.server.responses";
+
     public static final String JMS_COMMON_WS_REQUESTS = "jms.common.ws.requests";
 
     public static final String JMS_COMMON_WS_RESPONSES = "jms.common.ws.responses";
