@@ -25,6 +25,7 @@ import org.springframework.context.annotation.Bean;
 /**
  * This class provides the basic components used for JMS messaging.
  */
+@Deprecated
 public abstract class AbstractMessagingConfig extends AbstractConfig {
 
     @Value("${jms.activemq.broker.url:ssl://localhost:61617}")
