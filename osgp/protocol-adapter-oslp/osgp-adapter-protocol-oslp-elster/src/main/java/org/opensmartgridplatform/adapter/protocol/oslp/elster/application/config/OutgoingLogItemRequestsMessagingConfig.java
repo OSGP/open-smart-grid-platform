@@ -11,7 +11,7 @@ import javax.jms.ConnectionFactory;
 import javax.net.ssl.SSLException;
 
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.OslpLogItemRequestMessageSender;
-import org.opensmartgridplatform.shared.application.config.AbstractMessagingConfig;
+import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsConfiguration;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfigurationFactory;
 import org.slf4j.Logger;
@@ -31,7 +31,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @PropertySource("classpath:osgp-adapter-protocol-oslp-elster.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/AdapterProtocolOslpElster/config}", ignoreResourceNotFound = true)
-public class OutgoingLogItemRequestsMessagingConfig extends AbstractMessagingConfig {
+public class OutgoingLogItemRequestsMessagingConfig extends AbstractConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OutgoingLogItemRequestsMessagingConfig.class);
 
