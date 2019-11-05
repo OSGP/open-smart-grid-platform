@@ -10,6 +10,7 @@ package org.opensmartgridplatform.core.application.config;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opensmartgridplatform.core.infra.jms.protocol.DefaultProtocolJmsConfiguration;
 import org.opensmartgridplatform.core.infra.jms.protocol.incoming.ProtocolRequestMessageListenerContainerFactory;
 import org.opensmartgridplatform.core.infra.jms.protocol.incoming.ProtocolResponseMessageListenerContainerFactory;
 import org.opensmartgridplatform.core.infra.jms.protocol.outgoing.ProtocolRequestMessageJmsTemplateFactory;
@@ -63,6 +64,11 @@ public class ProtocolMessagingConfig extends AbstractConfig {
             final ProtocolInfoRepository protocolInfoRepository) {
         this.domainInfos = new ArrayList<>(domainInfoRepository.findAll());
         this.protocolInfos = new ArrayList<>(protocolInfoRepository.findAll());
+    }
+
+    @Bean
+    public DefaultProtocolJmsConfiguration defaultProtocolJmsConfiguration() {
+        return new DefaultProtocolJmsConfiguration();
     }
 
     @Bean

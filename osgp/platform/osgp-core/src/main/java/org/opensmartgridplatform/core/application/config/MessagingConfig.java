@@ -31,7 +31,7 @@ public class MessagingConfig extends AbstractMessagingConfig {
      * @return the DefaultJmsConfiguration bean
      */
     @Bean
-    public org.opensmartgridplatform.shared.application.config.messaging.JmsConfiguration defaultJmsConfiguration() {
+    public DefaultJmsConfiguration defaultJmsConfiguration() {
         return new DefaultJmsConfiguration();
     }
 }

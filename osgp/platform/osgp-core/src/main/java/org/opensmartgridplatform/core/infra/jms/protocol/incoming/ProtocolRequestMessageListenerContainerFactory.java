@@ -15,9 +15,9 @@ import org.apache.activemq.pool.PooledConnectionFactory;
 import org.opensmartgridplatform.core.domain.model.domain.DomainRequestService;
 import org.opensmartgridplatform.core.infra.jms.ConnectionFactoryRegistry;
 import org.opensmartgridplatform.core.infra.jms.MessageListenerContainerRegistry;
+import org.opensmartgridplatform.core.infra.jms.protocol.DefaultProtocolJmsConfiguration;
 import org.opensmartgridplatform.domain.core.entities.DomainInfo;
 import org.opensmartgridplatform.domain.core.entities.ProtocolInfo;
-import org.opensmartgridplatform.shared.application.config.messaging.JmsConfiguration;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfigurationFactory;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.slf4j.Logger;
@@ -36,7 +36,7 @@ public class ProtocolRequestMessageListenerContainerFactory implements Initializ
     private DomainRequestService domainRequestService;
 
     @Autowired
-    private JmsConfiguration defaultProtocolJmsConfiguration;
+    private DefaultProtocolJmsConfiguration defaultProtocolJmsConfiguration;
 
     private Environment environment;
     private List<ProtocolInfo> protocolInfos;

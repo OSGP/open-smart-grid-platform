@@ -15,8 +15,8 @@ import javax.net.ssl.SSLException;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.opensmartgridplatform.core.infra.jms.ConnectionFactoryRegistry;
 import org.opensmartgridplatform.core.infra.jms.Registry;
+import org.opensmartgridplatform.core.infra.jms.protocol.DefaultProtocolJmsConfiguration;
 import org.opensmartgridplatform.domain.core.entities.ProtocolInfo;
-import org.opensmartgridplatform.shared.application.config.messaging.JmsConfiguration;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfigurationFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +31,7 @@ public class ProtocolResponseMessageJmsTemplateFactory implements InitializingBe
     private static final Logger LOGGER = LoggerFactory.getLogger(ProtocolRequestMessageJmsTemplateFactory.class);
 
     @Autowired
-    private JmsConfiguration defaultProtocolJmsConfiguration;
+    private DefaultProtocolJmsConfiguration defaultProtocolJmsConfiguration;
 
     private Environment environment;
     private List<ProtocolInfo> protocolInfos;

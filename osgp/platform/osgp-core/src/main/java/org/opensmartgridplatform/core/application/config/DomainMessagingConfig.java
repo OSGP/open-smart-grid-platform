@@ -19,7 +19,6 @@ import org.opensmartgridplatform.domain.core.entities.ProtocolInfo;
 import org.opensmartgridplatform.domain.core.repositories.DomainInfoRepository;
 import org.opensmartgridplatform.domain.core.repositories.ProtocolInfoRepository;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
-import org.opensmartgridplatform.shared.application.config.messaging.JmsConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -62,7 +61,7 @@ public class DomainMessagingConfig extends AbstractConfig {
     }
 
     @Bean
-    public JmsConfiguration defaultDomainJmsConfiguration() {
+    public DefaultDomainJmsConfiguration defaultDomainJmsConfiguration() {
         return new DefaultDomainJmsConfiguration();
     }
 
