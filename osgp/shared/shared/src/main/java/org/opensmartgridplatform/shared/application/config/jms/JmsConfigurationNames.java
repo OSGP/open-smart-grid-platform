@@ -38,6 +38,8 @@ public class JmsConfigurationNames {
 
     public static final String JMS_OSGP_CORE_RESPONSES_INCOMING = "jms.osgp.core.responses.incoming";
 
+    public static final String JMS_LOGGING_OUTGOING_LOG_ITEM_REQUESTS = "jms.logging.outgoing.log.item.requests";
+
     public static final String JSM_ADMIN_REQUESTS = "jms.admin.requests";
 
     public static final String JMS_ADMIN_RESPONSES = "jms.admin.responses";

@@ -9,12 +9,10 @@
 package org.opensmartgridplatform.core.application.config;
 
 import org.opensmartgridplatform.shared.application.config.AbstractMessagingConfig;
-import org.opensmartgridplatform.shared.application.config.jms.JmsConfiguration;
-import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationFactory;
+import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
@@ -25,18 +23,15 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @PropertySource("classpath:osgp-core.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/Core/config}", ignoreResourceNotFound = true)
-
 public class MessagingConfig extends AbstractMessagingConfig {
 
-    // === JMS SETTINGS ===
+    /**
+     * Creates a bean for default JMS configuration settings
+     *
+     * @return the DefaultJmsConfiguration bean
+     */
     @Bean
-    public JmsConfiguration coreLogItemRequestJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.log.item.requests");
+    public org.opensmartgridplatform.shared.application.config.messaging.JmsConfiguration defaultJmsConfiguration() {
+        return new DefaultJmsConfiguration();
     }
-
-    @Bean
-    public JmsTemplate coreLogItemRequestsJmsTemplate(final JmsConfiguration coreLogItemRequestJmsConfiguration) {
-        return coreLogItemRequestJmsConfiguration.getJmsTemplate();
-    }
-
 }

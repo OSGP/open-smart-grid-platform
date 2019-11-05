@@ -79,28 +79,30 @@ public class DefaultJmsConfiguration implements JmsConfiguration {
     @Value("${jms.default.concurrent.consumers:2}")
     private int jmsDefaultConcurrentConsumers;
 
-    @Value("${jms.default.use.exponential.back.off:false}")
+    // Redelivery Policy fields
+    @Value("${jms.default.use.exponential.back.off:true}")
     private boolean jmsDefaultUseExponentialBackOff;
 
-    @Value("${jms.default.back.off.multiplier:5}")
+    @Value("${jms.default.back.off.multiplier:2}")
     private double jmsDefaultBackOffMultiplier;
 
-    @Value("${jms.default.maximum.redelivery.delay:-1}")
+    @Value("${jms.default.maximum.redelivery.delay:300000}")
     private long jmsDefaultMaximumRedeliveryDelay;
 
-    @Value("${jms.default.initial.redelivery.delay:1000}")
+    @Value("${jms.default.initial.redelivery.delay:60000}")
     private long jmsDefaultInitialRedeliveryDelay;
 
-    @Value("${jms.default.maximum.redeliveries:6}")
+    @Value("${jms.default.maximum.redeliveries:3}")
     private int jmsDefaultMaximumRedeliveries;
 
-    @Value("${jms.default.redelivery.delay:1000}")
+    @Value("${jms.default.redelivery.delay:60000}")
     private long jmsDefaultRedeliveryDelay;
 
+    // JMS Template fields
     @Value("${jms.default.delivery.persistent:true}")
     private boolean jmsDefaultDeliveryPersistent;
 
-    @Value("${jms.default.time.to.live:3600}")
+    @Value("${jms.default.time.to.live:3600000}")
     private long jmsDefaultTimeToLive;
 
     @Value("${jms.default.explicit.qos.enabled:true}")
