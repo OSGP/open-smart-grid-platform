@@ -32,12 +32,12 @@ class JmsPropertyReader {
     }
 
     public <T> T get(final String propertyName, final Class<T> targetType) {
-        LOGGER.info("Trying to find property {}.{}", this.propertyPrefix, propertyName);
+        LOGGER.debug("Trying to find property {}.{}", this.propertyPrefix, propertyName);
         final String fullPropertyName = this.propertyPrefix + "." + propertyName;
         T property = this.environment.getProperty(fullPropertyName, targetType);
 
         if (property == null) {
-            LOGGER.info("Property {} not found, trying default property.", fullPropertyName);
+            LOGGER.debug("Property {} not found, trying default property.", fullPropertyName);
             property = this.getDefault(propertyName, targetType);
             LOGGER.info("Found default value {} for property {}", property, propertyName);
         } else {

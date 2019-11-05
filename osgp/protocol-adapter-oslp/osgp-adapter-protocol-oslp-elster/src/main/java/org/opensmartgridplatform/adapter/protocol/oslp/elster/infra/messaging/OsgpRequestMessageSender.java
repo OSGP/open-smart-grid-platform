@@ -12,6 +12,8 @@ import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
+import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,15 +21,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
-import org.opensmartgridplatform.shared.infra.jms.Constants;
-import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
-
 public class OsgpRequestMessageSender {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OsgpRequestMessageSender.class);
 
     @Autowired
-    @Qualifier("osgpRequestsJmsTemplate")
+    @Qualifier("protocolOslpOutgoingOsgpCoreRequestsJmsTemplate")
     private JmsTemplate osgpRequestsJmsTemplate;
 
     public void send(final RequestMessage requestMessage, final String messageType) {

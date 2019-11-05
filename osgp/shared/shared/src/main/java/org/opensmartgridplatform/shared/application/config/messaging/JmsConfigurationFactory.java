@@ -42,6 +42,7 @@ public class JmsConfigurationFactory {
 
     public JmsConfigurationFactory(final Environment environment, final JmsConfiguration defaultJmsConfiguration,
             final String propertyPrefix) throws SSLException {
+        LOGGER.info("Initializing JmsConfigurationFactory with propertyPrefix \"{}\".", propertyPrefix);
         this.propertyReader = new JmsPropertyReader(environment, propertyPrefix, defaultJmsConfiguration);
         this.initPooledConnectionFactory();
     }

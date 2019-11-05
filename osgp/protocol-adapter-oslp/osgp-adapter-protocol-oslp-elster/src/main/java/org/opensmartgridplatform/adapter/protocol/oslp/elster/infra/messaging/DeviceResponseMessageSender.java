@@ -13,6 +13,10 @@ import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
 import org.apache.commons.lang3.StringUtils;
+import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,17 +24,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
-import org.opensmartgridplatform.shared.infra.jms.Constants;
-import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
-
 public class DeviceResponseMessageSender implements ResponseMessageSender {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceResponseMessageSender.class);
 
     @Autowired
-    @Qualifier("oslpResponsesJmsTemplate")
+    @Qualifier("protocolOslpOutgoingOsgpCoreResponsesJmsTemplate")
     private JmsTemplate oslpResponsesJmsTemplate;
 
     @Override
