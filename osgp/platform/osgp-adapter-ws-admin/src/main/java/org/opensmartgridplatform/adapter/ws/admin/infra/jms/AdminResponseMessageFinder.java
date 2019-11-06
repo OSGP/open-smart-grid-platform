@@ -9,13 +9,12 @@ package org.opensmartgridplatform.adapter.ws.admin.infra.jms;
 
 import javax.jms.ObjectMessage;
 
+import org.opensmartgridplatform.shared.infra.jms.BaseResponseMessageFinder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
-
-import org.opensmartgridplatform.shared.infra.jms.BaseResponseMessageFinder;
 
 /**
  * Class for retrieving response messages from the admin responses queue by
@@ -32,7 +31,7 @@ public final class AdminResponseMessageFinder extends BaseResponseMessageFinder 
      * Autowired JMS template for OSGP domain admin responses queue.
      */
     @Autowired
-    @Qualifier("wsAdminIncomingResponsesJmsTemplate")
+    @Qualifier("wsAdminIncomingDomainResponsesJmsTemplate")
     private JmsTemplate adminResponsesJmsTemplate;
 
     @Override
