@@ -43,6 +43,8 @@ public class JmsConfigurationNames {
 
     public static final String JMS_LOGGING_OUTGOING_LOG_ITEM_REQUESTS = "jms.logging.outgoing.log.item.requests";
 
+    public static final String JMS_ADMIN_LOGGING = "jms.admin.logging";
+
     public static final String JMS_ADMIN_REQUESTS = "jms.admin.requests";
 
     public static final String JMS_ADMIN_RESPONSES = "jms.admin.responses";

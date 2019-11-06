@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.ws.config;
+package org.opensmartgridplatform.adapter.ws.core.application.config.messaging;
 
 import javax.jms.ConnectionFactory;
 import javax.net.ssl.SSLException;
@@ -23,7 +23,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.jms.core.JmsTemplate;
 
 /**
- * Configuration class for outgoing domain requests
+ * Configuration class for outgoing logging messages
  *
  */
 @Configuration
@@ -40,15 +40,15 @@ public class OutgoingLoggingRequestsMessagingConfig {
                 JmsConfigurationNames.JMS_COMMON_LOGGING);
     }
 
-    @Bean(destroyMethod = "stop", name = "outgoingLoggingRequestsConnectionFactory")
-    public ConnectionFactory outgoingLoggingRequestsConnectionFactory() {
-        LOGGER.info("Initializing outgoingLoggingRequestsConnectionFactory bean.");
+    @Bean(destroyMethod = "stop", name = "wsCoreOutgoingLoggingRequestsConnectionFactory")
+    public ConnectionFactory connectionFactory() {
+        LOGGER.info("Initializing wsCoreOutgoingLoggingRequestsConnectionFactory bean.");
         return this.jmsConfigurationFactory.getPooledConnectionFactory();
     }
 
     @Bean(name = "loggingJmsTemplate")
-    public JmsTemplate outgoingLoggingRequestsJmsTemplate() {
-        LOGGER.info("Initializing outgoingLoggingRequestsJmsTemplate bean.");
+    public JmsTemplate jmsTemplate() {
+        LOGGER.info("Initializing wsCoreOutgoingLoggingRequestsJmsTemplate bean.");
         return this.jmsConfigurationFactory.initJmsTemplate();
     }
 }
