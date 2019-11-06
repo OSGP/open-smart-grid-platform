@@ -20,19 +20,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
+import org.springframework.stereotype.Component;
 
 /**
- * Class for sending common request messages to a queue
+ * Class for sending admin request messages to a queue
  */
+@Component(value = "wsAdminOutgoingDomainRequestsMessageSender")
 public class AdminRequestMessageSender {
-    /**
-     * Logger for this class
-     */
+
     private static final Logger LOGGER = LoggerFactory.getLogger(AdminRequestMessageSender.class);
 
-    /**
-     * Autowired field for admin requests jms template
-     */
     @Autowired
     @Qualifier("wsAdminOutgoingDomainRequestsJmsTemplate")
     private JmsTemplate adminRequestsJmsTemplate;

@@ -15,21 +15,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.stereotype.Component;
 
 /**
  * Class for retrieving response messages from the admin responses queue by
  * correlation UID.
  */
+@Component(value = "wsAdminResponseMessageFinder")
 public final class AdminResponseMessageFinder extends BaseResponseMessageFinder {
 
-    /**
-     * Logger for this class.
-     */
     private static final Logger LOGGER = LoggerFactory.getLogger(AdminResponseMessageFinder.class);
 
-    /**
-     * Autowired JMS template for OSGP domain admin responses queue.
-     */
     @Autowired
     @Qualifier("wsAdminIncomingDomainResponsesJmsTemplate")
     private JmsTemplate adminResponsesJmsTemplate;
