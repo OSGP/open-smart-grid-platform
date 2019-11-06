@@ -13,29 +13,25 @@ import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
 import org.apache.commons.lang3.StringUtils;
+import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
-
-import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.springframework.stereotype.Component;
 
 /**
  * Class for sending common request messages to a queue
  */
+@Component(value = "wsCoreOutgoingDomainRequestsMessageSender")
 public class CommonRequestMessageSender {
-    /**
-     * Logger for this class
-     */
+
     private static final Logger LOGGER = LoggerFactory.getLogger(CommonRequestMessageSender.class);
 
-    /**
-     * Autowired field for common requests jms template
-     */
     @Autowired
-    @Qualifier("wsCoreOutgoingRequestsJmsTemplate")
+    @Qualifier("wsCoreOutgoingDomainRequestsJmsTemplate")
     private JmsTemplate commonRequestsJmsTemplate;
 
     /**

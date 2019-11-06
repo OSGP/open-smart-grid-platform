@@ -9,7 +9,7 @@ package org.opensmartgridplatform.adapter.ws.admin.application.config;
 
 import org.opensmartgridplatform.adapter.ws.admin.application.config.messaging.IncomingDomainResponsesMessagingConfig;
 import org.opensmartgridplatform.adapter.ws.admin.application.config.messaging.OutgoingDomainRequestsMessagingConfig;
-import org.opensmartgridplatform.adapter.ws.admin.application.config.messaging.OutgoingLoggingRequestsMessagingConfig;
+import org.opensmartgridplatform.adapter.ws.config.OutgoingLoggingRequestsMessagingConfig;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsConfiguration;
 import org.springframework.context.annotation.Bean;
