@@ -24,6 +24,7 @@ import org.opensmartgridplatform.shared.validation.Identification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -41,6 +42,7 @@ public class ScheduleManagementService {
     private CorrelationIdProviderService correlationIdProviderService;
 
     @Autowired
+    @Qualifier("wsPublicLightingOutgoingDomainRequestsMessageSender")
     private PublicLightingRequestMessageSender publicLightingRequestMessageSender;
 
     /**
@@ -71,7 +73,9 @@ public class ScheduleManagementService {
                 scheduledTime == null ? null : scheduledTime.getMillis());
 
         final PublicLightingRequestMessage message = new PublicLightingRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(schedule).build();
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .request(schedule)
+                .build();
 
         this.publicLightingRequestMessageSender.send(message);
 

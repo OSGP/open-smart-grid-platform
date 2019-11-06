@@ -17,7 +17,9 @@ import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component(value = "wsPublicLightingIncomingDomainResponsesMessageListener")
 public class PublicLightingResponseMessageListener implements MessageListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PublicLightingResponseMessageListener.class);
