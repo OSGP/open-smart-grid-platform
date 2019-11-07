@@ -7,19 +7,18 @@
  */
 package org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms;
 
+import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.AdHocManagementService;
+import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
+import org.opensmartgridplatform.domain.core.valueobjects.EventMessageDataContainer;
+import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
+import org.opensmartgridplatform.shared.infra.jms.UnknownMessageTypeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.AdHocManagementService;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.domain.core.valueobjects.EventMessageDataContainer;
-import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
-import org.opensmartgridplatform.shared.infra.jms.UnknownMessageTypeException;
-
-@Component(value = "domainPublicLightingIncomingOsgpCoreRequestMessageProcessor")
+@Component(value = "domainPublicLightingIncomingOsgpCoreRequestsMessageProcessor")
 public class OsgpCoreRequestMessageProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OsgpCoreRequestMessageProcessor.class);
@@ -38,8 +37,8 @@ public class OsgpCoreRequestMessageProcessor {
 
         LOGGER.info(
                 "Received request message from OSGP-CORE messageType: {} deviceIdentification: {}, organisationIdentification: {}, correlationUid: {}, className: {}",
-                messageType, deviceIdentification, organisationIdentification, correlationUid, dataObject.getClass()
-                        .getCanonicalName());
+                messageType, deviceIdentification, organisationIdentification, correlationUid,
+                dataObject.getClass().getCanonicalName());
 
         if (DeviceFunction.SET_TRANSITION.name().equals(messageType)) {
             final EventMessageDataContainer dataContainer = (EventMessageDataContainer) dataObject;

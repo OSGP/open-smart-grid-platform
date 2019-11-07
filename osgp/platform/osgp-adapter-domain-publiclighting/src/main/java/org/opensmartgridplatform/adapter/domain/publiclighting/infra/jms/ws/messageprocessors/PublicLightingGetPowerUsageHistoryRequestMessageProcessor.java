@@ -43,10 +43,10 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends B
 
     @Autowired
     public PublicLightingGetPowerUsageHistoryRequestMessageProcessor(
-            WebServiceResponseMessageSender webServiceResponseMessageSender,
-            @Qualifier("domainPublicLightingWebServiceRequestMessageProcessorMap") MessageProcessorMap webServiceRequestMessageProcessorMap) {
-        super(webServiceResponseMessageSender, webServiceRequestMessageProcessorMap, MessageType.GET_POWER_USAGE_HISTORY,
-                ComponentType.DOMAIN_PUBLIC_LIGHTING);
+            final WebServiceResponseMessageSender webServiceResponseMessageSender,
+            @Qualifier("domainPublicLightingIncomingWebServiceRequestsMessageProcessorMap") final MessageProcessorMap webServiceRequestMessageProcessorMap) {
+        super(webServiceResponseMessageSender, webServiceRequestMessageProcessorMap,
+                MessageType.GET_POWER_USAGE_HISTORY, ComponentType.DOMAIN_PUBLIC_LIGHTING);
     }
 
     @Override

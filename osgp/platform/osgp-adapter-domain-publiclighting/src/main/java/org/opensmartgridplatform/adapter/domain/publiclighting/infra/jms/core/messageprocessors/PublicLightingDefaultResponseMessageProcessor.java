@@ -11,11 +11,11 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.DefaultDeviceResponseService;
-import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
@@ -43,9 +43,8 @@ public class PublicLightingDefaultResponseMessageProcessor extends BaseMessagePr
     private DefaultDeviceResponseService defaultDeviceResponseService;
 
     @Autowired
-    protected PublicLightingDefaultResponseMessageProcessor(
-            ResponseMessageSender webServiceResponseMessageSender,
-            @Qualifier("domainPublicLightingOsgpCoreResponseMessageProcessorMap") MessageProcessorMap osgpCoreResponseMessageProcessorMap) {
+    protected PublicLightingDefaultResponseMessageProcessor(final ResponseMessageSender webServiceResponseMessageSender,
+            @Qualifier("domainPublicLightingIncomingOsgpCoreResponsesMessageProcessorMap") final MessageProcessorMap osgpCoreResponseMessageProcessorMap) {
         super(webServiceResponseMessageSender, osgpCoreResponseMessageProcessorMap, MessageType.SET_LIGHT,
                 ComponentType.DOMAIN_PUBLIC_LIGHTING);
         this.addMessageType(MessageType.RESUME_SCHEDULE);

@@ -13,10 +13,10 @@ import javax.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.ScheduleManagementService;
 import org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.domain.core.valueobjects.Schedule;
-import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
@@ -43,8 +43,8 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends BaseMessag
 
     @Autowired
     public PublicLightingSetScheduleRequestMessageProcessor(
-            WebServiceResponseMessageSender webServiceResponseMessageSender,
-            @Qualifier("domainPublicLightingWebServiceRequestMessageProcessorMap") MessageProcessorMap webServiceRequestMessageProcessorMap) {
+            final WebServiceResponseMessageSender webServiceResponseMessageSender,
+            @Qualifier("domainPublicLightingIncomingWebServiceRequestsMessageProcessorMap") final MessageProcessorMap webServiceRequestMessageProcessorMap) {
         super(webServiceResponseMessageSender, webServiceRequestMessageProcessorMap, MessageType.SET_LIGHT_SCHEDULE,
                 ComponentType.DOMAIN_PUBLIC_LIGHTING);
     }

@@ -12,11 +12,11 @@ import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.DeviceMonitoringService;
 import org.opensmartgridplatform.dto.valueobjects.PowerUsageHistoryResponseMessageDataContainerDto;
-import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
@@ -46,8 +46,8 @@ public class PublicLightingPowerUsageHistoryResponseMessageProcessor extends Bas
 
     @Autowired
     protected PublicLightingPowerUsageHistoryResponseMessageProcessor(
-            ResponseMessageSender webServiceResponseMessageSender,
-            @Qualifier("domainPublicLightingOsgpCoreResponseMessageProcessorMap") MessageProcessorMap osgpCoreResponseMessageProcessorMap) {
+            final ResponseMessageSender webServiceResponseMessageSender,
+            @Qualifier("domainPublicLightingIncomingOsgpCoreResponsesMessageProcessorMap") final MessageProcessorMap osgpCoreResponseMessageProcessorMap) {
         super(webServiceResponseMessageSender, osgpCoreResponseMessageProcessorMap, MessageType.GET_POWER_USAGE_HISTORY,
                 ComponentType.DOMAIN_PUBLIC_LIGHTING);
     }

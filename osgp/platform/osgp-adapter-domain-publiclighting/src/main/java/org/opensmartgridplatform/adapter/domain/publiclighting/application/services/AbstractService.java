@@ -7,9 +7,6 @@
  */
 package org.opensmartgridplatform.adapter.domain.publiclighting.application.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.mapping.DomainPublicLightingMapper;
 import org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.core.OsgpCoreRequestMessageSender;
 import org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.ws.WebServiceResponseMessageSender;
@@ -24,6 +21,8 @@ import org.opensmartgridplatform.domain.core.services.OrganisationDomainService;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 public class AbstractService {
 
@@ -40,14 +39,14 @@ public class AbstractService {
     protected LightMeasurementDeviceRepository lightMeasurementDeviceRepository;
 
     @Autowired
-    @Qualifier(value = "domainPublicLightingOutgoingOsgpCoreRequestMessageSender")
+    @Qualifier(value = "domainPublicLightingOutgoingOsgpCoreRequestsMessageSender")
     protected OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
 
     @Autowired
     protected DomainPublicLightingMapper domainCoreMapper;
 
     @Autowired
-    @Qualifier(value = "domainPublicLightingOutgoingWebServiceResponseMessageSender")
+    @Qualifier(value = "domainPublicLightingOutgoingWebServiceResponsesMessageSender")
     protected WebServiceResponseMessageSender webServiceResponseMessageSender;
 
     protected Device findActiveDevice(final String deviceIdentification) throws FunctionalException {
