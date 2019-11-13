@@ -9,24 +9,23 @@ package org.opensmartgridplatform.adapter.domain.core.infra.jms;
 
 import java.io.Serializable;
 
+import org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.WebServiceRequestMessageSender;
+import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
+import org.opensmartgridplatform.shared.infra.jms.UnknownMessageTypeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.WebServiceRequestMessageSender;
-import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
-import org.opensmartgridplatform.shared.infra.jms.UnknownMessageTypeException;
-
-@Component(value = "domainCoreIncomingOsgpCoreRequestsMessageProcessor")
+@Component(value = "domainCoreInboundOsgpCoreRequestsMessageProcessor")
 public class OsgpCoreRequestMessageProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OsgpCoreRequestMessageProcessor.class);
 
-    @Qualifier("domainCoreWebServiceRequestsMessageSender")
     @Autowired
-    private WebServiceRequestMessageSender webServiceRequestMessageSender;
+    @Qualifier("domainCoreOutboundWebServiceRequestsMessageSender")
+    private WebServiceRequestMessageSender messageSender;
 
     public void processMessage(final RequestMessage requestMessage, final String messageType)
             throws UnknownMessageTypeException {
@@ -44,7 +43,7 @@ public class OsgpCoreRequestMessageProcessor {
         if ("RELAY_STATUS_UPDATED".equals(messageType)) {
             final RequestMessage requestMsg = new RequestMessage(correlationUid, organisationIdentification,
                     deviceIdentification, dataObject);
-            this.webServiceRequestMessageSender.send(requestMsg, messageType);
+            this.messageSender.send(requestMsg, messageType);
         } else {
             throw new UnknownMessageTypeException("Unknown JMSType: " + messageType);
         }

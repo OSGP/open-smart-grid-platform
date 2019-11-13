@@ -40,8 +40,8 @@ public class CommonRebootRequestMessageProcessor extends BaseMessageProcessor {
 
     @Autowired
     public CommonRebootRequestMessageProcessor(
-            @Qualifier("domainCoreOutgoingWebServiceResponsesMessageSender") ResponseMessageSender responseMessageSender,
-            @Qualifier("domainCoreWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainCoreOutboundWebServiceResponsesMessageSender") final ResponseMessageSender responseMessageSender,
+            @Qualifier("domainCoreInboundWebServiceRequestsMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.SET_REBOOT, ComponentType.DOMAIN_CORE);
     }
 

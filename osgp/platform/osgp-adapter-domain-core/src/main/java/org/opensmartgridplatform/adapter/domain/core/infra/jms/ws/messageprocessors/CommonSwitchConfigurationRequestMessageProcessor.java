@@ -41,8 +41,8 @@ public class CommonSwitchConfigurationRequestMessageProcessor extends BaseMessag
 
     @Autowired
     public CommonSwitchConfigurationRequestMessageProcessor(
-            @Qualifier("domainCoreOutgoingWebServiceResponsesMessageSender") ResponseMessageSender responseMessageSender,
-            @Qualifier("domainCoreWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainCoreOutboundWebServiceResponsesMessageSender") final ResponseMessageSender responseMessageSender,
+            @Qualifier("domainCoreInboundWebServiceRequestsMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.SWITCH_CONFIGURATION_BANK,
                 ComponentType.DOMAIN_CORE);
     }
