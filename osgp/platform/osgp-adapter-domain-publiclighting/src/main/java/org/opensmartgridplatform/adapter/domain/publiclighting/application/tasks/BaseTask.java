@@ -44,7 +44,7 @@ public class BaseTask {
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseTask.class);
 
     @Autowired
-    @Qualifier("domainPublicLightingOutgoingOsgpCoreRequestsMessageSender")
+    @Qualifier("domainPublicLightingOutboundOsgpCoreRequestsMessageSender")
     protected OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
 
     @Autowired

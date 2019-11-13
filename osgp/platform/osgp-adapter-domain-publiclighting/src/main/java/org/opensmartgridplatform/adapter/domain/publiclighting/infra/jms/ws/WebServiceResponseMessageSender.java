@@ -22,11 +22,11 @@ import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Component;
 
 // Send response message to the web service adapter.
-@Component(value = "domainPublicLightingOutgoingWebServiceResponsesMessageSender")
+@Component(value = "domainPublicLightingOutboundWebServiceResponsesMessageSender")
 public class WebServiceResponseMessageSender implements ResponseMessageSender {
 
     @Autowired
-    @Qualifier("domainPublicLightingOutgoingWebServiceResponsesJmsTemplate")
+    @Qualifier("domainPublicLightingOutboundWebServiceResponsesJmsTemplate")
     private JmsTemplate webServiceResponsesJmsTemplate;
 
     /**

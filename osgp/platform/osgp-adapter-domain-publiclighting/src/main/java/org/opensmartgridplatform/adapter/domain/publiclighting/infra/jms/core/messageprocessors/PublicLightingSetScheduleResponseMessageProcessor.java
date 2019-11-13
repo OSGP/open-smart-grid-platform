@@ -51,7 +51,7 @@ public class PublicLightingSetScheduleResponseMessageProcessor extends BaseMessa
     @Autowired
     protected PublicLightingSetScheduleResponseMessageProcessor(
             final ResponseMessageSender webServiceResponseMessageSender,
-            @Qualifier("domainPublicLightingIncomingOsgpCoreResponsesMessageProcessorMap") final MessageProcessorMap osgpCoreResponseMessageProcessorMap) {
+            @Qualifier("domainPublicLightingInboundOsgpCoreResponsesMessageProcessorMap") final MessageProcessorMap osgpCoreResponseMessageProcessorMap) {
         super(webServiceResponseMessageSender, osgpCoreResponseMessageProcessorMap, MessageType.SET_LIGHT_SCHEDULE,
                 ComponentType.DOMAIN_PUBLIC_LIGHTING);
     }

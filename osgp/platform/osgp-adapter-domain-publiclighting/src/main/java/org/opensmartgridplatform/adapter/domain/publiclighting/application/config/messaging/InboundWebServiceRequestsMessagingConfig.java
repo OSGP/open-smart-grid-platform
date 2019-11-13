@@ -10,7 +10,7 @@ package org.opensmartgridplatform.adapter.domain.publiclighting.application.conf
 import javax.jms.ConnectionFactory;
 import javax.net.ssl.SSLException;
 
-import org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.core.OsgpCoreResponseMessageListener;
+import org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.ws.WebServiceRequestMessageListener;
 import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationNames;
 import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsConfiguration;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfigurationFactory;
@@ -25,37 +25,38 @@ import org.springframework.core.env.Environment;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
 /**
- * Configuration class for incoming OSGP core responses.
+ * Configuration class for inbound web service requests.
  */
 @Configuration
-public class IncomingOsgpCoreResponsesMessagingConfig {
+public class InboundWebServiceRequestsMessagingConfig {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(IncomingOsgpCoreResponsesMessagingConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(InboundWebServiceRequestsMessagingConfig.class);
 
     private JmsConfigurationFactory jmsConfigurationFactory;
 
-    public IncomingOsgpCoreResponsesMessagingConfig(final Environment environment,
+    public InboundWebServiceRequestsMessagingConfig(final Environment environment,
             final DefaultJmsConfiguration defaultJmsConfiguration) throws SSLException {
         this.jmsConfigurationFactory = new JmsConfigurationFactory(environment, defaultJmsConfiguration,
-                JmsConfigurationNames.JMS_INCOMING_OSGP_CORE_RESPONSES);
+                JmsConfigurationNames.JMS_INCOMING_WS_REQUESTS);
     }
 
-    @Bean(destroyMethod = "stop", name = "domainPublicLightingIncomingOsgpCoreResponsesConnectionFactory")
+    @Bean(destroyMethod = "stop", name = "domainPublicLightingInboundWebServiceRequestsConnectionFactory")
     public ConnectionFactory connectionFactory() {
-        LOGGER.info("Initializing domainPublicLightingIncomingOsgpCoreResponsesConnectionFactory bean.");
+        LOGGER.info("Initializing domainPublicLightingInboundWebServiceRequestsConnectionFactory bean.");
         return this.jmsConfigurationFactory.getPooledConnectionFactory();
     }
 
-    @Bean(name = "domainPublicLightingIncomingOsgpCoreResponsesMessageListenerContainer")
+    @Bean(name = "domainPublicLightingInboundWebServiceRequestsMessageListenerContainer")
     public DefaultMessageListenerContainer messageListenerContainer(
-            @Qualifier("domainPublicLightingIncomingOsgpCoreResponsesMessageListener") final OsgpCoreResponseMessageListener messageListener) {
-        LOGGER.info("Initializing domainPublicLightingIncomingOsgpCoreResponsesMessageListenerContainer bean.");
+            @Qualifier("domainPublicLightingInboundWebServiceRequestsMessageListener") final WebServiceRequestMessageListener messageListener) {
+        LOGGER.info("Initializing domainPublicLightingInboundWebServiceRequestsMessageListenerContainer bean.");
         return this.jmsConfigurationFactory.initMessageListenerContainer(messageListener);
     }
 
-    @Bean(name = "domainPublicLightingIncomingOsgpCoreResponsesMessageProcessorMap")
+    @Bean
+    @Qualifier("domainPublicLightingInboundWebServiceRequestsMessageProcessorMap")
     public MessageProcessorMap messageProcessorMap() {
-        return new BaseMessageProcessorMap("domainPublicLightingIncomingOsgpCoreResponsesMessageProcessorMap");
+        return new BaseMessageProcessorMap("domainPublicLightingInboundWebServiceRequestsMessageProcessorMap");
     }
 
 }

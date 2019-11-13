@@ -39,14 +39,14 @@ public class AbstractService {
     protected LightMeasurementDeviceRepository lightMeasurementDeviceRepository;
 
     @Autowired
-    @Qualifier(value = "domainPublicLightingOutgoingOsgpCoreRequestsMessageSender")
+    @Qualifier(value = "domainPublicLightingOutboundOsgpCoreRequestsMessageSender")
     protected OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
 
     @Autowired
     protected DomainPublicLightingMapper domainCoreMapper;
 
     @Autowired
-    @Qualifier(value = "domainPublicLightingOutgoingWebServiceResponsesMessageSender")
+    @Qualifier(value = "domainPublicLightingOutboundWebServiceResponsesMessageSender")
     protected WebServiceResponseMessageSender webServiceResponseMessageSender;
 
     protected Device findActiveDevice(final String deviceIdentification) throws FunctionalException {

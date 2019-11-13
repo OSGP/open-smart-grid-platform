@@ -21,11 +21,11 @@ import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Component;
 
 // This class should send response messages to OSGP Core.
-@Component(value = "domainPublicLightingOutgoingOsgpCoreResponsesMessageSender")
+@Component(value = "domainPublicLightingOutboundOsgpCoreResponsesMessageSender")
 public class OsgpCoreResponseMessageSender {
 
     @Autowired
-    @Qualifier("domainPublicLightingOutgoingOsgpCoreResponsesJmsTemplate")
+    @Qualifier("domainPublicLightingOutboundOsgpCoreResponsesJmsTemplate")
     private JmsTemplate osgpCoreResponsesJmsTemplate;
 
     public void send(final ResponseMessage responseMessage, final String messageType) {

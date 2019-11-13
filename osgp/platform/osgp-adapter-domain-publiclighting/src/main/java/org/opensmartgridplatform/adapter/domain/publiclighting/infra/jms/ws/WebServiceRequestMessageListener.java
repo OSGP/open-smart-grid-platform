@@ -21,13 +21,13 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 // Fetch incoming messages from the requests queue of web service adapter.
-@Component(value = "domainPublicLightingIncomingWebServiceRequestsMessageListener")
+@Component(value = "domainPublicLightingInboundWebServiceRequestsMessageListener")
 public class WebServiceRequestMessageListener implements MessageListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceRequestMessageListener.class);
 
     @Autowired
-    @Qualifier("domainPublicLightingIncomingWebServiceRequestsMessageProcessorMap")
+    @Qualifier("domainPublicLightingInboundWebServiceRequestsMessageProcessorMap")
     private MessageProcessorMap messageProcessorMap;
 
     public WebServiceRequestMessageListener() {

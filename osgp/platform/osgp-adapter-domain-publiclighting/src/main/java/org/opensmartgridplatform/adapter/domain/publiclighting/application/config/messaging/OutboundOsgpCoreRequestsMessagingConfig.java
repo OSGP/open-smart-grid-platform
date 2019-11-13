@@ -21,30 +21,30 @@ import org.springframework.core.env.Environment;
 import org.springframework.jms.core.JmsTemplate;
 
 /**
- * Configuration class for outgoing web service responses.
+ * Configuration class for outbound requests to OSGP Core.
  */
 @Configuration
-public class OutgoingWebServiceResponsesMessagingConfig {
+public class OutboundOsgpCoreRequestsMessagingConfig {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(OutgoingWebServiceResponsesMessagingConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OutboundOsgpCoreRequestsMessagingConfig.class);
 
     private JmsConfigurationFactory jmsConfigurationFactory;
 
-    public OutgoingWebServiceResponsesMessagingConfig(final Environment environment,
+    public OutboundOsgpCoreRequestsMessagingConfig(final Environment environment,
             final DefaultJmsConfiguration defaultJmsConfiguration) throws SSLException {
         this.jmsConfigurationFactory = new JmsConfigurationFactory(environment, defaultJmsConfiguration,
-                JmsConfigurationNames.JMS_OUTGOING_WS_RESPONSES);
+                JmsConfigurationNames.JMS_OUTGOING_OSGP_CORE_REQUESTS);
     }
 
-    @Bean(destroyMethod = "stop", name = "domainPublicLightingOutgoingWebServiceResponsesConnectionFactory")
+    @Bean(destroyMethod = "stop", name = "domainPublicLightingOutboundOsgpCoreRequestsConnectionFactory")
     public ConnectionFactory connectionFactory() {
-        LOGGER.info("Initializing domainPublicLightingOutgoingWebServiceResponsesConnectionFactory bean.");
+        LOGGER.info("Initializing domainPublicLightingOutboundOsgpCoreRequestsConnectionFactory bean.");
         return this.jmsConfigurationFactory.getPooledConnectionFactory();
     }
 
-    @Bean(name = "domainPublicLightingOutgoingWebServiceResponsesJmsTemplate")
+    @Bean(name = "domainPublicLightingOutboundOsgpCoreRequestsJmsTemplate")
     public JmsTemplate jmsTemplate() {
-        LOGGER.info("Initializing domainPublicLightOutgoingWebServiceResponsesJmsTemplate bean.");
+        LOGGER.info("Initializing domainPublicLightingOutboundOsgpCoreRequestsJmsTemplate bean.");
         return this.jmsConfigurationFactory.initJmsTemplate();
     }
 }

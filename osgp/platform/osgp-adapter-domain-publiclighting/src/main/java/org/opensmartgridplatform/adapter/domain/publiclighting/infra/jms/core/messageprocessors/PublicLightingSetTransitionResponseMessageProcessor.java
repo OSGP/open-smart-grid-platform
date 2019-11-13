@@ -54,7 +54,7 @@ public class PublicLightingSetTransitionResponseMessageProcessor extends BaseMes
     @Autowired
     protected PublicLightingSetTransitionResponseMessageProcessor(
             final ResponseMessageSender webServiceResponseMessageSender,
-            @Qualifier("domainPublicLightingIncomingOsgpCoreResponsesMessageProcessorMap") final MessageProcessorMap osgpCoreResponseMessageProcessorMap) {
+            @Qualifier("domainPublicLightingInboundOsgpCoreResponsesMessageProcessorMap") final MessageProcessorMap osgpCoreResponseMessageProcessorMap) {
         super(webServiceResponseMessageSender, osgpCoreResponseMessageProcessorMap, MessageType.SET_TRANSITION,
                 ComponentType.DOMAIN_PUBLIC_LIGHTING);
     }

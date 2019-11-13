@@ -47,7 +47,7 @@ public class PublicLightingPowerUsageHistoryResponseMessageProcessor extends Bas
     @Autowired
     protected PublicLightingPowerUsageHistoryResponseMessageProcessor(
             final ResponseMessageSender webServiceResponseMessageSender,
-            @Qualifier("domainPublicLightingIncomingOsgpCoreResponsesMessageProcessorMap") final MessageProcessorMap osgpCoreResponseMessageProcessorMap) {
+            @Qualifier("domainPublicLightingInboundOsgpCoreResponsesMessageProcessorMap") final MessageProcessorMap osgpCoreResponseMessageProcessorMap) {
         super(webServiceResponseMessageSender, osgpCoreResponseMessageProcessorMap, MessageType.GET_POWER_USAGE_HISTORY,
                 ComponentType.DOMAIN_PUBLIC_LIGHTING);
     }

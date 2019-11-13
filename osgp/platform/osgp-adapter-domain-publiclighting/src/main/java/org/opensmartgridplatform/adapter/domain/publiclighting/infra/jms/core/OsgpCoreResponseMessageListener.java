@@ -21,13 +21,13 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 //Fetch incoming messages from the responses queue of OSGP Core.
-@Component(value = "domainPublicLightingIncomingOsgpCoreResponsesMessageListener")
+@Component(value = "domainPublicLightingInboundOsgpCoreResponsesMessageListener")
 public class OsgpCoreResponseMessageListener implements MessageListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OsgpCoreResponseMessageListener.class);
 
     @Autowired
-    @Qualifier("domainPublicLightingIncomingOsgpCoreResponsesMessageProcessorMap")
+    @Qualifier("domainPublicLightingInboundOsgpCoreResponsesMessageProcessorMap")
     private MessageProcessorMap messageProcessorMap;
 
     public OsgpCoreResponseMessageListener() {

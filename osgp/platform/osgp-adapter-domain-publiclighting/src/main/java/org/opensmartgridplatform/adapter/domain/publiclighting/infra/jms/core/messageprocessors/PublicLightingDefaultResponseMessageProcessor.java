@@ -44,7 +44,7 @@ public class PublicLightingDefaultResponseMessageProcessor extends BaseMessagePr
 
     @Autowired
     protected PublicLightingDefaultResponseMessageProcessor(final ResponseMessageSender webServiceResponseMessageSender,
-            @Qualifier("domainPublicLightingIncomingOsgpCoreResponsesMessageProcessorMap") final MessageProcessorMap osgpCoreResponseMessageProcessorMap) {
+            @Qualifier("domainPublicLightingInboundOsgpCoreResponsesMessageProcessorMap") final MessageProcessorMap osgpCoreResponseMessageProcessorMap) {
         super(webServiceResponseMessageSender, osgpCoreResponseMessageProcessorMap, MessageType.SET_LIGHT,
                 ComponentType.DOMAIN_PUBLIC_LIGHTING);
         this.addMessageType(MessageType.RESUME_SCHEDULE);

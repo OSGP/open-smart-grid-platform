@@ -44,7 +44,7 @@ public class PublicLightingResumeScheduleRequestMessageProcessor extends BaseMes
     @Autowired
     public PublicLightingResumeScheduleRequestMessageProcessor(
             final WebServiceResponseMessageSender webServiceResponseMessageSender,
-            @Qualifier("domainPublicLightingIncomingWebServiceRequestsMessageProcessorMap") final MessageProcessorMap webServiceRequestMessageProcessorMap) {
+            @Qualifier("domainPublicLightingInboundWebServiceRequestsMessageProcessorMap") final MessageProcessorMap webServiceRequestMessageProcessorMap) {
         super(webServiceResponseMessageSender, webServiceRequestMessageProcessorMap, MessageType.RESUME_SCHEDULE,
                 ComponentType.DOMAIN_PUBLIC_LIGHTING);
     }

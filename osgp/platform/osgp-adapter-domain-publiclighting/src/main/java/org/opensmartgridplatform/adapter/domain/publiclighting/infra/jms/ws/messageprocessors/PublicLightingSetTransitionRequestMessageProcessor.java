@@ -41,7 +41,7 @@ public class PublicLightingSetTransitionRequestMessageProcessor extends BaseMess
     @Autowired
     public PublicLightingSetTransitionRequestMessageProcessor(
             final WebServiceResponseMessageSender webServiceResponseMessageSender,
-            @Qualifier("domainPublicLightingIncomingWebServiceRequestsMessageProcessorMap") final MessageProcessorMap webServiceRequestMessageProcessorMap) {
+            @Qualifier("domainPublicLightingInboundWebServiceRequestsMessageProcessorMap") final MessageProcessorMap webServiceRequestMessageProcessorMap) {
         super(webServiceResponseMessageSender, webServiceRequestMessageProcessorMap, MessageType.SET_TRANSITION,
                 ComponentType.DOMAIN_PUBLIC_LIGHTING);
     }

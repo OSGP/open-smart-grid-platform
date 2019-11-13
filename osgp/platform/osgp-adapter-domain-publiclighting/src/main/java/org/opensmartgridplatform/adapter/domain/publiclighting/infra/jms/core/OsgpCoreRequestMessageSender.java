@@ -21,11 +21,11 @@ import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Component;
 
 //Send request message to the requests queue of OSGP Core.
-@Component(value = "domainPublicLightingOutgoingOsgpCoreRequestsMessageSender")
+@Component(value = "domainPublicLightingOutboundOsgpCoreRequestsMessageSender")
 public class OsgpCoreRequestMessageSender {
 
     @Autowired
-    @Qualifier("domainPublicLightingOutgoingOsgpCoreRequestsJmsTemplate")
+    @Qualifier("domainPublicLightingOutboundOsgpCoreRequestsJmsTemplate")
     private JmsTemplate osgpCoreRequestsJmsTemplate;
 
     public void send(final RequestMessage requestMessage, final String messageType, final int messagePriority,
