@@ -20,6 +20,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.jms.core.JmsTemplate;
 
+/**
+ * Configuration class for outbound requests to OSGP Core
+ */
 @Configuration
 public class OutboundOsgpCoreRequestsMessagingConfig {
 

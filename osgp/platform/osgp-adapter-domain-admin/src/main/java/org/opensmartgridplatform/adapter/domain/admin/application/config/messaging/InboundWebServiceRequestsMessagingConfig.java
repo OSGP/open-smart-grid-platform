@@ -24,6 +24,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
+/**
+ * Configuration class for inbound requests from web service adapter
+ */
 @Configuration
 public class InboundWebServiceRequestsMessagingConfig {
 
