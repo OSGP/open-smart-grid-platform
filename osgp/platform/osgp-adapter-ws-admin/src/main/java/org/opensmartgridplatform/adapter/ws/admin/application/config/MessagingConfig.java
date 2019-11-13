@@ -7,9 +7,9 @@
  */
 package org.opensmartgridplatform.adapter.ws.admin.application.config;
 
-import org.opensmartgridplatform.adapter.ws.admin.application.config.messaging.IncomingDomainResponsesMessagingConfig;
-import org.opensmartgridplatform.adapter.ws.admin.application.config.messaging.OutgoingDomainRequestsMessagingConfig;
-import org.opensmartgridplatform.adapter.ws.admin.application.config.messaging.OutgoingLoggingRequestsMessagingConfig;
+import org.opensmartgridplatform.adapter.ws.admin.application.config.messaging.InboundDomainResponsesMessagingConfig;
+import org.opensmartgridplatform.adapter.ws.admin.application.config.messaging.OutboundDomainRequestsMessagingConfig;
+import org.opensmartgridplatform.adapter.ws.admin.application.config.messaging.OutboundLoggingRequestsMessagingConfig;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -21,8 +21,8 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource("classpath:osgp-adapter-ws-admin.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/AdapterWsAdmin/config}", ignoreResourceNotFound = true)
-@Import({ OutgoingDomainRequestsMessagingConfig.class, IncomingDomainResponsesMessagingConfig.class,
-        OutgoingLoggingRequestsMessagingConfig.class })
+@Import({ OutboundDomainRequestsMessagingConfig.class, InboundDomainResponsesMessagingConfig.class,
+        OutboundLoggingRequestsMessagingConfig.class })
 public class MessagingConfig extends AbstractConfig {
 
     @Bean

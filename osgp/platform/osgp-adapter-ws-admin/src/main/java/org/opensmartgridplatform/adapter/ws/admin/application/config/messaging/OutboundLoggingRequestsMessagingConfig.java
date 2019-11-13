@@ -23,32 +23,32 @@ import org.springframework.core.env.Environment;
 import org.springframework.jms.core.JmsTemplate;
 
 /**
- * Configuration class for outgoing logging messages
+ * Configuration class for outbound requests to OSGP Logging
  *
  */
 @Configuration
 @ComponentScan(basePackageClasses = LoggingMessageSender.class)
-public class OutgoingLoggingRequestsMessagingConfig {
+public class OutboundLoggingRequestsMessagingConfig {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(OutgoingLoggingRequestsMessagingConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OutboundLoggingRequestsMessagingConfig.class);
 
     private JmsConfigurationFactory jmsConfigurationFactory;
 
-    public OutgoingLoggingRequestsMessagingConfig(final Environment environment,
+    public OutboundLoggingRequestsMessagingConfig(final Environment environment,
             final DefaultJmsConfiguration defaultJmsConfiguration) throws SSLException {
         this.jmsConfigurationFactory = new JmsConfigurationFactory(environment, defaultJmsConfiguration,
                 JmsConfigurationNames.JMS_ADMIN_LOGGING);
     }
 
-    @Bean(destroyMethod = "stop", name = "wsAdminOutgoingLoggingRequestsConnectionFactory")
+    @Bean(destroyMethod = "stop", name = "wsAdminOutboundLoggingRequestsConnectionFactory")
     public ConnectionFactory connectionFactory() {
-        LOGGER.info("Initializing wsAdminOutgoingLoggingRequestsConnectionFactory bean.");
+        LOGGER.info("Initializing wsAdminOutboundLoggingRequestsConnectionFactory bean.");
         return this.jmsConfigurationFactory.getPooledConnectionFactory();
     }
 
     @Bean(name = "loggingJmsTemplate")
     public JmsTemplate jmsTemplate() {
-        LOGGER.info("Initializing wsAdminOutgoingLoggingJmsTemplate bean.");
+        LOGGER.info("Initializing wsAdminOutboundLoggingJmsTemplate bean.");
         return this.jmsConfigurationFactory.initJmsTemplate();
     }
 }

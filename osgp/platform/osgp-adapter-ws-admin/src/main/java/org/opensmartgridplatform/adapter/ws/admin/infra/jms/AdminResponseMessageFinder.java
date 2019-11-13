@@ -27,14 +27,14 @@ public final class AdminResponseMessageFinder extends BaseResponseMessageFinder 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdminResponseMessageFinder.class);
 
     @Autowired
-    @Qualifier("wsAdminIncomingDomainResponsesJmsTemplate")
-    private JmsTemplate adminResponsesJmsTemplate;
+    @Qualifier("wsAdminInboundDomainResponsesJmsTemplate")
+    private JmsTemplate jmsTemplate;
 
     @Override
     protected ObjectMessage receiveObjectMessage(final String correlationUid) {
         LOGGER.info("Trying to find message with correlationUID: {}", correlationUid);
 
-        return (ObjectMessage) this.adminResponsesJmsTemplate.receiveSelected(this.getJmsCorrelationId(correlationUid));
+        return (ObjectMessage) this.jmsTemplate.receiveSelected(this.getJmsCorrelationId(correlationUid));
     }
 
 }

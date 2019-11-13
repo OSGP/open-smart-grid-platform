@@ -22,33 +22,33 @@ import org.springframework.core.env.Environment;
 import org.springframework.jms.core.JmsTemplate;
 
 /**
- * Configuration class for incoming domain responses
+ * Configuration class for inbound responses from domain adapter.
  */
 @Configuration
-public class IncomingDomainResponsesMessagingConfig {
+public class InboundDomainResponsesMessagingConfig {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(IncomingDomainResponsesMessagingConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(InboundDomainResponsesMessagingConfig.class);
 
     private JmsConfigurationFactory jmsConfigurationFactory;
 
     @Value("${jms.admin.responses.receive.timeout:100}")
     private long receiveTimeout;
 
-    public IncomingDomainResponsesMessagingConfig(final Environment environment,
+    public InboundDomainResponsesMessagingConfig(final Environment environment,
             final DefaultJmsConfiguration defaultJmsConfiguration) throws SSLException {
         this.jmsConfigurationFactory = new JmsConfigurationFactory(environment, defaultJmsConfiguration,
                 JmsConfigurationNames.JMS_ADMIN_RESPONSES);
     }
 
-    @Bean(destroyMethod = "stop", name = "wsAdminIncomingDomainResponsesConnectionFactory")
-    public ConnectionFactory incomingDomainResponsesConnectionFactory() {
-        LOGGER.info("Initializing incomingDomainResponsesConnectionFactory bean.");
+    @Bean(destroyMethod = "stop", name = "wsAdminInboundDomainResponsesConnectionFactory")
+    public ConnectionFactory connectionFactory() {
+        LOGGER.info("Initializing wsAdminInboundDomainResponsesConnectionFactory bean.");
         return this.jmsConfigurationFactory.getPooledConnectionFactory();
     }
 
-    @Bean(name = "wsAdminIncomingDomainResponsesJmsTemplate")
-    public JmsTemplate incomingDomainResponsesJmsTemplate() {
-        LOGGER.info("Initializing incomingDomainResponsesJmsTemplate bean with receive timeout {}.",
+    @Bean(name = "wsAdminInboundDomainResponsesJmsTemplate")
+    public JmsTemplate jmsTemplate() {
+        LOGGER.info("Initializing wsAdminInboundDomainResponsesJmsTemplate bean with receive timeout {}.",
                 this.receiveTimeout);
         final JmsTemplate jmsTemplate = this.jmsConfigurationFactory.initJmsTemplate();
         jmsTemplate.setReceiveTimeout(this.receiveTimeout);

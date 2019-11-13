@@ -21,31 +21,31 @@ import org.springframework.core.env.Environment;
 import org.springframework.jms.core.JmsTemplate;
 
 /**
- * Configuration class for outgoing domain requests
+ * Configuration class for outbound requests to domain adapter.
  *
  */
 @Configuration
-public class OutgoingDomainRequestsMessagingConfig {
+public class OutboundDomainRequestsMessagingConfig {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(OutgoingDomainRequestsMessagingConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OutboundDomainRequestsMessagingConfig.class);
 
     private JmsConfigurationFactory jmsConfigurationFactory;
 
-    public OutgoingDomainRequestsMessagingConfig(final Environment environment,
+    public OutboundDomainRequestsMessagingConfig(final Environment environment,
             final DefaultJmsConfiguration defaultJmsConfiguration) throws SSLException {
         this.jmsConfigurationFactory = new JmsConfigurationFactory(environment, defaultJmsConfiguration,
                 JmsConfigurationNames.JMS_ADMIN_REQUESTS);
     }
 
-    @Bean(destroyMethod = "stop", name = "wsAdminOutgoingDomainRequestsConnectionFactory")
-    public ConnectionFactory outgoingDomainRequestsConnectionFactory() {
-        LOGGER.info("Initializing outgoingDomainRequestsConnectionFactory bean.");
+    @Bean(destroyMethod = "stop", name = "wsAdminOutboundDomainRequestsConnectionFactory")
+    public ConnectionFactory connectionFactory() {
+        LOGGER.info("Initializing wsAdminOutboundDomainRequestsConnectionFactory bean.");
         return this.jmsConfigurationFactory.getPooledConnectionFactory();
     }
 
-    @Bean(name = "wsAdminOutgoingDomainRequestsJmsTemplate")
-    public JmsTemplate outgoingDomainRequestsJmsTemplate() {
-        LOGGER.info("Initializing outgoingDomainRequestsJmsTemplate bean.");
+    @Bean(name = "wsAdminOutboundDomainRequestsJmsTemplate")
+    public JmsTemplate jmsTemplate() {
+        LOGGER.info("Initializing wsAdminOutboundDomainRequestsJmsTemplate bean.");
         return this.jmsConfigurationFactory.initJmsTemplate();
     }
 }

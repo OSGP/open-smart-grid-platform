@@ -25,14 +25,14 @@ import org.springframework.stereotype.Component;
 /**
  * Class for sending admin request messages to a queue
  */
-@Component(value = "wsAdminOutgoingDomainRequestsMessageSender")
+@Component(value = "wsAdminOutboundDomainRequestsMessageSender")
 public class AdminRequestMessageSender {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdminRequestMessageSender.class);
 
     @Autowired
-    @Qualifier("wsAdminOutgoingDomainRequestsJmsTemplate")
-    private JmsTemplate adminRequestsJmsTemplate;
+    @Qualifier("wsAdminOutboundDomainRequestsJmsTemplate")
+    private JmsTemplate jmsTemplate;
 
     /**
      * Method for sending a request message to the queue
@@ -72,7 +72,7 @@ public class AdminRequestMessageSender {
     private void sendMessage(final AdminRequestMessage requestMessage) {
         LOGGER.info("Sending request message to admin requests queue");
 
-        this.adminRequestsJmsTemplate.send(new MessageCreator() {
+        this.jmsTemplate.send(new MessageCreator() {
 
             @Override
             public Message createMessage(final Session session) throws JMSException {
