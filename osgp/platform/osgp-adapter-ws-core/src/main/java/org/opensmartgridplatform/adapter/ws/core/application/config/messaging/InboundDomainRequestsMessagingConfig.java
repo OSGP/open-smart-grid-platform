@@ -23,32 +23,32 @@ import org.springframework.core.env.Environment;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
 /**
- * Configuration class for incoming domain requests
+ * Configuration class for inbound requests from domain adapter
  *
  */
 @Configuration
-public class IncomingDomainRequestsMessagingConfig {
+public class InboundDomainRequestsMessagingConfig {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(IncomingDomainRequestsMessagingConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(InboundDomainRequestsMessagingConfig.class);
 
     private JmsConfigurationFactory jmsConfigurationFactory;
 
-    public IncomingDomainRequestsMessagingConfig(final Environment environment,
+    public InboundDomainRequestsMessagingConfig(final Environment environment,
             final DefaultJmsConfiguration defaultJmsConfiguration) throws SSLException {
         this.jmsConfigurationFactory = new JmsConfigurationFactory(environment, defaultJmsConfiguration,
                 JmsConfigurationNames.JMS_COMMON_DOMAIN_TO_WS_REQUESTS);
     }
 
-    @Bean(destroyMethod = "stop", name = "wsCoreIncomingDomainRequestsConnectionFactory")
-    public ConnectionFactory incomingDomainRequestsConnectionFactory() {
-        LOGGER.info("Initializing incomingDomainRequestsConnectionFactory bean.");
+    @Bean(destroyMethod = "stop", name = "wsCoreInboundDomainRequestsConnectionFactory")
+    public ConnectionFactory connectionFactory() {
+        LOGGER.info("Initializing wsCoreInboundDomainRequestsConnectionFactory bean.");
         return this.jmsConfigurationFactory.getPooledConnectionFactory();
     }
 
-    @Bean(name = "wsCoreIncomingDomainRequestsMessageListenerContainer")
-    public DefaultMessageListenerContainer incomingDomainRequestsMessageListenerContainer(
-            @Qualifier("wsCoreIncomingDomainRequestsMessageListener") final CommonRequestMessageListener commonRequestMessageListener) {
-        LOGGER.info("Initializing incomingDomainRequestsMessageListenerContainer bean.");
-        return this.jmsConfigurationFactory.initMessageListenerContainer(commonRequestMessageListener);
+    @Bean(name = "wsCoreInboundDomainRequestsMessageListenerContainer")
+    public DefaultMessageListenerContainer messageListenerContainer(
+            @Qualifier("wsCoreInboundDomainRequestsMessageListener") final CommonRequestMessageListener messageListener) {
+        LOGGER.info("Initializing wsCoreInboundDomainRequestsMessageListenerContainer bean.");
+        return this.jmsConfigurationFactory.initMessageListenerContainer(messageListener);
     }
 }

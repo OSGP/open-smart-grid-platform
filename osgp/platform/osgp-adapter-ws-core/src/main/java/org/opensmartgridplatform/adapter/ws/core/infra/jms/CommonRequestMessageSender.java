@@ -25,14 +25,14 @@ import org.springframework.stereotype.Component;
 /**
  * Class for sending common request messages to a queue
  */
-@Component(value = "wsCoreOutgoingDomainRequestsMessageSender")
+@Component(value = "wsCoreOutboundDomainRequestsMessageSender")
 public class CommonRequestMessageSender {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommonRequestMessageSender.class);
 
     @Autowired
-    @Qualifier("wsCoreOutgoingDomainRequestsJmsTemplate")
-    private JmsTemplate commonRequestsJmsTemplate;
+    @Qualifier("wsCoreOutboundDomainRequestsJmsTemplate")
+    private JmsTemplate jmsTemplate;
 
     /**
      * Method for sending a request message to the queue
@@ -73,7 +73,7 @@ public class CommonRequestMessageSender {
     private void sendMessage(final CommonRequestMessage requestMessage) {
         LOGGER.info("Sending request message to common requests queue");
 
-        this.commonRequestsJmsTemplate.send(new MessageCreator() {
+        this.jmsTemplate.send(new MessageCreator() {
 
             @Override
             public Message createMessage(final Session session) throws JMSException {

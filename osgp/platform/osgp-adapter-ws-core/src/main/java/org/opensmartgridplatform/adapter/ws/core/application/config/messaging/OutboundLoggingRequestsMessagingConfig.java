@@ -10,49 +10,45 @@ package org.opensmartgridplatform.adapter.ws.core.application.config.messaging;
 import javax.jms.ConnectionFactory;
 import javax.net.ssl.SSLException;
 
+import org.opensmartgridplatform.adapter.ws.infra.jms.LoggingMessageSender;
 import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationNames;
 import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsConfiguration;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfigurationFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.jms.core.JmsTemplate;
 
 /**
- * Configuration class for incoming domain responses
+ * Configuration class for outbound logging messages
  *
  */
 @Configuration
-public class IncomingDomainResponsesMessagingConfig {
+@ComponentScan(basePackageClasses = LoggingMessageSender.class)
+public class OutboundLoggingRequestsMessagingConfig {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(IncomingDomainResponsesMessagingConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OutboundLoggingRequestsMessagingConfig.class);
 
     private JmsConfigurationFactory jmsConfigurationFactory;
 
-    @Value("${jms.common.responses.receive.timeout:100}")
-    private long receiveTimeout;
-
-    public IncomingDomainResponsesMessagingConfig(final Environment environment,
+    public OutboundLoggingRequestsMessagingConfig(final Environment environment,
             final DefaultJmsConfiguration defaultJmsConfiguration) throws SSLException {
         this.jmsConfigurationFactory = new JmsConfigurationFactory(environment, defaultJmsConfiguration,
-                JmsConfigurationNames.JMS_COMMON_RESPONSES);
+                JmsConfigurationNames.JMS_COMMON_LOGGING);
     }
 
-    @Bean(destroyMethod = "stop", name = "wsCoreIncomingDomainResponsesConnectionFactory")
-    public ConnectionFactory incomingDomainResponsesConnectionFactory() {
-        LOGGER.info("Initializing incomingDomainResponsesConnectionFactory bean.");
+    @Bean(destroyMethod = "stop", name = "wsCoreOutboundLoggingRequestsConnectionFactory")
+    public ConnectionFactory connectionFactory() {
+        LOGGER.info("Initializing wsCoreOutboundLoggingRequestsConnectionFactory bean.");
         return this.jmsConfigurationFactory.getPooledConnectionFactory();
     }
 
-    @Bean(name = "wsCoreIncomingDomainResponsesJmsTemplate")
-    public JmsTemplate incomingDomainResponsesJmsTemplate() {
-        LOGGER.info("Initializing incomingDomainResponsesJmsTemplate bean with receive timeout {}.",
-                this.receiveTimeout);
-        final JmsTemplate jmsTemplate = this.jmsConfigurationFactory.initJmsTemplate();
-        jmsTemplate.setReceiveTimeout(this.receiveTimeout);
-        return jmsTemplate;
+    @Bean(name = "loggingJmsTemplate")
+    public JmsTemplate jmsTemplate() {
+        LOGGER.info("Initializing wsCoreOutboundLoggingRequestsJmsTemplate bean.");
+        return this.jmsConfigurationFactory.initJmsTemplate();
     }
 }

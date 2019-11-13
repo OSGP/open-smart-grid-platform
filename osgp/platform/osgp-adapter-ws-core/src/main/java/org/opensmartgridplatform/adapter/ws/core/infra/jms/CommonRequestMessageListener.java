@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 //Fetch incoming messages from the domain core to web service core requests queue.
-@Component(value = "wsCoreIncomingDomainRequestsMessageListener")
+@Component(value = "wsCoreInboundDomainRequestsMessageListener")
 public class CommonRequestMessageListener implements MessageListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommonRequestMessageListener.class);
