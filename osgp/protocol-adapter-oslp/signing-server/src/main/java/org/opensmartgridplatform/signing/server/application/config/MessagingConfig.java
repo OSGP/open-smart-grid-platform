@@ -7,11 +7,14 @@
  */
 package org.opensmartgridplatform.signing.server.application.config;
 
-import org.opensmartgridplatform.shared.application.config.AbstractMessagingConfig;
+import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsConfiguration;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfiguration;
+import org.opensmartgridplatform.signing.server.application.config.messaging.InboundRequestsMessagingConfig;
+import org.opensmartgridplatform.signing.server.application.config.messaging.OutboundResponsesMessagingConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -23,7 +26,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @PropertySource("classpath:signing-server.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/SigningServer/config}", ignoreResourceNotFound = true)
-public class MessagingConfig extends AbstractMessagingConfig {
+@Import(value = { InboundRequestsMessagingConfig.class, OutboundResponsesMessagingConfig.class })
+public class MessagingConfig extends AbstractConfig {
 
     @Bean
     public JmsConfiguration defaultJmsConfiguration() {
