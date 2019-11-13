@@ -60,12 +60,12 @@ public class AdHocManagementService {
     private CorrelationIdProviderService correlationIdProviderService;
 
     @Autowired
-    @Qualifier("wsPublicLightingOutgoingDomainRequestsMessageSender")
-    private PublicLightingRequestMessageSender publicLightingRequestMessageSender;
+    @Qualifier("wsPublicLightingOutboundDomainRequestsMessageSender")
+    private PublicLightingRequestMessageSender messageSender;
 
     @Autowired
-    @Qualifier("wsPublicLightingIncomingDomainResponsesMessageFinder")
-    private PublicLightingResponseMessageFinder publicLightingResponseMessageFinder;
+    @Qualifier("wsPublicLightingInboundDomainResponsesMessageFinder")
+    private PublicLightingResponseMessageFinder messageFinder;
 
     public AdHocManagementService() {
         // Parameterless constructor required for transactions
@@ -109,14 +109,14 @@ public class AdHocManagementService {
                 .deviceMessageMetadata(deviceMessageMetadata)
                 .request(lightValueMessageDataContainer)
                 .build();
-        this.publicLightingRequestMessageSender.send(message);
+        this.messageSender.send(message);
 
         return correlationUid;
     }
 
     public ResponseMessage dequeueSetLightResponse(final String correlationUid) throws OsgpException {
 
-        return this.publicLightingResponseMessageFinder.findMessage(correlationUid);
+        return this.messageFinder.findMessage(correlationUid);
     }
 
     public String enqueueGetStatusRequest(@Identification final String organisationIdentification,
@@ -140,14 +140,14 @@ public class AdHocManagementService {
                 .deviceMessageMetadata(deviceMessageMetadata)
                 .build();
 
-        this.publicLightingRequestMessageSender.send(message);
+        this.messageSender.send(message);
 
         return correlationUid;
     }
 
     public ResponseMessage dequeueGetStatusResponse(final String correlationUid) throws OsgpException {
 
-        return this.publicLightingResponseMessageFinder.findMessage(correlationUid);
+        return this.messageFinder.findMessage(correlationUid);
     }
 
     public String enqueueResumeScheduleRequest(@Identification final String organisationIdentification,
@@ -174,13 +174,13 @@ public class AdHocManagementService {
                 .request(resumeScheduleData)
                 .build();
 
-        this.publicLightingRequestMessageSender.send(message);
+        this.messageSender.send(message);
 
         return correlationUid;
     }
 
     public ResponseMessage dequeueResumeScheduleResponse(final String correlationUid) throws OsgpException {
-        return this.publicLightingResponseMessageFinder.findMessage(correlationUid);
+        return this.messageFinder.findMessage(correlationUid);
     }
 
     public String enqueueTransitionRequest(@Identification final String organisationIdentification,
@@ -208,13 +208,13 @@ public class AdHocManagementService {
                 .request(transitionMessageDataContainer)
                 .build();
 
-        this.publicLightingRequestMessageSender.send(message);
+        this.messageSender.send(message);
 
         return correlationUid;
     }
 
     public ResponseMessage dequeueSetTransitionResponse(final String correlationUid) throws OsgpException {
-        return this.publicLightingResponseMessageFinder.findMessage(correlationUid);
+        return this.messageFinder.findMessage(correlationUid);
     }
 
     /**
@@ -259,7 +259,7 @@ public class AdHocManagementService {
                 .request(lightMeasurementDeviceIdentification)
                 .build();
 
-        this.publicLightingRequestMessageSender.send(message);
+        this.messageSender.send(message);
 
         return correlationUid;
     }

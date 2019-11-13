@@ -21,20 +21,19 @@ import org.springframework.stereotype.Component;
  * Class for retrieving response messages from the public lighting responses
  * queue by correlation UID.
  */
-@Component(value = "wsPublicLightingIncomingDomainResponsesMessageFinder")
+@Component(value = "wsPublicLightingInboundDomainResponsesMessageFinder")
 public class PublicLightingResponseMessageFinder extends BaseResponseMessageFinder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PublicLightingResponseMessageFinder.class);
 
     @Autowired
-    @Qualifier("wsPublicLightingIncomingDomainResponsesJmsTemplate")
-    private JmsTemplate publicLightingResponsesJmsTemplate;
+    @Qualifier("wsPublicLightingInboundDomainResponsesJmsTemplate")
+    private JmsTemplate jmsTemplate;
 
     @Override
     protected ObjectMessage receiveObjectMessage(final String correlationUid) {
         LOGGER.info("Trying to find message with correlationUID: {}", correlationUid);
 
-        return (ObjectMessage) this.publicLightingResponsesJmsTemplate
-                .receiveSelected(this.getJmsCorrelationId(correlationUid));
+        return (ObjectMessage) this.jmsTemplate.receiveSelected(this.getJmsCorrelationId(correlationUid));
     }
 }

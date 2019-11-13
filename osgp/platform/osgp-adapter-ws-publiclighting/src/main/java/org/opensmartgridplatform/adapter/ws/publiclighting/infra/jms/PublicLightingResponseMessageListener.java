@@ -17,15 +17,17 @@ import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-@Component(value = "wsPublicLightingIncomingDomainResponsesMessageListener")
+@Component(value = "wsPublicLightingInboundDomainResponsesMessageListener")
 public class PublicLightingResponseMessageListener implements MessageListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PublicLightingResponseMessageListener.class);
 
     @Autowired
-    private MessageProcessorMap domainResponseMessageProcessorMap;
+    @Qualifier("wsPublicLightingInboundDomainResponsesMessageProcessorMap")
+    private MessageProcessorMap messageProcessorMap;
 
     @Override
     public void onMessage(final Message message) {
@@ -37,8 +39,7 @@ public class PublicLightingResponseMessageListener implements MessageListener {
             final String correlationUid = objectMessage.getJMSCorrelationID();
             LOGGER.info("objectMessage CorrelationUID: {}", correlationUid);
 
-            final MessageProcessor processor = this.domainResponseMessageProcessorMap
-                    .getMessageProcessor(objectMessage);
+            final MessageProcessor processor = this.messageProcessorMap.getMessageProcessor(objectMessage);
 
             processor.processMessage(objectMessage);
 

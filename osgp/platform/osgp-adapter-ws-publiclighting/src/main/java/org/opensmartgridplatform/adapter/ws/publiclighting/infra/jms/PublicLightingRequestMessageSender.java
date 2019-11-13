@@ -25,13 +25,13 @@ import org.springframework.stereotype.Component;
 /**
  * Class for sending public lighting request messages to a queue
  */
-@Component(value = "wsPublicLightingOutgoingDomainRequestsMessageSender")
+@Component(value = "wsPublicLightingOutboundDomainRequestsMessageSender")
 public class PublicLightingRequestMessageSender {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PublicLightingRequestMessageSender.class);
 
     @Autowired
-    @Qualifier("wsPublicLightingOutgoingDomainRequestsJmsTemplate")
+    @Qualifier("wsPublicLightingOutboundDomainRequestsJmsTemplate")
     private JmsTemplate jmsTemplate;
 
     /**

@@ -42,8 +42,8 @@ public class ScheduleManagementService {
     private CorrelationIdProviderService correlationIdProviderService;
 
     @Autowired
-    @Qualifier("wsPublicLightingOutgoingDomainRequestsMessageSender")
-    private PublicLightingRequestMessageSender publicLightingRequestMessageSender;
+    @Qualifier("wsPublicLightingOutboundDomainRequestsMessageSender")
+    private PublicLightingRequestMessageSender messageSender;
 
     /**
      * Constructor
@@ -77,7 +77,7 @@ public class ScheduleManagementService {
                 .request(schedule)
                 .build();
 
-        this.publicLightingRequestMessageSender.send(message);
+        this.messageSender.send(message);
 
         return correlationUid;
     }

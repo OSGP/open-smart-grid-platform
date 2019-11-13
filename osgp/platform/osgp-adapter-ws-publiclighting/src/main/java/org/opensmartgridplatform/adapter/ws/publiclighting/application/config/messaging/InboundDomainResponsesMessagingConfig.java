@@ -27,55 +27,51 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
 /**
- * Configuration class for incoming domain responses
- *
- * @author sander
- *
+ * Configuration class for inbound responses from domain adapter.
  */
 @Configuration
-public class IncomingDomainResponsesMessagingConfig {
+public class InboundDomainResponsesMessagingConfig {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(IncomingDomainResponsesMessagingConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(InboundDomainResponsesMessagingConfig.class);
 
     private JmsConfigurationFactory jmsConfigurationFactory;
 
     @Value("${jms.publiclighting.responses.receive.timeout:100}")
     private long receiveTimeout;
 
-    public IncomingDomainResponsesMessagingConfig(final Environment environment,
+    public InboundDomainResponsesMessagingConfig(final Environment environment,
             final DefaultJmsConfiguration defaultJmsConfiguration) throws SSLException {
         this.jmsConfigurationFactory = new JmsConfigurationFactory(environment, defaultJmsConfiguration,
                 JmsConfigurationNames.JMS_PUBLICLIGHTING_RESPONSES);
     }
 
-    @Bean(destroyMethod = "stop", name = "wsPublicLightingIncomingDomainResponsesConnectionFactory")
+    @Bean(destroyMethod = "stop", name = "wsPublicLightingInboundDomainResponsesConnectionFactory")
     public ConnectionFactory connectionFactory() {
-        LOGGER.info("Initializing wsPublicLightingIncomingDomainResponsesConnectionFactory bean.");
+        LOGGER.info("Initializing wsPublicLightingInboundDomainResponsesConnectionFactory bean.");
         return this.jmsConfigurationFactory.getPooledConnectionFactory();
     }
 
-    @Bean(name = "wsPublicLightingIncomingDomainResponsesJmsTemplate")
+    @Bean(name = "wsPublicLightingInboundDomainResponsesJmsTemplate")
     public JmsTemplate jmsTemplate() {
-        LOGGER.info("Initializing wsPublicLightingIncomingDomainResponsesJmsTemplate with receive timeout {}.",
+        LOGGER.info("Initializing wsPublicLightingInboundDomainResponsesJmsTemplate with receive timeout {}.",
                 this.receiveTimeout);
         final JmsTemplate jmsTemplate = this.jmsConfigurationFactory.initJmsTemplate();
         jmsTemplate.setReceiveTimeout(this.receiveTimeout);
         return jmsTemplate;
     }
 
-    @Bean(name = "wsPublicLightingIncomingDomainResponsesMessageListenerContainer")
+    @Bean(name = "wsPublicLightingInboundDomainResponsesMessageListenerContainer")
     public DefaultMessageListenerContainer messageListenerContainer(
-            @Qualifier("wsPublicLightingIncomingDomainResponsesMessageListener") final PublicLightingResponseMessageListener responseMessageListener) {
-        LOGGER.info("Initializing wsPublicLightingIncomingDomainResponsesMessageListenerContainer bean.");
+            @Qualifier("wsPublicLightingInboundDomainResponsesMessageListener") final PublicLightingResponseMessageListener responseMessageListener) {
+        LOGGER.info("Initializing wsPublicLightingInboundDomainResponsesMessageListenerContainer bean.");
         final DefaultMessageListenerContainer container = this.jmsConfigurationFactory
                 .initMessageListenerContainer(responseMessageListener);
         container.setMessageSelector("JMSType = 'SET_LIGHT_SCHEDULE'");
         return container;
     }
 
-    @Bean
-    @Qualifier("wsPublicLightingIncomingDomainResponsesMessageProcessorMap")
-    public MessageProcessorMap incomingDomainResponsesMessageProcessorMap() {
-        return new BaseMessageProcessorMap("wsPublicLightingIncomingDomainResponsesMessageProcessorMap");
+    @Bean(name = "wsPublicLightingInboundDomainResponsesMessageProcessorMap")
+    public MessageProcessorMap messageProcessorMap() {
+        return new BaseMessageProcessorMap("wsPublicLightingInboundDomainResponsesMessageProcessorMap");
     }
 }

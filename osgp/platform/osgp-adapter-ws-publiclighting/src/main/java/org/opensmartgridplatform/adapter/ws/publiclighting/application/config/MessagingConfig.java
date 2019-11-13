@@ -7,9 +7,9 @@
  */
 package org.opensmartgridplatform.adapter.ws.publiclighting.application.config;
 
-import org.opensmartgridplatform.adapter.ws.publiclighting.application.config.messaging.IncomingDomainResponsesMessagingConfig;
-import org.opensmartgridplatform.adapter.ws.publiclighting.application.config.messaging.OutgoingDomainRequestsMessagingConfig;
-import org.opensmartgridplatform.adapter.ws.publiclighting.application.config.messaging.OutgoingLoggingRequestsMessagingConfig;
+import org.opensmartgridplatform.adapter.ws.publiclighting.application.config.messaging.InboundDomainResponsesMessagingConfig;
+import org.opensmartgridplatform.adapter.ws.publiclighting.application.config.messaging.OutboundDomainRequestsMessagingConfig;
+import org.opensmartgridplatform.adapter.ws.publiclighting.application.config.messaging.OutboundLoggingRequestsMessagingConfig;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -21,8 +21,8 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource("classpath:osgp-adapter-ws-publiclighting.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/AdapterWsPublicLighting/config}", ignoreResourceNotFound = true)
-@Import(value = { IncomingDomainResponsesMessagingConfig.class, OutgoingDomainRequestsMessagingConfig.class,
-        OutgoingLoggingRequestsMessagingConfig.class })
+@Import(value = { InboundDomainResponsesMessagingConfig.class, OutboundDomainRequestsMessagingConfig.class,
+        OutboundLoggingRequestsMessagingConfig.class })
 public class MessagingConfig extends AbstractConfig {
 
     @Bean

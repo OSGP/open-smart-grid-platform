@@ -39,7 +39,7 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DomainResponseMessageProcessor.class);
 
-    @Qualifier("wsPublicLightingIncomingDomainResponsesMessageProcessorMap")
+    @Qualifier("wsPublicLightingInboundDomainResponsesMessageProcessorMap")
     @Autowired
     protected MessageProcessorMap domainResponseMessageProcessorMap;
 
