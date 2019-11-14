@@ -26,7 +26,9 @@ import org.springframework.jms.IllegalStateException;
 import org.springframework.jms.UncategorizedJmsException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
+import org.springframework.stereotype.Component;
 
+@Component(value = "protocolIec61850OutboundOsgpCoreResponsesMessageSender")
 public class DeviceResponseMessageSender implements ResponseMessageSender {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceResponseMessageSender.class);
@@ -37,8 +39,8 @@ public class DeviceResponseMessageSender implements ResponseMessageSender {
     private static final String LOG_MESSAGE_NULL_FIELD = "{} is null.";
 
     @Autowired
-    @Qualifier("iec61850ResponsesJmsTemplate")
-    private JmsTemplate iec61850ResponsesJmsTemplate;
+    @Qualifier("protocolIec61850OutboundOsgpCoreResponsesJmsTemplate")
+    private JmsTemplate jmsTemplate;
 
     @Autowired
     private Iec61850DeviceConnectionService iec61850deviceConnectionService;
@@ -55,7 +57,7 @@ public class DeviceResponseMessageSender implements ResponseMessageSender {
 
         final ProtocolResponseMessage msg = (ProtocolResponseMessage) responseMessage;
 
-        if (!this.checkMessage(msg)) {
+        if (!checkMessage(msg)) {
             return;
         }
 
@@ -76,7 +78,7 @@ public class DeviceResponseMessageSender implements ResponseMessageSender {
         }
     }
 
-    private boolean checkMessage(final ProtocolResponseMessage msg) {
+    private static boolean checkMessage(final ProtocolResponseMessage msg) {
         if (StringUtils.isBlank(msg.getOrganisationIdentification())) {
             LOGGER.error(LOG_MESSAGE_BLANK_FIELD, "OrganisationIdentification");
             return false;
@@ -112,7 +114,7 @@ public class DeviceResponseMessageSender implements ResponseMessageSender {
                 responseMessage.getCorrelationUid(), responseMessage.getDeviceIdentification(),
                 responseMessage.getMessageType(), responseMessage.getMessagePriority());
 
-        this.iec61850ResponsesJmsTemplate.send(new MessageCreator() {
+        this.jmsTemplate.send(new MessageCreator() {
             @Override
             public Message createMessage(final Session session) throws JMSException {
                 final ObjectMessage objectMessage = session.createObjectMessage(responseMessage);

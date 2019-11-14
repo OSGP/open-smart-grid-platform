@@ -11,6 +11,7 @@ import static org.opensmartgridplatform.shared.application.config.messaging.JmsP
 
 import java.util.Arrays;
 
+import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.net.ssl.SSLException;
 
@@ -29,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
+import org.springframework.jms.listener.SessionAwareMessageListener;
 
 /**
  * This class provides the basic components used for JMS messaging.
@@ -39,12 +41,18 @@ public class JmsConfigurationFactory {
 
     private JmsPropertyReader propertyReader;
     private PooledConnectionFactory pooledConnectionFactory;
+    private RedeliveryPolicy redeliveryPolicy;
 
     public JmsConfigurationFactory(final Environment environment, final JmsConfiguration defaultJmsConfiguration,
             final String propertyPrefix) throws SSLException {
         LOGGER.info("Initializing JmsConfigurationFactory with propertyPrefix \"{}\".", propertyPrefix);
         this.propertyReader = new JmsPropertyReader(environment, propertyPrefix, defaultJmsConfiguration);
-        this.initPooledConnectionFactory();
+        this.redeliveryPolicy = this.initRedeliveryPolicy();
+        this.pooledConnectionFactory = this.initPooledConnectionFactory();
+    }
+
+    public RedeliveryPolicy getRedeliveryPolicy() {
+        return this.redeliveryPolicy;
     }
 
     public PooledConnectionFactory getPooledConnectionFactory() {
@@ -82,10 +90,36 @@ public class JmsConfigurationFactory {
         LOGGER.debug("Initializing message listener container for message listener: {}, and destination {}.",
                 messageListener, destination);
 
+        final DefaultMessageListenerContainer messageListenerContainer = this.initMessageListenerContainer();
+        messageListenerContainer.setDestination(destination);
+        messageListenerContainer.setMessageListener(messageListener);
+        return messageListenerContainer;
+    }
+
+    public DefaultMessageListenerContainer
+            initMessageListenerContainer(final SessionAwareMessageListener<Message> messageListener) {
+        LOGGER.debug("Initializing message listener container for message listener: {}.", messageListener);
+        final ActiveMQDestination destination = new ActiveMQQueue(
+                this.propertyReader.get(PROPERTY_NAME_QUEUE, String.class));
+        return this.initMessageListenerContainer(messageListener, destination);
+    }
+
+    public DefaultMessageListenerContainer initMessageListenerContainer(
+            final SessionAwareMessageListener<Message> messageListener, final ActiveMQDestination destination) {
+        LOGGER.debug("Initializing message listener container for message listener: {}, and destination {}.",
+                messageListener, destination);
+
+        final DefaultMessageListenerContainer messageListenerContainer = this.initMessageListenerContainer();
+        messageListenerContainer.setDestination(destination);
+        messageListenerContainer.setMessageListener(messageListener);
+        return messageListenerContainer;
+    }
+
+    public DefaultMessageListenerContainer initMessageListenerContainer() {
+        LOGGER.debug("Initializing default message listener container.");
+
         final DefaultMessageListenerContainer defaultMessageListenerContainer = new DefaultMessageListenerContainer();
         defaultMessageListenerContainer.setConnectionFactory(this.pooledConnectionFactory);
-        defaultMessageListenerContainer.setDestination(destination);
-        defaultMessageListenerContainer.setMessageListener(messageListener);
         defaultMessageListenerContainer
                 .setConcurrentConsumers(this.propertyReader.get(PROPERTY_NAME_CONCURRENT_CONSUMERS, int.class));
         defaultMessageListenerContainer
@@ -94,28 +128,29 @@ public class JmsConfigurationFactory {
         return defaultMessageListenerContainer;
     }
 
-    private void initPooledConnectionFactory() throws SSLException {
+    private PooledConnectionFactory initPooledConnectionFactory() throws SSLException {
         LOGGER.debug("Initializing pooled connection factory.");
 
-        this.pooledConnectionFactory = new PooledConnectionFactory();
-        this.pooledConnectionFactory.setConnectionFactory(this.initConnectionFactory());
-        this.pooledConnectionFactory
-                .setMaxConnections(this.propertyReader.get(PROPERTY_NAME_CONNECTION_POOL_SIZE, int.class));
-        this.pooledConnectionFactory.setMaximumActiveSessionPerConnection(
+        final PooledConnectionFactory connectionFactory = new PooledConnectionFactory();
+        connectionFactory.setConnectionFactory(this.initConnectionFactory());
+        connectionFactory.setMaxConnections(this.propertyReader.get(PROPERTY_NAME_CONNECTION_POOL_SIZE, int.class));
+        connectionFactory.setMaximumActiveSessionPerConnection(
                 this.propertyReader.get(PROPERTY_NAME_CONNECTION_POOL_MAX_ACTIVE_SESSIONS, int.class));
         final boolean blockIfSessionPoolIsFull = this.propertyReader
                 .get(PROPERTY_NAME_CONNECTION_POOL_BLOCK_IF_SESSION_POOL_IS_FULL, boolean.class);
-        this.pooledConnectionFactory.setBlockIfSessionPoolIsFull(blockIfSessionPoolIsFull);
+        connectionFactory.setBlockIfSessionPoolIsFull(blockIfSessionPoolIsFull);
         if (blockIfSessionPoolIsFull) {
-            this.pooledConnectionFactory.setBlockIfSessionPoolIsFullTimeout(this.propertyReader
+            connectionFactory.setBlockIfSessionPoolIsFullTimeout(this.propertyReader
                     .get(PROPERTY_NAME_CONNECTION_POOL_BLOCK_IF_SESSION_POOL_IS_FULL_TIMEOUT, long.class));
         }
-        this.pooledConnectionFactory
+        connectionFactory
                 .setExpiryTimeout(this.propertyReader.get(PROPERTY_NAME_CONNECTION_POOL_EXPIRY_TIMEOUT, long.class));
-        this.pooledConnectionFactory
+        connectionFactory
                 .setIdleTimeout(this.propertyReader.get(PROPERTY_NAME_CONNECTION_POOL_IDLE_TIMEOUT, int.class));
-        this.pooledConnectionFactory.setTimeBetweenExpirationCheckMillis(this.propertyReader
+        connectionFactory.setTimeBetweenExpirationCheckMillis(this.propertyReader
                 .get(PROPERTY_NAME_CONNECTION_POOL_TIME_BETWEEN_EXPIRATION_CHECK_MILLIS, long.class));
+
+        return connectionFactory;
     }
 
     private ActiveMQSslConnectionFactory initConnectionFactory() throws SSLException {
@@ -161,24 +196,21 @@ public class JmsConfigurationFactory {
         LOGGER.debug("Initializing redelivery policy map.");
 
         final RedeliveryPolicyMap redeliveryPolicyMap = new RedeliveryPolicyMap();
-        redeliveryPolicyMap.setDefaultEntry(this.initRedeliveryPolicy());
+        redeliveryPolicyMap.setDefaultEntry(this.redeliveryPolicy);
         return redeliveryPolicyMap;
     }
 
     private RedeliveryPolicy initRedeliveryPolicy() {
         LOGGER.debug("Initializing redelivery policy.");
 
-        final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
-        redeliveryPolicy.setUseExponentialBackOff(
-                this.propertyReader.get(PROPERTY_NAME_USE_EXPONENTIAL_BACK_OFF, boolean.class));
-        redeliveryPolicy.setBackOffMultiplier(this.propertyReader.get(PROPERTY_NAME_BACK_OFF_MULTIPLIER, double.class));
+        final RedeliveryPolicy policy = new RedeliveryPolicy();
+        policy.setUseExponentialBackOff(this.propertyReader.get(PROPERTY_NAME_USE_EXPONENTIAL_BACK_OFF, boolean.class));
+        policy.setBackOffMultiplier(this.propertyReader.get(PROPERTY_NAME_BACK_OFF_MULTIPLIER, double.class));
 
-        redeliveryPolicy.setMaximumRedeliveries(this.propertyReader.get(PROPERTY_NAME_MAXIMUM_REDELIVERIES, int.class));
-        redeliveryPolicy
-                .setInitialRedeliveryDelay(this.propertyReader.get(PROPERTY_NAME_INITIAL_REDELIVERY_DELAY, long.class));
-        redeliveryPolicy.setRedeliveryDelay(this.propertyReader.get(PROPERTY_NAME_REDELIVERY_DELAY, long.class));
-        redeliveryPolicy
-                .setMaximumRedeliveryDelay(this.propertyReader.get(PROPERTY_NAME_MAXIMUM_REDELIVERY_DELAY, long.class));
-        return redeliveryPolicy;
+        policy.setMaximumRedeliveries(this.propertyReader.get(PROPERTY_NAME_MAXIMUM_REDELIVERIES, int.class));
+        policy.setInitialRedeliveryDelay(this.propertyReader.get(PROPERTY_NAME_INITIAL_REDELIVERY_DELAY, long.class));
+        policy.setRedeliveryDelay(this.propertyReader.get(PROPERTY_NAME_REDELIVERY_DELAY, long.class));
+        policy.setMaximumRedeliveryDelay(this.propertyReader.get(PROPERTY_NAME_MAXIMUM_REDELIVERY_DELAY, long.class));
+        return policy;
     }
 }

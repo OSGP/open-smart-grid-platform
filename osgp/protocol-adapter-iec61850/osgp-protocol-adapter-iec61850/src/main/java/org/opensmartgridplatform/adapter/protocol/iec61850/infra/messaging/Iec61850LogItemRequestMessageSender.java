@@ -12,43 +12,42 @@ import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
+import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
+import org.springframework.stereotype.Component;
 
-import org.opensmartgridplatform.shared.infra.jms.Constants;
-
+@Component(value = "protocolIec61850OutboundLogItemRequestsMessageSender")
 public class Iec61850LogItemRequestMessageSender {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850LogItemRequestMessageSender.class);
 
     @Autowired
-    private JmsTemplate iec61850LogItemRequestsJmsTemplate;
+    @Qualifier("protocolIec61850OutboundLogItemRequestsJmsTemplate")
+    private JmsTemplate jmsTemplate;
 
-    public void send(final Iec61850LogItemRequestMessage iec61850LogItemRequestMessage) {
+    public void send(final Iec61850LogItemRequestMessage message) {
 
         LOGGER.debug("Sending Iec61850LogItemRequestMessage");
 
-        this.iec61850LogItemRequestsJmsTemplate.send(new MessageCreator() {
+        this.jmsTemplate.send(new MessageCreator() {
             @Override
             public Message createMessage(final Session session) throws JMSException {
                 final ObjectMessage objectMessage = session.createObjectMessage();
                 objectMessage.setJMSType(Constants.IEC61850_LOG_ITEM_REQUEST);
-                objectMessage.setStringProperty(Constants.IS_INCOMING, iec61850LogItemRequestMessage.isIncoming()
-                        .toString());
-                objectMessage.setStringProperty(Constants.ENCODED_MESSAGE,
-                        iec61850LogItemRequestMessage.getEncodedMessage());
-                objectMessage.setStringProperty(Constants.DECODED_MESSAGE,
-                        iec61850LogItemRequestMessage.getDecodedMessage());
-                objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
-                        iec61850LogItemRequestMessage.getDeviceIdentification());
+                objectMessage.setStringProperty(Constants.IS_INCOMING, message.isIncoming().toString());
+                objectMessage.setStringProperty(Constants.ENCODED_MESSAGE, message.getEncodedMessage());
+                objectMessage.setStringProperty(Constants.DECODED_MESSAGE, message.getDecodedMessage());
+                objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION, message.getDeviceIdentification());
                 objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
-                        iec61850LogItemRequestMessage.getOrganisationIdentification());
-                objectMessage.setStringProperty(Constants.IS_VALID, iec61850LogItemRequestMessage.isValid().toString());
+                        message.getOrganisationIdentification());
+                objectMessage.setStringProperty(Constants.IS_VALID, message.isValid().toString());
                 objectMessage.setIntProperty(Constants.PAYLOAD_MESSAGE_SERIALIZED_SIZE,
-                        iec61850LogItemRequestMessage.getPayloadMessageSerializedSize());
+                        message.getPayloadMessageSerializedSize());
                 return objectMessage;
             }
         });
