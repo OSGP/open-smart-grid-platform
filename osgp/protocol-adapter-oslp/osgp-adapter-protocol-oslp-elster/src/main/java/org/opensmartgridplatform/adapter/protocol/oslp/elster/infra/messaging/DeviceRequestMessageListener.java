@@ -14,12 +14,6 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.NotSupportedException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
@@ -29,8 +23,13 @@ import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
-@Component(value = "oslpRequestsMessageListener")
+@Component(value = "protocolOslpInboundOsgpCoreRequestsMessageListener")
 public class DeviceRequestMessageListener implements MessageListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceRequestMessageListener.class);
@@ -75,8 +74,14 @@ public class DeviceRequestMessageListener implements MessageListener {
 
             final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(objectMessage);
             final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage.Builder()
-                    .deviceMessageMetadata(deviceMessageMetadata).domain(domain).domainVersion(domainVersion)
-                    .result(result).osgpException(osgpException).dataObject(dataObject).scheduled(false).build();
+                    .deviceMessageMetadata(deviceMessageMetadata)
+                    .domain(domain)
+                    .domainVersion(domainVersion)
+                    .result(result)
+                    .osgpException(osgpException)
+                    .dataObject(dataObject)
+                    .scheduled(false)
+                    .build();
 
             this.deviceResponseMessageSender.send(protocolResponseMessage);
         } catch (final Exception e) {

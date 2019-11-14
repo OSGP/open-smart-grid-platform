@@ -23,14 +23,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
+import org.springframework.stereotype.Component;
 
+@Component(value = "protocolOslpOutboundOsgpCoreResponsesMessageSender")
 public class DeviceResponseMessageSender implements ResponseMessageSender {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceResponseMessageSender.class);
 
     @Autowired
-    @Qualifier("protocolOslpOutgoingOsgpCoreResponsesJmsTemplate")
-    private JmsTemplate oslpResponsesJmsTemplate;
+    @Qualifier("protocolOslpOutboundOsgpCoreResponsesJmsTemplate")
+    private JmsTemplate jmsTemplate;
 
     @Override
     public void send(final ResponseMessage responseMessage) {
@@ -83,7 +85,7 @@ public class DeviceResponseMessageSender implements ResponseMessageSender {
                 responseMessage.getDeviceIdentification(), responseMessage.getMessageType(),
                 responseMessage.getMessagePriority());
 
-        this.oslpResponsesJmsTemplate.send(new MessageCreator() {
+        this.jmsTemplate.send(new MessageCreator() {
             @Override
             public Message createMessage(final Session session) throws JMSException {
                 final ObjectMessage objectMessage = session.createObjectMessage(responseMessage);

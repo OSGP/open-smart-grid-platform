@@ -7,12 +7,20 @@
  */
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.application.config;
 
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.config.messaging.InboundOsgpCoreRequestsMessagingConfig;
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.config.messaging.InboundOsgpCoreResponsesMessagingConfig;
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.config.messaging.InboundSigningServerResponsesMessagingConfig;
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.config.messaging.OutboundLogItemRequestsMessagingConfig;
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.config.messaging.OutboundOsgpCoreRequestsMessagingConfig;
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.config.messaging.OutboundOsgpCoreResponsesMessagingConfig;
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.config.messaging.OutboundSigningServerRequestsMessagingConfig;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -24,6 +32,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @PropertySource("classpath:osgp-adapter-protocol-oslp-elster.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/AdapterProtocolOslpElster/config}", ignoreResourceNotFound = true)
+@Import(value = { InboundOsgpCoreRequestsMessagingConfig.class, InboundOsgpCoreResponsesMessagingConfig.class,
+        InboundSigningServerResponsesMessagingConfig.class, OutboundLogItemRequestsMessagingConfig.class,
+        OutboundOsgpCoreRequestsMessagingConfig.class, OutboundOsgpCoreResponsesMessagingConfig.class,
+        OutboundSigningServerRequestsMessagingConfig.class })
 public class MessagingConfig extends AbstractConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MessagingConfig.class);
