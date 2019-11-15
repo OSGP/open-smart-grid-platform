@@ -38,9 +38,13 @@ public class ProtocolMessagingConfig extends AbstractConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProtocolMessagingConfig.class);
 
-    // JMS Settings
-    private static final String PROPERTY_NAME_JMS_ACTIVEMQ_MESSAGEGROUP_CACHESIZE = "jms.protocol.activemq.messagegroup.cachesize";
-    private static final String PROPERTY_NAME_MAX_RETRY_COUNT = "max.retry.count";
+    private static final int DEFAULT_MESSAGE_GROUP_CACHE_SIZE = 1024;
+
+    @Value("${max.retry.count:3}")
+    private int maxRetryCount;
+
+    @Value("${jms.protocol.activemq.messagegroup.cachesize:1024}")
+    private int messageGroupCacheSize;
 
     // JMS Settings: SSL settings for the protocol requests and responses
     @Value("${jms.protocol.activemq.broker.client.key.store:/etc/osp/activemq/client.ks}")
@@ -54,8 +58,6 @@ public class ProtocolMessagingConfig extends AbstractConfig {
 
     @Value("${jms.protocol.activemq.broker.client.trust.store.pwd:password}")
     private String trustKeyStorePwd;
-
-    private static final int DEFAULT_MESSAGE_GROUP_CACHE_SIZE = 1024;
 
     private List<DomainInfo> domainInfos;
     private List<ProtocolInfo> protocolInfos;
@@ -80,17 +82,12 @@ public class ProtocolMessagingConfig extends AbstractConfig {
     @Bean
     public Integer messageGroupCacheSize() {
         LOGGER.debug("Creating bean: messageGroupCacheSize");
-        try {
-            final int cacheSize = Integer
-                    .parseInt(this.environment.getProperty(PROPERTY_NAME_JMS_ACTIVEMQ_MESSAGEGROUP_CACHESIZE));
-            if (cacheSize <= 0) {
-                throw new NumberFormatException(String.valueOf(cacheSize));
-            }
-            return cacheSize;
-        } catch (final NumberFormatException e) {
-            LOGGER.warn("Invalid message group cache size, using default value {}", DEFAULT_MESSAGE_GROUP_CACHE_SIZE,
-                    e);
+        if (this.messageGroupCacheSize <= 0) {
+            LOGGER.warn("Invalid message group cache size {}, using default value {}", this.messageGroupCacheSize,
+                    DEFAULT_MESSAGE_GROUP_CACHE_SIZE);
             return DEFAULT_MESSAGE_GROUP_CACHE_SIZE;
+        } else {
+            return this.messageGroupCacheSize;
         }
     }
 
@@ -132,6 +129,6 @@ public class ProtocolMessagingConfig extends AbstractConfig {
 
     @Bean
     public int getMaxRetryCount() {
-        return Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_MAX_RETRY_COUNT));
+        return this.maxRetryCount;
     }
 }

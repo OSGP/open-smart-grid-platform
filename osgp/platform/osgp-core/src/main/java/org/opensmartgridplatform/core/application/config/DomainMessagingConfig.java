@@ -33,9 +33,11 @@ import org.springframework.context.annotation.PropertySource;
 public class DomainMessagingConfig extends AbstractConfig {
     private static final Logger LOGGER = LoggerFactory.getLogger(DomainMessagingConfig.class);
 
-    private static final String PROPERTY_NAME_JMS_GET_POWER_USAGE_HISTORY_REQUEST_TIME_TO_LIVE = "jms.get.power.usage.history.request.time.to.live";
+    @Value("${jms.get.power.usage.history.request.time.to.live:3600000}")
+    private long getPowerUsageHistoryRequestTimeToLive;
 
-    private static final String PROPERTY_NAME_NETMANAGEMENT_ORGANISATION = "netmanagement.organisation";
+    @Value("${netmanagement.organisation:test-org}")
+    private String netmanagementOrganisation;
 
     // JMS Settings: SSL settings for the domain requests and responses
     @Value("${jms.domain.activemq.broker.client.key.store:/etc/osp/activemq/client.ks}")
@@ -104,15 +106,13 @@ public class DomainMessagingConfig extends AbstractConfig {
     }
 
     // Custom time to live for get power usage history requests.
-
     @Bean
     public Long getPowerUsageHistoryRequestTimeToLive() {
-        return Long.parseLong(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_GET_POWER_USAGE_HISTORY_REQUEST_TIME_TO_LIVE));
+        return this.getPowerUsageHistoryRequestTimeToLive;
     }
 
     @Bean
     public String netmanagementOrganisation() {
-        return this.environment.getRequiredProperty(PROPERTY_NAME_NETMANAGEMENT_ORGANISATION);
+        return this.netmanagementOrganisation;
     }
 }
