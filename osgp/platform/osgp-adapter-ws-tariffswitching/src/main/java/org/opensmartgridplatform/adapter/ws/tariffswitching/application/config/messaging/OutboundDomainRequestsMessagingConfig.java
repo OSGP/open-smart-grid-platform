@@ -5,50 +5,46 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.ws.publiclighting.application.config.messaging;
+package org.opensmartgridplatform.adapter.ws.tariffswitching.application.config.messaging;
 
 import javax.jms.ConnectionFactory;
 import javax.net.ssl.SSLException;
 
-import org.opensmartgridplatform.adapter.ws.infra.jms.LoggingMessageSender;
 import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationNames;
 import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsConfiguration;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfigurationFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.jms.core.JmsTemplate;
 
 /**
- * Configuration class for outbound messages to OSGP Logging.
- *
+ * Configuration class for outbound requests to domain adapter.
  */
 @Configuration
-@ComponentScan(basePackageClasses = LoggingMessageSender.class)
-public class OutboundLoggingRequestsMessagingConfig {
+public class OutboundDomainRequestsMessagingConfig {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(OutboundLoggingRequestsMessagingConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OutboundDomainRequestsMessagingConfig.class);
 
     private JmsConfigurationFactory jmsConfigurationFactory;
 
-    public OutboundLoggingRequestsMessagingConfig(final Environment environment,
+    public OutboundDomainRequestsMessagingConfig(final Environment environment,
             final DefaultJmsConfiguration defaultJmsConfiguration) throws SSLException {
         this.jmsConfigurationFactory = new JmsConfigurationFactory(environment, defaultJmsConfiguration,
-                JmsConfigurationNames.JMS_PUBLICLIGHTING_LOGGING);
+                JmsConfigurationNames.JMS_TARIFFSWITCHING_REQUESTS);
     }
 
-    @Bean(destroyMethod = "stop", name = "wsPublicLightingOutboundLoggingRequestsConnectionFactory")
+    @Bean(destroyMethod = "stop", name = "wsTariffSwitchingOutboundDomainRequestsConnectionFactory")
     public ConnectionFactory connectionFactory() {
-        LOGGER.info("Initializing wsPublicLightingOutboundLoggingRequestsConnectionFactory bean.");
+        LOGGER.info("Initializing wsTariffSwitchingOutboundDomainRequestsConnectionFactory bean.");
         return this.jmsConfigurationFactory.getPooledConnectionFactory();
     }
 
-    @Bean(name = "loggingJmsTemplate")
+    @Bean(name = "wsTariffSwitchingOutboundDomainRequestsJmsTemplate")
     public JmsTemplate jmsTemplate() {
-        LOGGER.info("Initializing loggingJmsTemplate bean.");
+        LOGGER.info("Initializing wsTariffSwitchingOutboundDomainRequestsJmsTemplate bean.");
         return this.jmsConfigurationFactory.initJmsTemplate();
     }
 }

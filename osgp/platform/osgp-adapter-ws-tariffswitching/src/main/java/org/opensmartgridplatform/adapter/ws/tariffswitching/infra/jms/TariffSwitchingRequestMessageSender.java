@@ -20,22 +20,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
+import org.springframework.stereotype.Component;
 
 /**
  * Class for sending tariff switching request messages to a queue
  */
+@Component(value = "wsTariffSwitchingOutboundDomainRequestsMessageSender")
 public class TariffSwitchingRequestMessageSender {
-    /**
-     * Logger for this class
-     */
+
     private static final Logger LOGGER = LoggerFactory.getLogger(TariffSwitchingRequestMessageSender.class);
 
-    /**
-     * Autowired field for tariff switching requests jms template
-     */
     @Autowired
-    @Qualifier("wsTariffSwitchingOutgoingRequestsJmsTemplate")
-    private JmsTemplate tariffSwitchingRequestsJmsTemplate;
+    @Qualifier("wsTariffSwitchingOutboundDomainRequestsJmsTemplate")
+    private JmsTemplate jmsTemplate;
 
     /**
      * Method for sending a request message to the queue
@@ -76,7 +73,7 @@ public class TariffSwitchingRequestMessageSender {
     private void sendMessage(final TariffSwitchingRequestMessage requestMessage) {
         LOGGER.info("Sending message to the tariff switching requests queue");
 
-        this.tariffSwitchingRequestsJmsTemplate.send(new MessageCreator() {
+        this.jmsTemplate.send(new MessageCreator() {
 
             @Override
             public Message createMessage(final Session session) throws JMSException {

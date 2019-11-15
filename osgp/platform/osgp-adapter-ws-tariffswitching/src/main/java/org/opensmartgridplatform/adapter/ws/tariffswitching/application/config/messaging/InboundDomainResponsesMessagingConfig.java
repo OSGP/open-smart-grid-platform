@@ -5,12 +5,12 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.ws.publiclighting.application.config.messaging;
+package org.opensmartgridplatform.adapter.ws.tariffswitching.application.config.messaging;
 
 import javax.jms.ConnectionFactory;
+import javax.jms.MessageListener;
 import javax.net.ssl.SSLException;
 
-import org.opensmartgridplatform.adapter.ws.publiclighting.infra.jms.PublicLightingResponseMessageListener;
 import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationNames;
 import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsConfiguration;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfigurationFactory;
@@ -34,47 +34,47 @@ public class InboundDomainResponsesMessagingConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InboundDomainResponsesMessagingConfig.class);
 
-    private JmsConfigurationFactory jmsConfigurationFactory;
-
-    @Value("${jms.publiclighting.responses.receive.timeout:100}")
+    @Value("${jms.tariffswitching.responses.receive.timeout:100}")
     private long receiveTimeout;
+
+    private JmsConfigurationFactory jmsConfigurationFactory;
 
     public InboundDomainResponsesMessagingConfig(final Environment environment,
             final DefaultJmsConfiguration defaultJmsConfiguration) throws SSLException {
         this.jmsConfigurationFactory = new JmsConfigurationFactory(environment, defaultJmsConfiguration,
-                JmsConfigurationNames.JMS_PUBLICLIGHTING_RESPONSES);
+                JmsConfigurationNames.JMS_TARIFFSWITCHING_RESPONSES);
     }
 
-    @Bean(destroyMethod = "stop", name = "wsPublicLightingInboundDomainResponsesConnectionFactory")
+    @Bean(destroyMethod = "stop", name = "wsTariffSwitchingInboundDomainResponsesConnectionFactory")
     public ConnectionFactory connectionFactory() {
-        LOGGER.info("Initializing wsPublicLightingInboundDomainResponsesConnectionFactory bean.");
+        LOGGER.info("Initializing wsTariffSwitchingInboundDomainResponsesConnectionFactory bean.");
         return this.jmsConfigurationFactory.getPooledConnectionFactory();
     }
 
-    @Bean(name = "wsPublicLightingInboundDomainResponsesJmsTemplate")
+    @Bean(name = "wsTariffSwitchingInboundDomainResponsesJmsTemplate")
     public JmsTemplate jmsTemplate() {
-        LOGGER.info("Initializing wsPublicLightingInboundDomainResponsesJmsTemplate with receive timeout {}.",
+        LOGGER.info("Initializing wsTariffSwitchingInboundDomainResponsesJmsTemplate bean with receive timeout {}.",
                 this.receiveTimeout);
         final JmsTemplate jmsTemplate = this.jmsConfigurationFactory.initJmsTemplate();
         jmsTemplate.setReceiveTimeout(this.receiveTimeout);
         return jmsTemplate;
     }
 
-    @Bean(name = "wsPublicLightingInboundDomainResponsesMessageListenerContainer")
-    public DefaultMessageListenerContainer messageListenerContainer(
-            @Qualifier("wsPublicLightingInboundDomainResponsesMessageListener") final PublicLightingResponseMessageListener responseMessageListener) {
-        LOGGER.info("Initializing wsPublicLightingInboundDomainResponsesMessageListenerContainer bean.");
+    @Bean(name = "wsTariffSwitchingResponsesMessageListenerContainer")
+    public DefaultMessageListenerContainer tariffSwitchingResponseMessageListenerContainer(
+            @Qualifier("wsTariffSwitchingInboundDomainResponsesMessageListener") final MessageListener messageListener) {
         final DefaultMessageListenerContainer container = this.jmsConfigurationFactory
-                .initMessageListenerContainer(responseMessageListener);
+                .initMessageListenerContainer(messageListener);
         // Only consume messages defined by the message selector string.
         // All other messages will be retrieved using
-        // {@link PublicLightingResponseMessageFinder}
-        container.setMessageSelector("JMSType = 'SET_LIGHT_SCHEDULE'");
+        // {@link TariffSwitchingResponseMessageFinder}
+        container.setMessageSelector("JMSType = 'SET_TARIFF_SCHEDULE'");
         return container;
     }
 
-    @Bean(name = "wsPublicLightingInboundDomainResponsesMessageProcessorMap")
+    @Bean
+    @Qualifier("wsTariffSwitchingInboundDomainResponsesMessageProcessorMap")
     public MessageProcessorMap messageProcessorMap() {
-        return new BaseMessageProcessorMap("wsPublicLightingInboundDomainResponsesMessageProcessorMap");
+        return new BaseMessageProcessorMap("inboundDomainResponsesMessageProcessorMap");
     }
 }

@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.ws.publiclighting.application.config.messaging;
+package org.opensmartgridplatform.adapter.ws.tariffswitching.application.config.messaging;
 
 import javax.jms.ConnectionFactory;
 import javax.net.ssl.SSLException;
@@ -23,8 +23,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.jms.core.JmsTemplate;
 
 /**
- * Configuration class for outbound messages to OSGP Logging.
- *
+ * Configuration class for outbound requests to OSGP Logging.
  */
 @Configuration
 @ComponentScan(basePackageClasses = LoggingMessageSender.class)
@@ -37,12 +36,12 @@ public class OutboundLoggingRequestsMessagingConfig {
     public OutboundLoggingRequestsMessagingConfig(final Environment environment,
             final DefaultJmsConfiguration defaultJmsConfiguration) throws SSLException {
         this.jmsConfigurationFactory = new JmsConfigurationFactory(environment, defaultJmsConfiguration,
-                JmsConfigurationNames.JMS_PUBLICLIGHTING_LOGGING);
+                JmsConfigurationNames.JMS_TARIFFSWITCHING_LOGGING);
     }
 
-    @Bean(destroyMethod = "stop", name = "wsPublicLightingOutboundLoggingRequestsConnectionFactory")
+    @Bean(destroyMethod = "stop", name = "wsTariffSwitchingOutboundLoggingRequestsConnectionFactory")
     public ConnectionFactory connectionFactory() {
-        LOGGER.info("Initializing wsPublicLightingOutboundLoggingRequestsConnectionFactory bean.");
+        LOGGER.info("Initializing wsTariffSwitchingOutboundLoggingRequestsConnectionFactory bean.");
         return this.jmsConfigurationFactory.getPooledConnectionFactory();
     }
 
