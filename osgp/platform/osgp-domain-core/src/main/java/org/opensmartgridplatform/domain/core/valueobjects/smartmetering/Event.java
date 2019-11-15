@@ -18,20 +18,23 @@ public class Event implements Serializable {
      * Serial Version UID.
      */
     private static final long serialVersionUID = 4482313912422705642L;
-    private DateTime timestamp;
-    private Integer eventCode;
-    private Integer eventCounter;
+    private final DateTime timestamp;
+    private final Integer eventCode;
+    private final Integer eventCounter;
+    private final EventLogCategory eventLogCategory;
 
-    public Event(final DateTime timestamp, final Integer eventCode, final Integer eventCounter) {
+    public Event(final DateTime timestamp, final Integer eventCode, final Integer eventCounter,
+            final EventLogCategory eventLogCategory) {
         this.timestamp = timestamp;
         this.eventCode = eventCode;
         this.eventCounter = eventCounter;
+        this.eventLogCategory = eventLogCategory;
     }
 
     @Override
     public String toString() {
-        return String.format("Event[time=%s, code=%s, type=%s%s]", this.timestamp, this.eventCode,
-                this.eventCode == null ? null : EventType.getByEventCode(this.eventCode),
+        return String.format("Event[time=%s, code=%s, category=%s, type=%s%s]", this.timestamp, this.eventCode,
+                this.eventLogCategory.name(), this.eventCode == null ? null : EventType.getByEventCode(this.eventCode),
                 this.eventCounter == null ? "" : ", counter=" + this.eventCounter);
     }
 
@@ -45,5 +48,9 @@ public class Event implements Serializable {
 
     public Integer getEventCounter() {
         return this.eventCounter;
+    }
+
+    public EventLogCategory getEventLogCategory() {
+        return this.eventLogCategory;
     }
 }

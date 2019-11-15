@@ -14,7 +14,7 @@
 
   <artifactId>parent-pa-oslp</artifactId>
   <groupId>org.opensmartgridplatform</groupId>
-  <version>4.37.1</version>
+  <version>4.38.0</version>
   <packaging>pom</packaging>
   <name>parent-pa-oslp</name>
   <!-- Description, Organization, Licenses, URL and Distribution Management elements are needed for the maven-jxr-plugin to generate a maven site -->
@@ -44,7 +44,7 @@
     <java.version>1.8</java.version>
     <module.baseUri>${project.baseUri}/../</module.baseUri>
     <osgp.version>${project.version}</osgp.version>
-    <osgp.shared.version>4.37.1</osgp.shared.version>
+    <osgp.shared.version>4.38.0</osgp.shared.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <spring.version>4.3.18.RELEASE</spring.version>
@@ -70,8 +70,8 @@
     <maven.site.plugin>3.7.1</maven.site.plugin>
     <apache.activemq.version>5.15.9</apache.activemq.version>
     <commons.pool.version>1.6</commons.pool.version>
-    <jackson.version>2.9.9</jackson.version>
-    <jackson-databind.version>2.9.9.2</jackson-databind.version>
+    <jackson.version>2.9.10</jackson.version>
+    <jackson-databind.version>2.9.10.1</jackson-databind.version>
     <proton-jms.version>0.7</proton-jms.version>
     <logback.version>1.2.3</logback.version>
     <logback.ext.version>0.1.4</logback.ext.version>

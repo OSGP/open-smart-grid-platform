@@ -14,7 +14,7 @@
 
   <artifactId>protocol-adapter-iec60870</artifactId>
   <groupId>org.opensmartgridplatform</groupId>
-  <version>4.37.1-SNAPSHOT</version>
+  <version>4.38.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>protocol-adapter-iec60870</name>
   <properties>

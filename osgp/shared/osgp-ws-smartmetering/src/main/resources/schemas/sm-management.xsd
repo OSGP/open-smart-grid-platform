@@ -278,6 +278,8 @@
                    minOccurs="1" maxOccurs="1"/>
       <xsd:element name="eventType" type="tns:EventType"
                    minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="EventLogCategory" type="tns:EventLogCategory"
+                   minOccurs="1" maxOccurs="1"/>
       <xsd:element name="eventCounter" type="xsd:int"
                    minOccurs="0" maxOccurs="1"/>
     </xsd:sequence>

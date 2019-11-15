@@ -30,8 +30,7 @@ public class SetConfigurationObjectResponseMessageProcessor extends OsgpCoreResp
     private ConfigurationService configurationService;
 
     @Autowired
-    protected SetConfigurationObjectResponseMessageProcessor(
-            WebServiceResponseMessageSender responseMessageSender,
+    protected SetConfigurationObjectResponseMessageProcessor(WebServiceResponseMessageSender responseMessageSender,
             @Qualifier("domainSmartMeteringOsgpCoreResponseMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.SET_CONFIGURATION_OBJECT,
                 ComponentType.DOMAIN_SMART_METERING);
@@ -39,7 +38,7 @@ public class SetConfigurationObjectResponseMessageProcessor extends OsgpCoreResp
 
     @Override
     protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
-        // Only the result is used, no need to check the dataObject.
+        // Only the Result (OK/NOK/Exception) is returned, no need to check the (contents of the dataObject).
         return true;
     }
 

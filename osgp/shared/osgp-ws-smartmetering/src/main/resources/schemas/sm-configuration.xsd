@@ -2,20 +2,20 @@
   License, Version 2.0 (the "License"); you may not use this file except in 
   compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 -->
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-  xmlns:tns="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-configuration/2014/10"
-  xmlns:common="http://www.opensmartgridplatform.org/schemas/common/2014/10"
-  attributeFormDefault="unqualified" elementFormDefault="qualified"
-  targetNamespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-configuration/2014/10">
+            xmlns:tns="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-configuration/2014/10"
+            xmlns:common="http://www.opensmartgridplatform.org/schemas/common/2014/10"
+            attributeFormDefault="unqualified" elementFormDefault="qualified"
+            targetNamespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-configuration/2014/10">
 
   <xsd:import namespace="http://www.opensmartgridplatform.org/schemas/common/2014/10"
-    schemaLocation="common.xsd" />
+              schemaLocation="common.xsd"/>
 
   <xsd:element name="SetSpecialDaysRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
         <xsd:element name="SpecialDaysRequestData" type="tns:SpecialDaysRequestData"
-          minOccurs="1" maxOccurs="1" />
+                     minOccurs="1" maxOccurs="1"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -37,9 +37,9 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="Result" type="common:OsgpResultType"
-          minOccurs="1" />
+                     minOccurs="1"/>
         <xsd:element name="Description" type="xsd:string"
-          minOccurs="0" />
+                     minOccurs="0"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -58,7 +58,7 @@
       <xsd:extension base="common:Response">
         <xsd:sequence>
           <xsd:element name="FirmwareVersions" type="tns:FirmwareVersion"
-            minOccurs="1" maxOccurs="unbounded" />
+                       minOccurs="1" maxOccurs="unbounded"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -67,9 +67,9 @@
   <xsd:element name="UpdateFirmwareRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="DeviceIdentification" type="common:Identification" />
+        <xsd:element name="DeviceIdentification" type="common:Identification"/>
         <xsd:element name="FirmwareVersion" type="tns:FirmwareVersion"
-          minOccurs="1" maxOccurs="unbounded" />
+                     minOccurs="1" maxOccurs="unbounded"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -91,10 +91,10 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="Result" type="common:OsgpResultType"
-          minOccurs="1" />
+                     minOccurs="1"/>
         <xsd:sequence>
           <xsd:element name="FirmwareVersion" type="tns:FirmwareVersion"
-            minOccurs="1" maxOccurs="unbounded" />
+                       minOccurs="1" maxOccurs="unbounded"/>
         </xsd:sequence>
       </xsd:sequence>
     </xsd:complexType>
@@ -111,12 +111,12 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="Result" type="common:OsgpResultType"
-          minOccurs="1" />
-        <xsd:element name="decodedMessage" type="xsd:string" />
-        <xsd:element name="encodedMessage" type="xsd:hexBinary" />
+                     minOccurs="1"/>
+        <xsd:element name="decodedMessage" type="xsd:string"/>
+        <xsd:element name="encodedMessage" type="xsd:hexBinary"/>
         <xsd:sequence>
           <xsd:element name="alarm" type="common:AlarmType"
-            minOccurs="1" maxOccurs="unbounded" />
+                       minOccurs="1" maxOccurs="unbounded"/>
         </xsd:sequence>
       </xsd:sequence>
     </xsd:complexType>
@@ -127,7 +127,7 @@
       <xsd:extension base="common:Command">
         <xsd:sequence>
           <xsd:element name="FirmwareVersion" type="tns:FirmwareVersion"
-            minOccurs="1" maxOccurs="unbounded" />
+                       minOccurs="1" maxOccurs="unbounded"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -144,7 +144,7 @@
     <xsd:complexContent>
       <xsd:extension base="common:Response">
         <xsd:sequence>
-          <xsd:element name="ConfigurationObject" type="tns:ConfigurationObject" />
+          <xsd:element name="ConfigurationObject" type="tns:ConfigurationObject"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -152,18 +152,18 @@
 
   <xsd:complexType name="FirmwareVersion">
     <xsd:sequence>
-      <xsd:element name="Version" type="xsd:string" />
-      <xsd:element name="FirmwareModuleType" type="tns:FirmwareModuleType" />
+      <xsd:element name="Version" type="xsd:string"/>
+      <xsd:element name="FirmwareModuleType" type="tns:FirmwareModuleType"/>
     </xsd:sequence>
   </xsd:complexType>
 
   <!-- Firmware Module Types -->
   <xsd:simpleType name="FirmwareModuleType">
     <xsd:restriction base="xsd:string">
-      <xsd:enumeration value="ACTIVE_FIRMWARE" />
-      <xsd:enumeration value="MODULE_ACTIVE_FIRMWARE" />
-      <xsd:enumeration value="COMMUNICATION_MODULE_ACTIVE_FIRMWARE" />
-      <xsd:enumeration value="M_BUS_DRIVER_ACTIVE_FIRMWARE" />
+      <xsd:enumeration value="ACTIVE_FIRMWARE"/>
+      <xsd:enumeration value="MODULE_ACTIVE_FIRMWARE"/>
+      <xsd:enumeration value="COMMUNICATION_MODULE_ACTIVE_FIRMWARE"/>
+      <xsd:enumeration value="M_BUS_DRIVER_ACTIVE_FIRMWARE"/>
     </xsd:restriction>
   </xsd:simpleType>
 
@@ -171,7 +171,7 @@
   <xsd:element name="GetFirmwareVersionRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="DeviceIdentification" type="common:Identification" />
+        <xsd:element name="DeviceIdentification" type="common:Identification"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -194,10 +194,10 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="Result" type="common:OsgpResultType"
-          minOccurs="1" />
+                     minOccurs="1"/>
         <xsd:sequence>
           <xsd:element name="FirmwareVersion" type="tns:FirmwareVersion"
-            minOccurs="1" maxOccurs="unbounded" />
+                       minOccurs="1" maxOccurs="unbounded"/>
         </xsd:sequence>
       </xsd:sequence>
     </xsd:complexType>
@@ -206,10 +206,10 @@
   <xsd:element name="SetConfigurationObjectRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
         <xsd:element name="SetConfigurationObjectRequestData"
-          type="tns:SetConfigurationObjectRequestData" minOccurs="1"
-          maxOccurs="1" />
+                     type="tns:SetConfigurationObjectRequestData" minOccurs="1"
+                     maxOccurs="1"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -231,9 +231,9 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="Result" type="common:OsgpResultType"
-          minOccurs="1" />
+                     minOccurs="1"/>
         <xsd:element name="Description" type="xsd:string"
-          minOccurs="0" />
+                     minOccurs="0"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -241,7 +241,7 @@
   <xsd:element name="GetConfigurationObjectRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -263,9 +263,9 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="Result" type="common:OsgpResultType"
-          minOccurs="1" />
+                     minOccurs="1"/>
         <xsd:element name="ConfigurationObject" type="tns:ConfigurationObject"
-          minOccurs="0" />
+                     minOccurs="0"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -273,9 +273,9 @@
   <xsd:element name="SetPushSetupAlarmRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
         <xsd:element name="SetPushSetupAlarmRequestData"
-          type="tns:SetPushSetupAlarmRequestData" />
+                     type="tns:SetPushSetupAlarmRequestData"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -297,9 +297,9 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="Result" type="common:OsgpResultType"
-          minOccurs="1" />
+                     minOccurs="1"/>
         <xsd:element name="Description" type="xsd:string"
-          minOccurs="0" />
+                     minOccurs="0"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -307,8 +307,8 @@
   <xsd:element name="SetPushSetupSmsRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
-        <xsd:element name="SetPushSetupSmsRequestData" type="tns:SetPushSetupSmsRequestData" />
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
+        <xsd:element name="SetPushSetupSmsRequestData" type="tns:SetPushSetupSmsRequestData"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -330,9 +330,9 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="Result" type="common:OsgpResultType"
-          minOccurs="1" />
+                     minOccurs="1"/>
         <xsd:element name="Description" type="xsd:string"
-          minOccurs="0" />
+                     minOccurs="0"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -340,16 +340,16 @@
   <xsd:element name="SetAlarmNotificationsRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
         <xsd:element name="SetAlarmNotificationsRequestData"
-          type="tns:SetAlarmNotificationsRequestData" />
+                     type="tns:SetAlarmNotificationsRequestData"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
   <xsd:element name="SetAlarmNotificationsAsyncResponse">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="AsyncResponse" type="common:AsyncResponse" />
+        <xsd:element name="AsyncResponse" type="common:AsyncResponse"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -364,9 +364,9 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="Result" type="common:OsgpResultType"
-          minOccurs="1" />
+                     minOccurs="1"/>
         <xsd:element name="Description" type="xsd:string"
-          minOccurs="0" />
+                     minOccurs="0"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -375,7 +375,7 @@
     <xsd:complexContent>
       <xsd:extension base="common:Command">
         <xsd:sequence>
-          <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+          <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -384,7 +384,7 @@
   <xsd:element name="SetEncryptionKeyExchangeOnGMeterRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -408,9 +408,9 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="Result" type="common:OsgpResultType"
-          minOccurs="1" />
+                     minOccurs="1"/>
         <xsd:element name="Description" type="xsd:string"
-          minOccurs="0" />
+                     minOccurs="0"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -419,7 +419,7 @@
     <xsd:complexContent>
       <xsd:extension base="common:Query">
         <xsd:sequence>
-          <xsd:element name="MbusDeviceIdentification" type="common:DeviceIdentification" />
+          <xsd:element name="MbusDeviceIdentification" type="common:DeviceIdentification"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -429,8 +429,8 @@
     <xsd:complexContent>
       <xsd:extension base="common:Response">
         <xsd:sequence>
-          <xsd:element name="MbusDeviceIdentification" type="common:DeviceIdentification" />
-          <xsd:element name="EncryptionKeyStatus" type="tns:EncryptionKeyStatus" />
+          <xsd:element name="MbusDeviceIdentification" type="common:DeviceIdentification"/>
+          <xsd:element name="EncryptionKeyStatus" type="tns:EncryptionKeyStatus"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -439,7 +439,7 @@
   <xsd:element name="GetMbusEncryptionKeyStatusRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -464,9 +464,9 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="Result" type="common:OsgpResultType"
-          minOccurs="1" />
+                     minOccurs="1"/>
         <xsd:element name="EncryptionKeyStatus" type="tns:EncryptionKeyStatus"
-          minOccurs="0" />
+                     minOccurs="0"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -475,9 +475,9 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="GatewayDeviceIdentification"
-          type="common:DeviceIdentification" />
+                     type="common:DeviceIdentification"/>
         <xsd:element name="GetMbusEncryptionKeyStatusByChannelRequestData"
-          type="tns:GetMbusEncryptionKeyStatusByChannelRequestData" />
+                     type="tns:GetMbusEncryptionKeyStatusByChannelRequestData"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -502,9 +502,9 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="Result" type="common:OsgpResultType"
-          minOccurs="1" />
+                     minOccurs="1"/>
         <xsd:element name="EncryptionKeyStatus" type="tns:EncryptionKeyStatus"
-          minOccurs="0" />
+                     minOccurs="0"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -512,9 +512,9 @@
   <xsd:element name="SetActivityCalendarRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
         <xsd:element name="ActivityCalendarData"
-          type="tns:SetActivityCalendarRequestData" />
+                     type="tns:SetActivityCalendarRequestData"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -536,9 +536,9 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="Result" type="common:OsgpResultType"
-          minOccurs="1" />
+                     minOccurs="1"/>
         <xsd:element name="Description" type="xsd:string"
-          minOccurs="0" />
+                     minOccurs="0"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -546,7 +546,7 @@
   <xsd:element name="GetAdministrativeStatusRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -580,7 +580,7 @@
   <xsd:element name="GetAdministrativeStatusResponse">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="Enabled" type="tns:AdministrativeStatusType" />
+        <xsd:element name="Enabled" type="tns:AdministrativeStatusType"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -588,8 +588,8 @@
   <xsd:element name="SetAdministrativeStatusRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
-        <xsd:element name="Enabled" type="tns:AdministrativeStatusType" />
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
+        <xsd:element name="Enabled" type="tns:AdministrativeStatusType"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -612,9 +612,9 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="Result" type="common:OsgpResultType"
-          minOccurs="1" />
+                     minOccurs="1"/>
         <xsd:element name="Description" type="xsd:string"
-          minOccurs="0" />
+                     minOccurs="0"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -622,8 +622,8 @@
   <xsd:element name="ReplaceKeysRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
-        <xsd:element name="SetKeysRequestData" type="tns:SetKeysRequestData" />
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
+        <xsd:element name="SetKeysRequestData" type="tns:SetKeysRequestData"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -646,9 +646,9 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="Result" type="common:OsgpResultType"
-          minOccurs="1" />
+                     minOccurs="1"/>
         <xsd:element name="Description" type="xsd:string"
-          minOccurs="0" />
+                     minOccurs="0"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -656,7 +656,7 @@
   <xsd:element name="GenerateAndReplaceKeysRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -687,9 +687,9 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="Result" type="common:OsgpResultType"
-          minOccurs="1" />
+                     minOccurs="1"/>
         <xsd:element name="Description" type="xsd:string"
-          minOccurs="0" />
+                     minOccurs="0"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -697,9 +697,9 @@
   <xsd:element name="SetClockConfigurationRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
         <xsd:element name="SetClockConfigurationData"
-          type="tns:SetClockConfigurationRequestData" />
+                     type="tns:SetClockConfigurationRequestData"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -722,9 +722,9 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="Result" type="common:OsgpResultType"
-          minOccurs="1" />
+                     minOccurs="1"/>
         <xsd:element name="Description" type="xsd:string"
-          minOccurs="0" />
+                     minOccurs="0"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -732,9 +732,9 @@
   <xsd:element name="ConfigureDefinableLoadProfileRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
         <xsd:element name="DefinableLoadProfileConfigurationData"
-          type="tns:DefinableLoadProfileConfigurationData" />
+                     type="tns:DefinableLoadProfileConfigurationData"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -757,9 +757,9 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="Result" type="common:OsgpResultType"
-          minOccurs="1" />
+                     minOccurs="1"/>
         <xsd:element name="Description" type="xsd:string"
-          minOccurs="0" />
+                     minOccurs="0"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -767,9 +767,9 @@
   <xsd:element name="SetMbusUserKeyByChannelRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
         <xsd:element name="SetMbusUserKeyByChannelRequestData"
-          type="tns:SetMbusUserKeyByChannelRequestData" />
+                     type="tns:SetMbusUserKeyByChannelRequestData"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -793,9 +793,9 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="Result" type="common:OsgpResultType"
-          minOccurs="1" />
+                     minOccurs="1"/>
         <xsd:element name="Description" type="xsd:string"
-          minOccurs="0" />
+                     minOccurs="0"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -807,7 +807,7 @@
       <xsd:extension base="common:Command">
         <xsd:sequence>
           <xsd:element maxOccurs="30" name="SpecialDays"
-            type="tns:SpecialDay" />
+                       type="tns:SpecialDay"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -816,22 +816,22 @@
   <xsd:complexType name="SpecialDay">
     <xsd:sequence>
       <xsd:element name="specialDayDate" minOccurs="1"
-        maxOccurs="1" type="common:CosemDateType" />
+                   maxOccurs="1" type="common:CosemDateType"/>
       <xsd:element minOccurs="1" maxOccurs="1" name="dayId"
-        type="xsd:int" />
+                   type="xsd:int"/>
     </xsd:sequence>
   </xsd:complexType>
 
   <xsd:complexType name="AlarmNotifications">
     <xsd:sequence maxOccurs="unbounded">
-      <xsd:element name="AlarmNotification" type="tns:AlarmNotification" />
+      <xsd:element name="AlarmNotification" type="tns:AlarmNotification"/>
     </xsd:sequence>
   </xsd:complexType>
 
   <xsd:complexType name="AlarmNotification">
     <xsd:sequence>
-      <xsd:element name="AlarmType" type="common:AlarmType" />
-      <xsd:element name="Enabled" type="xsd:boolean" />
+      <xsd:element name="AlarmType" type="common:AlarmType"/>
+      <xsd:element name="Enabled" type="xsd:boolean"/>
     </xsd:sequence>
   </xsd:complexType>
 
@@ -840,7 +840,7 @@
     <xsd:complexContent>
       <xsd:extension base="common:Response">
         <xsd:sequence>
-          <xsd:element name="AdministrativeStatusType" type="tns:AdministrativeStatusType" />
+          <xsd:element name="AdministrativeStatusType" type="tns:AdministrativeStatusType"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -849,9 +849,9 @@
   <!-- Administrative Status Types -->
   <xsd:simpleType name="AdministrativeStatusType">
     <xsd:restriction base="xsd:string">
-      <xsd:enumeration value="UNDEFINED" />
-      <xsd:enumeration value="OFF" />
-      <xsd:enumeration value="ON" />
+      <xsd:enumeration value="UNDEFINED"/>
+      <xsd:enumeration value="OFF"/>
+      <xsd:enumeration value="ON"/>
     </xsd:restriction>
   </xsd:simpleType>
 
@@ -859,7 +859,7 @@
     <xsd:complexContent>
       <xsd:extension base="common:Command">
         <xsd:sequence>
-          <xsd:element name="AdministrativeStatusType" type="tns:AdministrativeStatusType" />
+          <xsd:element name="AdministrativeStatusType" type="tns:AdministrativeStatusType"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -869,7 +869,7 @@
     <xsd:complexContent>
       <xsd:extension base="common:Command">
         <xsd:sequence>
-          <xsd:element name="ConfigurationObject" type="tns:ConfigurationObject" />
+          <xsd:element name="ConfigurationObject" type="tns:ConfigurationObject"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -882,12 +882,11 @@
     </xsd:complexContent>
   </xsd:complexType>
 
-
   <xsd:complexType name="SetPushSetupAlarmRequestData">
     <xsd:complexContent>
       <xsd:extension base="common:Command">
         <xsd:sequence>
-          <xsd:element name="PushSetupAlarm" type="tns:PushSetupAlarm" />
+          <xsd:element name="PushSetupAlarm" type="tns:PushSetupAlarm"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -897,7 +896,7 @@
     <xsd:complexContent>
       <xsd:extension base="common:Command">
         <xsd:sequence>
-          <xsd:element name="PushSetupSms" type="tns:PushSetupSms" />
+          <xsd:element name="PushSetupSms" type="tns:PushSetupSms"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -907,7 +906,7 @@
     <xsd:complexContent>
       <xsd:extension base="common:Command">
         <xsd:sequence>
-          <xsd:element name="AlarmNotifications" type="tns:AlarmNotifications" />
+          <xsd:element name="AlarmNotifications" type="tns:AlarmNotifications"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -918,7 +917,7 @@
       <xsd:extension base="common:Command">
         <xsd:sequence>
           <xsd:element name="ActivityCalendar" type="tns:ActivityCalendarType"
-            minOccurs="1" maxOccurs="1" />
+                       minOccurs="1" maxOccurs="1"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -927,59 +926,59 @@
   <xsd:complexType name="ActivityCalendarType">
     <xsd:sequence>
       <xsd:element name="CalendarName" type="tns:NameType"
-        minOccurs="1" maxOccurs="1" />
+                   minOccurs="1" maxOccurs="1"/>
       <xsd:element name="ActivatePassiveCalendarTime" type="common:CosemDateTimeType"
-        minOccurs="1" maxOccurs="1" />
+                   minOccurs="1" maxOccurs="1"/>
       <xsd:element name="SeasonProfile" type="tns:SeasonsType"
-        minOccurs="1" maxOccurs="1" />
+                   minOccurs="1" maxOccurs="1"/>
     </xsd:sequence>
   </xsd:complexType>
 
   <xsd:complexType name="ConfigurationObject">
     <xsd:sequence>
-      <xsd:element name="GprsOperationMode" type="tns:GprsOperationModeType" minOccurs="0" maxOccurs="1" />
-      <xsd:element name="ConfigurationFlags" type="tns:ConfigurationFlags" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="GprsOperationMode" type="tns:GprsOperationModeType" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="ConfigurationFlags" type="tns:ConfigurationFlags" minOccurs="0" maxOccurs="1"/>
     </xsd:sequence>
   </xsd:complexType>
 
   <xsd:complexType name="ConfigurationFlags">
     <xsd:sequence minOccurs="1" maxOccurs="10">
-      <xsd:element name="ConfigurationFlag" type="tns:ConfigurationFlag" />
+      <xsd:element name="ConfigurationFlag" type="tns:ConfigurationFlag"/>
     </xsd:sequence>
   </xsd:complexType>
 
   <xsd:complexType name="ConfigurationFlag">
     <xsd:sequence>
-      <xsd:element name="ConfigurationFlagType" type="tns:ConfigurationFlagType" />
-      <xsd:element name="Enabled" type="xsd:boolean" />
+      <xsd:element name="ConfigurationFlagType" type="tns:ConfigurationFlagType"/>
+      <xsd:element name="Enabled" type="xsd:boolean"/>
     </xsd:sequence>
   </xsd:complexType>
 
   <!-- ConfigurationObjectFlagType -->
   <xsd:simpleType name="ConfigurationFlagType">
     <xsd:restriction base="xsd:string">
-      <xsd:enumeration value="DISCOVER_ON_OPEN_COVER" />
-      <xsd:enumeration value="DISCOVER_ON_POWER_ON" />
-      <xsd:enumeration value="DYNAMIC_MBUS_ADDRESS" />
-      <xsd:enumeration value="PO_ENABLE" />
-      <xsd:enumeration value="HLS_3_ON_P3_ENABLE" />
-      <xsd:enumeration value="HLS_4_ON_P3_ENABLE" />
-      <xsd:enumeration value="HLS_5_ON_P3_ENABLE" />
-      <xsd:enumeration value="HLS_3_ON_PO_ENABLE" />
-      <xsd:enumeration value="HLS_4_ON_PO_ENABLE" />
-      <xsd:enumeration value="HLS_5_ON_PO_ENABLE" />
-      <xsd:enumeration value="DIRECT_ATTACH_AT_POWER_ON" />
-      <xsd:enumeration value="HLS_6_ON_P3_ENABLE" />
-      <xsd:enumeration value="HLS_7_ON_P3_ENABLE" />
-      <xsd:enumeration value="HLS_6_ON_P0_ENABLE" />
-      <xsd:enumeration value="HLS_7_ON_P0_ENABLE" />
-      </xsd:restriction>
+      <xsd:enumeration value="DISCOVER_ON_OPEN_COVER"/>
+      <xsd:enumeration value="DISCOVER_ON_POWER_ON"/>
+      <xsd:enumeration value="DYNAMIC_MBUS_ADDRESS"/>
+      <xsd:enumeration value="PO_ENABLE"/>
+      <xsd:enumeration value="HLS_3_ON_P3_ENABLE"/>
+      <xsd:enumeration value="HLS_4_ON_P3_ENABLE"/>
+      <xsd:enumeration value="HLS_5_ON_P3_ENABLE"/>
+      <xsd:enumeration value="HLS_3_ON_PO_ENABLE"/>
+      <xsd:enumeration value="HLS_4_ON_PO_ENABLE"/>
+      <xsd:enumeration value="HLS_5_ON_PO_ENABLE"/>
+      <xsd:enumeration value="DIRECT_ATTACH_AT_POWER_ON"/>
+      <xsd:enumeration value="HLS_6_ON_P3_ENABLE"/>
+      <xsd:enumeration value="HLS_7_ON_P3_ENABLE"/>
+      <xsd:enumeration value="HLS_6_ON_P0_ENABLE"/>
+      <xsd:enumeration value="HLS_7_ON_P0_ENABLE"/>
+    </xsd:restriction>
   </xsd:simpleType>
 
   <xsd:simpleType name="GprsOperationModeType">
     <xsd:restriction base="xsd:string">
-      <xsd:enumeration value="ALWAYS_ON" />
-      <xsd:enumeration value="TRIGGERED" />
+      <xsd:enumeration value="ALWAYS_ON"/>
+      <xsd:enumeration value="TRIGGERED"/>
     </xsd:restriction>
   </xsd:simpleType>
 
@@ -1029,70 +1028,70 @@
   <xsd:complexType name="SeasonsType">
     <xsd:sequence>
       <xsd:element name="Season" type="tns:SeasonType"
-        minOccurs="1" maxOccurs="4" />
+                   minOccurs="1" maxOccurs="4"/>
     </xsd:sequence>
   </xsd:complexType>
 
   <xsd:complexType name="SeasonType">
     <xsd:sequence>
       <xsd:element name="SeasonProfileName" type="tns:NameType"
-        minOccurs="1" maxOccurs="1" />
+                   minOccurs="1" maxOccurs="1"/>
       <xsd:element name="SeasonStart" type="common:CosemDateTimeType"
-        minOccurs="1" maxOccurs="1" />
+                   minOccurs="1" maxOccurs="1"/>
       <xsd:element name="WeekProfile" type="tns:WeekType"
-        minOccurs="1" maxOccurs="1" />
+                   minOccurs="1" maxOccurs="1"/>
     </xsd:sequence>
   </xsd:complexType>
 
   <xsd:complexType name="WeekType">
     <xsd:sequence>
       <xsd:element name="WeekProfileName" type="tns:NameType"
-        minOccurs="1" maxOccurs="1" />
+                   minOccurs="1" maxOccurs="1"/>
       <xsd:element name="Monday" type="tns:DayType"
-        minOccurs="1" maxOccurs="1" />
+                   minOccurs="1" maxOccurs="1"/>
       <xsd:element name="Tuesday" type="tns:DayType"
-        minOccurs="1" maxOccurs="1" />
+                   minOccurs="1" maxOccurs="1"/>
       <xsd:element name="Wednesday" type="tns:DayType"
-        minOccurs="1" maxOccurs="1" />
+                   minOccurs="1" maxOccurs="1"/>
       <xsd:element name="Thursday" type="tns:DayType"
-        minOccurs="1" maxOccurs="1" />
+                   minOccurs="1" maxOccurs="1"/>
       <xsd:element name="Friday" type="tns:DayType"
-        minOccurs="1" maxOccurs="1" />
+                   minOccurs="1" maxOccurs="1"/>
       <xsd:element name="Saturday" type="tns:DayType"
-        minOccurs="1" maxOccurs="1" />
+                   minOccurs="1" maxOccurs="1"/>
       <xsd:element name="Sunday" type="tns:DayType"
-        minOccurs="1" maxOccurs="1" />
+                   minOccurs="1" maxOccurs="1"/>
     </xsd:sequence>
   </xsd:complexType>
 
   <xsd:complexType name="DayType">
     <xsd:sequence>
       <xsd:element name="DayId" type="xsd:integer"
-        minOccurs="1" maxOccurs="1" />
+                   minOccurs="1" maxOccurs="1"/>
       <xsd:element name="DaySchedule" type="tns:DayProfileActionsType"
-        minOccurs="1" maxOccurs="1" />
+                   minOccurs="1" maxOccurs="1"/>
     </xsd:sequence>
   </xsd:complexType>
 
   <xsd:complexType name="DayProfileActionsType">
     <xsd:sequence>
       <xsd:element name="DayProfileAction" type="tns:DayProfileActionType"
-        minOccurs="1" maxOccurs="unbounded" />
+                   minOccurs="1" maxOccurs="unbounded"/>
     </xsd:sequence>
   </xsd:complexType>
 
   <xsd:complexType name="DayProfileActionType">
     <xsd:sequence>
       <xsd:element name="StartTime" type="common:CosemTimeType"
-        minOccurs="1" maxOccurs="1" />
+                   minOccurs="1" maxOccurs="1"/>
       <xsd:element name="ScriptSelector" type="xsd:integer"
-        minOccurs="1" maxOccurs="1" />
+                   minOccurs="1" maxOccurs="1"/>
     </xsd:sequence>
   </xsd:complexType>
 
   <xsd:simpleType name="NameType">
     <xsd:restriction base="common:AlphaNumericType">
-      <xsd:length value="8" />
+      <xsd:length value="8"/>
     </xsd:restriction>
   </xsd:simpleType>
 
@@ -1114,15 +1113,15 @@
           <xsd:element name="TimeZoneOffset">
             <xsd:simpleType>
               <xsd:restriction base="xsd:short">
-                <xsd:minInclusive value="-720" />
-                <xsd:maxInclusive value="720" />
+                <xsd:minInclusive value="-720"/>
+                <xsd:maxInclusive value="720"/>
               </xsd:restriction>
             </xsd:simpleType>
           </xsd:element>
-          <xsd:element name="DaylightSavingsBegin" type="common:CosemDateTimeType" />
-          <xsd:element name="DaylightSavingsEnd" type="common:CosemDateTimeType" />
+          <xsd:element name="DaylightSavingsBegin" type="common:CosemDateTimeType"/>
+          <xsd:element name="DaylightSavingsEnd" type="common:CosemDateTimeType"/>
           <xsd:element name="DaylightSavingsEnabled" type="xsd:boolean"
-            default="true" />
+                       default="true"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -1133,9 +1132,9 @@
       <xsd:extension base="common:Command">
         <xsd:sequence>
           <xsd:element name="CaptureObjects"
-            type="common:CaptureObjectDefinitions" minOccurs="0" />
+                       type="common:CaptureObjectDefinitions" minOccurs="0"/>
           <xsd:element name="CapturePeriod" type="xsd:unsignedInt"
-            minOccurs="0" />
+                       minOccurs="0"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -1145,7 +1144,7 @@
     <xsd:complexContent>
       <xsd:extension base="common:Command">
         <xsd:sequence>
-          <xsd:element name="Channel" type="common:Channel" />
+          <xsd:element name="Channel" type="common:Channel"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -1153,11 +1152,11 @@
 
   <xsd:simpleType name="EncryptionKeyStatus">
     <xsd:restriction base="xsd:string">
-      <xsd:enumeration value="NO_ENCRYPTION_KEY" />
-      <xsd:enumeration value="ENCRYPTION_KEY_SET" />
-      <xsd:enumeration value="ENCRYPTION_KEY_TRANSFERRED" />
-      <xsd:enumeration value="ENCRYPTION_KEY_SET_AND_TRANSFERRED" />
-      <xsd:enumeration value="ENCRYPTION_KEY_IN_USE" />
+      <xsd:enumeration value="NO_ENCRYPTION_KEY"/>
+      <xsd:enumeration value="ENCRYPTION_KEY_SET"/>
+      <xsd:enumeration value="ENCRYPTION_KEY_TRANSFERRED"/>
+      <xsd:enumeration value="ENCRYPTION_KEY_SET_AND_TRANSFERRED"/>
+      <xsd:enumeration value="ENCRYPTION_KEY_IN_USE"/>
     </xsd:restriction>
   </xsd:simpleType>
 
@@ -1165,7 +1164,7 @@
     <xsd:complexContent>
       <xsd:extension base="common:Command">
         <xsd:sequence>
-          <xsd:element name="Channel" type="common:Channel" />
+          <xsd:element name="Channel" type="common:Channel"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -1176,9 +1175,80 @@
       <xsd:extension base="common:Response">
         <xsd:sequence>
           <xsd:element name="GatewayDeviceIdentification"
-            type="common:DeviceIdentification" />
-          <xsd:element name="EncryptionKeyStatus" type="tns:EncryptionKeyStatus" />
-          <xsd:element name="Channel" type="common:Channel" />
+                       type="common:DeviceIdentification"/>
+          <xsd:element name="EncryptionKeyStatus" type="tns:EncryptionKeyStatus"/>
+          <xsd:element name="Channel" type="common:Channel"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="SetRandomisationSettingsRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
+        <xsd:element name="SetRandomisationSettingsData"
+                     type="tns:SetRandomisationSettingsRequestData"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetRandomisationSettingsAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetRandomisationSettingsAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetRandomisationSettingsResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Result" type="common:OsgpResultType"
+                     minOccurs="1"/>
+        <xsd:element name="Description" type="xsd:string"
+                     minOccurs="0"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="SetRandomisationSettingsRequestData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Command">
+        <xsd:sequence>
+          <xsd:element name="DirectAttach" type="xsd:integer">
+            <xsd:annotation>
+              <xsd:documentation>IP address or DNS name of the service
+                listening for alarm notifications over TCP.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="randomisationStartWindow" type="xsd:integer">
+            <xsd:annotation>
+              <xsd:documentation>Port number of the service listening
+                for alarm notifications over TCP.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="multiplicationFactor" type="xsd:integer">
+            <xsd:annotation>
+              <xsd:documentation>Port number of the service listening
+                for alarm notifications over TCP.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="numberOfRetries" type="xsd:integer">
+            <xsd:annotation>
+              <xsd:documentation>Port number of the service listening
+                for alarm notifications over TCP.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
