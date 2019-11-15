@@ -15,8 +15,6 @@ import java.util.UUID;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -25,8 +23,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(classes = { ProtocolRequestMessageSenderTestConfig.class })
 public class ProtocolRequestMessageSenderTest {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProtocolRequestMessageSenderTest.class);
-
     @Autowired
     private ProtocolRequestMessageSender messageSender;
 
@@ -34,7 +30,7 @@ public class ProtocolRequestMessageSenderTest {
     private int messageGroupCacheSize;
 
     @Test
-    public void messageGroupIdShouldBeBetween0AndCacheSize() {
+    public void testMessageGroupIdShouldBeBetween0AndCacheSize() {
         for (int i = 0; i < 10000; i++) {
             final String uuid = UUID.randomUUID().toString();
             final String messageGroupId = this.messageSender.getMessageGroupId(uuid);
@@ -46,7 +42,7 @@ public class ProtocolRequestMessageSenderTest {
     }
 
     @Test
-    public void numberOfMessageGroupsShouldNotExceedCacheSize() {
+    public void testNumberOfMessageGroupsShouldNotExceedCacheSize() {
         final Set<String> groupIds = new HashSet<>();
 
         for (int i = 0; i < 10000; i++) {
@@ -59,7 +55,7 @@ public class ProtocolRequestMessageSenderTest {
     }
 
     @Test
-    public void messageGroupIdShouldBeSameForSameDevice() {
+    public void testMmessageGroupIdShouldBeSameForSameDevice() {
         final String deviceId = "test-device-001";
         final Set<String> groupIds = new HashSet<>();
 

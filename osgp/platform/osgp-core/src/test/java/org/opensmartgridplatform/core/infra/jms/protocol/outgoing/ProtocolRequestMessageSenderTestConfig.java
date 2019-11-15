@@ -9,6 +9,7 @@ package org.opensmartgridplatform.core.infra.jms.protocol.outgoing;
 
 import static org.mockito.Mockito.mock;
 
+import org.opensmartgridplatform.core.infra.jms.protocol.DefaultProtocolJmsConfiguration;
 import org.opensmartgridplatform.core.infra.messaging.CoreLogItemRequestMessageSender;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jms.core.JmsTemplate;
@@ -18,6 +19,11 @@ public class ProtocolRequestMessageSenderTestConfig {
     @Bean
     public int messageGroupCacheSize() {
         return 1024;
+    }
+
+    @Bean
+    public DefaultProtocolJmsConfiguration defaultProtocolJmsConfiguration() {
+        return new DefaultProtocolJmsConfiguration();
     }
 
     @Bean
