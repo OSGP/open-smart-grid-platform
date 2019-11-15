@@ -115,7 +115,7 @@ public class JmsConfigurationFactory {
         return messageListenerContainer;
     }
 
-    public DefaultMessageListenerContainer initMessageListenerContainer() {
+    private DefaultMessageListenerContainer initMessageListenerContainer() {
         LOGGER.debug("Initializing default message listener container.");
 
         final DefaultMessageListenerContainer defaultMessageListenerContainer = new DefaultMessageListenerContainer();
