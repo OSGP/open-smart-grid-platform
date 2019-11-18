@@ -11,9 +11,9 @@ import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
-import org.jboss.netty.logging.InternalLoggerFactory;
-import org.jboss.netty.logging.Slf4JLoggerFactory;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
+import org.opensmartgridplatform.shared.application.config.AbstractPersistenceConfig;
+import org.opensmartgridplatform.shared.infra.db.DefaultConnectionPoolFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,15 +24,13 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import org.opensmartgridplatform.shared.application.config.AbstractPersistenceConfig;
-import org.opensmartgridplatform.shared.infra.db.DefaultConnectionPoolFactory;
 import com.zaxxer.hikari.HikariDataSource;
 
 /**
  * An application context Java configuration class.
  */
-@EnableJpaRepositories(entityManagerFactoryRef = "dlmsEntityManagerFactory", basePackageClasses = {
-        DlmsDeviceRepository.class })
+@EnableJpaRepositories(entityManagerFactoryRef = "dlmsEntityManagerFactory",
+        basePackageClasses = { DlmsDeviceRepository.class })
 @Configuration
 @EnableTransactionManagement()
 @PropertySource("classpath:osgp-adapter-protocol-dlms.properties")
@@ -57,14 +55,12 @@ public class DlmsPersistenceConfig extends AbstractPersistenceConfig {
 
     private HikariDataSource dataSourceDlms;
 
-    public DlmsPersistenceConfig() {
-        InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
-    }
-
     public DataSource getDataSourceDlms() {
         if (this.dataSourceDlms == null) {
             final DefaultConnectionPoolFactory.Builder builder = super.builder().withUsername(this.username)
-                    .withPassword(this.password).withDatabaseHost(this.databaseHost).withDatabasePort(this.databasePort)
+                    .withPassword(this.password)
+                    .withDatabaseHost(this.databaseHost)
+                    .withDatabasePort(this.databasePort)
                     .withDatabaseName(this.databaseName);
             final DefaultConnectionPoolFactory factory = builder.build();
             this.dataSourceDlms = factory.getDefaultConnectionPool();
