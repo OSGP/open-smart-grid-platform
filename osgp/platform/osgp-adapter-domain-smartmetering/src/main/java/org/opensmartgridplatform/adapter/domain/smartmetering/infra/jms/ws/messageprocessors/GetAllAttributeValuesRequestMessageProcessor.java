@@ -27,7 +27,7 @@ public class GetAllAttributeValuesRequestMessageProcessor extends BaseRequestMes
 
     @Autowired
     protected GetAllAttributeValuesRequestMessageProcessor(
-            @Qualifier("domainSmartMeteringWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(messageProcessorMap, MessageType.GET_ALL_ATTRIBUTE_VALUES);
     }
 

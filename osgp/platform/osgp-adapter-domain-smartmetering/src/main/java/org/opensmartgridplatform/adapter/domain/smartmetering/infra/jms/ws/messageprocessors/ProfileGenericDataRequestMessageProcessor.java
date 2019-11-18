@@ -27,7 +27,7 @@ public class ProfileGenericDataRequestMessageProcessor extends BaseRequestMessag
 
     @Autowired
     protected ProfileGenericDataRequestMessageProcessor(
-            @Qualifier("domainSmartMeteringWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(messageProcessorMap, MessageType.GET_PROFILE_GENERIC_DATA);
     }
 

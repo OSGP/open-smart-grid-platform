@@ -29,7 +29,7 @@ public class SynchronizeTimeRequestMessageProcessor extends BaseRequestMessagePr
 
     @Autowired
     protected SynchronizeTimeRequestMessageProcessor(
-            @Qualifier("domainSmartMeteringWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(messageProcessorMap, MessageType.SYNCHRONIZE_TIME);
     }
 

@@ -27,7 +27,7 @@ public class ConfigureDefinableLoadProfileRequestMessageProcessor extends BaseRe
 
     @Autowired
     protected ConfigureDefinableLoadProfileRequestMessageProcessor(
-            @Qualifier("domainSmartMeteringWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(messageProcessorMap, MessageType.CONFIGURE_DEFINABLE_LOAD_PROFILE);
     }
 

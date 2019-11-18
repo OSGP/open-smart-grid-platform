@@ -27,7 +27,7 @@ public class GetAdministrativeStatusRequestMessageProcessor extends BaseRequestM
 
     @Autowired
     protected GetAdministrativeStatusRequestMessageProcessor(
-            @Qualifier("domainSmartMeteringWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(messageProcessorMap, MessageType.GET_ADMINISTRATIVE_STATUS);
     }
 

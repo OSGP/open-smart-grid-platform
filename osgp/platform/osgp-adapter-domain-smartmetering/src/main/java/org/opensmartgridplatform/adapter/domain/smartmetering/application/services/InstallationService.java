@@ -8,7 +8,6 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
-import ma.glasnost.orika.MapperFactory;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.CommonMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
@@ -50,6 +49,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import ma.glasnost.orika.MapperFactory;
+
 @Service(value = "domainSmartMeteringInstallationService")
 @Transactional(value = "transactionManager")
 public class InstallationService {
@@ -57,7 +58,7 @@ public class InstallationService {
     private static final Logger LOGGER = LoggerFactory.getLogger(InstallationService.class);
 
     @Autowired
-    @Qualifier(value = "domainSmartMeteringOutgoingOsgpCoreRequestMessageSender")
+    @Qualifier(value = "domainSmartMeteringOutboundOsgpCoreRequestsMessageSender")
     private OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
 
     @Autowired
@@ -76,6 +77,7 @@ public class InstallationService {
     private MapperFactory mapperFactory;
 
     @Autowired
+    @Qualifier(value = "domainSmartMeteringOutboundWebServiceResponsesMessageSender")
     private WebServiceResponseMessageSender webServiceResponseMessageSender;
 
     @Autowired
@@ -135,41 +137,40 @@ public class InstallationService {
         return protocolInfo;
     }
 
-    private DeviceModel getDeviceModel(
-            final org.opensmartgridplatform.domain.core.valueobjects.DeviceModel deviceModel) {
+    private DeviceModel
+            getDeviceModel(final org.opensmartgridplatform.domain.core.valueobjects.DeviceModel deviceModel) {
         final Manufacturer manufacturer = this.manufacturerRepository.findByCode(deviceModel.getManufacturer());
         return this.deviceModelRepository.findByManufacturerAndModelCode(manufacturer, deviceModel.getModelCode());
     }
 
     private void storeAuthorization(final String organisationIdentification, final SmartMeter smartMeter) {
-        final Organisation organisation = this.organisationRepository.findByOrganisationIdentification(
-                organisationIdentification);
+        final Organisation organisation = this.organisationRepository
+                .findByOrganisationIdentification(organisationIdentification);
         final DeviceAuthorization authorization = smartMeter.addAuthorization(organisation, DeviceFunctionGroup.OWNER);
         this.deviceAuthorizationRepository.save(authorization);
     }
 
     private RequestMessage getRequestMessage(final DeviceMessageMetadata deviceMessageMetadata,
             final SmartMeteringDevice smartMeteringDevice) {
-        return new RequestMessage(
-                deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(),
-                deviceMessageMetadata.getDeviceIdentification(),
+        return new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 this.mapperFactory.getMapperFacade().map(smartMeteringDevice, SmartMeteringDeviceDto.class));
     }
 
     /**
-     * In case of errors that prevented adding the meter to the protocol database,
-     * the meter should be removed from the core database as well.
+     * In case of errors that prevented adding the meter to the protocol
+     * database, the meter should be removed from the core database as well.
      */
     @Transactional
     public void removeMeter(final DeviceMessageMetadata deviceMessageMetadata) {
 
-        final SmartMeter device = this.smartMeteringDeviceRepository.findByDeviceIdentification(
-                deviceMessageMetadata.getDeviceIdentification());
+        final SmartMeter device = this.smartMeteringDeviceRepository
+                .findByDeviceIdentification(deviceMessageMetadata.getDeviceIdentification());
 
-        LOGGER.warn("Removing meter {} for organization {}, because adding it to the protocol database failed with "
-                        + "correlation UID {}", deviceMessageMetadata.getDeviceIdentification(),
-                deviceMessageMetadata.getOrganisationIdentification(),
+        LOGGER.warn(
+                "Removing meter {} for organization {}, because adding it to the protocol database failed with "
+                        + "correlation UID {}",
+                deviceMessageMetadata.getDeviceIdentification(), deviceMessageMetadata.getOrganisationIdentification(),
                 deviceMessageMetadata.getCorrelationUid());
 
         this.deviceAuthorizationRepository.delete(device.getAuthorizations());
@@ -242,7 +243,8 @@ public class InstallationService {
                 .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
                 .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
                 .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
-                .withResult(this.getResponseMessageResultType(deviceResult, exception)).withOsgpException(exception)
+                .withResult(this.getResponseMessageResultType(deviceResult, exception))
+                .withOsgpException(exception)
                 .withMessagePriority(deviceMessageMetadata.getMessagePriority())
                 .build();
 
