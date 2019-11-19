@@ -4,8 +4,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import ma.glasnost.orika.MapperFacade;
-import ma.glasnost.orika.MapperFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,6 +26,10 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import ma.glasnost.orika.MapperFacade;
+import ma.glasnost.orika.MapperFactory;
 
 @RunWith(MockitoJUnitRunner.class)
 public class InstallationServiceTest {
@@ -36,6 +38,8 @@ public class InstallationServiceTest {
     private static final String PROTOCOL_NAME = "test-protocol-name";
     private static final String PROTOCOL_VERSION = "test-protocol-version";
 
+    @InjectMocks
+    private SmartMeterService smartMeterService;
     @InjectMocks
     private InstallationService instance;
 
@@ -79,6 +83,7 @@ public class InstallationServiceTest {
         when(this.mapperFactory.getMapperFacade()).thenReturn(this.mapperFacade);
         when(this.mapperFacade.map(this.smartMeteringDevice, SmartMeter.class)).thenReturn(this.smartMeter);
         when(this.smartMeteringDeviceRepository.save(this.smartMeter)).thenReturn(this.smartMeter);
+        ReflectionTestUtils.setField(this.instance, "smartMeterService", this.smartMeterService);
     }
 
     @Test
@@ -88,8 +93,8 @@ public class InstallationServiceTest {
         when(this.smartMeteringDeviceRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION)).thenReturn(null);
         when(this.smartMeteringDevice.getProtocolName()).thenReturn(PROTOCOL_NAME);
         when(this.smartMeteringDevice.getProtocolVersion()).thenReturn(PROTOCOL_VERSION);
-        when(this.protocolInfoRepository.findByProtocolAndProtocolVersion(PROTOCOL_NAME, PROTOCOL_VERSION)).thenReturn(
-                this.protocolInfo);
+        when(this.protocolInfoRepository.findByProtocolAndProtocolVersion(PROTOCOL_NAME, PROTOCOL_VERSION))
+                .thenReturn(this.protocolInfo);
 
         // CALL
         this.instance.addMeter(this.deviceMessageMetadata, this.addSmartMeterRequest);
@@ -106,8 +111,8 @@ public class InstallationServiceTest {
         when(this.smartMeteringDeviceRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION)).thenReturn(null);
         when(this.smartMeteringDevice.getProtocolName()).thenReturn(PROTOCOL_NAME);
         when(this.smartMeteringDevice.getProtocolVersion()).thenReturn(PROTOCOL_VERSION);
-        when(this.protocolInfoRepository.findByProtocolAndProtocolVersion(PROTOCOL_NAME, PROTOCOL_VERSION)).thenReturn(
-                null);
+        when(this.protocolInfoRepository.findByProtocolAndProtocolVersion(PROTOCOL_NAME, PROTOCOL_VERSION))
+                .thenReturn(null);
 
         // CALL
         try {
@@ -122,8 +127,8 @@ public class InstallationServiceTest {
     public void addMeterDeviceExists() {
 
         // SETUP
-        when(this.smartMeteringDeviceRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION)).thenReturn(
-                this.smartMeter);
+        when(this.smartMeteringDeviceRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION))
+                .thenReturn(this.smartMeter);
 
         // CALL
         try {
