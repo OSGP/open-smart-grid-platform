@@ -8,7 +8,7 @@
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
@@ -43,6 +43,25 @@
               <clearOutputDir>false</clearOutputDir>
             </configuration>
           </execution>
+          <execution>
+            <id>smart-metering-external-interface-integration</id>
+            <goals>
+              <goal>xjc</goal>
+            </goals>
+            <configuration>
+              <extension>true</extension>
+              <bindingDirectory>src/main/resources/schemas</bindingDirectory>
+              <bindingFiles>sm-external-interface.xjb</bindingFiles>
+              <schemaDirectory>src/main/resources/schemas</schemaDirectory>
+              <xmlschema>true</xmlschema>
+              <schemaFiles>sm-external-interface.xsd</schemaFiles>
+              <!--              <schemaFiles>sm-external-interface.xsd</schemaFiles>-->
+              <staleFile>${project.build.directory}/jaxb2/.schema-smart-metering-external-stale-flag</staleFile>
+              <!-- USE THIS ONLY FOR THE FIRST EXECUTION -->
+              <clearOutputDir>false</clearOutputDir>
+            </configuration>
+          </execution>
+
           <execution>
             <id>smart-metering-management</id>
             <goals>
@@ -147,6 +166,7 @@
           </execution>
         </executions>
       </plugin>
+
     </plugins>
   </build>
 

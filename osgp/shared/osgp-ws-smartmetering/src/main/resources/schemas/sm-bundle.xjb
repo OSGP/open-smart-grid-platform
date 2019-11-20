@@ -25,6 +25,7 @@
       <jxb:package
         name="org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle"></jxb:package>
     </jxb:schemaBindings>
+
   </jxb:bindings>
 
   <jxb:bindings schemaLocation="sm-management.xsd">
@@ -61,16 +62,5 @@
         name="org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation"></jxb:package>
     </jxb:schemaBindings>
   </jxb:bindings>
-
-  <jxb:bindings schemaLocation="sm-bundle.xsd"
-    node="/xs:schema/xs:complexType[@name='Actions']/xs:sequence/xs:choice">
-    <jxb:property name="ActionList" />
-  </jxb:bindings>
-
-  <jxb:bindings schemaLocation="sm-bundle.xsd"
-    node="/xs:schema/xs:complexType[@name='AllResponses']/xs:sequence/xs:choice">
-    <jxb:property name="ResponseList" />
-  </jxb:bindings>
-
 
 </jxb:bindings>
