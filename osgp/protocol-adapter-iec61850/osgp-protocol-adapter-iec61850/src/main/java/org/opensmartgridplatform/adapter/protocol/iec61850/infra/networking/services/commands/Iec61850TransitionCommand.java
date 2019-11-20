@@ -10,9 +10,6 @@ package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.ser
 import org.joda.time.DateTime;
 import org.openmuc.openiec61850.BdaBoolean;
 import org.openmuc.openiec61850.Fc;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.Iec61850Client;
@@ -26,10 +23,18 @@ import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.help
 import org.opensmartgridplatform.adapter.protocol.iec61850.services.DeviceMessageLoggingService;
 import org.opensmartgridplatform.dto.valueobjects.TransitionMessageDataContainerDto;
 import org.opensmartgridplatform.dto.valueobjects.TransitionTypeDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Iec61850TransitionCommand {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850TransitionCommand.class);
+
+    private DeviceMessageLoggingService loggingService;
+
+    public Iec61850TransitionCommand(final DeviceMessageLoggingService loggingService) {
+        this.loggingService = loggingService;
+    }
 
     public void transitionDevice(final Iec61850Client iec61850Client, final DeviceConnection deviceConnection,
             final TransitionMessageDataContainerDto transitionMessageDataContainer) throws ProtocolAdapterException {
@@ -68,8 +73,9 @@ public class Iec61850TransitionCommand {
                         SubDataAttribute.OPERATION, SubDataAttribute.CONTROL_VALUE,
                         Boolean.toString(controlValueForTransition));
 
-                DeviceMessageLoggingService.logMessage(deviceMessageLog, deviceConnection.getDeviceIdentification(),
-                        deviceConnection.getOrganisationIdentification(), false);
+                Iec61850TransitionCommand.this.loggingService.logMessage(deviceMessageLog,
+                        deviceConnection.getDeviceIdentification(), deviceConnection.getOrganisationIdentification(),
+                        false);
 
                 return null;
             }

@@ -64,13 +64,16 @@ public class Iec61850ClientSSLDEventListener extends Iec61850ClientBaseEventList
         TRG_TYPE_DESCRIPTION_PER_CODE.put((short) 4, "autonomous trigger");
     }
 
+    private DeviceMessageLoggingService loggingService;
     private final String organizationIdentification;
     private final List<EventNotificationDto> eventNotifications = new ArrayList<>();
     private final Map<Integer, Integer> externalIndexByInternalIndex = new TreeMap<>();
 
     public Iec61850ClientSSLDEventListener(final String organizationIdentification, final String deviceIdentification,
-            final DeviceManagementService deviceManagementService) throws ProtocolAdapterException {
+            final DeviceManagementService deviceManagementService, final DeviceMessageLoggingService loggingService)
+            throws ProtocolAdapterException {
         super(deviceIdentification, deviceManagementService, Iec61850ClientSSLDEventListener.class);
+        this.loggingService = loggingService;
         this.organizationIdentification = organizationIdentification;
         this.externalIndexByInternalIndex
                 .putAll(this.buildExternalByInternalIndexMap(this.deviceManagementService, this.deviceIdentification));
@@ -434,8 +437,8 @@ public class Iec61850ClientSSLDEventListener extends Iec61850ClientBaseEventList
                     evnRpn.getFc(), SubDataAttribute.REMARK, remarkNode.getStringValue());
         }
 
-        DeviceMessageLoggingService.logMessage(deviceMessageLog, this.deviceIdentification,
-                this.organizationIdentification, true);
+        this.loggingService.logMessage(deviceMessageLog, this.deviceIdentification, this.organizationIdentification,
+                true);
     }
 
     @Override
