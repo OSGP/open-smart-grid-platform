@@ -8,6 +8,7 @@
 package org.opensmartgridplatform.cucumber.platform.glue.steps.database.core;
 
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.io.File;
@@ -27,10 +28,13 @@ import org.opensmartgridplatform.domain.core.entities.DeviceModel;
 import org.opensmartgridplatform.domain.core.entities.FirmwareFile;
 import org.opensmartgridplatform.domain.core.entities.FirmwareModule;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
+import org.opensmartgridplatform.domain.core.entities.SsldPendingFirmwareUpdate;
 import org.opensmartgridplatform.domain.core.repositories.DeviceFirmwareFileRepository;
 import org.opensmartgridplatform.domain.core.repositories.DeviceModelRepository;
 import org.opensmartgridplatform.domain.core.repositories.FirmwareFileRepository;
+import org.opensmartgridplatform.domain.core.repositories.SsldPendingFirmwareUpdateRepository;
 import org.opensmartgridplatform.domain.core.repositories.SsldRepository;
+import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +55,9 @@ public class FirmwareFileSteps {
 
     @Autowired
     private SsldRepository ssldRepository;
+
+    @Autowired
+    private SsldPendingFirmwareUpdateRepository ssldPendingFirmwareUpdateRepository;
 
     @Autowired
     private DeviceModelRepository deviceModelRepository;
@@ -282,4 +289,24 @@ public class FirmwareFileSteps {
         return path;
     }
 
+    @Given("^a pending firmware update record for an ssld$")
+    @Transactional("txMgrCore")
+    public void aPendingFirmwareUpdateRecordForAnSsld(final Map<String, String> settings) {
+        final String deviceIdentification = getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION);
+
+        final Ssld ssld = this.ssldRepository.findByDeviceIdentification(deviceIdentification);
+
+        final FirmwareModuleType firmwareModuleType = getEnum(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_FUNC,
+                FirmwareModuleType.class);
+        final String firmwareVersion = getString(settings, PlatformKeys.FIRMWARE_VERSION);
+        final String organisationIdentification = getString(settings, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION);
+
+        SsldPendingFirmwareUpdate ssldPendingFirmwareUpdate = new SsldPendingFirmwareUpdate(true, firmwareModuleType,
+                firmwareVersion, "CORE", "1.0", organisationIdentification);
+
+        ssldPendingFirmwareUpdate = this.ssldPendingFirmwareUpdateRepository.save(ssldPendingFirmwareUpdate);
+
+        ssld.setSsldPendingFirmwareUpdate(ssldPendingFirmwareUpdate);
+        this.ssldRepository.save(ssld);
+    }
 }
