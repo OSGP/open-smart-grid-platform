@@ -23,6 +23,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 import javax.persistence.PrimaryKeyJoinColumn;
 
@@ -51,9 +52,10 @@ public class Ssld extends Device {
      */
     public static final String SSLD_TYPE = "SSLD";
 
-    @Column()
+    @Column
     private boolean hasPublicKey;
 
+    @Column
     private boolean hasSchedule;
 
     @OneToMany(mappedBy = "device", targetEntity = Ean.class, cascade = CascadeType.ALL, orphanRemoval = true)
@@ -73,6 +75,10 @@ public class Ssld extends Device {
     @ManyToOne(optional = true, cascade = { CascadeType.MERGE, CascadeType.PERSIST }, fetch = FetchType.LAZY)
     @JoinColumn(name = "light_measurement_device_id")
     private LightMeasurementDevice lightMeasurementDevice;
+
+    @OneToOne(optional = true, orphanRemoval = true)
+    @JoinColumn(name = "ssld_pending_firmware_update_id")
+    private SsldPendingFirmwareUpdate ssldPendingFirmwareUpdate;
 
     public Ssld() {
         // Default constructor.
@@ -238,6 +244,14 @@ public class Ssld extends Device {
 
     public LightMeasurementDevice getLightMeasurementDevice() {
         return this.lightMeasurementDevice;
+    }
+
+    public void setSsldPendingFirmwareUpdate(final SsldPendingFirmwareUpdate ssldPendingFirmwareUpdate) {
+        this.ssldPendingFirmwareUpdate = ssldPendingFirmwareUpdate;
+    }
+
+    public SsldPendingFirmwareUpdate getSsldPendingFirmwareUpdate() {
+        return this.ssldPendingFirmwareUpdate;
     }
 
     /**
