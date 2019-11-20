@@ -85,28 +85,35 @@ public class DeviceResponseMessageSender implements ResponseMessageSender {
                 responseMessage.getDeviceIdentification(), responseMessage.getMessageType(),
                 responseMessage.getMessagePriority());
 
-        this.jmsTemplate.send(new MessageCreator() {
-            @Override
-            public Message createMessage(final Session session) throws JMSException {
-                final ObjectMessage objectMessage = session.createObjectMessage(responseMessage);
-                objectMessage.setJMSCorrelationID(responseMessage.getCorrelationUid());
-                objectMessage.setStringProperty(Constants.DOMAIN, responseMessage.getDomain());
-                objectMessage.setStringProperty(Constants.DOMAIN_VERSION, responseMessage.getDomainVersion());
-                objectMessage.setJMSType(responseMessage.getMessageType());
-                objectMessage.setJMSPriority(responseMessage.getMessagePriority());
-                objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
-                        responseMessage.getOrganisationIdentification());
-                objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
-                        responseMessage.getDeviceIdentification());
-                objectMessage.setStringProperty(Constants.RESULT, responseMessage.getResult().toString());
-                if (responseMessage.getOsgpException() != null) {
-                    objectMessage.setStringProperty(Constants.DESCRIPTION,
-                            responseMessage.getOsgpException().getMessage());
-                }
-                objectMessage.setBooleanProperty(Constants.IS_SCHEDULED, responseMessage.isScheduled());
-                objectMessage.setIntProperty(Constants.RETRY_COUNT, responseMessage.getRetryCount());
-                return objectMessage;
+        this.jmsTemplate.send(new DeviceResponseMessageCreator(responseMessage));
+    }
+
+    private static class DeviceResponseMessageCreator implements MessageCreator {
+
+        private final ProtocolResponseMessage message;
+
+        public DeviceResponseMessageCreator(final ProtocolResponseMessage message) {
+            this.message = message;
+        }
+
+        @Override
+        public Message createMessage(final Session session) throws JMSException {
+            final ObjectMessage objMsg = session.createObjectMessage(this.message);
+            objMsg.setJMSCorrelationID(this.message.getCorrelationUid());
+            objMsg.setStringProperty(Constants.DOMAIN, this.message.getDomain());
+            objMsg.setStringProperty(Constants.DOMAIN_VERSION, this.message.getDomainVersion());
+            objMsg.setJMSType(this.message.getMessageType());
+            objMsg.setJMSPriority(this.message.getMessagePriority());
+            objMsg.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
+                    this.message.getOrganisationIdentification());
+            objMsg.setStringProperty(Constants.DEVICE_IDENTIFICATION, this.message.getDeviceIdentification());
+            objMsg.setStringProperty(Constants.RESULT, this.message.getResult().toString());
+            if (this.message.getOsgpException() != null) {
+                objMsg.setStringProperty(Constants.DESCRIPTION, this.message.getOsgpException().getMessage());
             }
-        });
+            objMsg.setBooleanProperty(Constants.IS_SCHEDULED, this.message.isScheduled());
+            objMsg.setIntProperty(Constants.RETRY_COUNT, this.message.getRetryCount());
+            return objMsg;
+        }
     }
 }
