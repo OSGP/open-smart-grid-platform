@@ -11,6 +11,8 @@ import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.publiclighting.database.Database;
 import org.opensmartgridplatform.cucumber.platform.publiclighting.database.OslpDatabase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import cucumber.api.java.After;
@@ -20,6 +22,8 @@ import cucumber.api.java.Before;
  * Class with all the scenario hooks when each scenario runs.
  */
 public class ScenarioHooks extends GlueBase {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ScenarioHooks.class);
 
     @Autowired
     private Database database;
@@ -53,7 +57,12 @@ public class ScenarioHooks extends GlueBase {
     public void beforeScenario() {
         this.database.preparePublicLightingDatabaseForScenario();
         // this.database.prepareTariffSwitchingDatabaseForScenario();
+
         this.oslpDatabase.prepareDatabaseForScenario();
+        if (!this.oslpDatabase.isOslpDeviceTableEmpty()) {
+            LOGGER.warn("OSLP device table is not empty after inital delete! Trying once more...");
+            this.oslpDatabase.prepareDatabaseForScenario();
+        }
 
         // Make sure that the scenario context is clean before each test.
         ScenarioContext.context = null;
