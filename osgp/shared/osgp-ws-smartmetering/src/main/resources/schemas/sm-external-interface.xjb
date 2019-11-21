@@ -1,0 +1,52 @@
+<jxb:bindings version="2.0" xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+    xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    jxb:extensionBindingPrefixes="xjc">
+
+   <jxb:bindings schemaLocation="common.xsd">
+      <jxb:schemaBindings>
+         <jxb:package name="org.opensmartgridplatform.adapter.ws.schema.smartmetering.common" />
+      </jxb:schemaBindings>
+   </jxb:bindings>
+   <jxb:bindings schemaLocation="sm-bundle.xsd">
+      <jxb:schemaBindings>
+         <jxb:package name="org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle" />
+      </jxb:schemaBindings>
+      <jxb:bindings node="/xs:schema/xs:complexType[@name='Actions']/xs:sequence/xs:choice">
+         <jxb:property name="ActionList" />
+      </jxb:bindings>
+      <jxb:bindings node="/xs:schema/xs:complexType[@name='AllResponses']/xs:sequence/xs:choice">
+         <jxb:property name="ResponseList" />
+      </jxb:bindings>
+   </jxb:bindings>
+   <jxb:bindings schemaLocation="sm-management.xsd">
+      <jxb:schemaBindings>
+         <jxb:package name="org.opensmartgridplatform.adapter.ws.schema.smartmetering.management" />
+      </jxb:schemaBindings>
+   </jxb:bindings>
+   <jxb:bindings schemaLocation="sm-external-interface.xsd">
+      <jxb:schemaBindings>
+         <jxb:package name="org.opensmartgridplatform.adapter.ws.schema.smartmetering.external_interface" />
+      </jxb:schemaBindings>
+   </jxb:bindings>
+   <jxb:bindings schemaLocation="sm-monitoring.xsd">
+      <jxb:schemaBindings>
+         <jxb:package name="org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring" />
+      </jxb:schemaBindings>
+   </jxb:bindings>
+   <jxb:bindings schemaLocation="sm-configuration.xsd">
+      <jxb:schemaBindings>
+         <jxb:package name="org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration" />
+      </jxb:schemaBindings>
+   </jxb:bindings>
+   <jxb:bindings schemaLocation="sm-adhoc.xsd">
+      <jxb:schemaBindings>
+         <jxb:package name="org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc" />
+      </jxb:schemaBindings>
+   </jxb:bindings>
+   <jxb:bindings schemaLocation="sm-installation.xsd">
+      <jxb:schemaBindings>
+         <jxb:package name="org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation" />
+      </jxb:schemaBindings>
+   </jxb:bindings>
+</jxb:bindings>
