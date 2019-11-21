@@ -32,7 +32,6 @@
               <goal>xjc</goal>
             </goals>
             <configuration>
-              <extension>true</extension>
               <bindingDirectory>src/main/resources/schemas</bindingDirectory>
               <bindingFiles>sm-bundle.xjb</bindingFiles>
               <schemaDirectory>src/main/resources</schemaDirectory>
@@ -50,7 +49,6 @@
               <goal>xjc</goal>
             </goals>
             <configuration>
-              <extension>true</extension>
               <bindingDirectory>src/main/resources/schemas</bindingDirectory>
               <bindingFiles>sm-external-interface.xjb</bindingFiles>
               <schemaDirectory>src/main/resources/schemas</schemaDirectory>
