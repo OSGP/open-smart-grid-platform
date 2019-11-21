@@ -25,7 +25,6 @@
       <jxb:package
         name="org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle"></jxb:package>
     </jxb:schemaBindings>
-
   </jxb:bindings>
 
   <jxb:bindings schemaLocation="sm-management.xsd">

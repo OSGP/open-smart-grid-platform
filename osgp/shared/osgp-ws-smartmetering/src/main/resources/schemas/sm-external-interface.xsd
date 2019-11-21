@@ -1,5 +1,4 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            xmlns:tns="http://www.opensmartgridplatform.org/schemas/smartmetering/external-interface/v1"
             xmlns:bun="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-bundle/2014/10"
             attributeFormDefault="qualified" elementFormDefault="qualified"
             targetNamespace="http://www.opensmartgridplatform.org/schemas/smartmetering/external-interface/v1">
@@ -7,21 +6,29 @@
   <xsd:import namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-bundle/2014/10"
               schemaLocation="sm-bundle.xsd"/>
 
-  <xsd:complexType name="ExternalInterfaceRequestMessage">
-    <xsd:sequence>
-      <xsd:element name="messageId" type="xsd:string"/>
-      <xsd:element name="deviceIdentification" type="xsd:string"/>
-    </xsd:sequence>
-  </xsd:complexType>
-
-  <xsd:complexType name="PeriodicMeterReadsRequestMessage">
-    <xsd:complexContent>
-      <xsd:extension base="tns:ExternalInterfaceRequestMessage">
-        <xsd:sequence>
+  <xsd:element name="ExternalInterfaceRequestMessage">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="messageId" type="xsd:string"/>
+        <xsd:element name="deviceIdentification" type="xsd:string"/>
+        <xsd:choice>
           <xsd:element ref="bun:GetPeriodicMeterReadsRequest"/>
-        </xsd:sequence>
-      </xsd:extension>
-    </xsd:complexContent>
-  </xsd:complexType>
+        </xsd:choice>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="ExternalInterfaceResultMessage">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="messageId" type="xsd:string"/>
+        <xsd:element name="deviceIdentification" type="xsd:string"/>
+        <xsd:choice>
+          <xsd:element ref="bun:PeriodicMeterReadsResponse"/>
+        </xsd:choice>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
 </xsd:schema>
 
