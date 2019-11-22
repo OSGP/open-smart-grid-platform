@@ -40,9 +40,9 @@ public class CommonGetConfigurationRequestMessageProcessor extends BaseMessagePr
 
     @Autowired
     public CommonGetConfigurationRequestMessageProcessor(
-            @Qualifier("domainCoreOutgoingWebServiceResponsesMessageSender") ResponseMessageSender responseMessageSender,
-            @Qualifier("domainCoreWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
-        super(responseMessageSender, messageProcessorMap, MessageType.GET_CONFIGURATION, ComponentType.DOMAIN_CORE);
+            @Qualifier("domainCoreOutboundWebServiceResponsesMessageSender") final ResponseMessageSender messageSender,
+            @Qualifier("domainCoreInboundWebServiceRequestsMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
+        super(messageSender, messageProcessorMap, MessageType.GET_CONFIGURATION, ComponentType.DOMAIN_CORE);
     }
 
     @Override

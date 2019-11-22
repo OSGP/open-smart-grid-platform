@@ -9,11 +9,6 @@ package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.ser
 
 import javax.jms.JMSException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceMessageStatus;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceResponseHandler;
@@ -29,9 +24,15 @@ import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.help
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.LogicalDevice;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850EnableReportingCommand;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850GetLightSensorStatusCommand;
+import org.opensmartgridplatform.adapter.protocol.iec61850.services.DeviceMessageLoggingService;
 import org.opensmartgridplatform.core.db.api.iec61850.application.services.LmdDataService;
 import org.opensmartgridplatform.core.db.api.iec61850.entities.LightMeasurementDevice;
 import org.opensmartgridplatform.dto.valueobjects.DeviceStatusDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 @Component
 public class Iec61850LmdDeviceService implements LmdDeviceService {
@@ -43,6 +44,10 @@ public class Iec61850LmdDeviceService implements LmdDeviceService {
 
     @Autowired
     private Iec61850DeviceConnectionService iec61850DeviceConnectionService;
+
+    @Autowired
+    @Qualifier(value = "protocolIec61850DeviceMessageLoggingService")
+    private DeviceMessageLoggingService deviceMessageLoggingService;
 
     @Autowired
     private LmdDataService lmdDataService;
@@ -62,8 +67,8 @@ public class Iec61850LmdDeviceService implements LmdDeviceService {
 
             LOGGER.info("Iec61850LmdDeviceService.getStatus() called for LMD: {}", lmd);
 
-            final DeviceStatusDto deviceStatus = new Iec61850GetLightSensorStatusCommand()
-                    .getStatusFromDevice(this.iec61850Client, deviceConnection, lmd);
+            final DeviceStatusDto deviceStatus = new Iec61850GetLightSensorStatusCommand(
+                    this.deviceMessageLoggingService).getStatusFromDevice(this.iec61850Client, deviceConnection, lmd);
 
             final GetStatusDeviceResponse deviceResponse = new GetStatusDeviceResponse(deviceRequest, deviceStatus);
 
@@ -86,9 +91,12 @@ public class Iec61850LmdDeviceService implements LmdDeviceService {
     private DeviceConnection connectToDevice(final DeviceRequest deviceRequest) throws ConnectionFailureException {
 
         final DeviceConnectionParameters deviceConnectionParameters = DeviceConnectionParameters.newBuilder()
-                .ipAddress(deviceRequest.getIpAddress()).deviceIdentification(deviceRequest.getDeviceIdentification())
-                .ied(IED.ABB_RTU).serverName(IED.ABB_RTU.getDescription())
-                .logicalDevice(LogicalDevice.LD0.getDescription()).build();
+                .ipAddress(deviceRequest.getIpAddress())
+                .deviceIdentification(deviceRequest.getDeviceIdentification())
+                .ied(IED.ABB_RTU)
+                .serverName(IED.ABB_RTU.getDescription())
+                .logicalDevice(LogicalDevice.LD0.getDescription())
+                .build();
 
         return this.iec61850DeviceConnectionService.connect(deviceConnectionParameters,
                 deviceRequest.getOrganisationIdentification());

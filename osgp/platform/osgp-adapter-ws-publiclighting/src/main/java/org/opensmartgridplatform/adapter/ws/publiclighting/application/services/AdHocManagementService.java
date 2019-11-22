@@ -18,7 +18,6 @@ import org.opensmartgridplatform.adapter.ws.publiclighting.infra.jms.PublicLight
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
-import org.opensmartgridplatform.shared.validation.Identification;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.LightValue;
 import org.opensmartgridplatform.domain.core.valueobjects.LightValueMessageDataContainer;
@@ -30,6 +29,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.opensmartgridplatform.shared.validation.Identification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,12 +60,12 @@ public class AdHocManagementService {
     private CorrelationIdProviderService correlationIdProviderService;
 
     @Autowired
-    @Qualifier("wsPublicLightingOutgoingRequestsMessageSender")
-    private PublicLightingRequestMessageSender publicLightingRequestMessageSender;
+    @Qualifier("wsPublicLightingOutboundDomainRequestsMessageSender")
+    private PublicLightingRequestMessageSender messageSender;
 
     @Autowired
-    @Qualifier("wsPublicLightingIncomingResponsesMessageFinder")
-    private PublicLightingResponseMessageFinder publicLightingResponseMessageFinder;
+    @Qualifier("wsPublicLightingInboundDomainResponsesMessageFinder")
+    private PublicLightingResponseMessageFinder messageFinder;
 
     public AdHocManagementService() {
         // Parameterless constructor required for transactions
@@ -106,15 +106,17 @@ public class AdHocManagementService {
                 organisationIdentification, correlationUid, MessageType.SET_LIGHT.name(), messagePriority);
 
         final PublicLightingRequestMessage message = new PublicLightingRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(lightValueMessageDataContainer).build();
-        this.publicLightingRequestMessageSender.send(message);
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .request(lightValueMessageDataContainer)
+                .build();
+        this.messageSender.send(message);
 
         return correlationUid;
     }
 
     public ResponseMessage dequeueSetLightResponse(final String correlationUid) throws OsgpException {
 
-        return this.publicLightingResponseMessageFinder.findMessage(correlationUid);
+        return this.messageFinder.findMessage(correlationUid);
     }
 
     public String enqueueGetStatusRequest(@Identification final String organisationIdentification,
@@ -135,16 +137,17 @@ public class AdHocManagementService {
                 organisationIdentification, correlationUid, MessageType.GET_LIGHT_STATUS.name(), messagePriority);
 
         final PublicLightingRequestMessage message = new PublicLightingRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).build();
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .build();
 
-        this.publicLightingRequestMessageSender.send(message);
+        this.messageSender.send(message);
 
         return correlationUid;
     }
 
     public ResponseMessage dequeueGetStatusResponse(final String correlationUid) throws OsgpException {
 
-        return this.publicLightingResponseMessageFinder.findMessage(correlationUid);
+        return this.messageFinder.findMessage(correlationUid);
     }
 
     public String enqueueResumeScheduleRequest(@Identification final String organisationIdentification,
@@ -167,15 +170,17 @@ public class AdHocManagementService {
                 organisationIdentification, correlationUid, MessageType.RESUME_SCHEDULE.name(), messagePriority);
 
         final PublicLightingRequestMessage message = new PublicLightingRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(resumeScheduleData).build();
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .request(resumeScheduleData)
+                .build();
 
-        this.publicLightingRequestMessageSender.send(message);
+        this.messageSender.send(message);
 
         return correlationUid;
     }
 
     public ResponseMessage dequeueResumeScheduleResponse(final String correlationUid) throws OsgpException {
-        return this.publicLightingResponseMessageFinder.findMessage(correlationUid);
+        return this.messageFinder.findMessage(correlationUid);
     }
 
     public String enqueueTransitionRequest(@Identification final String organisationIdentification,
@@ -199,15 +204,17 @@ public class AdHocManagementService {
                 organisationIdentification, correlationUid, MessageType.SET_TRANSITION.name(), messagePriority);
 
         final PublicLightingRequestMessage message = new PublicLightingRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(transitionMessageDataContainer).build();
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .request(transitionMessageDataContainer)
+                .build();
 
-        this.publicLightingRequestMessageSender.send(message);
+        this.messageSender.send(message);
 
         return correlationUid;
     }
 
     public ResponseMessage dequeueSetTransitionResponse(final String correlationUid) throws OsgpException {
-        return this.publicLightingResponseMessageFinder.findMessage(correlationUid);
+        return this.messageFinder.findMessage(correlationUid);
     }
 
     /**
@@ -248,9 +255,11 @@ public class AdHocManagementService {
                 messagePriority);
 
         final PublicLightingRequestMessage message = new PublicLightingRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(lightMeasurementDeviceIdentification).build();
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .request(lightMeasurementDeviceIdentification)
+                .build();
 
-        this.publicLightingRequestMessageSender.send(message);
+        this.messageSender.send(message);
 
         return correlationUid;
     }

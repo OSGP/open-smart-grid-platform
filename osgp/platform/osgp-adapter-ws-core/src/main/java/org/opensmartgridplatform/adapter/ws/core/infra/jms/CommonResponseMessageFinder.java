@@ -9,18 +9,19 @@ package org.opensmartgridplatform.adapter.ws.core.infra.jms;
 
 import javax.jms.ObjectMessage;
 
+import org.opensmartgridplatform.shared.infra.jms.BaseResponseMessageFinder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
-
-import org.opensmartgridplatform.shared.infra.jms.BaseResponseMessageFinder;
+import org.springframework.stereotype.Component;
 
 /**
  * Class for retrieving response messages from the common responses queue by
  * correlation UID.
  */
+@Component(value = "wsCoreInboundDomainResponsesMessageFinder")
 public final class CommonResponseMessageFinder extends BaseResponseMessageFinder {
 
     /**
@@ -32,15 +33,14 @@ public final class CommonResponseMessageFinder extends BaseResponseMessageFinder
      * Autowired JMS template for OSGP domain common responses queue.
      */
     @Autowired
-    @Qualifier("wsCoreIncomingResponsesJmsTemplate")
-    private JmsTemplate commonResponsesJmsTemplate;
+    @Qualifier("wsCoreInboundDomainResponsesJmsTemplate")
+    private JmsTemplate jmsTemplate;
 
     @Override
     protected ObjectMessage receiveObjectMessage(final String correlationUid) {
         LOGGER.info("Trying to find message with correlationUID: {}", correlationUid);
 
-        return (ObjectMessage) this.commonResponsesJmsTemplate
-                .receiveSelected(this.getJmsCorrelationId(correlationUid));
+        return (ObjectMessage) this.jmsTemplate.receiveSelected(this.getJmsCorrelationId(correlationUid));
     }
 
 }

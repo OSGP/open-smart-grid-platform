@@ -7,9 +7,6 @@
  */
 package org.opensmartgridplatform.adapter.domain.tariffswitching.application.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-
 import org.opensmartgridplatform.adapter.domain.tariffswitching.application.mapping.DomainTariffSwitchingMapper;
 import org.opensmartgridplatform.adapter.domain.tariffswitching.infra.jms.core.OsgpCoreRequestMessageSender;
 import org.opensmartgridplatform.adapter.domain.tariffswitching.infra.jms.ws.WebServiceResponseMessageSender;
@@ -23,6 +20,8 @@ import org.opensmartgridplatform.domain.core.services.OrganisationDomainService;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 public class AbstractService {
 
@@ -36,14 +35,14 @@ public class AbstractService {
     protected SsldRepository ssldRepository;
 
     @Autowired
-    @Qualifier("domainTariffSwitchingOutgoingOsgpCoreRequestMessageSender")
+    @Qualifier("domainTariffSwitchingOutboundOsgpCoreRequestsMessageSender")
     protected OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
 
     @Autowired
     protected DomainTariffSwitchingMapper domainCoreMapper;
 
     @Autowired
-    @Qualifier("domainTariffSwitchingOutgoingWebServiceResponseMessageSender")
+    @Qualifier("domainTariffSwitchingOutboundWebServiceResponsesMessageSender")
     protected WebServiceResponseMessageSender webServiceResponseMessageSender;
 
     protected Device findActiveDevice(final String deviceIdentification) throws FunctionalException {

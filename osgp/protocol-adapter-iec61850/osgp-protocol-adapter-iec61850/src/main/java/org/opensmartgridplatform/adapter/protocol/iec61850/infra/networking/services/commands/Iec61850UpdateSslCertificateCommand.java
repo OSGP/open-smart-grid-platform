@@ -12,9 +12,6 @@ import java.util.Date;
 
 import org.joda.time.DateTime;
 import org.openmuc.openiec61850.Fc;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.Iec61850Client;
@@ -27,12 +24,20 @@ import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.help
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
 import org.opensmartgridplatform.adapter.protocol.iec61850.services.DeviceMessageLoggingService;
 import org.opensmartgridplatform.dto.valueobjects.CertificationDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Iec61850UpdateSslCertificateCommand {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850UpdateSslCertificateCommand.class);
 
-    private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+    private final DeviceMessageLoggingService loggingService;
+
+    public Iec61850UpdateSslCertificateCommand(final DeviceMessageLoggingService loggingService) {
+        this.loggingService = loggingService;
+    }
 
     public void pushSslCertificateToDevice(final Iec61850Client iec61850Client, final DeviceConnection deviceConnection,
             final CertificationDto certification) throws ProtocolAdapterException {
@@ -80,9 +85,9 @@ public class Iec61850UpdateSslCertificateCommand {
 
                 deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION,
                         DataAttribute.CERTIFICATE_AUTHORITY_REPLACE, Fc.CF, SubDataAttribute.START_TIME,
-                        simpleDateFormat.format(oneMinuteFromNow));
+                        Iec61850UpdateSslCertificateCommand.this.simpleDateFormat.format(oneMinuteFromNow));
 
-                DeviceMessageLoggingService.logMessage(deviceMessageLog, deviceConnection.getDeviceIdentification(),
+                loggingService.logMessage(deviceMessageLog, deviceConnection.getDeviceIdentification(),
                         deviceConnection.getOrganisationIdentification(), false);
 
                 return null;

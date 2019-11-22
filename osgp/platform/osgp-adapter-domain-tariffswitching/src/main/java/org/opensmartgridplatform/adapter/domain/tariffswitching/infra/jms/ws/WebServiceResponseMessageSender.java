@@ -19,18 +19,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
+import org.springframework.stereotype.Component;
 
 // Send response message to the web service adapter.
+@Component(value = "domainTariffSwitchingOutboundWebServiceResponsesMessageSender")
 public class WebServiceResponseMessageSender implements ResponseMessageSender {
 
     @Autowired
-    @Qualifier("domainTariffSwitchingOutgoingWebServiceResponsesJmsTemplate")
-    private JmsTemplate outgoingWebServiceResponsesJmsTemplate;
+    @Qualifier("domainTariffSwitchingOutboundWebServiceResponsesJmsTemplate")
+    private JmsTemplate jmsTemplate;
 
     @Override
     public void send(final ResponseMessage responseMessage) {
 
-        this.outgoingWebServiceResponsesJmsTemplate.send(new MessageCreator() {
+        this.jmsTemplate.send(new MessageCreator() {
 
             @Override
             public Message createMessage(final Session session) throws JMSException {

@@ -12,23 +12,22 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
+import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
+import org.opensmartgridplatform.shared.infra.jms.UnknownMessageTypeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
-import org.opensmartgridplatform.shared.infra.jms.UnknownMessageTypeException;
-
 // This class should fetch request messages from incoming requests queue of OSGP Core.
-@Component(value = "domainCoreIncomingOsgpCoreRequestsMessageListener")
+@Component(value = "domainCoreInboundOsgpCoreRequestsMessageListener")
 public class OsgpCoreRequestMessageListener implements MessageListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OsgpCoreRequestMessageListener.class);
 
     @Autowired
-    @Qualifier("domainCoreIncomingOsgpCoreRequestsMessageProcessor")
+    @Qualifier("domainCoreInboundOsgpCoreRequestsMessageProcessor")
     private OsgpCoreRequestMessageProcessor osgpCoreRequestMessageProcessor;
 
     @Override

@@ -42,8 +42,8 @@ public class CommonSetEventNotificationsRequestMessageProcessor extends BaseMess
 
     @Autowired
     public CommonSetEventNotificationsRequestMessageProcessor(
-            @Qualifier("domainCoreOutgoingWebServiceResponsesMessageSender") ResponseMessageSender responseMessageSender,
-            @Qualifier("domainCoreWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainCoreOutboundWebServiceResponsesMessageSender") final ResponseMessageSender responseMessageSender,
+            @Qualifier("domainCoreInboundWebServiceRequestsMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.SET_EVENT_NOTIFICATIONS,
                 ComponentType.DOMAIN_CORE);
     }

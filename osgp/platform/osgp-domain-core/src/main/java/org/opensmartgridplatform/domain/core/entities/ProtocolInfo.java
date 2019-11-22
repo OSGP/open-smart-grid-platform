@@ -29,16 +29,16 @@ public class ProtocolInfo extends AbstractEntity {
     private String protocolVersion;
 
     @Column(nullable = false, length = 255)
-    private String outgoingProtocolRequestsQueue;
+    private String outgoingRequestsPropertyPrefix;
 
     @Column(nullable = false, length = 255)
-    private String incomingProtocolResponsesQueue;
+    private String incomingResponsesPropertyPrefix;
 
     @Column(nullable = false, length = 255)
-    private String incomingProtocolRequestsQueue;
+    private String incomingRequestsPropertyPrefix;
 
     @Column(nullable = false, length = 255)
-    private String outgoingProtocolResponsesQueue;
+    private String outgoingResponsesPropertyPrefix;
 
     @Column
     private boolean parallelRequestsAllowed;
@@ -50,10 +50,10 @@ public class ProtocolInfo extends AbstractEntity {
     private ProtocolInfo(final Builder builder) {
         this.protocol = builder.protocol;
         this.protocolVersion = builder.protocolVersion;
-        this.outgoingProtocolRequestsQueue = builder.outgoingProtocolRequestsQueue;
-        this.incomingProtocolResponsesQueue = builder.incomingProtocolResponsesQueue;
-        this.incomingProtocolRequestsQueue = builder.incomingProtocolRequestsQueue;
-        this.outgoingProtocolResponsesQueue = builder.outgoingProtocolResponsesQueue;
+        this.outgoingRequestsPropertyPrefix = builder.outgoingRequestsPropertyPrefix;
+        this.incomingResponsesPropertyPrefix = builder.incomingResponsesPropertyPrefix;
+        this.incomingRequestsPropertyPrefix = builder.incomingRequestsPropertyPrefix;
+        this.outgoingResponsesPropertyPrefix = builder.outgoingResponsesPropertyPrefix;
         this.parallelRequestsAllowed = builder.parallelRequestsAllowed;
     }
 
@@ -97,33 +97,33 @@ public class ProtocolInfo extends AbstractEntity {
         return this.protocolVersion;
     }
 
-    public String getOutgoingProtocolRequestsQueue() {
-        return this.outgoingProtocolRequestsQueue;
+    public String getOutgoingRequestsPropertyPrefix() {
+        return this.outgoingRequestsPropertyPrefix;
     }
 
-    public String getIncomingProtocolResponsesQueue() {
-        return this.incomingProtocolResponsesQueue;
+    public String getIncomingResponsesPropertyPrefix() {
+        return this.incomingResponsesPropertyPrefix;
     }
 
-    public String getIncomingProtocolRequestsQueue() {
-        return this.incomingProtocolRequestsQueue;
+    public String getIncomingRequestsPropertyPrefix() {
+        return this.incomingRequestsPropertyPrefix;
     }
 
-    public String getOutgoingProtocolResponsesQueue() {
-        return this.outgoingProtocolResponsesQueue;
+    public String getOutgoingResponsesPropertyPrefix() {
+        return this.outgoingResponsesPropertyPrefix;
     }
 
     public boolean isParallelRequestsAllowed() {
         return this.parallelRequestsAllowed;
     }
 
-    private static class Builder {
+    public static class Builder {
         private String protocol;
         private String protocolVersion;
-        private String outgoingProtocolRequestsQueue;
-        private String incomingProtocolResponsesQueue;
-        private String incomingProtocolRequestsQueue;
-        private String outgoingProtocolResponsesQueue;
+        private String outgoingRequestsPropertyPrefix;
+        private String incomingResponsesPropertyPrefix;
+        private String incomingRequestsPropertyPrefix;
+        private String outgoingResponsesPropertyPrefix;
         private Boolean parallelRequestsAllowed;
 
         public Builder() {
@@ -140,23 +140,23 @@ public class ProtocolInfo extends AbstractEntity {
             return this;
         }
 
-        public Builder withOutgoingProtocolRequestsQueue(final String queue) {
-            this.outgoingProtocolRequestsQueue = queue;
+        public Builder withOutgoingRequestsPropertyPrefix(final String propertyPrefix) {
+            this.outgoingRequestsPropertyPrefix = propertyPrefix;
             return this;
         }
 
-        public Builder withIncomingProtocolResponsesQueue(final String queue) {
-            this.incomingProtocolResponsesQueue = queue;
+        public Builder withIncomingResponsesPropertyPrefix(final String propertyPrefix) {
+            this.incomingResponsesPropertyPrefix = propertyPrefix;
             return this;
         }
 
-        public Builder withIncomingProtocolRequestsQueue(final String queue) {
-            this.incomingProtocolRequestsQueue = queue;
+        public Builder withIncomingRequestsPropertyPrefix(final String propertyPrefix) {
+            this.incomingRequestsPropertyPrefix = propertyPrefix;
             return this;
         }
 
-        public Builder withOutgoingProtocolResponsesQueue(final String queue) {
-            this.outgoingProtocolResponsesQueue = queue;
+        public Builder withOutgoingResponsesPropertyPrefix(final String propertyPrefix) {
+            this.outgoingResponsesPropertyPrefix = propertyPrefix;
             return this;
         }
 
