@@ -41,7 +41,7 @@ public class MessagingConfig extends AbstractConfig {
     private static final Logger LOGGER = LoggerFactory.getLogger(MessagingConfig.class);
 
     @Bean
-    DefaultJmsConfiguration defaultJmsConfiguration() {
+    public DefaultJmsConfiguration defaultJmsConfiguration() {
         LOGGER.info("Initializing defaultJmsConfiguration bean.");
         return new DefaultJmsConfiguration();
     }

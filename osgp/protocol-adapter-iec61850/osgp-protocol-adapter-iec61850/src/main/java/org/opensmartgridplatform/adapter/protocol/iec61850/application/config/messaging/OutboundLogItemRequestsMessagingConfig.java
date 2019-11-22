@@ -10,13 +10,10 @@ package org.opensmartgridplatform.adapter.protocol.iec61850.application.config.m
 import javax.jms.ConnectionFactory;
 import javax.net.ssl.SSLException;
 
-import org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.Iec61850LogItemRequestMessageSender;
-import org.opensmartgridplatform.adapter.protocol.iec61850.services.DeviceMessageLoggingService;
 import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsConfiguration;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfigurationFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -48,13 +45,5 @@ public class OutboundLogItemRequestsMessagingConfig {
     public JmsTemplate jmsTemplate() {
         LOGGER.info("Initializing protocolIec61850OutboundLogItemRequestsJmsTemplate bean.");
         return this.jmsConfigurationFactory.initJmsTemplate();
-    }
-
-    // TODO - Fix "Classes with only "static" methods should not be instantiated
-    // (squid:S2440)" sonar warning
-    @Bean
-    public DeviceMessageLoggingService deviceMessageLoggingService(
-            @Qualifier("protocolIec61850OutboundLogItemRequestsMessageSender") final Iec61850LogItemRequestMessageSender messageSender) {
-        return new DeviceMessageLoggingService(messageSender);
     }
 }

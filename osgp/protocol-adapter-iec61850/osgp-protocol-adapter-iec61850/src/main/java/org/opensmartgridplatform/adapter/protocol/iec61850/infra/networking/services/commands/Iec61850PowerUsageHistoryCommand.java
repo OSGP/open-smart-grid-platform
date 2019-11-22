@@ -12,9 +12,6 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 import org.openmuc.openiec61850.Fc;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.NodeException;
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
@@ -35,10 +32,18 @@ import org.opensmartgridplatform.dto.valueobjects.PowerUsageHistoryMessageDataCo
 import org.opensmartgridplatform.dto.valueobjects.RelayDataDto;
 import org.opensmartgridplatform.dto.valueobjects.SsldDataDto;
 import org.opensmartgridplatform.dto.valueobjects.TimePeriodDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Iec61850PowerUsageHistoryCommand {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850PowerUsageHistoryCommand.class);
+
+    private DeviceMessageLoggingService loggingService;
+
+    public Iec61850PowerUsageHistoryCommand(final DeviceMessageLoggingService loggingService) {
+        this.loggingService = loggingService;
+    }
 
     public List<PowerUsageDataDto> getPowerUsageHistoryDataFromDevice(final Iec61850Client iec61850Client,
             final DeviceConnection deviceConnection,
@@ -64,8 +69,9 @@ public class Iec61850PowerUsageHistoryCommand {
                     powerUsageHistoryData.addAll(powerUsageData);
                 }
 
-                DeviceMessageLoggingService.logMessage(deviceMessageLog, deviceConnection.getDeviceIdentification(),
-                        deviceConnection.getOrganisationIdentification(), false);
+                Iec61850PowerUsageHistoryCommand.this.loggingService.logMessage(deviceMessageLog,
+                        deviceConnection.getDeviceIdentification(), deviceConnection.getOrganisationIdentification(),
+                        false);
 
                 /*
                  * This way of gathering leads to PowerUsageData elements per
@@ -153,10 +159,18 @@ public class Iec61850PowerUsageHistoryCommand {
             final List<RelayDataDto> relayDataList = new ArrayList<>();
             final RelayDataDto relayData = new RelayDataDto(relayIndex, totalMinutesOnForDate);
             relayDataList.add(relayData);
-            final SsldDataDto ssldData = SsldDataDto.newBuilder().withActualCurrent1(0).withActualCurrent2(0)
-                    .withActualCurrent3(0).withActualPower1(0).withActualPower2(0).withActualPower3(0)
-                    .withAveragePowerFactor1(0).withAveragePowerFactor2(0).withAveragePowerFactor3(0)
-                    .withRelayData(relayDataList).build();
+            final SsldDataDto ssldData = SsldDataDto.newBuilder()
+                    .withActualCurrent1(0)
+                    .withActualCurrent2(0)
+                    .withActualCurrent3(0)
+                    .withActualPower1(0)
+                    .withActualPower2(0)
+                    .withActualPower3(0)
+                    .withAveragePowerFactor1(0)
+                    .withAveragePowerFactor2(0)
+                    .withAveragePowerFactor3(0)
+                    .withRelayData(relayDataList)
+                    .build();
             powerUsageData.setSsldData(ssldData);
             powerUsageHistoryDataFromRelay.add(powerUsageData);
         }

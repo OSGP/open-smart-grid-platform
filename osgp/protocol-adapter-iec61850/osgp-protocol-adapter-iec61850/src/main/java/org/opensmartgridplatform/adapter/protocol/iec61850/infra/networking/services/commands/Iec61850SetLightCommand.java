@@ -12,9 +12,6 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.openmuc.openiec61850.BdaBoolean;
 import org.openmuc.openiec61850.Fc;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.NodeException;
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
@@ -28,10 +25,18 @@ import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.help
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
 import org.opensmartgridplatform.adapter.protocol.iec61850.services.DeviceMessageLoggingService;
 import org.opensmartgridplatform.dto.valueobjects.LightValueDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Iec61850SetLightCommand {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850SetLightCommand.class);
+
+    private DeviceMessageLoggingService loggingService;
+
+    public Iec61850SetLightCommand(final DeviceMessageLoggingService loggingService) {
+        this.loggingService = loggingService;
+    }
 
     /**
      * Switch one or more light relays of a switching device.
@@ -77,8 +82,9 @@ public class Iec61850SetLightCommand {
                     }
                 }
 
-                DeviceMessageLoggingService.logMessage(deviceMessageLog, deviceConnection.getDeviceIdentification(),
-                        deviceConnection.getOrganisationIdentification(), false);
+                Iec61850SetLightCommand.this.loggingService.logMessage(deviceMessageLog,
+                        deviceConnection.getDeviceIdentification(), deviceConnection.getOrganisationIdentification(),
+                        false);
 
                 return null;
             }

@@ -9,9 +9,6 @@ package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.ser
 
 import org.openmuc.openiec61850.BdaBoolean;
 import org.openmuc.openiec61850.Fc;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.Iec61850Client;
@@ -23,10 +20,18 @@ import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.help
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.NodeContainer;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
 import org.opensmartgridplatform.adapter.protocol.iec61850.services.DeviceMessageLoggingService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Iec61850RebootCommand {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850RebootCommand.class);
+
+    private DeviceMessageLoggingService loggingService;
+
+    public Iec61850RebootCommand(final DeviceMessageLoggingService loggingService) {
+        this.loggingService = loggingService;
+    }
 
     public void rebootDevice(final Iec61850Client iec61850Client, final DeviceConnection deviceConnection)
             throws ProtocolAdapterException {
@@ -57,8 +62,9 @@ public class Iec61850RebootCommand {
                 deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.REBOOT_OPERATION,
                         Fc.ST, SubDataAttribute.OPERATION, SubDataAttribute.CONTROL_VALUE, Boolean.toString(true));
 
-                DeviceMessageLoggingService.logMessage(deviceMessageLog, deviceConnection.getDeviceIdentification(),
-                        deviceConnection.getOrganisationIdentification(), false);
+                Iec61850RebootCommand.this.loggingService.logMessage(deviceMessageLog,
+                        deviceConnection.getDeviceIdentification(), deviceConnection.getOrganisationIdentification(),
+                        false);
 
                 return null;
             }
