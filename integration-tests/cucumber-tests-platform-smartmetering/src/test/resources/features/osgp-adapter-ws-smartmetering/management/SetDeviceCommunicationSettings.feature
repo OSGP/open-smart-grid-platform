@@ -10,7 +10,7 @@ Feature: SmartMetering Management - Set Device Communication Settings
       | DeviceType           | SMART_METER_E     |
     When the set device communication settings request is received
       | DeviceIdentification     | TEST1024000000001 |
-      | ChallengeLength          |                16 |
+      | ChallengeLength          | 16                |
       | WithListSupported        | true              |
       | SelectiveAccessSupported | false             |
       | IpAddressIsStatic        | false             |
@@ -18,7 +18,7 @@ Feature: SmartMetering Management - Set Device Communication Settings
       | UseHdlc                  | true              |
     Then the set device communication settings response should be "OK"
     And the device "TEST1024000000001" should be in the database with attributes
-      | ChallengeLength          |    16 |
+      | ChallengeLength          | 16    |
       | WithListSupported        | true  |
       | SelectiveAccessSupported | false |
       | IpAddressIsStatic        | false |

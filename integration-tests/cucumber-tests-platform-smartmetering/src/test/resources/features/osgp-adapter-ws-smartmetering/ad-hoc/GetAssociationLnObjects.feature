@@ -1,4 +1,4 @@
-@SmartMetering @Platform @SmartMeteringAdHoc
+@SmartMetering @Platform @SmartMeteringAdHoc @NightlyBuildOnly
 Feature: SmartMetering AdHoc - Get Association LN Objects
   As a grid operator
   I want to be able to get the Association LN object list from a device

@@ -1,4 +1,4 @@
-@SmartMetering @Platform @SmartMeteringConfiguration
+@SmartMetering @Platform @SmartMeteringConfiguration @NightlyBuildOnly
 Feature: SmartMetering Configuration - Set Push Setup SMS
   As a grid operator
   I want to be able to set the Push setup SMS on a device

@@ -1,4 +1,4 @@
-@SmartMetering @Platform @SmartMeteringConfiguration
+@SmartMetering @Platform @SmartMeteringConfiguration @NightlyBuildOnly
 Feature: SmartMetering - Configuration - M-Bus encryption key status
   As a product owner
   I want to be able to retrieve the encryption key status from an M-Bus device

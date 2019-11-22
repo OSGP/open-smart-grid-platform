@@ -1,4 +1,4 @@
-@SmartMetering @Platform @SmartMeteringConfiguration
+@SmartMetering @Platform @SmartMeteringConfiguration @NightlyBuildOnly
 Feature: SmartMetering Configuration - Replace Keys
   As a grid operator
   I want to be able to replace the keys on a device
