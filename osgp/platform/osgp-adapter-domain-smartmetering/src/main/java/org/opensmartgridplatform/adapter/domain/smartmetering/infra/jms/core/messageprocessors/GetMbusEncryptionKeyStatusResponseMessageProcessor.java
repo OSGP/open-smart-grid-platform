@@ -30,7 +30,7 @@ public class GetMbusEncryptionKeyStatusResponseMessageProcessor extends OsgpCore
     @Autowired
     public GetMbusEncryptionKeyStatusResponseMessageProcessor(
             WebServiceResponseMessageSender responseMessageSender,
-            @Qualifier("domainSmartMeteringOsgpCoreResponseMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.GET_MBUS_ENCRYPTION_KEY_STATUS,
                 ComponentType.DOMAIN_SMART_METERING);
     }

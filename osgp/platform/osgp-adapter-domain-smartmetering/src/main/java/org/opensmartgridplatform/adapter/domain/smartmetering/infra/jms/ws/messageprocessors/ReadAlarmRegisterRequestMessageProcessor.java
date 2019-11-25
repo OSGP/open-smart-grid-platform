@@ -27,7 +27,7 @@ public class ReadAlarmRegisterRequestMessageProcessor extends BaseRequestMessage
 
     @Autowired
     public ReadAlarmRegisterRequestMessageProcessor(
-            @Qualifier("domainSmartMeteringWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(messageProcessorMap, MessageType.READ_ALARM_REGISTER);
     }
 

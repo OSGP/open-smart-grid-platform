@@ -40,7 +40,7 @@ public class BundleResponseMessageProcessor extends OsgpCoreResponseMessageProce
     @Autowired
     public BundleResponseMessageProcessor(
             WebServiceResponseMessageSender responseMessageSender,
-            @Qualifier("domainSmartMeteringOsgpCoreResponseMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.HANDLE_BUNDLED_ACTIONS,
                 ComponentType.DOMAIN_SMART_METERING);
     }

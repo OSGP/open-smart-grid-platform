@@ -22,8 +22,6 @@ import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.jboss.netty.handler.logging.LoggingHandler;
 import org.jboss.netty.logging.InternalLogLevel;
-import org.jboss.netty.logging.InternalLoggerFactory;
-import org.jboss.netty.logging.Slf4JLoggerFactory;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.threads.RecoverKeyProcess;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.threads.RecoverKeyProcessInitiator;
@@ -58,10 +56,6 @@ public class DlmsConfig extends AbstractConfig {
     private static final String PROPERTY_NAME_DLMS_PORT_SERVER = "dlms.port.server";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DlmsConfig.class);
-
-    public DlmsConfig() {
-        InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
-    }
 
     /**
      * Returns a ServerBootstrap setting up a server pipeline listening for
@@ -155,13 +149,14 @@ public class DlmsConfig extends AbstractConfig {
     }
 
     @Bean
-    public ScheduledExecutorService scheduledExecutorService(
-            @Value("${executor.scheduled.poolsize}") final int poolsize) {
+    public ScheduledExecutorService
+            scheduledExecutorService(@Value("${executor.scheduled.poolsize}") final int poolsize) {
         return Executors.newScheduledThreadPool(poolsize);
     }
 
     private ChannelPipeline getPipeline() {
-        final ChannelPipeline pipeline = DlmsConfig.this.createChannelPipeline(DlmsConfig.this.dlmsChannelHandlerServer());
+        final ChannelPipeline pipeline = DlmsConfig.this
+                .createChannelPipeline(DlmsConfig.this.dlmsChannelHandlerServer());
 
         LOGGER.info("Created new DLMS handler pipeline for server");
 

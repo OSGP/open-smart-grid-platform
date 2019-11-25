@@ -35,7 +35,7 @@ public class ScanMbusChannelsResponseMessageProcessor extends OsgpCoreResponseMe
     @Autowired
     public ScanMbusChannelsResponseMessageProcessor(
             WebServiceResponseMessageSender responseMessageSender,
-            @Qualifier("domainSmartMeteringOsgpCoreResponseMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.SCAN_MBUS_CHANNELS,
                 ComponentType.DOMAIN_SMART_METERING);
     }

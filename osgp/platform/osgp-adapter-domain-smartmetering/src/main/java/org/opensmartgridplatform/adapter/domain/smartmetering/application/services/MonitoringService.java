@@ -7,13 +7,6 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
@@ -50,6 +43,12 @@ import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service(value = "domainSmartMeteringMonitoringService")
 @Transactional(value = "transactionManager")
@@ -60,7 +59,7 @@ public class MonitoringService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MonitoringService.class);
 
     @Autowired
-    @Qualifier(value = "domainSmartMeteringOutgoingOsgpCoreRequestMessageSender")
+    @Qualifier(value = "domainSmartMeteringOutboundOsgpCoreRequestsMessageSender")
     private OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
 
     @Autowired
@@ -70,6 +69,7 @@ public class MonitoringService {
     private DomainHelperService domainHelperService;
 
     @Autowired
+    @Qualifier(value = "domainSmartMeteringOutboundWebServiceResponsesMessageSender")
     private WebServiceResponseMessageSender webServiceResponseMessageSender;
 
     public MonitoringService() {
@@ -89,9 +89,10 @@ public class MonitoringService {
 
             if (smartMeter.getChannel() == null) {
                 /*
-                 * For now, throw a FunctionalException. As soon as we can communicate with some
-                 * types of gas meters directly, and not through an M-Bus port of an energy
-                 * meter, this will have to be changed.
+                 * For now, throw a FunctionalException. As soon as we can
+                 * communicate with some types of gas meters directly, and not
+                 * through an M-Bus port of an energy meter, this will have to
+                 * be changed.
                  */
                 throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
                         ComponentType.DOMAIN_SMART_METERING,
@@ -104,9 +105,10 @@ public class MonitoringService {
             final Device gatewayDevice = smartMeter.getGatewayDevice();
             if (gatewayDevice == null) {
                 /*
-                 * For now throw a FunctionalException, based on the same reasoning as with the
-                 * channel a couple of lines up. As soon as we have scenario's with direct
-                 * communication with gas meters this will have to be changed.
+                 * For now throw a FunctionalException, based on the same
+                 * reasoning as with the channel a couple of lines up. As soon
+                 * as we have scenario's with direct communication with gas
+                 * meters this will have to be changed.
                  */
                 throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
                         ComponentType.DOMAIN_SMART_METERING,
@@ -144,10 +146,12 @@ public class MonitoringService {
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
                 .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(result)
                 .withOsgpException(exception)
                 .withDataObject(this.monitoringMapper.map(periodMeterReadsValueDTO, PeriodicMeterReadsContainer.class))
-                .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
@@ -166,11 +170,13 @@ public class MonitoringService {
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
                 .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(result)
                 .withOsgpException(exception)
                 .withDataObject(
                         this.monitoringMapper.map(periodMeterReadsValueDTO, PeriodicMeterReadsContainerGas.class))
-                .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
@@ -188,9 +194,10 @@ public class MonitoringService {
 
             if (smartMeter.getChannel() == null) {
                 /*
-                 * For now, throw a FunctionalException. As soon as we can communicate with some
-                 * types of gas meters directly, and not through an M-Bus port of an energy
-                 * meter, this will have to be changed.
+                 * For now, throw a FunctionalException. As soon as we can
+                 * communicate with some types of gas meters directly, and not
+                 * through an M-Bus port of an energy meter, this will have to
+                 * be changed.
                  */
                 throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
                         ComponentType.DOMAIN_SMART_METERING,
@@ -199,9 +206,10 @@ public class MonitoringService {
             final Device gatewayDevice = smartMeter.getGatewayDevice();
             if (gatewayDevice == null) {
                 /*
-                 * For now throw a FunctionalException, based on the same reasoning as with the
-                 * channel a couple of lines up. As soon as we have scenario's with direct
-                 * communication with gas meters this will have to be changed.
+                 * For now throw a FunctionalException, based on the same
+                 * reasoning as with the channel a couple of lines up. As soon
+                 * as we have scenario's with direct communication with gas
+                 * meters this will have to be changed.
                  */
                 throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
                         ComponentType.DOMAIN_SMART_METERING,
@@ -240,10 +248,12 @@ public class MonitoringService {
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
                 .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(result)
                 .withOsgpException(exception)
                 .withDataObject(this.monitoringMapper.map(actualMeterReadsDto, MeterReads.class))
-                .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
@@ -262,10 +272,12 @@ public class MonitoringService {
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
                 .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(result)
                 .withOsgpException(exception)
                 .withDataObject(this.monitoringMapper.map(actualMeterReadsGas, MeterReadsGas.class))
-                .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
@@ -305,9 +317,12 @@ public class MonitoringService {
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
                 .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
-                .withOsgpException(exception).withDataObject(alarmRegisterValueDomain)
-                .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(result)
+                .withOsgpException(exception)
+                .withDataObject(alarmRegisterValueDomain)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
@@ -349,9 +364,12 @@ public class MonitoringService {
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
                 .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
-                .withOsgpException(exception).withDataObject(profileGenericDataResponse)
-                .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(result)
+                .withOsgpException(exception)
+                .withDataObject(profileGenericDataResponse)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
@@ -394,8 +412,11 @@ public class MonitoringService {
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
                 .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
-                .withOsgpException(exception).withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(result)
+                .withOsgpException(exception)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 }

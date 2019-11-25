@@ -31,7 +31,7 @@ public class SynchronizeTimeResponseMessageProcessor extends OsgpCoreResponseMes
 
     @Autowired
     protected SynchronizeTimeResponseMessageProcessor(WebServiceResponseMessageSender responseMessageSender,
-            @Qualifier("domainSmartMeteringOsgpCoreResponseMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.SYNCHRONIZE_TIME,
                 ComponentType.DOMAIN_SMART_METERING);
     }

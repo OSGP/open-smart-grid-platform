@@ -29,7 +29,7 @@ public class ClearAlarmRegisterRequestMessageProcessor extends BaseRequestMessag
 
     @Autowired
     protected ClearAlarmRegisterRequestMessageProcessor(
-            @Qualifier("domainSmartMeteringWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(messageProcessorMap, MessageType.CLEAR_ALARM_REGISTER);
     }
 

@@ -27,7 +27,7 @@ public class FindEventsRequestMessageProcessor extends BaseRequestMessageProcess
 
     @Autowired
     protected FindEventsRequestMessageProcessor(
-            @Qualifier("domainSmartMeteringWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(messageProcessorMap, MessageType.FIND_EVENTS);
     }
 

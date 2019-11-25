@@ -9,13 +9,6 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.application.servi
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.exceptions.InactiveDeviceException;
@@ -39,6 +32,12 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service(value = "domainSmartMeteringMBusGatewayService")
 @Transactional(value = "transactionManager")
@@ -49,7 +48,7 @@ public class MBusGatewayService {
     private static final int MAXIMUM_NUMBER_OF_MBUS_CHANNELS = 4;
 
     @Autowired
-    @Qualifier(value = "domainSmartMeteringOutgoingOsgpCoreRequestMessageSender")
+    @Qualifier(value = "domainSmartMeteringOutboundOsgpCoreRequestsMessageSender")
     private OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
 
     @Autowired

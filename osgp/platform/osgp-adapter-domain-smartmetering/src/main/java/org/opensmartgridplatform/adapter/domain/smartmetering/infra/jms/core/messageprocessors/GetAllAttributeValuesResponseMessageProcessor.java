@@ -31,7 +31,7 @@ public class GetAllAttributeValuesResponseMessageProcessor extends OsgpCoreRespo
     @Autowired
     public GetAllAttributeValuesResponseMessageProcessor(
             WebServiceResponseMessageSender responseMessageSender,
-            @Qualifier("domainSmartMeteringOsgpCoreResponseMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.GET_ALL_ATTRIBUTE_VALUES,
                 ComponentType.DOMAIN_SMART_METERING);
     }

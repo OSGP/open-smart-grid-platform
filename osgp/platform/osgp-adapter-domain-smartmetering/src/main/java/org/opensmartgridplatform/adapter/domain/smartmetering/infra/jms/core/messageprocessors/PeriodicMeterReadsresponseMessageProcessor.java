@@ -32,7 +32,7 @@ public class PeriodicMeterReadsresponseMessageProcessor extends OsgpCoreResponse
     @Autowired
     protected PeriodicMeterReadsresponseMessageProcessor(
             WebServiceResponseMessageSender responseMessageSender,
-            @Qualifier("domainSmartMeteringOsgpCoreResponseMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.REQUEST_PERIODIC_METER_DATA,
                 ComponentType.DOMAIN_SMART_METERING);
     }

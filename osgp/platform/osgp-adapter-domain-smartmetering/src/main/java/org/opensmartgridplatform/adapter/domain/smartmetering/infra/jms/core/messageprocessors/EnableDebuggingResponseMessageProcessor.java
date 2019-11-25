@@ -29,7 +29,7 @@ public class EnableDebuggingResponseMessageProcessor extends OsgpCoreResponseMes
 
     @Autowired
     public EnableDebuggingResponseMessageProcessor(WebServiceResponseMessageSender responseMessageSender,
-            @Qualifier("domainSmartMeteringOsgpCoreResponseMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.ENABLE_DEBUGGING,
                 ComponentType.DOMAIN_SMART_METERING);
     }
