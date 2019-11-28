@@ -23,7 +23,7 @@ public class SsldPendingFirmwareUpdate extends AbstractEntity {
     private static final long serialVersionUID = 1L;
 
     @Column(nullable = false)
-    private boolean pendingFirmwareUpdate;
+    private String deviceIdentification;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -31,12 +31,6 @@ public class SsldPendingFirmwareUpdate extends AbstractEntity {
 
     @Column(nullable = false)
     private String firmwareVersion;
-
-    @Column(nullable = false)
-    private String domain;
-
-    @Column(nullable = false)
-    private String domainVersion;
 
     @Column(nullable = false)
     private String organisationIdentification;
@@ -48,19 +42,17 @@ public class SsldPendingFirmwareUpdate extends AbstractEntity {
         // Default constructor.
     }
 
-    public SsldPendingFirmwareUpdate(final boolean pendingFirmwareUpdate, final FirmwareModuleType firmwareModuleType,
-            final String firmwareVersion, final String domain, final String domainVersion,
-            final String organisationIdentification) {
-        this.pendingFirmwareUpdate = pendingFirmwareUpdate;
+    public SsldPendingFirmwareUpdate(final String deviceIdentification, final FirmwareModuleType firmwareModuleType,
+            final String firmwareVersion, final String organisationIdentification, final String correlationUid) {
+        this.deviceIdentification = deviceIdentification;
         this.firmwareModuleType = firmwareModuleType;
         this.firmwareVersion = firmwareVersion;
-        this.domain = domain;
-        this.domainVersion = domainVersion;
         this.organisationIdentification = organisationIdentification;
+        this.correlationUid = correlationUid;
     }
 
-    public boolean hasPendingFirmwareUpdate() {
-        return this.pendingFirmwareUpdate;
+    public String getDeviceIdentification() {
+        return this.deviceIdentification;
     }
 
     public FirmwareModuleType getFirmwareModuleType() {
@@ -71,20 +63,8 @@ public class SsldPendingFirmwareUpdate extends AbstractEntity {
         return this.firmwareVersion;
     }
 
-    public String getDomain() {
-        return this.domain;
-    }
-
-    public String getDomainVersion() {
-        return this.domainVersion;
-    }
-
     public String getOrganisationIdentification() {
         return this.organisationIdentification;
-    }
-
-    public void setCorrelationUid(final String correlationUid) {
-        this.correlationUid = correlationUid;
     }
 
     public String getCorrelationUid() {
@@ -93,16 +73,15 @@ public class SsldPendingFirmwareUpdate extends AbstractEntity {
 
     @Override
     public String toString() {
-        return "SsldPendingFirmwareUpdate [pendingFirmwareUpdate=" + this.pendingFirmwareUpdate
-                + ", firmwareModuleType=" + this.firmwareModuleType + ", firmwareVersion=" + this.firmwareVersion
-                + ", domain=" + this.domain + ", domainVersion=" + this.domainVersion + ", organistationIdentification="
-                + this.organisationIdentification + ", correlationUid=" + this.correlationUid + "]";
+        return "SsldPendingFirmwareUpdate [deviceIdentification=" + this.deviceIdentification + ", firmwareModuleType="
+                + this.firmwareModuleType + ", firmwareVersion=" + this.firmwareVersion
+                + ", organisationIdentification=" + this.organisationIdentification + ", correlationUid="
+                + this.correlationUid + "]";
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.pendingFirmwareUpdate, this.firmwareModuleType, this.firmwareVersion,
-                this.organisationIdentification);
+        return Objects.hash(this.deviceIdentification, this.firmwareModuleType, this.firmwareVersion);
     }
 
     @Override
@@ -114,10 +93,9 @@ public class SsldPendingFirmwareUpdate extends AbstractEntity {
             return false;
         }
         final SsldPendingFirmwareUpdate ssldPendingFirmwareUpdate = (SsldPendingFirmwareUpdate) that;
-        return Objects.equals(this.pendingFirmwareUpdate, ssldPendingFirmwareUpdate.pendingFirmwareUpdate)
+        return Objects.equals(this.deviceIdentification, ssldPendingFirmwareUpdate.deviceIdentification)
                 && Objects.equals(this.firmwareModuleType, ssldPendingFirmwareUpdate.firmwareModuleType)
-                && Objects.equals(this.firmwareVersion, ssldPendingFirmwareUpdate.firmwareVersion) && Objects
-                        .equals(this.organisationIdentification, ssldPendingFirmwareUpdate.organisationIdentification);
+                && Objects.equals(this.firmwareVersion, ssldPendingFirmwareUpdate.firmwareVersion);
     }
 
 }

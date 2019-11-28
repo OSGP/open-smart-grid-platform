@@ -54,7 +54,7 @@ public class RegisterDeviceMessageProcessor extends ProtocolRequestMessageProces
                     deviceRegistrationData.getIpAddress(), deviceRegistrationData.getDeviceType(),
                     deviceRegistrationData.isHasSchedule());
 
-            this.deviceRegistrationMessageService.checkSsldPendingFirmwareUpdate(metadata.getDeviceIdentification());
+            this.deviceRegistrationMessageService.sendRequestMessageToDomainCore(metadata.getDeviceIdentification());
 
         } catch (final UnknownHostException e) {
             final String errorMessage = String.format("%s occurred, reason: %s", e.getClass().getName(),

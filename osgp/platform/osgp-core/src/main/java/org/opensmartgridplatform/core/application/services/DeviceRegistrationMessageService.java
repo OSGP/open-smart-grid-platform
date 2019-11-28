@@ -16,11 +16,10 @@ import org.opensmartgridplatform.core.domain.model.domain.DomainRequestService;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DomainInfo;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
-import org.opensmartgridplatform.domain.core.entities.SsldPendingFirmwareUpdate;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.DomainInfoRepository;
-import org.opensmartgridplatform.domain.core.repositories.SsldRepository;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderTimestampService;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,8 +34,6 @@ public class DeviceRegistrationMessageService {
 
     private static final String LOCAL_HOST = "127.0.0.1";
 
-    private static final String SSLD_PENDING_FIRMWARE_UPDATE = "SSLD_PENDING_FIRMWARE_UPDATE";
-
     @Autowired
     private DeviceRepository deviceRepository;
 
@@ -44,7 +41,7 @@ public class DeviceRegistrationMessageService {
     private DomainInfoRepository domainInfoRepository;
 
     @Autowired
-    private SsldRepository ssldRepository;
+    private String netmanagementOrganisation;
 
     @Autowired
     private DomainRequestService domainRequestService;
@@ -54,7 +51,7 @@ public class DeviceRegistrationMessageService {
 
     /**
      * Update device registration data (IP address, etc). Device is added
-     * (without an owner) when not exist yet.
+     * (without an owner) when it doesn't exist.
      *
      * @param deviceIdentification
      *            The device identification.
@@ -120,33 +117,16 @@ public class DeviceRegistrationMessageService {
         }
     }
 
-    public void checkSsldPendingFirmwareUpdate(final String deviceIdentification) {
+    public void sendRequestMessageToDomainCore(final String deviceIdentification) {
 
-        final Ssld ssld = this.ssldRepository.findByDeviceIdentification(deviceIdentification);
-        if (ssld == null) {
-            LOGGER.warn("No SSLD found for device identification: {}.", deviceIdentification);
-            return;
-        }
+        final String correlationUid = this.correlationIdProviderTimestampService
+                .getCorrelationId(this.netmanagementOrganisation, deviceIdentification);
 
-        final SsldPendingFirmwareUpdate ssldPendingFirmwareUpdate = ssld.getSsldPendingFirmwareUpdate();
-        if (ssldPendingFirmwareUpdate == null) {
-            LOGGER.info("No SSLD pending firmware update found for device identification: {}.", deviceIdentification);
-            return;
-        }
+        final RequestMessage message = new RequestMessage(correlationUid, this.netmanagementOrganisation,
+                deviceIdentification, null);
 
-        if (ssldPendingFirmwareUpdate.hasPendingFirmwareUpdate()) {
-            final String organisationIdentification = ssldPendingFirmwareUpdate.getOrganisationIdentification();
+        final DomainInfo domainInfo = this.domainInfoRepository.findByDomainAndDomainVersion("CORE", "1.0");
 
-            final String correlationUid = this.correlationIdProviderTimestampService
-                    .getCorrelationId(organisationIdentification, deviceIdentification);
-
-            final RequestMessage message = new RequestMessage(correlationUid, organisationIdentification,
-                    deviceIdentification, ssldPendingFirmwareUpdate);
-
-            final DomainInfo domainInfo = this.domainInfoRepository.findByDomainAndDomainVersion(
-                    ssldPendingFirmwareUpdate.getDomain(), ssldPendingFirmwareUpdate.getDomainVersion());
-
-            this.domainRequestService.send(message, SSLD_PENDING_FIRMWARE_UPDATE, domainInfo);
-        }
+        this.domainRequestService.send(message, MessageType.REGISTER_DEVICE.name(), domainInfo);
     }
 }

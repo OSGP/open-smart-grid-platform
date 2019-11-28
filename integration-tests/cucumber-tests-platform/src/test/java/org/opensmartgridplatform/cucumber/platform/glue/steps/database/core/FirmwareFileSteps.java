@@ -294,19 +294,15 @@ public class FirmwareFileSteps {
     public void aPendingFirmwareUpdateRecordForAnSsld(final Map<String, String> settings) {
         final String deviceIdentification = getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION);
 
-        final Ssld ssld = this.ssldRepository.findByDeviceIdentification(deviceIdentification);
-
         final FirmwareModuleType firmwareModuleType = getEnum(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_FUNC,
                 FirmwareModuleType.class);
         final String firmwareVersion = getString(settings, PlatformKeys.FIRMWARE_VERSION);
         final String organisationIdentification = getString(settings, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION);
 
-        SsldPendingFirmwareUpdate ssldPendingFirmwareUpdate = new SsldPendingFirmwareUpdate(true, firmwareModuleType,
-                firmwareVersion, "CORE", "1.0", organisationIdentification);
+        SsldPendingFirmwareUpdate ssldPendingFirmwareUpdate = new SsldPendingFirmwareUpdate(deviceIdentification,
+                firmwareModuleType, firmwareVersion, organisationIdentification, "correlationUid");
 
         ssldPendingFirmwareUpdate = this.ssldPendingFirmwareUpdateRepository.save(ssldPendingFirmwareUpdate);
 
-        ssld.setSsldPendingFirmwareUpdate(ssldPendingFirmwareUpdate);
-        this.ssldRepository.save(ssld);
     }
 }

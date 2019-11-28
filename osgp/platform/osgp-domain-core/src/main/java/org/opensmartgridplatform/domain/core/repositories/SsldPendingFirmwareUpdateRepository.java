@@ -14,4 +14,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SsldPendingFirmwareUpdateRepository extends JpaRepository<SsldPendingFirmwareUpdate, Long> {
 
+    SsldPendingFirmwareUpdate findByDeviceIdentification(String deviceIdentification);
+
 }

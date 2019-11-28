@@ -1,10 +1,8 @@
 @PublicLighting @Platform @FirmwareManagement
 Feature: FirmwareManagement pending firmware update
-  As OSGP 
-  I want to manage the firmware of a device
-  In order to update the firmware history,
-  Execute a get firmware version request,
-  After an SSLD registers and a pending firmware update records exists
+  As grid operator
+  I want to have an updated firmware history upon registration of an SSLD after a firmware update
+  In order to improve the firmware management process
 
   @OslpMockServer
   Scenario Outline: Get firmware version, because a pending firmware update record exists when an SSLD registers
@@ -32,10 +30,10 @@ Feature: FirmwareManagement pending firmware update
       | FirmwareModuleVersionFunc | <Firmware Version> |
     And the device returns firmware version "<Firmware Version>" over "<Protocol>"
     And a pending firmware update record for an ssld
-      | DeviceIdentification       | TEST1024010101010                |
-      | FirmwareModuleVersionFunc  | FUNCTIONAL                       |
-      | FirmwareVersion            | <Firmware Version>               |
-      | OrganizationIdentification | TestOrganization                 |
+      | DeviceIdentification       | TEST1024010101010  |
+      | FirmwareModuleVersionFunc  | FUNCTIONAL         |
+      | FirmwareVersion            | <Firmware Version> |
+      | OrganizationIdentification | TestOrganization   |
     When the device sends a register device request to the platform over "<Protocol>"
       | DeviceIdentification | TEST1024010101010 |
       | Protocol             | <Protocol>        |
