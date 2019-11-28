@@ -7,12 +7,11 @@
  */
 package org.opensmartgridplatform.adapter.ws.admin.application.mapping;
 
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.ConfigurableMapper;
-
+import org.opensmartgridplatform.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
 import org.springframework.stereotype.Component;
 
-import org.opensmartgridplatform.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
+import ma.glasnost.orika.MapperFactory;
+import ma.glasnost.orika.impl.ConfigurableMapper;
 
 @Component(value = "adminDeviceManagementMapper")
 public class DeviceManagementMapper extends ConfigurableMapper {
@@ -22,21 +21,27 @@ public class DeviceManagementMapper extends ConfigurableMapper {
         mapperFactory.registerClassMap(mapperFactory
                 .classMap(org.opensmartgridplatform.logging.domain.entities.DeviceLogItem.class,
                         org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.MessageLog.class)
-                .field("modificationTime", "timestamp").byDefault().toClassMap());
+                .field("modificationTime", "timestamp")
+                .byDefault()
+                .toClassMap());
 
         mapperFactory.registerClassMap(mapperFactory
                 .classMap(org.opensmartgridplatform.domain.core.entities.DeviceAuthorization.class,
                         org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.DeviceAuthorisation.class)
                 .field("device.deviceIdentification", "deviceIdentification")
-                .field("organisation.organisationIdentification", "organisationIdentification").byDefault()
+                .field("organisation.organisationIdentification", "organisationIdentification")
+                .byDefault()
                 .toClassMap());
 
         mapperFactory.registerClassMap(mapperFactory
                 .classMap(org.opensmartgridplatform.domain.core.entities.ProtocolInfo.class,
                         org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.ProtocolInfo.class)
-                        .exclude("outgoingProtocolRequestsQueue").exclude("incomingProtocolResponsesQueue")
-                        .exclude("incomingProtocolRequestsQueue").exclude("outgoingProtocolResponsesQueue").byDefault()
-                        .toClassMap());
+                .exclude("outgoingRequestsPropertyPrefix")
+                .exclude("incomingResponsesPropertyPrefix")
+                .exclude("incomingRequestsPropertyPrefix")
+                .exclude("outgoingResponsesPropertyPrefix")
+                .byDefault()
+                .toClassMap());
 
         mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
     }

@@ -20,7 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 // This class should fetch request messages from incoming requests queue of OSGP Core.
-@Component(value = "domainCoreIncomingOsgpCoreRequestsMessageListener")
+@Component(value = "domainCoreInboundOsgpCoreRequestsMessageListener")
 public class OsgpCoreRequestMessageListener implements MessageListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OsgpCoreRequestMessageListener.class);

@@ -10,24 +10,27 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.config;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
-import org.springframework.web.WebApplicationInitializer;
-
+import org.jboss.netty.logging.InternalLoggerFactory;
+import org.jboss.netty.logging.Slf4JLoggerFactory;
 import org.opensmartgridplatform.shared.application.config.AbstractApplicationInitializer;
+import org.springframework.web.WebApplicationInitializer;
 
 /**
  * Web application Java configuration class.
  */
-public class ProtocolAdapterDlmsInitializer extends AbstractApplicationInitializer implements WebApplicationInitializer {
+public class ProtocolAdapterDlmsInitializer extends AbstractApplicationInitializer
+        implements WebApplicationInitializer {
 
     public ProtocolAdapterDlmsInitializer() {
         super(ApplicationContext.class, "java:comp/env/osgp/AdapterProtocolDlms/log-config");
+        InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
     }
-    
+
     /**
      * Handles the start of the spring boot.
      */
     @Override
     public void onStartup(final ServletContext servletContext) throws ServletException {
-        startUp(servletContext);
+        this.startUp(servletContext);
     }
 }

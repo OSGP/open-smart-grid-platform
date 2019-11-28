@@ -33,7 +33,7 @@ public class ProfileGenericDataResponseMessageProcessor extends OsgpCoreResponse
     @Autowired
     protected ProfileGenericDataResponseMessageProcessor(
             WebServiceResponseMessageSender responseMessageSender,
-            @Qualifier("domainSmartMeteringOsgpCoreResponseMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.GET_PROFILE_GENERIC_DATA,
                 ComponentType.DOMAIN_SMART_METERING);
     }

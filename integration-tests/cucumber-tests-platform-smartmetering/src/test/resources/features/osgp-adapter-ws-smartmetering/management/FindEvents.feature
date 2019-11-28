@@ -8,7 +8,7 @@ Feature: SmartMetering Management - Find Events
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
-
+  @NightlyBuildOnly
   Scenario: find standard events from a device for a period without events
     When receiving a find standard events request
       | DeviceIdentification | TEST1024000000001        |

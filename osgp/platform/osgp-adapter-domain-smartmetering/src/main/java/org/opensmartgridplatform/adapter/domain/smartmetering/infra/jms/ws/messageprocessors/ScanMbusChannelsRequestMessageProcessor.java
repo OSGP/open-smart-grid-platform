@@ -26,7 +26,7 @@ public class ScanMbusChannelsRequestMessageProcessor extends BaseRequestMessageP
 
     @Autowired
     protected ScanMbusChannelsRequestMessageProcessor(
-            @Qualifier("domainSmartMeteringWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(messageProcessorMap, MessageType.SCAN_MBUS_CHANNELS);
     }
 

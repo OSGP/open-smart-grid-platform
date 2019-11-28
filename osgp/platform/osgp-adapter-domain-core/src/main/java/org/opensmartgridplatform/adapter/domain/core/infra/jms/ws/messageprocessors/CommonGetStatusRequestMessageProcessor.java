@@ -40,9 +40,9 @@ public class CommonGetStatusRequestMessageProcessor extends BaseMessageProcessor
 
     @Autowired
     public CommonGetStatusRequestMessageProcessor(
-            @Qualifier("domainCoreOutgoingWebServiceResponsesMessageSender") ResponseMessageSender responseMessageSender,
-            @Qualifier("domainCoreWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
-        super(responseMessageSender, messageProcessorMap, MessageType.GET_STATUS, ComponentType.DOMAIN_CORE);
+            @Qualifier("domainCoreOutboundWebServiceResponsesMessageSender") final ResponseMessageSender messageSender,
+            @Qualifier("domainCoreInboundWebServiceRequestsMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
+        super(messageSender, messageProcessorMap, MessageType.GET_STATUS, ComponentType.DOMAIN_CORE);
     }
 
     @Override

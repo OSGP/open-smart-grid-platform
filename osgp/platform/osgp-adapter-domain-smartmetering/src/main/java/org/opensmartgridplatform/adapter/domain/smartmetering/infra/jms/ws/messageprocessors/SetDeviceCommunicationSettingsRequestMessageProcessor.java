@@ -29,7 +29,7 @@ public class SetDeviceCommunicationSettingsRequestMessageProcessor extends BaseR
 
     @Autowired
     protected SetDeviceCommunicationSettingsRequestMessageProcessor(
-            @Qualifier("domainSmartMeteringWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(messageProcessorMap, MessageType.SET_DEVICE_COMMUNICATION_SETTINGS);
     }
 

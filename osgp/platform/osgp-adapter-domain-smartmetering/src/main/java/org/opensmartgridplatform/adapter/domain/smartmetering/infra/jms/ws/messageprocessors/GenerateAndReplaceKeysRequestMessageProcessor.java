@@ -26,7 +26,7 @@ public class GenerateAndReplaceKeysRequestMessageProcessor extends BaseRequestMe
 
     @Autowired
     protected GenerateAndReplaceKeysRequestMessageProcessor(
-            @Qualifier("domainSmartMeteringWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(messageProcessorMap, MessageType.GENERATE_AND_REPLACE_KEYS);
     }
 

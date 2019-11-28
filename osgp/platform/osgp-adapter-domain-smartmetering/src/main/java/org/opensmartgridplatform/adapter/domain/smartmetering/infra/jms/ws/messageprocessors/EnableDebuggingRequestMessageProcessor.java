@@ -26,7 +26,7 @@ public class EnableDebuggingRequestMessageProcessor extends BaseRequestMessagePr
 
     @Autowired
     protected EnableDebuggingRequestMessageProcessor(
-            @Qualifier("domainSmartMeteringWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(messageProcessorMap, MessageType.ENABLE_DEBUGGING);
     }
 

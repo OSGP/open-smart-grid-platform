@@ -1,4 +1,4 @@
-@SmartMetering @Platform @SmartMeteringManagement
+@SmartMetering @Platform @SmartMeteringManagement @NightlyBuildOnly
 Feature: SmartMetering Management - Enable and disable debugging
   As a grid operator
   I want to turn debugging of a device on or off

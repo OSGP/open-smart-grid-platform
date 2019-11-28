@@ -14,7 +14,7 @@ Feature: SmartMetering - Receive Alarm Notifications
       | DeviceIdentification | TEST1024000000001 |
     Then the alarm should be pushed to the osgp_logging database device_log_item table
       | DeviceIdentification | TEST1024000000001 |
-
+  @NightlyBuildOnly
   Scenario: Handle a received alarm notification from an unknown device
     When an alarm notification is received from an unknown device
       | DeviceIdentification | UNKNOWN0000000001 |

@@ -49,6 +49,12 @@ public class Iec61850GetConfigurationCommand {
     private static final int SWITCH_TYPE_LIGHT = 1;
     private static final DateTimeZone TIME_ZONE_AMSTERDAM = DateTimeZone.forID("Europe/Amsterdam");
 
+    private DeviceMessageLoggingService loggingService;
+
+    public Iec61850GetConfigurationCommand(final DeviceMessageLoggingService loggingService) {
+        this.loggingService = loggingService;
+    }
+
     public ConfigurationDto getConfigurationFromDevice(final Iec61850Client iec61850Client,
             final DeviceConnection deviceConnection, final Ssld ssld, final Iec61850Mapper mapper)
             throws ProtocolAdapterException {
@@ -104,9 +110,11 @@ public class Iec61850GetConfigurationCommand {
 
                 final LightTypeDto lightType = LightTypeDto.valueOf(lightTypeValue);
                 final short astroGateSunRiseOffset = softwareConfiguration
-                        .getShort(SubDataAttribute.ASTRONOMIC_SUNRISE_OFFSET).getValue();
+                        .getShort(SubDataAttribute.ASTRONOMIC_SUNRISE_OFFSET)
+                        .getValue();
                 final short astroGateSunSetOffset = softwareConfiguration
-                        .getShort(SubDataAttribute.ASTRONOMIC_SUNSET_OFFSET).getValue();
+                        .getShort(SubDataAttribute.ASTRONOMIC_SUNSET_OFFSET)
+                        .getValue();
 
                 deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION,
                         DataAttribute.SOFTWARE_CONFIGURATION, Fc.CF, SubDataAttribute.ASTRONOMIC_SUNRISE_OFFSET,
@@ -115,12 +123,16 @@ public class Iec61850GetConfigurationCommand {
                         DataAttribute.SOFTWARE_CONFIGURATION, Fc.CF, SubDataAttribute.ASTRONOMIC_SUNSET_OFFSET,
                         Short.toString(astroGateSunSetOffset));
 
-                final ConfigurationDto configuration = ConfigurationDto.newBuilder().withLightType(lightType)
-                        .withDaliConfiguration(daliConfiguration).withRelayConfiguration(relayConfiguration)
+                final ConfigurationDto configuration = ConfigurationDto.newBuilder()
+                        .withLightType(lightType)
+                        .withDaliConfiguration(daliConfiguration)
+                        .withRelayConfiguration(relayConfiguration)
                         .withShortTermHistoryIntervalMinutes(shortTermHistoryIntervalMinutes)
-                        .withPreferredLinkType(preferredLinkType).withMeterType(meterType)
+                        .withPreferredLinkType(preferredLinkType)
+                        .withMeterType(meterType)
                         .withLongTermHistoryInterval(longTermHistoryInterval)
-                        .withLongTermHysteryIntervalType(longTermHistoryIntervalType).build();
+                        .withLongTermHysteryIntervalType(longTermHistoryIntervalType)
+                        .build();
 
                 // getting the registration configuration values
                 LOGGER.info("Reading the registration configuration values");
@@ -180,7 +192,8 @@ public class Iec61850GetConfigurationCommand {
 
                 final int timeSyncFrequency = clock.getUnsignedShort(SubDataAttribute.TIME_SYNC_FREQUENCY).getValue();
                 final boolean automaticSummerTimingEnabled = clock
-                        .getBoolean(SubDataAttribute.AUTOMATIC_SUMMER_TIMING_ENABLED).getValue();
+                        .getBoolean(SubDataAttribute.AUTOMATIC_SUMMER_TIMING_ENABLED)
+                        .getValue();
                 final String summerTimeDetails = clock.getString(SubDataAttribute.SUMMER_TIME_DETAILS);
                 final String winterTimeDetails = clock.getString(SubDataAttribute.WINTER_TIME_DETAILS);
 
@@ -192,10 +205,12 @@ public class Iec61850GetConfigurationCommand {
                 configuration.setAutomaticSummerTimingEnabled(automaticSummerTimingEnabled);
                 configuration
                         .setSummerTimeDetails(new DaylightSavingTimeTransition(TIME_ZONE_AMSTERDAM, summerTimeDetails)
-                                .getDateTimeForNextTransition().toDateTime(DateTimeZone.UTC));
+                                .getDateTimeForNextTransition()
+                                .toDateTime(DateTimeZone.UTC));
                 configuration
                         .setWinterTimeDetails(new DaylightSavingTimeTransition(TIME_ZONE_AMSTERDAM, winterTimeDetails)
-                                .getDateTimeForNextTransition().toDateTime(DateTimeZone.UTC));
+                                .getDateTimeForNextTransition()
+                                .toDateTime(DateTimeZone.UTC));
                 configuration.setNtpHost(ntpHost);
                 configuration.setNtpEnabled(ntpEnabled);
                 configuration.setNtpSyncInterval(ntpSyncInterval);
@@ -216,8 +231,9 @@ public class Iec61850GetConfigurationCommand {
                 deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.CLOCK, Fc.CF,
                         SubDataAttribute.NTP_SYNC_INTERVAL, String.valueOf(ntpSyncInterval));
 
-                DeviceMessageLoggingService.logMessage(deviceMessageLog, deviceConnection.getDeviceIdentification(),
-                        deviceConnection.getOrganisationIdentification(), false);
+                Iec61850GetConfigurationCommand.this.loggingService.logMessage(deviceMessageLog,
+                        deviceConnection.getDeviceIdentification(), deviceConnection.getOrganisationIdentification(),
+                        false);
 
                 return configuration;
             }

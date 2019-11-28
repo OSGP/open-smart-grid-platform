@@ -59,6 +59,12 @@ public class Iec61850SetScheduleCommand {
     // The number of schedule entries available for a relay.
     private static final int MAX_NUMBER_OF_SCHEDULE_ENTRIES = 64;
 
+    private final DeviceMessageLoggingService loggingService;
+
+    public Iec61850SetScheduleCommand(final DeviceMessageLoggingService loggingService) {
+        this.loggingService = loggingService;
+    }
+
     public void setScheduleOnDevice(final Iec61850Client iec61850Client, final DeviceConnection deviceConnection,
             final RelayTypeDto relayType, final ScheduleDto scheduleDto, final Ssld ssld,
             final SsldDataService ssldDataService) throws ProtocolAdapterException {
@@ -120,7 +126,8 @@ public class Iec61850SetScheduleCommand {
                                     i);
                         }
                     }
-                    DeviceMessageLoggingService.logMessage(deviceMessageLog, deviceConnection.getDeviceIdentification(),
+                    Iec61850SetScheduleCommand.this.loggingService.logMessage(deviceMessageLog,
+                            deviceConnection.getDeviceIdentification(),
                             deviceConnection.getOrganisationIdentification(), false);
                     return null;
                 }
@@ -238,7 +245,8 @@ public class Iec61850SetScheduleCommand {
                     }
 
                     final Integer triggerMinutesBefore = scheduleNode
-                            .getUnsignedShort(SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_BEFORE).getValue();
+                            .getUnsignedShort(SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_BEFORE)
+                            .getValue();
                     if (triggerMinutesBefore != scheduleEntry.getTriggerWindowMinutesBefore()) {
                         scheduleNode.writeUnsignedShort(SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_BEFORE,
                                 scheduleEntry.getTriggerWindowMinutesBefore());
@@ -249,7 +257,8 @@ public class Iec61850SetScheduleCommand {
                     }
 
                     final Integer triggerMinutesAfter = scheduleNode
-                            .getUnsignedShort(SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_AFTER).getValue();
+                            .getUnsignedShort(SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_AFTER)
+                            .getValue();
                     if (triggerMinutesAfter != scheduleEntry.getTriggerWindowMinutesAfter()) {
                         scheduleNode.writeUnsignedShort(SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_AFTER,
                                 scheduleEntry.getTriggerWindowMinutesAfter());
@@ -322,9 +331,10 @@ public class Iec61850SetScheduleCommand {
 
                         // First time we come across this relay, checking its
                         // type.
-                        this.checkRelayForSchedules(ssldDataService
-                                .getDeviceOutputSettingForInternalIndex(ssld, internalIndex).getRelayType(), relayType,
-                                internalIndex);
+                        this.checkRelayForSchedules(
+                                ssldDataService.getDeviceOutputSettingForInternalIndex(ssld, internalIndex)
+                                        .getRelayType(),
+                                relayType, internalIndex);
 
                         // Adding it to scheduleEntries.
                         final List<ScheduleEntry> scheduleEntries = new ArrayList<>();

@@ -31,7 +31,7 @@ public class GetSpecificAttributeValueResponseMessageProcessor extends OsgpCoreR
     @Autowired
     public GetSpecificAttributeValueResponseMessageProcessor(
             WebServiceResponseMessageSender responseMessageSender,
-            @Qualifier("domainSmartMeteringOsgpCoreResponseMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.GET_SPECIFIC_ATTRIBUTE_VALUE,
                 ComponentType.DOMAIN_SMART_METERING);
     }

@@ -12,9 +12,6 @@ import java.util.List;
 
 import org.openmuc.openiec61850.BdaBoolean;
 import org.openmuc.openiec61850.Fc;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.Iec61850Client;
@@ -31,10 +28,18 @@ import org.opensmartgridplatform.dto.valueobjects.DeviceStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.LightTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.LightValueDto;
 import org.opensmartgridplatform.dto.valueobjects.LinkTypeDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Iec61850GetLightSensorStatusCommand {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850GetLightSensorStatusCommand.class);
+
+    private DeviceMessageLoggingService loggingService;
+
+    public Iec61850GetLightSensorStatusCommand(final DeviceMessageLoggingService loggingService) {
+        this.loggingService = loggingService;
+    }
 
     public DeviceStatusDto getStatusFromDevice(final Iec61850Client iec61850Client,
             final DeviceConnection deviceConnection, final LightMeasurementDevice lmd) throws ProtocolAdapterException {
@@ -63,8 +68,9 @@ public class Iec61850GetLightSensorStatusCommand {
          * (non-Javadoc)
          *
          * @see
-         * org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper
-         * .Function #apply(org.opensmartgridplatform.adapter.protocol.iec61850.domain.
+         * org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.
+         * helper .Function
+         * #apply(org.opensmartgridplatform.adapter.protocol.iec61850.domain.
          * valueobjects .DeviceMessageLog)
          */
         @Override
@@ -97,7 +103,8 @@ public class Iec61850GetLightSensorStatusCommand {
             final List<LightValueDto> sensorValues = new ArrayList<>();
             sensorValues.add(new LightValueDto(index, !stVal.getValue(), luxValue));
 
-            DeviceMessageLoggingService.logMessage(deviceMessageLog, this.deviceConnection.getDeviceIdentification(),
+            Iec61850GetLightSensorStatusCommand.this.loggingService.logMessage(deviceMessageLog,
+                    this.deviceConnection.getDeviceIdentification(),
                     this.deviceConnection.getOrganisationIdentification(), false);
 
             return new DeviceStatusDto(sensorValues, preferredLinkType, actualLinkType, lightType, notificationMask);

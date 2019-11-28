@@ -26,7 +26,7 @@ public class CommonRelayStatusUpdatedMessageProcessor extends DomainCoreDeviceRe
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommonRelayStatusUpdatedMessageProcessor.class);
 
-    @Qualifier("domainCoreWebServiceRequestsMessageSender")
+    @Qualifier("domainCoreOutboundWebServiceRequestsMessageSender")
     @Autowired
     private WebServiceRequestMessageSender webServiceRequestMessageSender;
 

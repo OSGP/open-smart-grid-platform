@@ -32,7 +32,7 @@ public class SetPushSetupAlarmResponseMessageProcessor extends OsgpCoreResponseM
 
     @Autowired
     protected SetPushSetupAlarmResponseMessageProcessor(WebServiceResponseMessageSender responseMessageSender,
-            @Qualifier("domainSmartMeteringOsgpCoreResponseMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.SET_PUSH_SETUP_ALARM,
                 ComponentType.DOMAIN_SMART_METERING);
     }

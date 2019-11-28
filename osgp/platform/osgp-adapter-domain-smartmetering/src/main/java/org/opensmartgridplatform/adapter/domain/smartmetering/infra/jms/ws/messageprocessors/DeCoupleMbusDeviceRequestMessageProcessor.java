@@ -32,7 +32,7 @@ public class DeCoupleMbusDeviceRequestMessageProcessor extends BaseRequestMessag
 
     @Autowired
     protected DeCoupleMbusDeviceRequestMessageProcessor(
-            @Qualifier("domainSmartMeteringWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(messageProcessorMap, MessageType.DE_COUPLE_MBUS_DEVICE);
     }
 

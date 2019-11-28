@@ -13,24 +13,25 @@ import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
 import org.apache.activemq.command.ActiveMQDestination;
+import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
+import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
+import org.springframework.stereotype.Component;
 
-import org.opensmartgridplatform.shared.infra.jms.Constants;
-import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
-import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
-
+@Component(value = "protocolOslpOutboundSigningServerRequestsMessageSender")
 public class SigningServerRequestMessageSender {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SigningServerRequestMessageSender.class);
 
     @Autowired
-    @Qualifier("signingServerRequestsJmsTemplate")
-    private JmsTemplate signingServerRequestsJmsTemplate;
+    @Qualifier("protocolOslpOutboundSigningServerRequestsJmsTemplate")
+    private JmsTemplate jmsTemplate;
 
     @Autowired
     private ActiveMQDestination replyToQueue;
@@ -40,10 +41,9 @@ public class SigningServerRequestMessageSender {
     }
 
     public void send(final RequestMessage requestMessage, final String messageType, final int messagePriority) {
-        LOGGER.info("Sending request message to signing server, with reply-to-queue: {}.",
-                this.replyToQueue.toString());
+        LOGGER.info("Sending request message to signing server, with reply-to-queue: {}.", this.replyToQueue);
 
-        this.signingServerRequestsJmsTemplate.send(new MessageCreator() {
+        this.jmsTemplate.send(new MessageCreator() {
 
             @Override
             public Message createMessage(final Session session) throws JMSException {
