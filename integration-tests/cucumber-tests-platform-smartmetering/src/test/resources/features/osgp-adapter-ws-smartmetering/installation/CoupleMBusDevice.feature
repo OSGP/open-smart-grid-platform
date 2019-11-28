@@ -348,10 +348,9 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | Code    | 217                        |
       | Message | ALL_MBUS_CHANNELS_OCCUPIED |
     And the mbus device "TESTG102400000001" is not coupled to the device "TEST1024000000001"
-
-#  Scenario: Couple G-meter to an E-meter that is already coupled with other G-meter on channel 2
   #TODO: Fix in SLIM-1991
   @Skip @NightlyBuildOnly
+  Scenario: Couple G-meter to an E-meter that is already coupled with other G-meter on channel 2
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
