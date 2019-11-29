@@ -152,27 +152,12 @@ public class FirmwareModuleData implements Serializable {
         }
     }
 
-    public FirmwareModuleType getFirmwareModuleType() {
-        FirmwareModuleType firmwareModuleType;
-
-        if (!StringUtils.isEmpty(this.moduleVersionComm)) {
-            firmwareModuleType = FirmwareModuleType.COMMUNICATION;
-        } else if (!StringUtils.isEmpty(this.moduleVersionFunc)) {
-            firmwareModuleType = FirmwareModuleType.FUNCTIONAL;
-        } else if (!StringUtils.isEmpty(this.moduleVersionMa)) {
-            firmwareModuleType = FirmwareModuleType.MODULE_ACTIVE;
-        } else if (!StringUtils.isEmpty(this.moduleVersionMbus)) {
-            firmwareModuleType = FirmwareModuleType.M_BUS;
-        } else if (!StringUtils.isEmpty(this.moduleVersionMBusDriverActive)) {
-            firmwareModuleType = FirmwareModuleType.M_BUS_DRIVER_ACTIVE;
-        } else if (!StringUtils.isEmpty(this.moduleVersionSec)) {
-            firmwareModuleType = FirmwareModuleType.SECURITY;
-        } else {
-            throw new IllegalArgumentException(
-                    "None of the firmware module descriptions is set! Unable to determine firmware module type!");
-        }
-
-        return firmwareModuleType;
-
+    @Override
+    public String toString() {
+        return "FirmwareModuleData [moduleVersionComm=" + this.moduleVersionComm + ", moduleVersionFunc="
+                + this.moduleVersionFunc + ", moduleVersionMa=" + this.moduleVersionMa + ", moduleVersionMbus="
+                + this.moduleVersionMbus + ", moduleVersionSec=" + this.moduleVersionSec
+                + ", moduleVersionMBusDriverActive=" + this.moduleVersionMBusDriverActive + "]";
     }
+
 }
