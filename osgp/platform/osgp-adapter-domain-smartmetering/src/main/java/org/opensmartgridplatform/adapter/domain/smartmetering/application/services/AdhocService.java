@@ -9,13 +9,6 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
@@ -37,6 +30,12 @@ import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import ma.glasnost.orika.MapperFactory;
 
@@ -49,10 +48,11 @@ public class AdhocService {
     private static final Logger LOGGER = LoggerFactory.getLogger(AdhocService.class);
 
     @Autowired
-    @Qualifier(value = "domainSmartMeteringOutgoingOsgpCoreRequestMessageSender")
+    @Qualifier(value = "domainSmartMeteringOutboundOsgpCoreRequestsMessageSender")
     private OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
 
     @Autowired
+    @Qualifier(value = "domainSmartMeteringOutboundWebServiceResponsesMessageSender")
     private WebServiceResponseMessageSender webServiceResponseMessageSender;
 
     @Autowired
@@ -101,8 +101,11 @@ public class AdhocService {
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
                 .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
-                .withOsgpException(exception).withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(result)
+                .withOsgpException(exception)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
@@ -137,9 +140,12 @@ public class AdhocService {
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
                 .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
-                .withOsgpException(exception).withDataObject(resultData)
-                .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(result)
+                .withOsgpException(exception)
+                .withDataObject(resultData)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
@@ -176,9 +182,12 @@ public class AdhocService {
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
                 .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
-                .withOsgpException(exception).withDataObject(associationLnListValueDomain)
-                .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(result)
+                .withOsgpException(exception)
+                .withDataObject(associationLnListValueDomain)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
@@ -216,9 +225,12 @@ public class AdhocService {
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
                 .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
-                .withOsgpException(exception).withDataObject(resultData)
-                .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(result)
+                .withOsgpException(exception)
+                .withDataObject(resultData)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
@@ -256,9 +268,12 @@ public class AdhocService {
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
                 .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
-                .withOsgpException(exception).withDataObject(scanMbusChannelsResponseData)
-                .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(result)
+                .withOsgpException(exception)
+                .withDataObject(scanMbusChannelsResponseData)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 }

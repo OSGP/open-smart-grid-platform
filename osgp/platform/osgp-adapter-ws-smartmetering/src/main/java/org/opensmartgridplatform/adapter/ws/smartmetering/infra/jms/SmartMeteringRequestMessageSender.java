@@ -20,23 +20,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
+import org.springframework.stereotype.Component;
 
 /**
  * Class for sending smart metering request messages to a queue
  *
  */
+@Component(value = "wsSmartMeteringOutboundDomainRequestsMessageSender")
 public class SmartMeteringRequestMessageSender {
-    /**
-     * Logger for this class
-     */
+
     private static final Logger LOGGER = LoggerFactory.getLogger(SmartMeteringRequestMessageSender.class);
 
-    /**
-     * Autowired field for smart metering requests jms template
-     */
     @Autowired
-    @Qualifier("wsSmartMeteringOutgoingRequestsJmsTemplate")
-    private JmsTemplate smartMeteringRequestsJmsTemplate;
+    @Qualifier("wsSmartMeteringOutboundDomainRequestsJmsTemplate")
+    private JmsTemplate jmsTemplate;
 
     /**
      * Method for sending a request message to the queue
@@ -76,7 +73,7 @@ public class SmartMeteringRequestMessageSender {
     private void sendMessage(final SmartMeteringRequestMessage requestMessage) {
         LOGGER.info("Sending message to the smart metering requests queue");
 
-        this.smartMeteringRequestsJmsTemplate.send(new MessageCreator() {
+        this.jmsTemplate.send(new MessageCreator() {
 
             @Override
             public Message createMessage(final Session session) throws JMSException {

@@ -27,7 +27,7 @@ public class SetMbusUserKeyByChannelRequestMessageProcessor extends BaseRequestM
 
     @Autowired
     protected SetMbusUserKeyByChannelRequestMessageProcessor(
-            @Qualifier("domainSmartMeteringWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(messageProcessorMap, MessageType.SET_MBUS_USER_KEY_BY_CHANNEL);
     }
 

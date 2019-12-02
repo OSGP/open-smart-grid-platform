@@ -12,22 +12,21 @@ import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
+import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Component;
 
-import org.opensmartgridplatform.shared.infra.jms.Constants;
-import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
-
 //Send request message to the requests queue of OSGP Core.
-@Component(value = "domainSmartMeteringOutgoingOsgpCoreRequestMessageSender")
+@Component(value = "domainSmartMeteringOutboundOsgpCoreRequestsMessageSender")
 public class OsgpCoreRequestMessageSender {
 
     @Autowired
-    @Qualifier("domainSmartMeteringOutgoingOsgpCoreRequestsJmsTemplate")
-    private JmsTemplate osgpCoreRequestsJmsTemplate;
+    @Qualifier("domainSmartMeteringOutboundOsgpCoreRequestsJmsTemplate")
+    private JmsTemplate jmsTemplate;
 
     public void send(final RequestMessage requestMessage, final String messageType, final int messagePriority,
             final Long scheduleTime) {
@@ -37,7 +36,7 @@ public class OsgpCoreRequestMessageSender {
     public void send(final RequestMessage requestMessage, final String messageType, final int messagePriority,
             final Long scheduleTime, final boolean bypassRetry) {
 
-        this.osgpCoreRequestsJmsTemplate.send(new MessageCreator() {
+        this.jmsTemplate.send(new MessageCreator() {
 
             @Override
             public Message createMessage(final Session session) throws JMSException {

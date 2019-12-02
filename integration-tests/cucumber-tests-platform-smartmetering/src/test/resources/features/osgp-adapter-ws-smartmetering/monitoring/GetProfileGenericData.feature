@@ -46,7 +46,7 @@ Feature: SmartMetering Monitoring - Profile Generic Data
       | CaptureObject_DataIndex_4      |                 0 |
       | CaptureObject_Unit_4           | KWH               |
       | NumberOfProfileEntries         |               960 |
-
+  @NightlyBuildOnly
   Scenario: Get the profile generic data from a device for a single selected value
     When the get profile generic data request is received
       | DeviceIdentification           | TEST1024000000001 |
@@ -77,7 +77,7 @@ Feature: SmartMetering Monitoring - Profile Generic Data
       | CaptureObject_DataIndex_2      |                 0 |
       | CaptureObject_Unit_2           | KWH               |
       | NumberOfProfileEntries         |                97 |
-
+  @NightlyBuildOnly
   Scenario: Get the profile generic data from a device for two selected values
     When the get profile generic data request is received
       | DeviceIdentification           | TEST1024000000001 |

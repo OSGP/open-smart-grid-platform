@@ -11,9 +11,11 @@ import org.opensmartgridplatform.adapter.protocol.iec61850.application.services.
 import org.opensmartgridplatform.adapter.protocol.iec61850.application.services.ReportingService;
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.IED;
+import org.opensmartgridplatform.adapter.protocol.iec61850.services.DeviceMessageLoggingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -25,6 +27,10 @@ public class Iec61850ClientEventListenerFactory {
     private DeviceManagementService deviceManagementService;
 
     @Autowired
+    @Qualifier(value = "protocolIec61850DeviceMessageLoggingService")
+    private DeviceMessageLoggingService deviceMessageLoggingService;
+
+    @Autowired
     private ReportingService reportingService;
 
     public Iec61850ClientBaseEventListener getEventListener(final IED ied, final String deviceIdentification,
@@ -32,7 +38,7 @@ public class Iec61850ClientEventListenerFactory {
         switch (ied) {
         case FLEX_OVL:
             return new Iec61850ClientSSLDEventListener(organizationIdentification, deviceIdentification,
-                    this.deviceManagementService);
+                    this.deviceManagementService, this.deviceMessageLoggingService);
         case ABB_RTU:
             return new Iec61850ClientLMDEventListener(deviceIdentification, this.deviceManagementService);
         case ZOWN_RTU:

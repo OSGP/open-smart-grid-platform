@@ -43,8 +43,8 @@ public class CommonUpdateDeviceCdmaSettingsRequestMessageProcessor extends BaseM
 
     @Autowired
     public CommonUpdateDeviceCdmaSettingsRequestMessageProcessor(
-            @Qualifier("domainCoreOutgoingWebServiceResponsesMessageSender") ResponseMessageSender responseMessageSender,
-            @Qualifier("domainCoreWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainCoreOutboundWebServiceResponsesMessageSender") final ResponseMessageSender responseMessageSender,
+            @Qualifier("domainCoreInboundWebServiceRequestsMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.UPDATE_DEVICE_CDMA_SETTINGS,
                 ComponentType.DOMAIN_CORE);
     }

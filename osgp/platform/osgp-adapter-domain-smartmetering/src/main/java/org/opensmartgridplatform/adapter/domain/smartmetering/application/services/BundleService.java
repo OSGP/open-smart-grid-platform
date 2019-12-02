@@ -41,10 +41,11 @@ public class BundleService {
     private static final Logger LOGGER = LoggerFactory.getLogger(BundleService.class);
 
     @Autowired
-    @Qualifier(value = "domainSmartMeteringOutgoingOsgpCoreRequestMessageSender")
+    @Qualifier(value = "domainSmartMeteringOutboundOsgpCoreRequestsMessageSender")
     private OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
 
     @Autowired
+    @Qualifier(value = "domainSmartMeteringOutboundWebServiceResponsesMessageSender")
     private WebServiceResponseMessageSender webServiceResponseMessageSender;
 
     @Autowired

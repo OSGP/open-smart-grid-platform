@@ -27,7 +27,7 @@ public class SetDeviceLifecycleStatusByChannelRequestMessageProcessor extends Ba
 
     @Autowired
     protected SetDeviceLifecycleStatusByChannelRequestMessageProcessor(
-            @Qualifier("domainSmartMeteringWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(messageProcessorMap, MessageType.SET_DEVICE_LIFECYCLE_STATUS_BY_CHANNEL);
     }
 

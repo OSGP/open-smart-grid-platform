@@ -12,19 +12,22 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification.NotificationType;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
+@Component(value = "wsSmartMeteringInboundDomainResponsesMessageListener")
 public class SmartMeteringResponseMessageListener implements MessageListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SmartMeteringResponseMessageListener.class);
 
     @Autowired
+    @Qualifier(value = "wsSmartMeteringInboundDomainResponsesMessageProcessorMap")
     private MessageProcessorMap domainResponseMessageProcessorMap;
 
     public SmartMeteringResponseMessageListener() {

@@ -40,8 +40,8 @@ public class CommonStopDeviceTestRequestMessageProcessor extends BaseMessageProc
 
     @Autowired
     public CommonStopDeviceTestRequestMessageProcessor(
-            @Qualifier("domainCoreOutgoingWebServiceResponsesMessageSender") ResponseMessageSender responseMessageSender,
-            @Qualifier("domainCoreWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainCoreOutboundWebServiceResponsesMessageSender") final ResponseMessageSender responseMessageSender,
+            @Qualifier("domainCoreInboundWebServiceRequestsMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.STOP_SELF_TEST, ComponentType.DOMAIN_CORE);
     }
 

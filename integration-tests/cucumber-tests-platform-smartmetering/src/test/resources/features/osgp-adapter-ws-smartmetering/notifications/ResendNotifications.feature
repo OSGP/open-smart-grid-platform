@@ -1,4 +1,4 @@
-@SmartMetering @Platform
+@SmartMetering @Platform @NightlyBuildOnly
 Feature: SmartMetering notifications - Resend notifications
   As an OSGP user
   I want the platform to resend missed notifications

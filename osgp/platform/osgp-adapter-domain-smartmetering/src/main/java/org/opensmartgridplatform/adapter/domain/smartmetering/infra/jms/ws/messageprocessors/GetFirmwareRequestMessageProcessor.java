@@ -34,7 +34,7 @@ public class GetFirmwareRequestMessageProcessor extends BaseRequestMessageProces
 
     @Autowired
     public GetFirmwareRequestMessageProcessor(
-            @Qualifier("domainSmartMeteringWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(messageProcessorMap, MessageType.GET_FIRMWARE_VERSION);
     }
 

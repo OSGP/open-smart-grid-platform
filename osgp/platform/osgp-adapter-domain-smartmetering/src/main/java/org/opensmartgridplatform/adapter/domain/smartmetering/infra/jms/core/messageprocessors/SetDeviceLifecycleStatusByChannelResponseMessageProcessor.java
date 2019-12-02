@@ -31,7 +31,7 @@ public class SetDeviceLifecycleStatusByChannelResponseMessageProcessor extends O
     @Autowired
     protected SetDeviceLifecycleStatusByChannelResponseMessageProcessor(
             WebServiceResponseMessageSender responseMessageSender,
-            @Qualifier("domainSmartMeteringOsgpCoreResponseMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.SET_DEVICE_LIFECYCLE_STATUS_BY_CHANNEL,
                 ComponentType.DOMAIN_SMART_METERING);
     }

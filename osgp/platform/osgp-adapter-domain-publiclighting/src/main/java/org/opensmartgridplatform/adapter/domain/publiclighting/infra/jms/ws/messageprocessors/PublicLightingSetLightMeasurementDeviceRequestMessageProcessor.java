@@ -41,10 +41,10 @@ public class PublicLightingSetLightMeasurementDeviceRequestMessageProcessor exte
 
     @Autowired
     public PublicLightingSetLightMeasurementDeviceRequestMessageProcessor(
-            WebServiceResponseMessageSender webServiceResponseMessageSender,
-            @Qualifier("domainPublicLightingWebServiceRequestMessageProcessorMap") MessageProcessorMap webServiceRequestMessageProcessorMap) {
-        super(webServiceResponseMessageSender, webServiceRequestMessageProcessorMap, MessageType.SET_LIGHT_MEASUREMENT_DEVICE,
-                ComponentType.DOMAIN_PUBLIC_LIGHTING);
+            final WebServiceResponseMessageSender webServiceResponseMessageSender,
+            @Qualifier("domainPublicLightingInboundWebServiceRequestsMessageProcessorMap") final MessageProcessorMap webServiceRequestMessageProcessorMap) {
+        super(webServiceResponseMessageSender, webServiceRequestMessageProcessorMap,
+                MessageType.SET_LIGHT_MEASUREMENT_DEVICE, ComponentType.DOMAIN_PUBLIC_LIGHTING);
     }
 
     @Override

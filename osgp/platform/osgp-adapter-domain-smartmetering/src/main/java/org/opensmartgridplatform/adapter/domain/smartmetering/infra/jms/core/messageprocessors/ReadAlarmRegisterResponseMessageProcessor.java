@@ -30,7 +30,7 @@ public class ReadAlarmRegisterResponseMessageProcessor extends OsgpCoreResponseM
     @Autowired
     protected ReadAlarmRegisterResponseMessageProcessor(
             WebServiceResponseMessageSender responseMessageSender,
-            @Qualifier("domainSmartMeteringOsgpCoreResponseMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.READ_ALARM_REGISTER,
                 ComponentType.DOMAIN_SMART_METERING);
     }

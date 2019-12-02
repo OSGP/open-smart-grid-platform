@@ -7,18 +7,17 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
+import org.opensmartgridplatform.adapter.ws.schema.core.notification.NotificationType;
+import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
+import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.UnknownMessageTypeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import org.opensmartgridplatform.adapter.ws.schema.core.notification.NotificationType;
-import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
-import org.opensmartgridplatform.shared.infra.jms.Constants;
-import org.opensmartgridplatform.shared.infra.jms.UnknownMessageTypeException;
-
 //Fetch incoming messages from the domain core to web service core requests queue.
-@Component(value = "domainCoreToWsIncomingWebServiceRequestsMessageListener")
+@Component(value = "wsCoreInboundDomainRequestsMessageListener")
 public class CommonRequestMessageListener implements MessageListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommonRequestMessageListener.class);

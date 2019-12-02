@@ -30,7 +30,7 @@ public class SetDeviceCommunicationSettingsResponseMessageProcessor extends Osgp
     @Autowired
     protected SetDeviceCommunicationSettingsResponseMessageProcessor(
             WebServiceResponseMessageSender responseMessageSender,
-            @Qualifier("domainSmartMeteringOsgpCoreResponseMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.SET_DEVICE_COMMUNICATION_SETTINGS,
                 ComponentType.DOMAIN_SMART_METERING);
     }

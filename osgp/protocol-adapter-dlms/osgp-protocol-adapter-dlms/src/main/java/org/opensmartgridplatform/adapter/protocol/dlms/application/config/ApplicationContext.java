@@ -7,12 +7,11 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.config;
 
-import org.jboss.netty.logging.InternalLoggerFactory;
-import org.jboss.netty.logging.Slf4JLoggerFactory;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.adapter.protocol.jasper.config.JasperWirelessConfig;
+import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -20,14 +19,13 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import org.opensmartgridplatform.shared.application.config.AbstractConfig;
-
 /**
  * An application context Java configuration class. The usage of Java
  * configuration requires Spring Framework 3.0
  */
 @Configuration
-@ComponentScan(basePackages = {"org.opensmartgridplatform.adapter.protocol.dlms", "org.opensmartgridplatform.shared.security" })
+@ComponentScan(basePackages = { "org.opensmartgridplatform.adapter.protocol.dlms",
+        "org.opensmartgridplatform.shared.security" })
 @EnableTransactionManagement()
 @Import({ MessagingConfig.class, DlmsPersistenceConfig.class, JasperWirelessConfig.class })
 @PropertySource("classpath:osgp-adapter-protocol-dlms.properties")
@@ -39,10 +37,6 @@ public class ApplicationContext extends AbstractConfig {
     private static final DateTimeZone LOCAL_TIME_ZONE = DateTimeZone.forID(LOCAL_TIME_ZONE_IDENTIFIER);
     private static final int TIME_ZONE_OFFSET_MINUTES = LOCAL_TIME_ZONE.getStandardOffset(new DateTime().getMillis())
             / DateTimeConstants.MILLIS_PER_MINUTE;
-
-    public ApplicationContext() {
-        InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
-    }
 
     // === Time zone config ===
 

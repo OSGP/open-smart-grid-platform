@@ -30,7 +30,7 @@ public class PushNotificationAlarmRequestMessageProcessor extends BaseRequestMes
 
     @Autowired
     protected PushNotificationAlarmRequestMessageProcessor(
-            @Qualifier("domainSmartMeteringOsgpCoreRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundOsgpCoreRequestsMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
         super(messageProcessorMap, MessageType.PUSH_NOTIFICATION_ALARM);
     }
 

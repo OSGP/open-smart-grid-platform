@@ -29,7 +29,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.listener.SessionAwareMessageListener;
+import org.springframework.stereotype.Component;
 
+@Component(value = "protocolIec61850InboundOsgpCoreRequestsMessageListener")
 public class DeviceRequestMessageListener implements SessionAwareMessageListener<Message> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceRequestMessageListener.class);
@@ -85,8 +87,14 @@ public class DeviceRequestMessageListener implements SessionAwareMessageListener
 
             final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(objectMessage);
             final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage.Builder()
-                    .deviceMessageMetadata(deviceMessageMetadata).domain(domain).domainVersion(domainVersion)
-                    .result(result).osgpException(osgpException).dataObject(dataObject).scheduled(false).build();
+                    .deviceMessageMetadata(deviceMessageMetadata)
+                    .domain(domain)
+                    .domainVersion(domainVersion)
+                    .result(result)
+                    .osgpException(osgpException)
+                    .dataObject(dataObject)
+                    .scheduled(false)
+                    .build();
 
             this.deviceResponseMessageSender.send(protocolResponseMessage);
         } catch (final Exception e) {

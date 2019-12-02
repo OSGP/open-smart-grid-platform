@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.requests.to.core;
 
 import javax.jms.ObjectMessage;
+import javax.jms.Session;
 
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -18,20 +19,22 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.stereotype.Component;
 
+@Component(value = "protocolDlmsOutboundOsgpCoreRequestsMessageSender")
 public class OsgpRequestMessageSender {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OsgpRequestMessageSender.class);
 
     @Autowired
-    @Qualifier("osgpRequestsJmsTemplate")
-    private JmsTemplate osgpRequestsJmsTemplate;
+    @Qualifier("protocolDlmsOutboundOsgpCoreRequestsJmsTemplate")
+    private JmsTemplate jmsTemplate;
 
     public void send(final RequestMessage requestMessage, final String messageType,
             final MessageMetadata messageMetadata) {
         LOGGER.info("Sending request message to OSGP.");
 
-        this.osgpRequestsJmsTemplate.send(session -> {
+        this.jmsTemplate.send((final Session session) -> {
             final ObjectMessage objectMessage = session.createObjectMessage(requestMessage);
             objectMessage.setJMSCorrelationID(requestMessage.getCorrelationUid());
             objectMessage.setJMSType(messageType);

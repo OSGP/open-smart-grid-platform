@@ -61,5 +61,4 @@ public interface JmsConfiguration {
     boolean isExplicitQosEnabled();
 
     String getQueue();
-
 }

@@ -12,15 +12,30 @@ import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
+import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
+import org.springframework.stereotype.Component;
 
-import org.opensmartgridplatform.shared.infra.jms.Constants;
-
+@Component(value = "protocolDlmsOutboundLogItemRequestsMessageSender")
 public class DlmsLogItemRequestMessageSender {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DlmsLogItemRequestMessageSender.class);
+
+    @Autowired
+    @Qualifier("protocolDlmsOutboundLogItemRequestsJmsTemplate")
+    private JmsTemplate jmsTemplate;
+
+    public void send(final DlmsLogItemRequestMessage dlmsLogItemRequestMessage) {
+
+        LOGGER.debug("Sending DlmsLogItemRequestMessage");
+
+        this.jmsTemplate.send(new DlmsLogItemRequestMessageCreator(dlmsLogItemRequestMessage));
+    }
 
     private static final class DlmsLogItemRequestMessageCreator implements MessageCreator {
 
@@ -53,15 +68,4 @@ public class DlmsLogItemRequestMessageSender {
         }
     }
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DlmsLogItemRequestMessageSender.class);
-
-    @Autowired
-    private JmsTemplate dlmsLogItemRequestsJmsTemplate;
-
-    public void send(final DlmsLogItemRequestMessage dlmsLogItemRequestMessage) {
-
-        LOGGER.debug("Sending DlmsLogItemRequestMessage");
-
-        this.dlmsLogItemRequestsJmsTemplate.send(new DlmsLogItemRequestMessageCreator(dlmsLogItemRequestMessage));
-    }
 }

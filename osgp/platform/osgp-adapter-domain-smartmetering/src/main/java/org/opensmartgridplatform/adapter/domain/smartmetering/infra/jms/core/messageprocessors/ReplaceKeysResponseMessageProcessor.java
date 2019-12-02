@@ -29,7 +29,7 @@ public class ReplaceKeysResponseMessageProcessor extends OsgpCoreResponseMessage
 
     @Autowired
     protected ReplaceKeysResponseMessageProcessor(WebServiceResponseMessageSender responseMessageSender,
-            @Qualifier("domainSmartMeteringOsgpCoreResponseMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.REPLACE_KEYS,
                 ComponentType.DOMAIN_SMART_METERING);
     }
