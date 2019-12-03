@@ -18,7 +18,6 @@ import org.opensmartgridplatform.domain.core.entities.DomainInfo;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.DomainInfoRepository;
-import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderTimestampService;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.slf4j.Logger;
@@ -41,13 +40,7 @@ public class DeviceRegistrationMessageService {
     private DomainInfoRepository domainInfoRepository;
 
     @Autowired
-    private String netmanagementOrganisation;
-
-    @Autowired
     private DomainRequestService domainRequestService;
-
-    @Autowired
-    private CorrelationIdProviderTimestampService correlationIdProviderTimestampService;
 
     /**
      * Update device registration data (IP address, etc). Device is added
@@ -117,12 +110,10 @@ public class DeviceRegistrationMessageService {
         }
     }
 
-    public void sendRequestMessageToDomainCore(final String deviceIdentification) {
+    public void sendRequestMessageToDomainCore(final String deviceIdentification,
+            final String organisationIdentification, final String correlationUid) {
 
-        final String correlationUid = this.correlationIdProviderTimestampService
-                .getCorrelationId(this.netmanagementOrganisation, deviceIdentification);
-
-        final RequestMessage message = new RequestMessage(correlationUid, this.netmanagementOrganisation,
+        final RequestMessage message = new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, null);
 
         final DomainInfo domainInfo = this.domainInfoRepository.findByDomainAndDomainVersion("CORE", "1.0");

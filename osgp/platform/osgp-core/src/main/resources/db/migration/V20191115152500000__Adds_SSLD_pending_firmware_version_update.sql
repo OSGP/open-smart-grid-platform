@@ -22,12 +22,14 @@ IF NOT EXISTS (
         CONSTRAINT ssld_pending_firmware_update_pkey PRIMARY KEY (id)
     );
 
+    CREATE INDEX ssld_pending_firmware_update_device_identification_index ON ssld_pending_firmware_update (device_identification);
+
     ALTER TABLE ssld_pending_firmware_update OWNER TO osp_admin;
 
     GRANT ALL ON TABLE ssld_pending_firmware_update TO osp_admin;
 
     -- Set comments for columns.
-    COMMENT ON COLUMN ssld_pending_firmware_update.device_identification IS 'The identification fo the SSLD';
+    COMMENT ON COLUMN ssld_pending_firmware_update.device_identification IS 'The identification of the SSLD';
     COMMENT ON COLUMN ssld_pending_firmware_update.firmware_module_type IS 'The firmware module type.';
     COMMENT ON COLUMN ssld_pending_firmware_update.firmware_version IS 'The firmware version to update to.';
     COMMENT ON COLUMN ssld_pending_firmware_update.organisation_identification IS 'The organisation identification of the organisation which issued the update firmware request.';
