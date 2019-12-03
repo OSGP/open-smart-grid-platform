@@ -48,11 +48,9 @@ public class OsgpCoreRequestMessageSender {
             final String ipAddress, final Long scheduledTime, final Long delay) {
 
         this.jmsTemplate.send(new MessageCreator() {
-
             @Override
             public Message createMessage(final Session session) throws JMSException {
                 final ObjectMessage objectMessage = session.createObjectMessage();
-
                 objectMessage.setJMSType(messageType);
                 objectMessage.setJMSPriority(messagePriority);
                 objectMessage.setJMSCorrelationID(requestMessage.getCorrelationUid());
@@ -68,7 +66,6 @@ public class OsgpCoreRequestMessageSender {
                     objectMessage.setLongProperty(ScheduledMessage.AMQ_SCHEDULED_DELAY, delay);
                 }
                 objectMessage.setObject(requestMessage.getRequest());
-
                 return objectMessage;
             }
         });

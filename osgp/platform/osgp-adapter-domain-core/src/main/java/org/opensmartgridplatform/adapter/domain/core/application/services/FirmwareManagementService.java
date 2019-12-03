@@ -31,7 +31,6 @@ import org.opensmartgridplatform.domain.core.repositories.FirmwareFileRepository
 import org.opensmartgridplatform.domain.core.repositories.ManufacturerRepository;
 import org.opensmartgridplatform.domain.core.repositories.SsldPendingFirmwareUpdateRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleData;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleType;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareUpdateMessageDataContainer;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion;
@@ -104,8 +103,7 @@ public class FirmwareManagementService extends AbstractService {
         final Device device = this.findActiveDevice(ids.getDeviceIdentification());
 
         if (device instanceof Ssld) {
-            this.createSsldPendingFirmwareUpdateRecord(ids, firmwareUpdateMessageDataContainer.getFirmwareModuleData(),
-                    firmwareUpdateMessageDataContainer.getFirmwareUrl());
+            this.createSsldPendingFirmwareUpdateRecord(ids, firmwareUpdateMessageDataContainer.getFirmwareUrl());
         }
 
         this.osgpCoreRequestMessageSender.sendWithScheduledTime(
@@ -115,8 +113,7 @@ public class FirmwareManagementService extends AbstractService {
                 messageType, messagePriority, device.getIpAddress(), scheduleTime);
     }
 
-    private void createSsldPendingFirmwareUpdateRecord(final CorrelationIds ids,
-            final FirmwareModuleData firmwareModuleData, final String firmwareUrl) {
+    private void createSsldPendingFirmwareUpdateRecord(final CorrelationIds ids, final String firmwareUrl) {
         try {
             final String firmwareFilename = getFirmwareFilename(firmwareUrl);
 
@@ -146,8 +143,7 @@ public class FirmwareManagementService extends AbstractService {
     private static String getFirmwareFilename(final String firmwareUrl) {
         final String[] split = firmwareUrl.split("/");
         Assert.isTrue(split.length >= 1, "Splitting URL on / failed!");
-        final String firmwareFilename = split[split.length - 1];
-        return firmwareFilename;
+        return split[split.length - 1];
     }
 
     private static FirmwareModuleType getFirmwareModuleType(final Map<FirmwareModule, String> firmwareModuleVersions) {
