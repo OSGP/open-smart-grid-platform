@@ -7,10 +7,10 @@
  */
 package org.opensmartgridplatform.adapter.domain.admin.application.config.messaging;
 
+import javax.jms.ConnectionFactory;
+import javax.jms.MessageListener;
 import javax.net.ssl.SSLException;
 
-import org.apache.activemq.pool.PooledConnectionFactory;
-import org.opensmartgridplatform.adapter.domain.admin.infra.jms.ws.WebServiceRequestMessageListener;
 import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationNames;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfiguration;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfigurationFactory;
@@ -40,21 +40,20 @@ public class InboundWebServiceRequestsMessagingConfig {
                 JmsConfigurationNames.JMS_INCOMING_WS_REQUESTS);
     }
 
-    @Bean(destroyMethod = "stop", name = "incomingWebServiceRequestsPooledConnectionFactory")
-    public PooledConnectionFactory incomingWebServiceRequestsPooledConnectionFactory() {
-        LOGGER.info("Initializing pooled connection factory for incoming web service requests.");
+    @Bean(destroyMethod = "stop", name = "domainAdminInboundWebServiceRequestsConnectionFactory")
+    public ConnectionFactory connectionFactory() {
+        LOGGER.info("Initializing domainAdminInboundWebServiceRequestsConnectionFactory bean.");
         return this.jmsConfigurationFactory.getPooledConnectionFactory();
     }
 
-    @Bean(name = "domainAdminIncomingWebServiceRequestsMessageListenerContainer")
-    public DefaultMessageListenerContainer incomingWebServiceRequestsMessageListenerContainer(
-            @Qualifier("domainAdminIncomingWebServiceRequestMessageListener") final WebServiceRequestMessageListener incomingWebServiceRequestMessageListener) {
-        return this.jmsConfigurationFactory.initMessageListenerContainer(incomingWebServiceRequestMessageListener);
+    @Bean(name = "domainAdminInboundWebServiceRequestsMessageListenerContainer")
+    public DefaultMessageListenerContainer messageListenerContainer(
+            @Qualifier("domainAdminInboundWebServiceRequestsMessageListener") final MessageListener messageListener) {
+        return this.jmsConfigurationFactory.initMessageListenerContainer(messageListener);
     }
 
-    @Bean
-    @Qualifier("domainAdminWebServiceRequestMessageProcessorMap")
-    public MessageProcessorMap incomingWebServiceRequestMessageProcessorMap() {
-        return new BaseMessageProcessorMap("WebServiceRequestMessageProcessorMap");
+    @Bean(name = "domainAdminInboundWebServiceRequestsMessageProcessorMap")
+    public MessageProcessorMap messageProcessorMap() {
+        return new BaseMessageProcessorMap("domainAdminInboundWebServiceRequestsMessageProcessorMap");
     }
 }

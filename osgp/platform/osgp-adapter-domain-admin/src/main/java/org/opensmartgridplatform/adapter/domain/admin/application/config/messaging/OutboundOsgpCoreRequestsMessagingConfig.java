@@ -7,9 +7,9 @@
  */
 package org.opensmartgridplatform.adapter.domain.admin.application.config.messaging;
 
+import javax.jms.ConnectionFactory;
 import javax.net.ssl.SSLException;
 
-import org.apache.activemq.pool.PooledConnectionFactory;
 import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationNames;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfiguration;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfigurationFactory;
@@ -36,14 +36,15 @@ public class OutboundOsgpCoreRequestsMessagingConfig {
                 JmsConfigurationNames.JMS_OUTGOING_OSGP_CORE_REQUESTS);
     }
 
-    @Bean(destroyMethod = "stop", name = "domainAdminOutgoingOsgpCoreRequestsPooledConnectionFactory")
-    public PooledConnectionFactory outgoingOsgpCoreRequestsPooledConnectionFactory() {
-        LOGGER.info("Initializing pooled connection factory for outgoing OSGP core requests.");
+    @Bean(destroyMethod = "stop", name = "domainAdminOutboundOsgpCoreRequestsConnectionFactory")
+    public ConnectionFactory connectionFactory() {
+        LOGGER.info("Initializing domainAdminOutboundOsgpCoreRequestsConnectionFactory bean.");
         return this.jmsConfigurationFactory.getPooledConnectionFactory();
     }
 
-    @Bean(name = "domainAdminOutgoingOsgpCoreRequestsJmsTemplate")
-    public JmsTemplate outgoingOsgpCoreRequestsJmsTemplate() {
+    @Bean(name = "domainAdminOutboundOsgpCoreRequestsJmsTemplate")
+    public JmsTemplate jmsTemplate() {
+        LOGGER.info("Initializing domainAdminOutboundOsgpCoreRequestsJmsTemplate bean.");
         return this.jmsConfigurationFactory.initJmsTemplate();
     }
 

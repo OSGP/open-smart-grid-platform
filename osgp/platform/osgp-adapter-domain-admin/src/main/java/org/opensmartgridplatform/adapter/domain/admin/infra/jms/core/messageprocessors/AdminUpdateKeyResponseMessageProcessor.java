@@ -11,7 +11,6 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.admin.application.services.DeviceManagementService;
-import org.opensmartgridplatform.adapter.domain.admin.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
@@ -20,8 +19,8 @@ import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,10 +43,9 @@ public class AdminUpdateKeyResponseMessageProcessor extends BaseMessageProcessor
 
     @Autowired
     protected AdminUpdateKeyResponseMessageProcessor(
-            @Qualifier("domainAdminOutgoingWebServiceResponseMessageSender") WebServiceResponseMessageSender webServiceResponseMessageSender,
-            @Qualifier("domainAdminOsgpCoreResponseMessageProcessorMap") MessageProcessorMap osgpCoreResponseMessageProcessorMap) {
-        super(webServiceResponseMessageSender, osgpCoreResponseMessageProcessorMap, MessageType.UPDATE_KEY,
-                ComponentType.DOMAIN_CORE);
+            @Qualifier("domainAdminOutboundWebServiceResponsesMessageSender") final ResponseMessageSender responseMessageSender,
+            @Qualifier("domainAdminInboundOsgpCoreResponsesMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
+        super(responseMessageSender, messageProcessorMap, MessageType.UPDATE_KEY, ComponentType.DOMAIN_CORE);
     }
 
     @Override
