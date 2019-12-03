@@ -36,13 +36,13 @@ public class InboundLoggingRequestsMessagingConfig {
         this.jmsConfigurationFactory = new JmsConfigurationFactory(environment, defaultJmsConfiguration, "jms.logging");
     }
 
-    @Bean("OsgpLoggingInboundLoggingRequestsConnectionFactory")
+    @Bean(destroyMethod = "stop", name = "OsgpLoggingInboundLoggingRequestsConnectionFactory")
     public ConnectionFactory connectionFactory() {
         LOGGER.info("Initializing OsgpLoggingInboundLoggingRequestsConnectionFactory bean.");
         return this.jmsConfigurationFactory.getPooledConnectionFactory();
     }
 
-    @Bean("OsgpLoggingInboundLoggingRequestsMessageListenerContainer")
+    @Bean(name = "OsgpLoggingInboundLoggingRequestsMessageListenerContainer")
     public DefaultMessageListenerContainer messageListenerContainer(
             @Qualifier("OsgpLoggingInboundLoggingRequestsMessageListener") final MessageListener messageListener) {
         LOGGER.info("Initializing OsgpLoggingInboundLoggingRequestsMessageListenerContainer bean.");

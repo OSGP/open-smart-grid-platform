@@ -39,7 +39,7 @@ public class InboundProtocolLogItemRequestsMessagingConfig {
                 JmsConfigurationNames.JMS_PROTOCOL_LOG_ITEM_REQUESTS);
     }
 
-    @Bean(name = "OsgpLoggingInboundProtocolLogItemRequestsConnectionFactory")
+    @Bean(destroyMethod = "stop", name = "OsgpLoggingInboundProtocolLogItemRequestsConnectionFactory")
     public ConnectionFactory connectionFactory() {
         LOGGER.info("Initializing OsgpLoggingInboundProtocolLogItemRequestsConnectionFactory bean.");
         return this.jmsConfigurationFactory.getPooledConnectionFactory();
