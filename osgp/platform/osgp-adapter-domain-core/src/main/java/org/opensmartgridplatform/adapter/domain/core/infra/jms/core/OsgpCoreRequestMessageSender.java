@@ -47,17 +47,19 @@ public class OsgpCoreRequestMessageSender {
     private void send(final RequestMessage requestMessage, final String messageType, final int messagePriority,
             final String ipAddress, final Long scheduledTime, final Long delay) {
 
+        final String correlationUid = requestMessage.getCorrelationUid();
+        final String organisationIdentification = requestMessage.getOrganisationIdentification();
+        final String deviceIdentification = requestMessage.getDeviceIdentification();
+
         this.jmsTemplate.send(new MessageCreator() {
             @Override
             public Message createMessage(final Session session) throws JMSException {
                 final ObjectMessage objectMessage = session.createObjectMessage();
                 objectMessage.setJMSType(messageType);
                 objectMessage.setJMSPriority(messagePriority);
-                objectMessage.setJMSCorrelationID(requestMessage.getCorrelationUid());
-                objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
-                        requestMessage.getOrganisationIdentification());
-                objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
-                        requestMessage.getDeviceIdentification());
+                objectMessage.setJMSCorrelationID(correlationUid);
+                objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION, organisationIdentification);
+                objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION, deviceIdentification);
                 objectMessage.setStringProperty(Constants.IP_ADDRESS, ipAddress);
                 if (scheduledTime != null) {
                     objectMessage.setLongProperty(Constants.SCHEDULE_TIME, scheduledTime);
