@@ -13,9 +13,9 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.da.application.services.DeviceManagementService;
-import org.opensmartgridplatform.shared.infra.jms.BaseNotificationMessageProcessor;
 import org.opensmartgridplatform.dto.da.GetHealthStatusResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.BaseNotificationMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -43,9 +43,8 @@ public class GetHealthStatusResponseMessageProcessor extends BaseNotificationMes
     private DeviceManagementService deviceManagementService;
 
     @Autowired
-    protected GetHealthStatusResponseMessageProcessor(
-            final NotificationResponseMessageSender responseMessageSender,
-            @Qualifier("domainDistributionAutomationOsgpCoreResponseMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
+    protected GetHealthStatusResponseMessageProcessor(final NotificationResponseMessageSender responseMessageSender,
+            @Qualifier("domainDistributionAutomationInboundOsgpCoreResponsesMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.GET_HEALTH_STATUS);
     }
 
@@ -89,9 +88,8 @@ public class GetHealthStatusResponseMessageProcessor extends BaseNotificationMes
 
             final GetHealthStatusResponseDto dataResponse = (GetHealthStatusResponseDto) dataObject;
 
-            this.deviceManagementService
-                    .handleHealthStatusResponse(dataResponse, deviceIdentification, organisationIdentification, correlationUid, messageType,
-                            responseMessageResultType, osgpException);
+            this.deviceManagementService.handleHealthStatusResponse(dataResponse, deviceIdentification,
+                    organisationIdentification, correlationUid, messageType, responseMessageResultType, osgpException);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);

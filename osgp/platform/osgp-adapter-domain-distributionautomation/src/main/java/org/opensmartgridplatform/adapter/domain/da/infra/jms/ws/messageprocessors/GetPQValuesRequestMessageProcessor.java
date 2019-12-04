@@ -42,7 +42,7 @@ public class GetPQValuesRequestMessageProcessor extends BaseNotificationMessageP
 
     @Autowired
     public GetPQValuesRequestMessageProcessor(final NotificationResponseMessageSender responseMessageSender,
-            @Qualifier("domainDistributionAutomationWebServiceRequestMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainDistributionAutomationInboundWebServiceRequestsMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.GET_POWER_QUALITY_VALUES);
     }
 
