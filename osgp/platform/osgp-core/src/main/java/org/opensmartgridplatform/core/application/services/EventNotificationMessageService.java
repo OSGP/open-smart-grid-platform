@@ -31,6 +31,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.EventType;
 import org.opensmartgridplatform.domain.core.valueobjects.RelayType;
 import org.opensmartgridplatform.dto.valueobjects.EventNotificationDto;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderTimestampService;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,8 +42,6 @@ import org.springframework.stereotype.Service;
 public class EventNotificationMessageService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EventNotificationMessageService.class);
-
-    private static final String RELAY_STATUS_UPDATED_EVENTS = "RELAY_STATUS_UPDATED";
 
     @Autowired
     private CorrelationIdProviderTimestampService correlationIdProviderTimestampService;
@@ -191,7 +190,8 @@ public class EventNotificationMessageService {
             ssld.updateSwitchingEventRelayStatuses(lastRelayStatusPerIndex);
             this.eventNotificationHelperService.saveSsld(ssld);
 
-            this.sendRequestMessageToDomainCore(RELAY_STATUS_UPDATED_EVENTS, ssld.getDeviceIdentification(), null);
+            this.sendRequestMessageToDomainCore(MessageType.RELAY_STATUS_UPDATED_EVENTS.name(),
+                    ssld.getDeviceIdentification(), null);
         }
     }
 
@@ -212,7 +212,8 @@ public class EventNotificationMessageService {
         if (lastRelayStatusPerIndex.get(relayIndex) == null || switchingEvent.getDateTime()
                 .after(lastRelayStatusPerIndex.get(relayIndex).getLastSwitchingEventTime())) {
             final RelayStatus relayStatus = new RelayStatus.Builder(device, relayIndex)
-                    .withLastSwitchingEventState(isRelayOn, switchingEvent.getDateTime()).build();
+                    .withLastSwitchingEventState(isRelayOn, switchingEvent.getDateTime())
+                    .build();
             lastRelayStatusPerIndex.put(relayIndex, relayStatus);
         }
     }
@@ -235,7 +236,8 @@ public class EventNotificationMessageService {
 
         this.eventNotificationHelperService.saveDevice(device);
 
-        this.sendRequestMessageToDomainCore(RELAY_STATUS_UPDATED_EVENTS, device.getDeviceIdentification(), null);
+        this.sendRequestMessageToDomainCore(MessageType.RELAY_STATUS_UPDATED_EVENTS.name(),
+                device.getDeviceIdentification(), null);
     }
 
     private void updateRelayStatusForEvent(final int index, final Device device, final Date dateTime,
@@ -257,7 +259,8 @@ public class EventNotificationMessageService {
             if (ssld.getRelayStatusByIndex(index) == null
                     || eventTime.after(ssld.getRelayStatusByIndex(index).getLastSwitchingEventTime())) {
                 final RelayStatus newRelayState = new RelayStatus.Builder(device, index)
-                        .withLastSwitchingEventState(isRelayOn, eventTime).build();
+                        .withLastSwitchingEventState(isRelayOn, eventTime)
+                        .build();
 
                 ssld.addOrUpdateRelayStatus(newRelayState);
             }

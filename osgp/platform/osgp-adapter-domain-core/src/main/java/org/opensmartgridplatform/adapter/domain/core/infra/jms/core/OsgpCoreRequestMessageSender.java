@@ -12,6 +12,7 @@ import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
+import org.apache.activemq.ScheduledMessage;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,31 +31,43 @@ public class OsgpCoreRequestMessageSender {
 
     public void send(final RequestMessage requestMessage, final String messageType, final int messagePriority,
             final String ipAddress) {
-        this.send(requestMessage, messageType, messagePriority, ipAddress, null);
+        this.send(requestMessage, messageType, messagePriority, ipAddress, null, null);
     }
 
-    public void send(final RequestMessage requestMessage, final String messageType, final int messagePriority,
-            final String ipAddress, final Long scheduleTime) {
+    public void sendWithScheduledTime(final RequestMessage requestMessage, final String messageType,
+            final int messagePriority, final String ipAddress, final Long scheduledTime) {
+        this.send(requestMessage, messageType, messagePriority, ipAddress, scheduledTime, null);
+    }
+
+    public void sendWithDelay(final RequestMessage requestMessage, final String messageType, final int messagePriority,
+            final String ipAddress, final Long delay) {
+        this.send(requestMessage, messageType, messagePriority, ipAddress, null, delay);
+    }
+
+    private void send(final RequestMessage requestMessage, final String messageType, final int messagePriority,
+            final String ipAddress, final Long scheduledTime, final Long delay) {
+
+        final String correlationUid = requestMessage.getCorrelationUid();
+        final String organisationIdentification = requestMessage.getOrganisationIdentification();
+        final String deviceIdentification = requestMessage.getDeviceIdentification();
 
         this.jmsTemplate.send(new MessageCreator() {
-
             @Override
             public Message createMessage(final Session session) throws JMSException {
                 final ObjectMessage objectMessage = session.createObjectMessage();
-
                 objectMessage.setJMSType(messageType);
                 objectMessage.setJMSPriority(messagePriority);
-                objectMessage.setJMSCorrelationID(requestMessage.getCorrelationUid());
-                objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
-                        requestMessage.getOrganisationIdentification());
-                objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
-                        requestMessage.getDeviceIdentification());
+                objectMessage.setJMSCorrelationID(correlationUid);
+                objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION, organisationIdentification);
+                objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION, deviceIdentification);
                 objectMessage.setStringProperty(Constants.IP_ADDRESS, ipAddress);
-                if (scheduleTime != null) {
-                    objectMessage.setLongProperty(Constants.SCHEDULE_TIME, scheduleTime);
+                if (scheduledTime != null) {
+                    objectMessage.setLongProperty(Constants.SCHEDULE_TIME, scheduledTime);
+                }
+                if (delay != null) {
+                    objectMessage.setLongProperty(ScheduledMessage.AMQ_SCHEDULED_DELAY, delay);
                 }
                 objectMessage.setObject(requestMessage.getRequest());
-
                 return objectMessage;
             }
         });
