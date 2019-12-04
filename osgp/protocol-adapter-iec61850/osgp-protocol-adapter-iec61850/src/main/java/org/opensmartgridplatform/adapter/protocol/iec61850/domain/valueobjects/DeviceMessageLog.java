@@ -7,9 +7,9 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import org.openmuc.openiec61850.Fc;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
@@ -23,13 +23,12 @@ public class DeviceMessageLog {
     private final IED ied;
     private final LogicalDevice logicalDevice;
     private final String messageType;
-    private final Map<String, String> readVariables = new HashMap<>();
+    private final Map<String, String> readVariables = new TreeMap<>();
 
     public DeviceMessageLog(final IED ied, final LogicalDevice logicalDevice, final String messageType) {
         this.ied = ied;
         this.logicalDevice = logicalDevice;
         this.messageType = messageType;
-
     }
 
     private void addReadVariable(final String variable, final String value) {
@@ -53,9 +52,14 @@ public class DeviceMessageLog {
      */
     public void addVariable(final LogicalNode logicalNode, final DataAttribute dataAttribute,
             final Fc functionalConstraint, final String value) {
-        this.addReadVariable(logicalNode.getDescription().concat(".").concat(dataAttribute.getDescription()).concat("[")
-                .concat(functionalConstraint.name()).concat("]"), value);
+        final String key = logicalNode.getDescription()
+                .concat(".")
+                .concat(dataAttribute.getDescription())
+                .concat("[")
+                .concat(functionalConstraint.name())
+                .concat("]");
 
+        this.addReadVariable(key, value);
     }
 
     /**
@@ -64,10 +68,15 @@ public class DeviceMessageLog {
      */
     public void addVariable(final LogicalNode logicalNode, final DataAttribute dataAttribute,
             final Fc functionalConstraint, final SubDataAttribute subDataAttribute, final String value) {
-        this.addReadVariable(
-                logicalNode.getDescription().concat(".").concat(dataAttribute.getDescription()).concat("[")
-                        .concat(functionalConstraint.name()).concat("].").concat(subDataAttribute.getDescription()),
-                value);
+        final String key = logicalNode.getDescription()
+                .concat(".")
+                .concat(dataAttribute.getDescription())
+                .concat("[")
+                .concat(functionalConstraint.name())
+                .concat("].")
+                .concat(subDataAttribute.getDescription());
+
+        this.addReadVariable(key, value);
     }
 
     /**
@@ -77,9 +86,17 @@ public class DeviceMessageLog {
     public void addVariable(final LogicalNode logicalNode, final DataAttribute dataAttribute,
             final Fc functionalConstraint, final SubDataAttribute subDataAttribute,
             final SubDataAttribute subSubDataAttribute, final String value) {
-        this.addReadVariable(logicalNode.getDescription().concat(".").concat(dataAttribute.getDescription()).concat("[")
-                .concat(functionalConstraint.name()).concat("].").concat(subDataAttribute.getDescription()).concat(".")
-                .concat(subSubDataAttribute.getDescription()), value);
+        final String key = logicalNode.getDescription()
+                .concat(".")
+                .concat(dataAttribute.getDescription())
+                .concat("[")
+                .concat(functionalConstraint.name())
+                .concat("].")
+                .concat(subDataAttribute.getDescription())
+                .concat(".")
+                .concat(subSubDataAttribute.getDescription());
+
+        this.addReadVariable(key, value);
     }
 
     /**
@@ -89,8 +106,16 @@ public class DeviceMessageLog {
     public void addVariable(final LogicalNode logicalNode, final DataAttribute dataAttribute,
             final Fc functionalConstraint, final String scheduleEntryName, final SubDataAttribute subSubDataAttribute,
             final String value) {
-        this.addReadVariable(logicalNode.getDescription().concat(".").concat(dataAttribute.getDescription()).concat("[")
-                .concat(functionalConstraint.name()).concat("].").concat(scheduleEntryName).concat(".")
-                .concat(subSubDataAttribute.getDescription()), value);
+        final String key = logicalNode.getDescription()
+                .concat(".")
+                .concat(dataAttribute.getDescription())
+                .concat("[")
+                .concat(functionalConstraint.name())
+                .concat("].")
+                .concat(scheduleEntryName)
+                .concat(".")
+                .concat(subSubDataAttribute.getDescription());
+
+        this.addReadVariable(key, value);
     }
 }
