@@ -7,13 +7,11 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.steps;
 
-import static org.mockito.Mockito.mock;
 import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.TestDefaults.DEFAULT_DEVICE_IDENTIFICATION;
 import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.TestDefaults.DEFAULT_MESSAGE_TYPE;
 
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
-import javax.jms.Session;
 
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.DeviceRequestMessageListener;
 import org.opensmartgridplatform.dto.da.GetHealthStatusRequestDto;
@@ -29,8 +27,9 @@ public class RequestSteps {
     @When("I receive a request for the IEC60870 device")
     public void whenIReceiveRequestForIec60870Device() throws JMSException {
         final ObjectMessage message = new ObjectMessageBuilder().withDeviceIdentification(DEFAULT_DEVICE_IDENTIFICATION)
-                .withMessageType(DEFAULT_MESSAGE_TYPE).withObject(new GetHealthStatusRequestDto()).build();
-        final Session session = mock(Session.class);
-        this.messageListener.onMessage(message, session);
+                .withMessageType(DEFAULT_MESSAGE_TYPE)
+                .withObject(new GetHealthStatusRequestDto())
+                .build();
+        this.messageListener.onMessage(message);
     }
 }

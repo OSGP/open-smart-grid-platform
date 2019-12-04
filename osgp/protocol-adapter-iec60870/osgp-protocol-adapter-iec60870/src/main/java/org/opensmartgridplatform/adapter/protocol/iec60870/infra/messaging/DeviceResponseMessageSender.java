@@ -26,7 +26,9 @@ import org.springframework.jms.IllegalStateException;
 import org.springframework.jms.UncategorizedJmsException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
+import org.springframework.stereotype.Component;
 
+@Component("protocolIec60870OutboundOsgpCoreResponsesMessageSender")
 public class DeviceResponseMessageSender implements ResponseMessageSender {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceResponseMessageSender.class);
@@ -37,8 +39,8 @@ public class DeviceResponseMessageSender implements ResponseMessageSender {
     private static final String LOG_MESSAGE_NULL_FIELD = "{} is null.";
 
     @Autowired
-    @Qualifier("iec60870ResponsesJmsTemplate")
-    private JmsTemplate iec60870ResponsesJmsTemplate;
+    @Qualifier("protocolIec60870OutboundOsgpCoreResponsesJmsTemplate")
+    private JmsTemplate jmsTemplate;
 
     @Autowired
     private ClientConnectionService iec60870DeviceConnectionService;
@@ -55,7 +57,7 @@ public class DeviceResponseMessageSender implements ResponseMessageSender {
 
         final ProtocolResponseMessage msg = (ProtocolResponseMessage) responseMessage;
 
-        if (!this.checkMessage(msg)) {
+        if (!checkMessage(msg)) {
             return;
         }
 
@@ -76,7 +78,7 @@ public class DeviceResponseMessageSender implements ResponseMessageSender {
         }
     }
 
-    private boolean checkMessage(final ProtocolResponseMessage msg) {
+    private static boolean checkMessage(final ProtocolResponseMessage msg) {
         boolean result = true;
 
         if (StringUtils.isBlank(msg.getOrganisationIdentification())) {
@@ -115,37 +117,34 @@ public class DeviceResponseMessageSender implements ResponseMessageSender {
                 responseMessage.getMessageType(), responseMessage.getMessagePriority());
 
         final MessageCreator responseMessageCreator = new ResponseMessageCreator(responseMessage);
-        this.iec60870ResponsesJmsTemplate.send(responseMessageCreator);
+        this.jmsTemplate.send(responseMessageCreator);
     }
 
-    private class ResponseMessageCreator implements MessageCreator {
+    private static class ResponseMessageCreator implements MessageCreator {
 
-        private final ProtocolResponseMessage responseMessage;
+        private final ProtocolResponseMessage message;
 
-        public ResponseMessageCreator(final ProtocolResponseMessage responseMessage) {
-            this.responseMessage = responseMessage;
+        public ResponseMessageCreator(final ProtocolResponseMessage message) {
+            this.message = message;
         }
 
         @Override
         public Message createMessage(final Session session) throws JMSException {
-            final ObjectMessage objectMessage = session.createObjectMessage(this.responseMessage);
-            objectMessage.setJMSCorrelationID(this.responseMessage.getCorrelationUid());
-            objectMessage.setStringProperty(Constants.DOMAIN, this.responseMessage.getDomain());
-            objectMessage.setStringProperty(Constants.DOMAIN_VERSION, this.responseMessage.getDomainVersion());
-            objectMessage.setJMSType(this.responseMessage.getMessageType());
-            objectMessage.setJMSPriority(this.responseMessage.getMessagePriority());
-            objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
-                    this.responseMessage.getOrganisationIdentification());
-            objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
-                    this.responseMessage.getDeviceIdentification());
-            objectMessage.setStringProperty(Constants.RESULT, this.responseMessage.getResult().toString());
-            if (this.responseMessage.getOsgpException() != null) {
-                objectMessage.setStringProperty(Constants.DESCRIPTION,
-                        this.responseMessage.getOsgpException().getMessage());
+            final ObjectMessage msg = session.createObjectMessage(this.message);
+            msg.setJMSCorrelationID(this.message.getCorrelationUid());
+            msg.setStringProperty(Constants.DOMAIN, this.message.getDomain());
+            msg.setStringProperty(Constants.DOMAIN_VERSION, this.message.getDomainVersion());
+            msg.setJMSType(this.message.getMessageType());
+            msg.setJMSPriority(this.message.getMessagePriority());
+            msg.setStringProperty(Constants.ORGANISATION_IDENTIFICATION, this.message.getOrganisationIdentification());
+            msg.setStringProperty(Constants.DEVICE_IDENTIFICATION, this.message.getDeviceIdentification());
+            msg.setStringProperty(Constants.RESULT, this.message.getResult().toString());
+            if (this.message.getOsgpException() != null) {
+                msg.setStringProperty(Constants.DESCRIPTION, this.message.getOsgpException().getMessage());
             }
-            objectMessage.setBooleanProperty(Constants.IS_SCHEDULED, this.responseMessage.isScheduled());
-            objectMessage.setIntProperty(Constants.RETRY_COUNT, this.responseMessage.getRetryCount());
-            return objectMessage;
+            msg.setBooleanProperty(Constants.IS_SCHEDULED, this.message.isScheduled());
+            msg.setIntProperty(Constants.RETRY_COUNT, this.message.getRetryCount());
+            return msg;
         }
     }
 

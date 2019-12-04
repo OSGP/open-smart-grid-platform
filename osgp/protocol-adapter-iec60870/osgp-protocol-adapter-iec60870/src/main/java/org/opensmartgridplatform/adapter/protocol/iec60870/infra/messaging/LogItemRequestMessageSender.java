@@ -17,9 +17,12 @@ import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
+import org.springframework.stereotype.Component;
 
+@Component(value = "protocolIec60870OutboundLogItemRequestsMessageSender")
 public class LogItemRequestMessageSender {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LogItemRequestMessageSender.class);
@@ -29,18 +32,19 @@ public class LogItemRequestMessageSender {
     private static final int DEFAULT_SIZE = 0;
 
     @Autowired
-    private JmsTemplate logItemRequestsJmsTemplate;
+    @Qualifier("protocolIec60870OutboundLogItemRequestsJmsTemplate")
+    private JmsTemplate jmsTemplate;
 
     public void send(final LogItem logItem) {
 
         LOGGER.debug("Sending LogItemRequestMessage");
 
         final LogItemMessageCreator messageCreator = new LogItemMessageCreator(logItem);
-        this.logItemRequestsJmsTemplate.send(messageCreator);
+        this.jmsTemplate.send(messageCreator);
 
     }
 
-    private class LogItemMessageCreator implements MessageCreator {
+    private static class LogItemMessageCreator implements MessageCreator {
 
         private final LogItem logItem;
 

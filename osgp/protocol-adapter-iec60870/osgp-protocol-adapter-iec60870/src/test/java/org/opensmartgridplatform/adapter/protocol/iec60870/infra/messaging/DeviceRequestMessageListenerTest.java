@@ -16,7 +16,6 @@ import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.Test
 
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
-import javax.jms.Session;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,14 +45,15 @@ public class DeviceRequestMessageListenerTest {
     public void shouldProcessMessageWhenMessageTypeIsSupported() throws JMSException {
         // Arrange
         final ObjectMessage message = new ObjectMessageBuilder().withDeviceIdentification(DEFAULT_DEVICE_IDENTIFICATION)
-                .withMessageType(DEFAULT_MESSAGE_TYPE).withObject(new GetHealthStatusRequestDto()).build();
-        final Session session = mock(Session.class);
+                .withMessageType(DEFAULT_MESSAGE_TYPE)
+                .withObject(new GetHealthStatusRequestDto())
+                .build();
 
         final MessageProcessor messageProcessor = mock(GetHealthStatusRequestMessageProcessor.class);
         when(this.iec60870RequestMessageProcessorMap.getMessageProcessor(message)).thenReturn(messageProcessor);
 
         // Act
-        this.deviceRequestMessageListener.onMessage(message, session);
+        this.deviceRequestMessageListener.onMessage(message);
 
         // Assert
         verify(messageProcessor).processMessage(message);
@@ -63,13 +63,14 @@ public class DeviceRequestMessageListenerTest {
     public void shouldSendErrorMessageWhenMessageTypeIsNotSupported() throws JMSException {
         // Arrange
         final ObjectMessage message = new ObjectMessageBuilder().withDeviceIdentification(DEFAULT_DEVICE_IDENTIFICATION)
-                .withMessageType(DEFAULT_MESSAGE_TYPE).withObject(new GetHealthStatusRequestDto()).build();
-        final Session session = mock(Session.class);
+                .withMessageType(DEFAULT_MESSAGE_TYPE)
+                .withObject(new GetHealthStatusRequestDto())
+                .build();
 
         when(this.iec60870RequestMessageProcessorMap.getMessageProcessor(message)).thenThrow(JMSException.class);
 
         // Act
-        this.deviceRequestMessageListener.onMessage(message, session);
+        this.deviceRequestMessageListener.onMessage(message);
 
         // Assert
         verify(this.deviceResponseMessageSender).send(argThat(new ErrorResponseMessageMatcher()));
