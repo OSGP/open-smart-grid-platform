@@ -12,10 +12,10 @@ import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.microgrids.application.services.AdHocManagementService;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.GetDataResponseDto;
-import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.BaseNotificationMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.NotificationResponseMessageSender;
@@ -42,9 +42,8 @@ public class GetDataResponseMessageProcessor extends BaseNotificationMessageProc
     private AdHocManagementService adHocManagementService;
 
     @Autowired
-    protected GetDataResponseMessageProcessor(
-            final NotificationResponseMessageSender responseMessageSender,
-            @Qualifier("domainMicrogridsOsgpCoreResponseMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
+    protected GetDataResponseMessageProcessor(final NotificationResponseMessageSender responseMessageSender,
+            @Qualifier("domainMicrogridsInboundOsgpCoreResponsesMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.GET_DATA);
     }
 
@@ -91,8 +90,8 @@ public class GetDataResponseMessageProcessor extends BaseNotificationMessageProc
 
             final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification,
                     correlationUid);
-            this.adHocManagementService.handleGetDataResponse(dataResponse, ids,
-                    messageType, responseMessageResultType, osgpException);
+            this.adHocManagementService.handleGetDataResponse(dataResponse, ids, messageType, responseMessageResultType,
+                    osgpException);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);

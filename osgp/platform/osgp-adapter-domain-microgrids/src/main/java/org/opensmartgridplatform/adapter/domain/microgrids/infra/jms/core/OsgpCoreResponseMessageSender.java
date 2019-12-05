@@ -12,26 +12,25 @@ import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
+import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Component;
 
-import org.opensmartgridplatform.shared.infra.jms.Constants;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
-
 // This class should send response messages to OSGP Core.
-@Component(value = "domainMicrogridsOutgoingOsgpCoreResponseMessageSender")
+@Component(value = "domainMicrogridsOutboundOsgpCoreResponsesMessageSender")
 public class OsgpCoreResponseMessageSender {
 
     @Autowired
-    @Qualifier("domainMicrogridsOutgoingOsgpCoreResponsesJmsTemplate")
-    private JmsTemplate osgpCoreResponsesJmsTemplate;
+    @Qualifier("domainMicrogridsOutboundOsgpCoreResponsesJmsTemplate")
+    private JmsTemplate jmsTemplate;
 
     public void send(final ResponseMessage responseMessage, final String messageType) {
 
-        this.osgpCoreResponsesJmsTemplate.send(new MessageCreator() {
+        this.jmsTemplate.send(new MessageCreator() {
 
             @Override
             public Message createMessage(final Session session) throws JMSException {
