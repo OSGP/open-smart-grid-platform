@@ -10,6 +10,7 @@ import javax.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.ws.schema.core.notification.NotificationType;
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.UnknownMessageTypeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +38,7 @@ public class CommonRequestMessageListener implements MessageListener {
             final String deviceIdentification = objectMessage.getStringProperty(Constants.DEVICE_IDENTIFICATION);
             final Serializable dataObject = objectMessage.getObject();
 
-            if ("RELAY_STATUS_UPDATED".equals(messageType)) {
+            if (MessageType.RELAY_STATUS_UPDATED_EVENTS.name().equals(messageType)) {
                 this.notificationService.sendNotification(organisationIdentification, deviceIdentification, null,
                         correlationUid, null, NotificationType.DEVICE_UPDATED);
             } else {
