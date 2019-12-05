@@ -19,8 +19,8 @@ import org.opensmartgridplatform.adapter.ws.schema.microgrids.notification.Notif
 import org.opensmartgridplatform.adapter.ws.schema.shared.notification.GenericNotification;
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
 import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataService;
-import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -28,6 +28,7 @@ import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * Base class for MessageProcessor implementations. Each MessageProcessor
@@ -48,7 +49,8 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
      * The map of message processor instances.
      */
     @Autowired
-    protected MessageProcessorMap domainResponseMessageProcessorMap;
+    @Qualifier(value = "wsMicrogridsInboundDomainResponsesMessageProcessorMap")
+    protected MessageProcessorMap messageProcessorMap;
 
     @Autowired
     private NotificationService notificationService;
@@ -78,7 +80,7 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
      */
     @PostConstruct
     public void init() {
-        this.domainResponseMessageProcessorMap.addMessageProcessor(this.messageType, this);
+        this.messageProcessorMap.addMessageProcessor(this.messageType, this);
     }
 
     @Override
@@ -120,7 +122,8 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
-            CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification, correlationUid);
+            final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification,
+                    correlationUid);
             this.handleMessage(ids, messageType, resultType, resultDescription, dataObject);
 
         } catch (final Exception e) {

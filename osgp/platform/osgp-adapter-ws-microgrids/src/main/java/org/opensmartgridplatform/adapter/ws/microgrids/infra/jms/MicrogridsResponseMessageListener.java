@@ -12,23 +12,22 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
-import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
-import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
-
+@Component(value = "wsMicrogridsInboundDomainResponsesMessageListener")
 public class MicrogridsResponseMessageListener implements MessageListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MicrogridsResponseMessageListener.class);
 
     @Autowired
-    private MessageProcessorMap domainResponseMessageProcessorMap;
-
-    public MicrogridsResponseMessageListener() {
-        // empty constructor
-    }
+    @Qualifier(value = "wsMicrogridsInboundDomainResponsesMessageProcessorMap")
+    private MessageProcessorMap messageProcessorMap;
 
     @Override
     public void onMessage(final Message message) {
@@ -39,8 +38,7 @@ public class MicrogridsResponseMessageListener implements MessageListener {
             final String correlationUid = objectMessage.getJMSCorrelationID();
             LOGGER.info("objectMessage CorrelationUID: {}", correlationUid);
 
-            final MessageProcessor processor = this.domainResponseMessageProcessorMap
-                    .getMessageProcessor(objectMessage);
+            final MessageProcessor processor = this.messageProcessorMap.getMessageProcessor(objectMessage);
 
             processor.processMessage(objectMessage);
 
