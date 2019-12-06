@@ -7,7 +7,6 @@
  */
 package org.opensmartgridplatform.domain.core.entities;
 
-import java.io.Serializable;
 import java.sql.Timestamp;
 
 import javax.persistence.Entity;
@@ -29,7 +28,7 @@ public class ScheduledTaskWithoutData extends AbstractScheduledTask {
     }
 
     public ScheduledTaskWithoutData(final DeviceMessageMetadata deviceMessageMetadata, final String domain,
-            final String domainVersion, final Serializable messageData, final Timestamp scheduledTime) {
+            final String domainVersion, final Timestamp scheduledTime) {
 
         super(deviceMessageMetadata, domain, domainVersion, scheduledTime);
     }
