@@ -31,7 +31,7 @@ import org.opensmartgridplatform.domain.core.entities.Ean;
 import org.opensmartgridplatform.domain.core.entities.Event;
 import org.opensmartgridplatform.domain.core.entities.Manufacturer;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
-import org.opensmartgridplatform.domain.core.entities.ScheduledTask;
+import org.opensmartgridplatform.domain.core.entities.ScheduledTaskWithoutData;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
 import org.opensmartgridplatform.domain.core.exceptions.ArgumentNullOrEmptyException;
 import org.opensmartgridplatform.domain.core.exceptions.NotAuthorizedException;
@@ -39,7 +39,7 @@ import org.opensmartgridplatform.domain.core.exceptions.UnknownEntityException;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.EventRepository;
 import org.opensmartgridplatform.domain.core.repositories.OrganisationRepository;
-import org.opensmartgridplatform.domain.core.repositories.ScheduledTaskRepository;
+import org.opensmartgridplatform.domain.core.repositories.ScheduledTaskWithoutDataRepository;
 import org.opensmartgridplatform.domain.core.services.DeviceDomainService;
 import org.opensmartgridplatform.domain.core.specifications.DeviceSpecifications;
 import org.opensmartgridplatform.domain.core.specifications.EventSpecifications;
@@ -120,7 +120,7 @@ public class DeviceManagementService {
     private CommonResponseMessageFinder commonResponseMessageFinder;
 
     @Autowired
-    private ScheduledTaskRepository scheduledTaskRepository;
+    private ScheduledTaskWithoutDataRepository scheduledTaskRepository;
 
     @Autowired
     private WritableDeviceAuthorizationRepository writableAuthorizationRepository;
@@ -565,7 +565,9 @@ public class DeviceManagementService {
                 messagePriority);
 
         final CommonRequestMessage message = new CommonRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(eventNotificationMessageDataContainer).build();
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .request(eventNotificationMessageDataContainer)
+                .build();
 
         this.commonRequestMessageSender.send(message);
 
@@ -580,7 +582,7 @@ public class DeviceManagementService {
 
     @Transactional(value = "transactionManager")
     // === RETRIEVE SCHEDULED TASKS LIST FOR SPECIFIC DEVICE ===
-    public List<ScheduledTask> findScheduledTasks(@Identification final String organisationIdentification,
+    public List<ScheduledTaskWithoutData> findScheduledTasks(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
@@ -593,7 +595,7 @@ public class DeviceManagementService {
 
     @Transactional(value = "transactionManager")
     // === RETRIEVE SCHEDULED TASKS LIST FOR ALL DEVICES ===
-    public List<ScheduledTask> findScheduledTasks(@Identification final String organisationIdentification)
+    public List<ScheduledTaskWithoutData> findScheduledTasks(@Identification final String organisationIdentification)
             throws FunctionalException {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.FIND_SCHEDULED_TASKS);
@@ -768,7 +770,9 @@ public class DeviceManagementService {
                 messagePriority);
 
         final CommonRequestMessage message = new CommonRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(certification).build();
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .request(certification)
+                .build();
 
         this.commonRequestMessageSender.send(message);
 
@@ -800,7 +804,9 @@ public class DeviceManagementService {
                 messagePriority);
 
         final CommonRequestMessage message = new CommonRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(verificationKey).build();
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .request(verificationKey)
+                .build();
 
         this.commonRequestMessageSender.send(message);
 
@@ -834,7 +840,9 @@ public class DeviceManagementService {
                 organisationIdentification, correlationUid, MessageType.SET_DEVICE_LIFECYCLE_STATUS.name());
 
         final CommonRequestMessage message = new CommonRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(newDeviceLifecycleStatus).build();
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .request(newDeviceLifecycleStatus)
+                .build();
 
         this.commonRequestMessageSender.send(message);
 
@@ -863,7 +871,9 @@ public class DeviceManagementService {
                 organisationIdentification, correlationUid, MessageType.UPDATE_DEVICE_CDMA_SETTINGS.name());
 
         final CommonRequestMessage message = new CommonRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(cdmaSettings).build();
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .request(cdmaSettings)
+                .build();
 
         this.commonRequestMessageSender.send(message);
 

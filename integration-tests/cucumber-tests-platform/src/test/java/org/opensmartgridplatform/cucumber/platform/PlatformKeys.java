@@ -219,8 +219,9 @@ public class PlatformKeys extends Keys {
     public static final String KEY_RESULT = "Result";
     public static final String KEY_RESULT_TYPE = "ResultType";
     public static final String KEY_REVOKED = "Revoked";
-    public static final String KEY_SETPOINT_END_TIME = "SetPointEndTime";
 
+    public static final String KEY_SCHEDULED_TIME = "ScheduledTime";
+    public static final String KEY_SETPOINT_END_TIME = "SetPointEndTime";
     public static final String KEY_SETPOINT_ID = "SetPointId";
     public static final String KEY_SETPOINT_NODE = "SetPointNode";
 

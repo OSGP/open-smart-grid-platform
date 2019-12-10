@@ -7,36 +7,29 @@
  */
 package org.opensmartgridplatform.domain.core.entities;
 
-import java.io.Serializable;
 import java.sql.Timestamp;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Type;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 
+/**
+ * Scheduled task without the actual data
+ */
 @Entity
 @Table(name = "scheduled_task")
-public class ScheduledTask extends AbstractScheduledTask {
+public class ScheduledTaskWithoutData extends AbstractScheduledTask {
 
     private static final long serialVersionUID = 1L;
 
-    @Type(type = "java.io.Serializable")
-    private Serializable messageData;
-
-    ScheduledTask() {
+    ScheduledTaskWithoutData() {
         // Default empty constructor for Hibernate.
     }
 
-    public ScheduledTask(final DeviceMessageMetadata deviceMessageMetadata, final String domain,
-            final String domainVersion, final Serializable messageData, final Timestamp scheduledTime) {
+    public ScheduledTaskWithoutData(final DeviceMessageMetadata deviceMessageMetadata, final String domain,
+            final String domainVersion, final Timestamp scheduledTime) {
 
         super(deviceMessageMetadata, domain, domainVersion, scheduledTime);
-        this.messageData = messageData;
-    }
-
-    public Serializable getMessageData() {
-        return this.messageData;
     }
 }
