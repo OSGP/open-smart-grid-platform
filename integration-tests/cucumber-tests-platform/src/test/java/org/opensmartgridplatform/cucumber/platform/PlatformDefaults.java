@@ -47,6 +47,8 @@ public class PlatformDefaults {
     public static final String DEFAULT_CONTAINER_NUMBER_ADDITION = "A";
     public static final String DEFAULT_CONTAINER_POSTALCODE = "6546KM";
     public static final String DEFAULT_CONTAINER_STREET = "StandardStreet";
+    public static final String DEFAULT_CORRELATION_UID = "correlation-uid-1";
+
     public static final String DEFAULT_DC_LIGHTS = "0";
     public static final Long DEFAULT_DEVICE_ID = new java.util.Random().nextLong();
 
@@ -120,6 +122,8 @@ public class PlatformDefaults {
     public static final Boolean DEFAULT_PUBLICKEYPRESENT = true;
     public static final String DEFAULT_PUBLICLIGHTING_DESCRIPTION = "";
     public static final String DEFAULT_RECORD_TIME = "";
+
+    public static final String DEFAULT_SCHEDULED_TIME = "tomorrow at noon";
     public static final Integer DEFAULT_SHORT_INTERVAL = 15;
     public static final String DEFAULT_SMART_METER_DEVICE_IDENTIFICATION = "TEST1024000000001";
     public static final String DEFAULT_SMART_METER_GAS_DEVICE_IDENTIFICATION = "TESTG102400000001";
