@@ -141,23 +141,6 @@ public class TestConfiguration {
         return new GetHealthStatusRequestMessageProcessor();
     }
 
-    // @Bean
-    // public JmsConfigurationFactory iec60870JmsConfigurationFactory() {
-    // return mock(JmsConfigurationFactory.class);
-    // }
-
-    // @Bean
-    // public JmsConfiguration iec60870ResponseJmsConfiguration(final
-    // JmsConfigurationFactory jmsConfigurationFactory) {
-    // return mock(JmsConfiguration.class);
-    // }
-    //
-    // @Bean
-    // public JmsTemplate iec60870ResponsesJmsTemplate(final JmsConfiguration
-    // iec60870ResponseJmsConfiguration) {
-    // return mock(JmsTemplate.class);
-    // }
-
     @Bean(name = "protocolIec60870OutboundOsgpCoreResponsesConnectionFactory")
     public ConnectionFactory iec60870ResponsesConnectionFactory() {
         return mock(PooledConnectionFactory.class);
