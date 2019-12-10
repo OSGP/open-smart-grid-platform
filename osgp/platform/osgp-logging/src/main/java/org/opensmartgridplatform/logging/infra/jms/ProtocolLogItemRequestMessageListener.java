@@ -18,8 +18,10 @@ import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 //This class should fetch incoming messages from a logging requests queue.
+@Component(value = "OsgpLoggingInboundProtocolLogItemRequestsMessageListener")
 public class ProtocolLogItemRequestMessageListener implements MessageListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProtocolLogItemRequestMessageListener.class);

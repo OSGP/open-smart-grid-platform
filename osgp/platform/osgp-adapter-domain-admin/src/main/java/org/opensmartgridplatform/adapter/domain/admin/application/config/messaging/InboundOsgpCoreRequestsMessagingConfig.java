@@ -7,10 +7,10 @@
  */
 package org.opensmartgridplatform.adapter.domain.admin.application.config.messaging;
 
+import javax.jms.ConnectionFactory;
+import javax.jms.MessageListener;
 import javax.net.ssl.SSLException;
 
-import org.apache.activemq.pool.PooledConnectionFactory;
-import org.opensmartgridplatform.adapter.domain.admin.infra.jms.OsgpCoreRequestMessageListener;
 import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationNames;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfiguration;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfigurationFactory;
@@ -40,21 +40,21 @@ public class InboundOsgpCoreRequestsMessagingConfig {
                 JmsConfigurationNames.JMS_INCOMING_OSGP_CORE_REQUESTS);
     }
 
-    @Bean(destroyMethod = "stop", name = "domainAdminIncomingOsgpCoreRequestsPooledConnectionFactory")
-    public PooledConnectionFactory incomingOsgpCoreRequestsPooledConnectionFactory() {
-        LOGGER.info("Initializing pooled connection factory for incoming OSGP core requests.");
+    @Bean(destroyMethod = "stop", name = "domainAdminInboundOsgpCoreRequestsConnectionFactory")
+    public ConnectionFactory connectionFactory() {
+        LOGGER.info("Initializing domainAdminInboundOsgpCoreRequestsConnectionFactory bean.");
         return this.jmsConfigurationFactory.getPooledConnectionFactory();
     }
 
-    @Bean(name = "domainAdminIncomingOsgpCoreRequestsMessageListenerContainer")
-    public DefaultMessageListenerContainer incomingOsgpCoreRequestsMessageListenerContainer(
-            @Qualifier("domainAdminIncomingOsgpCoreRequestMessageListener") final OsgpCoreRequestMessageListener incomingOsgpCoreRequestMessageListener) {
-        return this.jmsConfigurationFactory.initMessageListenerContainer(incomingOsgpCoreRequestMessageListener);
+    @Bean(name = "domainAdminInboundOsgpCoreRequestsMessageListenerContainer")
+    public DefaultMessageListenerContainer messageListenerContainer(
+            @Qualifier("domainAdminInboundOsgpCoreRequestsMessageListener") final MessageListener messageListener) {
+        LOGGER.info("Initializing domainAdminInboundOsgpCoreRequestsMessageListenerContainer bean.");
+        return this.jmsConfigurationFactory.initMessageListenerContainer(messageListener);
     }
 
-    @Bean
-    @Qualifier("domainAdminOsgpCoreRequestMessageProcessorMap")
-    public MessageProcessorMap incomingOsgpCoreRequestMessageProcessorMap() {
-        return new BaseMessageProcessorMap("OsgpCoreRequestMessageProcessorMap");
+    @Bean(name = "domainAdminInboundOsgpCoreRequestsMessageProcessorMap")
+    public MessageProcessorMap messageProcessorMap() {
+        return new BaseMessageProcessorMap("domainAdminInboundOsgpCoreRequestsMessageProcessorMap");
     }
 }

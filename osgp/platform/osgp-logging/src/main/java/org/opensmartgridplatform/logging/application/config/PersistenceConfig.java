@@ -23,19 +23,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.zaxxer.hikari.HikariDataSource;
 
-@EnableJpaRepositories(basePackageClasses = { WebServiceMonitorLogRepository.class })
 @Configuration
-@PropertySource("classpath:osgp-logging.properties")
-@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
-@PropertySource(value = "file:${osgp/Logging/config}", ignoreResourceNotFound = true)
-public class LoggingConfig extends AbstractConfig {
+@EnableJpaRepositories(basePackageClasses = { WebServiceMonitorLogRepository.class })
+@EnableTransactionManagement
+public class PersistenceConfig extends AbstractConfig {
 
     private static final String PROPERTY_NAME_DATABASE_USERNAME = "db.username";
     private static final String PROPERTY_NAME_DATABASE_PW = "db.password";
@@ -63,7 +61,7 @@ public class LoggingConfig extends AbstractConfig {
 
     private static final String PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN = "entitymanager.packages.to.scan";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LoggingConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PersistenceConfig.class);
 
     private HikariDataSource dataSource;
 
@@ -93,10 +91,17 @@ public class LoggingConfig extends AbstractConfig {
                     .parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_IDLE_TIMEOUT));
 
             final DefaultConnectionPoolFactory.Builder builder = new DefaultConnectionPoolFactory.Builder()
-                    .withUsername(username).withPassword(password).withDriverClassName(driverClassName)
-                    .withProtocol(databaseProtocol).withDatabaseHost(databaseHost).withDatabasePort(databasePort)
-                    .withDatabaseName(databaseName).withMinPoolSize(minPoolSize).withMaxPoolSize(maxPoolSize)
-                    .withAutoCommit(isAutoCommit).withIdleTimeout(idleTimeout);
+                    .withUsername(username)
+                    .withPassword(password)
+                    .withDriverClassName(driverClassName)
+                    .withProtocol(databaseProtocol)
+                    .withDatabaseHost(databaseHost)
+                    .withDatabasePort(databasePort)
+                    .withDatabaseName(databaseName)
+                    .withMinPoolSize(minPoolSize)
+                    .withMaxPoolSize(maxPoolSize)
+                    .withAutoCommit(isAutoCommit)
+                    .withIdleTimeout(idleTimeout);
             final DefaultConnectionPoolFactory factory = builder.build();
             this.dataSource = factory.getDefaultConnectionPool();
         }

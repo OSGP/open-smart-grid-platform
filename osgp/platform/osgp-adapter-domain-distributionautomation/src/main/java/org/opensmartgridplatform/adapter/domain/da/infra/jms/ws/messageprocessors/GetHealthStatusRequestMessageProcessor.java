@@ -13,13 +13,12 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.da.application.services.DeviceManagementService;
-import org.opensmartgridplatform.shared.infra.jms.BaseNotificationMessageProcessor;
 import org.opensmartgridplatform.domain.da.valueobjects.GetHealthStatusRequest;
+import org.opensmartgridplatform.shared.infra.jms.BaseNotificationMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.NotificationResponseMessageSender;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,9 +40,8 @@ public class GetHealthStatusRequestMessageProcessor extends BaseNotificationMess
     private DeviceManagementService deviceManagementService;
 
     @Autowired
-    public GetHealthStatusRequestMessageProcessor(
-            final NotificationResponseMessageSender responseMessageSender,
-            @Qualifier("domainDistributionAutomationWebServiceRequestMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
+    public GetHealthStatusRequestMessageProcessor(final NotificationResponseMessageSender responseMessageSender,
+            @Qualifier("domainDistributionAutomationInboundWebServiceRequestsMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.GET_HEALTH_STATUS);
     }
 
@@ -79,8 +77,8 @@ public class GetHealthStatusRequestMessageProcessor extends BaseNotificationMess
         try {
             LOGGER.info("Calling application service function: {}", messageType);
 
-            this.deviceManagementService
-                    .getHealthStatus(organisationIdentification, deviceIdentification, correlationUid, messageType, getHealthStatusRequest);
+            this.deviceManagementService.getHealthStatus(organisationIdentification, deviceIdentification,
+                    correlationUid, messageType, getHealthStatusRequest);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);

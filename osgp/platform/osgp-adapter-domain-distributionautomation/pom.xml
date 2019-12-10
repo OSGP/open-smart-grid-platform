@@ -18,7 +18,6 @@
     <relativePath>../parent-platform/pom.xml</relativePath>
   </parent>
 
-  <groupId>org.opensmartgridplatform</groupId>
   <artifactId>osgp-adapter-domain-distributionautomation</artifactId>
   <packaging>war</packaging>
   <name>osgp-adapter-domain-distributionautomation</name>

@@ -7,90 +7,26 @@
  */
 package org.opensmartgridplatform.adapter.ws.microgrids.application.config;
 
-import org.opensmartgridplatform.adapter.ws.infra.jms.LoggingMessageSender;
-import org.opensmartgridplatform.adapter.ws.microgrids.infra.jms.MicrogridsRequestMessageSender;
-import org.opensmartgridplatform.adapter.ws.microgrids.infra.jms.MicrogridsResponseMessageListener;
-import org.opensmartgridplatform.shared.application.config.AbstractMessagingConfig;
-import org.opensmartgridplatform.shared.application.config.jms.JmsConfiguration;
-import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationFactory;
-import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationNames;
-import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessorMap;
-import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.opensmartgridplatform.adapter.ws.microgrids.application.config.messaging.InboundDomainResponsesMessagingConfig;
+import org.opensmartgridplatform.adapter.ws.microgrids.application.config.messaging.OutboundDomainRequestsMessagingConfig;
+import org.opensmartgridplatform.adapter.ws.microgrids.application.config.messaging.OutboundLoggingRequestsMessagingConfig;
+import org.opensmartgridplatform.shared.application.config.AbstractConfig;
+import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
 @Configuration
 @PropertySource("classpath:osgp-adapter-ws-microgrids.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/AdapterWsMicrogrids/config}", ignoreResourceNotFound = true)
-public class MessagingConfig extends AbstractMessagingConfig {
-
-    @Autowired
-    private MicrogridsResponseMessageListener microgridsResponseMessageListener;
-
-    // === JMS SETTINGS: Microgrids REQUESTS ===
+@Import(value = { InboundDomainResponsesMessagingConfig.class, OutboundDomainRequestsMessagingConfig.class,
+        OutboundLoggingRequestsMessagingConfig.class })
+public class MessagingConfig extends AbstractConfig {
 
     @Bean
-    public JmsConfiguration requestJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration(JmsConfigurationNames.JMS_MICROGRIDS_REQUESTS);
+    public DefaultJmsConfiguration defaultJmsConfiguration() {
+        return new DefaultJmsConfiguration();
     }
-
-    @Bean(name = "wsMicrogridsOutgoingRequestsJmsTemplate")
-    public JmsTemplate microgridsRequestsJmsTemplate(final JmsConfiguration requestJmsConfiguration) {
-        return requestJmsConfiguration.getJmsTemplate();
-    }
-
-    @Bean(name = "wsMicrogridsOutgoingRequestsMessageSender")
-    public MicrogridsRequestMessageSender microgridsRequestMessageSender() {
-        return new MicrogridsRequestMessageSender();
-    }
-
-    // === JMS SETTINGS: Microgrids RESPONSES ===
-
-    @Bean
-    public JmsConfiguration responseJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeReceiveConfiguration(JmsConfigurationNames.JMS_MICROGRIDS_RESPONSES,
-                this.microgridsResponseMessageListener);
-    }
-
-    @Bean(name = "wsMicrogridsResponsesMessageListenerContainer")
-    public DefaultMessageListenerContainer microgridsResponseMessageListenerContainer(
-            final JmsConfiguration responseJmsConfiguration) {
-        return responseJmsConfiguration.getMessageListenerContainer();
-
-    }
-
-    @Bean
-    public MicrogridsResponseMessageListener microgridsResponseMessageListener() {
-        return new MicrogridsResponseMessageListener();
-    }
-
-    @Bean
-    @Qualifier("domainMicrogridsResponseMessageProcessorMap")
-    public MessageProcessorMap microgridsResponseMessageProcessorMap() {
-        return new BaseMessageProcessorMap("domainResponseMessageProcessorMap");
-    }
-
-    // === JMS SETTINGS: MICROGRIDS LOGGING ===
-
-    @Bean
-    public JmsConfiguration loggingJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration(JmsConfigurationNames.JMS_MICROGRIDS_LOGGING);
-    }
-
-    @Bean
-    public JmsTemplate loggingJmsTemplate(final JmsConfiguration loggingJmsConfiguration) {
-        return loggingJmsConfiguration.getJmsTemplate();
-    }
-
-    @Bean
-    public LoggingMessageSender loggingMessageSender() {
-        return new LoggingMessageSender();
-    }
-
 }

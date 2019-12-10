@@ -17,7 +17,6 @@ import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.NotificationResponseMessageSender;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,9 +38,8 @@ public class SetDataRequestMessageProcessor extends BaseNotificationMessageProce
     private AdHocManagementService adHocManagementService;
 
     @Autowired
-    public SetDataRequestMessageProcessor(
-            final NotificationResponseMessageSender responseMessageSender,
-            @Qualifier("domainMicrogridsWebServiceRequestMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
+    public SetDataRequestMessageProcessor(final NotificationResponseMessageSender responseMessageSender,
+            @Qualifier("domainMicrogridsInboundWebServiceRequestsMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.SET_DATA);
     }
 
