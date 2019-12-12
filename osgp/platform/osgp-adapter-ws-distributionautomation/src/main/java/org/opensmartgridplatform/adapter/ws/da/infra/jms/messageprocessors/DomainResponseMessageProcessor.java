@@ -28,12 +28,9 @@ import org.springframework.stereotype.Component;
 /**
  * Class to process incoming domain responses.
  */
-@Component
+@Component(value = "wsDistributionAutomationInboundDomainResponsesMessageProcessor")
 public class DomainResponseMessageProcessor implements MessageProcessor {
 
-    /**
-     * Logger for this class.
-     */
     private static final Logger LOGGER = LoggerFactory.getLogger(DomainResponseMessageProcessor.class);
 
     @Autowired
@@ -44,10 +41,6 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
 
     @Autowired
     private ResponseDataService responseDataService;
-
-    public DomainResponseMessageProcessor() {
-        // Default constructor.
-    }
 
     @Override
     public void processMessage(final ObjectMessage message) {
@@ -70,7 +63,7 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
 
             messageType = message.getJMSType();
-            this.validateMessageType(messageType);
+            validateMessageType(messageType);
 
             resultType = ResponseMessageResultType.valueOf(message.getStringProperty(Constants.RESULT));
             resultDescription = message.getStringProperty(Constants.DESCRIPTION);
@@ -81,12 +74,12 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
             dataObject = message.getObject();
         } catch (final IllegalArgumentException e) {
             LOGGER.error("UNRECOVERABLE ERROR, received messageType {} is unknown.", messageType, e);
-            this.logDebugInformation(messageType, correlationUid, organisationIdentification, deviceIdentification);
+            logDebugInformation(messageType, correlationUid, organisationIdentification, deviceIdentification);
 
             return;
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
-            this.logDebugInformation(messageType, correlationUid, organisationIdentification, deviceIdentification);
+            logDebugInformation(messageType, correlationUid, organisationIdentification, deviceIdentification);
 
             return;
         }
@@ -103,14 +96,15 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
                     resultType.name(), correlationUid, notificationMessage, notificationType);
 
         } catch (final RuntimeException e) {
-            this.handleError(e, correlationUid, notificationType);
+            handleError(e, correlationUid, notificationType);
         }
     }
 
     private void handleMessage(final CorrelationIds ids, final String messageType,
             final ResponseMessageResultType resultType, final String resultDescription, final Serializable dataObject) {
 
-        final short numberOfNotificationsSent = 0;
+        final short NUMBER_OF_NOTIFICATIONS_SENT = 0;
+
         Serializable meterResponseObject;
         if (dataObject == null) {
             meterResponseObject = resultDescription;
@@ -119,7 +113,7 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
         }
 
         final ResponseData responseData = new ResponseData(ids, messageType, resultType, meterResponseObject,
-                numberOfNotificationsSent);
+                NUMBER_OF_NOTIFICATIONS_SENT);
         this.responseDataService.enqueue(responseData);
     }
 
@@ -134,7 +128,7 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
      * @param notificationType
      *            The message type.
      */
-    private void handleError(final RuntimeException e, final String correlationUid,
+    private static void handleError(final RuntimeException e, final String correlationUid,
             final NotificationType notificationType) {
 
         LOGGER.warn("Error '{}' occurred while trying to send notification type: {} with correlationUid: {}",
@@ -149,12 +143,12 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
      * @throws IllegalArgumentException,
      *             when no NotificationType is found for the given messageType.
      */
-    private void validateMessageType(final String messageType) {
+    private static void validateMessageType(final String messageType) {
         final NotificationType notificationType = NotificationType.valueOf(messageType);
         LOGGER.debug("Received message has known notification type: \"{}\"", notificationType);
     }
 
-    private void logDebugInformation(final String messageType, final String correlationUid,
+    private static void logDebugInformation(final String messageType, final String correlationUid,
             final String organisationIdentification, final String deviceIdentification) {
         LOGGER.debug("messageType: {}", messageType);
         LOGGER.debug("CorrelationUid: {}", correlationUid);

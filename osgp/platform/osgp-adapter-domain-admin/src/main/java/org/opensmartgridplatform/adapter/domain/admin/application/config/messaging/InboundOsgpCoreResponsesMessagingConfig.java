@@ -7,10 +7,10 @@
  */
 package org.opensmartgridplatform.adapter.domain.admin.application.config.messaging;
 
+import javax.jms.ConnectionFactory;
+import javax.jms.MessageListener;
 import javax.net.ssl.SSLException;
 
-import org.apache.activemq.pool.PooledConnectionFactory;
-import org.opensmartgridplatform.adapter.domain.admin.infra.jms.core.OsgpCoreResponseMessageListener;
 import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationNames;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfiguration;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfigurationFactory;
@@ -40,21 +40,20 @@ public class InboundOsgpCoreResponsesMessagingConfig {
                 JmsConfigurationNames.JMS_INCOMING_OSGP_CORE_RESPONSES);
     }
 
-    @Bean(destroyMethod = "stop", name = "domainAdminIncomingOsgpCoreResponsesPooledConnectionFactory")
-    public PooledConnectionFactory incomingOsgpCoreResponsesPooledConnectionFactory() {
-        LOGGER.info("Initializing pooled connection factory for incoming OSGP core responses.");
+    @Bean(destroyMethod = "stop", name = "domainAdminInboundOsgpCoreResponsesConnectionFactory")
+    public ConnectionFactory connectionFactory() {
+        LOGGER.info("Initializing domainAdminInboundOsgpCoreResponsesConnectionFactory bean.");
         return this.jmsConfigurationFactory.getPooledConnectionFactory();
     }
 
-    @Bean(name = "domainAdminIncomingOsgpCoreResponsesMessageListenerContainer")
-    public DefaultMessageListenerContainer incomingOsgpCoreResponsesMessageListenerContainer(
-            @Qualifier("domainAdminIncomingOsgpCoreResponseMessageListener") final OsgpCoreResponseMessageListener incomingOsgpCoreResponseMessageListener) {
-        return this.jmsConfigurationFactory.initMessageListenerContainer(incomingOsgpCoreResponseMessageListener);
+    @Bean(name = "domainAdminInboundOsgpCoreResponsesMessageListenerContainer")
+    public DefaultMessageListenerContainer messageListenerContainer(
+            @Qualifier("domainAdminInboundOsgpCoreResponsesMessageListener") final MessageListener messageListener) {
+        return this.jmsConfigurationFactory.initMessageListenerContainer(messageListener);
     }
 
-    @Bean
-    @Qualifier("domainAdminOsgpCoreResponseMessageProcessorMap")
-    public MessageProcessorMap incomingOsgpCoreResponseMessageProcessorMap() {
-        return new BaseMessageProcessorMap("OsgpCoreResponseMessageProcessorMap");
+    @Bean("domainAdminInboundOsgpCoreResponsesMessageProcessorMap")
+    public MessageProcessorMap messageProcessorMap() {
+        return new BaseMessageProcessorMap("domainAdminInboundOsgpCoreResponsesMessageProcessorMap");
     }
 }

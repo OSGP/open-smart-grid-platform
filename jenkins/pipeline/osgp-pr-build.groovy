@@ -39,7 +39,7 @@ pipeline {
         stage ('Maven Build') {
             steps {
                 withMaven(
-                        maven: 'Apache Maven 3.5.0',
+                        maven: 'Apache Maven 3.6.2',
                         mavenLocalRepo: '.repository',
                         options: [
                                 artifactsPublisher(disabled: true),
@@ -89,7 +89,7 @@ pipeline {
             steps {
                 withSonarQubeEnv('SonarQube local') {
                     withMaven(
-                        maven: 'Apache Maven 3.5.0',
+                        maven: 'Apache Maven 3.6.2',
                         mavenLocalRepo: '.repository',
                         options: [
                                 artifactsPublisher(disabled: true),
@@ -157,7 +157,7 @@ echo Found cucumber tags: [$EXTRACTED_TAGS]'''
         stage ('Collect Coverage') {
             steps {
                 withMaven(
-                        maven: 'Apache Maven 3.5.0',
+                        maven: 'Apache Maven 3.6.2',
                         mavenLocalRepo: '.repository',
                         options: [
                                 artifactsPublisher(disabled: true),

@@ -13,9 +13,9 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.da.application.services.AdHocManagementService;
-import org.opensmartgridplatform.shared.infra.jms.BaseNotificationMessageProcessor;
 import org.opensmartgridplatform.dto.da.GetDeviceModelResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.BaseNotificationMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -43,9 +43,8 @@ public class GetDeviceModelResponseMessageProcessor extends BaseNotificationMess
     private AdHocManagementService adHocManagementService;
 
     @Autowired
-    protected GetDeviceModelResponseMessageProcessor(
-            final NotificationResponseMessageSender responseMessageSender,
-            @Qualifier("domainDistributionAutomationOsgpCoreResponseMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
+    protected GetDeviceModelResponseMessageProcessor(final NotificationResponseMessageSender responseMessageSender,
+            @Qualifier("domainDistributionAutomationInboundOsgpCoreResponsesMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.GET_DEVICE_MODEL);
     }
 

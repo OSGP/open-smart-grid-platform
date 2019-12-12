@@ -37,19 +37,20 @@ import org.springframework.jms.support.JmsUtils;
  * construction. The Singleton instance is added to the HashMap of
  * MessageProcessors after dependency injection has completed.
  */
-public abstract class BaseMessageProcessor implements MessageProcessor {
+public abstract class AbstractMessageProcessor implements MessageProcessor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(BaseMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractMessageProcessor.class);
 
     @Autowired
     private int maxRedeliveriesForIec60870Requests;
 
     @Autowired
+    @Qualifier("protocolIec60870OutboundOsgpCoreResponsesMessageSender")
     private ResponseMessageSender responseMessageSender;
 
     @Autowired
-    @Qualifier("iec60870RequestMessageProcessorMap")
-    private MessageProcessorMap iec60870RequestMessageProcessorMap;
+    @Qualifier("protocolIec60870InboundOsgpCoreRequestsMessageProcessorMap")
+    private MessageProcessorMap messageProcessorMap;
 
     @Autowired
     private ClientConnectionService iec60870DeviceConnectionService;
@@ -66,7 +67,7 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
      *            The MessageType the MessageProcessor implementation can
      *            process.
      */
-    protected BaseMessageProcessor(final MessageType messageType) {
+    protected AbstractMessageProcessor(final MessageType messageType) {
         this.messageType = messageType;
     }
 
@@ -84,7 +85,7 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
      */
     @PostConstruct
     public void init() {
-        this.iec60870RequestMessageProcessorMap.addMessageProcessor(this.messageType, this);
+        this.messageProcessorMap.addMessageProcessor(this.messageType, this);
     }
 
     @Override
@@ -94,7 +95,8 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
         MessageMetadata messageMetadata = null;
         try {
             messageMetadata = MessageMetadata.fromMessage(message);
-            final RequestMetadata requestMetadata = RequestMetadata.newBuilder().messageMetadata(messageMetadata)
+            final RequestMetadata requestMetadata = RequestMetadata.newBuilder()
+                    .messageMetadata(messageMetadata)
                     .build();
             final ClientConnection deviceConnection = this.iec60870DeviceConnectionService
                     .getConnection(requestMetadata);
@@ -120,9 +122,13 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(messageMetadata);
 
         final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage.Builder()
-                .domain(messageMetadata.getDomain()).domainVersion(messageMetadata.getDomainVersion())
-                .deviceMessageMetadata(deviceMessageMetadata).result(ResponseMessageResultType.NOT_OK).osgpException(e)
-                .retryCount(messageMetadata.getRetryCount()).build();
+                .domain(messageMetadata.getDomain())
+                .domainVersion(messageMetadata.getDomainVersion())
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .result(ResponseMessageResultType.NOT_OK)
+                .osgpException(e)
+                .retryCount(messageMetadata.getRetryCount())
+                .build();
 
         if (this.hasRemainingRedeliveries(messageMetadata)) {
             this.redeliverMessage(messageMetadata, e);

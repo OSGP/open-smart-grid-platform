@@ -11,24 +11,22 @@ import java.util.Date;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
+import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
-import javax.jms.Session;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.listener.SessionAwareMessageListener;
-import org.springframework.stereotype.Component;
 
 import org.opensmartgridplatform.logging.domain.entities.MethodResult;
 import org.opensmartgridplatform.logging.domain.entities.WebServiceMonitorLogItem;
 import org.opensmartgridplatform.logging.domain.repositories.WebServiceMonitorLogRepository;
-import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 // Fetch incoming log messages from the logging requests queue.
-@Component
-public class LoggingMessageListener implements SessionAwareMessageListener<Message> {
+@Component(value = "OsgpLoggingInboundLoggingRequestsMessageListener")
+public class LoggingMessageListener implements MessageListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LoggingMessageListener.class);
 
@@ -40,15 +38,15 @@ public class LoggingMessageListener implements SessionAwareMessageListener<Messa
     }
 
     @Override
-    public void onMessage(final Message message, final Session session) throws JMSException {
+    public void onMessage(final Message message) {
         try {
             LOGGER.info("Received logging message");
             final ObjectMessage objectMessage = (ObjectMessage) message;
 
             // Create a log item.
             final Date timestamp = new Date(objectMessage.getLongProperty(Constants.TIME_STAMP));
-            final String organisationIdentification =
-                    objectMessage.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
+            final String organisationIdentification = objectMessage
+                    .getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             final String deviceIdentification = objectMessage.getStringProperty(Constants.DEVICE_IDENTIFICATION);
             final String correlationUid = objectMessage.getJMSCorrelationID();
             final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification,
@@ -65,7 +63,7 @@ public class LoggingMessageListener implements SessionAwareMessageListener<Messa
         }
     }
 
-    private MethodResult methodResultFor(final ObjectMessage objectMessage) throws JMSException {
+    private static MethodResult methodResultFor(final ObjectMessage objectMessage) throws JMSException {
         return new MethodResult(objectMessage.getStringProperty(Constants.APPLICATION_NAME),
                 objectMessage.getStringProperty(Constants.CLASS_NAME),
                 objectMessage.getStringProperty(Constants.METHOD_NAME),
