@@ -18,7 +18,7 @@
       </ConnectedAP>
     </SubNetwork>
   </Communication>
-  <IED name="Transformer" type="Transformer application" manufacturer="CGI" configVersion="0.1.0" engRight="full" owner="">
+  <IED name="Transformer" type="Transformer application" manufacturer="OSGP" configVersion="0.1.0" engRight="full" owner="">
     <Services nameLength="64">
       <ClientServices bufReport="true" unbufReport="true" sv="true" />
       <DynAssociation />
