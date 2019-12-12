@@ -43,6 +43,7 @@ import org.opensmartgridplatform.simulator.protocol.iec61850.server.logicaldevic
 import org.opensmartgridplatform.simulator.protocol.iec61850.server.logicaldevices.Pv;
 import org.opensmartgridplatform.simulator.protocol.iec61850.server.logicaldevices.Rtu;
 import org.opensmartgridplatform.simulator.protocol.iec61850.server.logicaldevices.SwitchDevice;
+import org.opensmartgridplatform.simulator.protocol.iec61850.server.logicaldevices.Transformer;
 import org.opensmartgridplatform.simulator.protocol.iec61850.server.logicaldevices.Wind;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -137,6 +138,7 @@ public class RtuSimulator implements ServerEventListener {
 
     private void addLogicalDevices(final ServerModel serverModel) {
         this.addRtuDevices(serverModel);
+        this.addTransformerDevices(serverModel);
         this.addPvDevices(serverModel);
         this.addBatteryDevices(serverModel);
         this.addEngineDevices(serverModel);
@@ -159,6 +161,19 @@ public class RtuSimulator implements ServerEventListener {
         ModelNode rtuNode = serverModel.getChild(this.getDeviceName() + logicalDeviceName);
         while (rtuNode != null) {
             this.logicalDevices.add(new Rtu(this.getDeviceName(), logicalDeviceName, serverModel));
+            i += 1;
+            logicalDeviceName = rtuPrefix + i;
+            rtuNode = serverModel.getChild(this.getDeviceName() + logicalDeviceName);
+        }
+    }
+
+    private void addTransformerDevices(final ServerModel serverModel) {
+        final String rtuPrefix = "TFR";
+        int i = 1;
+        String logicalDeviceName = rtuPrefix + i;
+        ModelNode rtuNode = serverModel.getChild(this.getDeviceName() + logicalDeviceName);
+        while (rtuNode != null) {
+            this.logicalDevices.add(new Transformer(this.getDeviceName(), logicalDeviceName, serverModel));
             i += 1;
             logicalDeviceName = rtuPrefix + i;
             rtuNode = serverModel.getChild(this.getDeviceName() + logicalDeviceName);
