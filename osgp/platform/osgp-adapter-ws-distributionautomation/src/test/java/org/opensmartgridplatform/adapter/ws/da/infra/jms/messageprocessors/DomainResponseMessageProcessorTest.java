@@ -7,9 +7,10 @@
  */
 package org.opensmartgridplatform.adapter.ws.da.infra.jms.messageprocessors;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -22,7 +23,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.notification.NotificationType;
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
 import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataService;
@@ -38,7 +39,7 @@ public class DomainResponseMessageProcessorTest {
     private ResponseDataService responseDataService;
 
     @InjectMocks
-    private DomainResponseMessageProcessor responseMessageProcessor = new DomainResponseMessageProcessor();
+    private final DomainResponseMessageProcessor responseMessageProcessor = new DomainResponseMessageProcessor();
 
     @Test
     public void testProcessGetHealthStatusResponseOkMessage() throws JMSException {
@@ -109,8 +110,8 @@ public class DomainResponseMessageProcessorTest {
 
         // Assert
         // Verify a notification was sent
-        verify(this.notificationService).sendNotification(anyString(), anyString(), eq(result), anyString(),
-                anyString(), eq(NotificationType.valueOf(notificationName)));
+        verify(this.notificationService).sendNotification(nullable(String.class), nullable(String.class), eq(result),
+                nullable(String.class), nullable(String.class), eq(NotificationType.valueOf(notificationName)));
 
         // Verify a response was enqueued for storage
         verify(this.responseDataService).enqueue(any());
