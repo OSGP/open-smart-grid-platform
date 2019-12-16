@@ -106,7 +106,7 @@
     <guava.version>18.0</guava.version>
     <pmd.version>4.3</pmd.version>
     <jacoco.version>0.7.9</jacoco.version>
-    <selenium.java.version>3.4.0</selenium.java.version>
+    <selenium.java.version>3.11.0</selenium.java.version>
     <SunriseSunsetCalculator.version>1.1</SunriseSunsetCalculator.version>
     <ant.junit.version>1.10.1</ant.junit.version>
     <args4j.version>2.33</args4j.version>
@@ -827,107 +827,4 @@
 
     </dependencies>
   </dependencyManagement>
-
-  <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>external.atlassian.jgitflow</groupId>
-          <artifactId>jgitflow-maven-plugin</artifactId>
-          <version>1.0-m5.1</version>
-          <configuration>
-            <pushFeatures>true</pushFeatures>
-            <pushHotfixes>true</pushHotfixes>
-            <pushReleases>true</pushReleases>
-            <enableSshAgent>true</enableSshAgent>
-            <flowInitContext>
-              <masterBranchName>master</masterBranchName>
-              <developBranchName>development</developBranchName>
-              <featureBranchPrefix>feature-</featureBranchPrefix>
-              <releaseBranchPrefix>release-</releaseBranchPrefix>
-              <hotfixBranchPrefix>hotfix-</hotfixBranchPrefix>
-              <versionTagPrefix>${project.artifactId}-</versionTagPrefix>
-            </flowInitContext>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>${maven.compiler.plugin.version}</version>
-        </plugin>
-
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-project-info-reports-plugin</artifactId>
-          <version>${maven.project.info.reports.plugin.version}</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-jxr-plugin</artifactId>
-          <version>${jxr.version}</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-site-plugin</artifactId>
-          <version>${maven.site.plugin}</version>
-        </plugin>
-
-        <plugin>
-          <groupId>com.mycila</groupId>
-          <artifactId>license-maven-plugin</artifactId>
-          <version>${license.maven.plugin}</version>
-          <configuration>
-            <header>${license.maven.plugin.location}</header>
-            <properties>
-              <owner>Mycila</owner>
-              <email>mathieu.carbou@gmail.com</email>
-            </properties>
-            <excludes>
-              <exclude>**/README.md</exclude>
-              <exclude>src/test/resources/**</exclude>
-              <exclude>src/main/resources/**</exclude>
-            </excludes>
-          </configuration>
-          <executions>
-            <execution>
-              <goals>
-                <goal>check</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <fork>true</fork>
-          <source>1.8</source>
-          <target>1.8</target>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-
-  <reporting>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>${maven.project.info.reports.plugin.version}</version>
-        <configuration>
-          <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
-          <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jxr-plugin</artifactId>
-        <version>${jxr.version}</version>
-      </plugin>
-    </plugins>
-  </reporting>
 </project>
