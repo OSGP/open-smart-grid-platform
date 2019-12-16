@@ -15,10 +15,9 @@ import org.opensmartgridplatform.adapter.ws.microgrids.infra.jms.MicrogridsReque
 import org.opensmartgridplatform.adapter.ws.microgrids.infra.jms.MicrogridsRequestMessageSender;
 import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataService;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
-import org.opensmartgridplatform.domain.core.exceptions.ArgumentNullOrEmptyException;
-import org.opensmartgridplatform.shared.validation.Identification;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.entities.RtuDevice;
+import org.opensmartgridplatform.domain.core.exceptions.ArgumentNullOrEmptyException;
+import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.microgrids.valueobjects.EmptyResponse;
 import org.opensmartgridplatform.domain.microgrids.valueobjects.GetDataRequest;
 import org.opensmartgridplatform.domain.microgrids.valueobjects.GetDataResponse;
@@ -29,6 +28,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.opensmartgridplatform.shared.validation.Identification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,7 +75,7 @@ public class MicrogridsService {
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_DATA);
 
         final MicrogridsRequestMessage message = new MicrogridsRequestMessage(MessageType.GET_DATA, correlationUid,
-                organisationIdentification, deviceIdentification, dataRequest, null);
+                organisationIdentification, deviceIdentification, dataRequest);
 
         try {
             this.requestMessageSender.send(message);
@@ -126,7 +126,7 @@ public class MicrogridsService {
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_DATA);
 
         final MicrogridsRequestMessage message = new MicrogridsRequestMessage(MessageType.SET_DATA, correlationUid,
-                organisationIdentification, deviceIdentification, setDataRequest, null);
+                organisationIdentification, deviceIdentification, setDataRequest);
 
         try {
             this.requestMessageSender.send(message);

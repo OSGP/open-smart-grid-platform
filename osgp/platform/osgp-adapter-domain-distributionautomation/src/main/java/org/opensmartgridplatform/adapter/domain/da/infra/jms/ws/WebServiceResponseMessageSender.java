@@ -9,21 +9,24 @@
  */
 package org.opensmartgridplatform.adapter.domain.da.infra.jms.ws;
 
+import javax.jms.ObjectMessage;
+import javax.jms.Session;
+
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.NotificationResponseMessageSender;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
-
-import javax.jms.ObjectMessage;
+import org.springframework.stereotype.Component;
 
 // Send response message to the web service adapter.
+@Component(value = "domainDistributionAutomationOutboundWebServiceResponsesMessageSender")
 public class WebServiceResponseMessageSender implements NotificationResponseMessageSender {
 
     @Autowired
-    @Qualifier("domainDistributionAutomationOutgoingWebServiceResponsesJmsTemplate")
-    private JmsTemplate webServiceResponsesJmsTemplate;
+    @Qualifier("domainDistributionAutomationOutboundWebServiceResponsesJmsTemplate")
+    private JmsTemplate jmsTemplate;
 
     /**
      * Send a response message to the web service adapter using a custom time to
@@ -37,31 +40,29 @@ public class WebServiceResponseMessageSender implements NotificationResponseMess
     public void send(final ResponseMessage responseMessage, final Long timeToLive, final String messageType) {
 
         // Keep the original time to live from configuration.
-        final Long originalTimeToLive = this.webServiceResponsesJmsTemplate.getTimeToLive();
+        final Long originalTimeToLive = this.jmsTemplate.getTimeToLive();
         if (timeToLive != null) {
             // Set the custom time to live.
-            this.webServiceResponsesJmsTemplate.setTimeToLive(timeToLive);
+            this.jmsTemplate.setTimeToLive(timeToLive);
         }
 
-        this.webServiceResponsesJmsTemplate.send( session -> {
+        this.jmsTemplate.send((final Session session) -> {
             final ObjectMessage objectMessage = session.createObjectMessage(responseMessage);
             objectMessage.setJMSCorrelationID(responseMessage.getCorrelationUid());
             objectMessage.setJMSType(messageType);
             objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
                     responseMessage.getOrganisationIdentification());
-            objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
-                    responseMessage.getDeviceIdentification());
+            objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION, responseMessage.getDeviceIdentification());
             objectMessage.setStringProperty(Constants.RESULT, responseMessage.getResult().toString());
             if (responseMessage.getOsgpException() != null) {
-                objectMessage.setStringProperty(Constants.DESCRIPTION,
-                        responseMessage.getOsgpException().getMessage());
+                objectMessage.setStringProperty(Constants.DESCRIPTION, responseMessage.getOsgpException().getMessage());
             }
             return objectMessage;
-        } );
+        });
 
         if (timeToLive != null) {
             // Restore the time to live from the configuration.
-            this.webServiceResponsesJmsTemplate.setTimeToLive(originalTimeToLive);
+            this.jmsTemplate.setTimeToLive(originalTimeToLive);
         }
     }
 

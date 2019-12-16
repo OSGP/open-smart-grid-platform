@@ -14,7 +14,7 @@ import org.openmuc.j60870.IeQualifierOfInterrogation;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnection;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.LogItem;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.RequestMetadata;
-import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.BaseMessageProcessor;
+import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.AbstractMessageProcessor;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.ProtocolAdapterException;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -26,7 +26,7 @@ import org.springframework.stereotype.Component;
  * Class for processing get health status requests.
  */
 @Component
-public class GetHealthStatusRequestMessageProcessor extends BaseMessageProcessor {
+public class GetHealthStatusRequestMessageProcessor extends AbstractMessageProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetHealthStatusRequestMessageProcessor.class);
 

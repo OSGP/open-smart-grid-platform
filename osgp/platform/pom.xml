@@ -8,12 +8,12 @@
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>platform</artifactId>
-  <version>4.37.0-SNAPSHOT</version>
+  <version>4.39.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <properties>
@@ -83,6 +83,7 @@
         <version>${maven.site.plugin}</version>
       </plugin>
     </plugins>
+
   </build>
 
   <modules>
@@ -129,4 +130,5 @@
     <module>osgp-logging</module>
     <module>osgp-core</module>
   </modules>
+
 </project>

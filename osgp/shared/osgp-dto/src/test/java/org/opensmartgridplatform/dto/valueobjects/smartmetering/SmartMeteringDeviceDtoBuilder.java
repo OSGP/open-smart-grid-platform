@@ -22,7 +22,8 @@ public class SmartMeteringDeviceDtoBuilder {
         dto.setDeliveryDate(new DateBuilder().build());
         dto.setDeviceIdentification("deviceIdentification" + counter);
         dto.setDeviceType("deviceType" + counter);
-        dto.setDSMRVersion("dsmrVersion" + counter);
+        dto.setProtocolName("protocolName" + counter);
+        dto.setProtocolVersion("protocolVersion" + counter);
         dto.setGlobalEncryptionUnicastKey(("globalEncryptionUnicastKey" + counter).getBytes());
         dto.setHLS3Active(true);
         dto.setHLS4Active(true);

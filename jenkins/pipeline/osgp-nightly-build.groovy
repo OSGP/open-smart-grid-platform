@@ -23,7 +23,7 @@ pipeline {
         stage('Maven Build') {
             steps {
                 withMaven(
-                        maven: 'Apache Maven 3.5.0',
+                        maven: 'Apache Maven 3.6.2',
                         mavenLocalRepo: '.repository',
                         options: [
                                 artifactsPublisher(disabled: true),
@@ -62,7 +62,7 @@ pipeline {
         stage ('Collect Coverage') {
             steps {
                 withMaven(
-                        maven: 'Apache Maven 3.5.0',
+                        maven: 'Apache Maven 3.6.2',
                         mavenLocalRepo: '.repository',
                         options: [
                                 artifactsPublisher(disabled: true),
@@ -91,7 +91,12 @@ pipeline {
             build job: 'Destroy an AWS System', parameters: [string(name: 'SERVERNAME', value: servername), string(name: 'PLAYBOOK', value: playbook)]            
         }
         failure {
-            step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: 'kevin.smeets@cgi.com,ruud.lemmers@cgi.com,sander.van.der.heijden@cgi.com', sendToIndividuals: false])
+            emailext (
+                subject: '${DEFAULT_SUBJECT}',
+                body: '${DEFAULT_CONTENT}',
+                recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
+                to: '${DEFAULT_RECIPIENTS}',
+                from: '${DEFAULT_REPLYTO}')
         }
         cleanup {
             // Delete workspace folder.

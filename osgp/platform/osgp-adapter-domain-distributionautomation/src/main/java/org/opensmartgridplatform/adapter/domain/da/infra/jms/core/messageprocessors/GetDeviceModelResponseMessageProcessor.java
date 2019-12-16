@@ -45,7 +45,7 @@ public class GetDeviceModelResponseMessageProcessor extends BaseNotificationMess
 
     @Autowired
     protected GetDeviceModelResponseMessageProcessor(final NotificationResponseMessageSender responseMessageSender,
-            @Qualifier("domainDistributionAutomationOsgpCoreResponseMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainDistributionAutomationInboundOsgpCoreResponsesMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.GET_DEVICE_MODEL);
     }
 

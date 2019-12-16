@@ -32,7 +32,7 @@ public class GetAssociationLnObjectsResponseMessageProcessor extends OsgpCoreRes
     @Autowired
     public GetAssociationLnObjectsResponseMessageProcessor(
             WebServiceResponseMessageSender responseMessageSender,
-            @Qualifier("domainSmartMeteringOsgpCoreResponseMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.GET_ASSOCIATION_LN_OBJECTS,
                 ComponentType.DOMAIN_SMART_METERING);
     }

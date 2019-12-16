@@ -61,7 +61,7 @@ import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateD
 import org.opensmartgridplatform.adapter.ws.schema.core.notification.NotificationType;
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
-import org.opensmartgridplatform.domain.core.entities.ScheduledTask;
+import org.opensmartgridplatform.domain.core.entities.ScheduledTaskWithoutData;
 import org.opensmartgridplatform.domain.core.exceptions.ValidationException;
 import org.opensmartgridplatform.domain.core.valueobjects.CdmaSettings;
 import org.opensmartgridplatform.domain.core.valueobjects.Certification;
@@ -156,8 +156,9 @@ public class DeviceManagementEndpoint {
         try {
             final List<Organisation> organisations = this.deviceManagementService
                     .findAllOrganisations(organisationIdentification);
-            response.getOrganisations().addAll(this.deviceManagementMapper.mapAsList(organisations,
-                    org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Organisation.class));
+            response.getOrganisations()
+                    .addAll(this.deviceManagementMapper.mapAsList(organisations,
+                            org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Organisation.class));
         } catch (final ConstraintViolationException e) {
             LOGGER.error(EXCEPTION, e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
@@ -335,7 +336,7 @@ public class DeviceManagementEndpoint {
         final FindScheduledTasksResponse response = new FindScheduledTasksResponse();
 
         try {
-            List<ScheduledTask> scheduledTasks;
+            List<ScheduledTaskWithoutData> scheduledTasks;
             if (request.getDeviceIdentification() == null) {
                 scheduledTasks = this.deviceManagementService.findScheduledTasks(organisationIdentification);
             } else {
@@ -343,8 +344,9 @@ public class DeviceManagementEndpoint {
                         request.getDeviceIdentification());
             }
 
-            response.getScheduledTask().addAll(this.deviceManagementMapper.mapAsList(scheduledTasks,
-                    org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.ScheduledTask.class));
+            response.getScheduledTask()
+                    .addAll(this.deviceManagementMapper.mapAsList(scheduledTasks,
+                            org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.ScheduledTask.class));
         } catch (final ConstraintViolationException e) {
             LOGGER.error("Exception find Scheduled tasks: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,

@@ -10,9 +10,10 @@ package org.opensmartgridplatform.adapter.protocol.oslp.elster.application.confi
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
-import org.springframework.web.WebApplicationInitializer;
-
+import org.jboss.netty.logging.InternalLoggerFactory;
+import org.jboss.netty.logging.Slf4JLoggerFactory;
 import org.opensmartgridplatform.shared.application.config.AbstractApplicationInitializer;
+import org.springframework.web.WebApplicationInitializer;
 
 /**
  * Web application Java configuration class.
@@ -22,6 +23,7 @@ public class OsgpProtocolAdapterOslpInitializer extends AbstractApplicationIniti
 
     public OsgpProtocolAdapterOslpInitializer() {
         super(ApplicationContext.class, "java:comp/env/osgp/AdapterProtocolOslpElster/log-config");
+        InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
     }
 
     @Override

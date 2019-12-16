@@ -27,10 +27,6 @@ import org.openmuc.openiec61850.ServerEventListener;
 import org.openmuc.openiec61850.ServerModel;
 import org.openmuc.openiec61850.ServerSap;
 import org.openmuc.openiec61850.ServiceError;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Scheduled;
-
 import org.opensmartgridplatform.simulator.protocol.iec61850.server.eventproducers.ServerSapEventProducer;
 import org.opensmartgridplatform.simulator.protocol.iec61850.server.logicaldevices.Battery;
 import org.opensmartgridplatform.simulator.protocol.iec61850.server.logicaldevices.Boiler;
@@ -46,7 +42,11 @@ import org.opensmartgridplatform.simulator.protocol.iec61850.server.logicaldevic
 import org.opensmartgridplatform.simulator.protocol.iec61850.server.logicaldevices.Pq;
 import org.opensmartgridplatform.simulator.protocol.iec61850.server.logicaldevices.Pv;
 import org.opensmartgridplatform.simulator.protocol.iec61850.server.logicaldevices.Rtu;
+import org.opensmartgridplatform.simulator.protocol.iec61850.server.logicaldevices.SwitchDevice;
 import org.opensmartgridplatform.simulator.protocol.iec61850.server.logicaldevices.Wind;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
 
 public class RtuSimulator implements ServerEventListener {
 
@@ -149,6 +149,7 @@ public class RtuSimulator implements ServerEventListener {
         this.addWindDevices(serverModel);
         this.addLightMeasurementDevice(serverModel);
         this.addPqDevices(serverModel);
+        this.addSwitchDevices(serverModel);
     }
 
     private void addRtuDevices(final ServerModel serverModel) {
@@ -305,6 +306,16 @@ public class RtuSimulator implements ServerEventListener {
         }
     }
 
+    private void addSwitchDevices(final ServerModel serverModel) {
+        final String logicalDeviceName = "IO";
+        final ModelNode switchDevice = serverModel.getChild(this.getDeviceName() + logicalDeviceName);
+
+        if (switchDevice != null) {
+            LOGGER.info("Adding switchDevice " + this.getDeviceName());
+            this.logicalDevices.add(new SwitchDevice(this.getDeviceName(), logicalDeviceName, serverModel));
+        }
+    }
+
     private void addPqDevices(final ServerModel serverModel) {
         final String pqPrefix = "PQ";
         int i = 1;
@@ -386,18 +397,21 @@ public class RtuSimulator implements ServerEventListener {
         // Get a new model copy to see values that have been set on the server.
         logicalDevice.refreshServerModel(this.server.getModelCopy());
         final ModelNode actual = logicalDevice.getBasicDataAttribute(LogicalDeviceNode.fromDescription(node));
+
+        final String onLogicalDevice = "\" on logical device \"";
+
         if (actual == null) {
-            throw new AssertionError("RTU Simulator does not have expected node \"" + node + "\" on logical device \""
+            throw new AssertionError("RTU Simulator does not have expected node \"" + node + onLogicalDevice
                     + logicalDeviceName + "\".");
         }
         if (!(actual instanceof BasicDataAttribute)) {
-            throw new AssertionError("RTU Simulator value has node \"" + node + "\" on logical device \""
-                    + logicalDeviceName + "\", but it is not a BasicDataAttribute: " + actual.getClass().getName());
+            throw new AssertionError("RTU Simulator value has node \"" + node + onLogicalDevice + logicalDeviceName
+                    + "\", but it is not a BasicDataAttribute: " + actual.getClass().getName());
         }
         final BasicDataAttribute expected = this.getCopyWithNewValue((BasicDataAttribute) actual, value);
         if (!BasicDataAttributesHelper.attributesEqual(expected, (BasicDataAttribute) actual)) {
-            throw new AssertionError("RTU Simulator attribute for node \"" + node + "\" on logical device \""
-                    + logicalDeviceName + "\" - expected: [" + expected + "], actual: [" + actual + "]");
+            throw new AssertionError("RTU Simulator attribute for node \"" + node + onLogicalDevice + logicalDeviceName
+                    + "\" - expected: [" + expected + "], actual: [" + actual + "]");
         }
     }
 

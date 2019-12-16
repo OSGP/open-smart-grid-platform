@@ -8,9 +8,6 @@
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.services.commands;
 
 import org.openmuc.openiec61850.Fc;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.Iec61850Client;
@@ -22,10 +19,18 @@ import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.help
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.NodeContainer;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
 import org.opensmartgridplatform.adapter.protocol.iec61850.services.DeviceMessageLoggingService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Iec61850SetEventNotificationFilterCommand {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850SetEventNotificationFilterCommand.class);
+
+    private DeviceMessageLoggingService loggingService;
+
+    public Iec61850SetEventNotificationFilterCommand(final DeviceMessageLoggingService loggingService) {
+        this.loggingService = loggingService;
+    }
 
     public void setEventNotificationFilterOnDevice(final Iec61850Client iec61850Client,
             final DeviceConnection deviceConnection, final String filter) throws ProtocolAdapterException {
@@ -47,8 +52,9 @@ public class Iec61850SetEventNotificationFilterCommand {
                 deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.EVENT_BUFFER, Fc.CF,
                         SubDataAttribute.EVENT_BUFFER_FILTER, filter);
 
-                DeviceMessageLoggingService.logMessage(deviceMessageLog, deviceConnection.getDeviceIdentification(),
-                        deviceConnection.getOrganisationIdentification(), false);
+                Iec61850SetEventNotificationFilterCommand.this.loggingService.logMessage(deviceMessageLog,
+                        deviceConnection.getDeviceIdentification(), deviceConnection.getOrganisationIdentification(),
+                        false);
 
                 return null;
             }

@@ -11,7 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.RetrieveEventsCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.FindEventsCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.SetDeviceLifecycleStatusByChannelCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
@@ -37,7 +37,7 @@ public class ManagementService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ManagementService.class);
 
     @Autowired
-    private RetrieveEventsCommandExecutor retrieveEventsCommandExecutor;
+    private FindEventsCommandExecutor findEventsCommandExecutor;
 
     @Autowired
     private SetDeviceLifecycleStatusByChannelCommandExecutor setDeviceLifecycleStatusByChannelCommandExecutor;
@@ -54,13 +54,13 @@ public class ManagementService {
 
         LOGGER.info("findEvents setting up connection with meter {}", device.getDeviceIdentification());
 
-        for (final FindEventsRequestDto findEventsQuery : findEventsQueryMessageDataContainer
-                .getFindEventsQueryList()) {
+        for (final FindEventsRequestDto findEventsQuery :
+                findEventsQueryMessageDataContainer.getFindEventsQueryList()) {
             LOGGER.info("findEventsQuery.eventLogCategory: {}, findEventsQuery.from: {}, findEventsQuery.until: {}",
                     findEventsQuery.getEventLogCategory().toString(), findEventsQuery.getFrom(),
                     findEventsQuery.getUntil());
 
-            events.addAll(this.retrieveEventsCommandExecutor.execute(conn, device, findEventsQuery));
+            events.addAll(this.findEventsCommandExecutor.execute(conn, device, findEventsQuery));
         }
 
         return new EventMessageDataResponseDto(events);
@@ -95,8 +95,8 @@ public class ManagementService {
             final SetDeviceLifecycleStatusByChannelRequestDataDto setDeviceLifecycleStatusByChannelRequest)
             throws OsgpException {
 
-        return this.setDeviceLifecycleStatusByChannelCommandExecutor
-                .execute(conn, device, setDeviceLifecycleStatusByChannelRequest);
+        return this.setDeviceLifecycleStatusByChannelCommandExecutor.execute(conn, device,
+                setDeviceLifecycleStatusByChannelRequest);
     }
 
 }

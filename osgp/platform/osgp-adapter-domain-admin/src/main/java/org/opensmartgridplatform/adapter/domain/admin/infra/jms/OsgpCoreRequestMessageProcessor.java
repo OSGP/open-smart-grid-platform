@@ -7,14 +7,13 @@
  */
 package org.opensmartgridplatform.adapter.domain.admin.infra.jms;
 
+import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
+import org.opensmartgridplatform.shared.infra.jms.UnknownMessageTypeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
-import org.opensmartgridplatform.shared.infra.jms.UnknownMessageTypeException;
-
-@Component(value = "domainAdminIncomingOsgpCoreRequestMessageProcessor")
+@Component(value = "domainAdminInboundOsgpCoreRequestsMessageProcessor")
 public class OsgpCoreRequestMessageProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OsgpCoreRequestMessageProcessor.class);
@@ -29,8 +28,8 @@ public class OsgpCoreRequestMessageProcessor {
 
         LOGGER.info(
                 "Received request message from OSGP-CORE messageType: {} deviceIdentification: {}, organisationIdentification: {}, correlationUid: {}, className: {}",
-                messageType, deviceIdentification, organisationIdentification, correlationUid, dataObject.getClass()
-                .getCanonicalName());
+                messageType, deviceIdentification, organisationIdentification, correlationUid,
+                dataObject.getClass().getCanonicalName());
 
         throw new UnknownMessageTypeException("Unknown JMSType: " + messageType);
     }

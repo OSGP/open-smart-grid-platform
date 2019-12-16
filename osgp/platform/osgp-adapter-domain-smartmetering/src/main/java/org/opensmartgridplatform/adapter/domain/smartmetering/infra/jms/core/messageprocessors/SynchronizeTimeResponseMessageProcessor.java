@@ -30,16 +30,15 @@ public class SynchronizeTimeResponseMessageProcessor extends OsgpCoreResponseMes
     private AdhocService adhocService;
 
     @Autowired
-    protected SynchronizeTimeResponseMessageProcessor(
-            WebServiceResponseMessageSender responseMessageSender,
-            @Qualifier("domainSmartMeteringOsgpCoreResponseMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+    protected SynchronizeTimeResponseMessageProcessor(WebServiceResponseMessageSender responseMessageSender,
+            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.SYNCHRONIZE_TIME,
                 ComponentType.DOMAIN_SMART_METERING);
     }
 
     @Override
     protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
-        // Only the result is used, no need to check the dataObject.
+        // Only the Result (OK/NOK/Exception) is returned, no need to check the (contents of the dataObject).
         return true;
     }
 

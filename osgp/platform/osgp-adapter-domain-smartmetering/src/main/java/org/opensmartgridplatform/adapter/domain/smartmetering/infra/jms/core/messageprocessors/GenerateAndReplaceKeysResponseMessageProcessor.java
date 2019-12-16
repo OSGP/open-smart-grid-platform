@@ -1,9 +1,10 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.messageprocessors;
 
@@ -27,16 +28,15 @@ public class GenerateAndReplaceKeysResponseMessageProcessor extends OsgpCoreResp
     private ConfigurationService configurationService;
 
     @Autowired
-    protected GenerateAndReplaceKeysResponseMessageProcessor(
-            WebServiceResponseMessageSender responseMessageSender,
-            @Qualifier("domainSmartMeteringOsgpCoreResponseMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+    protected GenerateAndReplaceKeysResponseMessageProcessor(WebServiceResponseMessageSender responseMessageSender,
+            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.GENERATE_AND_REPLACE_KEYS,
                 ComponentType.DOMAIN_SMART_METERING);
     }
 
     @Override
     protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
-        // Only the result is used, no need to check the dataObject.
+        // Only the Result (OK/NOK/Exception) is returned, no need to check the (contents of the dataObject).
         return true;
     }
 
@@ -44,7 +44,7 @@ public class GenerateAndReplaceKeysResponseMessageProcessor extends OsgpCoreResp
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessage responseMessage, final OsgpException osgpException) {
 
-        this.configurationService.handleGenerateAndReplaceKeysResponse(deviceMessageMetadata, responseMessage.getResult(),
-                osgpException);
+        this.configurationService.handleGenerateAndReplaceKeysResponse(deviceMessageMetadata,
+                responseMessage.getResult(), osgpException);
     }
 }

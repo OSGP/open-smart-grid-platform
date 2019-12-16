@@ -107,12 +107,6 @@ public class FirmwareManagementService {
     private String firmwareDirectory;
 
     @Autowired
-    private WritableDeviceFirmwareFileRepository writableDeviceFirmwareRepository;
-
-    @Autowired
-    private WritableDeviceRepository writableDeviceRepository;
-
-    @Autowired
     private boolean firmwareFileStorage;
 
     public String enqueueUpdateFirmwareRequest(@Identification final String organisationIdentification,
@@ -138,7 +132,9 @@ public class FirmwareManagementService {
                 scheduledTime == null ? null : scheduledTime.getMillis());
 
         final CommonRequestMessage message = new CommonRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(firmwareUpdateMessageDataContainer).build();
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .request(firmwareUpdateMessageDataContainer)
+                .build();
 
         this.commonRequestMessageSender.send(message);
 
@@ -169,7 +165,8 @@ public class FirmwareManagementService {
                 organisationIdentification, correlationUid, MessageType.GET_FIRMWARE_VERSION.name(), messagePriority);
 
         final CommonRequestMessage message = new CommonRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).build();
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .build();
 
         this.commonRequestMessageSender.send(message);
 
@@ -578,7 +575,7 @@ public class FirmwareManagementService {
      * Saves a {@link DeviceFirmwareFile} instance.
      */
     @Transactional(value = "writableTransactionManager")
-    public void saveCurrentDeviceFirmwareFile(final DeviceFirmwareFile deviceFirmwareFile) {
+    public void saveDeviceFirmwareFile(final DeviceFirmwareFile deviceFirmwareFile) {
         this.deviceFirmwareFileRepository.save(deviceFirmwareFile);
     }
 
@@ -682,7 +679,7 @@ public class FirmwareManagementService {
                     new UnknownEntityException(FirmwareFile.class, String.valueOf(firmwareIdentification)));
         }
 
-        final List<DeviceFirmwareFile> deviceFirmwares = this.writableDeviceFirmwareRepository
+        final List<DeviceFirmwareFile> deviceFirmwares = this.deviceFirmwareFileRepository
                 .findByFirmwareFile(removedFirmwareFile);
         if (!deviceFirmwares.isEmpty()) {
             LOGGER.info("FirmwareFile is linked to device.");
@@ -709,7 +706,8 @@ public class FirmwareManagementService {
 
         // Only remove the file if no other firmware is using it.
         if (deviceModel.isFileStorage() && this.firmwareFileRepository
-                .findByDeviceModelAndFilename(deviceModel, removedFirmwareFile.getFilename()).size() == 1) {
+                .findByDeviceModelAndFilename(deviceModel, removedFirmwareFile.getFilename())
+                .size() == 1) {
             this.removePhysicalFirmwareFile(this.createFirmwarePath(deviceModel, removedFirmwareFile.getFilename()));
 
         }
@@ -725,9 +723,9 @@ public class FirmwareManagementService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_FIRMWARE);
 
-        final Device device = this.writableDeviceRepository.findByDeviceIdentification(deviceIdentification);
+        final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
 
-        return this.writableDeviceFirmwareRepository.findByDeviceOrderByInstallationDateAsc(device);
+        return this.deviceFirmwareFileRepository.findByDeviceOrderByInstallationDateAsc(device);
     }
 
     public ResponseMessage dequeueGetFirmwareResponse(final String correlationUid) throws OsgpException {
@@ -753,7 +751,9 @@ public class FirmwareManagementService {
                 organisationIdentification, correlationUid, MessageType.SWITCH_FIRMWARE.name(), messagePriority);
 
         final CommonRequestMessage message = new CommonRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(version).build();
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .request(version)
+                .build();
 
         this.commonRequestMessageSender.send(message);
 
@@ -847,8 +847,10 @@ public class FirmwareManagementService {
 
     private File createFirmwarePath(final DeviceModel deviceModel, final String fileName) {
         return new File(this.firmwareDirectory.concat(File.separator)
-                .concat(deviceModel.getManufacturer().getCode().replaceAll(" ", SPACE_REPLACER)).concat(File.separator)
-                .concat(deviceModel.getModelCode().replaceAll(" ", SPACE_REPLACER)).concat(File.separator)
+                .concat(deviceModel.getManufacturer().getCode().replaceAll(" ", SPACE_REPLACER))
+                .concat(File.separator)
+                .concat(deviceModel.getModelCode().replaceAll(" ", SPACE_REPLACER))
+                .concat(File.separator)
                 .concat(fileName));
     }
 
@@ -860,4 +862,5 @@ public class FirmwareManagementService {
         }
         this.firmwareFileRepository.saveAll(firmwareFiles);
     }
+
 }

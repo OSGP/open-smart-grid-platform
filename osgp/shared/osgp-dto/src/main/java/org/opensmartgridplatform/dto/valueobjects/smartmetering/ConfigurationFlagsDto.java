@@ -17,18 +17,18 @@ public class ConfigurationFlagsDto implements Serializable {
 
     private static final long serialVersionUID = 8360475869038077578L;
 
-    private List<ConfigurationFlagDto> configurationFlag;
+    private final List<ConfigurationFlagDto> flags;
 
-    public ConfigurationFlagsDto(final List<ConfigurationFlagDto> configurationFlag) {
-        this.configurationFlag = new ArrayList<>(configurationFlag);
+    public ConfigurationFlagsDto(final List<ConfigurationFlagDto> flags) {
+        this.flags = new ArrayList<>(flags);
     }
 
     @Override
     public String toString() {
-        return this.configurationFlag == null ? "Flags[none]" : String.format("Flags%s", this.configurationFlag);
+        return String.format("Flags %s", this.flags);
     }
 
-    public List<ConfigurationFlagDto> getConfigurationFlag() {
-        return new ArrayList<>(this.configurationFlag);
+    public List<ConfigurationFlagDto> getFlags() {
+        return new ArrayList<>(this.flags);
     }
 }

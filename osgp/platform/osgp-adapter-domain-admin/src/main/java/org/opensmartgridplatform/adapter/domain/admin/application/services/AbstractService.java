@@ -7,13 +7,12 @@
  */
 package org.opensmartgridplatform.adapter.domain.admin.application.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-
 import org.opensmartgridplatform.adapter.domain.admin.infra.jms.core.OsgpCoreRequestMessageSender;
-import org.opensmartgridplatform.adapter.domain.admin.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.domain.core.services.DeviceDomainService;
 import org.opensmartgridplatform.domain.core.services.OrganisationDomainService;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 public class AbstractService {
 
@@ -24,10 +23,10 @@ public class AbstractService {
     protected OrganisationDomainService organisationDomainService;
 
     @Autowired
-    @Qualifier("domainAdminOutgoingOsgpCoreRequestMessageSender")
+    @Qualifier("domainAdminOutboundOsgpCoreRequestsMessageSender")
     protected OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
 
     @Autowired
-    @Qualifier("domainAdminOutgoingWebServiceResponseMessageSender")
-    protected WebServiceResponseMessageSender webServiceResponseMessageSender;
+    @Qualifier("domainAdminOutboundWebServiceResponsesMessageSender")
+    protected ResponseMessageSender webServiceResponseMessageSender;
 }

@@ -35,7 +35,7 @@ public class GetFirmwareVersionResponseMessageProcessor extends OsgpCoreResponse
     @Autowired
     protected GetFirmwareVersionResponseMessageProcessor(
             WebServiceResponseMessageSender responseMessageSender,
-            @Qualifier("domainSmartMeteringOsgpCoreResponseMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.GET_FIRMWARE_VERSION,
                 ComponentType.DOMAIN_SMART_METERING);
     }

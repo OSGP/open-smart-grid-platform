@@ -12,10 +12,10 @@ import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.core.application.services.ConfigurationManagementService;
 import org.opensmartgridplatform.domain.core.valueobjects.Configuration;
-import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
@@ -42,8 +42,8 @@ public class CommonSetConfigurationRequestMessageProcessor extends BaseMessagePr
 
     @Autowired
     public CommonSetConfigurationRequestMessageProcessor(
-            @Qualifier("domainCoreOutgoingWebServiceResponsesMessageSender") ResponseMessageSender responseMessageSender,
-            @Qualifier("domainCoreWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainCoreOutboundWebServiceResponsesMessageSender") final ResponseMessageSender responseMessageSender,
+            @Qualifier("domainCoreInboundWebServiceRequestsMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.SET_CONFIGURATION, ComponentType.DOMAIN_CORE);
     }
 

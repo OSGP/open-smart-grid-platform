@@ -12,28 +12,23 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
-import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
-
 // Fetch incoming messages from the requests queue of web service adapter.
-@Component(value = "domainMicrogridsIncomingWebServiceRequestMessageListener")
+@Component(value = "domainMicrogridsInboundWebServiceRequestsMessageListener")
 public class WebServiceRequestMessageListener implements MessageListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceRequestMessageListener.class);
 
     @Autowired
-    @Qualifier("domainMicrogridsWebServiceRequestMessageProcessorMap")
-    private MessageProcessorMap webServiceRequestMessageProcessorMap;
-
-    public WebServiceRequestMessageListener() {
-        // empty constructor
-    }
+    @Qualifier("domainMicrogridsInboundWebServiceRequestsMessageProcessorMap")
+    private MessageProcessorMap messageProcessorMap;
 
     @Override
     public void onMessage(final Message message) {
@@ -42,8 +37,7 @@ public class WebServiceRequestMessageListener implements MessageListener {
 
             final ObjectMessage objectMessage = (ObjectMessage) message;
 
-            final MessageProcessor processor = this.webServiceRequestMessageProcessorMap
-                    .getMessageProcessor(objectMessage);
+            final MessageProcessor processor = this.messageProcessorMap.getMessageProcessor(objectMessage);
 
             processor.processMessage(objectMessage);
 

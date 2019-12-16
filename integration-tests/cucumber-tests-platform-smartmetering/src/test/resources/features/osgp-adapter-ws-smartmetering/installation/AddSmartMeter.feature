@@ -9,8 +9,9 @@ Feature: SmartMetering Installation - Add smart meter
       | DeviceType            | SMART_METER_E                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
       | CommunicationMethod   | GPRS                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
       | CommunicationProvider | KPN                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-      | ICC_id                |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             1234 |
-      | DSMR_version          | 4.2.2                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+      | ICC_id                | 1234                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+      | protocolName          | DSMR                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+      | protocolVersion       | 4.2.2                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
       | Supplier              | Kaifa                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
       | HLS3_active           | false                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
       | HLS4_active           | false                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
@@ -28,15 +29,16 @@ Feature: SmartMetering Installation - Add smart meter
       | ModelCode        | Test |
     And a request to the device can be performed after activation
     And the stored keys are not equal to the received keys
-
+  @NightlyBuildOnly
   Scenario: Add a new device with incorrectly encrypted keys
     When receiving a smartmetering add device request
       | DeviceIdentification  | TEST1024000000001 |
       | DeviceType            | SMART_METER_E     |
       | CommunicationMethod   | GPRS              |
       | CommunicationProvider | KPN               |
-      | ICC_id                |              1234 |
-      | DSMR_version          | 4.2.2             |
+      | ICC_id                | 1234              |
+      | protocolName          | DSMR              |
+      | protocolVersion       | 4.2.2             |
       | Supplier              | Kaifa             |
       | HLS3_active           | false             |
       | HLS4_active           | false             |
@@ -46,7 +48,7 @@ Feature: SmartMetering Installation - Add smart meter
       | Encryption_key        | abc0123456789def  |
     Then retrieving the AddDevice response results in an exception
     And a SOAP fault should have been returned
-      | Code         |                                                           804 |
+      | Code         | 804                                                           |
       | Message      | DECRYPTION_EXCEPTION                                          |
       | InnerMessage | Unexpected exception during decryption of E_METER_MASTER key. |
     And the dlms device with identification "TEST1024000000001" does not exist

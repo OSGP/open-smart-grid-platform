@@ -90,9 +90,13 @@ public class AdHocManagementService extends BaseService {
         }
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
-                .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(exception)
-                .withDataObject(getDeviceModelResponse).build();
+                .withCorrelationUid(correlationUid)
+                .withOrganisationIdentification(organisationIdentification)
+                .withDeviceIdentification(deviceIdentification)
+                .withResult(result)
+                .withOsgpException(exception)
+                .withDataObject(getDeviceModelResponse)
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage, messageType);
     }
 }

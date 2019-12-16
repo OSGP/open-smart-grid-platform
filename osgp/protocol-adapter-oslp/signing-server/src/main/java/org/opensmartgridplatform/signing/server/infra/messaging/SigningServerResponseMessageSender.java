@@ -14,20 +14,23 @@ import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
 import org.apache.commons.lang3.StringUtils;
+import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
+import org.springframework.stereotype.Component;
 
-import org.opensmartgridplatform.shared.infra.jms.Constants;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
-
+@Component("signingServerOutboundResponsesMessageSender")
 public class SigningServerResponseMessageSender {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SigningServerResponseMessageSender.class);
 
     @Autowired
+    @Qualifier("signingServerOutboundResponsesJmsTemplate")
     private JmsTemplate responsesJmsTemplate;
 
     public void send(final ResponseMessage responseMessage, final String messageType, final Destination replyToQueue) {

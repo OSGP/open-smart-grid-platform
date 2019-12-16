@@ -12,11 +12,11 @@ import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.tariffswitching.application.services.DefaultDeviceResponseService;
 import org.opensmartgridplatform.adapter.domain.tariffswitching.infra.jms.ws.WebServiceResponseMessageSender;
-import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
@@ -45,9 +45,9 @@ public class TariffSwitchingSetScheduleResponseMessageProcessor extends BaseMess
 
     @Autowired
     protected TariffSwitchingSetScheduleResponseMessageProcessor(
-            WebServiceResponseMessageSender webServiceResponseMessageSender,
-            @Qualifier("domainTariffSwitchingOsgpCoreResponseMessageProcessorMap")MessageProcessorMap responseMessageProcessorMap) {
-        super(webServiceResponseMessageSender, responseMessageProcessorMap, MessageType.SET_TARIFF_SCHEDULE,
+            final WebServiceResponseMessageSender webServiceResponseMessageSender,
+            @Qualifier("domainTariffSwitchingInboundOsgpCoreResponsesMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
+        super(webServiceResponseMessageSender, messageProcessorMap, MessageType.SET_TARIFF_SCHEDULE,
                 ComponentType.DOMAIN_TARIFF_SWITCHING);
     }
 

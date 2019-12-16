@@ -12,21 +12,20 @@ import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
+import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Component;
 
-import org.opensmartgridplatform.shared.infra.jms.Constants;
-import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
-
 //Send request message to the requests queue of OSGP Core.
-@Component(value = "domainPublicLightingOutgoingOsgpCoreRequestMessageSender")
+@Component(value = "domainPublicLightingOutboundOsgpCoreRequestsMessageSender")
 public class OsgpCoreRequestMessageSender {
 
     @Autowired
-    @Qualifier("domainPublicLightingOutgoingOsgpCoreRequestsJmsTemplate")
+    @Qualifier("domainPublicLightingOutboundOsgpCoreRequestsJmsTemplate")
     private JmsTemplate osgpCoreRequestsJmsTemplate;
 
     public void send(final RequestMessage requestMessage, final String messageType, final int messagePriority,

@@ -1,9 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services;
 
@@ -150,8 +151,8 @@ public class DeviceManagementService {
                 organisationIdentification, publicKey);
 
         try {
-            OslpDevice oslpDevice = this.oslpDeviceSettingsService
-                    .getDeviceByDeviceIdentification(deviceIdentification);
+            OslpDevice oslpDevice = this.oslpDeviceSettingsService.getDeviceByDeviceIdentification(
+                    deviceIdentification);
             if (oslpDevice == null) {
                 // Device not found, create new device
                 LOGGER.debug("Device [{}] does not exist, creating new device", deviceIdentification);
@@ -184,8 +185,8 @@ public class DeviceManagementService {
                 organisationIdentification);
 
         try {
-            final OslpDevice oslpDevice = this.oslpDeviceSettingsService
-                    .getDeviceByDeviceIdentification(deviceIdentification);
+            final OslpDevice oslpDevice = this.oslpDeviceSettingsService.getDeviceByDeviceIdentification(
+                    deviceIdentification);
             if (oslpDevice == null) {
                 throw new ProtocolAdapterException(String.format("Device not found: %s", deviceIdentification));
             }
@@ -207,9 +208,9 @@ public class DeviceManagementService {
             final OsgpException osgpException, final DeviceResponseMessageSender responseMessageSender) {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(messageMetadata);
-        final ProtocolResponseMessage responseMessage = ProtocolResponseMessage.newBuilder()
-                .domain(messageMetadata.getDomain()).domainVersion(messageMetadata.getDomainVersion())
-                .deviceMessageMetadata(deviceMessageMetadata).result(result).osgpException(osgpException).build();
+        final ProtocolResponseMessage responseMessage = ProtocolResponseMessage.newBuilder().domain(
+                messageMetadata.getDomain()).domainVersion(messageMetadata.getDomainVersion()).deviceMessageMetadata(
+                deviceMessageMetadata).result(result).osgpException(osgpException).build();
 
         responseMessageSender.send(responseMessage);
     }

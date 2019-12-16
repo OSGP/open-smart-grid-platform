@@ -1,7 +1,6 @@
-@SmartMetering @Platform
+@SmartMetering @Platform @NightlyBuildOnly
 Feature: SmartMetering functional exceptions regarding connections
 
-  @NightlyBuildOnly
   Scenario: Get administrative status on a non-responsive device
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
@@ -13,7 +12,6 @@ Feature: SmartMetering functional exceptions regarding connections
       | Code    |              211 |
       | Message | CONNECTION_ERROR |
 
-  @NightlyBuildOnly
   Scenario: Connect to a smart meter with an invalid ip address
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |

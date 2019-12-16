@@ -13,13 +13,12 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.da.application.services.AdHocManagementService;
-import org.opensmartgridplatform.shared.infra.jms.BaseNotificationMessageProcessor;
 import org.opensmartgridplatform.domain.da.valueobjects.GetDeviceModelRequest;
+import org.opensmartgridplatform.shared.infra.jms.BaseNotificationMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.NotificationResponseMessageSender;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,9 +40,8 @@ public class GetDeviceModelRequestMessageProcessor extends BaseNotificationMessa
     private AdHocManagementService adHocManagementService;
 
     @Autowired
-    public GetDeviceModelRequestMessageProcessor(
-            final NotificationResponseMessageSender responseMessageSender,
-            @Qualifier("domainDistributionAutomationWebServiceRequestMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
+    public GetDeviceModelRequestMessageProcessor(final NotificationResponseMessageSender responseMessageSender,
+            @Qualifier("domainDistributionAutomationInboundWebServiceRequestsMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.GET_DEVICE_MODEL);
     }
 
@@ -78,8 +76,8 @@ public class GetDeviceModelRequestMessageProcessor extends BaseNotificationMessa
         try {
             LOGGER.info("Calling application service function: {}", messageType);
 
-            this.adHocManagementService
-                    .getDeviceModel(organisationIdentification, deviceIdentification, correlationUid, messageType, getDeviceModelRequest);
+            this.adHocManagementService.getDeviceModel(organisationIdentification, deviceIdentification, correlationUid,
+                    messageType, getDeviceModelRequest);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);

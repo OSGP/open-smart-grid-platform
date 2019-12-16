@@ -7,8 +7,8 @@
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FirmwareModuleType;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FirmwareVersion;
+import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleType;
+import org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion;
 
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
@@ -30,7 +30,7 @@ public class FirmwareVersionConverter extends
         final org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.FirmwareVersion firmwareVersion = new org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.FirmwareVersion();
         firmwareVersion.setFirmwareModuleType(
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.FirmwareModuleType
-                        .valueOf(source.getType().getDescription()));
+                        .valueOf(source.getFirmwareModuleType().getDescription()));
         firmwareVersion.setVersion(source.getVersion());
 
         return firmwareVersion;

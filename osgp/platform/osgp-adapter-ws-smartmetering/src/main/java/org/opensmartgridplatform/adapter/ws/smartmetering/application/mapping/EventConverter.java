@@ -1,9 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
@@ -11,19 +12,18 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.EventType;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.Event;
-
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
+import org.joda.time.DateTime;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.EventLogCategory;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.EventType;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class EventConverter
-        extends BidirectionalConverter<Event, org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event> {
+public class EventConverter extends
+        BidirectionalConverter<Event, org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EventConverter.class);
 
@@ -36,14 +36,17 @@ public class EventConverter
         }
 
         try {
-            final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventType eventType = org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventType
-                    .getValue(source.getEventCode());
-            final XMLGregorianCalendar timestamp = DatatypeFactory.newInstance()
-                    .newXMLGregorianCalendar(source.getTimestamp().toGregorianCalendar());
-            final org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event event = new org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event();
+            final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventType eventType =
+                    org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventType.getByEventCode(
+                    source.getEventCode());
+            final XMLGregorianCalendar timestamp = DatatypeFactory.newInstance().newXMLGregorianCalendar(
+                    source.getTimestamp().toGregorianCalendar());
+            final org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event event =
+                    new org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event();
             event.setEventType(EventType.fromValue(eventType.toString()));
             event.setTimestamp(timestamp);
             event.setEventCounter(source.getEventCounter());
+            event.setEventLogCategory(EventLogCategory.fromValue(source.getEventLogCategory().name()));
             return event;
         } catch (final DatatypeConfigurationException e) {
             LOGGER.error("DatatypeConfigurationException", e);
@@ -60,8 +63,11 @@ public class EventConverter
         }
 
         final DateTime timestamp = new DateTime(source.getTimestamp().toGregorianCalendar().getTime());
-        final Integer eventCode = org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventType
-                .valueOf(source.getEventType().toString()).getValue();
-        return new Event(timestamp, eventCode, source.getEventCounter());
+        final Integer eventCode = org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventType.valueOf(
+                source.getEventType().toString()).getEventCode();
+        final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventLogCategory eventLogCategory =
+                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventLogCategory.fromValue(
+                source.getEventLogCategory().value());
+        return new Event(timestamp, eventCode, source.getEventCounter(), eventLogCategory);
     }
 }

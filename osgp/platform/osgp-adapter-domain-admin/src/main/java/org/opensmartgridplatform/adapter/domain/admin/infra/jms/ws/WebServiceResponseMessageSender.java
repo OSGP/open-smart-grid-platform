@@ -12,28 +12,27 @@ import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
+import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Component;
 
-import org.opensmartgridplatform.shared.infra.jms.Constants;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
-
 // Send response message to the web service adapter.
-@Component(value = "domainAdminOutgoingWebServiceResponseMessageSender")
+@Component(value = "domainAdminOutboundWebServiceResponsesMessageSender")
 public class WebServiceResponseMessageSender implements ResponseMessageSender {
 
     @Autowired
-    @Qualifier("domainAdminOutgoingWebServiceResponsesJmsTemplate")
-    private JmsTemplate outgoingWebServiceResponsesJmsTemplate;
+    @Qualifier("domainAdminOutboundWebServiceResponsesJmsTemplate")
+    private JmsTemplate jmsTemplate;
 
     @Override
     public void send(final ResponseMessage responseMessage) {
 
-        this.outgoingWebServiceResponsesJmsTemplate.send(new MessageCreator() {
+        this.jmsTemplate.send(new MessageCreator() {
 
             @Override
             public Message createMessage(final Session session) throws JMSException {
@@ -45,8 +44,8 @@ public class WebServiceResponseMessageSender implements ResponseMessageSender {
                         responseMessage.getDeviceIdentification());
                 objectMessage.setStringProperty(Constants.RESULT, responseMessage.getResult().toString());
                 if (responseMessage.getOsgpException() != null) {
-                    objectMessage.setStringProperty(Constants.DESCRIPTION, responseMessage.getOsgpException()
-                            .getMessage());
+                    objectMessage.setStringProperty(Constants.DESCRIPTION,
+                            responseMessage.getOsgpException().getMessage());
                 }
 
                 return objectMessage;

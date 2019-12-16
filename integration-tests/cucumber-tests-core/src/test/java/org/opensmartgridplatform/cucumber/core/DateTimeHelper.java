@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.core;
 
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,12 +16,15 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.luckycatlabs.sunrisesunset.SunriseSunsetCalculator;
 import com.luckycatlabs.sunrisesunset.dto.Location;
 
 public class DateTimeHelper {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(DateTimeHelper.class);
     private static final String TIME_FORMAT = "HH:mm";
     private static final String CET_TIMEZONE = "Europe/Paris";
 
@@ -34,6 +38,7 @@ public class DateTimeHelper {
      * <li>tomorrow - 1 year
      * <li>yesterday + 2 weeks
      * <li>today at midday
+     * <li>today at noon
      * <li>yesterday at midnight
      * <li>now at midday + 1 week
      * </ul>
@@ -95,6 +100,7 @@ public class DateTimeHelper {
 
             switch (whenMatcher.group(3)) {
             case "midday":
+            case "noon":
                 retval = retval.withHourOfDay(12);
                 break;
             case "midnight":
@@ -102,7 +108,7 @@ public class DateTimeHelper {
                 break;
             default:
                 throw new IllegalArgumentException(
-                        "Invalid dateString [" + dateString + "], expected \"midday\" or \"midnight\"");
+                        "Invalid dateString [" + dateString + "], expected \"midday\", \"noon\" or \"midnight\"");
             }
             retval = retval.withMinuteOfHour(0);
             retval = retval.withSecondOfMinute(0);
@@ -159,7 +165,14 @@ public class DateTimeHelper {
         if (startDate == null) {
             return defaultStartDate;
         }
-        final DateTime dateTime = getDateTime(startDate);
+        DateTime dateTime;
+        try {
+            dateTime = getDateTime(startDate);
+        } catch (final IllegalArgumentException e) {
+            LOGGER.debug(
+                    "The string {} could not be parsed by DateTimeHelper.getDateTime, lets org.joda.time.DateTime");
+            dateTime = DateTime.parse(startDate);
+        }
         if (dateTime == null) {
             return defaultStartDate;
         }
@@ -190,6 +203,17 @@ public class DateTimeHelper {
         }
 
         return new DateTime(officialTransition.getTimeInMillis());
+    }
+
+    /**
+     * Shifts a DateTime from the system's timezone to UTC.
+     *
+     * @param dateTime
+     *            The DateTime in local system's timezone.
+     * @return shifted DateTime in UTC
+     */
+    public static final DateTime shiftSystemZoneToUtc(final DateTime dateTime) {
+        return dateTime.plusSeconds(ZonedDateTime.now().getOffset().getTotalSeconds()).withZone(DateTimeZone.UTC);
     }
 
     /**
@@ -238,7 +262,8 @@ public class DateTimeHelper {
 
         // Add offset
         final DateTime shiftedTime = new DateTime()
-                .withTime(parsedTime.getHourOfDay(), parsedTime.getMinuteOfHour(), 0, 0).plusHours(offsetHours);
+                .withTime(parsedTime.getHourOfDay(), parsedTime.getMinuteOfHour(), 0, 0)
+                .plusHours(offsetHours);
 
         return timeFormatter.print(shiftedTime);
     }

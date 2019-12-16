@@ -436,7 +436,7 @@ public class DlmsDeviceSteps {
     private void createDlmsDeviceInProtocolAdapterDatabase(final Map<String, String> inputSettings) {
         final ProtocolInfo protocolInfo = this.getProtocolInfo(inputSettings);
 
-        final DlmsDeviceBuilder dlmsDeviceBuilder = new DlmsDeviceBuilder().setProtocol(protocolInfo);
+        final DlmsDeviceBuilder dlmsDeviceBuilder = new DlmsDeviceBuilder().setProtocolName(protocolInfo);
         /*
          * Enable the necessary security key builders in the DLMS device builder
          * before calling withSettings. This allows the withSettings to be

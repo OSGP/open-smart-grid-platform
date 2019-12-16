@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.glue.steps.database.core;
 
+import static org.junit.Assert.assertEquals;
 import static org.opensmartgridplatform.cucumber.core.DateTimeHelper.getDateTime;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -26,6 +28,7 @@ import org.opensmartgridplatform.domain.core.repositories.FirmwareFileRepository
 import org.springframework.beans.factory.annotation.Autowired;
 
 import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
 
 public class DeviceFirmwareFileSteps {
 
@@ -53,15 +56,8 @@ public class DeviceFirmwareFileSteps {
                 PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         // Get the firmware file
-        FirmwareFile firmwareFile;
-        final String firmwareFileName = getString(settings, PlatformKeys.FIRMWARE_FILE_FILENAME);
-        if (StringUtils.isEmpty(firmwareFileName)) {
-            final List<FirmwareFile> firmwareFiles = this.firmwareFileRepository.findAll();
-            firmwareFile = firmwareFiles.get(firmwareFiles.size() - 1);
-        } else {
-            final List<FirmwareFile> firmwareFiles = this.firmwareFileRepository.findByFilename(firmwareFileName);
-            firmwareFile = firmwareFiles.get(0);
-        }
+        final FirmwareFile firmwareFile = this
+                .getFirmwareFile(getString(settings, PlatformKeys.FIRMWARE_FILE_FILENAME));
 
         final Date installationDate = getDateTime(getString(settings, PlatformKeys.FIRMWARE_INSTALLATION_DATE,
                 PlatformDefaults.FIRMWARE_INSTALLATION_DATE)).toDate();
@@ -71,5 +67,37 @@ public class DeviceFirmwareFileSteps {
                 installedBy);
 
         this.deviceFirmwareFileRepository.save(deviceFirmwareFile);
+    }
+
+    private FirmwareFile getFirmwareFile(final String firmwareFileName) {
+        FirmwareFile firmwareFile;
+        if (StringUtils.isEmpty(firmwareFileName)) {
+            final List<FirmwareFile> firmwareFiles = this.firmwareFileRepository.findAll();
+            firmwareFile = firmwareFiles.get(firmwareFiles.size() - 1);
+        } else {
+            final List<FirmwareFile> firmwareFiles = this.firmwareFileRepository.findByFilename(firmwareFileName);
+            firmwareFile = firmwareFiles.get(0);
+        }
+        return firmwareFile;
+    }
+
+    @Then("^the device firmware file exists$")
+    public void theDeviceFirmwareFileExists(final Map<String, String> settings) throws Throwable {
+        final String deviceIdentification = settings.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION);
+        final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+        final FirmwareFile firmwareFile = this
+                .getFirmwareFile(getString(settings, PlatformKeys.FIRMWARE_FILE_FILENAME));
+        final DeviceFirmwareFile deviceFirmwareFile = Wait.untilAndReturn(() -> {
+            final DeviceFirmwareFile entity = this.deviceFirmwareFileRepository.findByDeviceAndFirmwareFile(device,
+                    firmwareFile);
+            if (entity == null) {
+                throw new Exception("Device with identification [" + deviceIdentification + "]");
+            }
+
+            return entity;
+        });
+
+        assertEquals(deviceIdentification, deviceFirmwareFile.getDevice().getDeviceIdentification());
+
     }
 }

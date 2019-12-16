@@ -1,4 +1,4 @@
-@SmartMetering @Platform
+@SmartMetering @Platform @NightlyBuildOnly
 Feature: SmartMetering functional exceptions regarding encryption keys
 
   Scenario: Replace keys on a device with incorrectly encrypted keys

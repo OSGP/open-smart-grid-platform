@@ -20,22 +20,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
+import org.springframework.stereotype.Component;
 
 /**
  * Class for sending public lighting request messages to a queue
  */
+@Component(value = "wsPublicLightingOutboundDomainRequestsMessageSender")
 public class PublicLightingRequestMessageSender {
-    /**
-     * Logger for this class
-     */
+
     private static final Logger LOGGER = LoggerFactory.getLogger(PublicLightingRequestMessageSender.class);
 
-    /**
-     * Autowired field for public lighting requests jms template
-     */
     @Autowired
-    @Qualifier("wsPublicLightingOutgoingRequestsJmsTemplate")
-    private JmsTemplate publicLightingRequestsJmsTemplate;
+    @Qualifier("wsPublicLightingOutboundDomainRequestsJmsTemplate")
+    private JmsTemplate jmsTemplate;
 
     /**
      * Method for sending a request message to the queue
@@ -76,7 +73,7 @@ public class PublicLightingRequestMessageSender {
     private void sendMessage(final PublicLightingRequestMessage requestMessage) {
         LOGGER.info("Sending message to the public lighting requests queue");
 
-        this.publicLightingRequestsJmsTemplate.send(new MessageCreator() {
+        this.jmsTemplate.send(new MessageCreator() {
 
             @Override
             public Message createMessage(final Session session) throws JMSException {

@@ -8,7 +8,7 @@ Feature: SmartMetering Configuration - Clock configuration
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
-
+  @NightlyBuildOnly
   Scenario: Set clock configuration in a single request
     When the SetClockConfiguration request is received
       | DeviceIdentification     | TEST1024000000001        |
@@ -19,7 +19,7 @@ Feature: SmartMetering Configuration - Clock configuration
     Then the set clock configuration response should be returned
       | DeviceIdentification | TEST1024000000001 |
       | Result               | OK                |
-
+  @NightlyBuildOnly
   Scenario: Set clock configuration and synchronize time with incorrect timezone
     Given a bundle request
       | DeviceIdentification | TEST1024000000001 |

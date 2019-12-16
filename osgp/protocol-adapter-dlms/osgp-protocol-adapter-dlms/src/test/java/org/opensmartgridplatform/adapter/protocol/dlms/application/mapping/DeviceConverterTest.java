@@ -1,9 +1,10 @@
 /**
  * Copyright 2018 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.mapping;
 
@@ -26,8 +27,8 @@ public class DeviceConverterTest {
 
         final DlmsDevice expected = this.converted(dto);
 
-        Assertions.assertThat(result).isEqualToIgnoringGivenFields(expected, "creationTime", "modificationTime",
-                "version");
+        Assertions.assertThat(result)
+                .isEqualToIgnoringGivenFields(expected, "creationTime", "modificationTime", "version");
         Assertions.assertThat(result.getSecurityKeys())
                 .usingElementComparatorIgnoringFields("creationTime", "modificationTime", "version")
                 .isEqualTo(expected.getSecurityKeys());
@@ -44,7 +45,7 @@ public class DeviceConverterTest {
         dlmsDevice.setHls5Active(dto.isHLS5Active());
         dlmsDevice.setMbusIdentificationNumber(dto.getMbusIdentificationNumber());
         dlmsDevice.setMbusManufacturerIdentification(dto.getMbusManufacturerIdentification());
-        dlmsDevice.setProtocol("DSMR", dto.getDSMRVersion());
+        dlmsDevice.setProtocol(dto.getProtocolName(), dto.getProtocolVersion());
 
         dlmsDevice.addSecurityKey(new SecurityKey(dlmsDevice, SecurityKeyType.E_METER_MASTER,
                 Hex.encodeHexString(dto.getMasterKey()), dto.getDeliveryDate(), null));

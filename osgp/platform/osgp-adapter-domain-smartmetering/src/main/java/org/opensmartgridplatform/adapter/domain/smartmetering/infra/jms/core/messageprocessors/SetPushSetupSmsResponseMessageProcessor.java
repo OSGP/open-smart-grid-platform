@@ -1,9 +1,10 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.messageprocessors;
 
@@ -30,16 +31,15 @@ public class SetPushSetupSmsResponseMessageProcessor extends OsgpCoreResponseMes
     private ConfigurationService configurationService;
 
     @Autowired
-    protected SetPushSetupSmsResponseMessageProcessor(
-            WebServiceResponseMessageSender responseMessageSender,
-            @Qualifier("domainSmartMeteringOsgpCoreResponseMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+    protected SetPushSetupSmsResponseMessageProcessor(WebServiceResponseMessageSender responseMessageSender,
+            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.SET_PUSH_SETUP_SMS,
                 ComponentType.DOMAIN_SMART_METERING);
     }
 
     @Override
     protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
-        // Only the result is used, no need to check the dataObject.
+        // Only the Result (OK/NOK/Exception) is returned, no need to check the (contents of the dataObject).
         return true;
     }
 

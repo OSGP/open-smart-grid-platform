@@ -1,4 +1,4 @@
-@SmartMetering @Platform
+@SmartMetering @Platform @NightlyBuildOnly
 Feature: SmartMetering functional exceptions regarding organisations
 
   Scenario: Get administrative status on a device of an unknown organisation

@@ -12,11 +12,11 @@ import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.core.application.services.DefaultDeviceResponseService;
 import org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.WebServiceResponseMessageSender;
-import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
@@ -44,10 +44,9 @@ public class CommonDefaultResponseMessageProcessor extends BaseMessageProcessor 
 
     @Autowired
     protected CommonDefaultResponseMessageProcessor(
-            @Qualifier("domainCoreOutgoingWebServiceResponsesMessageSender") WebServiceResponseMessageSender webServiceResponseMessageSender,
-            @Qualifier("domainCoreOsgpCoreResponseMessageProcessorMap") MessageProcessorMap osgpCoreResponseMessageProcessorMap) {
-        super(webServiceResponseMessageSender, osgpCoreResponseMessageProcessorMap, MessageType.SET_CONFIGURATION,
-                ComponentType.DOMAIN_CORE);
+            @Qualifier("domainCoreOutboundWebServiceResponsesMessageSender") final WebServiceResponseMessageSender responseMessageSender,
+            @Qualifier("domainCoreInboundOsgpCoreResponsesMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
+        super(responseMessageSender, messageProcessorMap, MessageType.SET_CONFIGURATION, ComponentType.DOMAIN_CORE);
         this.addMessageType(MessageType.UPDATE_FIRMWARE);
         this.addMessageType(MessageType.SET_REBOOT);
         this.addMessageType(MessageType.SET_EVENT_NOTIFICATIONS);

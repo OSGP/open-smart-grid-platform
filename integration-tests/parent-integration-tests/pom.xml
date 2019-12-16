@@ -14,7 +14,7 @@
 
   <artifactId>parent-integration-tests</artifactId>
   <groupId>org.opensmartgridplatform</groupId>
-  <version>4.37.0-SNAPSHOT</version>
+  <version>4.39.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>parent-integration-tests</name>
   <!-- Description, Organization, Licences, URL and Distribution Management 
@@ -71,7 +71,8 @@
     <apache.commons.lang.version>3.8.1</apache.commons.lang.version>
     <apache.httpcomponents.version>4.5.7</apache.httpcomponents.version>
     <apache.httpcomponents.httpcore.version>4.4.11</apache.httpcomponents.httpcore.version>
-    <jackson.version>2.9.8</jackson.version>
+    <jackson.version>2.9.10</jackson.version>
+    <jackson-databind.version>2.9.10.1</jackson-databind.version>
     <commons.codec.version>1.12</commons.codec.version>
     <orika.version>1.5.4</orika.version>
     <netty.version>3.10.6.Final</netty.version>
@@ -545,7 +546,7 @@
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
-        <version>${jackson.version}</version>
+        <version>${jackson-databind.version}</version>
       </dependency>
 
       <!-- Jakarta commons codec -->

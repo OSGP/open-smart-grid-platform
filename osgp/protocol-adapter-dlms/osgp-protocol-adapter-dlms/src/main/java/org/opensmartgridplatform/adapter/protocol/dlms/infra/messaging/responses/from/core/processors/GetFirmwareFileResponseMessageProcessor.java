@@ -1,9 +1,10 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.responses.from.core.processors;
 
@@ -18,7 +19,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.SilentException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.responses.from.core.OsgpResponseMessageProcessor;
-import org.opensmartgridplatform.dto.valueobjects.DeviceFunctionDto;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareFileDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -54,8 +54,8 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
         try {
             // Get metadata from message and update message type to update
             // firmware
-            messageMetadata = new MessageMetadata.Builder(MessageMetadata.fromMessage(message))
-                    .withMessageType(DeviceFunctionDto.UPDATE_FIRMWARE.name()).build();
+            messageMetadata = new MessageMetadata.Builder(MessageMetadata.fromMessage(message)).withMessageType(
+                    MessageType.UPDATE_FIRMWARE.name()).build();
 
             device = this.domainHelperService.findDlmsDevice(messageMetadata);
 

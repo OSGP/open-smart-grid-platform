@@ -11,24 +11,23 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
-import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
-
 // This class should fetch request messages from incoming requests queue of OSGP Core.
-@Component(value = "domainSmartMeteringIncomingOsgpCoreRequestMessageListener")
+@Component(value = "domainSmartMeteringInboundOsgpCoreRequestsMessageListener")
 public class OsgpCoreRequestMessageListener implements MessageListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OsgpCoreRequestMessageListener.class);
 
     @Autowired
-    @Qualifier("domainSmartMeteringOsgpCoreRequestMessageProcessorMap")
-    private MessageProcessorMap osgpCoreRequestMessageProcessorMap;
+    @Qualifier("domainSmartMeteringInboundOsgpCoreRequestsMessageProcessorMap")
+    private MessageProcessorMap messageProcessorMap;
 
     @Override
     public void onMessage(final Message message) {
@@ -36,7 +35,7 @@ public class OsgpCoreRequestMessageListener implements MessageListener {
             LOGGER.info("Received message of type: {}", message.getJMSType());
             final ObjectMessage objectMessage = (ObjectMessage) message;
 
-            final MessageProcessor processor = this.osgpCoreRequestMessageProcessorMap
+            final MessageProcessor processor = this.messageProcessorMap
                     .getMessageProcessor(objectMessage);
 
             processor.processMessage(objectMessage);

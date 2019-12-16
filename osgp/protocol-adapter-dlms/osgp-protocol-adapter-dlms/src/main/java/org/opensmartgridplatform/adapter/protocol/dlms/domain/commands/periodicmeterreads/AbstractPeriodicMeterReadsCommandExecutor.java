@@ -169,7 +169,7 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends Ab
     Optional<ProfileCaptureTime> getProfileCaptureTime(final DlmsDevice device,
             final DlmsObjectConfigService dlmsObjectConfigService, final Medium medium) {
         final DlmsObject dlmsObject = dlmsObjectConfigService.findDlmsObject(
-                Protocol.withNameAndVersion(device.getProtocol(), device.getProtocolVersion()),
+                Protocol.forDevice(device),
                 DlmsObjectType.INTERVAL_VALUES, medium).orElse(null);
 
         if (dlmsObject instanceof DlmsProfile) {

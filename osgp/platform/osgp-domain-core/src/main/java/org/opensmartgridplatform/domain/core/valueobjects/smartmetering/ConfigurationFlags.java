@@ -17,13 +17,13 @@ public class ConfigurationFlags implements Serializable {
 
     private static final long serialVersionUID = 8360475869038077578L;
 
-    private List<ConfigurationFlag> configurationFlag;
+    private final List<ConfigurationFlag> flags;
 
-    public ConfigurationFlags(final List<ConfigurationFlag> configurationFlag) {
-        this.configurationFlag = new ArrayList<>(configurationFlag);
+    public ConfigurationFlags(final List<ConfigurationFlag> flags) {
+        this.flags = new ArrayList<>(flags);
     }
 
-    public List<ConfigurationFlag> getConfigurationFlag() {
-        return new ArrayList<>(this.configurationFlag);
+    public List<ConfigurationFlag> getFlags() {
+        return new ArrayList<>(this.flags);
     }
 }

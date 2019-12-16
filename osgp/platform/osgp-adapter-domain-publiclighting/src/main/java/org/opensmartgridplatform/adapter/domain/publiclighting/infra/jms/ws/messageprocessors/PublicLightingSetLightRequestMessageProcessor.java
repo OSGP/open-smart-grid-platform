@@ -41,8 +41,8 @@ public class PublicLightingSetLightRequestMessageProcessor extends BaseMessagePr
 
     @Autowired
     public PublicLightingSetLightRequestMessageProcessor(
-            WebServiceResponseMessageSender webServiceResponseMessageSender,
-            @Qualifier("domainPublicLightingWebServiceRequestMessageProcessorMap") MessageProcessorMap webServiceRequestMessageProcessorMap) {
+            final WebServiceResponseMessageSender webServiceResponseMessageSender,
+            @Qualifier("domainPublicLightingInboundWebServiceRequestsMessageProcessorMap") final MessageProcessorMap webServiceRequestMessageProcessorMap) {
         super(webServiceResponseMessageSender, webServiceRequestMessageProcessorMap, MessageType.SET_LIGHT,
                 ComponentType.DOMAIN_PUBLIC_LIGHTING);
     }

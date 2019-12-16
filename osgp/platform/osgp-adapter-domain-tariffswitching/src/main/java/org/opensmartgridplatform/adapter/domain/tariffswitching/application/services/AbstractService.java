@@ -35,14 +35,14 @@ public class AbstractService {
     protected SsldRepository ssldRepository;
 
     @Autowired
-    @Qualifier("domainTariffSwitchingOutgoingOsgpCoreRequestMessageSender")
+    @Qualifier("domainTariffSwitchingOutboundOsgpCoreRequestsMessageSender")
     protected OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
 
     @Autowired
     protected DomainTariffSwitchingMapper domainCoreMapper;
 
     @Autowired
-    @Qualifier("domainTariffSwitchingOutgoingWebServiceResponseMessageSender")
+    @Qualifier("domainTariffSwitchingOutboundWebServiceResponsesMessageSender")
     protected WebServiceResponseMessageSender webServiceResponseMessageSender;
 
     protected Device findActiveDevice(final String deviceIdentification) throws FunctionalException {

@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-pa-oslp</artifactId>
-    <version>4.37.0-SNAPSHOT</version>
+    <version>4.39.0-SNAPSHOT</version>
     <relativePath>../parent-pa-oslp/pom.xml</relativePath>
   </parent>
 
@@ -86,7 +86,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>${jackson.version}</version>
+      <version>${jackson-databind.version}</version>
     </dependency>
 
     <!-- Guava for Joiner class -->

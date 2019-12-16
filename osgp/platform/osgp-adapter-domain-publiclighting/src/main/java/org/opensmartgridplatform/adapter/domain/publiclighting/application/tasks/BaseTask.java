@@ -17,11 +17,7 @@ import java.util.Map;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-
+import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.OsgpSystemCorrelationUid;
 import org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.core.OsgpCoreRequestMessageSender;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
@@ -35,6 +31,10 @@ import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.opensmartgridplatform.dto.valueobjects.DomainTypeDto;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * Base class for scheduled tasks.
@@ -44,7 +44,7 @@ public class BaseTask {
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseTask.class);
 
     @Autowired
-    @Qualifier("domainPublicLightingOutgoingOsgpCoreRequestMessageSender")
+    @Qualifier("domainPublicLightingOutboundOsgpCoreRequestsMessageSender")
     protected OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
 
     @Autowired
@@ -166,6 +166,8 @@ public class BaseTask {
 
         final List<Device> devicesToContact = this.deviceRepository.findByIdIn(map.keySet());
         LOGGER.info("devicesToContact.size(): {}", devicesToContact.size());
+        devicesToContact.sort((a, b) -> a.getDeviceIdentification().compareTo(b.getDeviceIdentification()));
+
         for (final Device device : devicesToContact) {
             LOGGER.info("device: {}, id: {}", device.getDeviceIdentification(), device.getId());
         }
@@ -197,9 +199,9 @@ public class BaseTask {
         final String deviceIdentification = device.getDeviceIdentification();
         // Try to use the identification of the owner organization.
         final String organisation = device.getOwner() == null ? "" : device.getOwner().getOrganisationIdentification();
-        // Creating message with empty CorrelationUID, in order to prevent a
-        // response.
-        final String correlationUid = "";
+        // Creating message with OSGP System CorrelationUID. This way the
+        // responses for scheduled tasks can be filtered out.
+        final String correlationUid = OsgpSystemCorrelationUid.CORRELATION_UID;
         final String deviceFunctionString = deviceFunction.name();
         final DomainTypeDto domain = DomainTypeDto.PUBLIC_LIGHTING;
 

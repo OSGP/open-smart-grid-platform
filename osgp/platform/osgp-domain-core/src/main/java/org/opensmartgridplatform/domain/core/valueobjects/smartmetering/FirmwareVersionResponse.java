@@ -9,6 +9,8 @@ package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
 import java.util.List;
 
+import org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion;
+
 public class FirmwareVersionResponse extends ActionResponse {
 
     private static final long serialVersionUID = 4471818892560224779L;

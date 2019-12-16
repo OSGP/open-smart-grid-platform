@@ -17,6 +17,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodTypeDto;
 public enum DlmsObjectType {
     AMR_STATUS (null),
     AMR_STATUS_MBUS (null),
+    ALARM_FILTER(null),
     CLOCK (null),
     PUSH_SCHEDULER (null),
     PUSH_SETUP_SCHEDULER (null),
@@ -34,7 +35,9 @@ public enum DlmsObjectType {
     MBUS_MASTER_VALUE (null),
     INTERVAL_VALUES (PeriodTypeDto.INTERVAL),
     MONTHLY_BILLING_VALUES (PeriodTypeDto.MONTHLY),
-    DAILY_LOAD_PROFILE (PeriodTypeDto.DAILY);
+    DAILY_LOAD_PROFILE (PeriodTypeDto.DAILY),
+    DIRECT_ATTACH(null),
+    RANDOMISATION_SETTINGS(null);
 
     private PeriodTypeDto relatedPeriodType;
 

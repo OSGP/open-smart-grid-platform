@@ -26,8 +26,8 @@ import org.opensmartgridplatform.domain.core.repositories.DeviceFirmwareModuleRe
 import org.opensmartgridplatform.domain.core.repositories.FirmwareFileRepository;
 import org.opensmartgridplatform.domain.core.repositories.FirmwareModuleRepository;
 import org.opensmartgridplatform.domain.core.repositories.SmartMeterRepository;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FirmwareModuleType;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FirmwareVersion;
+import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleType;
+import org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
@@ -199,7 +199,8 @@ public class FirmwareService {
             return Collections.emptyList();
         }
 
-        final Entry<FirmwareModuleType, String> versionByModuleType = firmwareVersionByModuleType.entrySet().iterator()
+        final Entry<FirmwareModuleType, String> versionByModuleType = firmwareVersionByModuleType.entrySet()
+                .iterator()
                 .next();
         final String moduleVersion = versionByModuleType.getValue();
         final String moduleDescription;
@@ -262,11 +263,12 @@ public class FirmwareService {
 
         for (final FirmwareVersion firmwareVersion : firmwareVersions) {
             final FirmwareModule firmwareModule = this.firmwareModuleRepository
-                    .findByDescriptionIgnoreCase(firmwareVersion.getType().getDescription());
+                    .findByDescriptionIgnoreCase(firmwareVersion.getFirmwareModuleType().getDescription());
             if (firmwareModule == null) {
                 LOGGER.error(
                         "Unable to store firmware version {} for device {}, no firmware module found for description \"{}\"",
-                        firmwareVersion, device.getDeviceIdentification(), firmwareVersion.getType().getDescription());
+                        firmwareVersion, device.getDeviceIdentification(),
+                        firmwareVersion.getFirmwareModuleType().getDescription());
                 continue;
             }
             final DeviceFirmwareModule deviceFirmwareModule = new DeviceFirmwareModule(device, firmwareModule,
@@ -281,16 +283,16 @@ public class FirmwareService {
         final Map<FirmwareModuleType, String> firmwareVersionByModuleType = new EnumMap<>(FirmwareModuleType.class);
 
         for (final FirmwareVersion firmwareVersion : firmwareVersions) {
-            switch (firmwareVersion.getType()) {
+            switch (firmwareVersion.getFirmwareModuleType()) {
             case COMMUNICATION:
                 // fall-through
             case MODULE_ACTIVE:
                 // fall-through
             case ACTIVE_FIRMWARE:
-                firmwareVersionByModuleType.put(firmwareVersion.getType(), firmwareVersion.getVersion());
+                firmwareVersionByModuleType.put(firmwareVersion.getFirmwareModuleType(), firmwareVersion.getVersion());
                 break;
             default:
-                LOGGER.error("Cannot handle firmware version type: {}", firmwareVersion.getType().name());
+                LOGGER.error("Cannot handle firmware version type: {}", firmwareVersion.getFirmwareModuleType().name());
                 throw new FunctionalException(FunctionalExceptionType.UNKNOWN_FIRMWARE,
                         ComponentType.DOMAIN_SMART_METERING);
             }

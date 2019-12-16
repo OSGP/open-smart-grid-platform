@@ -29,10 +29,14 @@ public abstract class AppBase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AppBase.class);
 
+    private static final String END_RETVAL = "End. Retval = {}";
+
     @Option(name = "-report", metaVar = "DIR", usage = "Directory to produce test reports")
     private File reportDir;
 
-    @Option(name = "-skip-xml-report", metaVar = "DIR", usage = "Suppress the JUnit XML report generation (for more logging)")
+    @Option(name = "-skip-xml-report",
+            metaVar = "DIR",
+            usage = "Suppress the JUnit XML report generation (for more logging)")
     private boolean skipXmlReport;
 
     /**
@@ -50,7 +54,7 @@ public abstract class AppBase {
             p.parseArgument(args);
             LOGGER.info("Start");
             final int retval = app.runTests(testClasses);
-            LOGGER.info("End. Retval = {}", retval);
+            LOGGER.info(END_RETVAL, retval);
 
             return retval;
         } catch (final CmdLineException e) {
@@ -58,6 +62,11 @@ public abstract class AppBase {
             LOGGER.error("java -jar <...>.jar [opts] ...");
             p.printUsage(System.err);
             return -1;
+        } catch (final Exception e) {
+            LOGGER.error("Caught Exception", e);
+            final int retval = 1;
+            LOGGER.info(END_RETVAL, retval);
+            return retval;
         }
     }
 

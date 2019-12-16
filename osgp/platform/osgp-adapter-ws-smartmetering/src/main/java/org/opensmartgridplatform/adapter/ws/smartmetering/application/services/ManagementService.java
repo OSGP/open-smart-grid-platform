@@ -1,9 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.services;
 
@@ -82,7 +83,7 @@ public class ManagementService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
-        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.FIND_EVENTS);
+        this.domainHelperService.checkAllowed(organisation, device, DeviceFunction.FIND_EVENTS);
 
         LOGGER.info("findEvents called with organisation {}", organisationIdentification);
 
@@ -99,9 +100,8 @@ public class ManagementService {
                 organisationIdentification, correlationUid, MessageType.FIND_EVENTS.name(), messagePriority,
                 scheduleTime);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata)
-                .request(new FindEventsRequestDataList(findEventsQueryList)).build();
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
+                deviceMessageMetadata).request(new FindEventsRequestDataList(findEventsQueryList)).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -168,7 +168,7 @@ public class ManagementService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
-        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.ENABLE_DEBUGGING);
+        this.domainHelperService.checkAllowed(organisation, device, DeviceFunction.ENABLE_DEBUGGING);
 
         LOGGER.info("EnableDebugging called with organisation {}", organisationIdentification);
 
@@ -179,8 +179,8 @@ public class ManagementService {
                 organisationIdentification, correlationUid, MessageType.ENABLE_DEBUGGING.name(), messagePriority,
                 scheduleTime);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).build();
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
+                deviceMessageMetadata).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -194,7 +194,7 @@ public class ManagementService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
-        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.DISABLE_DEBUGGING);
+        this.domainHelperService.checkAllowed(organisation, device, DeviceFunction.DISABLE_DEBUGGING);
 
         LOGGER.info("DisableDebugging called with organisation {}", organisationIdentification);
 
@@ -205,8 +205,8 @@ public class ManagementService {
                 organisationIdentification, correlationUid, MessageType.DISABLE_DEBUGGING.name(), messagePriority,
                 scheduleTime);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).build();
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
+                deviceMessageMetadata).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -222,7 +222,7 @@ public class ManagementService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
-        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_MESSAGES);
+        this.domainHelperService.checkAllowed(organisation, device, DeviceFunction.GET_MESSAGES);
 
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
@@ -241,7 +241,7 @@ public class ManagementService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
-        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_DEVICE_COMMUNICATION_SETTINGS);
+        this.domainHelperService.checkAllowed(organisation, device, DeviceFunction.SET_DEVICE_COMMUNICATION_SETTINGS);
 
         LOGGER.info("SetDeviceCommunicationSettings called with organisation {}", organisationIdentification);
 
@@ -252,8 +252,8 @@ public class ManagementService {
                 organisationIdentification, correlationUid, MessageType.SET_DEVICE_COMMUNICATION_SETTINGS.name(),
                 messagePriority, scheduleTime);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(dataRequest).build();
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
+                deviceMessageMetadata).request(dataRequest).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -267,7 +267,8 @@ public class ManagementService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findDevice(deviceIdentification);
 
-        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_DEVICE_LIFECYCLE_STATUS_BY_CHANNEL);
+        this.domainHelperService.checkAllowed(organisation, device,
+                DeviceFunction.SET_DEVICE_LIFECYCLE_STATUS_BY_CHANNEL);
 
         LOGGER.info("SetDeviceLifecycleStatusByChannel called with organisation {}", organisationIdentification);
 
@@ -278,8 +279,8 @@ public class ManagementService {
                 organisationIdentification, correlationUid, MessageType.SET_DEVICE_LIFECYCLE_STATUS_BY_CHANNEL.name(),
                 messagePriority, scheduleTime);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
+                deviceMessageMetadata).request(requestData).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 

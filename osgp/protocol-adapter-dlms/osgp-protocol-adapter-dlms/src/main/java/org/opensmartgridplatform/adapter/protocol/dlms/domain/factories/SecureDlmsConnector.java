@@ -39,9 +39,9 @@ public abstract class SecureDlmsConnector extends Lls0Connector {
      * Set the correct security attributes on the tcpConnectionBuilder.
      *
      * @param device
-     *            The device to connect with.
+     *         The device to connect with.
      * @param tcpConnectionBuilder
-     *            The connection builder instance.
+     *         The connection builder instance.
      */
     protected abstract void setSecurity(final DlmsDevice device, final TcpConnectionBuilder tcpConnectionBuilder)
             throws OsgpException;
@@ -49,28 +49,29 @@ public abstract class SecureDlmsConnector extends Lls0Connector {
     /**
      * Create a connection with the device.
      *
-     *
      * @param device
-     *            The device to connect with.
+     *         The device to connect with.
      * @param dlmsMessageListener
-     *            Listener to set on the connection.
+     *         Listener to set on the connection.
+     *
      * @return The connection.
+     *
      * @throws IOException
-     *             When there are problems in connecting to or communicating
-     *             with the device.
+     *         When there are problems in connecting to or communicating
+     *         with the device.
      * @throws OsgpException
-     *             When there are problems reading the security and
-     *             authorization keys.
+     *         When there are problems reading the security and
+     *         authorization keys.
      */
-    protected DlmsConnection createConnection(final DlmsDevice device, final DlmsMessageListener dlmsMessageListener)
+    DlmsConnection createConnection(final DlmsDevice device, final DlmsMessageListener dlmsMessageListener)
             throws IOException, OsgpException {
 
         // Setup connection to device
         final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(
-                InetAddress.getByName(device.getIpAddress())).setResponseTimeout(this.responseTimeout)
-                .setLogicalDeviceId(this.logicalDeviceAddress);
-        tcpConnectionBuilder.setClientId(this.clientId)
-                .setReferencingMethod(device.isUseSn() ? ReferencingMethod.SHORT : ReferencingMethod.LOGICAL);
+                InetAddress.getByName(device.getIpAddress())).setResponseTimeout(
+                this.responseTimeout).setLogicalDeviceId(this.logicalDeviceAddress);
+        tcpConnectionBuilder.setClientId(this.clientId).setReferencingMethod(
+                device.isUseSn() ? ReferencingMethod.SHORT : ReferencingMethod.LOGICAL);
 
         if (device.isUseHdlc()) {
             tcpConnectionBuilder.useHdlc();
@@ -90,20 +91,21 @@ public abstract class SecureDlmsConnector extends Lls0Connector {
      * Get the valid securityKey of a given type for the device.
      *
      * @param device
-     *            The device.
+     *         The device.
      * @param securityKeyType
-     *            The type of key to return.
+     *         The type of key to return.
+     *
      * @return SecurityKey
+     *
      * @throws FunctionalException
-     *             when there is no valid key of the given type.
+     *         when there is no valid key of the given type.
      */
     protected SecurityKey getSecurityKey(final DlmsDevice device, final SecurityKeyType securityKeyType)
             throws FunctionalException {
         final SecurityKey securityKey = device.getValidSecurityKey(securityKeyType);
         if (securityKey == null) {
-            final String errorMessage = String
-                    .format("There is no valid key for device %s of type %s", device.getDeviceIdentification(),
-                            securityKeyType.name());
+            final String errorMessage = String.format("There is no valid key for device %s of type %s",
+                    device.getDeviceIdentification(), securityKeyType.name());
             LOGGER.error(errorMessage);
 
             throw new FunctionalException(FunctionalExceptionType.INVALID_DLMS_KEY_ENCRYPTION,

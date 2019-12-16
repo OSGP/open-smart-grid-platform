@@ -23,4 +23,8 @@ public class OslpDatabase {
         // First remove stuff from osgp_adapter_protocol_oslp.
         this.oslpDeviceRepository.deleteAllInBatch();
     }
+
+    public boolean isOslpDeviceTableEmpty() {
+        return this.oslpDeviceRepository.findAll().size() == 0;
+    }
 }
