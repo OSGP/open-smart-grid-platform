@@ -103,7 +103,7 @@
     <hikaricp.version>2.6.0</hikaricp.version>
     <micrometer.version>1.0.6</micrometer.version>
     <protobuf.version>2.4.1</protobuf.version>
-    <guava.version>18.0</guava.version>
+    <guava.version>23.6-jre</guava.version>
     <pmd.version>4.3</pmd.version>
     <checkstyle.version>2.12.1</checkstyle.version>
     <jacoco.version>0.7.9</jacoco.version>
