@@ -16,8 +16,6 @@
         <xsd:element name="deviceIdentification" type="xsd:string"/>
         <xsd:choice maxOccurs="1">
           <xsd:element ref="bun:GetPeriodicMeterReadsRequest"/>
-          <xsd:element ref="bun:GetPeriodicMeterReadsGasRequest"/>
-          <xsd:element ref="bun:FindEventsRequest"/>
         </xsd:choice>
       </xsd:sequence>
     </xsd:complexType>
@@ -30,7 +28,6 @@
         <xsd:element name="deviceIdentification" type="xsd:string"/>
         <xsd:choice maxOccurs="1">
           <xsd:element ref="bun:PeriodicMeterReadsResponse"/>
-          <xsd:element ref="bun:FindEventsResponse"/>
           <xsd:element ref="bun:FaultResponse"/>
         </xsd:choice>
       </xsd:sequence>
