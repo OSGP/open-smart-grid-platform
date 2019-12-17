@@ -33,7 +33,7 @@ import cucumber.api.java.en.Given;
 /**
  * IEC 60870 device specific steps.
  */
-public class Iec60870DeviceSteps extends GlueBase {
+public class Iec60870DeviceSteps {
 
     private static final String DEFAULT_DEVICE_TYPE = "RTU";
     private static final String DEFAULT_PROTOCOL = "60870-5-104";

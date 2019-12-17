@@ -25,7 +25,6 @@ import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindScheduledTasksRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindScheduledTasksResponse;
 import org.opensmartgridplatform.cucumber.core.DateTimeHelper;
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.common.support.ws.core.CoreDeviceManagementClient;
 import org.opensmartgridplatform.cucumber.platform.glue.steps.database.core.ScheduledTaskSteps;
@@ -37,7 +36,7 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.cucumber.datatable.DataTable;
 
-public class FindScheduledTasksSteps extends GlueBase {
+public class FindScheduledTasksSteps {
 
     @Autowired
     private ScheduledTaskSteps scheduledTaskSteps;
