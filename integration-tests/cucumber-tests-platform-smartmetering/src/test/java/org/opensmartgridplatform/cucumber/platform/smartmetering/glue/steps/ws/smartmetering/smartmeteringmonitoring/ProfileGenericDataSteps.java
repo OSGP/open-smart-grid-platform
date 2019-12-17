@@ -7,15 +7,13 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringmonitoring;
 
-import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getInteger;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getInteger;
 
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
 
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.CaptureObject;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ProfileEntry;
@@ -29,6 +27,7 @@ import org.opensmartgridplatform.cucumber.platform.helpers.SettingsHelper;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.ProfileGenericDataRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.SmartMeteringMonitoringRequestClient;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.SmartMeteringMonitoringResponseClient;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -60,7 +59,7 @@ public class ProfileGenericDataSteps {
         assertNotNull("ProfileGenericDataResponse should not be null", response);
 
         final int expectedNumberOfCaptureObjects = getInteger(settings, "NumberOfCaptureObjects", 0);
-        final List<CaptureObject> actualCaptureObjects = response.getCaptureObjectList().getCaptureObjects();
+        final List<CaptureObject> actualCaptureObjects = response.getCaptureObjects().getCaptureObjects();
         assertEquals("Number of capture objects", expectedNumberOfCaptureObjects, actualCaptureObjects.size());
 
         for (int i = 0; i < expectedNumberOfCaptureObjects; i++) {
@@ -69,7 +68,7 @@ public class ProfileGenericDataSteps {
         }
 
         final int expectedNumberOfProfileEntries = getInteger(settings, "NumberOfProfileEntries", 0);
-        final List<ProfileEntry> actualProfileEntries = response.getProfileEntryList().getProfileEntries();
+        final List<ProfileEntry> actualProfileEntries = response.getProfileEntries().getProfileEntries();
         assertEquals("Number of profile entries", expectedNumberOfProfileEntries, actualProfileEntries.size());
 
         if (expectedNumberOfProfileEntries > 0) {

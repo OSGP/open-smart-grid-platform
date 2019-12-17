@@ -36,11 +36,11 @@ public class ProfileGenericDataResponseConverter extends
         final CaptureObjects captureObjects = new CaptureObjects();
         captureObjects.getCaptureObjects()
                 .addAll(this.mapperFacade.mapAsList(source.getCaptureObjects(), CaptureObject.class));
-        result.setCaptureObjectList(captureObjects);
+        result.setCaptureObjects(captureObjects);
 
         final ProfileEntries profileEntries = new ProfileEntries();
         profileEntries.getProfileEntries().addAll(this.mapProfileEntries(source));
-        result.setProfileEntryList(profileEntries);
+        result.setProfileEntries(profileEntries);
 
         return result;
     }

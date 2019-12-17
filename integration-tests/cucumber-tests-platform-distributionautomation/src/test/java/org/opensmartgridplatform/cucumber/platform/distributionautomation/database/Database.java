@@ -39,16 +39,18 @@ public class Database {
     private TaskRepository taskRepository;
 
     private void insertDefaultData() {
-        this.notificationWebServiceConfigurationRepository.save(this.notificationEndpointConfigurations());
+        this.notificationWebServiceConfigurationRepository.saveAll(this.notificationEndpointConfigurations());
     }
 
     private List<NotificationWebServiceConfiguration> notificationEndpointConfigurations() {
         final NotificationWebServiceConfigurationBuilder builder = new NotificationWebServiceConfigurationBuilder()
-                .withApplicationName("DISTRIBUTION_AUTOMATION").withMarshallerContextPath(
+                .withApplicationName("DISTRIBUTION_AUTOMATION")
+                .withMarshallerContextPath(
                         "org.opensmartgridplatform.adapter.ws.schema.distributionautomation.notification");
 
         final NotificationWebServiceConfiguration osgpOrganizationConfig = builder
-                .withOrganisationIdentification("OSGP").build();
+                .withOrganisationIdentification("OSGP")
+                .build();
 
         return Arrays.asList(osgpOrganizationConfig);
     }

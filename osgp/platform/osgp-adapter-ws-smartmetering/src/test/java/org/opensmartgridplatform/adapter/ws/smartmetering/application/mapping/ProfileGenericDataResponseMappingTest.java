@@ -22,7 +22,6 @@ import java.util.List;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.junit.Test;
-
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.CaptureObject;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpUnitType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ProfileEntryValue;
@@ -44,13 +43,15 @@ public class ProfileGenericDataResponseMappingTest {
         final ProfileGenericDataResponse target = this.monitoringMapper.map(source, ProfileGenericDataResponse.class);
 
         assertNotNull("mapping ProfileGenericDataResponse should not return null", target);
-        assertEquals(target.getCaptureObjectList().getCaptureObjects().size(), 1);
-        assertEquals(target.getProfileEntryList().getProfileEntries().size(), 2);
-        assertNotNull(target.getProfileEntryList().getProfileEntries().get(0).getProfileEntryValue());
-        assertEquals(target.getProfileEntryList().getProfileEntries().get(0).getProfileEntryValue().size(), 4);
+        assertEquals(target.getCaptureObjects().getCaptureObjects().size(), 1);
+        assertEquals(target.getProfileEntries().getProfileEntries().size(), 2);
+        assertNotNull(target.getProfileEntries().getProfileEntries().get(0).getProfileEntryValue());
+        assertEquals(target.getProfileEntries().getProfileEntries().get(0).getProfileEntryValue().size(), 4);
 
         int i = 0;
-        for (final ProfileEntryValue profileEntryValue : target.getProfileEntryList().getProfileEntries().get(0)
+        for (final ProfileEntryValue profileEntryValue : target.getProfileEntries()
+                .getProfileEntries()
+                .get(0)
                 .getProfileEntryValue()) {
             assertNotNull(profileEntryValue.getStringValueOrDateValueOrFloatValue());
             assertEquals(1, profileEntryValue.getStringValueOrDateValueOrFloatValue().size());
@@ -89,12 +90,14 @@ public class ProfileGenericDataResponseMappingTest {
         assertTrue(
                 ((BigDecimal) profileEntryValue.getStringValueOrDateValueOrFloatValue().get(0)).doubleValue() == 100.d);
 
-        profileEntryValueVo = new org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileEntryValue(12345L);
+        profileEntryValueVo = new org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileEntryValue(
+                12345L);
         profileEntryValue = this.monitoringMapper.map(profileEntryValueVo, ProfileEntryValue.class);
         assertTrue(((Long) profileEntryValue.getStringValueOrDateValueOrFloatValue().get(0)).doubleValue() == 12345L);
     }
 
-    private org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse makeresponseVo() {
+    private org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse
+            makeresponseVo() {
         final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse result = new org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse(
                 this.makeObisCode(), this.makeCaptureObjectsVo(), this.makeProfileEntriesVo());
         return result;
@@ -111,21 +114,23 @@ public class ProfileGenericDataResponseMappingTest {
         return profileEntries;
     }
 
-    private List<org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CaptureObject> makeCaptureObjectsVo() {
+    private List<org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CaptureObject>
+            makeCaptureObjectsVo() {
         final List<org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CaptureObject> captureObjectVos = new ArrayList<>();
         captureObjectVos.add(this.makeCaptureObjectVo());
         return captureObjectVos;
     }
 
     private org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CaptureObject makeCaptureObjectVo() {
-        return new org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CaptureObject(10L, "0.0.1.0.0.255", 10, 1,
-                OsgpUnitType.UNDEFINED.name());
+        return new org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CaptureObject(10L, "0.0.1.0.0.255",
+                10, 1, OsgpUnitType.UNDEFINED.name());
     }
 
     private ProfileEntry makeProfileEntryVo() {
         final List<org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileEntryValue> entriesVo = new ArrayList<>();
         entriesVo.add(new org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileEntryValue("test"));
-        entriesVo.add(new org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileEntryValue(new Date()));
+        entriesVo.add(
+                new org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileEntryValue(new Date()));
         entriesVo.add(new org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileEntryValue(
                 new BigDecimal(100.5d)));
         entriesVo.add(new org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileEntryValue(12345L));

@@ -21,7 +21,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Test;
-
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpUnitType;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CaptureObject;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ObisCodeValues;
@@ -53,9 +52,9 @@ public class GetProfileGenericDataResponseMappingTest {
 
         // Assert
         this.assertObisCode(target.getProfileGenericData().getLogicalName(), obisCode);
-        this.assertCaptureObjects(target.getProfileGenericData().getCaptureObjectList().getCaptureObjects(),
+        this.assertCaptureObjects(target.getProfileGenericData().getCaptureObjects().getCaptureObjects(),
                 captureObjects);
-        this.assertProfileEntries(target.getProfileGenericData().getProfileEntryList().getProfileEntries(),
+        this.assertProfileEntries(target.getProfileGenericData().getProfileEntries().getProfileEntries(),
                 profileEntries);
 
     }

@@ -15,8 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.MbusChannelShortEquipmentIdentifier;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.ScanMbusChannelsAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.ScanMbusChannelsAsyncResponse;
@@ -30,6 +28,7 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartme
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.adhoc.ScanMbusChannelsRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.adhoc.SmartMeteringAdHocRequestClient;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.adhoc.SmartMeteringAdHocResponseClient;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -58,7 +57,7 @@ public class ScanMbusChannelsSteps {
         final ScanMbusChannelsResponse response = this.responseClient.getResponse(asyncRequest);
         assertEquals("Result is not as expected.", settings.get(PlatformSmartmeteringKeys.RESULT),
                 response.getResult().name());
-        this.assertChannelShortIds(settings, response.getChannelShortIds());
+        this.assertChannelShortIds(settings, response.getChannelShortId());
     }
 
     public void assertChannelShortIds(final Map<String, String> expectedValues,
@@ -106,7 +105,10 @@ public class ScanMbusChannelsSteps {
 
         final Predicate<MbusChannelShortEquipmentIdentifier> channelMatches = channelShortId -> channel == channelShortId
                 .getChannel();
-        return channelShortIds.stream().filter(channelMatches).map(MbusChannelShortEquipmentIdentifier::getShortId)
-                .findFirst().orElse(null);
+        return channelShortIds.stream()
+                .filter(channelMatches)
+                .map(MbusChannelShortEquipmentIdentifier::getShortId)
+                .findFirst()
+                .orElse(null);
     }
 }
