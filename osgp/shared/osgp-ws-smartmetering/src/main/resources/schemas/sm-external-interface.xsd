@@ -14,7 +14,7 @@
       <xsd:sequence>
         <xsd:element name="messageId" type="xsd:string"/>
         <xsd:element name="deviceIdentification" type="xsd:string"/>
-        <xsd:choice maxOccurs="1">
+        <xsd:choice>
           <xsd:element ref="bun:GetPeriodicMeterReadsRequest"/>
         </xsd:choice>
       </xsd:sequence>
@@ -26,7 +26,7 @@
       <xsd:sequence>
         <xsd:element name="messageId" type="xsd:string"/>
         <xsd:element name="deviceIdentification" type="xsd:string"/>
-        <xsd:choice maxOccurs="1">
+        <xsd:choice>
           <xsd:element ref="bun:PeriodicMeterReadsResponse"/>
           <xsd:element ref="bun:FaultResponse"/>
         </xsd:choice>
