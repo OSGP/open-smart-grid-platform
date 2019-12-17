@@ -52,9 +52,9 @@ public class GetProfileGenericDataResponseMappingTest {
 
         // Assert
         this.assertObisCode(target.getProfileGenericData().getLogicalName(), obisCode);
-        this.assertCaptureObjects(target.getProfileGenericData().getCaptureObjects().getCaptureObjects(),
+        this.assertCaptureObjects(target.getProfileGenericData().getCaptureObjectList().getCaptureObjects(),
                 captureObjects);
-        this.assertProfileEntries(target.getProfileGenericData().getProfileEntries().getProfileEntries(),
+        this.assertProfileEntries(target.getProfileGenericData().getProfileEntryList().getProfileEntries(),
                 profileEntries);
 
     }

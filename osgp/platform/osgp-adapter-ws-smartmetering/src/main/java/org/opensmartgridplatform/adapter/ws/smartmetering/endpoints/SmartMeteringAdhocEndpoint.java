@@ -310,7 +310,7 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
                     .getMessageData();
 
             if (ResponseMessageResultType.OK == responseData.getResultType()) {
-                final List<MbusChannelShortEquipmentIdentifier> channelShortIds = response.getChannelShortId();
+                final List<MbusChannelShortEquipmentIdentifier> channelShortIds = response.getChannelShortIds();
                 channelShortIds.addAll(this.adhocMapper.mapAsList(scanMbusChannelsResponse.getChannelShortIds(),
                         MbusChannelShortEquipmentIdentifier.class));
             } else if (responseData.getMessageData() instanceof OsgpException) {

@@ -57,7 +57,7 @@ public class ScanMbusChannelsSteps {
         final ScanMbusChannelsResponse response = this.responseClient.getResponse(asyncRequest);
         assertEquals("Result is not as expected.", settings.get(PlatformSmartmeteringKeys.RESULT),
                 response.getResult().name());
-        this.assertChannelShortIds(settings, response.getChannelShortId());
+        this.assertChannelShortIds(settings, response.getChannelShortIds());
     }
 
     public void assertChannelShortIds(final Map<String, String> expectedValues,

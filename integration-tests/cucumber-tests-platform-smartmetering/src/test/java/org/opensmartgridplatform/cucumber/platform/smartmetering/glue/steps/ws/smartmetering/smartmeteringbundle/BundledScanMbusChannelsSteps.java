@@ -49,7 +49,7 @@ public class BundledScanMbusChannelsSteps extends BaseBundleSteps {
             throws Throwable {
 
         final ScanMbusChannelsResponse response = (ScanMbusChannelsResponse) this.getNextBundleResponse();
-        this.scanMbusChannelsSteps.assertChannelShortIds(values, response.getChannelShortId());
+        this.scanMbusChannelsSteps.assertChannelShortIds(values, response.getChannelShortIds());
     }
 
 }

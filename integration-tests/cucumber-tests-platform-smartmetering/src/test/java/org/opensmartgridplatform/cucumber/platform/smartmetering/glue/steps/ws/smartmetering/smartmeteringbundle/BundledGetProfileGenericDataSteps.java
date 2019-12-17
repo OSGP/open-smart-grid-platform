@@ -50,8 +50,8 @@ public class BundledGetProfileGenericDataSteps extends BaseBundleSteps {
         final ProfileGenericDataResponse profileGenericDataResponse = (ProfileGenericDataResponse) response;
         final ProfileGenericData profileGenericData = profileGenericDataResponse.getProfileGenericData();
 
-        this.assertEqualCaptureObjects(profileGenericData.getCaptureObjects().getCaptureObjects(), values);
-        this.assertEqualProfileEntries(profileGenericData.getProfileEntries().getProfileEntries(), values);
+        this.assertEqualCaptureObjects(profileGenericData.getCaptureObjectList().getCaptureObjects(), values);
+        this.assertEqualProfileEntries(profileGenericData.getProfileEntryList().getProfileEntries(), values);
     }
 
     private void assertEqualCaptureObjects(final List<CaptureObject> actualCaptureObjects,

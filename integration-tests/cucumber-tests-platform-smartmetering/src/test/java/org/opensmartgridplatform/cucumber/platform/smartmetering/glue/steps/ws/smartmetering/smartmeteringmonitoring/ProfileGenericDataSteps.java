@@ -59,7 +59,7 @@ public class ProfileGenericDataSteps {
         assertNotNull("ProfileGenericDataResponse should not be null", response);
 
         final int expectedNumberOfCaptureObjects = getInteger(settings, "NumberOfCaptureObjects", 0);
-        final List<CaptureObject> actualCaptureObjects = response.getCaptureObjects().getCaptureObjects();
+        final List<CaptureObject> actualCaptureObjects = response.getCaptureObjectList().getCaptureObjects();
         assertEquals("Number of capture objects", expectedNumberOfCaptureObjects, actualCaptureObjects.size());
 
         for (int i = 0; i < expectedNumberOfCaptureObjects; i++) {
@@ -68,7 +68,7 @@ public class ProfileGenericDataSteps {
         }
 
         final int expectedNumberOfProfileEntries = getInteger(settings, "NumberOfProfileEntries", 0);
-        final List<ProfileEntry> actualProfileEntries = response.getProfileEntries().getProfileEntries();
+        final List<ProfileEntry> actualProfileEntries = response.getProfileEntryList().getProfileEntries();
         assertEquals("Number of profile entries", expectedNumberOfProfileEntries, actualProfileEntries.size());
 
         if (expectedNumberOfProfileEntries > 0) {

@@ -43,13 +43,13 @@ public class ProfileGenericDataResponseMappingTest {
         final ProfileGenericDataResponse target = this.monitoringMapper.map(source, ProfileGenericDataResponse.class);
 
         assertNotNull("mapping ProfileGenericDataResponse should not return null", target);
-        assertEquals(target.getCaptureObjects().getCaptureObjects().size(), 1);
-        assertEquals(target.getProfileEntries().getProfileEntries().size(), 2);
-        assertNotNull(target.getProfileEntries().getProfileEntries().get(0).getProfileEntryValue());
-        assertEquals(target.getProfileEntries().getProfileEntries().get(0).getProfileEntryValue().size(), 4);
+        assertEquals(target.getCaptureObjectList().getCaptureObjects().size(), 1);
+        assertEquals(target.getProfileEntryList().getProfileEntries().size(), 2);
+        assertNotNull(target.getProfileEntryList().getProfileEntries().get(0).getProfileEntryValue());
+        assertEquals(target.getProfileEntryList().getProfileEntries().get(0).getProfileEntryValue().size(), 4);
 
         int i = 0;
-        for (final ProfileEntryValue profileEntryValue : target.getProfileEntries()
+        for (final ProfileEntryValue profileEntryValue : target.getProfileEntryList()
                 .getProfileEntries()
                 .get(0)
                 .getProfileEntryValue()) {
