@@ -40,4 +40,11 @@
   <Environment name="osgp/AdapterWsCore/log-config"
     value="/etc/osp/osgp-adapter-ws-core-logback.xml" type="java.lang.String"
     override="true" />
+  
+  <Environment name="osgp/DomainLogging/config"
+    value="/etc/osp/osgp-domain-logging.properties" type="java.lang.String"
+    override="true" />
+  <Environment name="osgp/AdapterWsSharedDb/config"
+    value="/etc/osp/osgp-adapter-ws-shared-db.properties" type="java.lang.String"
+    override="true" />
 </Context>
