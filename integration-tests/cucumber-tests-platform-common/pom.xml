@@ -13,7 +13,6 @@
     <relativePath>../parent-integration-tests/pom.xml</relativePath>
   </parent>
 
-  <groupId>org.opensmartgridplatform</groupId>
   <artifactId>cucumber-tests-platform-common</artifactId>
   <packaging>jar</packaging>
 
