@@ -55,7 +55,8 @@
     <hibernate.version>5.4.1.Final</hibernate.version>
     <junit.version>4.12</junit.version>
     <assertj.version>3.12.2</assertj.version>
-    <mockito.version>2.25.1</mockito.version>
+    <mockito.version>3.2.4</mockito.version>
+    <bytebuddy.version>1.10.5</bytebuddy.version>
     <flyway.version>5.0.3</flyway.version>
     <slf4j.version>1.7.26</slf4j.version>
     <apache.commons.lang.version>3.8.1</apache.commons.lang.version>
@@ -314,6 +315,12 @@
         <artifactId>mockito-core</artifactId>
         <version>${mockito.version}</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+          <groupId>net.bytebuddy</groupId>
+          <artifactId>byte-buddy</artifactId>
+          <version>${bytebuddy.version}</version>
+          <scope>test</scope>
       </dependency>
 
       <dependency>
