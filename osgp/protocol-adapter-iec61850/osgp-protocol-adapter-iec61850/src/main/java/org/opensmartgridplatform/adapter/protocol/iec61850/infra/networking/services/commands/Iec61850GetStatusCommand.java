@@ -39,6 +39,12 @@ public class Iec61850GetStatusCommand {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850GetStatusCommand.class);
 
+    private DeviceMessageLoggingService loggingService;
+
+    public Iec61850GetStatusCommand(final DeviceMessageLoggingService loggingService) {
+        this.loggingService = loggingService;
+    }
+
     public DeviceStatusDto getStatusFromDevice(final Iec61850Client iec61850Client,
             final DeviceConnection deviceConnection, final Ssld ssld) throws ProtocolAdapterException {
         final Function<DeviceStatusDto> function = new Function<DeviceStatusDto>() {
@@ -96,8 +102,9 @@ public class Iec61850GetStatusCommand {
                 deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION,
                         DataAttribute.SOFTWARE_CONFIGURATION, Fc.CF, SubDataAttribute.LIGHT_TYPE, lightTypeValue);
 
-                DeviceMessageLoggingService.logMessage(deviceMessageLog, deviceConnection.getDeviceIdentification(),
-                        deviceConnection.getOrganisationIdentification(), false);
+                Iec61850GetStatusCommand.this.loggingService.logMessage(deviceMessageLog,
+                        deviceConnection.getDeviceIdentification(), deviceConnection.getOrganisationIdentification(),
+                        false);
 
                 /*
                  * The preferredLinkType and actualLinkType are hard-coded to

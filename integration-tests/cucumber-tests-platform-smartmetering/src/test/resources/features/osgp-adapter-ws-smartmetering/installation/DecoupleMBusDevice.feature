@@ -1,4 +1,4 @@
-@SmartMetering @Platform
+@SmartMetering @Platform @NightlyBuildOnly
 Feature: SmartMetering Installation - Decouple M-Bus Device
   As a grid operator
   I want to be able to decouple an M-Bus device from a smart meter

@@ -48,9 +48,9 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
     /**
      * The map of message processor instances.
      */
-    @Qualifier("domainSmartMeteringResponseMessageProcessorMap")
+    @Qualifier("wsSmartMeteringInboundDomainResponsesMessageProcessorMap")
     @Autowired
-    protected MessageProcessorMap domainResponseMessageProcessorMap;
+    protected MessageProcessorMap messageProcessorMap;
 
     @Autowired
     private NotificationService notificationService;
@@ -80,7 +80,7 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
      */
     @PostConstruct
     public void init() {
-        this.domainResponseMessageProcessorMap.addMessageProcessor(this.messageType, this);
+        this.messageProcessorMap.addMessageProcessor(this.messageType, this);
     }
 
     @Override
@@ -128,9 +128,11 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
             this.handleMessage(ids, actualMessageType, resultType, resultDescription, dataObject);
 
             // Send notification indicating data is available.
-            this.notificationService.sendNotification(new NotificationWebServiceLookupKey(organisationIdentification,
-                    ApplicationConstants.APPLICATION_NAME), new GenericNotification(notificationMessage, resultType.name(),
-                    deviceIdentification, correlationUid, String.valueOf(notificationType)));
+            this.notificationService.sendNotification(
+                    new NotificationWebServiceLookupKey(organisationIdentification,
+                            ApplicationConstants.APPLICATION_NAME),
+                    new GenericNotification(notificationMessage, resultType.name(), deviceIdentification,
+                            correlationUid, String.valueOf(notificationType)));
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, notificationType);
@@ -154,8 +156,8 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
     }
 
     /**
-     * In case of an error, this function can be used to send a response containing
-     * the exception to the web-service-adapter.
+     * In case of an error, this function can be used to send a response
+     * containing the exception to the web-service-adapter.
      *
      * @param e
      *            The exception.

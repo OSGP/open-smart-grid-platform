@@ -10,12 +10,6 @@ package org.opensmartgridplatform.adapter.domain.core.application.services;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
-
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceOutputSetting;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
@@ -26,14 +20,19 @@ import org.opensmartgridplatform.dto.valueobjects.ConfigurationDto;
 import org.opensmartgridplatform.dto.valueobjects.RelayConfigurationDto;
 import org.opensmartgridplatform.dto.valueobjects.RelayMapDto;
 import org.opensmartgridplatform.dto.valueobjects.RelayTypeDto;
-import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 @Service(value = "domainCoreConfigurationManagementService")
 @Transactional(value = "transactionManager")
@@ -81,8 +80,8 @@ public class ConfigurationManagementService extends AbstractService {
         final org.opensmartgridplatform.dto.valueobjects.ConfigurationDto configurationDto = this.domainCoreMapper
                 .map(configuration, org.opensmartgridplatform.dto.valueobjects.ConfigurationDto.class);
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(ids, configurationDto), messageType, messagePriority,
-                device.getIpAddress(), scheduleTime);
+        this.osgpCoreRequestMessageSender.sendWithScheduledTime(new RequestMessage(ids, configurationDto), messageType,
+                messagePriority, device.getIpAddress(), scheduleTime);
     }
 
     private void updateDeviceOutputSettings(final Device device, final Configuration configuration) {
@@ -165,9 +164,13 @@ public class ConfigurationManagementService extends AbstractService {
             osgpException = new TechnicalException(ComponentType.UNKNOWN, e.getMessage(), e);
         }
 
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withIds(ids)
-                .withResult(result).withOsgpException(osgpException).withDataObject(configuration)
-                .withMessagePriority(messagePriority).build();
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withIds(ids)
+                .withResult(result)
+                .withOsgpException(osgpException)
+                .withDataObject(configuration)
+                .withMessagePriority(messagePriority)
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage);
     }
 
@@ -194,9 +197,10 @@ public class ConfigurationManagementService extends AbstractService {
             // available to generate configuration
             final List<RelayMapDto> relayMap = new ArrayList<>();
 
-            outputSettings.forEach(outputSetting -> relayMap.add(new org.opensmartgridplatform.dto.valueobjects.RelayMapDto(
-                    outputSetting.getExternalId(), outputSetting.getInternalId(),
-                    RelayTypeDto.valueOf(outputSetting.getOutputType().toString()), outputSetting.getAlias())));
+            outputSettings
+                    .forEach(outputSetting -> relayMap.add(new org.opensmartgridplatform.dto.valueobjects.RelayMapDto(
+                            outputSetting.getExternalId(), outputSetting.getInternalId(),
+                            RelayTypeDto.valueOf(outputSetting.getOutputType().toString()), outputSetting.getAlias())));
 
             originalConfig.setRelayConfiguration(new RelayConfigurationDto(relayMap));
         }

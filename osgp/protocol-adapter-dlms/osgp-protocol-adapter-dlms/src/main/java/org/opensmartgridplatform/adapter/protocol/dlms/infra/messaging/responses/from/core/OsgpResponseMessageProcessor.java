@@ -43,11 +43,12 @@ public abstract class OsgpResponseMessageProcessor extends DlmsConnectionMessage
     private static final Logger LOGGER = LoggerFactory.getLogger(OsgpResponseMessageProcessor.class);
 
     @Autowired
+    @Qualifier("protocolDlmsOutboundOsgpCoreResponsesMessageSender")
     protected DeviceResponseMessageSender responseMessageSender;
 
     @Autowired
-    @Qualifier("protocolDlmsOsgpResponseMessageProcessorMap")
-    protected MessageProcessorMap osgpResponseMessageProcessorMap;
+    @Qualifier("protocolDlmsInboundOsgpResponsesMessageProcessorMap")
+    protected MessageProcessorMap messageProcessorMap;
 
     @Autowired
     protected DomainHelperService domainHelperService;
@@ -72,10 +73,11 @@ public abstract class OsgpResponseMessageProcessor extends DlmsConnectionMessage
      */
     @PostConstruct
     public void init() {
-        this.osgpResponseMessageProcessorMap.addMessageProcessor(this.messageType, this);
+        this.messageProcessorMap.addMessageProcessor(this.messageType, this);
     }
 
-    @SuppressWarnings("squid:S1193") // SilentException cannot be caught since it does not extend Exception.
+    @SuppressWarnings("squid:S1193") // SilentException cannot be caught since
+                                     // it does not extend Exception.
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
         LOGGER.debug("Processing {} request message", this.messageType);
@@ -118,9 +120,9 @@ public abstract class OsgpResponseMessageProcessor extends DlmsConnectionMessage
 
     /**
      * Implementation of this method should call a service that can handle the
-     * requestObject and return a response object to be put on the response queue.
-     * This response object can also be null for methods that don't provide result
-     * data.
+     * requestObject and return a response object to be put on the response
+     * queue. This response object can also be null for methods that don't
+     * provide result data.
      *
      * @param conn
      *            the connection to the device.

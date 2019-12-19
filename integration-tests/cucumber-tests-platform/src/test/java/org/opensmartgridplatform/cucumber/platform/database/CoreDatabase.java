@@ -26,6 +26,7 @@ import org.opensmartgridplatform.domain.core.repositories.OrganisationRepository
 import org.opensmartgridplatform.domain.core.repositories.RelayStatusRepository;
 import org.opensmartgridplatform.domain.core.repositories.ScheduledTaskRepository;
 import org.opensmartgridplatform.domain.core.repositories.SmartMeterRepository;
+import org.opensmartgridplatform.domain.core.repositories.SsldPendingFirmwareUpdateRepository;
 import org.opensmartgridplatform.domain.core.repositories.SsldRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.PlatformDomain;
 import org.opensmartgridplatform.domain.core.valueobjects.PlatformFunctionGroup;
@@ -87,6 +88,9 @@ public class CoreDatabase {
     private SsldRepository ssldRepository;
 
     @Autowired
+    private SsldPendingFirmwareUpdateRepository ssldPendingFirmwareUpdateRepository;
+
+    @Autowired
     private RelayStatusRepository relayStatusRepository;
 
     @Autowired
@@ -146,6 +150,7 @@ public class CoreDatabase {
         this.eventRepository.deleteAllInBatch();
         this.smartMeterRepository.deleteAllInBatch();
         this.relayStatusRepository.deleteAllInBatch();
+        this.ssldPendingFirmwareUpdateRepository.deleteAllInBatch();
         this.ssldRepository.deleteAllInBatch();
         this.deviceRepository.deleteAllInBatch();
         this.lightMeasurementDeviceRepository.deleteAllInBatch();
@@ -168,6 +173,7 @@ public class CoreDatabase {
         this.eventRepository.deleteAll();
         this.smartMeterRepository.deleteAll();
         this.relayStatusRepository.deleteAll();
+        this.ssldPendingFirmwareUpdateRepository.deleteAll();
         this.ssldRepository.deleteAll();
         this.deviceRepository.deleteAll();
         this.lightMeasurementDeviceRepository.deleteAll();

@@ -121,7 +121,6 @@
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
-      <version>4.3.6</version>
     </dependency>
     <dependency>
       <groupId>xmlunit</groupId>
@@ -191,6 +190,7 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-all</artifactId>
+      <scope>test</scope>
     </dependency>
 
   </dependencies>

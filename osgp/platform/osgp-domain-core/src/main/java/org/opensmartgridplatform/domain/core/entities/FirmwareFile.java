@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.domain.core.entities;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -32,7 +33,6 @@ import javax.persistence.OrderBy;
 
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
-
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleData;
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
 
@@ -56,7 +56,9 @@ public class FirmwareFile extends AbstractEntity {
     private String identification = newRandomIdentification();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
-    @JoinTable(name = "device_model_firmware_file", joinColumns = @JoinColumn(name = "firmware_file_id"), inverseJoinColumns = @JoinColumn(name = "device_model_id"))
+    @JoinTable(name = "device_model_firmware_file",
+            joinColumns = @JoinColumn(name = "firmware_file_id"),
+            inverseJoinColumns = @JoinColumn(name = "device_model_id"))
     @OrderBy("modelCode")
     @Sort(type = SortType.NATURAL)
     private SortedSet<DeviceModel> deviceModels = new TreeSet<>();
@@ -351,5 +353,12 @@ public class FirmwareFile extends AbstractEntity {
 
     public void setFile(final byte[] file) {
         this.file = file;
+    }
+
+    @Override
+    public String toString() {
+        return "FirmwareFile [identification=" + this.identification + ", filename=" + this.filename + ", description="
+                + this.description + ", pushToNewDevices=" + this.pushToNewDevices + ", file="
+                + Arrays.toString(this.file) + ", hash=" + this.hash + "]";
     }
 }

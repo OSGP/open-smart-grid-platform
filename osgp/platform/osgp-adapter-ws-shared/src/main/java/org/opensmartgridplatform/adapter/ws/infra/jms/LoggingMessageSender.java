@@ -12,20 +12,18 @@ import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
+import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
+import org.springframework.stereotype.Component;
 
-import org.opensmartgridplatform.shared.infra.jms.Constants;
-
+@Component(value = "loggingMessageSender")
 public class LoggingMessageSender {
 
-    /**
-     * Logger for this class
-     */
     private static final Logger LOGGER = LoggerFactory.getLogger(LoggingMessageSender.class);
 
     @Autowired

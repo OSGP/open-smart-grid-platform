@@ -13,11 +13,11 @@ import javax.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.domain.core.application.services.ConfigurationManagementService;
 import org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.dto.valueobjects.ConfigurationDto;
-import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
@@ -45,10 +45,9 @@ public class CommonGetConfigurationResponseMessageProcessor extends BaseMessageP
 
     @Autowired
     protected CommonGetConfigurationResponseMessageProcessor(
-            @Qualifier("domainCoreOutgoingWebServiceResponsesMessageSender") WebServiceResponseMessageSender webServiceResponseMessageSender,
-            @Qualifier("domainCoreOsgpCoreResponseMessageProcessorMap") MessageProcessorMap osgpCoreResponseMessageProcessorMap) {
-        super(webServiceResponseMessageSender, osgpCoreResponseMessageProcessorMap, MessageType.GET_CONFIGURATION,
-                ComponentType.DOMAIN_CORE);
+            @Qualifier("domainCoreOutboundWebServiceResponsesMessageSender") final WebServiceResponseMessageSender responseMessageSender,
+            @Qualifier("domainCoreInboundOsgpCoreResponsesMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
+        super(responseMessageSender, messageProcessorMap, MessageType.GET_CONFIGURATION, ComponentType.DOMAIN_CORE);
     }
 
     @Override

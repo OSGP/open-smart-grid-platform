@@ -12,9 +12,6 @@ import java.util.List;
 import org.joda.time.DateTime;
 import org.openmuc.openiec61850.BdaInt8;
 import org.openmuc.openiec61850.Fc;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DaylightSavingTimeTransition;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
@@ -31,6 +28,8 @@ import org.opensmartgridplatform.dto.valueobjects.ConfigurationDto;
 import org.opensmartgridplatform.dto.valueobjects.DeviceFixedIpDto;
 import org.opensmartgridplatform.dto.valueobjects.RelayMapDto;
 import org.opensmartgridplatform.dto.valueobjects.RelayTypeDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Iec61850SetConfigurationCommand {
 
@@ -38,6 +37,12 @@ public class Iec61850SetConfigurationCommand {
 
     private static final int SWITCH_TYPE_TARIFF = 0;
     private static final int SWITCH_TYPE_LIGHT = 1;
+
+    private DeviceMessageLoggingService loggingService;
+
+    public Iec61850SetConfigurationCommand(final DeviceMessageLoggingService loggingService) {
+        this.loggingService = loggingService;
+    }
 
     public void setConfigurationOnDevice(final Iec61850Client iec61850Client, final DeviceConnection deviceConnection,
             final ConfigurationDto configuration) throws ProtocolAdapterException {
@@ -198,7 +203,8 @@ public class Iec61850SetConfigurationCommand {
                     if (summerTimeDetails != null) {
 
                         final String mwdValueForBeginOfDst = DaylightSavingTimeTransition
-                                .forDateTimeAccordingToFormat(summerTimeDetails, dstFormatMwd).getTransition();
+                                .forDateTimeAccordingToFormat(summerTimeDetails, dstFormatMwd)
+                                .getTransition();
                         LOGGER.info("Updating DstBeginTime to {} based on SummerTimeDetails {}", mwdValueForBeginOfDst,
                                 summerTimeDetails);
                         clock.writeString(SubDataAttribute.SUMMER_TIME_DETAILS, mwdValueForBeginOfDst);
@@ -209,7 +215,8 @@ public class Iec61850SetConfigurationCommand {
                     if (winterTimeDetails != null) {
 
                         final String mwdValueForEndOfDst = DaylightSavingTimeTransition
-                                .forDateTimeAccordingToFormat(winterTimeDetails, dstFormatMwd).getTransition();
+                                .forDateTimeAccordingToFormat(winterTimeDetails, dstFormatMwd)
+                                .getTransition();
                         LOGGER.info("Updating DstEndTime to {} based on WinterTimeDetails {}", mwdValueForEndOfDst,
                                 winterTimeDetails);
                         clock.writeString(SubDataAttribute.WINTER_TIME_DETAILS, mwdValueForEndOfDst);
@@ -287,8 +294,9 @@ public class Iec61850SetConfigurationCommand {
                             Fc.CF, SubDataAttribute.GATEWAY, deviceFixedIp.getGateWay());
                 }
 
-                DeviceMessageLoggingService.logMessage(deviceMessageLog, deviceConnection.getDeviceIdentification(),
-                        deviceConnection.getOrganisationIdentification(), false);
+                Iec61850SetConfigurationCommand.this.loggingService.logMessage(deviceMessageLog,
+                        deviceConnection.getDeviceIdentification(), deviceConnection.getOrganisationIdentification(),
+                        false);
 
                 return null;
             }

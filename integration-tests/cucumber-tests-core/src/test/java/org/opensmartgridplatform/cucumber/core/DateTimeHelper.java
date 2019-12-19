@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.core;
 
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,6 +38,7 @@ public class DateTimeHelper {
      * <li>tomorrow - 1 year
      * <li>yesterday + 2 weeks
      * <li>today at midday
+     * <li>today at noon
      * <li>yesterday at midnight
      * <li>now at midday + 1 week
      * </ul>
@@ -98,6 +100,7 @@ public class DateTimeHelper {
 
             switch (whenMatcher.group(3)) {
             case "midday":
+            case "noon":
                 retval = retval.withHourOfDay(12);
                 break;
             case "midnight":
@@ -105,7 +108,7 @@ public class DateTimeHelper {
                 break;
             default:
                 throw new IllegalArgumentException(
-                        "Invalid dateString [" + dateString + "], expected \"midday\" or \"midnight\"");
+                        "Invalid dateString [" + dateString + "], expected \"midday\", \"noon\" or \"midnight\"");
             }
             retval = retval.withMinuteOfHour(0);
             retval = retval.withSecondOfMinute(0);
@@ -200,6 +203,17 @@ public class DateTimeHelper {
         }
 
         return new DateTime(officialTransition.getTimeInMillis());
+    }
+
+    /**
+     * Shifts a DateTime from the system's timezone to UTC.
+     *
+     * @param dateTime
+     *            The DateTime in local system's timezone.
+     * @return shifted DateTime in UTC
+     */
+    public static final DateTime shiftSystemZoneToUtc(final DateTime dateTime) {
+        return dateTime.plusSeconds(ZonedDateTime.now().getOffset().getTotalSeconds()).withZone(DateTimeZone.UTC);
     }
 
     /**

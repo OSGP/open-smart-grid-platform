@@ -43,8 +43,8 @@ public class CommonUpdateDeviceSslCertificationRequestMessageProcessor extends B
 
     @Autowired
     public CommonUpdateDeviceSslCertificationRequestMessageProcessor(
-            @Qualifier("domainCoreOutgoingWebServiceResponsesMessageSender") ResponseMessageSender responseMessageSender,
-            @Qualifier("domainCoreWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainCoreOutboundWebServiceResponsesMessageSender") final ResponseMessageSender responseMessageSender,
+            @Qualifier("domainCoreInboundWebServiceRequestsMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.UPDATE_DEVICE_SSL_CERTIFICATION,
                 ComponentType.DOMAIN_CORE);
     }

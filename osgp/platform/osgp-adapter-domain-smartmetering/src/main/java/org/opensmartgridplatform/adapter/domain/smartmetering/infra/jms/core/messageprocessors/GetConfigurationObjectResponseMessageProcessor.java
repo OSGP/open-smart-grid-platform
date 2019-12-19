@@ -33,7 +33,7 @@ public class GetConfigurationObjectResponseMessageProcessor extends OsgpCoreResp
     @Autowired
     protected GetConfigurationObjectResponseMessageProcessor(
             WebServiceResponseMessageSender responseMessageSender,
-            @Qualifier("domainSmartMeteringOsgpCoreResponseMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.GET_CONFIGURATION_OBJECT,
                 ComponentType.DOMAIN_SMART_METERING);
     }

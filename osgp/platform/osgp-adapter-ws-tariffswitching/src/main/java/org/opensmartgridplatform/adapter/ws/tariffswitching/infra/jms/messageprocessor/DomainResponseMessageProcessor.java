@@ -39,9 +39,9 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DomainResponseMessageProcessor.class);
 
-    @Qualifier("domainTariffSwitchingResponseMessageProcessorMap")
     @Autowired
-    protected MessageProcessorMap domainResponseMessageProcessorMap;
+    @Qualifier("wsTariffSwitchingInboundDomainResponsesMessageProcessorMap")
+    protected MessageProcessorMap messageProcessorMap;
 
     @Autowired
     private NotificationService notificationService;
@@ -71,7 +71,7 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
      */
     @PostConstruct
     public void init() {
-        this.domainResponseMessageProcessorMap.addMessageProcessor(this.messageType, this);
+        this.messageProcessorMap.addMessageProcessor(this.messageType, this);
     }
 
     @Override

@@ -13,30 +13,26 @@ import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
 import org.apache.commons.lang3.StringUtils;
+import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
-
-import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.springframework.stereotype.Component;
 
 /**
- * Class for sending common request messages to a queue
+ * Class for sending admin request messages to a queue
  */
+@Component(value = "wsAdminOutboundDomainRequestsMessageSender")
 public class AdminRequestMessageSender {
-    /**
-     * Logger for this class
-     */
+
     private static final Logger LOGGER = LoggerFactory.getLogger(AdminRequestMessageSender.class);
 
-    /**
-     * Autowired field for admin requests jms template
-     */
     @Autowired
-    @Qualifier("wsAdminOutgoingRequestsJmsTemplate")
-    private JmsTemplate adminRequestsJmsTemplate;
+    @Qualifier("wsAdminOutboundDomainRequestsJmsTemplate")
+    private JmsTemplate jmsTemplate;
 
     /**
      * Method for sending a request message to the queue
@@ -76,7 +72,7 @@ public class AdminRequestMessageSender {
     private void sendMessage(final AdminRequestMessage requestMessage) {
         LOGGER.info("Sending request message to admin requests queue");
 
-        this.adminRequestsJmsTemplate.send(new MessageCreator() {
+        this.jmsTemplate.send(new MessageCreator() {
 
             @Override
             public Message createMessage(final Session session) throws JMSException {

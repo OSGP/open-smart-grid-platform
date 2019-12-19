@@ -241,7 +241,6 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
       <scope>test</scope>
-      <version>4.2.4.RELEASE</version>
-    </dependency>
+      </dependency>
   </dependencies>
 </project>

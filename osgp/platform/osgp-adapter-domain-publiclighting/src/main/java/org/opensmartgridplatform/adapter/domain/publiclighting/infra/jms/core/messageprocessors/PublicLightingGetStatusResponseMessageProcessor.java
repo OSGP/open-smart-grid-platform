@@ -47,7 +47,7 @@ public class PublicLightingGetStatusResponseMessageProcessor extends BaseMessage
     @Autowired
     protected PublicLightingGetStatusResponseMessageProcessor(
             final ResponseMessageSender webServiceResponseMessageSender,
-            @Qualifier("domainPublicLightingOsgpCoreResponseMessageProcessorMap") final MessageProcessorMap osgpCoreResponseMessageProcessorMap) {
+            @Qualifier("domainPublicLightingInboundOsgpCoreResponsesMessageProcessorMap") final MessageProcessorMap osgpCoreResponseMessageProcessorMap) {
         super(webServiceResponseMessageSender, osgpCoreResponseMessageProcessorMap, MessageType.GET_LIGHT_STATUS,
                 ComponentType.DOMAIN_PUBLIC_LIGHTING);
     }

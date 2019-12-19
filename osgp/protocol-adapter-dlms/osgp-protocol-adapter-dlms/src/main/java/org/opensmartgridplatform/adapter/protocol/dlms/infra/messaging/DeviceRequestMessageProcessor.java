@@ -43,7 +43,7 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
     protected DeviceResponseMessageSender responseMessageSender;
 
     @Autowired
-    @Qualifier("protocolDlmsDeviceRequestMessageProcessorMap")
+    @Qualifier("protocolDlmsInboundOsgpCoreRequestsMessageProcessorMap")
     protected MessageProcessorMap dlmsRequestMessageProcessorMap;
 
     @Autowired
@@ -72,7 +72,8 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
         this.dlmsRequestMessageProcessorMap.addMessageProcessor(this.messageType, this);
     }
 
-    @SuppressWarnings("squid:S1193") // SilentException cannot be caught since it does not extend Exception.
+    @SuppressWarnings("squid:S1193") // SilentException cannot be caught since
+                                     // it does not extend Exception.
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
         LOGGER.debug("Processing {} request message", this.messageType);
@@ -85,10 +86,11 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
             messageMetadata = MessageMetadata.fromMessage(message);
 
             /**
-             * The happy flow for addMeter requires that the dlmsDevice does not exist.
-             * Because the findDlmsDevice below throws a runtime exception, we skip this
-             * call in the addMeter flow. The AddMeterRequestMessageProcessor will throw the
-             * appropriate 'dlmsDevice already exists' error if the dlmsDevice does exists!
+             * The happy flow for addMeter requires that the dlmsDevice does not
+             * exist. Because the findDlmsDevice below throws a runtime
+             * exception, we skip this call in the addMeter flow. The
+             * AddMeterRequestMessageProcessor will throw the appropriate
+             * 'dlmsDevice already exists' error if the dlmsDevice does exists!
              */
             if (!MessageType.ADD_METER.name().equals(messageMetadata.getMessageType())) {
                 device = this.domainHelperService.findDlmsDevice(messageMetadata);
@@ -125,9 +127,9 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
 
     /**
      * Implementation of this method should call a service that can handle the
-     * requestObject and return a response object to be put on the response queue.
-     * This response object can also be null for methods that don't provide result
-     * data.
+     * requestObject and return a response object to be put on the response
+     * queue. This response object can also be null for methods that don't
+     * provide result data.
      *
      * @param conn
      *            the connection to the device.

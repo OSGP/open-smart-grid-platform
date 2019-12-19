@@ -13,30 +13,26 @@ import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
 import org.apache.commons.lang3.StringUtils;
+import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
-
-import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.springframework.stereotype.Component;
 
 /**
  * Class for sending common request messages to a queue
  */
+@Component(value = "wsCoreOutboundDomainRequestsMessageSender")
 public class CommonRequestMessageSender {
-    /**
-     * Logger for this class
-     */
+
     private static final Logger LOGGER = LoggerFactory.getLogger(CommonRequestMessageSender.class);
 
-    /**
-     * Autowired field for common requests jms template
-     */
     @Autowired
-    @Qualifier("wsCoreOutgoingRequestsJmsTemplate")
-    private JmsTemplate commonRequestsJmsTemplate;
+    @Qualifier("wsCoreOutboundDomainRequestsJmsTemplate")
+    private JmsTemplate jmsTemplate;
 
     /**
      * Method for sending a request message to the queue
@@ -77,7 +73,7 @@ public class CommonRequestMessageSender {
     private void sendMessage(final CommonRequestMessage requestMessage) {
         LOGGER.info("Sending request message to common requests queue");
 
-        this.commonRequestsJmsTemplate.send(new MessageCreator() {
+        this.jmsTemplate.send(new MessageCreator() {
 
             @Override
             public Message createMessage(final Session session) throws JMSException {

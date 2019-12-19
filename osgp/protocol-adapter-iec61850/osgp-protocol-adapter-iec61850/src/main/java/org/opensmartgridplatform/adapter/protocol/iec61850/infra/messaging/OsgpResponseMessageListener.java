@@ -22,7 +22,9 @@ import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.opensmartgridplatform.shared.infra.jms.UnknownMessageTypeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+@Component(value = "protocolIec61850InboundOsgpCoreResponsesMessageListener")
 public class OsgpResponseMessageListener implements MessageListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OsgpResponseMessageListener.class);
@@ -39,8 +41,8 @@ public class OsgpResponseMessageListener implements MessageListener {
             final String result = responseMessage == null ? null : responseMessage.getResult().toString();
             final OsgpException osgpException = responseMessage == null ? null : responseMessage.getOsgpException();
 
-            if (MessageType.valueOf(messageType).equals(MessageType.REGISTER_DEVICE)) {
-                this.handleDeviceRegistration(result, deviceIdentification, messageType, osgpException);
+            if (MessageType.valueOf(messageType) == (MessageType.REGISTER_DEVICE)) {
+                handleDeviceRegistration(result, deviceIdentification, messageType, osgpException);
             } else {
                 throw new UnknownMessageTypeException("Unknown JMSType: " + messageType);
             }
@@ -54,9 +56,9 @@ public class OsgpResponseMessageListener implements MessageListener {
         }
     }
 
-    private void handleDeviceRegistration(final String result, final String deviceIdentification,
+    private static void handleDeviceRegistration(final String result, final String deviceIdentification,
             final String messageType, final OsgpException osgpException) throws ProtocolAdapterException {
-        if (ResponseMessageResultType.valueOf(result).equals(ResponseMessageResultType.NOT_OK)) {
+        if (ResponseMessageResultType.valueOf(result) == (ResponseMessageResultType.NOT_OK)) {
             throw new ProtocolAdapterException(
                     String.format("Response for device: %s for MessageType: %s is: %s, error: %s", deviceIdentification,
                             messageType, result, osgpException));

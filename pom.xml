@@ -86,6 +86,9 @@
   </build>
 
   <modules>
+    <!-- super pom -->
+    <module>super/pom.xml</module>
+
     <!-- shared -->
     <module>osgp/shared/parent-shared</module>
     <module>osgp/shared/shared</module>

@@ -1,4 +1,4 @@
-@SmartMetering @Platform @SmartMeteringAdHoc
+@SmartMetering @Platform @SmartMeteringAdHoc @NightlyBuildOnly
 Feature: SmartMetering AdHoc - Get All Attribute Values
   As a grid operator
   I want to be able to get all attribute values from a device

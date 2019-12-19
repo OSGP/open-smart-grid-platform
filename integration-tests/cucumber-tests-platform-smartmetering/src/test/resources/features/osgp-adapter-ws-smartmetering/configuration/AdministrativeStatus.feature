@@ -1,4 +1,4 @@
-@SmartMetering @Platform @SmartMeteringConfiguration
+@SmartMetering @Platform @SmartMeteringConfiguration @NightlyBuildOnly
 Feature: SmartMetering Configuration - Administrative Status
   As a grid operator
   I want to be able to perform get or set the administrative status on a device

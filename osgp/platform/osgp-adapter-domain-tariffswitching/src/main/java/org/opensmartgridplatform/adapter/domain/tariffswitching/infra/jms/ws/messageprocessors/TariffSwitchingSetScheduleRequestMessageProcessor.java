@@ -12,10 +12,10 @@ import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.tariffswitching.application.services.ScheduleManagementService;
 import org.opensmartgridplatform.domain.core.valueobjects.Schedule;
-import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
@@ -42,9 +42,8 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor extends BaseMessa
     private ScheduleManagementService scheduleManagementService;
 
     @Autowired
-    public TariffSwitchingSetScheduleRequestMessageProcessor(
-            ResponseMessageSender responseMessageSender,
-            @Qualifier("domainTariffSwitchingWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+    public TariffSwitchingSetScheduleRequestMessageProcessor(final ResponseMessageSender responseMessageSender,
+            @Qualifier("domainTariffSwitchingInboundWebServiceRequestsMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.SET_TARIFF_SCHEDULE,
                 ComponentType.DOMAIN_TARIFF_SWITCHING);
     }
@@ -87,8 +86,8 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor extends BaseMessa
             final Schedule tariffSchedule = (Schedule) dataObject;
             final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification,
                     correlationUid);
-            this.scheduleManagementService.setTariffSchedule(ids, tariffSchedule.getScheduleEntries(),
-                    scheduleTime, messageType, messagePriority);
+            this.scheduleManagementService.setTariffSchedule(ids, tariffSchedule.getScheduleEntries(), scheduleTime,
+                    messageType, messagePriority);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType,

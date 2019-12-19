@@ -9,6 +9,11 @@
  */
 package org.opensmartgridplatform.adapter.domain.da.infra.jms.core;
 
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageListener;
+import javax.jms.ObjectMessage;
+
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.slf4j.Logger;
@@ -17,20 +22,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageListener;
-import javax.jms.ObjectMessage;
-
-//Fetch incoming messages from the responses queue of OSGP Core.
-@Component(value = "domainDistributionAutomationIncomingOsgpCoreResponseMessageListener")
+/**
+ * Fetches inbound responses from OSGP Core from queue.
+ */
+@Component(value = "domainDistributionAutomationInboundOsgpCoreResponsesMessageListener")
 public class OsgpCoreResponseMessageListener implements MessageListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OsgpCoreResponseMessageListener.class);
 
     @Autowired
-    @Qualifier("domainDistributionAutomationOsgpCoreResponseMessageProcessorMap")
-    private MessageProcessorMap osgpCoreResponseMessageProcessorMap;
+    @Qualifier("domainDistributionAutomationInboundOsgpCoreResponsesMessageProcessorMap")
+    private MessageProcessorMap messageProcessorMap;
 
     @Override
     public void onMessage(final Message message) {
@@ -39,8 +41,7 @@ public class OsgpCoreResponseMessageListener implements MessageListener {
 
             final ObjectMessage objectMessage = (ObjectMessage) message;
 
-            final MessageProcessor processor = this.osgpCoreResponseMessageProcessorMap
-                    .getMessageProcessor(objectMessage);
+            final MessageProcessor processor = this.messageProcessorMap.getMessageProcessor(objectMessage);
 
             processor.processMessage(objectMessage);
 

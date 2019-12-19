@@ -29,7 +29,7 @@ public class SetClockConfigurationResponseMessageProcessor extends OsgpCoreRespo
 
     @Autowired
     protected SetClockConfigurationResponseMessageProcessor(WebServiceResponseMessageSender responseMessageSender,
-            @Qualifier("domainSmartMeteringOsgpCoreResponseMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.SET_CLOCK_CONFIGURATION,
                 ComponentType.DOMAIN_SMART_METERING);
     }

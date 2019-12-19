@@ -19,12 +19,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
+import org.springframework.stereotype.Component;
 
 // Send response message to the web service adapter.
+@Component(value = "domainPublicLightingOutboundWebServiceResponsesMessageSender")
 public class WebServiceResponseMessageSender implements ResponseMessageSender {
 
     @Autowired
-    @Qualifier("domainPublicLightingOutgoingWebServiceResponsesJmsTemplate")
+    @Qualifier("domainPublicLightingOutboundWebServiceResponsesJmsTemplate")
     private JmsTemplate webServiceResponsesJmsTemplate;
 
     /**

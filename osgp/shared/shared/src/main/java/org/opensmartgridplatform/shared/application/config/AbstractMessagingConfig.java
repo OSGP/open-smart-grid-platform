@@ -24,7 +24,11 @@ import org.springframework.context.annotation.Bean;
 
 /**
  * This class provides the basic components used for JMS messaging.
+ *
+ * @deprecated Will be replaced by broker per queue configuration using the
+ *             {@link org.opensmartgridplatform.shared.application.config.messaging.JmsConfigurationFactory}
  */
+@Deprecated
 public abstract class AbstractMessagingConfig extends AbstractConfig {
 
     @Value("${jms.activemq.broker.url:ssl://localhost:61617}")

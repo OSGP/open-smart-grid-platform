@@ -31,7 +31,7 @@ public class SetConfigurationObjectResponseMessageProcessor extends OsgpCoreResp
 
     @Autowired
     protected SetConfigurationObjectResponseMessageProcessor(WebServiceResponseMessageSender responseMessageSender,
-            @Qualifier("domainSmartMeteringOsgpCoreResponseMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.SET_CONFIGURATION_OBJECT,
                 ComponentType.DOMAIN_SMART_METERING);
     }
