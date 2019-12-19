@@ -115,10 +115,6 @@ public class DlmsObjectConfigService {
 
         if (!(object instanceof DlmsProfile) || from == null || to == null) {
             return null;
-        } else if (!device.isSelectiveAccessSupported()) {
-            LOGGER.info("Device does not support selective access, returning all captureobjects as selected objects");
-            selectedObjects.addAll(((DlmsProfile) object).getCaptureObjects());
-            return null;
         } else {
             final int accessSelector = 1;
 
@@ -141,13 +137,13 @@ public class DlmsObjectConfigService {
 
             final DlmsProfile profile = (DlmsProfile) object;
 
-            if (!protocol.isSelectValuesInSelectiveAccessSupported()) {
-                // If selecting values is not supported, then all values are selected (and the objectDefinitions list
-                // should be empty)
-                selectedObjects.addAll(profile.getCaptureObjects());
-            } else {
+            if (protocol.isSelectValuesInSelectiveAccessSupported() && addressRequest.getDevice().isSelectiveAccessSupported()) {
                 objectDefinitions = this.getObjectDefinitions(addressRequest.getChannel(),
                         addressRequest.getFilterMedium(), protocol, profile, selectedObjects);
+            } else {
+                // If selecting values is not supported, then all values are selected (and the objectDefinitions list
+                // should be empty)
+                selectedObjects.addAll(((DlmsProfile) object).getCaptureObjects());
             }
         }
 
