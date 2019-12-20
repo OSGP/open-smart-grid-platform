@@ -201,7 +201,11 @@
         <artifactId>hibernate-entitymanager</artifactId>
         <version>${hibernate.version}</version>
       </dependency>
-
+      <dependency>
+          <groupId>net.bytebuddy</groupId>
+          <artifactId>byte-buddy</artifactId>
+          <version>${bytebuddy.version}</version>
+      </dependency>
 
       <!-- Flyway (DB Migration) -->
       <dependency>
@@ -315,12 +319,6 @@
         <artifactId>mockito-core</artifactId>
         <version>${mockito.version}</version>
         <scope>test</scope>
-      </dependency>
-      <dependency>
-          <groupId>net.bytebuddy</groupId>
-          <artifactId>byte-buddy</artifactId>
-          <version>${bytebuddy.version}</version>
-          <scope>test</scope>
       </dependency>
 
       <dependency>
