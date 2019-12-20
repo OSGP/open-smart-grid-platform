@@ -78,6 +78,17 @@
       <name>Fuse Source</name>
       <url>http://repo.fusesource.com/nexus/content/groups/public/</url>
       <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>maven-repo1</id>
+      <name>Maven Repository</name>
+      <url>https://repo1.maven.org/maven2/</url>
+      <releases>
         <enabled>true</enabled>
       </releases>
       <snapshots>
