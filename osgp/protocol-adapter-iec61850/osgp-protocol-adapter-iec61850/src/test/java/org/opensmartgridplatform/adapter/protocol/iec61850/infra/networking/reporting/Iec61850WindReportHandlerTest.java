@@ -7,13 +7,12 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.reporting;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class Iec61850WindReportHandlerTest {
 
@@ -40,13 +39,13 @@ public class Iec61850WindReportHandlerTest {
 
         final Matcher reportMatcher = NODE_PATTERN.matcher(reference);
 
-        assertTrue(reportMatcher.matches());
+        assertThat(reportMatcher.matches()).isTrue();
 
-        assertEquals(expectedServerName, reportMatcher.group(1));
-        assertEquals(expectedSystemId, reportMatcher.group(2));
-        assertEquals(expectedNodeName, reportMatcher.group(3));
-        assertEquals(expectedNodeId, reportMatcher.group(4));
-        assertEquals(expectedAttribute, reportMatcher.group(5));
+        assertThat(reportMatcher.group(1)).isEqualTo(expectedServerName);
+        assertThat(reportMatcher.group(2)).isEqualTo(expectedSystemId);
+        assertThat(reportMatcher.group(3)).isEqualTo(expectedNodeName);
+        assertThat(reportMatcher.group(4)).isEqualTo(expectedNodeId);
+        assertThat(reportMatcher.group(5)).isEqualTo(expectedAttribute);
 
     }
 }

@@ -6,11 +6,13 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
@@ -20,7 +22,8 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFla
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObjectDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GprsOperationModeTypeDto;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class SetConfigurationObjectServiceDsmr4Test {
 
     private static final GprsOperationModeTypeDto GPRS_OPERATION_MODE = GprsOperationModeTypeDto.ALWAYS_ON;
@@ -34,7 +37,7 @@ public class SetConfigurationObjectServiceDsmr4Test {
     @Mock
     ConfigurationObjectDto configurationOnDevice;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.instance = new SetConfigurationObjectServiceDsmr4(null);
         when(this.configurationToSet.getConfigurationFlags()).thenReturn(this.emptyFlags());
@@ -53,9 +56,10 @@ public class SetConfigurationObjectServiceDsmr4Test {
     @Test
     public void getBitPosition() {
         for (final ConfigurationFlagTypeDto flagTypeDto : ConfigurationFlagTypeDto.values()) {
-            flagTypeDto.getBitPositionDsmr4().ifPresent(bitPosition -> assertThat(
-                    this.instance.getBitPosition(flagTypeDto).orElseThrow(IllegalArgumentException::new)).isEqualTo(
-                    bitPosition));
+            flagTypeDto.getBitPositionDsmr4()
+                    .ifPresent(bitPosition -> assertThat(
+                            this.instance.getBitPosition(flagTypeDto).orElseThrow(IllegalArgumentException::new))
+                                    .isEqualTo(bitPosition));
         }
     }
 

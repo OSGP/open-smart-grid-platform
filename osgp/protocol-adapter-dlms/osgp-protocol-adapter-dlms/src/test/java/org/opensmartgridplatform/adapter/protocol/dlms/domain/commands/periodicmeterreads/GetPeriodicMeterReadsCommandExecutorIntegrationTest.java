@@ -22,10 +22,10 @@ import java.util.stream.Collectors;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SelectiveAccessDescription;
@@ -45,7 +45,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterRea
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseItemDto;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
 
     private GetPeriodicMeterReadsCommandExecutor executor;
@@ -83,33 +83,31 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
     private final byte ATTR_ID_BUFFER = 2;
     private final byte ATTR_ID_SCALER_UNIT = 3;
 
-    private final DataObject CLOCK = DataObject.newStructureData(
-            Arrays.asList(DataObject.newUInteger16Data(this.CLASS_ID_CLOCK),
-                    DataObject.newOctetStringData(this.OBIS_CLOCK.bytes()),
-                    DataObject.newInteger8Data(this.ATTR_ID_VALUE), DataObject.newUInteger16Data(0)));
+    private final DataObject CLOCK = DataObject.newStructureData(Arrays.asList(
+            DataObject.newUInteger16Data(this.CLASS_ID_CLOCK), DataObject.newOctetStringData(this.OBIS_CLOCK.bytes()),
+            DataObject.newInteger8Data(this.ATTR_ID_VALUE), DataObject.newUInteger16Data(0)));
 
-    private final DataObject STATUS = DataObject.newStructureData(
-            Arrays.asList(DataObject.newUInteger16Data(this.CLASS_ID_DATA),
-                    DataObject.newOctetStringData(this.OBIS_STATUS.bytes()),
-                    DataObject.newInteger8Data(this.ATTR_ID_VALUE), DataObject.newUInteger16Data(0)));
+    private final DataObject STATUS = DataObject.newStructureData(Arrays.asList(
+            DataObject.newUInteger16Data(this.CLASS_ID_DATA), DataObject.newOctetStringData(this.OBIS_STATUS.bytes()),
+            DataObject.newInteger8Data(this.ATTR_ID_VALUE), DataObject.newUInteger16Data(0)));
 
-    private final DataObject ACTIVE_ENERGY_IMPORT_RATE_1 = DataObject.newStructureData(
-            Arrays.asList(DataObject.newUInteger16Data(this.CLASS_ID_REGISTER),
+    private final DataObject ACTIVE_ENERGY_IMPORT_RATE_1 = DataObject
+            .newStructureData(Arrays.asList(DataObject.newUInteger16Data(this.CLASS_ID_REGISTER),
                     DataObject.newOctetStringData(this.OBIS_ACTIVE_ENERGY_IMPORT_RATE_1.bytes()),
                     DataObject.newInteger8Data(this.ATTR_ID_VALUE), DataObject.newUInteger16Data(0)));
 
-    private final DataObject ACTIVE_ENERGY_IMPORT_RATE_2 = DataObject.newStructureData(
-            Arrays.asList(DataObject.newUInteger16Data(this.CLASS_ID_REGISTER),
+    private final DataObject ACTIVE_ENERGY_IMPORT_RATE_2 = DataObject
+            .newStructureData(Arrays.asList(DataObject.newUInteger16Data(this.CLASS_ID_REGISTER),
                     DataObject.newOctetStringData(this.OBIS_ACTIVE_ENERGY_IMPORT_RATE_2.bytes()),
                     DataObject.newInteger8Data(this.ATTR_ID_VALUE), DataObject.newUInteger16Data(0)));
 
-    private final DataObject ACTIVE_ENERGY_EXPORT_RATE_1 = DataObject.newStructureData(
-            Arrays.asList(DataObject.newUInteger16Data(this.CLASS_ID_REGISTER),
+    private final DataObject ACTIVE_ENERGY_EXPORT_RATE_1 = DataObject
+            .newStructureData(Arrays.asList(DataObject.newUInteger16Data(this.CLASS_ID_REGISTER),
                     DataObject.newOctetStringData(this.OBIS_ACTIVE_ENERGY_EXPORT_RATE_1.bytes()),
                     DataObject.newInteger8Data(this.ATTR_ID_VALUE), DataObject.newUInteger16Data(0)));
 
-    private final DataObject ACTIVE_ENERGY_EXPORT_RATE_2 = DataObject.newStructureData(
-            Arrays.asList(DataObject.newUInteger16Data(this.CLASS_ID_REGISTER),
+    private final DataObject ACTIVE_ENERGY_EXPORT_RATE_2 = DataObject
+            .newStructureData(Arrays.asList(DataObject.newUInteger16Data(this.CLASS_ID_REGISTER),
                     DataObject.newOctetStringData(this.OBIS_ACTIVE_ENERGY_EXPORT_RATE_2.bytes()),
                     DataObject.newInteger8Data(this.ATTR_ID_VALUE), DataObject.newUInteger16Data(0)));
 
@@ -150,7 +148,7 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
         this.period2ClockValueNullDataPeriodMonthly = new GregorianCalendar(2019, Calendar.FEBRUARY, 1, 0, 0).getTime();
     }
 
-    @Before
+    @BeforeEach
     public void setUp() {
 
         final TimeZone defaultTimeZone = TimeZone.getDefault();
@@ -251,16 +249,20 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
         final List<AttributeAddress> requestedAttributeAddresses = this.connectionStub.getRequestedAttributeAddresses();
         assertThat(requestedAttributeAddresses.size()).isEqualTo(expectedTotalNumberOfAttributeAddresses);
 
-        // There should be 1 request to the buffer (id = 2) of a profile (class-id = 7)
-        final AttributeAddress actualAttributeAddressProfile = requestedAttributeAddresses.stream().filter(
-                a -> a.getClassId() == this.CLASS_ID_PROFILE).collect(Collectors.toList()).get(0);
+        // There should be 1 request to the buffer (id = 2) of a profile
+        // (class-id = 7)
+        final AttributeAddress actualAttributeAddressProfile = requestedAttributeAddresses.stream()
+                .filter(a -> a.getClassId() == this.CLASS_ID_PROFILE)
+                .collect(Collectors.toList())
+                .get(0);
 
         AttributeAddressAssert.is(actualAttributeAddressProfile, expectedAddressProfile);
 
-        // Check the amount of requests to the scaler_units of the meter values in the registers
-        final List<AttributeAddress> attributeAddressesScalerUnit = requestedAttributeAddresses.stream().filter(
-                a -> a.getClassId() == this.CLASS_ID_REGISTER && a.getId() == this.ATTR_ID_SCALER_UNIT).collect(
-                Collectors.toList());
+        // Check the amount of requests to the scaler_units of the meter values
+        // in the registers
+        final List<AttributeAddress> attributeAddressesScalerUnit = requestedAttributeAddresses.stream()
+                .filter(a -> a.getClassId() == this.CLASS_ID_REGISTER && a.getId() == this.ATTR_ID_SCALER_UNIT)
+                .collect(Collectors.toList());
         assertThat(attributeAddressesScalerUnit.size()).isEqualTo(expectedScalerUnitAddresses.size());
 
         // Check response
@@ -351,9 +353,8 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
             periodItem1 = DataObject.newStructureData(
                     Arrays.asList(period1Clock, period1Value1, period1Value2, period1Value3, period1Value4));
         } else {
-            periodItem1 = DataObject.newStructureData(
-                    Arrays.asList(period1Clock, period1Status, period1Value1, period1Value2, period1Value3,
-                            period1Value4));
+            periodItem1 = DataObject.newStructureData(Arrays.asList(period1Clock, period1Status, period1Value1,
+                    period1Value2, period1Value3, period1Value4));
         }
 
         // PERIOD 2
@@ -376,9 +377,8 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
             periodItem2 = DataObject.newStructureData(
                     Arrays.asList(period2Clock, period2Value1, period2Value2, period2Value3, period2Value4));
         } else {
-            periodItem2 = DataObject.newStructureData(
-                    Arrays.asList(period2Clock, period2Status, period2Value1, period2Value2, period2Value3,
-                            period2Value4));
+            periodItem2 = DataObject.newStructureData(Arrays.asList(period2Clock, period2Status, period2Value1,
+                    period2Value2, period2Value3, period2Value4));
         }
 
         // Create returnvalue and set in stub
@@ -410,9 +410,11 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
 
         final PeriodicMeterReadsResponseItemDto periodicMeterRead2 = periodicMeterReads.get(1);
 
-        if (!useNullData) { // The timestamps should be the same as the times set in the test
+        if (!useNullData) { // The timestamps should be the same as the times
+                            // set in the test
             assertThat(periodicMeterRead2.getLogTime()).isEqualTo(this.period2ClockValue);
-        } else { // The timestamps should be calculated using the periodType, starting from the time of period 1
+        } else { // The timestamps should be calculated using the periodType,
+                 // starting from the time of period 1
             if (type == PeriodTypeDto.INTERVAL) {
                 assertThat(periodicMeterRead2.getLogTime()).isEqualTo(this.period2ClockValueNullDataPeriod15Min);
             } else if (type == PeriodTypeDto.DAILY) {
@@ -430,22 +432,22 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
         final PeriodicMeterReadsResponseItemDto period2 = periodicMeterReads.get(1);
 
         if (type == PeriodTypeDto.MONTHLY || type == PeriodTypeDto.DAILY) {
-            assertThat(period1.getActiveEnergyImportTariffOne().getValue().longValue()).isEqualTo(
-                    this.PERIOD_1_LONG_VALUE_1);
-            assertThat(period1.getActiveEnergyImportTariffTwo().getValue().longValue()).isEqualTo(
-                    this.PERIOD_1_LONG_VALUE_2);
-            assertThat(period1.getActiveEnergyExportTariffOne().getValue().longValue()).isEqualTo(
-                    this.PERIOD_1_LONG_VALUE_3);
-            assertThat(period1.getActiveEnergyExportTariffTwo().getValue().longValue()).isEqualTo(
-                    this.PERIOD_1_LONG_VALUE_4);
-            assertThat(period2.getActiveEnergyImportTariffOne().getValue().longValue()).isEqualTo(
-                    this.PERIOD_2_LONG_VALUE_1);
-            assertThat(period2.getActiveEnergyImportTariffTwo().getValue().longValue()).isEqualTo(
-                    this.PERIOD_2_LONG_VALUE_2);
-            assertThat(period2.getActiveEnergyExportTariffOne().getValue().longValue()).isEqualTo(
-                    this.PERIOD_2_LONG_VALUE_3);
-            assertThat(period2.getActiveEnergyExportTariffTwo().getValue().longValue()).isEqualTo(
-                    this.PERIOD_2_LONG_VALUE_4);
+            assertThat(period1.getActiveEnergyImportTariffOne().getValue().longValue())
+                    .isEqualTo(this.PERIOD_1_LONG_VALUE_1);
+            assertThat(period1.getActiveEnergyImportTariffTwo().getValue().longValue())
+                    .isEqualTo(this.PERIOD_1_LONG_VALUE_2);
+            assertThat(period1.getActiveEnergyExportTariffOne().getValue().longValue())
+                    .isEqualTo(this.PERIOD_1_LONG_VALUE_3);
+            assertThat(period1.getActiveEnergyExportTariffTwo().getValue().longValue())
+                    .isEqualTo(this.PERIOD_1_LONG_VALUE_4);
+            assertThat(period2.getActiveEnergyImportTariffOne().getValue().longValue())
+                    .isEqualTo(this.PERIOD_2_LONG_VALUE_1);
+            assertThat(period2.getActiveEnergyImportTariffTwo().getValue().longValue())
+                    .isEqualTo(this.PERIOD_2_LONG_VALUE_2);
+            assertThat(period2.getActiveEnergyExportTariffOne().getValue().longValue())
+                    .isEqualTo(this.PERIOD_2_LONG_VALUE_3);
+            assertThat(period2.getActiveEnergyExportTariffTwo().getValue().longValue())
+                    .isEqualTo(this.PERIOD_2_LONG_VALUE_4);
         } else { // INTERVAL, only total values
             assertThat(period1.getActiveEnergyImport().getValue().longValue()).isEqualTo(this.PERIOD_1_LONG_VALUE_1);
             assertThat(period1.getActiveEnergyExport().getValue().longValue()).isEqualTo(this.PERIOD_1_LONG_VALUE_2);
@@ -466,20 +468,19 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
     private SelectiveAccessDescription createSelectiveAccessDescriptionDsmr4Daily(final DataObject from,
             final DataObject to) {
 
-        final DataObject selectedValues = DataObject.newArrayData(
-                Arrays.asList(this.CLOCK, this.STATUS, this.ACTIVE_ENERGY_IMPORT_RATE_1,
-                        this.ACTIVE_ENERGY_IMPORT_RATE_2, this.ACTIVE_ENERGY_EXPORT_RATE_1,
-                        this.ACTIVE_ENERGY_EXPORT_RATE_2));
+        final DataObject selectedValues = DataObject.newArrayData(Arrays.asList(this.CLOCK, this.STATUS,
+                this.ACTIVE_ENERGY_IMPORT_RATE_1, this.ACTIVE_ENERGY_IMPORT_RATE_2, this.ACTIVE_ENERGY_EXPORT_RATE_1,
+                this.ACTIVE_ENERGY_EXPORT_RATE_2));
 
-        final DataObject expectedAccessParam = DataObject.newStructureData(
-                Arrays.asList(this.CLOCK, from, to, selectedValues));
+        final DataObject expectedAccessParam = DataObject
+                .newStructureData(Arrays.asList(this.CLOCK, from, to, selectedValues));
 
         return new SelectiveAccessDescription(1, expectedAccessParam);
     }
 
     private AttributeAddress createAttributeAddressDsmr4Monthly(final DataObject from, final DataObject to) {
-        final SelectiveAccessDescription expectedSelectiveAccess = this.createSelectiveAccessDescriptionDsmr4Monthly(
-                from, to);
+        final SelectiveAccessDescription expectedSelectiveAccess = this
+                .createSelectiveAccessDescriptionDsmr4Monthly(from, to);
         return new AttributeAddress(this.CLASS_ID_PROFILE, this.OBIS_MONTHLY_DSMR4, this.ATTR_ID_BUFFER,
                 expectedSelectiveAccess);
     }
@@ -491,15 +492,15 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
                 Arrays.asList(this.CLOCK, this.ACTIVE_ENERGY_IMPORT_RATE_1, this.ACTIVE_ENERGY_IMPORT_RATE_2,
                         this.ACTIVE_ENERGY_EXPORT_RATE_1, this.ACTIVE_ENERGY_EXPORT_RATE_2));
 
-        final DataObject expectedAccessParam = DataObject.newStructureData(
-                Arrays.asList(this.CLOCK, from, to, selectedValues));
+        final DataObject expectedAccessParam = DataObject
+                .newStructureData(Arrays.asList(this.CLOCK, from, to, selectedValues));
 
         return new SelectiveAccessDescription(1, expectedAccessParam);
     }
 
     private AttributeAddress createAttributeAddressDsmr4Interval(final DataObject from, final DataObject to) {
-        final SelectiveAccessDescription expectedSelectiveAccess = this.createSelectiveAccessDescriptionDsmr4Interval(
-                from, to);
+        final SelectiveAccessDescription expectedSelectiveAccess = this
+                .createSelectiveAccessDescriptionDsmr4Interval(from, to);
         return new AttributeAddress(this.CLASS_ID_PROFILE, this.OBIS_INTERVAL_DSMR4, this.ATTR_ID_BUFFER,
                 expectedSelectiveAccess);
     }
@@ -509,8 +510,8 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
 
         final DataObject selectedValues = DataObject.newArrayData(Collections.emptyList());
 
-        final DataObject expectedAccessParam = DataObject.newStructureData(
-                Arrays.asList(this.CLOCK, from, to, selectedValues));
+        final DataObject expectedAccessParam = DataObject
+                .newStructureData(Arrays.asList(this.CLOCK, from, to, selectedValues));
 
         return new SelectiveAccessDescription(1, expectedAccessParam);
     }
@@ -540,8 +541,8 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
 
         final DataObject selectedValues = DataObject.newArrayData(Collections.emptyList());
 
-        final DataObject expectedAccessParam = DataObject.newStructureData(
-                Arrays.asList(this.CLOCK, from, to, selectedValues));
+        final DataObject expectedAccessParam = DataObject
+                .newStructureData(Arrays.asList(this.CLOCK, from, to, selectedValues));
 
         return new SelectiveAccessDescription(1, expectedAccessParam);
     }

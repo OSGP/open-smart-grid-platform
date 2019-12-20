@@ -11,11 +11,12 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmuc.jdlms.DlmsConnection;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -25,7 +26,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.Invocatio
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DlmsConnectionFactoryTest {
     private DlmsConnectionFactory factory;
 
@@ -44,7 +45,7 @@ public class DlmsConnectionFactoryTest {
     @Mock
     private DlmsConnection connection;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.factory = new DlmsConnectionFactory(this.hls5Connector, this.lls1Connector, this.lls0Connector,
                 this.domainHelperService);
@@ -63,20 +64,25 @@ public class DlmsConnectionFactoryTest {
         assertThat(result.getConnection()).isSameAs(this.connection);
     }
 
-    @Test(expected = FunctionalException.class)
+    @Test
     public void getConnection_throwsForHls4Device() throws Exception {
-        final DlmsDevice device = new DlmsDeviceBuilder().withHls4Active(true).build();
-        final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
+        Assertions.assertThrows(FunctionalException.class, () -> {
 
-        this.factory.getConnection(device, listener);
+            final DlmsDevice device = new DlmsDeviceBuilder().withHls4Active(true).build();
+            final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
+
+            this.factory.getConnection(device, listener);
+        });
     }
 
-    @Test(expected = FunctionalException.class)
+    @Test
     public void getConnection_throwsForHls3Device() throws Exception {
-        final DlmsDevice device = new DlmsDeviceBuilder().withHls3Active(true).build();
-        final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
+        Assertions.assertThrows(FunctionalException.class, () -> {
+            final DlmsDevice device = new DlmsDeviceBuilder().withHls3Active(true).build();
+            final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 
-        this.factory.getConnection(device, listener);
+            this.factory.getConnection(device, listener);
+        });
     }
 
     @Test
@@ -117,7 +123,6 @@ public class DlmsConnectionFactoryTest {
         assertThat(result).isEqualToComparingFieldByField(expected);
         assertThat(result.getConnection()).isSameAs(this.connection);
     }
-
 
     private DlmsConnectionManager newConnectionManager(final DlmsDevice device, final DlmsMessageListener listener,
             final DlmsConnector connector) throws OsgpException {

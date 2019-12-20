@@ -14,7 +14,7 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.Test
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
-import cucumber.api.java.Before;
+import io.cucumber.java.Before;
 
 @ContextConfiguration(classes = { TestConfiguration.class })
 public class ContextConfigurationSteps {

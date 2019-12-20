@@ -10,7 +10,6 @@ package org.opensmartgridplatform.adapter.domain.core.application.mapping;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,7 +18,7 @@ import java.util.List;
 
 import org.assertj.core.api.Assertions;
 import org.joda.time.DateTime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.domain.core.valueobjects.Configuration;
 import org.opensmartgridplatform.domain.core.valueobjects.DaliConfiguration;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFixedIp;
@@ -66,7 +65,7 @@ public class DomainCoreMapperTest {
                 FirmwareVersion.class);
 
         // Assert
-        assertEquals(expected, firmwareVersions);
+        assertThat(firmwareVersions).isEqualTo(expected);
     }
 
     @Test
@@ -78,7 +77,8 @@ public class DomainCoreMapperTest {
         Assertions
                 .assertThat(
                         this.mapper.map(source, org.opensmartgridplatform.dto.valueobjects.FirmwareModuleData.class))
-                .isEqualToComparingFieldByFieldRecursively(mappedValue);
+                .usingRecursiveComparison()
+                .isEqualTo(mappedValue);
     }
 
     private org.opensmartgridplatform.dto.valueobjects.FirmwareModuleData map(final FirmwareModuleData source) {
@@ -93,7 +93,7 @@ public class DomainCoreMapperTest {
 
         final Configuration result = this.mapper.map(source, Configuration.class);
 
-        assertThat(result).isEqualToComparingFieldByFieldRecursively(this.toConfiguration(source));
+        assertThat(result).usingRecursiveComparison().isEqualTo(this.toConfiguration(source));
     }
 
     private ConfigurationDto aConfigurationDto() {

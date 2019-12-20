@@ -10,9 +10,6 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.application.servi
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -22,8 +19,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.junit.Test;
-
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActiveEnergyValues;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AmrProfileStatusCode;
@@ -43,17 +40,18 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterRea
 
 public class PeriodicMeterReadContainerMappingTest {
 
-    private MonitoringMapper monitoringMapper = new MonitoringMapper();
+    private final MonitoringMapper monitoringMapper = new MonitoringMapper();
 
     // the List is not allowed to be null because of the way the constructor is
     // defined
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testWithNullList() {
+        Assertions.assertThrows(NullPointerException.class, () -> {
+            final List<PeriodicMeterReadsResponseItemDto> meterReads = null;
+            final PeriodTypeDto periodType = PeriodTypeDto.DAILY;
 
-        final List<PeriodicMeterReadsResponseItemDto> meterReads = null;
-        final PeriodTypeDto periodType = PeriodTypeDto.DAILY;
-
-        new PeriodicMeterReadsResponseDto(periodType, meterReads);
+            new PeriodicMeterReadsResponseDto(periodType, meterReads);
+        });
     }
 
     // Test if mapping with an empty List succeeds
@@ -66,24 +64,21 @@ public class PeriodicMeterReadContainerMappingTest {
         final PeriodicMeterReadsResponseDto periodicMeterReadsContainerDto = new PeriodicMeterReadsResponseDto(
                 periodType, meterReads);
 
-        final PeriodicMeterReadsContainer periodicMeterReadContainer = this.monitoringMapper.map(
-                periodicMeterReadsContainerDto, PeriodicMeterReadsContainer.class);
+        final PeriodicMeterReadsContainer periodicMeterReadContainer = this.monitoringMapper
+                .map(periodicMeterReadsContainerDto, PeriodicMeterReadsContainer.class);
 
-        assertNotNull(periodicMeterReadContainer);
-
-        assertTrue(periodicMeterReadContainer.getPeriodicMeterReads().isEmpty());
-        assertEquals(periodicMeterReadsContainerDto.getPeriodType().name(), periodicMeterReadContainer.getPeriodType()
-                .name());
+        assertThat(periodicMeterReadContainer).isNotNull();
+        assertThat(periodicMeterReadContainer.getPeriodicMeterReads()).isEmpty();
+        assertThat(periodicMeterReadContainer.getPeriodType().name())
+                .isEqualTo(periodicMeterReadsContainerDto.getPeriodType().name());
     }
 
     // Test if mapping with a non-empty List succeeds
     @Test
     public void testWithNonEmptyList() {
         // build test data
-        final DlmsMeterValueDto activeEnergyImport = new DlmsMeterValueDto(new BigDecimal(1.0),
-                DlmsUnitTypeDto.M3);
-        final DlmsMeterValueDto activeEnergyExport = new DlmsMeterValueDto(new BigDecimal(1.0),
-                DlmsUnitTypeDto.M3);
+        final DlmsMeterValueDto activeEnergyImport = new DlmsMeterValueDto(new BigDecimal(1.0), DlmsUnitTypeDto.M3);
+        final DlmsMeterValueDto activeEnergyExport = new DlmsMeterValueDto(new BigDecimal(1.0), DlmsUnitTypeDto.M3);
 
         final Set<AmrProfileStatusCodeFlagDto> amrProfileStatusCodeFlagSet = new TreeSet<>();
         amrProfileStatusCodeFlagSet.add(AmrProfileStatusCodeFlagDto.CRITICAL_ERROR);
@@ -100,34 +95,41 @@ public class PeriodicMeterReadContainerMappingTest {
         final PeriodicMeterReadsResponseDto periodicMeterReadsContainerDto = new PeriodicMeterReadsResponseDto(
                 periodType, meterReads);
         // actual mapping
-        final PeriodicMeterReadsContainer periodicMeterReadsContainer = this.monitoringMapper.map(
-                periodicMeterReadsContainerDto, PeriodicMeterReadsContainer.class);
+        final PeriodicMeterReadsContainer periodicMeterReadsContainer = this.monitoringMapper
+                .map(periodicMeterReadsContainerDto, PeriodicMeterReadsContainer.class);
         // test mapping
-        assertNotNull(periodicMeterReadsContainer);
+        assertThat(periodicMeterReadsContainer).isNotNull();
+        assertThat(periodicMeterReadsContainer.getPeriodType().name())
+                .isEqualTo(periodicMeterReadsContainerDto.getPeriodType().name());
+        assertThat(periodicMeterReadsContainer.getPeriodicMeterReads().size())
+                .isEqualTo(periodicMeterReadsContainerDto.getPeriodicMeterReads().size());
+        assertThat(periodicMeterReadsContainer.getPeriodicMeterReads().get(0).getLogTime())
+                .isEqualTo(periodicMeterReadsContainerDto.getPeriodicMeterReads().get(0).getLogTime());
+        assertThat(periodicMeterReadsContainer.getPeriodicMeterReads().get(0).getActiveEnergyImport().getValue())
+                .isEqualTo(new BigDecimal("1.0"));
+        assertThat(periodicMeterReadsContainer.getPeriodicMeterReads().get(0).getActiveEnergyImport().getOsgpUnit())
+                .isEqualTo(OsgpUnit.M3);
+        assertThat(periodicMeterReadsContainer.getPeriodicMeterReads().get(0).getActiveEnergyExport().getValue())
+                .isEqualTo(new BigDecimal("1.0"));
+        assertThat(periodicMeterReadsContainer.getPeriodicMeterReads().get(0).getActiveEnergyExport().getOsgpUnit())
+                .isEqualTo(OsgpUnit.M3);
 
-        assertEquals(periodicMeterReadsContainerDto.getPeriodType().name(), periodicMeterReadsContainer.getPeriodType()
-                .name());
+        assertThat(periodicMeterReadsContainer.getPeriodicMeterReads()
+                .get(0)
+                .getAmrProfileStatusCode()
+                .getAmrProfileStatusCodeFlags()
+                .size()).isEqualTo(
+                        periodicMeterReadsContainerDto.getPeriodicMeterReads()
+                                .get(0)
+                                .getAmrProfileStatusCode()
+                                .getAmrProfileStatusCodeFlags()
+                                .size());
 
-        assertEquals(periodicMeterReadsContainerDto.getPeriodicMeterReads().size(), periodicMeterReadsContainer
-                .getPeriodicMeterReads().size());
-        assertEquals(periodicMeterReadsContainerDto.getPeriodicMeterReads().get(0).getLogTime(),
-                periodicMeterReadsContainer.getPeriodicMeterReads().get(0).getLogTime());
-
-        assertEquals(new BigDecimal("1.0"), periodicMeterReadsContainer.getPeriodicMeterReads().get(0)
-                .getActiveEnergyImport().getValue());
-        assertEquals(OsgpUnit.M3, periodicMeterReadsContainer.getPeriodicMeterReads().get(0).getActiveEnergyImport()
-                .getOsgpUnit());
-        assertEquals(new BigDecimal("1.0"), periodicMeterReadsContainer.getPeriodicMeterReads().get(0)
-                .getActiveEnergyExport().getValue());
-        assertEquals(OsgpUnit.M3, periodicMeterReadsContainer.getPeriodicMeterReads().get(0).getActiveEnergyExport()
-                .getOsgpUnit());
-
-        assertEquals(periodicMeterReadsContainerDto.getPeriodicMeterReads().get(0).getAmrProfileStatusCode()
-                .getAmrProfileStatusCodeFlags().size(), periodicMeterReadsContainer.getPeriodicMeterReads().get(0)
-                .getAmrProfileStatusCode().getAmrProfileStatusCodeFlags().size());
-
-        assertTrue(periodicMeterReadsContainer.getPeriodicMeterReads().get(0).getAmrProfileStatusCode()
-                .getAmrProfileStatusCodeFlags().contains(AmrProfileStatusCodeFlag.CRITICAL_ERROR));
+        assertThat(periodicMeterReadsContainer.getPeriodicMeterReads()
+                .get(0)
+                .getAmrProfileStatusCode()
+                .getAmrProfileStatusCodeFlags()
+                .contains(AmrProfileStatusCodeFlag.CRITICAL_ERROR)).isTrue();
     }
 
     @Test
@@ -140,8 +142,8 @@ public class PeriodicMeterReadContainerMappingTest {
                 new DlmsMeterValueDto(new BigDecimal("12.37"), DlmsUnitTypeDto.M3),
                 new DlmsMeterValueDto(new BigDecimal("12.38"), DlmsUnitTypeDto.M3),
                 new DlmsMeterValueDto(new BigDecimal("12.39"), DlmsUnitTypeDto.M3));
-        final AmrProfileStatusCodeDto amrProfileStatusCodeDto = new AmrProfileStatusCodeDto(new HashSet<>(asList(
-                AmrProfileStatusCodeFlagDto.CRITICAL_ERROR, AmrProfileStatusCodeFlagDto.CLOCK_ADJUSTED)));
+        final AmrProfileStatusCodeDto amrProfileStatusCodeDto = new AmrProfileStatusCodeDto(new HashSet<>(
+                asList(AmrProfileStatusCodeFlagDto.CRITICAL_ERROR, AmrProfileStatusCodeFlagDto.CLOCK_ADJUSTED)));
         final PeriodicMeterReadsResponseItemDto source = new PeriodicMeterReadsResponseItemDto(logTime, valuesDto,
                 amrProfileStatusCodeDto);
 
@@ -154,9 +156,9 @@ public class PeriodicMeterReadContainerMappingTest {
                 new OsgpMeterValue(new BigDecimal("12.370"), OsgpUnit.M3),
                 new OsgpMeterValue(new BigDecimal("12.380"), OsgpUnit.M3),
                 new OsgpMeterValue(new BigDecimal("12.390"), OsgpUnit.M3));
-        final AmrProfileStatusCode amrProfileStatusCode = new AmrProfileStatusCode(new HashSet<>(asList(
-                AmrProfileStatusCodeFlag.CRITICAL_ERROR, AmrProfileStatusCodeFlag.CLOCK_ADJUSTED)));
+        final AmrProfileStatusCode amrProfileStatusCode = new AmrProfileStatusCode(new HashSet<>(
+                asList(AmrProfileStatusCodeFlag.CRITICAL_ERROR, AmrProfileStatusCodeFlag.CLOCK_ADJUSTED)));
         final PeriodicMeterReads expectedReads = new PeriodicMeterReads(logTime, expectedValues, amrProfileStatusCode);
-        assertThat(readsResult).isEqualToComparingFieldByFieldRecursively(expectedReads);
+        assertThat(readsResult).usingRecursiveComparison().isEqualTo(expectedReads);
     }
 }

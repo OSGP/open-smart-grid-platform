@@ -8,14 +8,11 @@
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ClockStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CosemDate;
@@ -38,7 +35,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.WindowElementDto
 
 public class PushSetupSmsMappingTest {
 
-    private ConfigurationMapper configurationMapper = new ConfigurationMapper();
+    private final ConfigurationMapper configurationMapper = new ConfigurationMapper();
 
     // To test if a PushSetupAlarm can be mapped if instance variables are
     // null.
@@ -52,14 +49,15 @@ public class PushSetupSmsMappingTest {
         final PushSetupSmsDto pushSetupSmsDto = this.configurationMapper.map(pushSetupSms, PushSetupSmsDto.class);
 
         // check values
-        assertNotNull(pushSetupSmsDto);
-        assertNull(pushSetupSmsDto.getLogicalName());
-        assertNull(pushSetupSmsDto.getPushObjectList());
-        assertNull(pushSetupSmsDto.getSendDestinationAndMethod());
-        assertNull(pushSetupSmsDto.getCommunicationWindow());
-        assertNull(pushSetupSmsDto.getRandomisationStartInterval());
-        assertNull(pushSetupSmsDto.getNumberOfRetries());
-        assertNull(pushSetupSmsDto.getRepetitionDelay());
+        assertThat(pushSetupSmsDto).isNotNull();
+        assertThat(pushSetupSmsDto.getLogicalName()).isNull();
+        assertThat(pushSetupSmsDto.getPushObjectList()).isNull();
+        assertThat(pushSetupSmsDto.getSendDestinationAndMethod()).isNull();
+        assertThat(pushSetupSmsDto.getCommunicationWindow()).isNull();
+        assertThat(pushSetupSmsDto.getRandomisationStartInterval()).isNull();
+        assertThat(pushSetupSmsDto.getNumberOfRetries()).isNull();
+        assertThat(pushSetupSmsDto.getRepetitionDelay()).isNull();
+
     }
 
     // To test if a PushSetupAlarm can be mapped if instance variables are
@@ -82,8 +80,8 @@ public class PushSetupSmsMappingTest {
         this.checkSendDestinationAndMethodMapping(pushSetupSms, pushSetupSmsDto);
         this.checkIntegerMapping(pushSetupSms, pushSetupSmsDto);
 
-        assertNotNull(pushSetupSmsDto.getPushObjectList());
-        assertNotNull(pushSetupSmsDto.getCommunicationWindow());
+        assertThat(pushSetupSmsDto.getPushObjectList()).isNotNull();
+        assertThat(pushSetupSmsDto.getCommunicationWindow()).isNotNull();
 
     }
 
@@ -101,7 +99,8 @@ public class PushSetupSmsMappingTest {
         final WindowElement windowElement = new WindowElement(startTime, endTime);
 
         final PushSetupSms pushSetupSms = new PushSetupSmsBuilder()
-                .withFilledLists(cosemObjectDefinition, windowElement).build();
+                .withFilledLists(cosemObjectDefinition, windowElement)
+                .build();
 
         // actual mapping
         final PushSetupSmsDto pushSetupSmsDto = this.configurationMapper.map(pushSetupSms, PushSetupSmsDto.class);
@@ -118,31 +117,26 @@ public class PushSetupSmsMappingTest {
     private void checkIntegerMapping(final PushSetupSms pushSetupSms, final PushSetupSmsDto pushSetupSmsDto) {
 
         // make sure none is null
-        assertNotNull(pushSetupSmsDto.getRandomisationStartInterval());
-        assertNotNull(pushSetupSmsDto.getNumberOfRetries());
-        assertNotNull(pushSetupSmsDto.getRepetitionDelay());
+        assertThat(pushSetupSmsDto.getRandomisationStartInterval()).isNotNull();
+        assertThat(pushSetupSmsDto.getNumberOfRetries()).isNotNull();
+        assertThat(pushSetupSmsDto.getRepetitionDelay()).isNotNull();
 
         // make sure all values are equal
-        assertEquals(pushSetupSms.getRandomisationStartInterval(), pushSetupSmsDto.getRandomisationStartInterval());
-        assertEquals(pushSetupSms.getNumberOfRetries(), pushSetupSmsDto.getNumberOfRetries());
-        assertEquals(pushSetupSms.getRepetitionDelay(), pushSetupSmsDto.getRepetitionDelay());
+        assertThat(pushSetupSmsDto.getRandomisationStartInterval())
+                .isEqualTo(pushSetupSms.getRandomisationStartInterval());
+        assertThat(pushSetupSmsDto.getNumberOfRetries()).isEqualTo(pushSetupSms.getNumberOfRetries());
+        assertThat(pushSetupSmsDto.getRepetitionDelay()).isEqualTo(pushSetupSms.getRepetitionDelay());
     }
 
     // method to test CosemObisCode object mapping
     private void checkCosemObisCodeMapping(final CosemObisCode cosemObisCode, final CosemObisCodeDto cosemObisCodeDto) {
 
         // make sure neither is null
-        assertNotNull(cosemObisCode);
-        assertNotNull(cosemObisCodeDto);
+        assertThat(cosemObisCode).isNotNull();
+        assertThat(cosemObisCodeDto).isNotNull();
 
         // make sure all instance variables are equal
-        assertEquals(cosemObisCode.getA(), cosemObisCodeDto.getA());
-        assertEquals(cosemObisCode.getB(), cosemObisCodeDto.getB());
-        assertEquals(cosemObisCode.getC(), cosemObisCodeDto.getC());
-        assertEquals(cosemObisCode.getD(), cosemObisCodeDto.getD());
-        assertEquals(cosemObisCode.getE(), cosemObisCodeDto.getE());
-        assertEquals(cosemObisCode.getF(), cosemObisCodeDto.getF());
-
+        assertThat(cosemObisCodeDto).isEqualToComparingFieldByField(cosemObisCode);
     }
 
     // method to test SendDestinationAndMethod mapping
@@ -152,36 +146,39 @@ public class PushSetupSmsMappingTest {
         final SendDestinationAndMethodDto sendDestinationAndMethodDto = pushSetupSmsDto.getSendDestinationAndMethod();
 
         // make sure neither is null
-        assertNotNull(sendDestinationAndMethod);
-        assertNotNull(sendDestinationAndMethodDto);
+        assertThat(sendDestinationAndMethod).isNotNull();
+        assertThat(sendDestinationAndMethodDto).isNotNull();
 
         // make sure all instance variables are equal
-        assertEquals(sendDestinationAndMethod.getTransportService().name(),
-                sendDestinationAndMethodDto.getTransportService().name());
-        assertEquals(sendDestinationAndMethod.getMessage().name(), sendDestinationAndMethodDto.getMessage().name());
-        assertEquals(sendDestinationAndMethod.getDestination(), sendDestinationAndMethodDto.getDestination());
+        assertThat(sendDestinationAndMethodDto.getTransportService().name())
+                .isEqualTo(sendDestinationAndMethod.getTransportService().name());
+        assertThat(sendDestinationAndMethodDto.getMessage().name())
+                .isEqualTo(sendDestinationAndMethod.getMessage().name());
+        assertThat(sendDestinationAndMethodDto.getDestination()).isEqualTo(sendDestinationAndMethod.getDestination());
     }
 
     // method to test non-empty list mapping
     private void checkNonEmptyListMapping(final PushSetupSms pushSetupSms, final PushSetupSmsDto pushSetupSmsDto) {
 
         // test pushObjectList mapping
-        assertNotNull(pushSetupSms.getPushObjectList());
-        assertNotNull(pushSetupSmsDto.getPushObjectList());
-        assertEquals(pushSetupSms.getPushObjectList().size(), pushSetupSmsDto.getPushObjectList().size());
+        assertThat(pushSetupSms.getPushObjectList()).isNotNull();
+        assertThat(pushSetupSmsDto.getPushObjectList()).isNotNull();
+        assertThat(pushSetupSmsDto.getPushObjectList().size()).isEqualTo(pushSetupSms.getPushObjectList().size());
 
         final CosemObjectDefinition cosemObjectDefinition = pushSetupSms.getPushObjectList().get(0);
         final CosemObjectDefinitionDto cosemObjectDefinitionDto = pushSetupSmsDto.getPushObjectList().get(0);
-        assertEquals(cosemObjectDefinition.getAttributeIndex(), cosemObjectDefinitionDto.getAttributeIndex());
-        assertEquals(cosemObjectDefinition.getClassId(), cosemObjectDefinitionDto.getClassId());
-        assertEquals(cosemObjectDefinition.getDataIndex(), cosemObjectDefinitionDto.getDataIndex());
+        assertThat(cosemObjectDefinitionDto.getAttributeIndex()).isEqualTo(cosemObjectDefinition.getAttributeIndex());
+        assertThat(cosemObjectDefinitionDto.getClassId()).isEqualTo(cosemObjectDefinition.getClassId());
+        assertThat(cosemObjectDefinitionDto.getDataIndex()).isEqualTo(cosemObjectDefinition.getDataIndex());
+
         this.checkCosemObisCodeMapping(cosemObjectDefinition.getLogicalName(),
                 cosemObjectDefinitionDto.getLogicalName());
 
         // test communicationWindow mapping
-        assertNotNull(pushSetupSms.getCommunicationWindow());
-        assertNotNull(pushSetupSmsDto.getCommunicationWindow());
-        assertEquals(pushSetupSms.getCommunicationWindow().size(), pushSetupSmsDto.getCommunicationWindow().size());
+        assertThat(pushSetupSms.getCommunicationWindow()).isNotNull();
+        assertThat(pushSetupSmsDto.getCommunicationWindow()).isNotNull();
+        assertThat(pushSetupSmsDto.getCommunicationWindow().size())
+                .isEqualTo(pushSetupSms.getCommunicationWindow().size());
 
         final WindowElement windowElement = pushSetupSms.getCommunicationWindow().get(0);
         final WindowElementDto windowElementDto = pushSetupSmsDto.getCommunicationWindow().get(0);
@@ -195,30 +192,24 @@ public class PushSetupSmsMappingTest {
     private void checkCosemDateTimeMapping(final CosemDateTime cosemDateTime, final CosemDateTimeDto cosemDateTimeDto) {
 
         // make sure neither is null
-        assertNotNull(cosemDateTime);
-        assertNotNull(cosemDateTimeDto);
+        assertThat(cosemDateTime).isNotNull();
+        assertThat(cosemDateTimeDto).isNotNull();
 
         // check variables
-        assertEquals(cosemDateTime.getDeviation(), cosemDateTimeDto.getDeviation());
+        assertThat(cosemDateTimeDto.getDeviation()).isEqualTo(cosemDateTime.getDeviation());
 
         final ClockStatus clockStatus = cosemDateTime.getClockStatus();
         final ClockStatusDto clockStatusDto = cosemDateTimeDto.getClockStatus();
-        assertEquals(clockStatus.getStatus(), clockStatusDto.getStatus());
-        assertEquals(clockStatus.isSpecified(), clockStatusDto.isSpecified());
+        assertThat(clockStatusDto.getStatus()).isEqualTo(clockStatus.getStatus());
+        assertThat(clockStatusDto.isSpecified()).isEqualTo(clockStatus.isSpecified());
 
         final CosemDate cosemDate = cosemDateTime.getDate();
         final CosemDateDto cosemDateDto = cosemDateTimeDto.getDate();
-        assertEquals(cosemDate.getYear(), cosemDateDto.getYear());
-        assertEquals(cosemDate.getMonth(), cosemDateDto.getMonth());
-        assertEquals(cosemDate.getDayOfMonth(), cosemDateDto.getDayOfMonth());
-        assertEquals(cosemDate.getDayOfWeek(), cosemDateDto.getDayOfWeek());
+        assertThat(cosemDateDto).isEqualToComparingFieldByField(cosemDate);
 
         final CosemTime cosemTime = cosemDateTime.getTime();
         final CosemTimeDto cosemTimeDto = cosemDateTimeDto.getTime();
-        assertEquals(cosemTime.getHour(), cosemTimeDto.getHour());
-        assertEquals(cosemTime.getMinute(), cosemTimeDto.getMinute());
-        assertEquals(cosemTime.getSecond(), cosemTimeDto.getSecond());
-        assertEquals(cosemTime.getHundredths(), cosemTimeDto.getHundredths());
+        assertThat(cosemTimeDto).isEqualToComparingFieldByField(cosemTime);
     }
 
 }

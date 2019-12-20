@@ -8,21 +8,17 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Spy;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.AbstractCommandExecutorStub;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.CommandExecutorMapStub;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -38,7 +34,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.FindEventsReques
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.OsgpResultTypeDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class BundleServiceTest {
 
     @InjectMocks
@@ -51,12 +47,6 @@ public class BundleServiceTest {
 
     private final List<FaultResponseParameterDto> parameters = new ArrayList<>();
     private final ComponentType defaultComponent = ComponentType.PROTOCOL_DLMS;
-
-    // ------------------
-
-    @Before
-    public void setup() {
-    }
 
     @Test
     public void testHappyFlow() {
@@ -78,11 +68,11 @@ public class BundleServiceTest {
     /**
      * Tests the retry mechanism works in the adapter-protocol. In the first run
      * a ConnectionException is thrown while executing the
-     * {@link FindEventsRequestDto}. In the second attempt (when the connection is
-     * restored again) the rest of the actions are executed.
+     * {@link FindEventsRequestDto}. In the second attempt (when the connection
+     * is restored again) the rest of the actions are executed.
      *
      * @throws ProtocolAdapterException
-     *         is not thrown in this test
+     *             is not thrown in this test
      */
     @Test
     public void testConnectionException() throws ProtocolAdapterException {
@@ -90,8 +80,8 @@ public class BundleServiceTest {
         final BundleMessagesRequestDto dto = new BundleMessagesRequestDto(actionDtoList);
 
         // Set the point where to throw the ConnectionException
-        this.getStub(FindEventsRequestDto.class).failWithRuntimeException(
-                new ConnectionException("Connection Exception thrown!"));
+        this.getStub(FindEventsRequestDto.class)
+                .failWithRuntimeException(new ConnectionException("Connection Exception thrown!"));
 
         try {
             // Execute all the actions
@@ -101,7 +91,7 @@ public class BundleServiceTest {
             // The execution is stopped. The number of responses is equal to the
             // actions performed before the point the exception is thrown. See
             // also the order of the ArrayList in method 'makeActions'.
-            assertEquals(8, dto.getAllResponses().size());
+            assertThat(dto.getAllResponses().size()).isEqualTo(8);
         }
 
         // Reset the point where the exception was thrown.
@@ -110,7 +100,7 @@ public class BundleServiceTest {
         try {
             // Execute the remaining actions
             this.callExecutors(dto);
-            assertEquals(dto.getAllResponses().size(), actionDtoList.size());
+            assertThat(actionDtoList.size()).isEqualTo(dto.getAllResponses().size());
         } catch (final ConnectionException connectionException) {
             fail("A ConnectionException should not have been thrown.");
         }
@@ -127,7 +117,7 @@ public class BundleServiceTest {
         this.parameters.add(new FaultResponseParameterDto("gasDeviceIdentification", "ESIMG140000000841"));
         this.parameters.add(new FaultResponseParameterDto("channel", "3"));
 
-        String defaultMessage = "Unable to handle request";
+        final String defaultMessage = "Unable to handle request";
         final FaultResponseDto faultResponse = this.bundleService.faultResponseForException(exception, this.parameters,
                 defaultMessage);
 
@@ -139,48 +129,51 @@ public class BundleServiceTest {
             final String expectedMessage, final String expectedComponent, final String expectedInnerException,
             final String expectedInnerMessage, final List<FaultResponseParameterDto> expectedParameterList) {
 
-        assertNotNull("faultResponse", actualResponse);
+        assertThat(actualResponse).withFailMessage("FaultResponse").isNotNull();
 
         /*
          * Fault Response should not contain the result fields for a generic
          * Action Response, and the result should always be NOT OK.
          */
-        assertNull("exception", actualResponse.getException());
-        assertNull("resultString", actualResponse.getResultString());
-        assertSame("result", OsgpResultTypeDto.NOT_OK, actualResponse.getResult());
+        assertThat(actualResponse.getException()).withFailMessage("exception").isNull();
+        assertThat(actualResponse.getResultString()).withFailMessage("resultString").isNull();
+        assertThat(actualResponse.getResult()).withFailMessage("result").isEqualTo(OsgpResultTypeDto.NOT_OK);
 
-        assertEquals("code", expectedCode, actualResponse.getCode());
-        assertEquals("message", expectedMessage, actualResponse.getMessage());
-        assertEquals("component", expectedComponent, actualResponse.getComponent());
-        assertEquals("innerException", expectedInnerException, actualResponse.getInnerException());
-        assertEquals("innerMessage", expectedInnerMessage, actualResponse.getInnerMessage());
+        assertThat(actualResponse.getCode()).withFailMessage("code").isEqualTo(expectedCode);
+        assertThat(actualResponse.getMessage()).withFailMessage("message").isEqualTo(expectedMessage);
+        assertThat(actualResponse.getComponent()).withFailMessage("component").isEqualTo(expectedComponent);
+        assertThat(actualResponse.getInnerException()).withFailMessage("innerException")
+                .isEqualTo(expectedInnerException);
+        assertThat(actualResponse.getInnerMessage()).withFailMessage("innerMessage").isEqualTo(expectedInnerMessage);
 
         if (expectedParameterList == null || expectedParameterList.isEmpty()) {
-            assertNull("parameters", actualResponse.getFaultResponseParameters());
+            assertThat(actualResponse.getFaultResponseParameters()).withFailMessage("parameters").isNull();
         } else {
-            assertNotNull("parameters", actualResponse.getFaultResponseParameters());
-            final List<FaultResponseParameterDto> actualParameterList =
-                    actualResponse.getFaultResponseParameters().getParameterList();
-            assertNotNull("parameter list", actualParameterList);
+            assertThat(actualResponse.getFaultResponseParameters()).withFailMessage("parameters").isNotNull();
+            final List<FaultResponseParameterDto> actualParameterList = actualResponse.getFaultResponseParameters()
+                    .getParameterList();
+            assertThat(actualParameterList).withFailMessage("parameter list").isNotNull();
             final int numberOfParameters = expectedParameterList.size();
-            assertEquals("number of parameters", numberOfParameters, actualParameterList.size());
+            assertThat(actualParameterList.size()).withFailMessage("number of parameters")
+                    .isEqualTo(numberOfParameters);
             for (int i = 0; i < numberOfParameters; i++) {
                 final FaultResponseParameterDto expectedParameter = expectedParameterList.get(i);
                 final FaultResponseParameterDto actualParameter = actualParameterList.get(i);
                 final int parameterNumber = i + 1;
-                assertEquals("parameter key " + parameterNumber, expectedParameter.getKey(), actualParameter.getKey());
-                assertEquals("parameter value " + parameterNumber, expectedParameter.getValue(),
-                        actualParameter.getValue());
+                assertThat(actualParameter.getKey()).withFailMessage("parameter key " + parameterNumber)
+                        .isEqualTo(expectedParameter.getKey());
+                assertThat(actualParameter.getValue()).withFailMessage("parameter value " + parameterNumber)
+                        .isEqualTo(expectedParameter.getValue());
             }
         }
     }
 
     private void assertResult(final BundleMessagesRequestDto result) {
-        assertNotNull(result);
-        assertNotNull(result.getActionList());
+        assertThat(result).isNotNull();
+        assertThat(result.getActionList()).isNotNull();
         for (final ActionDto actionDto : result.getActionList()) {
-            assertNotNull(actionDto.getRequest());
-            assertNotNull(actionDto.getResponse());
+            assertThat(actionDto.getRequest()).isNotNull();
+            assertThat(actionDto.getResponse()).isNotNull();
         }
     }
 

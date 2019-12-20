@@ -11,10 +11,10 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodic
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Fail.fail;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.same;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -29,12 +29,14 @@ import java.util.List;
 import java.util.Optional;
 
 import org.joda.time.DateTime;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.DataObject;
@@ -61,7 +63,8 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterRea
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseItemDto;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class GetPeriodicMeterReadsCommandExecutorTest {
 
     @InjectMocks
@@ -85,7 +88,7 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
     private final DateTime fromDateTime = new DateTime(this.from);
     private final DateTime toDateTime = new DateTime(this.to);
 
-    @Before
+    @BeforeEach
     public void setUp() {
         when(this.connectionManager.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     }
@@ -102,11 +105,11 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
 
     @Test
     public void testExecuteObjectNotFound() {
-        //SETUP
+        // SETUP
         final PeriodicMeterReadsRequestDto request = new PeriodicMeterReadsRequestDto(PeriodTypeDto.DAILY,
                 this.fromDateTime.toDate(), this.toDateTime.toDate(), ChannelDto.ONE);
-        when(this.dlmsObjectConfigService.findAttributeAddressForProfile(any(), any(), any(), any(), any(),
-                any())).thenReturn(Optional.empty());
+        when(this.dlmsObjectConfigService.findAttributeAddressForProfile(any(), any(), any(), any(), any(), any()))
+                .thenReturn(Optional.empty());
 
         // CALL
         try {
@@ -200,15 +203,15 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
 
         final GetResult getResult = mock(GetResult.class);
 
-        when(this.dlmsHelper.getAndCheck(this.connectionManager, this.device, expectedDescription,
-                attributeAddress)).thenReturn(asList(result0, result1, result2, result3, result4, result5));
+        when(this.dlmsHelper.getAndCheck(this.connectionManager, this.device, expectedDescription, attributeAddress))
+                .thenReturn(asList(result0, result1, result2, result3, result4, result5));
 
         when(this.dlmsHelper.readDataObject(result0, PERIODIC_E_METER_READS)).thenReturn(resultData);
 
         when(this.dlmsHelper.getAndCheck(eq(this.connectionManager), eq(this.device), eq(expectedDescription),
                 eq(attributeAddressForProfile.getAttributeAddress()))).thenReturn(Collections.singletonList(getResult));
-        when(this.dlmsHelper.getAndCheck(this.connectionManager, this.device, expectedDescription,
-                attributeAddress)).thenReturn(Collections.singletonList(getResult));
+        when(this.dlmsHelper.getAndCheck(this.connectionManager, this.device, expectedDescription, attributeAddress))
+                .thenReturn(Collections.singletonList(getResult));
 
         when(this.dlmsHelper.readDataObject(eq(getResult), any(String.class))).thenReturn(resultData);
 
@@ -263,4 +266,3 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
         return device;
     }
 }
-

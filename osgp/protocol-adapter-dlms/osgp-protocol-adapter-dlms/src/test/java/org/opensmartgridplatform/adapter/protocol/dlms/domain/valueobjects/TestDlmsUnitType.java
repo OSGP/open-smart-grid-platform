@@ -7,10 +7,9 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.valueobjects;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DlmsUnitTypeDto;
 
 public class TestDlmsUnitType {
@@ -18,20 +17,19 @@ public class TestDlmsUnitType {
     @Test
     public void testGetUnit() {
         final String result = DlmsUnitTypeDto.getUnit(1);
-        assertEquals("Y", result);
+        assertThat(result).isEqualTo("Y");
+
     }
 
     @Test
     public void testGetKwh() {
         final String result = DlmsUnitTypeDto.getUnit(30);
-        assertEquals("KWH", result);
+        assertThat(result).isEqualTo("KWH");
     }
 
     @Test
     public void testGetUndefined() {
-        String result = DlmsUnitTypeDto.getUnit(0);
-        assertEquals("UNDEFINED", result);
-
-        result = DlmsUnitTypeDto.getUnit(100);
+        final String result = DlmsUnitTypeDto.getUnit(0);
+        assertThat(result).isEqualTo("UNDEFINED");
     }
 }

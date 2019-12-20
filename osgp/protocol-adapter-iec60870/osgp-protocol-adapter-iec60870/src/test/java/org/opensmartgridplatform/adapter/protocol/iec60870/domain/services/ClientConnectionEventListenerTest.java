@@ -17,12 +17,11 @@ import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.Test
 
 import java.io.IOException;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.TypeId;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.AsduFactory;
@@ -30,13 +29,7 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.D
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseMetadata;
 import org.opensmartgridplatform.iec60870.Iec60870ASduHandlerNotFoundException;
 
-/**
- * org.mockito.exceptions.base.MockitoException: 
- * Mockito cannot mock this class: class org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionCacheImpl.
- * Mockito can only mock non-private & non-final classes.
- */
-@Ignore
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ClientConnectionEventListenerTest {
 
     private final static String DEVICE_IDENTIFICATION = "TEST-DEVICE-1";
@@ -53,12 +46,13 @@ public class ClientConnectionEventListenerTest {
     @Mock
     private ClientAsduHandler asduHandler;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.responseMetadata = new ResponseMetadata.Builder().withDeviceIdentification(DEFAULT_DEVICE_IDENTIFICATION)
                 .withOrganisationIdentification(DEFAULT_ORGANISATION_IDENTIFICATION)
                 .withDomainInfo(new DomainInfo(DEFAULT_DOMAIN, DEFAULT_DOMAIN_VERSION))
-                .withMessageType(DEFAULT_MESSAGE_TYPE).build();
+                .withMessageType(DEFAULT_MESSAGE_TYPE)
+                .build();
         this.clientConnectionEventListener = new ClientConnectionEventListener(DEVICE_IDENTIFICATION,
                 this.connectionCache, this.asduHandlerRegistry, this.responseMetadata);
     }

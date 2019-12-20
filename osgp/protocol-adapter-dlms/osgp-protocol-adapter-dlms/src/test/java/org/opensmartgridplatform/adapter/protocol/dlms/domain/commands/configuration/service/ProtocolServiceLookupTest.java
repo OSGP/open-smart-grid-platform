@@ -5,8 +5,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
@@ -15,7 +16,7 @@ public class ProtocolServiceLookupTest {
     private ProtocolServiceLookup instance;
     private GetConfigurationObjectServiceDsmr4 getService;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.getService = new GetConfigurationObjectServiceDsmr4(null);
         final List<ProtocolService> services = new ArrayList<>();
@@ -36,13 +37,15 @@ public class ProtocolServiceLookupTest {
         assertThat(result).isSameAs(this.getService);
     }
 
-    @Test(expected = ProtocolAdapterException.class)
+    @Test
     public void lookupGetServiceNotFound() throws ProtocolAdapterException {
+        Assertions.assertThrows(ProtocolAdapterException.class, () -> {
 
-        // SETUP
-        final Protocol protocol = Protocol.OTHER_PROTOCOL;
+            // SETUP
+            final Protocol protocol = Protocol.OTHER_PROTOCOL;
 
-        // CALL
-        this.instance.lookupSetService(protocol);
+            // CALL
+            this.instance.lookupSetService(protocol);
+        });
     }
 }

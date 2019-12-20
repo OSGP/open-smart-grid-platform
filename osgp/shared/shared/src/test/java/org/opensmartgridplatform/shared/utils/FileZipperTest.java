@@ -16,22 +16,20 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 public class FileZipperTest {
 
-    @Rule
-    public final TemporaryFolder folder = new TemporaryFolder();
+    @TempDir
+    Path folder;
 
     final FileZipper fileZipper = new FileZipper();
 
@@ -40,10 +38,10 @@ public class FileZipperTest {
 
     private String filePath;
 
-    @Before
+    @BeforeEach
     public void setup() throws IOException {
-        this.filePath = this.folder.getRoot().getAbsolutePath() + File.separator + this.fileName;
-        final Path path = Paths.get(this.filePath);
+        final Path path = this.folder.resolve(this.fileName);
+        this.filePath = path.toString();
         Files.write(path, this.lines, StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
     }
 

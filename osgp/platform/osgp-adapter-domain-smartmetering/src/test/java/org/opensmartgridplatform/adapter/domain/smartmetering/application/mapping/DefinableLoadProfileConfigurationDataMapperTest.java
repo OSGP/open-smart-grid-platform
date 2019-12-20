@@ -7,15 +7,12 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CaptureObjectDefinition;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DefinableLoadProfileConfigurationData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ObisCodeValues;
@@ -49,7 +46,7 @@ public class DefinableLoadProfileConfigurationDataMapperTest {
     private static final byte CAPTURE_OBJECT_ATTRIBUTE_INDEX_2 = 2;
     private static final Integer CAPTURE_OBJECT_DATA_INDEX_2 = 0;
 
-    private ConfigurationMapper mapper = new ConfigurationMapper();
+    private final ConfigurationMapper mapper = new ConfigurationMapper();
 
     @Test
     public void testDefinableLoadProfileConfigurationMapping() {
@@ -59,19 +56,24 @@ public class DefinableLoadProfileConfigurationDataMapperTest {
         final DefinableLoadProfileConfigurationDto definableLoadProfileConfigurationDto = this.mapper
                 .map(definableLoadProfileConfigurationData, DefinableLoadProfileConfigurationDto.class);
 
-        assertNotNull("Result of mapping DefinableLoadProfileConfigurationData must not be null",
-                definableLoadProfileConfigurationDto);
-        assertTrue(
-                "DefinableLoadProfileConfigurationDto should have capture objects: "
-                        + definableLoadProfileConfigurationDto,
-                definableLoadProfileConfigurationDto.hasCaptureObjects());
+        assertThat(definableLoadProfileConfigurationDto)
+                .withFailMessage("Result of mapping DefinableLoadProfileConfigurationData must not be null")
+                .isNotNull();
+
+        assertThat(definableLoadProfileConfigurationDto.hasCaptureObjects())
+                .withFailMessage("DefinableLoadProfileConfigurationDto should have capture objects: "
+                        + definableLoadProfileConfigurationDto)
+                .isTrue();
+
         this.assertCaptureObjects(definableLoadProfileConfigurationDto.getCaptureObjects());
-        assertTrue(
-                "DefinableLoadProfileConfigurationDto should have a capture period: "
-                        + definableLoadProfileConfigurationDto,
-                definableLoadProfileConfigurationDto.hasCapturePeriod());
-        assertEquals("DefinableLoadProfileConfigurationDto capture period", CAPTURE_PERIOD,
-                definableLoadProfileConfigurationDto.getCapturePeriod());
+        assertThat(definableLoadProfileConfigurationDto.hasCapturePeriod())
+                .withFailMessage("DefinableLoadProfileConfigurationDto should have a capture period: "
+                        + definableLoadProfileConfigurationDto)
+                .isTrue();
+
+        assertThat(definableLoadProfileConfigurationDto.getCapturePeriod())
+                .withFailMessage("DefinableLoadProfileConfigurationDto capture period")
+                .isEqualTo(CAPTURE_PERIOD);
     }
 
     private DefinableLoadProfileConfigurationData newDefinableLoadProfileConfigurationData() {
@@ -94,8 +96,9 @@ public class DefinableLoadProfileConfigurationDataMapperTest {
     }
 
     private void assertCaptureObjects(final List<CaptureObjectDefinitionDto> captureObjects) {
-        assertNotNull("Capture objects", captureObjects);
-        assertEquals("Number of capture objects", NUMBER_OF_CAPTURE_OBJECTS, captureObjects.size());
+        assertThat(captureObjects).withFailMessage("Capture objects").isNotNull();
+        assertThat(captureObjects.size()).withFailMessage("Number of capture objects")
+                .isEqualTo(NUMBER_OF_CAPTURE_OBJECTS);
         this.assertCaptureObjectDefinition(1, captureObjects.get(0), CAPTURE_OBJECT_CLASS_ID_1, CAPTURE_OBJECT_OBIS_A_1,
                 CAPTURE_OBJECT_OBIS_B_1, CAPTURE_OBJECT_OBIS_C_1, CAPTURE_OBJECT_OBIS_D_1, CAPTURE_OBJECT_OBIS_E_1,
                 CAPTURE_OBJECT_OBIS_F_1, CAPTURE_OBJECT_ATTRIBUTE_INDEX_1, CAPTURE_OBJECT_DATA_INDEX_1);
@@ -113,11 +116,14 @@ public class DefinableLoadProfileConfigurationDataMapperTest {
             final CaptureObjectDefinitionDto captureObject, final int classId, final byte a, final byte b, final byte c,
             final byte d, final byte e, final byte f, final byte attributeIndex, final Integer dataIndex) {
         final String captureObjectDescription = "capture object " + captureObjectNumber + " - ";
-        assertEquals(captureObjectDescription + "class id", classId, captureObject.getClassId());
+        assertThat(captureObject.getClassId()).withFailMessage(captureObjectDescription + "class id")
+                .isEqualTo(classId);
         this.assertLogicalName(captureObjectDescription + "OBIS code value ", captureObject.getLogicalName(), a, b, c,
                 d, e, f);
-        assertEquals(captureObjectDescription + "attribute index", attributeIndex, captureObject.getAttributeIndex());
-        assertEquals(captureObjectDescription + "data index", dataIndex, captureObject.getDataIndex());
+        assertThat(captureObject.getAttributeIndex()).withFailMessage(captureObjectDescription + "attribute index")
+                .isEqualTo(attributeIndex);
+        assertThat(captureObject.getDataIndex()).withFailMessage(captureObjectDescription + "data index")
+                .isEqualTo(dataIndex);
     }
 
     private ObisCodeValues newLogicalName(final byte a, final byte b, final byte c, final byte d, final byte e,
@@ -127,11 +133,11 @@ public class DefinableLoadProfileConfigurationDataMapperTest {
 
     private void assertLogicalName(final String obisCodeDescription, final ObisCodeValuesDto logicalName, final byte a,
             final byte b, final byte c, final byte d, final byte e, final byte f) {
-        assertEquals(obisCodeDescription + "a", a, logicalName.getA());
-        assertEquals(obisCodeDescription + "b", b, logicalName.getB());
-        assertEquals(obisCodeDescription + "c", c, logicalName.getC());
-        assertEquals(obisCodeDescription + "d", d, logicalName.getD());
-        assertEquals(obisCodeDescription + "e", e, logicalName.getE());
-        assertEquals(obisCodeDescription + "f", f, logicalName.getF());
+        assertThat(logicalName.getA()).withFailMessage(obisCodeDescription + "a").isEqualTo(a);
+        assertThat(logicalName.getB()).withFailMessage(obisCodeDescription + "b").isEqualTo(b);
+        assertThat(logicalName.getC()).withFailMessage(obisCodeDescription + "c").isEqualTo(c);
+        assertThat(logicalName.getD()).withFailMessage(obisCodeDescription + "d").isEqualTo(d);
+        assertThat(logicalName.getE()).withFailMessage(obisCodeDescription + "e").isEqualTo(e);
+        assertThat(logicalName.getF()).withFailMessage(obisCodeDescription + "f").isEqualTo(f);
     }
 }
