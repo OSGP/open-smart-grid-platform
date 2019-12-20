@@ -84,7 +84,6 @@ public class MonitoringService extends BaseService {
 
         final String deviceIdentification = ids.getDeviceIdentification();
         final String organisationIdentification = ids.getOrganisationIdentification();
-        final String correlationUid = ids.getCorrelationUid();
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         GetPQValuesResponse getPQValuesResponse = null;
@@ -96,7 +95,7 @@ public class MonitoringService extends BaseService {
                 throw osgpException;
             }
 
-            this.handleResponseMessageReceived(LOGGER, ids.getDeviceIdentification());
+            this.handleResponseMessageReceived(LOGGER, deviceIdentification);
 
             getPQValuesResponse = this.mapper.map(getPQValuesResponseDto, GetPQValuesResponse.class);
 
@@ -109,14 +108,18 @@ public class MonitoringService extends BaseService {
         // Support for Push messages, generate correlationUid
         String actualCorrelationUid = ids.getCorrelationUid();
         if ("no-correlationUid".equals(actualCorrelationUid)) {
-            actualCorrelationUid = getCorrelationId("DeviceGenerated", ids.getDeviceIdentification());
+            actualCorrelationUid = getCorrelationId("DeviceGenerated", deviceIdentification);
         }
 
-        final CorrelationIds actualIds = new CorrelationIds(ids.getOrganisationIdentification(),
-                ids.getDeviceIdentification(), actualCorrelationUid);
+        final CorrelationIds actualIds = new CorrelationIds(organisationIdentification, deviceIdentification,
+                actualCorrelationUid);
 
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withIds(actualIds)
-                .withResult(result).withOsgpException(exception).withDataObject(getPQValuesResponse).build();
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withIds(actualIds)
+                .withResult(result)
+                .withOsgpException(exception)
+                .withDataObject(getPQValuesResponse)
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage, messageType);
     }
 
@@ -146,8 +149,12 @@ public class MonitoringService extends BaseService {
             exception = this.ensureOsgpException(e, "Exception occurred while receiving Measurement Report");
         }
 
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withIds(ids)
-                .withResult(result).withOsgpException(exception).withDataObject(measurementReport).build();
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withIds(ids)
+                .withResult(result)
+                .withOsgpException(exception)
+                .withDataObject(measurementReport)
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage, messageType);
     }
 }
