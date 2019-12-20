@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.domain.da.measurements.Measurement;
 import org.opensmartgridplatform.domain.da.measurements.MeasurementGroup;
 import org.opensmartgridplatform.domain.da.measurements.MeasurementReport;
@@ -33,7 +33,7 @@ import org.opensmartgridplatform.dto.da.measurements.elements.TimestampMeasureme
 
 public class DomainDistributionAutomationMapperTest {
 
-    private DomainDistributionAutomationMapper mapper = new DomainDistributionAutomationMapper();
+    private final DomainDistributionAutomationMapper mapper = new DomainDistributionAutomationMapper();
 
     @Test
     public void testStringToMeasurementTypeConverter() {

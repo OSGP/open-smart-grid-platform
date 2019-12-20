@@ -8,16 +8,13 @@
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
-import org.junit.Test;
-
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.MeterReadsGas;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.OsgpUnit;
@@ -27,7 +24,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.MeterReadsGasRes
 
 public class MeterReadsGasMappingTest {
 
-    private MonitoringMapper monitoringMapper = new MonitoringMapper();
+    private final MonitoringMapper monitoringMapper = new MonitoringMapper();
 
     // Test the mapping of a complete MeterReadsGasDto object
     @Test
@@ -39,14 +36,14 @@ public class MeterReadsGasMappingTest {
         // actual mapping
         final MeterReadsGas meterReadsGas = this.monitoringMapper.map(meterReadsGasDto, MeterReadsGas.class);
         // test mapping
-        assertNotNull(meterReadsGas);
-        assertEquals(meterReadsGasDto.getLogTime(), meterReadsGas.getLogTime());
-        assertEquals(meterReadsGasDto.getCaptureTime(), meterReadsGas.getCaptureTime());
+        assertThat(meterReadsGas).isNotNull();
+        assertThat(meterReadsGas.getLogTime()).isEqualTo(meterReadsGasDto.getLogTime());
+        assertThat(meterReadsGas.getCaptureTime()).isEqualTo(meterReadsGasDto.getCaptureTime());
 
         final BigDecimal bigDecimal1 = consumption.getValue();
         final BigDecimal bigDecimal2 = meterReadsGas.getConsumption().getValue();
-        assertTrue(bigDecimal1.compareTo(bigDecimal2) == 0);
-        assertEquals(OsgpUnit.M3, meterReadsGas.getConsumption().getOsgpUnit());
+        assertThat(bigDecimal1.compareTo(bigDecimal2) == 0).isTrue();
+        assertThat(meterReadsGas.getConsumption().getOsgpUnit()).isEqualTo(OsgpUnit.M3);
 
     }
 
@@ -60,20 +57,20 @@ public class MeterReadsGasMappingTest {
         // actual mapping
         final MeterReadsGas meterReadsGas = this.monitoringMapper.map(meterReadsGasDto, MeterReadsGas.class);
         // test mapping
-        assertNotNull(meterReadsGas);
-        assertEquals(meterReadsGasDto.getLogTime(), meterReadsGas.getLogTime());
-        assertEquals(meterReadsGasDto.getCaptureTime(), meterReadsGas.getCaptureTime());
-        assertNull(meterReadsGas.getConsumption());
+        assertThat(meterReadsGas).isNotNull();
+        assertThat(meterReadsGas.getLogTime()).isEqualTo(meterReadsGasDto.getLogTime());
+        assertThat(meterReadsGas.getCaptureTime()).isEqualTo(meterReadsGasDto.getCaptureTime());
+        assertThat(meterReadsGas.getConsumption()).isNull();
     }
 
     // Dates can never be null, because of the way the constructor for a
     // MeterReadsGasDto is defined.
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testWithNullDates() {
-
-        final DlmsMeterValueDto consumption = new DlmsMeterValueDto(new BigDecimal(1.0), DlmsUnitTypeDto.M3);
-        new MeterReadsGasResponseDto(null, consumption, null);
-
+        Assertions.assertThrows(NullPointerException.class, () -> {
+            final DlmsMeterValueDto consumption = new DlmsMeterValueDto(new BigDecimal(1.0), DlmsUnitTypeDto.M3);
+            new MeterReadsGasResponseDto(null, consumption, null);
+        });
     }
 
 }

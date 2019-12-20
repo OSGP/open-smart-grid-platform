@@ -8,18 +8,18 @@
 package org.opensmartgridplatform.adapter.domain.core.application.tasks;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -31,8 +31,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 public class DeviceMessageCleanupJobTest {
 
-    @Rule
-    public final TemporaryFolder folder = new TemporaryFolder();
+    @TempDir
+    Path folder;
 
     @InjectMocks
     private DeviceMessageCleanupJob deviceMessageCleanupJob;
@@ -41,14 +41,15 @@ public class DeviceMessageCleanupJobTest {
     private TransactionalDeviceLogItemService transactionalDeviceLogItemService;
 
     private final String filePrefix = "junit-mocked-csv-file-";
+    private static final String JUST_A_FILE = "file.csv";
 
-    @Before
+    @BeforeEach
     public void initMocksAndSetProperties() {
         MockitoAnnotations.initMocks(this);
 
         ReflectionTestUtils.setField(this.deviceMessageCleanupJob, "deviceMessageRetentionPeriodInMonths", 1);
         ReflectionTestUtils.setField(this.deviceMessageCleanupJob, "csvFileLocation",
-                this.folder.getRoot().getAbsolutePath());
+                this.folder.resolve(JUST_A_FILE).getParent().toString());
         ReflectionTestUtils.setField(this.deviceMessageCleanupJob, "csvFilePrefix", this.filePrefix);
         ReflectionTestUtils.setField(this.deviceMessageCleanupJob, "csvFileCompressionEnabled", true);
         ReflectionTestUtils.setField(this.deviceMessageCleanupJob, "deviceMessagePageSize", 10);
@@ -68,7 +69,7 @@ public class DeviceMessageCleanupJobTest {
 
         // Example path:
         // /tmp/junit7318456469288690301/junit-mocked-csv-file-20190416-112237.csv.zip
-        final String path = this.folder.getRoot().getAbsolutePath();
+        final String path = this.folder.resolve(JUST_A_FILE).getParent().toString();
 
         final File zipFile = FileUtils.findFileInFolderUsingFilePrefix(path, this.filePrefix);
         assertThat(zipFile.exists()).isTrue();
@@ -88,9 +89,13 @@ public class DeviceMessageCleanupJobTest {
     }
 
     private List<DeviceLogItem> createDeviceLogItems() {
-        final DeviceLogItem.Builder builder = new DeviceLogItem.Builder().withIncoming(false).withDeviceUid("deviceUID")
-                .withEncodedMessage("0x4F 0x53 0x4C 0x50 ").withDecodedMessage("O S L P")
-                .withDeviceIdentification("test").withOrganisationIdentification("organisation").withValid(true)
+        final DeviceLogItem.Builder builder = new DeviceLogItem.Builder().withIncoming(false)
+                .withDeviceUid("deviceUID")
+                .withEncodedMessage("0x4F 0x53 0x4C 0x50 ")
+                .withDecodedMessage("O S L P")
+                .withDeviceIdentification("test")
+                .withOrganisationIdentification("organisation")
+                .withValid(true)
                 .withPayloadMessageSerializedSize(4);
         final DeviceLogItem deviceLogItem = new DeviceLogItem(builder);
         return Arrays.asList(deviceLogItem);

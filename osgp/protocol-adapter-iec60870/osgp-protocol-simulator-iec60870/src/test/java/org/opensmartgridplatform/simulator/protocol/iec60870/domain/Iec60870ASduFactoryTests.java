@@ -12,8 +12,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.CauseOfTransmission;
 import org.openmuc.j60870.IeQualifierOfInterrogation;
@@ -23,12 +23,12 @@ import org.openmuc.j60870.IeTime56;
 import org.openmuc.j60870.InformationElement;
 import org.openmuc.j60870.InformationObject;
 import org.openmuc.j60870.TypeId;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 public class Iec60870ASduFactoryTests {
 
-    private Iec60870ASduFactory iec60870ASduFactory = new Iec60870ASduFactory();
+    private final Iec60870ASduFactory iec60870ASduFactory = new Iec60870ASduFactory();
 
     @Test
     public void shouldCreateInterrogationCommand() {
@@ -41,7 +41,7 @@ public class Iec60870ASduFactoryTests {
         final ASdu actual = this.iec60870ASduFactory.createInterrogationCommandAsdu();
 
         // Assert
-        assertThat(actual).isEqualToComparingFieldByFieldRecursively(expected);
+        assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
     }
 
     @Test
@@ -52,22 +52,17 @@ public class Iec60870ASduFactoryTests {
         final ASdu expected = new ASdu(TypeId.M_ME_TF_1, false, CauseOfTransmission.SPONTANEOUS, false, false, 0, 1,
                 new InformationObject[] {
                         new InformationObject(9127,
-                                new InformationElement[][] { {
-                                        new IeShortFloat(10.0f),
-                                        new IeQuality(false, false, false, false, false),
-                                        new IeTime56(timestamp) } }),
-                        new InformationObject(9128,
-                                new InformationElement[][] { {
-                                        new IeShortFloat(20.5f),
-                                        new IeQuality(false, false, false, false, false),
-                                        new IeTime56(timestamp) } }) });
+                                new InformationElement[][] { { new IeShortFloat(10.0f),
+                                        new IeQuality(false, false, false, false, false), new IeTime56(timestamp) } }),
+                        new InformationObject(9128, new InformationElement[][] { { new IeShortFloat(20.5f),
+                                new IeQuality(false, false, false, false, false), new IeTime56(timestamp) } }) });
         // @formatter:on
 
         // Act
         final ASdu actual = this.iec60870ASduFactory.createInterrogationCommandResponseAsdu(timestamp);
 
         // Assert
-        assertThat(actual).isEqualToComparingFieldByFieldRecursively(expected);
+        assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
     }
 
     @Test
@@ -81,6 +76,6 @@ public class Iec60870ASduFactoryTests {
         final ASdu actual = this.iec60870ASduFactory.createSingleCommandAsdu();
 
         // Assert
-        assertThat(actual).isEqualToComparingFieldByFieldRecursively(expected);
+        assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
     }
 }

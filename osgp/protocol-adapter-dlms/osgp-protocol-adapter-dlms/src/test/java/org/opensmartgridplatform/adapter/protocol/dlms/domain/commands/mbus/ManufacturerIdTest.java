@@ -7,9 +7,9 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ManufacturerIdTest {
 
@@ -19,12 +19,13 @@ public class ManufacturerIdTest {
     @Test
     public void testManufacturerIdFromIdentification() {
         final ManufacturerId lgb = ManufacturerId.fromIdentification(this.manufacturerIdentificationLgb);
-        assertEquals("manufacturer_id value", this.manufacturerIdLgb, lgb.getId());
+        assertThat(lgb.getId()).withFailMessage("manufacturer_id value").isEqualTo(this.manufacturerIdLgb);
     }
 
     @Test
     public void testManufacturerIdFromId() {
         final ManufacturerId lgb = ManufacturerId.fromId(this.manufacturerIdLgb);
-        assertEquals("manufacturer_id code", this.manufacturerIdentificationLgb, lgb.getIdentification());
+        assertThat(lgb.getIdentification()).withFailMessage("manufacturer_id code")
+                .isEqualTo(this.manufacturerIdentificationLgb);
     }
 }

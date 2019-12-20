@@ -159,11 +159,10 @@
       <artifactId>activemq-spring</artifactId>
     </dependency>
 
-    <!-- Testing dependencies -->
+    <!-- Google Protocol Buffers -->
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
     </dependency>
   </dependencies>
 </project>

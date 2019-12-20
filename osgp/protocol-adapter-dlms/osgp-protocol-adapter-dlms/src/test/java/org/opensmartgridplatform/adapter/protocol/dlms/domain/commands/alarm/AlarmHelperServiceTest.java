@@ -8,13 +8,12 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto;
 
 public class AlarmHelperServiceTest {
@@ -32,7 +31,7 @@ public class AlarmHelperServiceTest {
         alarmTypes.add(AlarmTypeDto.FRAUD_ATTEMPT_M_BUS_CHANNEL_1);
         alarmTypes.add(AlarmTypeDto.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_1);
 
-        assertEquals(17895681L, (long) this.alarmHelperService.toLongValue(alarmTypes));
+        assertThat((long) this.alarmHelperService.toLongValue(alarmTypes)).isEqualTo(17895681L);
     }
 
     @Test
@@ -41,22 +40,24 @@ public class AlarmHelperServiceTest {
 
         final Set<AlarmTypeDto> alarmTypes = this.alarmHelperService.toAlarmTypes(registerValue);
 
-        assertTrue(alarmTypes.contains(AlarmTypeDto.CLOCK_INVALID));
-        assertTrue(alarmTypes.contains(AlarmTypeDto.PROGRAM_MEMORY_ERROR));
-        assertTrue(alarmTypes.contains(AlarmTypeDto.WATCHDOG_ERROR));
-        assertTrue(alarmTypes.contains(AlarmTypeDto.COMMUNICATION_ERROR_M_BUS_CHANNEL_1));
-        assertTrue(alarmTypes.contains(AlarmTypeDto.FRAUD_ATTEMPT_M_BUS_CHANNEL_1));
-        assertTrue(alarmTypes.contains(AlarmTypeDto.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_1));
+        assertThat(alarmTypes.contains(AlarmTypeDto.CLOCK_INVALID)).isTrue();
+        assertThat(alarmTypes.contains(AlarmTypeDto.PROGRAM_MEMORY_ERROR)).isTrue();
+        assertThat(alarmTypes.contains(AlarmTypeDto.WATCHDOG_ERROR)).isTrue();
+        assertThat(alarmTypes.contains(AlarmTypeDto.COMMUNICATION_ERROR_M_BUS_CHANNEL_1)).isTrue();
+        assertThat(alarmTypes.contains(AlarmTypeDto.FRAUD_ATTEMPT_M_BUS_CHANNEL_1)).isTrue();
+        assertThat(alarmTypes.contains(AlarmTypeDto.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_1)).isTrue();
     }
 
     @Test
     public void testBitPositions() {
-        assertEquals(0, (int) this.alarmHelperService.toBitPosition(AlarmTypeDto.CLOCK_INVALID));
-        assertEquals(8, (int) this.alarmHelperService.toBitPosition(AlarmTypeDto.PROGRAM_MEMORY_ERROR));
-        assertEquals(12, (int) this.alarmHelperService.toBitPosition(AlarmTypeDto.WATCHDOG_ERROR));
-        assertEquals(16, (int) this.alarmHelperService.toBitPosition(AlarmTypeDto.COMMUNICATION_ERROR_M_BUS_CHANNEL_1));
-        assertEquals(20, (int) this.alarmHelperService.toBitPosition(AlarmTypeDto.FRAUD_ATTEMPT_M_BUS_CHANNEL_1));
-        assertEquals(24,
-                (int) this.alarmHelperService.toBitPosition(AlarmTypeDto.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_1));
+        assertThat((int) this.alarmHelperService.toBitPosition(AlarmTypeDto.CLOCK_INVALID)).isEqualTo(0);
+        assertThat((int) this.alarmHelperService.toBitPosition(AlarmTypeDto.PROGRAM_MEMORY_ERROR)).isEqualTo(8);
+        assertThat((int) this.alarmHelperService.toBitPosition(AlarmTypeDto.WATCHDOG_ERROR)).isEqualTo(12);
+        assertThat((int) this.alarmHelperService.toBitPosition(AlarmTypeDto.COMMUNICATION_ERROR_M_BUS_CHANNEL_1))
+                .isEqualTo(16);
+        assertThat((int) this.alarmHelperService.toBitPosition(AlarmTypeDto.FRAUD_ATTEMPT_M_BUS_CHANNEL_1))
+                .isEqualTo(20);
+        assertThat((int) this.alarmHelperService.toBitPosition(AlarmTypeDto.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_1))
+                .isEqualTo(24);
     }
 }

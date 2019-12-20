@@ -11,7 +11,7 @@ package org.opensmartgridplatform.shared.utils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.shared.utils.StacktraceUtils.currentStacktrace;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class StacktraceUtilsTest {
     @Test

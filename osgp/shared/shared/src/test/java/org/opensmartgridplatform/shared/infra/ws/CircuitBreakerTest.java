@@ -7,9 +7,11 @@
  */
 package org.opensmartgridplatform.shared.infra.ws;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,10 +20,13 @@ public class CircuitBreakerTest {
 
     private CircuitBreaker circuitBreaker;
 
-    @Before
+    @BeforeEach
     public void before() {
-        this.circuitBreaker = new CircuitBreaker.Builder().withThreshold(2).withInitialDuration(30)
-                .withMaximumDuration(120).withMultiplier(3).build();
+        this.circuitBreaker = new CircuitBreaker.Builder().withThreshold(2)
+                .withInitialDuration(30)
+                .withMaximumDuration(120)
+                .withMultiplier(3)
+                .build();
     }
 
     @Test
@@ -72,15 +77,18 @@ public class CircuitBreakerTest {
     public void testZeroValues() {
         LOGGER.info("Test: expect using zero values for all parameters is allowed");
         try {
-            new CircuitBreaker.Builder().withThreshold(0).withInitialDuration(0).withMaximumDuration(0)
-                    .withMultiplier(0).build();
+            new CircuitBreaker.Builder().withThreshold(0)
+                    .withInitialDuration(0)
+                    .withMaximumDuration(0)
+                    .withMultiplier(0)
+                    .build();
         } catch (final Exception e) {
-            Assert.fail("Exception should not occur for valid build call");
+            fail("Exception should not occur for valid build call");
         }
     }
 
     private void failIllegalArgument(final String fieldName) {
-        Assert.fail(String.format("CircuitBreaker should not have been created because of an illegal value for [%s]",
+        fail(String.format("CircuitBreaker should not have been created because of an illegal value for [%s]",
                 fieldName));
     }
 
@@ -88,20 +96,21 @@ public class CircuitBreakerTest {
         // Checks an essential part of the error message instead
         // of the exact full text.
         final String exceptionMessage = e.getMessage();
-        Assert.assertTrue(exceptionMessage.contains("negative value"));
+        assertThat(exceptionMessage.contains("negative value")).isTrue();
     }
 
     @Test
     public void testInitiallyClosed() {
         LOGGER.info("Test: expect initial status is CLOSED");
-        Assert.assertTrue("Initial status should be CLOSED", this.circuitBreaker.isClosed());
+        assertThat(this.circuitBreaker.isClosed()).withFailMessage("Initial status should be CLOSED").isTrue();
     }
 
     @Test
     public void testOpenCircuit() {
         LOGGER.info("Test: expect status is OPEN after an explicit open");
         this.circuitBreaker.openCircuit();
-        Assert.assertFalse("Should be OPEN after explicit open circuit request", this.circuitBreaker.isClosed());
+        assertThat(this.circuitBreaker.isClosed()).withFailMessage("Should be OPEN after explicit open circuit request")
+                .isFalse();
     }
 
     @Test
@@ -109,14 +118,16 @@ public class CircuitBreakerTest {
         LOGGER.info("Test: expect status is OPEN after an explicit close");
         this.markTwoFailures();
         this.circuitBreaker.closeCircuit();
-        Assert.assertTrue("Should be CLOSED after explicit close circuit request", this.circuitBreaker.isClosed());
+        assertThat(this.circuitBreaker.isClosed())
+                .withFailMessage("Should be CLOSED after explicit close circuit request")
+                .isTrue();
     }
 
     @Test
     public void testClosedAfter1Failure() {
         LOGGER.info("Test: expect status is CLOSED after one failure");
         this.markFailure();
-        Assert.assertTrue("Status should be CLOSED after 1 failure", this.circuitBreaker.isClosed());
+        assertThat(this.circuitBreaker.isClosed()).withFailMessage("Status should be CLOSED after 1 failure").isTrue();
     }
 
     @Test
@@ -124,7 +135,7 @@ public class CircuitBreakerTest {
         LOGGER.info("Test: expect status is OPEN after two consecutive failures");
         this.markTwoFailures();
 
-        Assert.assertFalse("Status should be OPEN after 2 failures", this.circuitBreaker.isClosed());
+        assertThat(this.circuitBreaker.isClosed()).withFailMessage("Status should be OPEN after 2 failures").isFalse();
     }
 
     @Test
@@ -135,14 +146,18 @@ public class CircuitBreakerTest {
         // Wait until the circuit breaker is closed
         this.wait(35);
 
-        Assert.assertTrue("Status should be CLOSED after waiting for 35 ms", this.circuitBreaker.isClosed());
+        assertThat(this.circuitBreaker.isClosed()).withFailMessage("Status should be CLOSED after waiting for 35 ms")
+                .isTrue();
     }
 
     @Test
     public void testDurationIncrease() {
         LOGGER.info("Test: expect status is OPEN after waiting shorter than the current duration of 600 ms");
-        this.circuitBreaker = new CircuitBreaker.Builder().withThreshold(2).withInitialDuration(30)
-                .withMaximumDuration(1200).withMultiplier(20).build();
+        this.circuitBreaker = new CircuitBreaker.Builder().withThreshold(2)
+                .withInitialDuration(30)
+                .withMaximumDuration(1200)
+                .withMultiplier(20)
+                .build();
 
         // Trigger the circuit breaker to open
         this.markTwoFailures();
@@ -156,7 +171,8 @@ public class CircuitBreakerTest {
         // multiplier * initial duration.
         this.wait(100);
 
-        Assert.assertFalse("Status should be OPEN after waiting for 100 ms", this.circuitBreaker.isClosed());
+        assertThat(this.circuitBreaker.isClosed()).withFailMessage("Status should be OPEN after waiting for 100 ms")
+                .isFalse();
     }
 
     @Test
@@ -180,7 +196,8 @@ public class CircuitBreakerTest {
         // Wait until the circuit breaker is closed
         this.wait(125);
 
-        Assert.assertTrue("Status should be CLOSED after waiting for 125 ms", this.circuitBreaker.isClosed());
+        assertThat(this.circuitBreaker.isClosed()).withFailMessage("Status should be CLOSED after waiting for 125 ms")
+                .isTrue();
     }
 
     @Test
@@ -190,8 +207,9 @@ public class CircuitBreakerTest {
         this.markSuccess();
         this.markFailure();
 
-        Assert.assertTrue("Status should be CLOSED, when there's one failure after a success",
-                this.circuitBreaker.isClosed());
+        assertThat(this.circuitBreaker.isClosed())
+                .withFailMessage("Status should be CLOSED, when there's one failure after a success")
+                .isTrue();
     }
 
     private void markFailure() {
@@ -211,7 +229,7 @@ public class CircuitBreakerTest {
         try {
             Thread.sleep(milliseconds);
         } catch (final InterruptedException e) {
-            Assert.fail("Sleep interrupted");
+            fail("Sleep interrupted");
         }
     }
 }

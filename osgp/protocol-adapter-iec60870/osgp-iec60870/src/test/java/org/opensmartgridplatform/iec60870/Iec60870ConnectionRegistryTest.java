@@ -10,15 +10,15 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmuc.j60870.Connection;
 
 public class Iec60870ConnectionRegistryTest {
 
     private Iec60870ConnectionRegistry iec60870ConnectionRegistry;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.iec60870ConnectionRegistry = new Iec60870ConnectionRegistry();
     }

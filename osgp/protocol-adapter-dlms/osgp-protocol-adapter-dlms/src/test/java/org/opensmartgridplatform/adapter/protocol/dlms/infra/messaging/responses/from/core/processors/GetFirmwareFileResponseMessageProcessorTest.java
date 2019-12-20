@@ -8,8 +8,9 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.responses.from.core.processors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.same;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -19,13 +20,13 @@ import java.util.LinkedList;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.FirmwareService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -44,7 +45,7 @@ import org.opensmartgridplatform.shared.infra.jms.ObjectMessageBuilder;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class GetFirmwareFileResponseMessageProcessorTest {
     @Mock
     protected DlmsConnectionHelper connectionHelper;
@@ -72,7 +73,7 @@ public class GetFirmwareFileResponseMessageProcessorTest {
     @InjectMocks
     private GetFirmwareFileResponseMessageProcessor getFirmwareFileResponseMessageProcessor;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.dlmsDevice = new DlmsDeviceBuilder().withHls5Active(true).build();
     }
@@ -84,7 +85,8 @@ public class GetFirmwareFileResponseMessageProcessorTest {
         final FirmwareFileDto firmwareFileDto = this.setupFirmwareFileDto();
         final ResponseMessage responseMessage = this.setupResponseMessage(firmwareFileDto);
         final ObjectMessage message = new ObjectMessageBuilder().withMessageType(MessageType.GET_FIRMWARE_FILE.name())
-                .withObject(responseMessage).build();
+                .withObject(responseMessage)
+                .build();
         final UpdateFirmwareResponseDto updateFirmwareResponseDto = new UpdateFirmwareResponseDto(
                 firmwareFileDto.getFirmwareIdentification(), new LinkedList<>());
 
@@ -93,8 +95,8 @@ public class GetFirmwareFileResponseMessageProcessorTest {
 
         when(this.domainHelperService.findDlmsDevice(any(MessageMetadata.class))).thenReturn(this.dlmsDevice);
         when(this.dlmsConnectionManagerMock.getDlmsMessageListener()).thenReturn(this.dlmsMessageListenerMock);
-        when(this.connectionHelper.createConnectionForDevice(same(this.dlmsDevice), any(DlmsMessageListener.class)))
-                .thenReturn(this.dlmsConnectionManagerMock);
+        when(this.connectionHelper.createConnectionForDevice(same(this.dlmsDevice),
+                nullable(DlmsMessageListener.class))).thenReturn(this.dlmsConnectionManagerMock);
         when(this.firmwareService.updateFirmware(this.dlmsConnectionManagerMock, this.dlmsDevice, firmwareFileDto))
                 .thenReturn(updateFirmwareResponseDto);
 
@@ -109,8 +111,7 @@ public class GetFirmwareFileResponseMessageProcessorTest {
     }
 
     @Test
-    public void handleMessageShouldCallUpdateFirmware()
-            throws OsgpException {
+    public void handleMessageShouldCallUpdateFirmware() throws OsgpException {
         // arrange
         final FirmwareFileDto firmwareFileDto = this.setupFirmwareFileDto();
         final ResponseMessage responseMessage = this.setupResponseMessage(firmwareFileDto);
@@ -129,8 +130,12 @@ public class GetFirmwareFileResponseMessageProcessorTest {
     }
 
     private ResponseMessage setupResponseMessage(final FirmwareFileDto firmwareFileDto) {
-        return ResponseMessage.newResponseMessageBuilder().withCorrelationUid("corr-uid-1")
-                .withOrganisationIdentification("test-org").withDeviceIdentification("dvc-01")
-                .withResult(ResponseMessageResultType.OK).withDataObject(firmwareFileDto).build();
+        return ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid("corr-uid-1")
+                .withOrganisationIdentification("test-org")
+                .withDeviceIdentification("dvc-01")
+                .withResult(ResponseMessageResultType.OK)
+                .withDataObject(firmwareFileDto)
+                .build();
     }
 }

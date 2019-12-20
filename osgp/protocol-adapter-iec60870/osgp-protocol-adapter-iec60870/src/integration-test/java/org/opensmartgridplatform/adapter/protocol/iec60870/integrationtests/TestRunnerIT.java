@@ -9,8 +9,8 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests;
 
 import org.junit.runner.RunWith;
 
-import cucumber.api.CucumberOptions;
-import cucumber.api.junit.Cucumber;
+import io.cucumber.junit.Cucumber;
+import io.cucumber.junit.CucumberOptions;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(plugin = { "pretty" }, features = "src/integration-test/resources/features")

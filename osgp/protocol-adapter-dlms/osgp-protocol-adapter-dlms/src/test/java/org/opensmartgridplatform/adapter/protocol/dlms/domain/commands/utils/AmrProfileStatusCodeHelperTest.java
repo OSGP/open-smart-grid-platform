@@ -8,13 +8,12 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AmrProfileStatusCodeFlagDto;
 
 public class AmrProfileStatusCodeHelperTest {
@@ -28,7 +27,7 @@ public class AmrProfileStatusCodeHelperTest {
         amrStatusCodeFlags.add(AmrProfileStatusCodeFlagDto.DATA_NOT_VALID);
         amrStatusCodeFlags.add(AmrProfileStatusCodeFlagDto.POWER_DOWN);
 
-        assertEquals((short) 132, (short) this.helperService.toValue(amrStatusCodeFlags));
+        assertThat((short) this.helperService.toValue(amrStatusCodeFlags)).isEqualTo((short) 132);
     }
 
     @Test
@@ -38,14 +37,14 @@ public class AmrProfileStatusCodeHelperTest {
         final Set<AmrProfileStatusCodeFlagDto> amrStatusCodeFlags = this.helperService
                 .toAmrProfileStatusCodeFlags(registerValue);
 
-        assertTrue(amrStatusCodeFlags.contains(AmrProfileStatusCodeFlagDto.DATA_NOT_VALID));
-        assertTrue(amrStatusCodeFlags.contains(AmrProfileStatusCodeFlagDto.CLOCK_ADJUSTED));
+        assertThat(amrStatusCodeFlags.contains(AmrProfileStatusCodeFlagDto.DATA_NOT_VALID)).isTrue();
+        assertThat(amrStatusCodeFlags.contains(AmrProfileStatusCodeFlagDto.CLOCK_ADJUSTED)).isTrue();
     }
 
     @Test
     public void testBitPositions() {
-        assertEquals(1, (int) this.helperService.toBitPosition(AmrProfileStatusCodeFlagDto.CLOCK_INVALID));
-        assertEquals(3, (int) this.helperService.toBitPosition(AmrProfileStatusCodeFlagDto.DAYLIGHT_SAVING));
-        assertEquals(7, (int) this.helperService.toBitPosition(AmrProfileStatusCodeFlagDto.POWER_DOWN));
+        assertThat((int) this.helperService.toBitPosition(AmrProfileStatusCodeFlagDto.CLOCK_INVALID)).isEqualTo(1);
+        assertThat((int) this.helperService.toBitPosition(AmrProfileStatusCodeFlagDto.DAYLIGHT_SAVING)).isEqualTo(3);
+        assertThat((int) this.helperService.toBitPosition(AmrProfileStatusCodeFlagDto.POWER_DOWN)).isEqualTo(7);
     }
 }

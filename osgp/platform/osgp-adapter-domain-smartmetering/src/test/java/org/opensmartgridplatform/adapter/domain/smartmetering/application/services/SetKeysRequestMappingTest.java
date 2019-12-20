@@ -8,19 +8,16 @@
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeysRequestData;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeysRequestDto;
 
 public class SetKeysRequestMappingTest {
 
-    private ConfigurationMapper configurationMapper = new ConfigurationMapper();
+    private final ConfigurationMapper configurationMapper = new ConfigurationMapper();
 
     // To test mapping when arrays are null
     @Test
@@ -35,9 +32,9 @@ public class SetKeysRequestMappingTest {
         final SetKeysRequestDto keySetDto = this.configurationMapper.map(keySet, SetKeysRequestDto.class);
 
         // check if mapping succeeded
-        assertNotNull(keySetDto);
-        assertNull(keySetDto.getAuthenticationKey());
-        assertNull(keySetDto.getEncryptionKey());
+        assertThat(keySetDto).isNotNull();
+        assertThat(keySetDto.getAuthenticationKey()).isNull();
+        assertThat(keySetDto.getEncryptionKey()).isNull();
     }
 
     // To test mapping when arrays are empty
@@ -52,11 +49,11 @@ public class SetKeysRequestMappingTest {
         final SetKeysRequestDto keySetDto = this.configurationMapper.map(keySet, SetKeysRequestDto.class);
 
         // check if mapping succeeded
-        assertNotNull(keySetDto);
-        assertNotNull(keySetDto.getAuthenticationKey());
-        assertNotNull(keySetDto.getEncryptionKey());
-        assertEquals(keySet.getAuthenticationKey().length, keySetDto.getAuthenticationKey().length);
-        assertEquals(keySet.getEncryptionKey().length, keySetDto.getEncryptionKey().length);
+        assertThat(keySetDto).isNotNull();
+        assertThat(keySetDto.getAuthenticationKey()).isNotNull();
+        assertThat(keySetDto.getEncryptionKey()).isNotNull();
+        assertThat(keySetDto.getAuthenticationKey().length).isEqualTo(keySet.getAuthenticationKey().length);
+        assertThat(keySet.getEncryptionKey().length).isEqualTo(keySetDto.getEncryptionKey().length);
     }
 
     // To test mapping when arrays hold a value
@@ -71,13 +68,13 @@ public class SetKeysRequestMappingTest {
         final SetKeysRequestDto keySetDto = this.configurationMapper.map(keySet, SetKeysRequestDto.class);
 
         // check if mapping succeeded
-        assertNotNull(keySetDto);
-        assertNotNull(keySetDto.getAuthenticationKey());
-        assertNotNull(keySetDto.getEncryptionKey());
-        assertEquals(keySet.getAuthenticationKey().length, keySetDto.getAuthenticationKey().length);
-        assertEquals(keySet.getEncryptionKey().length, keySetDto.getEncryptionKey().length);
-        assertEquals(keySet.getAuthenticationKey()[0], keySetDto.getAuthenticationKey()[0]);
-        assertEquals(keySet.getEncryptionKey()[0], keySetDto.getEncryptionKey()[0]);
+        assertThat(keySetDto).isNotNull();
+        assertThat(keySetDto.getAuthenticationKey()).isNotNull();
+        assertThat(keySetDto.getEncryptionKey()).isNotNull();
+        assertThat(keySetDto.getAuthenticationKey().length).isEqualTo(keySet.getAuthenticationKey().length);
+        assertThat(keySet.getEncryptionKey().length).isEqualTo(keySetDto.getEncryptionKey().length);
+        assertThat(keySetDto.getAuthenticationKey()[0]).isEqualTo(keySet.getAuthenticationKey()[0]);
+        assertThat(keySetDto.getEncryptionKey()[0]).isEqualTo(keySet.getEncryptionKey()[0]);
 
     }
 

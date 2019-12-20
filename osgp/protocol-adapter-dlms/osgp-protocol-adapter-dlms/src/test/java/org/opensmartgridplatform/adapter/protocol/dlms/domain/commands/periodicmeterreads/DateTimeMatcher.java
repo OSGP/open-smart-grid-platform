@@ -3,25 +3,21 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodic
 import org.joda.time.DateTime;
 import org.mockito.ArgumentMatcher;
 
-public class DateTimeMatcher extends ArgumentMatcher<DateTime> {
+public class DateTimeMatcher implements ArgumentMatcher<DateTime> {
 
-    private long time;
+    private final long time;
 
-    public DateTimeMatcher(long time) {
+    public DateTimeMatcher(final long time) {
         this.time = time;
     }
 
-    @Override
-    public boolean matches(Object actual) {
-        return getActualTime(actual) == time;
+    private long getActualTime(final DateTime actual) {
+        return actual.getMillis();
     }
 
-    private long getActualTime(Object actual) {
-        if (actual instanceof DateTime) {
-            return ((DateTime) actual).getMillis();
-        } else {
-            throw new IllegalArgumentException("Cannot determine time of " + actual);
-        }
+    @Override
+    public boolean matches(final DateTime argument) {
+        return this.getActualTime(argument) == this.time;
     }
 
 }

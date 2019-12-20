@@ -7,13 +7,12 @@
  */
 package org.opensmartgridplatform.adapter.domain.publiclighting.application.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.net.InetAddress;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaBatch;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaBatchDevice;
 
@@ -21,9 +20,11 @@ public class CdmaBatchTest {
 
     private final InetAddress loopbackAddress = InetAddress.getLoopbackAddress();
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void newBatchNumberNull() {
-        new CdmaBatch(null);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            new CdmaBatch(null);
+        });
     }
 
     @Test
@@ -36,8 +37,8 @@ public class CdmaBatchTest {
         final CdmaBatchDevice cd2 = new CdmaBatchDevice("cd2", this.loopbackAddress);
         batch.addCdmaBatchDevice(cd2);
 
-        assertEquals(Short.valueOf((short) 1), batch.getBatchNumber());
-        assertEquals("Batch should contain 2 devices", 2, batch.getCdmaBatchDevices().size());
+        assertThat(batch.getBatchNumber()).isEqualTo(Short.valueOf((short) 1));
+        assertThat(batch.getCdmaBatchDevices().size()).withFailMessage("Batch should contain 2 devices").isEqualTo(2);
     }
 
     @Test
@@ -45,14 +46,15 @@ public class CdmaBatchTest {
         final CdmaBatch batch1 = new CdmaBatch((short) 7);
         final CdmaBatch batch2 = new CdmaBatch((short) 7);
 
-        assertEquals("Batches with the same batch number should be equal", batch1, batch2);
+        assertThat(batch1).withFailMessage("Batches with the same batch number should be equal").isEqualTo(batch2);
     }
 
     @Test
     public void largerWhenBatchNumberLarger() {
         final CdmaBatch batch3 = new CdmaBatch((short) 3);
         final CdmaBatch batch2 = new CdmaBatch((short) 2);
-        assertNotEquals("Batches with different batch numbers should not be equal", batch3, batch2);
-        assertTrue(batch3.compareTo(batch2) > 0);
+        assertThat(batch3).withFailMessage("Batches with different batch numbers should not be equal")
+                .isNotEqualTo(batch2);
+        assertThat(batch3.compareTo(batch2) > 0).isTrue();
     }
 }
