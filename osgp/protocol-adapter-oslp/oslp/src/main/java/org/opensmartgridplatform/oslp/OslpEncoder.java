@@ -7,17 +7,18 @@
  */
 package org.opensmartgridplatform.oslp;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
+import java.util.List;
 
-public class OslpEncoder extends OneToOneEncoder {
-    private static ChannelBuffer encodeMessage(OslpEnvelope envelope) {
-        int size = envelope.getSize();
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.MessageToMessageEncoder;;
 
-        ChannelBuffer buffer = ChannelBuffers.buffer(size);
+public class OslpEncoder extends MessageToMessageEncoder<OslpEnvelope> {
+    private static ByteBuf encodeMessage(final OslpEnvelope envelope) {
+        final int size = envelope.getSize();
+
+        final ByteBuf buffer = Unpooled.buffer(size);
 
         buffer.writeBytes(envelope.getSecurityKey());
         buffer.writeBytes(envelope.getSequenceNumber());
@@ -29,11 +30,8 @@ public class OslpEncoder extends OneToOneEncoder {
     }
 
     @Override
-    protected Object encode(ChannelHandlerContext ctx, Channel channel, Object msg) {
-        if (msg instanceof OslpEnvelope) {
-            return encodeMessage((OslpEnvelope) msg);
-        } else {
-            return msg;
-        }
+    protected void encode(final ChannelHandlerContext ctx, final OslpEnvelope msg, final List<Object> out)
+            throws Exception {
+        out.add(encodeMessage(msg));
     }
 }

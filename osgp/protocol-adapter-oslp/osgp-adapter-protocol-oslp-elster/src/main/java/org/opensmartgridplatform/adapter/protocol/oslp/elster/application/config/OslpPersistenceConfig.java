@@ -11,8 +11,9 @@ import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
-import org.jboss.netty.logging.InternalLoggerFactory;
-import org.jboss.netty.logging.Slf4JLoggerFactory;
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.repositories.OslpDeviceRepository;
+import org.opensmartgridplatform.shared.application.config.AbstractPersistenceConfig;
+import org.opensmartgridplatform.shared.infra.db.DefaultConnectionPoolFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,16 +24,13 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.repositories.OslpDeviceRepository;
-import org.opensmartgridplatform.shared.application.config.AbstractPersistenceConfig;
-import org.opensmartgridplatform.shared.infra.db.DefaultConnectionPoolFactory;
 import com.zaxxer.hikari.HikariDataSource;
 
 /**
  * An application context Java configuration class.
  */
-@EnableJpaRepositories(entityManagerFactoryRef = "oslpEntityManagerFactory", basePackageClasses = {
-        OslpDeviceRepository.class })
+@EnableJpaRepositories(entityManagerFactoryRef = "oslpEntityManagerFactory",
+        basePackageClasses = { OslpDeviceRepository.class })
 @Configuration
 @EnableTransactionManagement()
 @PropertySource("classpath:osgp-adapter-protocol-oslp-elster.properties")
@@ -60,10 +58,6 @@ public class OslpPersistenceConfig extends AbstractPersistenceConfig {
 
     private HikariDataSource dataSourceOslp;
 
-    public OslpPersistenceConfig() {
-        InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
-    }
-
     /**
      * Method for creating the Data Source.
      *
@@ -72,7 +66,9 @@ public class OslpPersistenceConfig extends AbstractPersistenceConfig {
     public DataSource getDataSourceOslp() {
         if (this.dataSourceOslp == null) {
             final DefaultConnectionPoolFactory.Builder builder = super.builder().withUsername(this.username)
-                    .withPassword(this.password).withDatabaseHost(this.databaseHost).withDatabasePort(this.databasePort)
+                    .withPassword(this.password)
+                    .withDatabaseHost(this.databaseHost)
+                    .withDatabasePort(this.databasePort)
                     .withDatabaseName(this.databaseName);
             final DefaultConnectionPoolFactory factory = builder.build();
             this.dataSourceOslp = factory.getDefaultConnectionPool();
