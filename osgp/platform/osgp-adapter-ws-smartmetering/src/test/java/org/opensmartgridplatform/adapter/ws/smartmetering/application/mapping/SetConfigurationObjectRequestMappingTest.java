@@ -8,11 +8,9 @@
 
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.ConfigurationFlag;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.ConfigurationFlagType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.ConfigurationFlags;
@@ -23,61 +21,11 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.S
 
 public class SetConfigurationObjectRequestMappingTest {
 
-    private final ConfigurationMapper configurationMapper = new ConfigurationMapper();
     private static final String DEVICE_ID = "id1";
     private static final ConfigurationFlagType FLAGTYPE = ConfigurationFlagType.DISCOVER_ON_OPEN_COVER;
     private static final GprsOperationModeType GPRSTYPE = GprsOperationModeType.ALWAYS_ON;
     private static final boolean ISENABLED = true;
-
-    /**
-     * Tests if mapping succeeds when SetConfigurationObjectRequestData is null.
-     */
-    @Test
-    public void testWithNullSetConfigurationObjectRequestData() {
-
-        // build test data
-        final SetConfigurationObjectRequestData setConfigurationObjectRequestData = null;
-        final SetConfigurationObjectRequest requestOriginal = new SetConfigurationObjectRequest();
-        requestOriginal.setDeviceIdentification(DEVICE_ID);
-        requestOriginal.setSetConfigurationObjectRequestData(setConfigurationObjectRequestData);
-
-        // actual mapping
-        final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest requestMapped = this.configurationMapper
-                .map(requestOriginal,
-                        org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest.class);
-
-        // check mapping
-        assertNotNull(requestMapped);
-        assertNotNull(requestMapped.getDeviceIdentification());
-        assertEquals(DEVICE_ID, requestMapped.getDeviceIdentification());
-        assertNull(requestMapped.getSetConfigurationObjectRequestData());
-    }
-
-    /**
-     * Tests if mapping succeeds when ConfigurationObject is null.
-     */
-    @Test
-    public void testWithNullConfigurationObject() {
-        // build test data
-        final ConfigurationObject configurationObject = null;
-        final SetConfigurationObjectRequestData setConfigurationObjectRequestData = new SetConfigurationObjectRequestData();
-        setConfigurationObjectRequestData.setConfigurationObject(configurationObject);
-        final SetConfigurationObjectRequest requestOriginal = new SetConfigurationObjectRequest();
-        requestOriginal.setDeviceIdentification(DEVICE_ID);
-        requestOriginal.setSetConfigurationObjectRequestData(setConfigurationObjectRequestData);
-
-        // actual mapping
-        final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest requestMapped = this.configurationMapper
-                .map(requestOriginal,
-                        org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest.class);
-
-        // check mapping
-        assertNotNull(requestMapped);
-        assertNotNull(requestMapped.getDeviceIdentification());
-        assertEquals(DEVICE_ID, requestMapped.getDeviceIdentification());
-        assertNotNull(requestMapped.getSetConfigurationObjectRequestData());
-        assertNull(requestMapped.getSetConfigurationObjectRequestData().getConfigurationObject());
-    }
+    private final ConfigurationMapper configurationMapper = new ConfigurationMapper();
 
     /**
      * Tests if mapping succeeds with a complete SetConfigurationRequestData
@@ -107,25 +55,75 @@ public class SetConfigurationObjectRequestMappingTest {
                         org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest.class);
 
         // check mapping
-        assertNotNull(requestMapped);
-        assertEquals(DEVICE_ID, requestMapped.getDeviceIdentification());
-        assertNotNull(requestMapped.getSetConfigurationObjectRequestData());
-        assertNotNull(requestMapped.getSetConfigurationObjectRequestData().getConfigurationObject());
-        assertNotNull(requestMapped.getSetConfigurationObjectRequestData().getConfigurationObject()
-                .getGprsOperationMode());
-        assertNotNull(requestMapped.getSetConfigurationObjectRequestData().getConfigurationObject()
-                .getConfigurationFlags());
-        assertNotNull(requestMapped.getSetConfigurationObjectRequestData().getConfigurationObject()
-                .getConfigurationFlags().getFlags());
-        assertNotNull(requestMapped.getSetConfigurationObjectRequestData().getConfigurationObject()
-                .getConfigurationFlags().getFlags().get(0));
-        assertNotNull(requestMapped.getSetConfigurationObjectRequestData().getConfigurationObject()
-                .getConfigurationFlags().getFlags().get(0).getConfigurationFlagType());
-        assertEquals(GPRSTYPE.name(), requestMapped.getSetConfigurationObjectRequestData().getConfigurationObject()
-                .getGprsOperationMode().name());
-        assertEquals(FLAGTYPE.name(), requestMapped.getSetConfigurationObjectRequestData().getConfigurationObject()
-                .getConfigurationFlags().getFlags().get(0).getConfigurationFlagType().name());
+        assertThat(requestMapped).isNotNull();
+        assertThat(requestMapped.getDeviceIdentification()).isEqualTo(DEVICE_ID);
+        assertThat(requestMapped.getSetConfigurationObjectRequestData()).isNotNull();
+        assertThat(requestMapped.getSetConfigurationObjectRequestData().getConfigurationObject()).isNotNull();
+        assertThat(requestMapped.getSetConfigurationObjectRequestData().getConfigurationObject().getGprsOperationMode())
+                .isNotNull();
+        assertThat(
+                requestMapped.getSetConfigurationObjectRequestData().getConfigurationObject().getConfigurationFlags())
+                        .isNotNull();
+        assertThat(requestMapped.getSetConfigurationObjectRequestData().getConfigurationObject().getConfigurationFlags()
+                .getFlags()).isNotNull();
+        assertThat(requestMapped.getSetConfigurationObjectRequestData().getConfigurationObject().getConfigurationFlags()
+                .getFlags().get(0)).isNotNull();
+        assertThat(requestMapped.getSetConfigurationObjectRequestData().getConfigurationObject().getConfigurationFlags()
+                .getFlags().get(0).getConfigurationFlagType()).isNotNull();
+        assertThat(requestMapped.getSetConfigurationObjectRequestData().getConfigurationObject().getGprsOperationMode()
+                .name()).isEqualTo(GPRSTYPE.name());
+        assertThat(requestMapped.getSetConfigurationObjectRequestData().getConfigurationObject().getConfigurationFlags()
+                .getFlags().get(0).getConfigurationFlagType().name()).isEqualTo(FLAGTYPE.name());
+    }
 
+    /**
+     * Tests if mapping succeeds when ConfigurationObject is null.
+     */
+    @Test
+    public void testWithNullConfigurationObject() {
+        // build test data
+        final ConfigurationObject configurationObject = null;
+        final SetConfigurationObjectRequestData setConfigurationObjectRequestData = new SetConfigurationObjectRequestData();
+        setConfigurationObjectRequestData.setConfigurationObject(configurationObject);
+        final SetConfigurationObjectRequest requestOriginal = new SetConfigurationObjectRequest();
+        requestOriginal.setDeviceIdentification(DEVICE_ID);
+        requestOriginal.setSetConfigurationObjectRequestData(setConfigurationObjectRequestData);
+
+        // actual mapping
+        final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest requestMapped = this.configurationMapper
+                .map(requestOriginal,
+                        org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest.class);
+
+        // check mapping
+        assertThat(requestMapped).isNotNull();
+        assertThat(requestMapped.getDeviceIdentification()).isNotNull();
+        assertThat(requestMapped.getDeviceIdentification()).isEqualTo(DEVICE_ID);
+        assertThat(requestMapped.getSetConfigurationObjectRequestData()).isNotNull();
+        assertThat(requestMapped.getSetConfigurationObjectRequestData().getConfigurationObject()).isNull();
+    }
+
+    /**
+     * Tests if mapping succeeds when SetConfigurationObjectRequestData is null.
+     */
+    @Test
+    public void testWithNullSetConfigurationObjectRequestData() {
+
+        // build test data
+        final SetConfigurationObjectRequestData setConfigurationObjectRequestData = null;
+        final SetConfigurationObjectRequest requestOriginal = new SetConfigurationObjectRequest();
+        requestOriginal.setDeviceIdentification(DEVICE_ID);
+        requestOriginal.setSetConfigurationObjectRequestData(setConfigurationObjectRequestData);
+
+        // actual mapping
+        final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest requestMapped = this.configurationMapper
+                .map(requestOriginal,
+                        org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest.class);
+
+        // check mapping
+        assertThat(requestMapped).isNotNull();
+        assertThat(requestMapped.getDeviceIdentification()).isNotNull();
+        assertThat(requestMapped.getDeviceIdentification()).isEqualTo(DEVICE_ID);
+        assertThat(requestMapped.getSetConfigurationObjectRequestData()).isNull();
     }
 
 }

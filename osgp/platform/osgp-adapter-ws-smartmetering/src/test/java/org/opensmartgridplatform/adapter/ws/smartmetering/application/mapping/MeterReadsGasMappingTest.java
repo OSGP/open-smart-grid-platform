@@ -8,14 +8,12 @@
 
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpUnitType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.MeterReadsGas;
@@ -24,11 +22,11 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.OsgpUnit
 
 public class MeterReadsGasMappingTest {
 
-    private MonitoringMapper monitoringMapper = new MonitoringMapper();
     private static final Date DATE = new Date();
     private static final BigDecimal VALUE = new BigDecimal(1.0);
     private static final OsgpUnit OSGP_UNIT = OsgpUnit.M3;
     private static final OsgpUnitType OSGP_UNITTYPE = OsgpUnitType.M_3;
+    private MonitoringMapper monitoringMapper = new MonitoringMapper();
 
     /**
      * Tests if a MeterReadsGas object can be mapped
@@ -45,12 +43,13 @@ public class MeterReadsGasMappingTest {
                 ActualMeterReadsGasResponse.class);
 
         // check mapping
-        assertNotNull(actualMeterReadsGasResponse);
-        assertNotNull(actualMeterReadsGasResponse.getConsumption());
-        assertNotNull(actualMeterReadsGasResponse.getConsumption().getUnit());
-        assertNotNull(actualMeterReadsGasResponse.getConsumption().getValue());
-        assertEquals(OSGP_UNITTYPE, actualMeterReadsGasResponse.getConsumption().getUnit());
-        assertEquals(VALUE, actualMeterReadsGasResponse.getConsumption().getValue());
+        assertThat(actualMeterReadsGasResponse).isNotNull();
+        assertThat(actualMeterReadsGasResponse.getConsumption()).isNotNull();
+        assertThat(actualMeterReadsGasResponse.getConsumption().getUnit()).isNotNull();
+        assertThat(actualMeterReadsGasResponse.getConsumption().getValue()).isNotNull();
+
+        assertThat(actualMeterReadsGasResponse.getConsumption().getUnit()).isEqualTo(OSGP_UNITTYPE);
+        assertThat(actualMeterReadsGasResponse.getConsumption().getValue()).isEqualTo(VALUE);
         // For more information on the mapping of Date to XmlGregorianCalendar
         // objects, refer to the DateMappingTest
     }

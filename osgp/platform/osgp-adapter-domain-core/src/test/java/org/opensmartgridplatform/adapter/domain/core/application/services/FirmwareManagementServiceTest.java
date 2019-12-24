@@ -68,6 +68,21 @@ public class FirmwareManagementServiceTest {
     @InjectMocks
     private FirmwareManagementService firmwareManagementService;
 
+    private Device createDevice(final DeviceModel deviceModel) {
+        final Device device = new Device();
+        device.setDeviceModel(deviceModel);
+        return device;
+    }
+
+    private FirmwareFile createFirmwareFile(final String version) {
+        final FirmwareFile firmwareFile = new FirmwareFile();
+        final FirmwareModule module1 = new FirmwareModule("Functional");
+        final FirmwareModule module2 = new FirmwareModule("Security");
+        firmwareFile.addFirmwareModule(module1, version);
+        firmwareFile.addFirmwareModule(module2, version);
+        return firmwareFile;
+    }
+
     @BeforeEach
     public void setUp() throws FunctionalException {
         final Manufacturer manufacturer = new Manufacturer("code", "name", false);
@@ -101,7 +116,6 @@ public class FirmwareManagementServiceTest {
 
         // Validate
         assertThat(versionsNotInHistory).withFailMessage("List should be empty").isEmpty();
-
     }
 
     @Test
@@ -120,7 +134,6 @@ public class FirmwareManagementServiceTest {
 
         // Assert
         assertThat(versionsNotInHistory).withFailMessage("Lists should be equal").isEqualTo(expected);
-
     }
 
     @Test
@@ -156,22 +169,6 @@ public class FirmwareManagementServiceTest {
 
         // Assert
         verify(this.deviceFirmwareFileRepository, never()).save(any(DeviceFirmwareFile.class));
-    }
-
-    private FirmwareFile createFirmwareFile(final String version) {
-        final FirmwareFile firmwareFile = new FirmwareFile();
-        final FirmwareModule module1 = new FirmwareModule("Functional");
-        final FirmwareModule module2 = new FirmwareModule("Security");
-        firmwareFile.addFirmwareModule(module1, version);
-        firmwareFile.addFirmwareModule(module2, version);
-        return firmwareFile;
-    }
-
-    private Device createDevice(final DeviceModel deviceModel) {
-        final Device device = new Device();
-        device.setDeviceModel(deviceModel);
-        return device;
-
     }
 
 }

@@ -8,8 +8,7 @@
 
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -18,63 +17,15 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.joda.time.DateTime;
+import org.junit.jupiter.api.Test;
+
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
-
-import org.joda.time.DateTime;
-import org.junit.Test;
 
 public class DateMappingTest {
 
     private MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
-
-    /**
-     * Tests the mapping of a Date object to a XMLGregorianCalendar object.
-     */
-    @Test
-    public void testDateToXMLGregorianCalendarMapping() {
-
-        final Date date = new Date();
-        final XMLGregorianCalendar xmlCalendar = this.mapperFactory.getMapperFacade().map(date,
-                XMLGregorianCalendar.class);
-
-        assertNotNull(xmlCalendar);
-
-        // convert Date to a DateTime to enable comparison (Date has deprecated
-        // method and test fails if these are used).
-        final DateTime dateTime = new DateTime(date);
-
-        assertEquals(dateTime.getYear(), xmlCalendar.getYear());
-        assertEquals(dateTime.getMonthOfYear(), xmlCalendar.getMonth());
-        assertEquals(dateTime.getDayOfMonth(), xmlCalendar.getDay());
-        assertEquals(dateTime.getHourOfDay(), xmlCalendar.getHour());
-        assertEquals(dateTime.getMinuteOfHour(), xmlCalendar.getMinute());
-        assertEquals(dateTime.getSecondOfMinute(), xmlCalendar.getSecond());
-        assertEquals(dateTime.getMillisOfSecond(), xmlCalendar.getMillisecond());
-    }
-
-    /**
-     * Test the mapping of an XMLGregorianCalendar to a Date object.
-     */
-    @Test
-    public void testXMLGregorianCalendarToDateMapping() {
-
-        final XMLGregorianCalendar xmlCalendar = this.createCalendar();
-        final Date date = this.mapperFactory.getMapperFacade().map(xmlCalendar, Date.class);
-
-        assertNotNull(date);
-
-        // convert Date to a DateTime to enable comparison (Date has deprecated
-        // method and test fails if these are used).
-        final DateTime dateTime = new DateTime(date);
-        assertEquals(xmlCalendar.getYear(), dateTime.getYear());
-        assertEquals(xmlCalendar.getMonth(), dateTime.getMonthOfYear());
-        assertEquals(xmlCalendar.getDay(), dateTime.getDayOfMonth());
-        assertEquals(xmlCalendar.getHour(), dateTime.getHourOfDay());
-        assertEquals(xmlCalendar.getMinute(), dateTime.getMinuteOfHour());
-        assertEquals(xmlCalendar.getSecond(), dateTime.getSecondOfMinute());
-        assertEquals(xmlCalendar.getMillisecond(), dateTime.getMillisOfSecond());
-    }
 
     /**
      * Method creates an instance of XMLGregorianCalendar
@@ -88,6 +39,54 @@ public class DateMappingTest {
             e.printStackTrace();
         }
         return xmlCalendar;
+    }
+
+    /**
+     * Tests the mapping of a Date object to a XMLGregorianCalendar object.
+     */
+    @Test
+    public void testDateToXMLGregorianCalendarMapping() {
+
+        final Date date = new Date();
+        final XMLGregorianCalendar xmlCalendar = this.mapperFactory.getMapperFacade().map(date,
+                XMLGregorianCalendar.class);
+
+        assertThat(xmlCalendar).isNotNull();
+
+        // convert Date to a DateTime to enable comparison (Date has deprecated
+        // method and test fails if these are used).
+        final DateTime dateTime = new DateTime(date);
+
+        assertThat(xmlCalendar.getYear()).isEqualTo(dateTime.getYear());
+        assertThat(xmlCalendar.getMonth()).isEqualTo(dateTime.getMonthOfYear());
+        assertThat(xmlCalendar.getDay()).isEqualTo(dateTime.getDayOfMonth());
+        assertThat(xmlCalendar.getHour()).isEqualTo(dateTime.getHourOfDay());
+        assertThat(xmlCalendar.getMinute()).isEqualTo(dateTime.getMinuteOfHour());
+        assertThat(xmlCalendar.getSecond()).isEqualTo(dateTime.getSecondOfMinute());
+        assertThat(xmlCalendar.getMillisecond()).isEqualTo(dateTime.getMillisOfSecond());
+    }
+
+    /**
+     * Test the mapping of an XMLGregorianCalendar to a Date object.
+     */
+    @Test
+    public void testXMLGregorianCalendarToDateMapping() {
+
+        final XMLGregorianCalendar xmlCalendar = this.createCalendar();
+        final Date date = this.mapperFactory.getMapperFacade().map(xmlCalendar, Date.class);
+
+        assertThat(date).isNotNull();
+
+        // convert Date to a DateTime to enable comparison (Date has deprecated
+        // method and test fails if these are used).
+        final DateTime dateTime = new DateTime(date);
+        assertThat(dateTime.getYear()).isEqualTo(xmlCalendar.getYear());
+        assertThat(dateTime.getMonthOfYear()).isEqualTo(xmlCalendar.getMonth());
+        assertThat(dateTime.getDayOfMonth()).isEqualTo(xmlCalendar.getDay());
+        assertThat(dateTime.getHourOfDay()).isEqualTo(xmlCalendar.getHour());
+        assertThat(dateTime.getMinuteOfHour()).isEqualTo(xmlCalendar.getMinute());
+        assertThat(dateTime.getSecondOfMinute()).isEqualTo(xmlCalendar.getSecond());
+        assertThat(dateTime.getMillisOfSecond()).isEqualTo(xmlCalendar.getMillisecond());
     }
 
 }

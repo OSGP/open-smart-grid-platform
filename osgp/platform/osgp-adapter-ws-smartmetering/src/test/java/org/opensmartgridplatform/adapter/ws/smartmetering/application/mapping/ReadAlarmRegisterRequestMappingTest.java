@@ -8,11 +8,9 @@
 
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterRequest;
 
 public class ReadAlarmRegisterRequestMappingTest {
@@ -31,12 +29,13 @@ public class ReadAlarmRegisterRequestMappingTest {
 
         // actual mapping
         final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest mapped = this.monitoringMapper
-                .map(original, org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest.class);
+                .map(original,
+                        org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest.class);
 
         // check mapping
-        assertNotNull(mapped);
-        assertNotNull(mapped.getDeviceIdentification());
-        assertEquals(original.getDeviceIdentification(), mapped.getDeviceIdentification());
+        assertThat(mapped).isNotNull();
+        assertThat(mapped.getDeviceIdentification()).isNotNull();
+        assertThat(mapped.getDeviceIdentification()).isEqualTo(original.getDeviceIdentification());
     }
 
 }

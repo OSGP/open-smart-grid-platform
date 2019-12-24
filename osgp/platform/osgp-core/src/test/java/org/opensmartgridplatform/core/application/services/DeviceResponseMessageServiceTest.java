@@ -7,9 +7,8 @@
  */
 package org.opensmartgridplatform.core.application.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyString;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -19,11 +18,11 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.core.domain.model.domain.DomainResponseService;
 import org.opensmartgridplatform.domain.core.entities.ScheduledTask;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
@@ -36,70 +35,31 @@ import org.opensmartgridplatform.shared.infra.jms.RetryHeader;
 /**
  * test class for DeviceResponseMessageService
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DeviceResponseMessageServiceTest {
 
-    @Mock
-    private DeviceService deviceService;
-
-    @Mock
-    private DomainResponseService domainResponseMessageSender;
-
-    @Mock
-    private ScheduledTaskService scheduledTaskService;
-
-    @Mock
-    private DeviceCommunicationInformationService deviceCommunicationInformationService;
-
-    @InjectMocks
-    private DeviceResponseMessageService deviceResponseMessageService;
-
     private static final String DEVICE_ID = "deviceId";
+
     private static final DeviceMessageMetadata DEVICE_MESSAGE_DATA = new DeviceMessageMetadata(DEVICE_ID,
             "organisationId", "correlationId", "messageType", 4);
+
     private static final String DOMAIN = "Domain";
+
     private static final String DOMAIN_VERSION = "1.0";
+
     private static final String DATA_OBJECT = "data object";
+
     private static final Timestamp SCHEDULED_TIME = new Timestamp(Calendar.getInstance().getTime().getTime());
-
-    /**
-     * test processMessage with a scheduled task that has been successful
-     */
-    @Test
-    public void testProcessScheduledMessageSuccess() {
-        final ProtocolResponseMessage message = new ProtocolResponseMessage.Builder()
-                .deviceMessageMetadata(DEVICE_MESSAGE_DATA).domain(DOMAIN).domainVersion(DOMAIN_VERSION)
-                .result(ResponseMessageResultType.OK).dataObject(DATA_OBJECT).scheduled(true).build();
-        final ScheduledTask scheduledTask = new ScheduledTask(DEVICE_MESSAGE_DATA, DOMAIN, DOMAIN, DATA_OBJECT,
-                SCHEDULED_TIME);
-        scheduledTask.setPending();
-        when(this.scheduledTaskService.findByCorrelationUid(anyString())).thenReturn(scheduledTask);
-        this.deviceResponseMessageService.processMessage(message);
-
-        // check if message is send and task is deleted
-        verify(this.domainResponseMessageSender).send(message);
-        verify(this.scheduledTaskService).deleteScheduledTask(scheduledTask);
-    }
-
-    /**
-     * test processMessage with a scheduled task that must be retried
-     */
-    @Test
-    public void testProcessScheduledMessageRetry() {
-        final String exceptionMessage = "message";
-        this.testProcessScheduledMessageRetry(exceptionMessage, exceptionMessage);
-    }
-
-    /**
-     * test processMessage with a scheduled task that must be retried with an
-     * error message longer than 255 characters
-     */
-    @Test
-    public void testProcessScheduledMessageRetryWithTruncatedError() {
-        final String exceptionMessageWith255Characters = StringUtils.repeat('x', 255);
-        final String tooLongExceptionMessage = exceptionMessageWith255Characters + "extra";
-        this.testProcessScheduledMessageRetry(tooLongExceptionMessage, exceptionMessageWith255Characters);
-    }
+    @Mock
+    private DeviceService deviceService;
+    @Mock
+    private DomainResponseService domainResponseMessageSender;
+    @Mock
+    private ScheduledTaskService scheduledTaskService;
+    @Mock
+    private DeviceCommunicationInformationService deviceCommunicationInformationService;
+    @InjectMocks
+    private DeviceResponseMessageService deviceResponseMessageService;
 
     /**
      * test processMessage with a scheduled task that failed
@@ -126,6 +86,15 @@ public class DeviceResponseMessageServiceTest {
         // check if message is send and task is deleted
         verify(this.domainResponseMessageSender).send(message);
         verify(this.scheduledTaskService).deleteScheduledTask(scheduledTask);
+    }
+
+    /**
+     * test processMessage with a scheduled task that must be retried
+     */
+    @Test
+    public void testProcessScheduledMessageRetry() {
+        final String exceptionMessage = "message";
+        this.testProcessScheduledMessageRetry(exceptionMessage, exceptionMessage);
     }
 
     private void testProcessScheduledMessageRetry(final String exceptionMessage, final String expectedMessage) {
@@ -155,8 +124,38 @@ public class DeviceResponseMessageServiceTest {
         verify(this.scheduledTaskService).saveScheduledTask(scheduledTask);
 
         // check if the scheduled time is updated to the message retry time
-        assertEquals(new Timestamp(scheduledRetryTime.getTime()), scheduledTask.getscheduledTime());
-        assertTrue(scheduledTask.getErrorLog().contains(expectedMessage));
+        assertThat(scheduledTask.getscheduledTime()).isEqualTo(new Timestamp(scheduledRetryTime.getTime()));
+        assertThat(scheduledTask.getErrorLog().contains(expectedMessage)).isTrue();
+    }
+
+    /**
+     * test processMessage with a scheduled task that must be retried with an
+     * error message longer than 255 characters
+     */
+    @Test
+    public void testProcessScheduledMessageRetryWithTruncatedError() {
+        final String exceptionMessageWith255Characters = StringUtils.repeat('x', 255);
+        final String tooLongExceptionMessage = exceptionMessageWith255Characters + "extra";
+        this.testProcessScheduledMessageRetry(tooLongExceptionMessage, exceptionMessageWith255Characters);
+    }
+
+    /**
+     * test processMessage with a scheduled task that has been successful
+     */
+    @Test
+    public void testProcessScheduledMessageSuccess() {
+        final ProtocolResponseMessage message = new ProtocolResponseMessage.Builder()
+                .deviceMessageMetadata(DEVICE_MESSAGE_DATA).domain(DOMAIN).domainVersion(DOMAIN_VERSION)
+                .result(ResponseMessageResultType.OK).dataObject(DATA_OBJECT).scheduled(true).build();
+        final ScheduledTask scheduledTask = new ScheduledTask(DEVICE_MESSAGE_DATA, DOMAIN, DOMAIN, DATA_OBJECT,
+                SCHEDULED_TIME);
+        scheduledTask.setPending();
+        when(this.scheduledTaskService.findByCorrelationUid(anyString())).thenReturn(scheduledTask);
+        this.deviceResponseMessageService.processMessage(message);
+
+        // check if message is send and task is deleted
+        verify(this.domainResponseMessageSender).send(message);
+        verify(this.scheduledTaskService).deleteScheduledTask(scheduledTask);
     }
 
 }

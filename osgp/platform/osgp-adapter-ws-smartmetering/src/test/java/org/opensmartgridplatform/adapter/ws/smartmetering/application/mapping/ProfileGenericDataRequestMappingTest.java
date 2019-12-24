@@ -8,10 +8,7 @@
 
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -21,42 +18,44 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.joda.time.DateTime;
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ObisCodeValues;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataRequest;
 
 public class ProfileGenericDataRequestMappingTest {
 
-    private final MonitoringMapper mapper = new MonitoringMapper();
-
     private static final String DEVICE_NAME = "TEST10240000001";
+
     private static final Date DATE = new Date();
+    private final MonitoringMapper mapper = new MonitoringMapper();
 
     @Test
     public void convertProfileGenericDataRequest() {
         final ProfileGenericDataRequest source = this.makeRequest();
         final Object result = this.mapper.map(source,
                 org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileGenericDataRequest.class);
-        assertNotNull("mapping ProfileGenericDataRequest should not return null", result);
-        assertThat("mapping ProfileGenericDataRequest should return correct type", result,
-                instanceOf(org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileGenericDataRequest.class));
+
+        assertThat(result).as("mapping ProfileGenericDataRequest should not return null").isNotNull();
+        assertThat(result).as("mapping ProfileGenericDataRequest should return correct type").isInstanceOf(
+                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileGenericDataRequest.class);
+
         final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileGenericDataRequest target = (org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileGenericDataRequest) result;
 
-        assertEquals(source.getDeviceIdentification(), target.getDeviceIdentification());
-        assertEquals(source.getObisCode().getA(), target.getObisCode().getA());
-        assertEquals(source.getObisCode().getF(), target.getObisCode().getF());
+        assertThat(target.getDeviceIdentification()).isEqualTo(source.getDeviceIdentification());
+        assertThat(target.getObisCode().getA()).isEqualTo((byte) source.getObisCode().getA());
+        assertThat(target.getObisCode().getF()).isEqualTo((byte) source.getObisCode().getF());
         final DateTime targetEndDate = new DateTime(target.getEndDate().getTime());
-        assertEquals(source.getBeginDate().getYear(), targetEndDate.getYear());
+        assertThat(targetEndDate.getYear()).isEqualTo(source.getBeginDate().getYear());
     }
 
-    private ProfileGenericDataRequest makeRequest() {
-        final ProfileGenericDataRequest result = new ProfileGenericDataRequest();
-        result.setObisCode(this.makeObisCodeValues());
-        result.setDeviceIdentification(DEVICE_NAME);
-        result.setBeginDate(this.makeGregorianCalendar());
-        result.setEndDate(this.makeGregorianCalendar());
-        return result;
+    private XMLGregorianCalendar makeGregorianCalendar() {
+        final GregorianCalendar gcal = new GregorianCalendar();
+        gcal.setTime(DATE);
+        try {
+            return DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
+        } catch (final DatatypeConfigurationException e) {
+            throw new RuntimeException("error creating XMLGregorianCalendar");
+        }
     }
 
     private ObisCodeValues makeObisCodeValues() {
@@ -70,13 +69,12 @@ public class ProfileGenericDataRequestMappingTest {
         return result;
     }
 
-    private XMLGregorianCalendar makeGregorianCalendar() {
-        GregorianCalendar gcal = new GregorianCalendar();
-        gcal.setTime(DATE);
-        try {
-            return DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
-        } catch (DatatypeConfigurationException e) {
-            throw new RuntimeException("error creating XMLGregorianCalendar");
-        }
+    private ProfileGenericDataRequest makeRequest() {
+        final ProfileGenericDataRequest result = new ProfileGenericDataRequest();
+        result.setObisCode(this.makeObisCodeValues());
+        result.setDeviceIdentification(DEVICE_NAME);
+        result.setBeginDate(this.makeGregorianCalendar());
+        result.setEndDate(this.makeGregorianCalendar());
+        return result;
     }
 }

@@ -8,26 +8,23 @@
 
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigInteger;
 
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.PushSetupAlarm;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.MessageType;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.TransportServiceType;
 
 public class PushSetupAlarmMappingTest {
 
-    private ConfigurationMapper configurationMapper = new ConfigurationMapper();
     private static final String HOST = "host";
     private static final BigInteger PORT = BigInteger.TEN;
     private static final String DESTINATION = "host:10";
     private static final TransportServiceType TRANSPORTSERVICETYPE = TransportServiceType.TCP;
     private static final MessageType MESSAGETYPE = MessageType.MANUFACTURER_SPECIFIC;
+    private ConfigurationMapper configurationMapper = new ConfigurationMapper();
 
     /**
      * Tests if mapping a PushSetupAlarm object succeeds.
@@ -46,27 +43,27 @@ public class PushSetupAlarmMappingTest {
                         org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupAlarm.class);
 
         // check mapping
-        assertNotNull(pushSetupAlarmMapped);
-        assertNotNull(pushSetupAlarmMapped.getSendDestinationAndMethod());
-        assertNotNull(pushSetupAlarmMapped.getSendDestinationAndMethod().getDestination());
-        assertNotNull(pushSetupAlarmMapped.getSendDestinationAndMethod().getTransportService());
-        assertNotNull(pushSetupAlarmMapped.getSendDestinationAndMethod().getMessage());
+        assertThat(pushSetupAlarmMapped).isNotNull();
+        assertThat(pushSetupAlarmMapped.getSendDestinationAndMethod()).isNotNull();
+        assertThat(pushSetupAlarmMapped.getSendDestinationAndMethod().getDestination()).isNotNull();
+        assertThat(pushSetupAlarmMapped.getSendDestinationAndMethod().getTransportService()).isNotNull();
+        assertThat(pushSetupAlarmMapped.getSendDestinationAndMethod().getMessage()).isNotNull();
 
         // Only a SendDestinationAndMethod is mapped:
-        assertNull(pushSetupAlarmMapped.getLogicalName());
-        assertNull(pushSetupAlarmMapped.getCommunicationWindow());
-        assertNull(pushSetupAlarmMapped.getNumberOfRetries());
-        assertNull(pushSetupAlarmMapped.getPushObjectList());
-        assertNull(pushSetupAlarmMapped.getRandomisationStartInterval());
-        assertNull(pushSetupAlarmMapped.getRepetitionDelay());
+        assertThat(pushSetupAlarmMapped.getLogicalName()).isNull();
+        assertThat(pushSetupAlarmMapped.getCommunicationWindow()).isNull();
+        assertThat(pushSetupAlarmMapped.getNumberOfRetries()).isNull();
+        assertThat(pushSetupAlarmMapped.getPushObjectList()).isNull();
+        assertThat(pushSetupAlarmMapped.getRandomisationStartInterval()).isNull();
+        assertThat(pushSetupAlarmMapped.getRepetitionDelay()).isNull();
 
         // port and host are combined into destination. The converter sets
         // default values for the other two variables of a
         // SendDestinationAndMethod.
-        assertEquals(DESTINATION, pushSetupAlarmMapped.getSendDestinationAndMethod().getDestination());
-        assertEquals(TRANSPORTSERVICETYPE.name(), pushSetupAlarmMapped.getSendDestinationAndMethod()
-                .getTransportService().name());
-        assertEquals(MESSAGETYPE.name(), pushSetupAlarmMapped.getSendDestinationAndMethod().getMessage().name());
-
+        assertThat(pushSetupAlarmMapped.getSendDestinationAndMethod().getDestination()).isEqualTo(DESTINATION);
+        assertThat(pushSetupAlarmMapped.getSendDestinationAndMethod().getTransportService().name())
+                .isEqualTo(TRANSPORTSERVICETYPE.name());
+        assertThat(pushSetupAlarmMapped.getSendDestinationAndMethod().getMessage().name())
+                .isEqualTo(MESSAGETYPE.name());
     }
 }

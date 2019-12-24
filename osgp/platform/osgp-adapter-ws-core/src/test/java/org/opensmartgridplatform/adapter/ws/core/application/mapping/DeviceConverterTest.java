@@ -1,19 +1,18 @@
 package org.opensmartgridplatform.adapter.ws.core.application.mapping;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyString;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
@@ -21,7 +20,7 @@ import org.opensmartgridplatform.domain.core.repositories.SsldRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.Address;
 import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DeviceConverterTest {
 
     @Mock
@@ -30,7 +29,7 @@ public class DeviceConverterTest {
     @InjectMocks
     private DeviceManagementMapper deviceManagementMapper;
 
-    @Before
+    @BeforeEach
     public void initMapper() {
         this.deviceManagementMapper.initialize();
     }
@@ -44,35 +43,35 @@ public class DeviceConverterTest {
         final org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device jaxbDevice = this.deviceManagementMapper
                 .map(device, org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device.class);
 
-        assertEquals("id", jaxbDevice.getDeviceIdentification());
-        assertEquals("alias", jaxbDevice.getAlias());
-        assertEquals("city", jaxbDevice.getContainerAddress().getCity());
-        assertEquals("postal", jaxbDevice.getContainerAddress().getPostalCode());
-        assertEquals("street", jaxbDevice.getContainerAddress().getStreet());
-        assertEquals(new Integer(42), jaxbDevice.getContainerAddress().getNumber());
-        assertEquals("nr", jaxbDevice.getContainerAddress().getNumberAddition());
-        assertEquals("munic", jaxbDevice.getContainerAddress().getMunicipality());
-        assertEquals("12.0", jaxbDevice.getGpsLatitude());
-        assertEquals("13.0", jaxbDevice.getGpsLongitude());
-        assertEquals("localhost/127.0.0.1", jaxbDevice.getNetworkAddress());
-        assertEquals("type", jaxbDevice.getDeviceType());
+        assertThat(jaxbDevice.getDeviceIdentification()).isEqualTo("id");
+        assertThat(jaxbDevice.getAlias()).isEqualTo("alias");
+        assertThat(jaxbDevice.getContainerAddress().getCity()).isEqualTo("city");
+        assertThat(jaxbDevice.getContainerAddress().getPostalCode()).isEqualTo("postal");
+        assertThat(jaxbDevice.getContainerAddress().getStreet()).isEqualTo("street");
+        assertThat(jaxbDevice.getContainerAddress().getNumber()).isEqualTo(new Integer(42));
+        assertThat(jaxbDevice.getContainerAddress().getNumberAddition()).isEqualTo("nr");
+        assertThat(jaxbDevice.getContainerAddress().getMunicipality()).isEqualTo("munic");
+        assertThat(jaxbDevice.getGpsLatitude()).isEqualTo("12.0");
+        assertThat(jaxbDevice.getGpsLongitude()).isEqualTo("13.0");
+        assertThat(jaxbDevice.getNetworkAddress()).isEqualTo("localhost/127.0.0.1");
+        assertThat(jaxbDevice.getDeviceType()).isEqualTo("type");
 
         final Device mappedBack = this.deviceManagementMapper.map(jaxbDevice, Device.class);
 
-        assertEquals("id", mappedBack.getDeviceIdentification());
-        assertEquals("alias", mappedBack.getAlias());
-        assertEquals("city", mappedBack.getContainerAddress().getCity());
-        assertEquals("postal", mappedBack.getContainerAddress().getPostalCode());
-        assertEquals("street", mappedBack.getContainerAddress().getStreet());
-        assertEquals(new Integer(42), mappedBack.getContainerAddress().getNumber());
-        assertEquals("nr", mappedBack.getContainerAddress().getNumberAddition());
-        assertEquals("munic", mappedBack.getContainerAddress().getMunicipality());
-        assertTrue(12 == mappedBack.getGpsCoordinates().getLatitude());
-        assertTrue(13 == mappedBack.getGpsCoordinates().getLongitude());
+        assertThat(mappedBack.getDeviceIdentification()).isEqualTo("id");
+        assertThat(mappedBack.getAlias()).isEqualTo("alias");
+        assertThat(mappedBack.getContainerAddress().getCity()).isEqualTo("city");
+        assertThat(mappedBack.getContainerAddress().getPostalCode()).isEqualTo("postal");
+        assertThat(mappedBack.getContainerAddress().getStreet()).isEqualTo("street");
+        assertThat(mappedBack.getContainerAddress().getNumber()).isEqualTo(new Integer(42));
+        assertThat(mappedBack.getContainerAddress().getNumberAddition()).isEqualTo("nr");
+        assertThat(mappedBack.getContainerAddress().getMunicipality()).isEqualTo("munic");
+        assertThat(mappedBack.getGpsCoordinates().getLatitude()).isEqualTo(12);
+        assertThat(mappedBack.getGpsCoordinates().getLongitude()).isEqualTo(13);
         // alas networkaddress in jaxb device is just a string, need parsing to
         // convert that to InetAddress
-        assertEquals(null, mappedBack.getNetworkAddress());
-        assertEquals("type", mappedBack.getDeviceType());
+        assertThat(mappedBack.getNetworkAddress()).isEqualTo(null);
+        assertThat(mappedBack.getDeviceType()).isEqualTo("type");
     }
 
     @Test
@@ -84,35 +83,35 @@ public class DeviceConverterTest {
         final org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device jaxbDevice = this.deviceManagementMapper
                 .map(device, org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device.class);
 
-        assertEquals("id", jaxbDevice.getDeviceIdentification());
-        assertEquals("alias", jaxbDevice.getAlias());
-        assertEquals("city", jaxbDevice.getContainerAddress().getCity());
-        assertEquals("postal", jaxbDevice.getContainerAddress().getPostalCode());
-        assertEquals("street", jaxbDevice.getContainerAddress().getStreet());
-        assertEquals(new Integer(42), jaxbDevice.getContainerAddress().getNumber());
-        assertEquals("nr", jaxbDevice.getContainerAddress().getNumberAddition());
-        assertEquals("munic", jaxbDevice.getContainerAddress().getMunicipality());
-        assertEquals("12.0", jaxbDevice.getGpsLatitude());
-        assertEquals("13.0", jaxbDevice.getGpsLongitude());
-        assertEquals("localhost/127.0.0.1", jaxbDevice.getNetworkAddress());
-        assertEquals("type", jaxbDevice.getDeviceType());
+        assertThat(jaxbDevice.getDeviceIdentification()).isEqualTo("id");
+        assertThat(jaxbDevice.getAlias()).isEqualTo("alias");
+        assertThat(jaxbDevice.getContainerAddress().getCity()).isEqualTo("city");
+        assertThat(jaxbDevice.getContainerAddress().getPostalCode()).isEqualTo("postal");
+        assertThat(jaxbDevice.getContainerAddress().getStreet()).isEqualTo("street");
+        assertThat(jaxbDevice.getContainerAddress().getNumber()).isEqualTo(new Integer(42));
+        assertThat(jaxbDevice.getContainerAddress().getNumberAddition()).isEqualTo("nr");
+        assertThat(jaxbDevice.getContainerAddress().getMunicipality()).isEqualTo("munic");
+        assertThat(jaxbDevice.getGpsLatitude()).isEqualTo("12.0");
+        assertThat(jaxbDevice.getGpsLongitude()).isEqualTo("13.0");
+        assertThat(jaxbDevice.getNetworkAddress()).isEqualTo("localhost/127.0.0.1");
+        assertThat(jaxbDevice.getDeviceType()).isEqualTo("type");
 
         final SmartMeter mappedBack = this.deviceManagementMapper.map(jaxbDevice, SmartMeter.class);
 
-        assertEquals("id", mappedBack.getDeviceIdentification());
-        assertEquals("alias", mappedBack.getAlias());
-        assertEquals("city", mappedBack.getContainerAddress().getCity());
-        assertEquals("postal", mappedBack.getContainerAddress().getPostalCode());
-        assertEquals("street", mappedBack.getContainerAddress().getStreet());
-        assertEquals(new Integer(42), mappedBack.getContainerAddress().getNumber());
-        assertEquals("nr", mappedBack.getContainerAddress().getNumberAddition());
-        assertEquals("munic", mappedBack.getContainerAddress().getMunicipality());
-        assertTrue(12 == mappedBack.getGpsCoordinates().getLatitude());
-        assertTrue(13 == mappedBack.getGpsCoordinates().getLongitude());
+        assertThat(mappedBack.getDeviceIdentification()).isEqualTo("id");
+        assertThat(mappedBack.getAlias()).isEqualTo("alias");
+        assertThat(mappedBack.getContainerAddress().getCity()).isEqualTo("city");
+        assertThat(mappedBack.getContainerAddress().getPostalCode()).isEqualTo("postal");
+        assertThat(mappedBack.getContainerAddress().getStreet()).isEqualTo("street");
+        assertThat(mappedBack.getContainerAddress().getNumber()).isEqualTo(new Integer(42));
+        assertThat(mappedBack.getContainerAddress().getNumberAddition()).isEqualTo("nr");
+        assertThat(mappedBack.getContainerAddress().getMunicipality()).isEqualTo("munic");
+        assertThat(mappedBack.getGpsCoordinates().getLatitude()).isEqualTo(12);
+        assertThat(mappedBack.getGpsCoordinates().getLongitude()).isEqualTo(13);
         // alas networkaddress in jaxb device is just a string, need parsing to
         // convert that to InetAddress
-        assertEquals(null, mappedBack.getNetworkAddress());
-        assertEquals("type", mappedBack.getDeviceType());
+        assertThat(mappedBack.getNetworkAddress()).isEqualTo(null);
+        assertThat(mappedBack.getDeviceType()).isEqualTo("type");
     }
 
     @Test
@@ -127,46 +126,44 @@ public class DeviceConverterTest {
         final org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device jaxbDevice = this.deviceManagementMapper
                 .map(device, org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device.class);
 
-        assertEquals("id", jaxbDevice.getDeviceIdentification());
-        assertEquals("alias", jaxbDevice.getAlias());
-        assertEquals("city", jaxbDevice.getContainerAddress().getCity());
-        assertEquals("postal", jaxbDevice.getContainerAddress().getPostalCode());
-        assertEquals("street", jaxbDevice.getContainerAddress().getStreet());
-        assertEquals(new Integer(42), jaxbDevice.getContainerAddress().getNumber());
-        assertEquals("nr", jaxbDevice.getContainerAddress().getNumberAddition());
-        assertEquals("munic", jaxbDevice.getContainerAddress().getMunicipality());
-        assertEquals("12.0", jaxbDevice.getGpsLatitude());
-        assertEquals("13.0", jaxbDevice.getGpsLongitude());
-        assertEquals("localhost/127.0.0.1", jaxbDevice.getNetworkAddress());
-        assertEquals(Ssld.SSLD_TYPE, jaxbDevice.getDeviceType());
-        assertEquals(3, jaxbDevice.getOutputSettings().size());
+        assertThat(jaxbDevice.getDeviceIdentification()).isEqualTo("id");
+        assertThat(jaxbDevice.getAlias()).isEqualTo("alias");
+        assertThat(jaxbDevice.getContainerAddress().getCity()).isEqualTo("city");
+        assertThat(jaxbDevice.getContainerAddress().getPostalCode()).isEqualTo("postal");
+        assertThat(jaxbDevice.getContainerAddress().getStreet()).isEqualTo("street");
+        assertThat(jaxbDevice.getContainerAddress().getNumber()).isEqualTo(new Integer(42));
+        assertThat(jaxbDevice.getContainerAddress().getNumberAddition()).isEqualTo("nr");
+        assertThat(jaxbDevice.getContainerAddress().getMunicipality()).isEqualTo("munic");
+        assertThat(jaxbDevice.getGpsLatitude()).isEqualTo("12.0");
+        assertThat(jaxbDevice.getGpsLongitude()).isEqualTo("13.0");
+        assertThat(jaxbDevice.getNetworkAddress()).isEqualTo("localhost/127.0.0.1");
+        assertThat(jaxbDevice.getDeviceType()).isEqualTo(Ssld.SSLD_TYPE);
+        assertThat(jaxbDevice.getOutputSettings().size()).isEqualTo(3);
         for (int i = 0; i < 3; i++) {
-            assertEquals(device.getOutputSettings().get(i).getAlias(),
-                    jaxbDevice.getOutputSettings().get(i).getAlias());
-
+            assertThat(device.getOutputSettings().get(i).getAlias())
+                    .isEqualTo(jaxbDevice.getOutputSettings().get(i).getAlias());
         }
 
         final Ssld mappedBack = this.deviceManagementMapper.map(jaxbDevice, Ssld.class);
 
-        assertEquals("id", mappedBack.getDeviceIdentification());
-        assertEquals("alias", mappedBack.getAlias());
-        assertEquals("city", mappedBack.getContainerAddress().getCity());
-        assertEquals("postal", mappedBack.getContainerAddress().getPostalCode());
-        assertEquals("street", mappedBack.getContainerAddress().getStreet());
-        assertEquals(new Integer(42), mappedBack.getContainerAddress().getNumber());
-        assertEquals("nr", mappedBack.getContainerAddress().getNumberAddition());
-        assertEquals("munic", mappedBack.getContainerAddress().getMunicipality());
-        assertTrue(12 == mappedBack.getGpsCoordinates().getLatitude());
-        assertTrue(13 == mappedBack.getGpsCoordinates().getLongitude());
+        assertThat(mappedBack.getDeviceIdentification()).isEqualTo("id");
+        assertThat(mappedBack.getAlias()).isEqualTo("alias");
+        assertThat(mappedBack.getContainerAddress().getCity()).isEqualTo("city");
+        assertThat(mappedBack.getContainerAddress().getPostalCode()).isEqualTo("postal");
+        assertThat(mappedBack.getContainerAddress().getStreet()).isEqualTo("street");
+        assertThat(mappedBack.getContainerAddress().getNumber()).isEqualTo(new Integer(42));
+        assertThat(mappedBack.getContainerAddress().getNumberAddition()).isEqualTo("nr");
+        assertThat(mappedBack.getContainerAddress().getMunicipality()).isEqualTo("munic");
+        assertThat(mappedBack.getGpsCoordinates().getLatitude()).isEqualTo(12.0f);
+        assertThat(mappedBack.getGpsCoordinates().getLongitude()).isEqualTo(13.0f);
         // alas networkaddress in jaxb device is just a string, need parsing to
         // convert that to InetAddress
-        assertEquals(null, mappedBack.getNetworkAddress());
-        assertEquals(Ssld.SSLD_TYPE, mappedBack.getDeviceType());
-        assertEquals(3, mappedBack.getOutputSettings().size());
+        assertThat(mappedBack.getNetworkAddress()).isEqualTo(null);
+        assertThat(mappedBack.getDeviceType()).isEqualTo(Ssld.SSLD_TYPE);
+        assertThat(mappedBack.getOutputSettings().size()).isEqualTo(3);
         for (int i = 0; i < 3; i++) {
-            assertEquals(device.getOutputSettings().get(i).getAlias(),
-                    mappedBack.getOutputSettings().get(i).getAlias());
-
+            assertThat(device.getOutputSettings().get(i).getAlias())
+                    .isEqualTo(mappedBack.getOutputSettings().get(i).getAlias());
         }
     }
 
