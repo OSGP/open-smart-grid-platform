@@ -120,12 +120,10 @@
     <module>osgp/protocol-adapter-dlms/osgp-jasper-interface</module>
 
     <!-- protocol-adapter-iec60870 -->
-<!--
     <module>osgp/protocol-adapter-iec60870/parent-pa-iec60870</module>
     <module>osgp/protocol-adapter-iec60870/osgp-iec60870</module>
     <module>osgp/protocol-adapter-iec60870/osgp-protocol-adapter-iec60870</module>
     <module>osgp/protocol-adapter-iec60870/osgp-protocol-simulator-iec60870</module>
--->
 
     <!-- platform -->
     <module>osgp/platform/parent-platform</module>
@@ -164,9 +162,7 @@
     <module>integration-tests/cucumber-tests-execution</module>
     <module>integration-tests/cucumber-tests-platform</module>
     <module>integration-tests/cucumber-tests-platform-common</module>
-<!--
     <module>integration-tests/cucumber-tests-platform-distributionautomation</module>
--->
     <module>integration-tests/cucumber-tests-platform-microgrids</module>
     <module>integration-tests/cucumber-tests-platform-publiclighting</module>
     <module>integration-tests/cucumber-tests-platform-smartmetering</module>
