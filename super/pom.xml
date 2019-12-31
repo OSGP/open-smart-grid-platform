@@ -13,7 +13,7 @@
 
   <artifactId>super-osgp</artifactId>
   <groupId>org.opensmartgridplatform</groupId>
-  <version>4.39.0-SNAPSHOT</version>
+  <version>4.40.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>super-osgp</name>
   <!-- Description, Organization, Licences, URL and Distribution Management 
@@ -45,10 +45,10 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <module.baseUri>${project.baseUri}/../</module.baseUri>
-    <osgp.version>4.39.0-SNAPSHOT</osgp.version>
-    <osgp.dlms.version>4.39.0-SNAPSHOT</osgp.dlms.version>
-    <osgp.shared.version>4.39.0-SNAPSHOT</osgp.shared.version>
-    <osgp.jasper-interface.version>4.39.0-SNAPSHOT</osgp.jasper-interface.version>
+    <osgp.version>4.40.0-SNAPSHOT</osgp.version>
+    <osgp.dlms.version>4.40.0-SNAPSHOT</osgp.dlms.version>
+    <osgp.shared.version>4.40.0-SNAPSHOT</osgp.shared.version>
+    <osgp.jasper-interface.version>4.40.0-SNAPSHOT</osgp.jasper-interface.version>
     <spring.version>4.3.18.RELEASE</spring.version>
     <spring.data.version>1.11.22.RELEASE</spring.data.version>
     <spring.data.commons.version>1.13.16.RELEASE</spring.data.commons.version>
