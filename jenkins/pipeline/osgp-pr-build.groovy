@@ -76,7 +76,9 @@ pipeline {
                 sh "cd release && plays/download-artifacts.yml -e artifactstodownload='{{ configuration_artifacts }}' -e deployment_type=snapshot -e osgp_version=${POMVERSION} -e tmp_artifacts_directory=../../target/artifacts"
                 sh "cd release && plays/download-artifacts.yml -e artifactstodownload='{{ dlms_simulator_artifacts }}' -e deployment_type=snapshot -e osgp_version=${FIXED_LIB_UPGRADE_VERSION} -e tmp_artifacts_directory=../../target/artifacts"
                 // Make sure a standalone version of the dlms device simulator is present
+// Ruud, temporarily modify the version number by copying the DLMS simulator files
                 sh "cp -p target/artifacts/dlms-device-simulator-${FIXED_LIB_UPGRADE_VERSION}.jar target/artifacts/dlms-device-simulator-${POMVERSION}-standalone.jar"
+                sh "cp -p target/osgp-simulator-dlms-triggered-${FIXED_LIB_UPGRADE_VERSION}.war target/artifacts/dlms-device-simulator-${POMVERSION}-standalone.jar"
                 // - The following artifacts are not specified in the root pom.xml, thus they should be retrieved from the artifactory.
 // Ruud, temporarily commented out to check if the two lines below are needed for the build.
 //                sh "cd release && plays/download-artifacts.yml -e artifactstodownload='{{ distribution_automation_artifacts }}' -e deployment_type=snapshot -e osgp_version=${POMVERSION} -e tmp_artifacts_directory=../../target/artifacts"
