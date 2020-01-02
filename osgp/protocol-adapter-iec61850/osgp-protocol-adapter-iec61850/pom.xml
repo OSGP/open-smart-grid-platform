@@ -20,7 +20,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-pa-iec61850</artifactId>
-    <version>4.39.0-SNAPSHOT</version>
+    <version>5.0.0-SNAPSHOT</version>
     <relativePath>../parent-pa-iec61850/pom.xml</relativePath>
   </parent>
 
@@ -217,8 +217,18 @@
 
     <!-- Testing dependencies -->
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

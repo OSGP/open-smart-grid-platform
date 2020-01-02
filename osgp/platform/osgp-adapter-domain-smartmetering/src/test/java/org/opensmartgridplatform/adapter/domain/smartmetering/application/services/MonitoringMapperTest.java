@@ -12,8 +12,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActiveEnergyValues;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.MeterReads;
@@ -29,7 +29,7 @@ import ma.glasnost.orika.impl.DefaultMapperFactory;
 public class MonitoringMapperTest {
     private MonitoringMapper mapper;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         this.mapper = new MonitoringMapper();
         this.mapper.configure(new DefaultMapperFactory.Builder().build());
@@ -57,6 +57,6 @@ public class MonitoringMapperTest {
                 new OsgpMeterValue(new BigDecimal("12.380"), OsgpUnit.M3),
                 new OsgpMeterValue(new BigDecimal("12.390"), OsgpUnit.M3));
         final MeterReads expected = new MeterReads(logTime, activeEnergyValues);
-        assertThat(result).isEqualToComparingFieldByFieldRecursively(expected);
+        assertThat(result).usingRecursiveComparison().isEqualTo(expected);
     }
 }

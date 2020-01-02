@@ -17,12 +17,11 @@ import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.Test
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.processors.GetHealthStatusRequestMessageProcessor;
 import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.matchers.ErrorResponseMessageMatcher;
 import org.opensmartgridplatform.dto.da.GetHealthStatusRequestDto;
@@ -30,13 +29,7 @@ import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.ObjectMessageBuilder;
 
-/**
- * org.mockito.exceptions.base.MockitoException: 
- * Mockito cannot mock this class: class org.springframework.jms.core.JmsTemplate.
- * Mockito can only mock non-private & non-final classes.
- */
-@Ignore
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DeviceRequestMessageListenerTest {
 
     @InjectMocks

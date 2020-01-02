@@ -8,18 +8,14 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.ByteBuffer;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.ISODateTimeFormat;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmuc.jdlms.datatypes.CosemDateTime;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClockStatusDto;
@@ -55,26 +51,26 @@ public class DlmsHelperTest {
 
         final DataObject dateInSummerTimeDataObject = this.dlmsHelper.asDataObject(this.dateTimeSummerTime());
 
-        assertTrue(dateInSummerTimeDataObject.isCosemDateFormat());
-        assertTrue(dateInSummerTimeDataObject.getValue() instanceof CosemDateTime);
+        assertThat(dateInSummerTimeDataObject.isCosemDateFormat()).isTrue();
+        assertThat(dateInSummerTimeDataObject.getValue() instanceof CosemDateTime).isTrue();
 
         final CosemDateTime cosemDateTime = dateInSummerTimeDataObject.getValue();
 
-        assertArrayEquals(this.byteArraySummerTime(), cosemDateTime.encode());
+        assertThat(cosemDateTime.encode()).isEqualTo(this.byteArraySummerTime());
     }
 
     @Test
     public void testDateTimeSummerTimeWithDeviationAndDst() {
 
-        final DataObject dateInSummerTimeDataObject = this.dlmsHelper
-                .asDataObject(this.dateTimeSummerTime(), -120, true);
+        final DataObject dateInSummerTimeDataObject = this.dlmsHelper.asDataObject(this.dateTimeSummerTime(), -120,
+                true);
 
-        assertTrue(dateInSummerTimeDataObject.isCosemDateFormat());
-        assertTrue(dateInSummerTimeDataObject.getValue() instanceof CosemDateTime);
+        assertThat(dateInSummerTimeDataObject.isCosemDateFormat()).isTrue();
+        assertThat(dateInSummerTimeDataObject.getValue() instanceof CosemDateTime).isTrue();
 
         final CosemDateTime cosemDateTime = dateInSummerTimeDataObject.getValue();
 
-        assertArrayEquals(this.byteArraySummerTime(), cosemDateTime.encode());
+        assertThat(cosemDateTime.encode()).isEqualTo(this.byteArraySummerTime());
     }
 
     @Test
@@ -89,15 +85,15 @@ public class DlmsHelperTest {
          * This test has a time input as if a server in the UTC time zone would
          * be synchronizing time on a device in the Amsterdam time zone.
          */
-        final DataObject dateInSummerTimeDataObject = this.dlmsHelper
-                .asDataObject(this.dateTimeSummerTimeUtc(), -120, true);
+        final DataObject dateInSummerTimeDataObject = this.dlmsHelper.asDataObject(this.dateTimeSummerTimeUtc(), -120,
+                true);
 
-        assertTrue(dateInSummerTimeDataObject.isCosemDateFormat());
-        assertTrue(dateInSummerTimeDataObject.getValue() instanceof CosemDateTime);
+        assertThat(dateInSummerTimeDataObject.isCosemDateFormat()).isTrue();
+        assertThat(dateInSummerTimeDataObject.getValue() instanceof CosemDateTime).isTrue();
 
         final CosemDateTime cosemDateTime = dateInSummerTimeDataObject.getValue();
 
-        assertArrayEquals(this.byteArraySummerTime(), cosemDateTime.encode());
+        assertThat(cosemDateTime.encode()).isEqualTo(this.byteArraySummerTime());
     }
 
     @Test
@@ -105,26 +101,26 @@ public class DlmsHelperTest {
 
         final DataObject dateInWinterTimeDataObject = this.dlmsHelper.asDataObject(this.dateTimeWinterTime());
 
-        assertTrue(dateInWinterTimeDataObject.isCosemDateFormat());
-        assertTrue(dateInWinterTimeDataObject.getValue() instanceof CosemDateTime);
+        assertThat(dateInWinterTimeDataObject.isCosemDateFormat()).isTrue();
+        assertThat(dateInWinterTimeDataObject.getValue() instanceof CosemDateTime).isTrue();
 
         final CosemDateTime cosemDateTime = dateInWinterTimeDataObject.getValue();
 
-        assertArrayEquals(this.byteArrayWinterTime(), cosemDateTime.encode());
+        assertThat(cosemDateTime.encode()).isEqualTo(this.byteArrayWinterTime());
     }
 
     @Test
     public void testDateTimeWinterTimeWithDeviationAndDst() {
 
-        final DataObject dateInWinterTimeDataObject = this.dlmsHelper
-                .asDataObject(this.dateTimeWinterTime(), -60, false);
+        final DataObject dateInWinterTimeDataObject = this.dlmsHelper.asDataObject(this.dateTimeWinterTime(), -60,
+                false);
 
-        assertTrue(dateInWinterTimeDataObject.isCosemDateFormat());
-        assertTrue(dateInWinterTimeDataObject.getValue() instanceof CosemDateTime);
+        assertThat(dateInWinterTimeDataObject.isCosemDateFormat()).isTrue();
+        assertThat(dateInWinterTimeDataObject.getValue() instanceof CosemDateTime).isTrue();
 
         final CosemDateTime cosemDateTime = dateInWinterTimeDataObject.getValue();
 
-        assertArrayEquals(this.byteArrayWinterTime(), cosemDateTime.encode());
+        assertThat(cosemDateTime.encode()).isEqualTo(this.byteArrayWinterTime());
     }
 
     @Test
@@ -139,15 +135,15 @@ public class DlmsHelperTest {
          * This test has a time input as if a server in the New York time zone
          * would be synchronizing time on a device in the Amsterdam time zone.
          */
-        final DataObject dateInWinterTimeDataObject = this.dlmsHelper
-                .asDataObject(this.dateTimeWinterTimeNewYork(), -60, false);
+        final DataObject dateInWinterTimeDataObject = this.dlmsHelper.asDataObject(this.dateTimeWinterTimeNewYork(),
+                -60, false);
 
-        assertTrue(dateInWinterTimeDataObject.isCosemDateFormat());
-        assertTrue(dateInWinterTimeDataObject.getValue() instanceof CosemDateTime);
+        assertThat(dateInWinterTimeDataObject.isCosemDateFormat()).isTrue();
+        assertThat(dateInWinterTimeDataObject.getValue() instanceof CosemDateTime).isTrue();
 
         final CosemDateTime cosemDateTime = dateInWinterTimeDataObject.getValue();
 
-        assertArrayEquals(this.byteArrayWinterTime(), cosemDateTime.encode());
+        assertThat(cosemDateTime.encode()).isEqualTo(this.byteArrayWinterTime());
     }
 
     @Test
@@ -155,11 +151,11 @@ public class DlmsHelperTest {
 
         final CosemDateTimeDto cosemDateTime = this.dlmsHelper.fromDateTimeValue(this.byteArraySummerTime());
 
-        assertTrue(cosemDateTime.isDateTimeSpecified());
+        assertThat(cosemDateTime.isDateTimeSpecified()).isTrue();
 
         final DateTime dateInSummerTime = cosemDateTime.asDateTime();
 
-        assertEquals("2015-07-21T14:53:07.230+02:00", ISODateTimeFormat.dateTime().print(dateInSummerTime));
+        assertThat(ISODateTimeFormat.dateTime().print(dateInSummerTime)).isEqualTo("2015-07-21T14:53:07.230+02:00");
     }
 
     @Test
@@ -167,11 +163,11 @@ public class DlmsHelperTest {
 
         final CosemDateTimeDto cosemDateTime = this.dlmsHelper.fromDateTimeValue(this.byteArrayWinterTime());
 
-        assertTrue(cosemDateTime.isDateTimeSpecified());
+        assertThat(cosemDateTime.isDateTimeSpecified()).isTrue();
 
         final DateTime dateInWinterTime = cosemDateTime.asDateTime();
 
-        assertEquals("2015-02-21T14:53:07.230+01:00", ISODateTimeFormat.dateTime().print(dateInWinterTime));
+        assertThat(ISODateTimeFormat.dateTime().print(dateInWinterTime)).isEqualTo("2015-02-21T14:53:07.230+01:00");
     }
 
     @Test
@@ -179,13 +175,13 @@ public class DlmsHelperTest {
 
         final CosemDateTimeDto cosemDateTime = this.dlmsHelper.fromDateTimeValue(this.byteArrayUnspecifiedTime());
 
-        assertFalse(cosemDateTime.isDateTimeSpecified());
-        assertFalse(cosemDateTime.isLocalDateSpecified());
-        assertFalse(cosemDateTime.isLocalDateTimeSpecified());
-        assertFalse(cosemDateTime.isLocalTimeSpecified());
-        assertFalse(cosemDateTime.isDeviationSpecified());
+        assertThat(cosemDateTime.isDateTimeSpecified()).isFalse();
+        assertThat(cosemDateTime.isLocalDateSpecified()).isFalse();
+        assertThat(cosemDateTime.isLocalDateTimeSpecified()).isFalse();
+        assertThat(cosemDateTime.isLocalTimeSpecified()).isFalse();
+        assertThat(cosemDateTime.isDeviationSpecified()).isFalse();
 
-        assertNull(cosemDateTime.asDateTime());
+        assertThat(cosemDateTime.asDateTime()).isNull();
     }
 
     @Test
@@ -193,7 +189,7 @@ public class DlmsHelperTest {
         final String expected = "number of bytes=2, value=37440, bits=10010010 01000000 ";
         final String logMessage = this.dlmsHelper.getDebugInfoBitStringBytes(new byte[] { -110, 64 });
 
-        assertEquals(expected, logMessage);
+        assertThat(logMessage).isEqualTo(expected);
     }
 
     private DateTime dateTimeSummerTime() {

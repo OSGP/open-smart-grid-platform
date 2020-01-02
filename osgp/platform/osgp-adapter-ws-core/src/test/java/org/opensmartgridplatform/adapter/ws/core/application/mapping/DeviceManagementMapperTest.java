@@ -14,8 +14,8 @@ import static org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.
 import static org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.DeviceInMaintetanceFilterType.IN_MAINTENANCE;
 import static org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FirmwareModuleFilterType.ACTIVE_FIRMWARE;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.DeviceFilter;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceActivatedFilterType;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceExternalManagedFilterType;
@@ -24,10 +24,34 @@ import org.opensmartgridplatform.domain.core.valueobjects.DeviceInMaintenanceFil
 public class DeviceManagementMapperTest {
     private DeviceManagementMapper mapper;
 
-    @Before
-    public void setUp() {
-        this.mapper = new DeviceManagementMapper();
-        this.mapper.initialize();
+    private org.opensmartgridplatform.domain.core.valueobjects.DeviceFilter expectedMapped(
+            final DeviceFilter deviceFilter) {
+        final org.opensmartgridplatform.domain.core.valueobjects.DeviceFilter expected = new org.opensmartgridplatform.domain.core.valueobjects.DeviceFilter();
+        expected.setOrganisationIdentification(deviceFilter.getOrganisationIdentification());
+        expected.setAlias(deviceFilter.getAlias());
+        expected.setDeviceIdentification(deviceFilter.getDeviceIdentification());
+        expected.setCity(deviceFilter.getCity());
+        expected.setPostalCode(deviceFilter.getPostalCode());
+        expected.setStreet(deviceFilter.getStreet());
+        expected.setNumber(deviceFilter.getNumber());
+        expected.setMunicipality(deviceFilter.getMunicipality());
+        expected.setDeviceExternalManaged(DeviceExternalManagedFilterType.EXTERNAL_MANAGEMENT);
+        expected.setDeviceActivated(DeviceActivatedFilterType.ACTIVE);
+        expected.setDeviceInMaintenance(DeviceInMaintenanceFilterType.IN_MAINTENANCE);
+        expected.setSortDir(deviceFilter.getSortDir());
+        expected.setSortedBy(deviceFilter.getSortedBy());
+        expected.setHasTechnicalInstallation(true);
+        expected.setOwner(deviceFilter.getOwner());
+        expected.setDeviceType(deviceFilter.getDeviceType());
+        expected.setManufacturer(deviceFilter.getManufacturer());
+        expected.setModel(deviceFilter.getModel());
+        expected.setFirmwareModuleType(
+                org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleFilterType.ACTIVE_FIRMWARE);
+        expected.setFirmwareModuleVersion(deviceFilter.getFirmwareModuleVersion());
+        expected.setExactMatch(deviceFilter.isExactMatch());
+        expected.setDeviceIdentificationsToUse(deviceFilter.getDeviceIdentificationsToUse());
+        expected.setDeviceIdentificationsToExclude(deviceFilter.getDeviceIdentificationsToExclude());
+        return expected;
     }
 
     @Test
@@ -63,33 +87,9 @@ public class DeviceManagementMapperTest {
         assertThat(result).isEqualToComparingFieldByFieldRecursively(this.expectedMapped(deviceFilter));
     }
 
-    private org.opensmartgridplatform.domain.core.valueobjects.DeviceFilter expectedMapped(
-            final DeviceFilter deviceFilter) {
-        final org.opensmartgridplatform.domain.core.valueobjects.DeviceFilter expected = new org.opensmartgridplatform.domain.core.valueobjects.DeviceFilter();
-        expected.setOrganisationIdentification(deviceFilter.getOrganisationIdentification());
-        expected.setAlias(deviceFilter.getAlias());
-        expected.setDeviceIdentification(deviceFilter.getDeviceIdentification());
-        expected.setCity(deviceFilter.getCity());
-        expected.setPostalCode(deviceFilter.getPostalCode());
-        expected.setStreet(deviceFilter.getStreet());
-        expected.setNumber(deviceFilter.getNumber());
-        expected.setMunicipality(deviceFilter.getMunicipality());
-        expected.setDeviceExternalManaged(DeviceExternalManagedFilterType.EXTERNAL_MANAGEMENT);
-        expected.setDeviceActivated(DeviceActivatedFilterType.ACTIVE);
-        expected.setDeviceInMaintenance(DeviceInMaintenanceFilterType.IN_MAINTENANCE);
-        expected.setSortDir(deviceFilter.getSortDir());
-        expected.setSortedBy(deviceFilter.getSortedBy());
-        expected.setHasTechnicalInstallation(true);
-        expected.setOwner(deviceFilter.getOwner());
-        expected.setDeviceType(deviceFilter.getDeviceType());
-        expected.setManufacturer(deviceFilter.getManufacturer());
-        expected.setModel(deviceFilter.getModel());
-        expected.setFirmwareModuleType(
-                org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleFilterType.ACTIVE_FIRMWARE);
-        expected.setFirmwareModuleVersion(deviceFilter.getFirmwareModuleVersion());
-        expected.setExactMatch(deviceFilter.isExactMatch());
-        expected.setDeviceIdentificationsToUse(deviceFilter.getDeviceIdentificationsToUse());
-        expected.setDeviceIdentificationsToExclude(deviceFilter.getDeviceIdentificationsToExclude());
-        return expected;
+    @BeforeEach
+    public void setUp() {
+        this.mapper = new DeviceManagementMapper();
+        this.mapper.initialize();
     }
 }

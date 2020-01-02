@@ -7,11 +7,12 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
@@ -19,7 +20,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagTypeDto;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class GetConfigurationObjectServiceDsmr4Test {
 
     private GetConfigurationObjectServiceDsmr4 instance;
@@ -29,7 +30,7 @@ public class GetConfigurationObjectServiceDsmr4Test {
     @Mock
     private DlmsHelper dlmsHelper;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.instance = new GetConfigurationObjectServiceDsmr4(this.dlmsHelper);
     }
@@ -46,131 +47,155 @@ public class GetConfigurationObjectServiceDsmr4Test {
     @Test
     public void getFlagType() {
         for (final ConfigurationFlagTypeDto flagTypeDto : ConfigurationFlagTypeDto.values()) {
-            flagTypeDto.getBitPositionDsmr4().ifPresent(bitPosition -> assertThat(
-                    this.instance.getFlagType(bitPosition).orElseThrow(IllegalArgumentException::new)).isEqualTo(
-                    flagTypeDto));
+            flagTypeDto.getBitPositionDsmr4()
+                    .ifPresent(bitPosition -> assertThat(
+                            this.instance.getFlagType(bitPosition).orElseThrow(IllegalArgumentException::new))
+                                    .isEqualTo(flagTypeDto));
         }
     }
 
-    @Test(expected = ProtocolAdapterException.class)
+    @Test
     public void getConfigurationObjectResultDataNull() throws ProtocolAdapterException {
-        // SETUP
-        when(this.getResult.getResultData()).thenReturn(null);
+        Assertions.assertThrows(ProtocolAdapterException.class, () -> {
+            // SETUP
+            when(this.getResult.getResultData()).thenReturn(null);
 
-        // CALL
-        this.instance.getConfigurationObject(this.getResult);
+            // CALL
+            this.instance.getConfigurationObject(this.getResult);
+        });
     }
 
-    @Test(expected = ProtocolAdapterException.class)
+    @Test
     public void getConfigurationObjectResultDataNotComplex() throws ProtocolAdapterException {
-        // SETUP
-        final DataObject nonComplex = mock(DataObject.class);
-        when(nonComplex.isComplex()).thenReturn(false);
-        when(this.getResult.getResultData()).thenReturn(nonComplex);
+        Assertions.assertThrows(ProtocolAdapterException.class, () -> {
 
-        // CALL
-        this.instance.getConfigurationObject(this.getResult);
+            // SETUP
+            final DataObject nonComplex = mock(DataObject.class);
+            when(nonComplex.isComplex()).thenReturn(false);
+            when(this.getResult.getResultData()).thenReturn(nonComplex);
+
+            // CALL
+            this.instance.getConfigurationObject(this.getResult);
+        });
     }
 
-    @Test(expected = ProtocolAdapterException.class)
+    @Test
     public void getConfigurationObjectElementsNull() throws ProtocolAdapterException {
-        // SETUP
-        final DataObject structure = mock(DataObject.class);
-        when(structure.isComplex()).thenReturn(true);
-        when(this.getResult.getResultData()).thenReturn(structure);
-        final List<DataObject> elements = null;
-        when(structure.getValue()).thenReturn(elements);
+        Assertions.assertThrows(ProtocolAdapterException.class, () -> {
 
-        // CALL
-        this.instance.getConfigurationObject(this.getResult);
+            // SETUP
+            final DataObject structure = mock(DataObject.class);
+            when(structure.isComplex()).thenReturn(true);
+            when(this.getResult.getResultData()).thenReturn(structure);
+            final List<DataObject> elements = null;
+            when(structure.getValue()).thenReturn(elements);
+
+            // CALL
+            this.instance.getConfigurationObject(this.getResult);
+        });
     }
 
-    @Test(expected = ProtocolAdapterException.class)
+    @Test
     public void getConfigurationObjectElementsSizeNotTwo() throws ProtocolAdapterException {
-        // SETUP
-        final DataObject structure = mock(DataObject.class);
-        when(structure.isComplex()).thenReturn(true);
-        when(this.getResult.getResultData()).thenReturn(structure);
-        final List<DataObject> elements = new ArrayList<>();
-        // elements is empty so size is not two
-        when(structure.getValue()).thenReturn(elements);
+        Assertions.assertThrows(ProtocolAdapterException.class, () -> {
 
-        // CALL
-        this.instance.getConfigurationObject(this.getResult);
+            // SETUP
+            final DataObject structure = mock(DataObject.class);
+            when(structure.isComplex()).thenReturn(true);
+            when(this.getResult.getResultData()).thenReturn(structure);
+            final List<DataObject> elements = new ArrayList<>();
+            // elements is empty so size is not two
+            when(structure.getValue()).thenReturn(elements);
+
+            // CALL
+            this.instance.getConfigurationObject(this.getResult);
+        });
     }
 
-    @Test(expected = ProtocolAdapterException.class)
+    @Test
     public void getConfigurationObjectGprsModeNull() throws ProtocolAdapterException {
-        // SETUP
-        final DataObject structure = mock(DataObject.class);
-        when(structure.isComplex()).thenReturn(true);
-        when(this.getResult.getResultData()).thenReturn(structure);
-        final List<DataObject> elements = new ArrayList<>();
-        // gprs mode is null
-        elements.add(null);
-        elements.add(null);
-        when(structure.getValue()).thenReturn(elements);
+        Assertions.assertThrows(ProtocolAdapterException.class, () -> {
 
-        // CALL
-        this.instance.getConfigurationObject(this.getResult);
+            // SETUP
+            final DataObject structure = mock(DataObject.class);
+            when(structure.isComplex()).thenReturn(true);
+            when(this.getResult.getResultData()).thenReturn(structure);
+            final List<DataObject> elements = new ArrayList<>();
+            // gprs mode is null
+            elements.add(null);
+            elements.add(null);
+            when(structure.getValue()).thenReturn(elements);
+
+            // CALL
+            this.instance.getConfigurationObject(this.getResult);
+        });
     }
 
-    @Test(expected = ProtocolAdapterException.class)
+    @Test
     public void getConfigurationObjectGprsModeNotNumber() throws ProtocolAdapterException {
-        // SETUP
-        final DataObject structure = mock(DataObject.class);
-        when(structure.isComplex()).thenReturn(true);
-        when(this.getResult.getResultData()).thenReturn(structure);
-        final List<DataObject> elements = new ArrayList<>();
-        final DataObject gprsMode = mock(DataObject.class);
-        // gprs mode is not a number
-        when(gprsMode.isNumber()).thenReturn(false);
-        elements.add(gprsMode);
-        elements.add(null);
-        when(structure.getValue()).thenReturn(elements);
+        Assertions.assertThrows(ProtocolAdapterException.class, () -> {
 
-        // CALL
-        this.instance.getConfigurationObject(this.getResult);
+            // SETUP
+            final DataObject structure = mock(DataObject.class);
+            when(structure.isComplex()).thenReturn(true);
+            when(this.getResult.getResultData()).thenReturn(structure);
+            final List<DataObject> elements = new ArrayList<>();
+            final DataObject gprsMode = mock(DataObject.class);
+            // gprs mode is not a number
+            when(gprsMode.isNumber()).thenReturn(false);
+            elements.add(gprsMode);
+            elements.add(null);
+            when(structure.getValue()).thenReturn(elements);
+
+            // CALL
+            this.instance.getConfigurationObject(this.getResult);
+        });
     }
 
-    @Test(expected = ProtocolAdapterException.class)
+    @Test
     public void getConfigurationObjectFlagsNull() throws ProtocolAdapterException {
-        // SETUP
-        final DataObject structure = mock(DataObject.class);
-        when(structure.isComplex()).thenReturn(true);
-        when(this.getResult.getResultData()).thenReturn(structure);
-        final List<DataObject> elements = new ArrayList<>();
-        final DataObject gprsMode = mock(DataObject.class);
-        when(gprsMode.isNumber()).thenReturn(true);
-        when(gprsMode.getValue()).thenReturn(42);
-        elements.add(gprsMode);
-        // flags is null
-        elements.add(null);
-        when(structure.getValue()).thenReturn(elements);
+        Assertions.assertThrows(ProtocolAdapterException.class, () -> {
 
-        // CALL
-        this.instance.getConfigurationObject(this.getResult);
+            // SETUP
+            final DataObject structure = mock(DataObject.class);
+            when(structure.isComplex()).thenReturn(true);
+            when(this.getResult.getResultData()).thenReturn(structure);
+            final List<DataObject> elements = new ArrayList<>();
+            final DataObject gprsMode = mock(DataObject.class);
+            when(gprsMode.isNumber()).thenReturn(true);
+            when(gprsMode.getValue()).thenReturn(42);
+            elements.add(gprsMode);
+            // flags is null
+            elements.add(null);
+            when(structure.getValue()).thenReturn(elements);
+
+            // CALL
+            this.instance.getConfigurationObject(this.getResult);
+        });
     }
 
-    @Test(expected = ProtocolAdapterException.class)
+    @Test
     public void getConfigurationObjectFlagsNotBitString() throws ProtocolAdapterException {
-        // SETUP
-        final DataObject structure = mock(DataObject.class);
-        when(structure.isComplex()).thenReturn(true);
-        when(this.getResult.getResultData()).thenReturn(structure);
-        final List<DataObject> elements = new ArrayList<>();
-        final DataObject gprsMode = mock(DataObject.class);
-        when(gprsMode.isNumber()).thenReturn(true);
-        when(gprsMode.getValue()).thenReturn(42);
-        elements.add(gprsMode);
-        final DataObject flags = mock(DataObject.class);
-        // flags is not a BitString
-        when(flags.isBitString()).thenReturn(false);
-        elements.add(flags);
-        when(structure.getValue()).thenReturn(elements);
+        Assertions.assertThrows(ProtocolAdapterException.class, () -> {
 
-        // CALL
-        this.instance.getConfigurationObject(this.getResult);
+            // SETUP
+            final DataObject structure = mock(DataObject.class);
+            when(structure.isComplex()).thenReturn(true);
+            when(this.getResult.getResultData()).thenReturn(structure);
+            final List<DataObject> elements = new ArrayList<>();
+            final DataObject gprsMode = mock(DataObject.class);
+            when(gprsMode.isNumber()).thenReturn(true);
+            when(gprsMode.getValue()).thenReturn(42);
+            elements.add(gprsMode);
+            final DataObject flags = mock(DataObject.class);
+            // flags is not a BitString
+            when(flags.isBitString()).thenReturn(false);
+            elements.add(flags);
+            when(structure.getValue()).thenReturn(elements);
+
+            // CALL
+            this.instance.getConfigurationObject(this.getResult);
+        });
     }
 
     // happy flows covered in IT's

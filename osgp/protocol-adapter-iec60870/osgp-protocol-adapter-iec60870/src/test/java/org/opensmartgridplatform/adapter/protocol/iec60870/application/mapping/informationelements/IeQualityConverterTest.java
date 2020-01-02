@@ -9,7 +9,7 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.application.mapping.
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmuc.j60870.IeQuality;
 import org.opensmartgridplatform.dto.da.measurements.elements.BitmaskMeasurementElementDto;
 
@@ -24,7 +24,7 @@ public class IeQualityConverterTest {
     private static final int IE_QUALITY_ALL = IE_QUALITY_OVERFLOW + IE_QUALITY_BLOCKED + IE_QUALITY_SUBSTITUTED
             + IE_QUALITY_NOT_TOPICAL + IE_QUALITY_INVALID;
 
-    private IeQualityConverter converter = new IeQualityConverter();
+    private final IeQualityConverter converter = new IeQualityConverter();
 
     @Test
     public void shouldConvertIeQualityNoneToByte() {

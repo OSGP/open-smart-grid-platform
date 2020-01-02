@@ -8,11 +8,9 @@
 
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AdministrativeStatusType;
 
 public class AdministrativeStatusTypeMappingTest {
@@ -38,13 +36,13 @@ public class AdministrativeStatusTypeMappingTest {
                         org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType.class);
 
         // check mapping
-        assertNotNull(undefined);
-        assertNotNull(off);
-        assertNotNull(on);
+        assertThat(undefined).isNotNull();
+        assertThat(off).isNotNull();
+        assertThat(on).isNotNull();
 
-        assertEquals(AdministrativeStatusType.UNDEFINED.name(), undefined.name());
-        assertEquals(AdministrativeStatusType.OFF.name(), off.name());
-        assertEquals(AdministrativeStatusType.ON.name(), on.name());
+        assertThat(undefined.name()).isEqualTo(AdministrativeStatusType.UNDEFINED.name());
+        assertThat(off.name()).isEqualTo(AdministrativeStatusType.OFF.name());
+        assertThat(on.name()).isEqualTo(AdministrativeStatusType.ON.name());
     }
 
     /**
@@ -66,19 +64,18 @@ public class AdministrativeStatusTypeMappingTest {
                 AdministrativeStatusType.class);
 
         // check mapping
-        assertNotNull(undefined);
-        assertNotNull(off);
-        assertNotNull(on);
+        assertThat(undefined).isNotNull();
+        assertThat(off).isNotNull();
+        assertThat(on).isNotNull();
 
-        assertEquals(
+        assertThat(undefined.name()).isEqualTo(
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType.UNDEFINED
-                .name(),
-                undefined.name());
-        assertEquals(
-                org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType.OFF.name(),
-                off.name());
-        assertEquals(
-                org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType.ON.name(),
-                on.name());
+                        .name());
+        assertThat(off.name()).isEqualTo(
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType.OFF
+                        .name());
+        assertThat(on.name()).isEqualTo(
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType.ON
+                        .name());
     }
 }

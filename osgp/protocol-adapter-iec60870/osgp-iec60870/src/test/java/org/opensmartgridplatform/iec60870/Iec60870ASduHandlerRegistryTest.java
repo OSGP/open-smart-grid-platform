@@ -7,14 +7,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.Mockito.mock;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmuc.j60870.TypeId;
 
 public class Iec60870ASduHandlerRegistryTest {
     private Iec60870ASduHandlerRegistry iec60870ASduHandlerRegistry;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.iec60870ASduHandlerRegistry = new Iec60870ASduHandlerRegistry();
     }

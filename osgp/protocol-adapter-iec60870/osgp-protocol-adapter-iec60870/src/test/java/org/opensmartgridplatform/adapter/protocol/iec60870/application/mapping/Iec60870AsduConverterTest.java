@@ -13,7 +13,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.CauseOfTransmission;
 import org.openmuc.j60870.IeQuality;
@@ -37,33 +37,16 @@ public class Iec60870AsduConverterTest {
 
     // @formatter:off
     private static final MeasurementReportDto MEASUREMENT_REPORT_DTO = new MeasurementReportDto(
-            new MeasurementReportHeaderDto(
-                    "M_ME_TF_1",
-                    "SPONTANEOUS",
-                    1,
-                    2),
-            Arrays.asList(new MeasurementGroupDto(
-                    "1",
-                    Arrays.asList(new MeasurementDto(Arrays.asList(
-                            new FloatMeasurementElementDto(10.0f),
+            new MeasurementReportHeaderDto("M_ME_TF_1", "SPONTANEOUS", 1, 2),
+            Arrays.asList(new MeasurementGroupDto("1",
+                    Arrays.asList(new MeasurementDto(Arrays.asList(new FloatMeasurementElementDto(10.0f),
                             new BitmaskMeasurementElementDto((byte) 0),
                             new TimestampMeasurementElementDto(TIMESTAMP_NOW)))))));
 
-    private static final ASdu ASDU = new ASdu(
-            TypeId.M_ME_TF_1,
-            false,
-            CauseOfTransmission.SPONTANEOUS,
-            false,
-            false,
-            1,
+    private static final ASdu ASDU = new ASdu(TypeId.M_ME_TF_1, false, CauseOfTransmission.SPONTANEOUS, false, false, 1,
             2,
-            new InformationObject[] {
-                    new InformationObject(
-                    1,
-                    new InformationElement[][] { {
-                        new IeShortFloat(10.0f),
-                        new IeQuality(false, false, false, false, false),
-                        new IeTime56(TIMESTAMP_NOW) } } )});
+            new InformationObject[] { new InformationObject(1, new InformationElement[][] { { new IeShortFloat(10.0f),
+                    new IeQuality(false, false, false, false, false), new IeTime56(TIMESTAMP_NOW) } }) });
     // @formatter:on
 
     @Test

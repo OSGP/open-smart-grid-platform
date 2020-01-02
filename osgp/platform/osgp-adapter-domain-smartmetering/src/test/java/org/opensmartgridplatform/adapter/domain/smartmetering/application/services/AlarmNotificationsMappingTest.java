@@ -8,16 +8,13 @@
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.junit.Test;
-
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AlarmNotification;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AlarmNotifications;
@@ -28,17 +25,17 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto;
 
 public class AlarmNotificationsMappingTest {
 
-    private ConfigurationMapper configurationMapper = new ConfigurationMapper();
+    private final ConfigurationMapper configurationMapper = new ConfigurationMapper();
 
     // The Set may never be null. Tests if NullPointerException is thrown
     // when constructor uses a Set that is null.
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testWithNullSet() {
-
-        // test data
-        final Set<AlarmNotification> alarmNotificationSet = null;
-        new AlarmNotifications(alarmNotificationSet);
-
+        Assertions.assertThrows(NullPointerException.class, () -> {
+            // test data
+            final Set<AlarmNotification> alarmNotificationSet = null;
+            new AlarmNotifications(alarmNotificationSet);
+        });
     }
 
     // The Set may be empty. Tests if mapping with an empty Set succeeds.
@@ -46,7 +43,7 @@ public class AlarmNotificationsMappingTest {
     public void testWithEmptySet() {
 
         // create test data
-        final Set<AlarmNotification> alarmNotificationSet = new TreeSet<AlarmNotification>();
+        final Set<AlarmNotification> alarmNotificationSet = new TreeSet<>();
         final AlarmNotifications alarmNotifications = new AlarmNotifications(alarmNotificationSet);
 
         // actual mapping
@@ -54,9 +51,9 @@ public class AlarmNotificationsMappingTest {
                 AlarmNotificationsDto.class);
 
         // check if mapping was successful
-        assertNotNull(alarmNotificationsDto);
-        assertNotNull(alarmNotificationsDto.getAlarmNotificationsSet());
-        assertTrue(alarmNotificationsDto.getAlarmNotificationsSet().isEmpty());
+        assertThat(alarmNotificationsDto).isNotNull();
+        assertThat(alarmNotificationsDto.getAlarmNotificationsSet()).isNotNull();
+        assertThat(alarmNotificationsDto.getAlarmNotificationsSet()).isEmpty();
     }
 
     // Tests if mapping with a Set with an entry succeeds.
@@ -64,7 +61,7 @@ public class AlarmNotificationsMappingTest {
     public void testWithSet() {
         // create test data
         final AlarmNotification alarmNotification = new AlarmNotification(AlarmType.CLOCK_INVALID, true);
-        final Set<AlarmNotification> alarmNotificationSet = new TreeSet<AlarmNotification>();
+        final Set<AlarmNotification> alarmNotificationSet = new TreeSet<>();
         alarmNotificationSet.add(alarmNotification);
         final AlarmNotifications alarmNotifications = new AlarmNotifications(alarmNotificationSet);
 
@@ -73,15 +70,15 @@ public class AlarmNotificationsMappingTest {
                 AlarmNotificationsDto.class);
 
         // check if mapping was successful
-        assertNotNull(alarmNotificationsDto);
-        assertNotNull(alarmNotificationsDto.getAlarmNotificationsSet());
-        assertEquals(alarmNotificationSet.size(), alarmNotificationsDto.getAlarmNotificationsSet().size());
-        assertFalse(alarmNotificationsDto.getAlarmNotificationsSet().isEmpty());
+        assertThat(alarmNotificationsDto).isNotNull();
+        assertThat(alarmNotificationsDto.getAlarmNotificationsSet()).isNotNull();
+        assertThat(alarmNotificationsDto.getAlarmNotificationsSet().size()).isEqualTo(alarmNotificationSet.size());
+        assertThat(alarmNotificationsDto.getAlarmNotificationsSet().isEmpty()).isFalse();
 
         // To see if there is an AlarmNotifictionDto with the same variables as
         // the AlarmNotification in the Set.
         final AlarmNotificationDto alarmNotificationDto = new AlarmNotificationDto(AlarmTypeDto.CLOCK_INVALID, true);
-        assertTrue(alarmNotificationsDto.getAlarmNotificationsSet().contains(alarmNotificationDto));
+        assertThat(alarmNotificationsDto.getAlarmNotificationsSet().contains(alarmNotificationDto)).isTrue();
     }
 
 }

@@ -1,15 +1,17 @@
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import org.opensmartgridplatform.domain.core.entities.ProtocolInfo;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
@@ -31,7 +33,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.MapperFactory;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class InstallationServiceTest {
 
     private static final String DEVICE_IDENTIFICATION = "test-device-identification";
@@ -75,7 +78,7 @@ public class InstallationServiceTest {
     @Mock
     private DeviceModel deviceModel;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         when(this.addSmartMeterRequest.getDevice()).thenReturn(this.smartMeteringDevice);
         when(this.deviceMessageMetadata.getDeviceIdentification()).thenReturn(DEVICE_IDENTIFICATION);

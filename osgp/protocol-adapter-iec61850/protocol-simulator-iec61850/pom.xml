@@ -40,7 +40,7 @@
       <url>${maven.site.distributionManagement.site.url}</url>
     </site>
   </distributionManagement>
-  <version>4.39.0-SNAPSHOT</version>
+  <version>5.0.0-SNAPSHOT</version>
 
   <parent>
     <groupId>org.springframework.boot</groupId>
@@ -149,7 +149,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
-        <version>${maven.site.plugin}</version>
       </plugin>
     </plugins>
 

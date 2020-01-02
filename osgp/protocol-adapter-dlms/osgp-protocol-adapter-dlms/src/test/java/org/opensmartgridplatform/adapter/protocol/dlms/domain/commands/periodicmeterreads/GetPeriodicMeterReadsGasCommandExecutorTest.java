@@ -11,9 +11,9 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodic
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Fail.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -26,12 +26,14 @@ import java.util.List;
 import java.util.Optional;
 
 import org.joda.time.DateTime;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
@@ -63,7 +65,8 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterRea
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsGasResponseItemDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class GetPeriodicMeterReadsGasCommandExecutorTest {
 
     @InjectMocks
@@ -87,7 +90,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
     private final DateTime fromDateTime = new DateTime(this.from);
     private final DateTime toDateTime = new DateTime(this.to);
 
-    @Before
+    @BeforeEach
     public void setUp() {
         when(this.connectionManager.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     }
@@ -104,11 +107,11 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
 
     @Test
     public void testExecuteObjectNotFound() {
-        //SETUP
+        // SETUP
         final PeriodicMeterReadsRequestDto request = new PeriodicMeterReadsRequestDto(PeriodTypeDto.DAILY,
                 this.fromDateTime.toDate(), this.toDateTime.toDate(), ChannelDto.ONE);
-        when(this.dlmsObjectConfigService.findAttributeAddressForProfile(any(), any(), any(), any(), any(),
-                any())).thenReturn(Optional.empty());
+        when(this.dlmsObjectConfigService.findAttributeAddressForProfile(any(), any(), any(), any(), any(), any()))
+                .thenReturn(Optional.empty());
 
         // CALL
         try {
@@ -219,11 +222,10 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
         assertThat(periodicMeterReads.size()).isEqualTo(2);
         assertThat(periodicMeterReads.stream().anyMatch(r -> r.getConsumption() == meterValue1)).isEqualTo(true);
         assertThat(periodicMeterReads.stream().anyMatch(r -> r.getConsumption() == meterValue2)).isEqualTo(true);
-        assertThat(
-                periodicMeterReads.stream().allMatch(r -> this.areDatesEqual(r.getLogTime(), cosemDateTime))).isEqualTo(
-                true);
-        assertThat(periodicMeterReads.stream().allMatch(
-                r -> this.areDatesEqual(r.getCaptureTime(), cosemDateTime))).isEqualTo(true);
+        assertThat(periodicMeterReads.stream().allMatch(r -> this.areDatesEqual(r.getLogTime(), cosemDateTime)))
+                .isEqualTo(true);
+        assertThat(periodicMeterReads.stream().allMatch(r -> this.areDatesEqual(r.getCaptureTime(), cosemDateTime)))
+                .isEqualTo(true);
     }
 
     private AttributeAddress createAttributeAddress(final DlmsObject dlmsObject) {
@@ -233,9 +235,9 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
 
     private AttributeAddressForProfile createAttributeAddressForProfile(final DlmsObject dlmsObject,
             final List<DlmsCaptureObject> selectedObjects) {
-        return new AttributeAddressForProfile(
-                new AttributeAddress(dlmsObject.getClassId(), new ObisCode(dlmsObject.getObisCodeAsString()),
-                        dlmsObject.getDefaultAttributeId(), null), selectedObjects);
+        return new AttributeAddressForProfile(new AttributeAddress(dlmsObject.getClassId(),
+                new ObisCode(dlmsObject.getObisCodeAsString()), dlmsObject.getDefaultAttributeId(), null),
+                selectedObjects);
     }
 
     private DlmsDevice createDevice(final Protocol protocol) {
@@ -244,7 +246,8 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
         return device;
     }
 
-    // Compares date with cosemDateTime. Note: cosemDateTime uses hundredths and not milliseconds
+    // Compares date with cosemDateTime. Note: cosemDateTime uses hundredths and
+    // not milliseconds
     private boolean areDatesEqual(final Date date, final CosemDateTimeDto cosemDateTime) {
         final DateTime dateTime = new DateTime(date);
         final CosemDateDto cosemDate = cosemDateTime.getDate();
@@ -257,4 +260,3 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
                 && dateTime.getMillisOfSecond() == cosemTime.getHundredths() * 10);
     }
 }
-

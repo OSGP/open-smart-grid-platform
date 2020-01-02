@@ -8,9 +8,7 @@
 
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -19,8 +17,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpUnitType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AmrProfileStatusCode;
@@ -33,13 +30,13 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.Periodic
 
 public class PeriodicMeterReadsContainerGasMappingTest {
 
-    private MonitoringMapper monitoringMapper = new MonitoringMapper();
     private static final PeriodType PERIODTYPE = PeriodType.DAILY;
     private static final Date DATE = new Date();
     private static final BigDecimal VALUE = new BigDecimal(1.0);
     private static final OsgpUnit OSGP_UNIT = OsgpUnit.M3;
     private static final OsgpUnitType OSGP_UNITTYPE = OsgpUnitType.M_3;
     private static final AmrProfileStatusCodeFlag AMRCODEFLAG = AmrProfileStatusCodeFlag.CLOCK_INVALID;
+    private MonitoringMapper monitoringMapper = new MonitoringMapper();
 
     /**
      * Tests if mapping a PeriodicMeterReadsContainerGas object with an empty
@@ -54,16 +51,16 @@ public class PeriodicMeterReadsContainerGasMappingTest {
                 PERIODTYPE, periodicMeterReadsGasList);
 
         // actual mapping
-        final PeriodicMeterReadsGasResponse periodicMeterReadsGasResponse = this.monitoringMapper.map(
-                periodicMeterReadsContainerGas, PeriodicMeterReadsGasResponse.class);
+        final PeriodicMeterReadsGasResponse periodicMeterReadsGasResponse = this.monitoringMapper
+                .map(periodicMeterReadsContainerGas, PeriodicMeterReadsGasResponse.class);
 
         // check mapping
-        assertNotNull(periodicMeterReadsGasResponse);
-        assertNotNull(periodicMeterReadsGasResponse.getPeriodicMeterReadsGas());
-        assertNotNull(periodicMeterReadsGasResponse.getPeriodType());
+        assertThat(periodicMeterReadsGasResponse).isNotNull();
+        assertThat(periodicMeterReadsGasResponse.getPeriodicMeterReadsGas()).isNotNull();
+        assertThat(periodicMeterReadsGasResponse.getPeriodType()).isNotNull();
 
-        assertTrue(periodicMeterReadsGasResponse.getPeriodicMeterReadsGas().isEmpty());
-        assertEquals(PERIODTYPE.name(), periodicMeterReadsGasResponse.getPeriodType().name());
+        assertThat(periodicMeterReadsGasResponse.getPeriodicMeterReadsGas().isEmpty()).isTrue();
+        assertThat(periodicMeterReadsGasResponse.getPeriodType().name()).isEqualTo(PERIODTYPE.name());
     }
 
     /**
@@ -87,30 +84,35 @@ public class PeriodicMeterReadsContainerGasMappingTest {
                 PERIODTYPE, periodicMeterReadsList);
 
         // actual mapping
-        final PeriodicMeterReadsGasResponse periodicMeterReadsResponseGas = this.monitoringMapper.map(
-                periodicMeterReadsContainer, PeriodicMeterReadsGasResponse.class);
+        final PeriodicMeterReadsGasResponse periodicMeterReadsResponseGas = this.monitoringMapper
+                .map(periodicMeterReadsContainer, PeriodicMeterReadsGasResponse.class);
 
         // check mapping
 
-        assertNotNull(periodicMeterReadsResponseGas);
-        assertNotNull(periodicMeterReadsResponseGas.getPeriodicMeterReadsGas());
-        assertNotNull(periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().get(0));
-        assertNotNull(periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().get(0).getAmrProfileStatusCode());
-        assertNotNull(periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().get(0).getAmrProfileStatusCode()
-                .getAmrProfileStatusCodeFlag());
-        assertNotNull(periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().get(0).getAmrProfileStatusCode()
-                .getAmrProfileStatusCodeFlag().get(0));
-        assertNotNull(periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().get(0).getConsumption());
-        assertNotNull(periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().get(0).getConsumption().getUnit());
-        assertNotNull(periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().get(0).getConsumption().getValue());
+        assertThat(periodicMeterReadsResponseGas).isNotNull();
+        assertThat(periodicMeterReadsResponseGas.getPeriodicMeterReadsGas()).isNotNull();
+        assertThat(periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().get(0)).isNotNull();
+        assertThat(periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().get(0).getAmrProfileStatusCode())
+                .isNotNull();
+        assertThat(periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().get(0).getAmrProfileStatusCode()
+                .getAmrProfileStatusCodeFlag()).isNotNull();
+        assertThat(periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().get(0).getAmrProfileStatusCode()
+                .getAmrProfileStatusCodeFlag().get(0)).isNotNull();
+        assertThat(periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().get(0).getConsumption()).isNotNull();
+        assertThat(periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().get(0).getConsumption().getUnit())
+                .isNotNull();
+        assertThat(periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().get(0).getConsumption().getValue())
+                .isNotNull();
 
-        assertEquals(PERIODTYPE.name(), periodicMeterReadsResponseGas.getPeriodType().name());
-        assertEquals(periodicMeterReadsList.size(), periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().size());
-        assertEquals(VALUE, periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().get(0).getConsumption().getValue());
-        assertEquals(OSGP_UNITTYPE, periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().get(0).getConsumption()
-                .getUnit());
-        assertEquals(AMRCODEFLAG.name(), periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().get(0)
-                .getAmrProfileStatusCode().getAmrProfileStatusCodeFlag().get(0).name());
+        assertThat(periodicMeterReadsResponseGas.getPeriodType().name()).isEqualTo(PERIODTYPE.name());
+        assertThat(periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().size())
+                .isEqualTo(periodicMeterReadsList.size());
+        assertThat(periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().get(0).getConsumption().getValue())
+                .isEqualTo(VALUE);
+        assertThat(periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().get(0).getConsumption().getUnit())
+                .isEqualTo(OSGP_UNITTYPE);
+        assertThat(periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().get(0).getAmrProfileStatusCode()
+                .getAmrProfileStatusCodeFlag().get(0).name()).isEqualTo(AMRCODEFLAG.name());
         // For more information on the mapping of Date to XmlGregorianCalendar
         // objects, refer to the DateMappingTest
     }

@@ -1,11 +1,10 @@
 package org.opensmartgridplatform.iec61850;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.charset.StandardCharsets;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class RegisterDeviceRequestTest {
 
@@ -19,16 +18,16 @@ public class RegisterDeviceRequestTest {
 
         final RegisterDeviceRequest request = new RegisterDeviceRequest(TESTED_BYTES);
 
-        assertEquals(TESTED_SERIAL_NUMBER, request.getSerialNumber());
-        assertEquals(TESTED_IP_ADDRESS, request.getIpAddress());
+        assertThat(request.getSerialNumber()).isEqualTo(TESTED_SERIAL_NUMBER);
+        assertThat(request.getIpAddress()).isEqualTo(TESTED_IP_ADDRESS);
 
-        assertEquals("Device identification should be serial number prefixed with 'KAI-'", "KAI-"
-                + TESTED_SERIAL_NUMBER, request.getDeviceIdentification());
-        assertArrayEquals(
-                "Byte array should match the byte[] used to construct the "
-                        + RegisterDeviceRequest.class.getSimpleName(), TESTED_BYTES, request.toByteArray());
-        assertEquals("Size should be the length of the byte array representation", TESTED_BYTES.length,
-                request.getSize());
+        assertThat(request.getDeviceIdentification())
+                .withFailMessage("Device identification should be serial number prefixed with 'KAI-'")
+                .isEqualTo("KAI-" + TESTED_SERIAL_NUMBER);
+        assertThat(request.toByteArray()).withFailMessage("Byte array should match the byte[] used to construct the "
+                + RegisterDeviceRequest.class.getSimpleName()).isEqualTo(TESTED_BYTES);
+        assertThat(request.getSize()).withFailMessage("Size should be the length of the byte array representation")
+                .isEqualTo(TESTED_BYTES.length);
     }
 
     @Test
@@ -36,15 +35,18 @@ public class RegisterDeviceRequestTest {
 
         final RegisterDeviceRequest request = new RegisterDeviceRequest(TESTED_SERIAL_NUMBER, TESTED_IP_ADDRESS);
 
-        assertEquals(TESTED_SERIAL_NUMBER, request.getSerialNumber());
-        assertEquals(TESTED_IP_ADDRESS, request.getIpAddress());
+        assertThat(request.getSerialNumber()).isEqualTo(TESTED_SERIAL_NUMBER);
+        assertThat(request.getIpAddress()).isEqualTo(TESTED_IP_ADDRESS);
 
-        assertEquals("Device identification should be serial number prefixed with 'KAI-'", "KAI-"
-                + TESTED_SERIAL_NUMBER, request.getDeviceIdentification());
-        assertArrayEquals(
+        assertThat(request.getDeviceIdentification())
+                .withFailMessage("Device identification should be serial number prefixed with 'KAI-'")
+                .isEqualTo("KAI-" + TESTED_SERIAL_NUMBER);
+
+        assertThat(request.toByteArray()).withFailMessage(
                 "Byte array should match the ASCII bytes for the concatenation of serial number, separator '/' and the IP address"
-                        + RegisterDeviceRequest.class.getSimpleName(), TESTED_BYTES, request.toByteArray());
-        assertEquals("Size should be the length of the byte array representation", TESTED_BYTES.length,
-                request.getSize());
+                        + RegisterDeviceRequest.class.getSimpleName())
+                .isEqualTo(TESTED_BYTES);
+        assertThat(request.getSize()).withFailMessage("Size should be the length of the byte array representation")
+                .isEqualTo(TESTED_BYTES.length);
     }
 }

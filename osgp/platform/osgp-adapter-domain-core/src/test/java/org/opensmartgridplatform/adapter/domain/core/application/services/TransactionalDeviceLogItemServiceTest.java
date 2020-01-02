@@ -15,8 +15,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.joda.time.DateTime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -38,7 +38,7 @@ public class TransactionalDeviceLogItemServiceTest {
     @Mock
     private DeviceLogItemSlicingRepository deviceLogItemSlicingRepository;
 
-    @Before
+    @BeforeEach
     public void initMocks() {
         MockitoAnnotations.initMocks(this);
     }
@@ -83,8 +83,12 @@ public class TransactionalDeviceLogItemServiceTest {
         final List<DeviceLogItem> deviceLogItems = new ArrayList<>();
         for (int i = 0; i < numberOfDeviceLogItems; i++) {
             final DeviceLogItem.Builder builder = new DeviceLogItem.Builder().withIncoming(false)
-                    .withDeviceUid("deviceUID").withEncodedMessage("0x48 0x49").withDecodedMessage("H I")
-                    .withDeviceIdentification("test").withOrganisationIdentification("organisation").withValid(true)
+                    .withDeviceUid("deviceUID")
+                    .withEncodedMessage("0x48 0x49")
+                    .withDecodedMessage("H I")
+                    .withDeviceIdentification("test")
+                    .withOrganisationIdentification("organisation")
+                    .withValid(true)
                     .withPayloadMessageSerializedSize(2);
             final DeviceLogItem deviceLogItem = new DeviceLogItem(builder);
             deviceLogItems.add(deviceLogItem);

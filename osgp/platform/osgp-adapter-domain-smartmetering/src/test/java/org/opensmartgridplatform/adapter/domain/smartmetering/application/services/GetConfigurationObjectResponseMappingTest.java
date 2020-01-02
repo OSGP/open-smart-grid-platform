@@ -8,15 +8,12 @@
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ConfigurationFlag;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ConfigurationObject;
@@ -31,42 +28,43 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GprsOperationMod
 
 public class GetConfigurationObjectResponseMappingTest {
 
-    private ConfigurationMapper mapper = new ConfigurationMapper();
+    private final ConfigurationMapper mapper = new ConfigurationMapper();
 
     @Test
     public void testMapGetConfigurationObjectResponseDto() {
         final GetConfigurationObjectResponseDto dto = this.makeGetConfigurationObjectResponseDto();
         final GetConfigurationObjectResponse result = this.mapper.map(dto, GetConfigurationObjectResponse.class);
-        assertNotNull("mapping GetConfigurationObjectResponseDto should not return null", result);
-        assertThat("mapping GetConfigurationObjectResponseDto should return correct type", result,
-                instanceOf(GetConfigurationObjectResponse.class));
+        assertThat(result).withFailMessage("mapping GetConfigurationObjectResponseDto should not return null")
+                .isNotNull();
+        assertThat(result).withFailMessage("mapping GetConfigurationObjectResponseDto should return correct type")
+                .isOfAnyClassIn(GetConfigurationObjectResponse.class);
     }
 
     @Test
     public void testMapConfigurationFlagDto() {
         final ConfigurationFlagDto dto = this.makeConfigurationFlagDto();
         final ConfigurationFlag result = this.mapper.map(dto, ConfigurationFlag.class);
-        assertNotNull("mapping ConfigurationFlagDto should not return null", result);
-        assertThat("mapping ConfigurationFlagDto should return correct type", result,
-                instanceOf(ConfigurationFlag.class));
+        assertThat(result).withFailMessage("mapping ConfigurationFlagDto should not return null").isNotNull();
+        assertThat(result).withFailMessage("mapping ConfigurationFlagDto should return correct type")
+                .isOfAnyClassIn(ConfigurationFlag.class);
     }
 
     @Test
     public void testMapGprsOperationModeTypeDto() {
         final GprsOperationModeTypeDto dto = GprsOperationModeTypeDto.ALWAYS_ON;
         final GprsOperationModeType result = this.mapper.map(dto, GprsOperationModeType.class);
-        assertNotNull("mapping GprsOperationModeTypeDto should not return null", result);
-        assertThat("mapping GprsOperationModeTypeDto should return correct type", result,
-                instanceOf(GprsOperationModeType.class));
+        assertThat(result).withFailMessage("mapping GprsOperationModeTypeDto should not return null").isNotNull();
+        assertThat(result).withFailMessage("mapping GprsOperationModeTypeDto should return correct type")
+                .isOfAnyClassIn(GprsOperationModeType.class);
     }
 
     @Test
     public void testMapConfigurationObjectDto() {
         final ConfigurationObjectDto dto = this.makeConfigurationObjectDto();
         final ConfigurationObject result = this.mapper.map(dto, ConfigurationObject.class);
-        assertNotNull("mapping ConfigurationObjectDto should not return null", result);
-        assertThat("mapping ConfigurationObjectDto should return correct type", result,
-                instanceOf(ConfigurationObject.class));
+        assertThat(result).withFailMessage("mapping ConfigurationObjectDto should not return null").isNotNull();
+        assertThat(result).withFailMessage("mapping ConfigurationObjectDto should return correct type")
+                .isOfAnyClassIn(ConfigurationObject.class);
     }
 
     private GetConfigurationObjectResponseDto makeGetConfigurationObjectResponseDto() {

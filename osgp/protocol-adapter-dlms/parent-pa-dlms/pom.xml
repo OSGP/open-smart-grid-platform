@@ -13,7 +13,7 @@
 
   <artifactId>parent-pa-dlms</artifactId>
   <groupId>org.opensmartgridplatform</groupId>
-  <version>4.39.0-SNAPSHOT</version>
+  <version>5.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>parent-pa-dlms</name>
   <!-- Description, Organization, Licences, URL and Distribution Management 
@@ -42,10 +42,10 @@
 
   <properties>
     <module.baseUri>${project.baseUri}/../</module.baseUri>
-    <osgp.version>4.39.0-SNAPSHOT</osgp.version>
-    <osgp.dlms.version>4.39.0-SNAPSHOT</osgp.dlms.version>
-    <osgp.shared.version>4.39.0-SNAPSHOT</osgp.shared.version>
-    <osgp.jasper-interface.version>4.39.0-SNAPSHOT</osgp.jasper-interface.version>
+    <osgp.version>5.0.0-SNAPSHOT</osgp.version>
+    <osgp.dlms.version>5.0.0-SNAPSHOT</osgp.dlms.version>
+    <osgp.shared.version>5.0.0-SNAPSHOT</osgp.shared.version>
+    <osgp.jasper-interface.version>5.0.0-SNAPSHOT</osgp.jasper-interface.version>
     <java.version>1.8</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -55,15 +55,16 @@
     <spring.wssecurity.version>3.0.7.RELEASE</spring.wssecurity.version>
     <spring.wssupport.version>3.0.7.RELEASE</spring.wssupport.version>
     <spring.ws.version>3.0.7.RELEASE</spring.ws.version>
-    <assertj.version>3.12.2</assertj.version>
+    <assertj.version>3.14.0</assertj.version>
     <xmlunit.version>1.6</xmlunit.version>
-    <mockito.version>1.10.19</mockito.version>
+    <mockito.version>3.2.4</mockito.version>
+    <byte.buddy.version>1.10.5</byte.buddy.version>
     <apache.wss4j.version>1.6.19</apache.wss4j.version>
     <servlet.version>4.0.1</servlet.version>
     <servlet.jstl.version>1.2</servlet.jstl.version>
     <hibernate.version>5.4.1.Final</hibernate.version>
     <postgresql.version>42.2.5</postgresql.version>
-    <junit.version>4.12</junit.version>
+    <junit.version>5.6.0-M1</junit.version>
     <joda.version>2.10.1</joda.version>
     <flyway.version>5.0.3</flyway.version>
     <slf4j.version>1.7.26</slf4j.version>
@@ -94,16 +95,27 @@
       <name>Fuse Source</name>
       <url>http://repo.fusesource.com/nexus/content/groups/public/</url>
       <releases>
-        <enabled>true</enabled>
+        <enabled>false</enabled>
       </releases>
       <snapshots>
-        <enabled>true</enabled>
+        <enabled>false</enabled>
       </snapshots>
     </repository>
     <repository>
       <id>oss-sonatype</id>
       <name>oss-sonatype</name>
       <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>maven-repo1</id>
+      <name>Maven Repository</name>
+      <url>https://repo1.maven.org/maven2/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
@@ -376,16 +388,37 @@
 
       <!-- Testing dependencies -->
       <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-api</artifactId>
         <version>${junit.version}</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-engine</artifactId>
+        <version>${junit.version}</version>
       </dependency>
       <dependency>
         <groupId>org.assertj</groupId>
         <artifactId>assertj-core</artifactId>
         <version>${assertj.version}</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <version>${mockito.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-junit-jupiter</artifactId>
+        <version>${mockito.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>net.bytebuddy</groupId>
+        <artifactId>byte-buddy</artifactId>
+        <version>${byte.buddy.version}</version>
       </dependency>
 
       <!-- PostgreSQL -->
@@ -407,12 +440,6 @@
         <groupId>xmlunit</groupId>
         <artifactId>xmlunit</artifactId>
         <version>${xmlunit.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.mockito</groupId>
-        <artifactId>mockito-all</artifactId>
-        <version>${mockito.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>

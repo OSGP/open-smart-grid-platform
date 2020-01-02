@@ -10,7 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.mapping;
 
 import org.apache.commons.codec.binary.Hex;
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;

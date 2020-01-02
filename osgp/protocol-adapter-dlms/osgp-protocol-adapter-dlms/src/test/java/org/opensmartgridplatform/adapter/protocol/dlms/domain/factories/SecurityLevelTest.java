@@ -15,7 +15,7 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.S
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.SecurityLevel.LLS0;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.SecurityLevel.LLS1;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDeviceBuilder;
 

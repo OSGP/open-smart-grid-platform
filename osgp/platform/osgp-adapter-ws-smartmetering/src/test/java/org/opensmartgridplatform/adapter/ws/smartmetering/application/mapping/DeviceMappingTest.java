@@ -9,9 +9,7 @@
 
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -21,14 +19,13 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.joda.time.DateTime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.Device;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
 
 public class DeviceMappingTest {
 
-    private final InstallationMapper installationMapper = new InstallationMapper();
     private static final String DEVICE_IDENTIFICATION = "nr1";
     private static final String DEVICE_TYPE = "typeA";
     private static final String COMMUNICATION_METHOD = "skype";
@@ -39,53 +36,80 @@ public class DeviceMappingTest {
     private static final String SUPPLIER = "supplier1";
     private static final boolean IS_ACTIVE = true;
     private static final byte[] KEY = "key".getBytes();
+    private final InstallationMapper installationMapper = new InstallationMapper();
     private final Date deliveryDateSmartMeteringDevice = new Date();
     private XMLGregorianCalendar deliveryDateDevice;
 
     /**
-     * Needed to initialize a XMLGregorianCalendar instance
+     * Method to check the mapping of a Device object to a SmartMeteringDevice
+     * object.
      */
-    @Before
-    public void init() {
-        try {
-            this.deliveryDateDevice = DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar());
-        } catch (final DatatypeConfigurationException e) {
-            e.printStackTrace();
-        }
+    private void checkDeviceToSmartMeteringDeviceMapping(final SmartMeteringDevice smartMeteringDevice) {
+
+        assertThat(smartMeteringDevice).isNotNull();
+        assertThat(smartMeteringDevice.getDeviceIdentification()).isEqualTo(DEVICE_IDENTIFICATION);
+        assertThat(smartMeteringDevice.getDeviceType()).isEqualTo(DEVICE_TYPE);
+        assertThat(smartMeteringDevice.getCommunicationMethod()).isEqualTo(COMMUNICATION_METHOD);
+        assertThat(smartMeteringDevice.getCommunicationProvider()).isEqualTo(COMMUNICATION_PROVIDER);
+        assertThat(smartMeteringDevice.getICCId()).isEqualTo(ICC_ID);
+        assertThat(smartMeteringDevice.getProtocolName()).isEqualTo(PROTOCOL_NAME);
+        assertThat(smartMeteringDevice.getProtocolVersion()).isEqualTo(PROTOCOL_VERSION);
+        assertThat(smartMeteringDevice.getSupplier()).isEqualTo(SUPPLIER);
+        assertThat(smartMeteringDevice.isHLS3Active()).isEqualTo(IS_ACTIVE);
+        assertThat(smartMeteringDevice.isHLS4Active()).isEqualTo(IS_ACTIVE);
+        assertThat(smartMeteringDevice.isHLS5Active()).isEqualTo(IS_ACTIVE);
+        assertThat(smartMeteringDevice.getMasterKey()).isEqualTo(KEY);
+        assertThat(smartMeteringDevice.getGlobalEncryptionUnicastKey()).isEqualTo(KEY);
+        assertThat(smartMeteringDevice.getAuthenticationKey()).isEqualTo(KEY);
+
+        // convert a Date object to a joda DateTime object, because the
+        // getYear/getMonth and getDay methods in Date are deprecated and give
+        // wrong results
+        final DateTime dateTime = this.createDateTime(this.deliveryDateSmartMeteringDevice);
+        assertThat(dateTime.getYear()).isEqualTo(this.deliveryDateDevice.getYear());
+        assertThat(dateTime.getMonthOfYear()).isEqualTo(this.deliveryDateDevice.getMonth());
+        assertThat(dateTime.getDayOfMonth()).isEqualTo(this.deliveryDateDevice.getDay());
     }
 
     /**
-     * Test to see if a Device object can be mapped to a SmartMeteringDevice
-     * object
+     * Method to check the mapping of a SmartMeteringDevice object to a Device
+     * object.
      */
-    @Test
-    public void testDeviceMapping() {
+    private void checkSmartMeteringDeviceToDeviceMapping(final Device device) {
 
-        // build test data
-        final Device device = this.createDevice();
+        assertThat(device).isNotNull();
+        assertThat(device.getDeviceIdentification()).isEqualTo(DEVICE_IDENTIFICATION);
+        assertThat(device.getDeviceType()).isEqualTo(DEVICE_TYPE);
+        assertThat(device.getCommunicationMethod()).isEqualTo(COMMUNICATION_METHOD);
+        assertThat(device.getCommunicationProvider()).isEqualTo(COMMUNICATION_PROVIDER);
+        assertThat(device.getICCId()).isEqualTo(ICC_ID);
+        assertThat(device.getProtocolName()).isEqualTo(PROTOCOL_NAME);
+        assertThat(device.getProtocolVersion()).isEqualTo(PROTOCOL_VERSION);
+        assertThat(device.getSupplier()).isEqualTo(SUPPLIER);
+        assertThat(device.isHLS3Active()).isEqualTo(IS_ACTIVE);
+        assertThat(device.isHLS4Active()).isEqualTo(IS_ACTIVE);
+        assertThat(device.isHLS5Active()).isEqualTo(IS_ACTIVE);
+        assertThat(device.getMasterKey()).isEqualTo(KEY);
+        assertThat(device.getGlobalEncryptionUnicastKey()).isEqualTo(KEY);
+        assertThat(device.getAuthenticationKey()).isEqualTo(KEY);
 
-        // actual mapping
-        final SmartMeteringDevice smartMeteringDevice = this.installationMapper.map(device, SmartMeteringDevice.class);
-
-        // check mapping
-        this.checkDeviceToSmartMeteringDeviceMapping(smartMeteringDevice);
-
+        // convert a Date object to a joda DateTime object, because the
+        // getYear/getMonth and getDay methods in Date are deprecated and give
+        // wrong results
+        final DateTime dateTime = this.createDateTime(this.deliveryDateSmartMeteringDevice);
+        assertThat(device.getDeliveryDate().getYear()).isEqualTo(dateTime.getYear());
+        assertThat(device.getDeliveryDate().getMonth()).isEqualTo(dateTime.getMonthOfYear());
+        assertThat(device.getDeliveryDate().getDay()).isEqualTo(dateTime.getDayOfMonth());
     }
 
     /**
-     * Test to see if a SmartMeteringDevice can be mapped to a Device
+     * Method to convert a Date to a DateTime object so it can be used for
+     * assertEquals statements.
      */
-    @Test
-    public void testSmartMeteringDeviceMapping() {
-        // build test data
-        final SmartMeteringDevice smartMeteringDevice = this.createSmartMeteringDevice();
+    private DateTime createDateTime(final Date date) {
 
-        // actual mapping
-        final Device device = this.installationMapper.map(smartMeteringDevice, Device.class);
-
-        // check mapping
-        this.checkSmartMeteringDeviceToDeviceMapping(device);
-
+        final DateTime dateTime = new DateTime(date);
+        return dateTime;
     }
 
     /**
@@ -137,75 +161,47 @@ public class DeviceMappingTest {
     }
 
     /**
-     * Method to check the mapping of a SmartMeteringDevice object to a Device
-     * object.
+     * Needed to initialize a XMLGregorianCalendar instance
      */
-    private void checkSmartMeteringDeviceToDeviceMapping(final Device device) {
-
-        assertNotNull(device);
-        assertEquals(DEVICE_IDENTIFICATION, device.getDeviceIdentification());
-        assertEquals(DEVICE_TYPE, device.getDeviceType());
-        assertEquals(COMMUNICATION_METHOD, device.getCommunicationMethod());
-        assertEquals(COMMUNICATION_PROVIDER, device.getCommunicationProvider());
-        assertEquals(ICC_ID, device.getICCId());
-        assertEquals(PROTOCOL_NAME, device.getProtocolName());
-        assertEquals(PROTOCOL_VERSION, device.getProtocolVersion());
-        assertEquals(SUPPLIER, device.getSupplier());
-        assertEquals(IS_ACTIVE, device.isHLS3Active());
-        assertEquals(IS_ACTIVE, device.isHLS4Active());
-        assertEquals(IS_ACTIVE, device.isHLS5Active());
-        assertArrayEquals(KEY, device.getMasterKey());
-        assertArrayEquals(KEY, device.getGlobalEncryptionUnicastKey());
-        assertArrayEquals(KEY, device.getAuthenticationKey());
-
-        // convert a Date object to a joda DateTime object, because the
-        // getYear/getMonth and getDay methods in Date are deprecated and give
-        // wrong results
-        final DateTime dateTime = this.createDateTime(this.deliveryDateSmartMeteringDevice);
-        assertEquals(dateTime.getYear(), device.getDeliveryDate().getYear());
-        assertEquals(dateTime.getMonthOfYear(), device.getDeliveryDate().getMonth());
-        assertEquals(dateTime.getDayOfMonth(), device.getDeliveryDate().getDay());
+    @BeforeEach
+    public void init() {
+        try {
+            this.deliveryDateDevice = DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar());
+        } catch (final DatatypeConfigurationException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
-     * Method to check the mapping of a Device object to a SmartMeteringDevice
-     * object.
+     * Test to see if a Device object can be mapped to a SmartMeteringDevice
+     * object
      */
-    private void checkDeviceToSmartMeteringDeviceMapping(final SmartMeteringDevice smartMeteringDevice) {
+    @Test
+    public void testDeviceMapping() {
 
-        assertNotNull(smartMeteringDevice);
-        assertEquals(DEVICE_IDENTIFICATION, smartMeteringDevice.getDeviceIdentification());
-        assertEquals(DEVICE_TYPE, smartMeteringDevice.getDeviceType());
-        assertEquals(COMMUNICATION_METHOD, smartMeteringDevice.getCommunicationMethod());
-        assertEquals(COMMUNICATION_PROVIDER, smartMeteringDevice.getCommunicationProvider());
-        assertEquals(ICC_ID, smartMeteringDevice.getICCId());
-        assertEquals(PROTOCOL_NAME, smartMeteringDevice.getProtocolName());
-        assertEquals(PROTOCOL_VERSION, smartMeteringDevice.getProtocolVersion());
-        assertEquals(SUPPLIER, smartMeteringDevice.getSupplier());
-        assertEquals(IS_ACTIVE, smartMeteringDevice.isHLS3Active());
-        assertEquals(IS_ACTIVE, smartMeteringDevice.isHLS4Active());
-        assertEquals(IS_ACTIVE, smartMeteringDevice.isHLS5Active());
-        assertArrayEquals(KEY, smartMeteringDevice.getMasterKey());
-        assertArrayEquals(KEY, smartMeteringDevice.getGlobalEncryptionUnicastKey());
-        assertArrayEquals(KEY, smartMeteringDevice.getAuthenticationKey());
+        // build test data
+        final Device device = this.createDevice();
 
-        // convert a Date object to a joda DateTime object, because the
-        // getYear/getMonth and getDay methods in Date are deprecated and give
-        // wrong results
-        final DateTime dateTime = this.createDateTime(this.deliveryDateSmartMeteringDevice);
-        assertEquals(this.deliveryDateDevice.getYear(), dateTime.getYear());
-        assertEquals(this.deliveryDateDevice.getMonth(), dateTime.getMonthOfYear());
-        assertEquals(this.deliveryDateDevice.getDay(), dateTime.getDayOfMonth());
+        // actual mapping
+        final SmartMeteringDevice smartMeteringDevice = this.installationMapper.map(device, SmartMeteringDevice.class);
+
+        // check mapping
+        this.checkDeviceToSmartMeteringDeviceMapping(smartMeteringDevice);
     }
 
     /**
-     * Method to convert a Date to a DateTime object so it can be used for
-     * assertEquals statements.
+     * Test to see if a SmartMeteringDevice can be mapped to a Device
      */
-    private DateTime createDateTime(final Date date) {
+    @Test
+    public void testSmartMeteringDeviceMapping() {
+        // build test data
+        final SmartMeteringDevice smartMeteringDevice = this.createSmartMeteringDevice();
 
-        final DateTime dateTime = new DateTime(date);
-        return dateTime;
+        // actual mapping
+        final Device device = this.installationMapper.map(smartMeteringDevice, Device.class);
+
+        // check mapping
+        this.checkSmartMeteringDeviceToDeviceMapping(device);
     }
 
 }

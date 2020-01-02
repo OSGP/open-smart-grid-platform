@@ -8,7 +8,8 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 /**
- * DlmsConnectionMessageProcessor implemenation, used to test the abstract DlmsConnectionMessageProcessor baseclass.
+ * DlmsConnectionMessageProcessor implementation, used to test the abstract
+ * DlmsConnectionMessageProcessor base class.
  */
 class DlmsConnectionMessageProcessorImpl extends DlmsConnectionMessageProcessor {
     private final DlmsMessageListener messageListener;

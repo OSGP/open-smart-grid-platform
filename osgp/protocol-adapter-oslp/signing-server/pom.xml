@@ -20,7 +20,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-pa-oslp</artifactId>
-    <version>4.39.0-SNAPSHOT</version>
+    <version>5.0.0-SNAPSHOT</version>
     <relativePath>../parent-pa-oslp/pom.xml</relativePath>
   </parent>
 
@@ -159,11 +159,10 @@
       <artifactId>activemq-spring</artifactId>
     </dependency>
 
-    <!-- Testing dependencies -->
+    <!-- Google Protocol Buffers -->
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
     </dependency>
   </dependencies>
 </project>

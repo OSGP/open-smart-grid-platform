@@ -7,10 +7,9 @@
  */
 package org.opensmartgridplatform.adapter.domain.core.application.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -20,12 +19,14 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceFirmwareFile;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
@@ -41,7 +42,8 @@ import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleType;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class FirmwareManagementServiceTest {
 
     private static final String VERSION_1 = "R01";
@@ -66,7 +68,22 @@ public class FirmwareManagementServiceTest {
     @InjectMocks
     private FirmwareManagementService firmwareManagementService;
 
-    @Before
+    private Device createDevice(final DeviceModel deviceModel) {
+        final Device device = new Device();
+        device.setDeviceModel(deviceModel);
+        return device;
+    }
+
+    private FirmwareFile createFirmwareFile(final String version) {
+        final FirmwareFile firmwareFile = new FirmwareFile();
+        final FirmwareModule module1 = new FirmwareModule("Functional");
+        final FirmwareModule module2 = new FirmwareModule("Security");
+        firmwareFile.addFirmwareModule(module1, version);
+        firmwareFile.addFirmwareModule(module2, version);
+        return firmwareFile;
+    }
+
+    @BeforeEach
     public void setUp() throws FunctionalException {
         final Manufacturer manufacturer = new Manufacturer("code", "name", false);
         final DeviceModel deviceModel = new DeviceModel(manufacturer, "modelCode", "description", false);
@@ -98,8 +115,7 @@ public class FirmwareManagementServiceTest {
                 .checkFirmwareHistoryForVersion("", versionsOnDevice);
 
         // Validate
-        assertTrue("List should be empty", versionsNotInHistory.isEmpty());
-
+        assertThat(versionsNotInHistory).withFailMessage("List should be empty").isEmpty();
     }
 
     @Test
@@ -117,8 +133,7 @@ public class FirmwareManagementServiceTest {
                 .checkFirmwareHistoryForVersion("", versionsOnDevice);
 
         // Assert
-        assertEquals("Lists should be equal", expected, versionsNotInHistory);
-
+        assertThat(versionsNotInHistory).withFailMessage("Lists should be equal").isEqualTo(expected);
     }
 
     @Test
@@ -154,22 +169,6 @@ public class FirmwareManagementServiceTest {
 
         // Assert
         verify(this.deviceFirmwareFileRepository, never()).save(any(DeviceFirmwareFile.class));
-    }
-
-    private FirmwareFile createFirmwareFile(final String version) {
-        final FirmwareFile firmwareFile = new FirmwareFile();
-        final FirmwareModule module1 = new FirmwareModule("Functional");
-        final FirmwareModule module2 = new FirmwareModule("Security");
-        firmwareFile.addFirmwareModule(module1, version);
-        firmwareFile.addFirmwareModule(module2, version);
-        return firmwareFile;
-    }
-
-    private Device createDevice(final DeviceModel deviceModel) {
-        final Device device = new Device();
-        device.setDeviceModel(deviceModel);
-        return device;
-
     }
 
 }
