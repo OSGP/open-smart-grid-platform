@@ -81,12 +81,10 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
-      <version>${jackson.version}</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>${jackson-databind.version}</version>
     </dependency>
 
     <!-- Guava for Joiner class -->
@@ -187,7 +185,7 @@
     <plugins>
       <plugin>
         <artifactId>maven-eclipse-plugin</artifactId>
-        <version>${maven.eclipse.plugin}</version>
+        <version>${maven.eclipse.plugin.version}</version>
         <configuration>
           <additionalProjectnatures>
             <projectnature>org.springframework.ide.eclipse.core.springnature</projectnature>
@@ -213,7 +211,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
-        <version>${maven.exec.plugin}</version>
+        <version>${maven.exec.plugin.version}</version>
         <configuration>
           <mainClass>org.test.int1.Main</mainClass>
         </configuration>
