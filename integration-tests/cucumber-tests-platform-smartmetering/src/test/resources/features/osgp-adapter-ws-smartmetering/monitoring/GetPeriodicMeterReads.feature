@@ -8,7 +8,7 @@ Feature: SmartMetering Monitoring - Get Periodic Meter Reads
     Given a dlms device
       | DeviceIdentification     | TEST1024000000001 |
       | DeviceType               | SMART_METER_E     |
-      | SelectiveAccessSupported | true              |
+      | SelectiveAccessSupported | false              |
     And a dlms device
       | DeviceIdentification        | TESTG102400000001 |
       | DeviceType                  | SMART_METER_G     |
