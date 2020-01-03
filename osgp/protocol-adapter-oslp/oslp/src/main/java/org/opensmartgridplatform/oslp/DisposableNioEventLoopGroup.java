@@ -19,7 +19,7 @@ public class DisposableNioEventLoopGroup extends NioEventLoopGroup implements Be
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DisposableNioEventLoopGroup.class);
 
-    private String name;
+    private String name = "disposableNioEventLoopGroup";
 
     public DisposableNioEventLoopGroup() {
         super();
