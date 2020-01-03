@@ -1214,7 +1214,7 @@ public class OslpDeviceService implements DeviceService {
 
     @Override
     public void setTransition(final SetTransitionDeviceRequest deviceRequest) {
-        LOGGER.info("setTranistion() for device: {}.", deviceRequest.getDeviceIdentification());
+        LOGGER.info("setTransition() for device: {}.", deviceRequest.getDeviceIdentification());
 
         this.buildOslpRequestSetTransition(deviceRequest);
     }
@@ -1222,7 +1222,7 @@ public class OslpDeviceService implements DeviceService {
     @Override
     public void doSetTransition(final OslpEnvelope oslpRequest, final DeviceRequest deviceRequest,
             final DeviceResponseHandler deviceResponseHandler, final String ipAddress) throws IOException {
-        LOGGER.info("doSetTranistion() for device: {}.", deviceRequest.getDeviceIdentification());
+        LOGGER.info("doSetTransition() for device: {}.", deviceRequest.getDeviceIdentification());
 
         this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
 
