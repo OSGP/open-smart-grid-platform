@@ -18,10 +18,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.SimpleChannelInboundHandler;
 
-public class OslpSecurityHandler extends ChannelInboundHandlerAdapter {
+@Sharable
+public class OslpSecurityHandler extends SimpleChannelInboundHandler<OslpEnvelope> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OslpSecurityHandler.class);
 
@@ -35,8 +37,9 @@ public class OslpSecurityHandler extends ChannelInboundHandlerAdapter {
     private OslpDeviceSettingsService oslpDeviceSettingsService;
 
     @Override
-    public void channelRead(final ChannelHandlerContext ctx, final Object msg) throws Exception {
-        final OslpEnvelope message = (OslpEnvelope) msg;
+    public void channelRead0(final ChannelHandlerContext ctx, final OslpEnvelope message) throws Exception {
+
+        LOGGER.info("Entering method: channelRead0 for channel {}", ctx.channel().id().asLongText());
 
         // Upon first registration, a deviceUid is unknown within the platform.
         // Search based on deviceIdentification in this case.
@@ -67,7 +70,6 @@ public class OslpSecurityHandler extends ChannelInboundHandlerAdapter {
 
             message.validate(publicKey);
         }
-
-        ctx.fireChannelRead(msg);
+        ctx.fireChannelRead(message);
     }
 }

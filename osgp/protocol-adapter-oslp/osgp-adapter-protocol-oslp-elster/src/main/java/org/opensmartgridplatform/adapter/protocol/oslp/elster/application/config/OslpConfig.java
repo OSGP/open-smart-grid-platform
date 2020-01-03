@@ -12,6 +12,7 @@ import java.net.InetSocketAddress;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.networking.OslpChannelHandlerClient;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.networking.OslpChannelHandlerServer;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.networking.OslpSecurityHandler;
+import org.opensmartgridplatform.oslp.DisposableNioEventLoopGroup;
 import org.opensmartgridplatform.oslp.OslpDecoder;
 import org.opensmartgridplatform.oslp.OslpEncoder;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
@@ -20,32 +21,22 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
-import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.logging.LogLevel;
-//import io.netty.channel.socket.nio.NioClientSocketChannelFactory;
-//import io.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import io.netty.handler.logging.LoggingHandler;
 
 /**
- * An application context Java configuration class. The usage of Java
- * configuration requires Spring Framework 3.0
+ * An application context Java configuration class.
  */
 @Configuration
-@EnableTransactionManagement()
-@PropertySource("classpath:osgp-adapter-protocol-oslp-elster.properties")
-@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
-@PropertySource(value = "file:{osgp/AdapterProtocolOslpElster/config}", ignoreResourceNotFound = true)
 public class OslpConfig extends AbstractConfig {
     private static final String PROPERTY_NAME_OSLP_TIMEOUT_CONNECT = "oslp.timeout.connect";
     private static final String PROPERTY_NAME_OSLP_CONCURRENT_CLIENT_CONNECTIONS_LIMIT_ACTIVE = "oslp.concurrent.client.connections.limit.active";
@@ -69,29 +60,31 @@ public class OslpConfig extends AbstractConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OslpConfig.class);
 
-    @Bean(destroyMethod = "shutdownGracefully")
-    public NioEventLoopGroup serverBossGroup() {
+    @Bean(name = "protocolAdapterOslpNettyServerBossGroup")
+    public DisposableNioEventLoopGroup serverBossGroup() {
         // TODO - Should we pass in any parameters, like for example number of
         // threads, to the constructor?
-        return new NioEventLoopGroup();
+        return new DisposableNioEventLoopGroup();
     }
 
-    @Bean(destroyMethod = "shutdownGracefully")
-    public NioEventLoopGroup serverWorkerGroup() {
+    @Bean(name = "protocolAdapterOslpNettyServerWorkerGroup")
+    public DisposableNioEventLoopGroup serverWorkerGroup() {
         // TODO - Should we pass in any parameters, like for example number of
         // threads, to the constructor?
-        return new NioEventLoopGroup();
+        return new DisposableNioEventLoopGroup();
     }
 
-    @Bean(destroyMethod = "shutdownGracefully")
-    public NioEventLoopGroup clientWorkerGroup() {
+    @Bean(name = "protocolAdapterOslpNettyClientWorkerGroup")
+    public DisposableNioEventLoopGroup clientWorkerGroup() {
         // TODO - Should we pass in any parameters, like for example number of
         // threads, to the constructor?
-        return new NioEventLoopGroup();
+        return new DisposableNioEventLoopGroup();
     }
 
     @Bean
     public Bootstrap clientBootstrap() {
+
+        LOGGER.info("Initializing clientBootstrap bean.");
 
         final Bootstrap bootstrap = new Bootstrap();
         bootstrap.group(this.clientWorkerGroup());
@@ -112,6 +105,8 @@ public class OslpConfig extends AbstractConfig {
 
     @Bean()
     public ServerBootstrap serverBootstrap() {
+
+        LOGGER.info("Initializing serverBootstrap bean.");
 
         final ServerBootstrap bootstrap = new ServerBootstrap();
         bootstrap.group(this.serverBossGroup(), this.serverWorkerGroup());

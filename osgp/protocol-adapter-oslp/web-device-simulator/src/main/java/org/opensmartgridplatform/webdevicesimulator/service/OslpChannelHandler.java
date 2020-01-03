@@ -28,13 +28,6 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.codec.binary.Base64;
-import org.jboss.netty.bootstrap.ClientBootstrap;
-import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelStateEvent;
-import org.jboss.netty.channel.ExceptionEvent;
-import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.SimpleChannelHandler;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Minutes;
@@ -93,7 +86,14 @@ import org.springframework.util.StringUtils;
 
 import com.google.protobuf.ByteString;
 
-public class OslpChannelHandler extends SimpleChannelHandler {
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandler.Sharable;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
+
+@Sharable
+public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope> {
 
     private static DateTimeZone localTimeZone = DateTimeZone.forID("Europe/Paris");
 
@@ -170,7 +170,7 @@ public class OslpChannelHandler extends SimpleChannelHandler {
     private String statusInternalIpAddress;
 
     @Autowired
-    private ClientBootstrap bootstrap;
+    private Bootstrap bootstrap;
 
     @Autowired
     private DeviceManagementService deviceManagementService;
@@ -180,7 +180,7 @@ public class OslpChannelHandler extends SimpleChannelHandler {
 
     private final Lock lock = new ReentrantLock();
 
-    private final ConcurrentMap<Integer, Callback> callbacks = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, Callback> callbacks = new ConcurrentHashMap<>();
 
     @Autowired
     private Integer sequenceNumberWindow;
@@ -227,8 +227,8 @@ public class OslpChannelHandler extends SimpleChannelHandler {
     }
 
     /**
-     * Get an OutOfSequenceEvent for given device id. The OutOfSequenceEvent
-     * instance will be removed from the list, before the instance is returned.
+     * Get an OutOfSequenceEvent for given device id. The OutOfSequenceEvent instance will be removed from the list,
+     * before the instance is returned.
      *
      * @param deviceId
      *            The id of the device.
@@ -265,17 +265,16 @@ public class OslpChannelHandler extends SimpleChannelHandler {
         this.deviceManagementService = deviceManagementService;
     }
 
-    public ClientBootstrap getBootstrap() {
+    public Bootstrap getBootstrap() {
         return this.bootstrap;
     }
 
-    public void setBootstrap(final ClientBootstrap bootstrap) {
+    public void setBootstrap(final Bootstrap bootstrap) {
         this.bootstrap = bootstrap;
     }
 
     @Override
-    public void messageReceived(final ChannelHandlerContext ctx, final MessageEvent e) throws Exception {
-        final OslpEnvelope message = (OslpEnvelope) e.getMessage();
+    public void channelRead0(final ChannelHandlerContext ctx, final OslpEnvelope message) throws Exception {
 
         this.oslpLogItemRepository.save(new OslpLogItem(message.getDeviceId(),
                 this.getDeviceIdentificationFromMessage(message.getPayloadMessage()), true,
@@ -286,7 +285,7 @@ public class OslpChannelHandler extends SimpleChannelHandler {
                 LOGGER.info("Received OSLP Response (before callback): {}", message.getPayloadMessage());
 
                 // Lookup correct callback and call handle method
-                final Integer channelId = e.getChannel().getId();
+                final String channelId = ctx.channel().id().asLongText();
                 final Callback callback = this.callbacks.remove(channelId);
                 if (callback == null) {
                     LOGGER.warn("Callback for channel {} does not longer exist, dropping response.", channelId);
@@ -328,8 +327,11 @@ public class OslpChannelHandler extends SimpleChannelHandler {
 
                 // Build the OslpEnvelope with the incremented sequence number.
                 final OslpEnvelope.Builder responseBuilder = new OslpEnvelope.Builder()
-                        .withSignature(this.oslpSignature).withProvider(this.oslpSignatureProvider)
-                        .withPrimaryKey(this.privateKey).withDeviceId(deviceId).withSequenceNumber(sequenceNumber);
+                        .withSignature(this.oslpSignature)
+                        .withProvider(this.oslpSignatureProvider)
+                        .withPrimaryKey(this.privateKey)
+                        .withDeviceId(deviceId)
+                        .withSequenceNumber(sequenceNumber);
 
                 // Pass the incremented sequence number to the handleRequest()
                 // function for checking.
@@ -342,48 +344,39 @@ public class OslpChannelHandler extends SimpleChannelHandler {
 
                 LOGGER.info("sending OSLP response with sequence number: {}",
                         this.convertByteArrayToInteger(response.getSequenceNumber()));
-                e.getChannel().write(response);
+                ctx.channel().writeAndFlush(response);
                 final String oslpResponse = response.getPayloadMessage().toString().split(" ")[0];
                 LOGGER.info("Sent OSLP Response: {}", oslpResponse);
             }
         } else {
             LOGGER.warn("Received message wasn't properly secured.");
         }
+
+        ctx.fireChannelRead(message);
     }
 
     @Override
-    public void channelOpen(final ChannelHandlerContext ctx, final ChannelStateEvent e) throws Exception {
-        LOGGER.info("Channel {} opened", e.getChannel().getId());
-        super.channelOpen(ctx, e);
+
+    public void channelActive(final ChannelHandlerContext ctx) throws Exception {
+        LOGGER.info("Channel {} active.", ctx.channel().id());
+        super.channelActive(ctx);
     }
 
     @Override
-    public void channelDisconnected(final ChannelHandlerContext ctx, final ChannelStateEvent e) throws Exception {
-        LOGGER.info("Channel {} disconnected", e.getChannel().getId());
-        super.channelDisconnected(ctx, e);
+    public void channelInactive(final ChannelHandlerContext ctx) throws Exception {
+        LOGGER.info("Channel {} inactive.", ctx.channel().id());
+        super.channelInactive(ctx);
     }
 
     @Override
-    public void channelClosed(final ChannelHandlerContext ctx, final ChannelStateEvent e) throws Exception {
-        LOGGER.info("Channel {} closed", e.getChannel().getId());
-        super.channelClosed(ctx, e);
-    }
-
-    @Override
-    public void channelUnbound(final ChannelHandlerContext ctx, final ChannelStateEvent e) throws Exception {
-        LOGGER.info("Channel {} unbound", e.getChannel().getId());
-        super.channelUnbound(ctx, e);
-    }
-
-    @Override
-    public void exceptionCaught(final ChannelHandlerContext ctx, final ExceptionEvent e) {
-        if (this.isConnectionReset(e.getCause())) {
+    public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
+        if (this.isConnectionReset(cause)) {
             LOGGER.info("Connection was (as expected) reset by the device.");
         } else {
-            LOGGER.warn("Unexpected exception from downstream.", e.getCause());
+            LOGGER.warn("Unexpected exception from downstream.", cause);
         }
 
-        e.getChannel().close();
+        ctx.channel().close();
     }
 
     private boolean isConnectionReset(final Throwable e) {
@@ -404,7 +397,7 @@ public class OslpChannelHandler extends SimpleChannelHandler {
         try {
             channelFuture = this.bootstrap.connect(address);
             channelFuture.awaitUninterruptibly(this.connectionTimeout, TimeUnit.MILLISECONDS);
-            if (channelFuture.getChannel() != null && channelFuture.getChannel().isConnected()) {
+            if (channelFuture.channel() != null && channelFuture.channel().isActive()) {
                 LOGGER.info("Connection established to: {}", address);
             } else {
                 LOGGER.info("The connnection to OSGP from device {} is not successful", deviceIdentification);
@@ -412,8 +405,8 @@ public class OslpChannelHandler extends SimpleChannelHandler {
                 throw new IOException("Unable to connect");
             }
 
-            this.callbacks.put(channelFuture.getChannel().getId(), callback);
-            channelFuture.getChannel().write(request);
+            this.callbacks.put(channelFuture.channel().id().asLongText(), callback);
+            channelFuture.channel().writeAndFlush(request);
         } finally {
             this.lock.unlock();
         }
@@ -424,17 +417,16 @@ public class OslpChannelHandler extends SimpleChannelHandler {
             LOGGER.info("Received OSLP response (after callback): {}", response.getPayloadMessage());
 
             /*
-             * Devices expect the channel to be closed if - and only if - the
-             * platform initiated the conversation. If the device initiated the
-             * conversation it needs to close the channel itself.
+             * Devices expect the channel to be closed if - and only if - the platform initiated the conversation. If
+             * the device initiated the conversation it needs to close the channel itself.
              */
-            channelFuture.getChannel().close();
+            channelFuture.channel().close();
 
             return response;
         } catch (final IOException | DeviceSimulatorException e) {
             LOGGER.error("send exception", e);
             // Remove callback when exception has occurred
-            this.callbacks.remove(channelFuture.getChannel().getId());
+            this.callbacks.remove(channelFuture.channel().id().asLongText());
             throw e;
         }
     }
@@ -619,7 +611,9 @@ public class OslpChannelHandler extends SimpleChannelHandler {
     private static Message createConfirmRegisterDeviceResponse(final int randomDevice, final int randomPlatform) {
         return Oslp.Message.newBuilder()
                 .setConfirmRegisterDeviceResponse(ConfirmRegisterDeviceResponse.newBuilder()
-                        .setRandomDevice(randomDevice).setRandomPlatform(randomPlatform).setStatus(Oslp.Status.OK))
+                        .setRandomDevice(randomDevice)
+                        .setRandomPlatform(randomPlatform)
+                        .setStatus(Oslp.Status.OK))
                 .build();
     }
 
@@ -631,16 +625,21 @@ public class OslpChannelHandler extends SimpleChannelHandler {
 
     private static Message createStartSelfTestResponse() {
         return Oslp.Message.newBuilder()
-                .setStartSelfTestResponse(StartSelfTestResponse.newBuilder().setStatus(Oslp.Status.OK)).build();
+                .setStartSelfTestResponse(StartSelfTestResponse.newBuilder().setStatus(Oslp.Status.OK))
+                .build();
     }
 
     private static Message createStopSelfTestResponse() {
-        return Oslp.Message.newBuilder().setStopSelfTestResponse(StopSelfTestResponse.newBuilder()
-                .setStatus(Oslp.Status.OK).setSelfTestResult(ByteString.copyFrom(new byte[] { 0 }))).build();
+        return Oslp.Message.newBuilder()
+                .setStopSelfTestResponse(StopSelfTestResponse.newBuilder()
+                        .setStatus(Oslp.Status.OK)
+                        .setSelfTestResult(ByteString.copyFrom(new byte[] { 0 })))
+                .build();
     }
 
     private static Message createSetLightResponse() {
-        return Oslp.Message.newBuilder().setSetLightResponse(SetLightResponse.newBuilder().setStatus(Oslp.Status.OK))
+        return Oslp.Message.newBuilder()
+                .setSetLightResponse(SetLightResponse.newBuilder().setStatus(Oslp.Status.OK))
                 .build();
     }
 
@@ -652,12 +651,15 @@ public class OslpChannelHandler extends SimpleChannelHandler {
 
     private static Message createUpdateFirmwareResponse() {
         return Oslp.Message.newBuilder()
-                .setUpdateFirmwareResponse(UpdateFirmwareResponse.newBuilder().setStatus(Oslp.Status.OK)).build();
+                .setUpdateFirmwareResponse(UpdateFirmwareResponse.newBuilder().setStatus(Oslp.Status.OK))
+                .build();
     }
 
     private static Message createGetFirmwareVersionResponse(final String firmwareVersion) {
-        return Oslp.Message.newBuilder().setGetFirmwareVersionResponse(
-                GetFirmwareVersionResponse.newBuilder().setFirmwareVersion(firmwareVersion)).build();
+        return Oslp.Message.newBuilder()
+                .setGetFirmwareVersionResponse(
+                        GetFirmwareVersionResponse.newBuilder().setFirmwareVersion(firmwareVersion))
+                .build();
     }
 
     private static Message createSwitchFirmwareResponse() {
@@ -667,18 +669,23 @@ public class OslpChannelHandler extends SimpleChannelHandler {
     }
 
     private static Message createSetDeviceVerificationKeyResponse() {
-        return Oslp.Message.newBuilder().setSetDeviceVerificationKeyResponse(
-                Oslp.SetDeviceVerificationKeyResponse.newBuilder().setStatus(Oslp.Status.OK)).build();
+        return Oslp.Message.newBuilder()
+                .setSetDeviceVerificationKeyResponse(
+                        Oslp.SetDeviceVerificationKeyResponse.newBuilder().setStatus(Oslp.Status.OK))
+                .build();
     }
 
     private static Message createUpdateDeviceSslCertificationResponse() {
-        return Oslp.Message.newBuilder().setUpdateDeviceSslCertificationResponse(
-                Oslp.UpdateDeviceSslCertificationResponse.newBuilder().setStatus(Oslp.Status.OK)).build();
+        return Oslp.Message.newBuilder()
+                .setUpdateDeviceSslCertificationResponse(
+                        Oslp.UpdateDeviceSslCertificationResponse.newBuilder().setStatus(Oslp.Status.OK))
+                .build();
     }
 
     private static Message createSetScheduleResponse() {
         return Oslp.Message.newBuilder()
-                .setSetScheduleResponse(SetScheduleResponse.newBuilder().setStatus(Oslp.Status.OK)).build();
+                .setSetScheduleResponse(SetScheduleResponse.newBuilder().setStatus(Oslp.Status.OK))
+                .build();
     }
 
     private static Message createGetActualPowerUsageResponse() {
@@ -692,20 +699,35 @@ public class OslpChannelHandler extends SimpleChannelHandler {
         @SuppressWarnings("deprecation")
         final int actualConsumedPower = currentDateTime.getMinutes();
 
-        return Oslp.Message.newBuilder().setGetActualPowerUsageResponse(GetActualPowerUsageResponse.newBuilder()
-                .setPowerUsageData(PowerUsageData.newBuilder().setRecordTime(utcTimestamp).setMeterType(MeterType.P1)
-                        .setTotalConsumedEnergy(actualConsumedPower * 2L).setActualConsumedPower(actualConsumedPower)
-                        .setPsldData(PsldData.newBuilder().setTotalLightingHours(actualConsumedPower * 3))
-                        .setSsldData(SsldData.newBuilder().setActualCurrent1(1).setActualCurrent2(2)
-                                .setActualCurrent3(3).setActualPower1(1).setActualPower2(2).setActualPower3(3)
-                                .setAveragePowerFactor1(1).setAveragePowerFactor2(2).setAveragePowerFactor3(3)
-                                .addRelayData(Oslp.RelayData.newBuilder()
-                                        .setIndex(ByteString.copyFrom(new byte[] { 2 })).setTotalLightingMinutes(480))
-                                .addRelayData(Oslp.RelayData.newBuilder()
-                                        .setIndex(ByteString.copyFrom(new byte[] { 3 })).setTotalLightingMinutes(480))
-                                .addRelayData(Oslp.RelayData.newBuilder()
-                                        .setIndex(ByteString.copyFrom(new byte[] { 4 })).setTotalLightingMinutes(480))))
-                .setStatus(Oslp.Status.OK)).build();
+        return Oslp.Message.newBuilder()
+                .setGetActualPowerUsageResponse(GetActualPowerUsageResponse.newBuilder()
+                        .setPowerUsageData(PowerUsageData.newBuilder()
+                                .setRecordTime(utcTimestamp)
+                                .setMeterType(MeterType.P1)
+                                .setTotalConsumedEnergy(actualConsumedPower * 2L)
+                                .setActualConsumedPower(actualConsumedPower)
+                                .setPsldData(PsldData.newBuilder().setTotalLightingHours(actualConsumedPower * 3))
+                                .setSsldData(SsldData.newBuilder()
+                                        .setActualCurrent1(1)
+                                        .setActualCurrent2(2)
+                                        .setActualCurrent3(3)
+                                        .setActualPower1(1)
+                                        .setActualPower2(2)
+                                        .setActualPower3(3)
+                                        .setAveragePowerFactor1(1)
+                                        .setAveragePowerFactor2(2)
+                                        .setAveragePowerFactor3(3)
+                                        .addRelayData(Oslp.RelayData.newBuilder()
+                                                .setIndex(ByteString.copyFrom(new byte[] { 2 }))
+                                                .setTotalLightingMinutes(480))
+                                        .addRelayData(Oslp.RelayData.newBuilder()
+                                                .setIndex(ByteString.copyFrom(new byte[] { 3 }))
+                                                .setTotalLightingMinutes(480))
+                                        .addRelayData(Oslp.RelayData.newBuilder()
+                                                .setIndex(ByteString.copyFrom(new byte[] { 4 }))
+                                                .setTotalLightingMinutes(480))))
+                        .setStatus(Oslp.Status.OK))
+                .build();
     }
 
     private static Message createGetPowerUsageHistoryWithDatesResponse(
@@ -772,17 +794,29 @@ public class OslpChannelHandler extends SimpleChannelHandler {
             totalUsage -= random;
             // Add power usage item to response
             final PowerUsageData powerUsageData = PowerUsageData.newBuilder()
-                    .setRecordTime(pageStartTime.toString(formatter)).setMeterType(MeterType.P1)
-                    .setTotalConsumedEnergy(totalUsage).setActualConsumedPower((int) random)
+                    .setRecordTime(pageStartTime.toString(formatter))
+                    .setMeterType(MeterType.P1)
+                    .setTotalConsumedEnergy(totalUsage)
+                    .setActualConsumedPower((int) random)
                     .setPsldData(PsldData.newBuilder().setTotalLightingHours((int) random * 3))
-                    .setSsldData(SsldData.newBuilder().setActualCurrent1(10).setActualCurrent2(20).setActualCurrent3(30)
-                            .setActualPower1(10).setActualPower2(20).setActualPower3(30).setAveragePowerFactor1(10)
-                            .setAveragePowerFactor2(20).setAveragePowerFactor3(30)
-                            .addRelayData(Oslp.RelayData.newBuilder().setIndex(ByteString.copyFrom(new byte[] { 2 }))
+                    .setSsldData(SsldData.newBuilder()
+                            .setActualCurrent1(10)
+                            .setActualCurrent2(20)
+                            .setActualCurrent3(30)
+                            .setActualPower1(10)
+                            .setActualPower2(20)
+                            .setActualPower3(30)
+                            .setAveragePowerFactor1(10)
+                            .setAveragePowerFactor2(20)
+                            .setAveragePowerFactor3(30)
+                            .addRelayData(Oslp.RelayData.newBuilder()
+                                    .setIndex(ByteString.copyFrom(new byte[] { 2 }))
                                     .setTotalLightingMinutes(burningMinutes - randomCumulativeMinutes))
-                            .addRelayData(Oslp.RelayData.newBuilder().setIndex(ByteString.copyFrom(new byte[] { 3 }))
+                            .addRelayData(Oslp.RelayData.newBuilder()
+                                    .setIndex(ByteString.copyFrom(new byte[] { 3 }))
                                     .setTotalLightingMinutes(burningMinutes - randomCumulativeMinutes))
-                            .addRelayData(Oslp.RelayData.newBuilder().setIndex(ByteString.copyFrom(new byte[] { 4 }))
+                            .addRelayData(Oslp.RelayData.newBuilder()
+                                    .setIndex(ByteString.copyFrom(new byte[] { 4 }))
                                     .setTotalLightingMinutes(burningMinutes - randomCumulativeMinutes)))
                     .build();
 
@@ -810,10 +844,15 @@ public class OslpChannelHandler extends SimpleChannelHandler {
 
     private static Message createUsageMessage(final int currentPageNumber, final int itemsPerPage,
             final int numberOfPages, final List<PowerUsageData> powerUsageDataList) {
-        return Oslp.Message.newBuilder().setGetPowerUsageHistoryResponse(GetPowerUsageHistoryResponse.newBuilder()
-                .addAllPowerUsageData(powerUsageDataList).setPageInfo(PageInfo.newBuilder()
-                        .setCurrentPage(currentPageNumber).setPageSize(itemsPerPage).setTotalPages(numberOfPages))
-                .setStatus(Oslp.Status.OK)).build();
+        return Oslp.Message.newBuilder()
+                .setGetPowerUsageHistoryResponse(GetPowerUsageHistoryResponse.newBuilder()
+                        .addAllPowerUsageData(powerUsageDataList)
+                        .setPageInfo(PageInfo.newBuilder()
+                                .setCurrentPage(currentPageNumber)
+                                .setPageSize(itemsPerPage)
+                                .setTotalPages(numberOfPages))
+                        .setStatus(Oslp.Status.OK))
+                .build();
 
     }
 
@@ -825,8 +864,10 @@ public class OslpChannelHandler extends SimpleChannelHandler {
 
     private Message createGetConfigurationResponse(final Device device) {
         final DaliConfiguration.Builder daliConfiguration = DaliConfiguration.newBuilder()
-                .addAddressMap(IndexAddressMap.newBuilder().setIndex(ByteString.copyFrom(new byte[] { 1 }))
-                        .setAddress(ByteString.copyFrom(new byte[] { 1 })).setRelayType(RelayType.RT_NOT_SET))
+                .addAddressMap(IndexAddressMap.newBuilder()
+                        .setIndex(ByteString.copyFrom(new byte[] { 1 }))
+                        .setAddress(ByteString.copyFrom(new byte[] { 1 }))
+                        .setRelayType(RelayType.RT_NOT_SET))
                 .setNumberOfLights(ByteString.copyFrom(new byte[] { 1 }));
 
         final Oslp.GetConfigurationResponse.Builder configuration = Oslp.GetConfigurationResponse.newBuilder();
@@ -869,7 +910,8 @@ public class OslpChannelHandler extends SimpleChannelHandler {
                 configuration.addSwitchingDelay(3);
                 configuration.addSwitchingDelay(4);
                 configuration.addRelayLinking(Oslp.RelayMatrix.newBuilder()
-                        .setMasterRelayIndex(ByteString.copyFrom(new byte[] { 2 })).setMasterRelayOn(false)
+                        .setMasterRelayIndex(ByteString.copyFrom(new byte[] { 2 }))
+                        .setMasterRelayOn(false)
                         .setIndicesOfControlledRelaysOn(ByteString.copyFrom(new byte[] { 3, 4 }))
                         .setIndicesOfControlledRelaysOff(ByteString.copyFrom(new byte[] { 3, 4 })));
                 configuration.setRelayRefreshing(false).setSummerTimeDetails("0360100").setWinterTimeDetails("1060200");
@@ -949,7 +991,8 @@ public class OslpChannelHandler extends SimpleChannelHandler {
 
         // Fallback in case output settings are not yet defined.
         if (outputValues.isEmpty()) {
-            final LightValue.Builder lightValue = LightValue.newBuilder().setIndex(OslpUtils.integerToByteString(0))
+            final LightValue.Builder lightValue = LightValue.newBuilder()
+                    .setIndex(OslpUtils.integerToByteString(0))
                     .setOn(device.isLightOn());
 
             if (device.getDimValue() != null) {
@@ -997,17 +1040,20 @@ public class OslpChannelHandler extends SimpleChannelHandler {
 
     private static Message createResumeScheduleResponse() {
         return Oslp.Message.newBuilder()
-                .setResumeScheduleResponse(Oslp.ResumeScheduleResponse.newBuilder().setStatus(Oslp.Status.OK)).build();
+                .setResumeScheduleResponse(Oslp.ResumeScheduleResponse.newBuilder().setStatus(Oslp.Status.OK))
+                .build();
     }
 
     private static Message createSetRebootResponse() {
         return Oslp.Message.newBuilder()
-                .setSetRebootResponse(Oslp.SetRebootResponse.newBuilder().setStatus(Oslp.Status.OK)).build();
+                .setSetRebootResponse(Oslp.SetRebootResponse.newBuilder().setStatus(Oslp.Status.OK))
+                .build();
     }
 
     private static Message createSetTransitionResponse() {
         return Oslp.Message.newBuilder()
-                .setSetTransitionResponse(Oslp.SetTransitionResponse.newBuilder().setStatus(Oslp.Status.OK)).build();
+                .setSetTransitionResponse(Oslp.SetTransitionResponse.newBuilder().setStatus(Oslp.Status.OK))
+                .build();
     }
 
     private void handleSetLightRequest(final Device device, final SetLightRequest request) {

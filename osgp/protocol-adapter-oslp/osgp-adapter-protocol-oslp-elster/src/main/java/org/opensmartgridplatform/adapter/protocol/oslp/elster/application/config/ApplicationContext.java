@@ -11,13 +11,11 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.FirmwareLocation;
-import org.opensmartgridplatform.core.db.api.application.config.OsgpCoreDbApiPersistenceConfig;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.application.config.PagingSettings;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -31,7 +29,6 @@ import io.netty.util.internal.logging.Slf4JLoggerFactory;
 @ComponentScan(basePackages = { "org.opensmartgridplatform.adapter.protocol.oslp.elster",
         "org.opensmartgridplatform.core.db.api" })
 @EnableTransactionManagement()
-@Import({ MessagingConfig.class, OslpConfig.class, OslpPersistenceConfig.class, OsgpCoreDbApiPersistenceConfig.class })
 @PropertySource("classpath:osgp-adapter-protocol-oslp-elster.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/AdapterProtocolOslpElster/config}", ignoreResourceNotFound = true)

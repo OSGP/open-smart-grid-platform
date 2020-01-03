@@ -23,8 +23,10 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 
+@Sharable
 public class OslpChannelHandlerClient extends OslpChannelHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OslpChannelHandlerClient.class);
@@ -65,8 +67,9 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
 
     @Override
     public void channelRead0(final ChannelHandlerContext ctx, final OslpEnvelope message) {
-
         final String channelId = ctx.channel().id().asLongText();
+
+        LOGGER.info("channelRead0 called for channel{}.", channelId);
 
         if (message.isValid()) {
             if (OslpUtils.isOslpResponse(message)) {

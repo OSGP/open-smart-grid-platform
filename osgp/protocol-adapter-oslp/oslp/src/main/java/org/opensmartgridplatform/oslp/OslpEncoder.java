@@ -9,12 +9,18 @@ package org.opensmartgridplatform.oslp;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageEncoder;;
 
 public class OslpEncoder extends MessageToMessageEncoder<OslpEnvelope> {
+
+    private static Logger LOGGER = LoggerFactory.getLogger(OslpEncoder.class);
+
     private static ByteBuf encodeMessage(final OslpEnvelope envelope) {
         final int size = envelope.getSize();
 
@@ -32,6 +38,8 @@ public class OslpEncoder extends MessageToMessageEncoder<OslpEnvelope> {
     @Override
     protected void encode(final ChannelHandlerContext ctx, final OslpEnvelope msg, final List<Object> out)
             throws Exception {
+        LOGGER.debug("Encoding message for channel {}.", ctx.channel().id().asLongText());
+
         out.add(encodeMessage(msg));
     }
 }

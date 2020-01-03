@@ -22,7 +22,6 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.netty.channel.ChannelHandlerContext;
-//import org.jboss.netty.channel.SimpleChannelHandler;
 import io.netty.channel.SimpleChannelInboundHandler;
 
 public abstract class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope> {

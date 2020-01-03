@@ -39,9 +39,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelId;
 
+@Sharable
 public class OslpChannelHandlerServer extends OslpChannelHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OslpChannelHandlerServer.class);
@@ -123,10 +125,11 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
 
     @Override
     public void channelRead0(final ChannelHandlerContext ctx, final OslpEnvelope message) throws Exception {
+        final ChannelId channelId = ctx.channel().id();
+        LOGGER.info("channelRead0 called for channel{}.", channelId.asLongText());
 
         this.loggingService.logMessage(message, true);
 
-        final ChannelId channelId = ctx.channel().id();
         if (message.isValid()) {
             if (OslpUtils.isOslpResponse(message)) {
                 LOGGER.warn("{} Received OSLP Response, which is not expected: {}", channelId,
@@ -164,12 +167,13 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
         } else {
             LOGGER.warn("{} Received message wasn't properly secured.", channelId);
         }
+
+        ctx.fireChannelRead(message);
     }
 
     /**
-     * Called when a signed OSLP envelope arrives from signing server. The
-     * envelope will be sent to the device which is waiting for a response. The
-     * channel for the waiting device should be present in the channelMap.
+     * Called when a signed OSLP envelope arrives from signing server. The envelope will be sent to the device which is
+     * waiting for a response. The channel for the waiting device should be present in the channelMap.
      *
      * @param signedOslpEnvelopeDto
      *            DTO containing signed OslpEnvelope.
@@ -187,7 +191,7 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
         // Get signed envelope, log it and send it to device.
         final OslpEnvelope response = signedOslpEnvelopeDto.getOslpEnvelope();
         this.loggingService.logMessage(response, false);
-        channel.write(response);
+        channel.writeAndFlush(response);
 
         LOGGER.info("{} Send OSLP Response: {}", channelId, response.getPayloadMessage());
     }

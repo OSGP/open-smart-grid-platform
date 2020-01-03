@@ -18,11 +18,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -32,10 +30,6 @@ import com.zaxxer.hikari.HikariDataSource;
 @EnableJpaRepositories(entityManagerFactoryRef = "oslpEntityManagerFactory",
         basePackageClasses = { OslpDeviceRepository.class })
 @Configuration
-@EnableTransactionManagement()
-@PropertySource("classpath:osgp-adapter-protocol-oslp-elster.properties")
-@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
-@PropertySource(value = "file:${osgp/AdapterProtocolOslpElster/config}", ignoreResourceNotFound = true)
 public class OslpPersistenceConfig extends AbstractPersistenceConfig {
 
     @Value("${db.username.oslp}")
