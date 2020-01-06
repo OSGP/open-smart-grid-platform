@@ -14,10 +14,10 @@ import java.security.PublicKey;
 
 import javax.annotation.Resource;
 
-import org.opensmartgridplatform.oslp.DisposableNioEventLoopGroup;
 import org.opensmartgridplatform.oslp.OslpDecoder;
 import org.opensmartgridplatform.oslp.OslpEncoder;
 import org.opensmartgridplatform.oslp.OslpEnvelope;
+import org.opensmartgridplatform.shared.infra.networking.DisposableNioEventLoopGroup;
 import org.opensmartgridplatform.shared.security.CertificateHelper;
 import org.opensmartgridplatform.webdevicesimulator.service.OslpChannelHandler;
 import org.opensmartgridplatform.webdevicesimulator.service.OslpSecurityHandler;

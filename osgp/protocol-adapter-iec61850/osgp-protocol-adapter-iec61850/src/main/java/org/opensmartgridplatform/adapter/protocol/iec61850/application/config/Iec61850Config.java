@@ -8,31 +8,29 @@
 package org.opensmartgridplatform.adapter.protocol.iec61850.application.config;
 
 import java.net.InetSocketAddress;
-import java.util.concurrent.Executors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jboss.netty.bootstrap.ServerBootstrap;
-import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.ChannelHandler;
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.Channels;
-import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
-import org.jboss.netty.handler.logging.LoggingHandler;
-import org.jboss.netty.logging.InternalLogLevel;
-import org.jboss.netty.logging.InternalLoggerFactory;
-import org.jboss.netty.logging.Slf4JLoggerFactory;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.entities.Iec61850Device;
-import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.Iec61850ChannelHandlerServer;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.RegisterDeviceRequestDecoder;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
+import org.opensmartgridplatform.shared.infra.networking.DisposableNioEventLoopGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 
 @Configuration
 @EnableTransactionManagement()
@@ -67,10 +65,6 @@ public class Iec61850Config extends AbstractConfig {
     private static final String PROPERTY_NAME_OSLP_DEFAULT_LATITUDE = "iec61850.default.latitude";
     private static final String PROPERTY_NAME_OSLP_DEFAULT_LONGITUDE = "iec61850.default.longitude";
 
-    public Iec61850Config() {
-        InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
-    }
-
     @Bean
     public int connectionTimeout() {
         return Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_IEC61850_TIMEOUT_CONNECT));
@@ -96,48 +90,54 @@ public class Iec61850Config extends AbstractConfig {
         return Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_IEC61850_RTU_PORT_SERVER));
     }
 
+    @Bean(name = "protocolAdapterIec61850NettyServerBossGroup")
+    public DisposableNioEventLoopGroup serverBossGroup() {
+        // TODO - Should we pass in any parameters, like for example number of
+        // threads, to the constructor?
+        return new DisposableNioEventLoopGroup();
+    }
+
+    @Bean(name = "protocolAdapterIec61850NettyServerWorkerGroup")
+    public DisposableNioEventLoopGroup serverWorkerGroup() {
+        // TODO - Should we pass in any parameters, like for example number of
+        // threads, to the constructor?
+        return new DisposableNioEventLoopGroup();
+    }
+
     /**
      * Returns a ServerBootstrap setting up a server pipeline listening for
      * incoming IEC61850 register device requests.
      *
      * @return an IEC61850 server bootstrap.
      */
-    @Bean(destroyMethod = "releaseExternalResources")
+    @Bean()
     public ServerBootstrap serverBootstrap() {
-        final ChannelFactory factory = new NioServerSocketChannelFactory(Executors.newCachedThreadPool(),
-                Executors.newCachedThreadPool());
+        LOGGER.info("Initializing serverBootstrap bean.");
 
-        final ServerBootstrap bootstrap = new ServerBootstrap(factory);
-
-        bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
+        final ServerBootstrap bootstrap = new ServerBootstrap();
+        bootstrap.group(this.serverBossGroup(), this.serverWorkerGroup());
+        bootstrap.channel(NioServerSocketChannel.class);
+        bootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
             @Override
-            public ChannelPipeline getPipeline() throws ProtocolAdapterException {
-                final ChannelPipeline pipeline = Iec61850Config.this
-                        .createChannelPipeline(Iec61850Config.this.iec61850ChannelHandlerServer());
-
-                LOGGER.info("Created new IEC61850 handler pipeline for server");
-
-                return pipeline;
+            protected void initChannel(final SocketChannel ch) throws Exception {
+                Iec61850Config.this.createChannelPipeline(ch, Iec61850Config.this.iec61850ChannelHandlerServer());
+                LOGGER.info("Created server new pipeline");
             }
         });
 
-        bootstrap.setOption("child.tcpNoDelay", true);
-        bootstrap.setOption("child.keepAlive", false);
+        bootstrap.childOption(ChannelOption.TCP_NODELAY, true);
+        bootstrap.childOption(ChannelOption.SO_KEEPALIVE, false);
 
         bootstrap.bind(new InetSocketAddress(this.iec61850PortListener()));
 
         return bootstrap;
     }
 
-    private ChannelPipeline createChannelPipeline(final ChannelHandler handler) {
-        final ChannelPipeline pipeline = Channels.pipeline();
-
-        pipeline.addLast("loggingHandler", new LoggingHandler(InternalLogLevel.INFO, true));
-
+    private ChannelPipeline createChannelPipeline(final SocketChannel channel, final ChannelHandler handler) {
+        final ChannelPipeline pipeline = channel.pipeline();
+        pipeline.addLast("loggingHandler", new LoggingHandler(LogLevel.INFO));
         pipeline.addLast("iec61850RegisterDeviceRequestDecoder", new RegisterDeviceRequestDecoder());
-
         pipeline.addLast("iec61850ChannelHandler", handler);
-
         return pipeline;
     }
 

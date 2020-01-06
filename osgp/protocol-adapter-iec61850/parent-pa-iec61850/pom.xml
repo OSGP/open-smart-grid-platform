@@ -65,7 +65,7 @@
     <apache.httpcomponents.version>4.5.7</apache.httpcomponents.version>
     <commons.codec.version>1.12</commons.codec.version>
     <orika.version>1.5.4</orika.version>
-    <netty.version>3.10.6.Final</netty.version>
+    <netty.version>4.1.44.Final</netty.version>
     <jxr.version>3.0.0</jxr.version>
     <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
     <maven.site.plugin>3.7.1</maven.site.plugin>
@@ -380,7 +380,7 @@
 
       <dependency>
         <groupId>io.netty</groupId>
-        <artifactId>netty</artifactId>
+        <artifactId>netty-all</artifactId>
         <version>${netty.version}</version>
         <scope>compile</scope>
       </dependency>
