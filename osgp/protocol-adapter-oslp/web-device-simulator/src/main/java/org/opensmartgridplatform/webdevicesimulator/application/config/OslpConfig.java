@@ -64,22 +64,16 @@ public class OslpConfig {
 
     @Bean(name = "deviceSimulatorOslpNettyServerBossGroup")
     public DisposableNioEventLoopGroup serverBossGroup() {
-        // TODO - Should we pass in any parameters, like for example number of
-        // threads, to the constructor?
         return new DisposableNioEventLoopGroup();
     }
 
     @Bean(name = "deviceSimulatorOslpNettyServerWorkerGroup")
     public DisposableNioEventLoopGroup serverWorkerGroup() {
-        // TODO - Should we pass in any parameters, like for example number of
-        // threads, to the constructor?
         return new DisposableNioEventLoopGroup();
     }
 
     @Bean(name = "deviceSimulatorOslpNettyClientWorkerGroup")
     public DisposableNioEventLoopGroup clientWorkerGroup() {
-        // TODO - Should we pass in any parameters, like for example number of
-        // threads, to the constructor?
         return new DisposableNioEventLoopGroup();
     }
 

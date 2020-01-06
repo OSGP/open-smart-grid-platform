@@ -102,10 +102,10 @@ public class OslpDecoder extends ReplayingDecoder<OslpDecoder.DecodingState> {
     }
 
     private void decodeDeviceId(final ByteBuf buffer) {
-        final int length = OslpEnvelope.DEVICE_ID_LENGTH + OslpEnvelope.MANUFACTURER_ID_LENGTH;
-        final byte[] bytes = ByteBufUtil.getBytes(buffer, buffer.readerIndex(), length);
+        final int deviceAndManufacturerLength = OslpEnvelope.DEVICE_ID_LENGTH + OslpEnvelope.MANUFACTURER_ID_LENGTH;
+        final byte[] bytes = ByteBufUtil.getBytes(buffer, buffer.readerIndex(), deviceAndManufacturerLength);
         this.builder.withDeviceId(bytes);
-        buffer.readerIndex(buffer.readerIndex() + length);
+        buffer.readerIndex(buffer.readerIndex() + deviceAndManufacturerLength);
     }
 
     private void decodeLengthIndicator(final ByteBuf buffer) {

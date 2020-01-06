@@ -62,22 +62,16 @@ public class OslpConfig extends AbstractConfig {
 
     @Bean(name = "protocolAdapterOslpNettyServerBossGroup")
     public DisposableNioEventLoopGroup serverBossGroup() {
-        // TODO - Should we pass in any parameters, like for example number of
-        // threads, to the constructor?
         return new DisposableNioEventLoopGroup();
     }
 
     @Bean(name = "protocolAdapterOslpNettyServerWorkerGroup")
     public DisposableNioEventLoopGroup serverWorkerGroup() {
-        // TODO - Should we pass in any parameters, like for example number of
-        // threads, to the constructor?
         return new DisposableNioEventLoopGroup();
     }
 
     @Bean(name = "protocolAdapterOslpNettyClientWorkerGroup")
     public DisposableNioEventLoopGroup clientWorkerGroup() {
-        // TODO - Should we pass in any parameters, like for example number of
-        // threads, to the constructor?
         return new DisposableNioEventLoopGroup();
     }
 

@@ -92,15 +92,11 @@ public class Iec61850Config extends AbstractConfig {
 
     @Bean(name = "protocolAdapterIec61850NettyServerBossGroup")
     public DisposableNioEventLoopGroup serverBossGroup() {
-        // TODO - Should we pass in any parameters, like for example number of
-        // threads, to the constructor?
         return new DisposableNioEventLoopGroup();
     }
 
     @Bean(name = "protocolAdapterIec61850NettyServerWorkerGroup")
     public DisposableNioEventLoopGroup serverWorkerGroup() {
-        // TODO - Should we pass in any parameters, like for example number of
-        // threads, to the constructor?
         return new DisposableNioEventLoopGroup();
     }
 

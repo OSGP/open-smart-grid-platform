@@ -62,15 +62,11 @@ public class DlmsConfig extends AbstractConfig {
 
     @Bean(name = "protocolAdapterDlmsNettyServerBossGroup")
     public DisposableNioEventLoopGroup serverBossGroup() {
-        // TODO - Should we pass in any parameters, like for example number of
-        // threads, to the constructor?
         return new DisposableNioEventLoopGroup();
     }
 
     @Bean(name = "protocolAdapterDlmsNettyServerWorkerGroup")
     public DisposableNioEventLoopGroup serverWorkerGroup() {
-        // TODO - Should we pass in any parameters, like for example number of
-        // threads, to the constructor?
         return new DisposableNioEventLoopGroup();
     }
 

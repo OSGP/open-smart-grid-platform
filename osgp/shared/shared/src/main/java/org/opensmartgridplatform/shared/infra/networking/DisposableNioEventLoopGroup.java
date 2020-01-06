@@ -32,7 +32,8 @@ public class DisposableNioEventLoopGroup extends NioEventLoopGroup implements Be
         try {
             f.await();
         } catch (final InterruptedException e) {
-            throw new RuntimeException(e);
+            Thread.currentThread().interrupt();
+            LOGGER.error("InterruptedException", e);
         }
     }
 
