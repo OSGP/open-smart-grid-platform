@@ -9,8 +9,6 @@ package org.opensmartgridplatform.adapter.protocol.jasper.infra.ws;
 
 import javax.annotation.Resource;
 
-import org.jboss.netty.logging.InternalLoggerFactory;
-import org.jboss.netty.logging.Slf4JLoggerFactory;
 import org.opensmartgridplatform.adapter.protocol.jasper.config.JasperWirelessAccess;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,10 +40,6 @@ public class JasperWirelessConfigTest {
 
     @Resource
     private Environment environment;
-
-    public JasperWirelessConfigTest() {
-        InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
-    }
 
     @Bean
     public Jaxb2Marshaller jasperWirelessMarshaller() {

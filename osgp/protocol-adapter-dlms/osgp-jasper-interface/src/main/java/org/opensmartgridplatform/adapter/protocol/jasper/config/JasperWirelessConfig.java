@@ -11,8 +11,6 @@ package org.opensmartgridplatform.adapter.protocol.jasper.config;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPException;
 
-import org.jboss.netty.logging.InternalLoggerFactory;
-import org.jboss.netty.logging.Slf4JLoggerFactory;
 import org.opensmartgridplatform.adapter.protocol.jasper.exceptions.OsgpJasperException;
 import org.opensmartgridplatform.adapter.protocol.jasper.infra.ws.CorrelationIdProviderService;
 import org.opensmartgridplatform.adapter.protocol.jasper.infra.ws.JasperWirelessSmsClient;
@@ -67,10 +65,6 @@ public class JasperWirelessConfig extends AbstractConfig {
 
     @Value("${jwcc.api_version}")
     private String apiVersion;
-
-    public JasperWirelessConfig() {
-        InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
-    }
 
     @Bean
     public Jaxb2Marshaller marshaller() {

@@ -83,7 +83,7 @@
     <maven.war.plugin.version>3.2.2</maven.war.plugin.version>
     <maven.surefire.plugin.version>2.22.1</maven.surefire.plugin.version>
     <maven.failsafe.plugin.version>2.22.1</maven.failsafe.plugin.version>
-    <netty.version>3.10.6.Final</netty.version>
+    <netty.version>4.1.44.Final</netty.version>
     <openmuc.jdlms.version>1.6.0</openmuc.jdlms.version>
     <javax.inject.version>1</javax.inject.version>
     <license.maven.plugin>3.0</license.maven.plugin>
@@ -301,7 +301,7 @@
 
       <dependency>
         <groupId>io.netty</groupId>
-        <artifactId>netty</artifactId>
+        <artifactId>netty-all</artifactId>
         <version>${netty.version}</version>
         <scope>compile</scope>
       </dependency>
