@@ -46,7 +46,7 @@ public class TransactionalDeviceLogItemServiceTest {
     @Test
     public void serviceReturnsOneDeviceLogItem() {
         final Slice<DeviceLogItem> mockSlice = this.mockSliceOfDeviceLogItems(1);
-        final PageRequest pageRequest = new PageRequest(0, 10, Sort.Direction.DESC, "id");
+        final PageRequest pageRequest = PageRequest.of(0, 10, Sort.Direction.DESC, "id");
         Mockito.when(this.deviceLogItemSlicingRepository.findByCreationTimeBefore(this.now, pageRequest))
                 .thenReturn(mockSlice);
 
@@ -58,7 +58,7 @@ public class TransactionalDeviceLogItemServiceTest {
     @Test
     public void serviceReturnsTenDeviceLogItems() {
         final Slice<DeviceLogItem> mockSlice = this.mockSliceOfDeviceLogItems(10);
-        final PageRequest pageRequest = new PageRequest(0, 10, Sort.Direction.DESC, "id");
+        final PageRequest pageRequest = PageRequest.of(0, 10, Sort.Direction.DESC, "id");
         Mockito.when(this.deviceLogItemSlicingRepository.findByCreationTimeBefore(this.now, pageRequest))
                 .thenReturn(mockSlice);
 
