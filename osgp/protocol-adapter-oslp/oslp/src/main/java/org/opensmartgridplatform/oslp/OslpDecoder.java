@@ -25,7 +25,7 @@ public class OslpDecoder extends ReplayingDecoder<OslpDecoder.DecodingState> {
     private final String signature;
     private final String provider;
 
-    public static enum DecodingState {
+    public enum DecodingState {
         SECURITY_KEY,
         SEQUENCE_NUMBER,
         DEVICE_ID,
@@ -47,7 +47,7 @@ public class OslpDecoder extends ReplayingDecoder<OslpDecoder.DecodingState> {
 
     @Override
     protected void decode(final ChannelHandlerContext ctx, final ByteBuf in, final List<Object> out) throws Exception {
-        LOGGER.debug("Decoding state: {}", this.state().toString());
+        LOGGER.debug("Decoding state: {}", this.state());
 
         if (this.state().compareTo(DecodingState.SECURITY_KEY) == 0) {
             LOGGER.debug("Decoding security key.");
