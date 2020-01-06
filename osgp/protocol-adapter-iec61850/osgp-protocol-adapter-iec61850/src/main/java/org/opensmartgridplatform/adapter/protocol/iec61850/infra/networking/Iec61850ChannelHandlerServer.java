@@ -25,8 +25,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 
+@Sharable
 public class Iec61850ChannelHandlerServer extends Iec61850ChannelHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850ChannelHandlerServer.class);
