@@ -230,7 +230,7 @@ public abstract class AbstractResendNotificationService<T extends Enum<T>> {
      */
     private List<ResponseData> getResponseDataForNotifying(final short notificationsResent,
             final DateTime createdBefore) {
-        final Pageable pageable = PageRequest.of(0, this.resendPageSize, new Sort(Direction.ASC, "creationTime"));
+        final Pageable pageable = PageRequest.of(0, this.resendPageSize, Sort.by(Direction.ASC, "creationTime"));
 
         return this.responseDataRepository.findByNumberOfNotificationsSentAndCreationTimeBefore(notificationsResent,
                 createdBefore.toDate(), pageable);

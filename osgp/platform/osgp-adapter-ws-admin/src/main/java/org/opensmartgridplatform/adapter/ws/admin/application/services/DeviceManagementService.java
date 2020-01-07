@@ -510,7 +510,7 @@ public class DeviceManagementService {
         final Organisation organisation = this.findOrganisation(organisationIdentification);
         this.isAllowed(organisation, PlatformFunction.GET_PROTOCOL_INFOS);
 
-        return this.protocolRepository.findAll(new Sort(Direction.ASC, "protocol", "protocolVersion"));
+        return this.protocolRepository.findAll(Sort.by(Direction.ASC, "protocol", "protocolVersion"));
     }
 
     public void updateDeviceProtocol(final String organisationIdentification,

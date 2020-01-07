@@ -11,6 +11,8 @@ import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
@@ -37,6 +39,7 @@ public class DeviceAuthorization extends AbstractEntity {
     private Organisation organisation;
 
     @Column()
+    @Enumerated(EnumType.ORDINAL)
     private DeviceFunctionGroup functionGroup;
 
     public DeviceAuthorization() {
