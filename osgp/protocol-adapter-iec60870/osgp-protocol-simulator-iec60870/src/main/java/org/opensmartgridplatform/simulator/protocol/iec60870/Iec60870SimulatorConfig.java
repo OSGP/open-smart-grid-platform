@@ -30,7 +30,7 @@ import org.springframework.scheduling.support.CronTrigger;
 @Configuration
 @ComponentScan(basePackageClasses = { Iec60870Server.class })
 @EnableScheduling
-@PropertySource(value = "classpath:application.properties", ignoreResourceNotFound = false)
+@PropertySource(value = "classpath:osgp-protocol-simulator-iec60870.properties", ignoreResourceNotFound = false)
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/SimulatorProtocolIec60870/config}", ignoreResourceNotFound = true)
 public class Iec60870SimulatorConfig {

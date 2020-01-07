@@ -28,6 +28,12 @@
       <jxb:schemaBindings>
          <jxb:package name="org.opensmartgridplatform.adapter.ws.schema.smartmetering.external_interface" />
       </jxb:schemaBindings>
+      <jxb:bindings node="/xs:schema/xs:element[@name='ExternalInterfaceResultMessage']/xs:complexType/xs:sequence/xs:choice">
+        <jxb:property name="ResponseData" />
+      </jxb:bindings>
+      <jxb:bindings node="/xs:schema/xs:element[@name='ExternalInterfaceRequestMessage']/xs:complexType/xs:sequence/xs:choice">
+        <jxb:property name="RequestData" />
+      </jxb:bindings>
    </jxb:bindings>
    <jxb:bindings schemaLocation="sm-monitoring.xsd">
       <jxb:schemaBindings>

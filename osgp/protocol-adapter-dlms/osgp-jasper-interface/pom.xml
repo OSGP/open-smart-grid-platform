@@ -21,7 +21,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-pa-dlms</artifactId>
-    <version>4.39.0-SNAPSHOT</version>
+    <version>4.40.0-SNAPSHOT</version>
     <relativePath>../parent-pa-dlms/pom.xml</relativePath>
   </parent>
 
@@ -121,7 +121,6 @@
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
-      <version>4.3.6</version>
     </dependency>
     <dependency>
       <groupId>xmlunit</groupId>
@@ -191,6 +190,7 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-all</artifactId>
+      <scope>test</scope>
     </dependency>
 
   </dependencies>
