@@ -9,6 +9,7 @@ package org.opensmartgridplatform.cucumber.platform.glue.steps.database.core;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Map;
 
@@ -70,7 +71,9 @@ public class RelayStatusSteps extends BaseDeviceSteps {
     private void assertLastSwitchingEventEquals(final RelayStatus expected, final RelayStatus actual) {
         if (expected != null && expected.getLastSwitchingEventTime() != null) {
             assertThat(actual).isNotNull();
-            assertThat(actual.getLastSwitchingEventTime()).isEqualTo(expected.getLastSwitchingEventTime());
+
+            final Timestamp timestamp = new Timestamp(expected.getLastSwitchingEventTime().getTime());
+            assertThat(actual.getLastSwitchingEventTime()).isEqualTo(timestamp);
             assertThat(actual.isLastSwitchingEventState()).isEqualTo(expected.isLastSwitchingEventState());
         }
     }
@@ -78,7 +81,9 @@ public class RelayStatusSteps extends BaseDeviceSteps {
     private void assertLastKnownStateEquals(final RelayStatus expected, final RelayStatus actual) {
         if (expected != null && expected.getLastKnownStateTime() != null) {
             assertThat(actual).isNotNull();
-            assertThat(actual.getLastKnownStateTime()).isEqualTo(expected.getLastKnownStateTime());
+
+            final Timestamp timestamp = new Timestamp(expected.getLastKnownStateTime().getTime());
+            assertThat(actual.getLastKnownStateTime()).isEqualTo(timestamp);
             assertThat(actual.isLastKnownState()).isEqualTo(expected.isLastKnownState());
         }
     }
