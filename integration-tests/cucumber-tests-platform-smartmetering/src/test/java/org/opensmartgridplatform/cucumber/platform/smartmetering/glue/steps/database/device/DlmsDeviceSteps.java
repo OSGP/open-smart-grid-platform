@@ -132,12 +132,12 @@ public class DlmsDeviceSteps {
 
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
         final DeviceModel deviceModel = device.getDeviceModel();
-        assertThat(deviceModel.getModelCode()).isEqualTo(deviceModelAttributes.get(PlatformKeys.DEVICEMODEL_MODELCODE),
-                deviceModel.getModelCode());
+        assertThat(deviceModel.getModelCode()).as(PlatformKeys.DEVICEMODEL_MODELCODE)
+                .isEqualTo(deviceModelAttributes.get(PlatformKeys.DEVICEMODEL_MODELCODE));
 
         final Manufacturer manufacturer = deviceModel.getManufacturer();
-        assertThat(manufacturer.getCode()).isEqualTo(PlatformKeys.MANUFACTURER_CODE,
-                deviceModelAttributes.get(PlatformKeys.MANUFACTURER_CODE));
+        assertThat(manufacturer.getCode()).as(PlatformKeys.MANUFACTURER_CODE)
+                .isEqualTo(deviceModelAttributes.get(PlatformKeys.MANUFACTURER_CODE));
     }
 
     @Then("^the smart meter is registered in the core database$")
