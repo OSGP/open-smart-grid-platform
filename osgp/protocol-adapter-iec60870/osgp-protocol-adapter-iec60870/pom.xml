@@ -24,7 +24,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-pa-iec60870</artifactId>
-    <version>4.39.0-SNAPSHOT</version>
+    <version>4.40.0-SNAPSHOT</version>
     <relativePath>../parent-pa-iec60870/pom.xml</relativePath>
   </parent>
 
@@ -283,7 +283,6 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
-      <version>${spring.test.version}</version>
     </dependency>
 
     <dependency>

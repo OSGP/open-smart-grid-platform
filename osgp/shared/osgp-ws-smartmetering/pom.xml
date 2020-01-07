@@ -13,7 +13,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-shared</artifactId>
-    <version>4.39.0-SNAPSHOT</version>
+    <version>4.40.0-SNAPSHOT</version>
     <relativePath>../parent-shared/pom.xml</relativePath>
   </parent>
 
@@ -39,7 +39,7 @@
               <wsdl>true</wsdl>
               <xmlschema>false</xmlschema>
               <staleFile>${project.build.directory}/jaxb2/.schema-smart-metering-bundle-stale-flag</staleFile>
-              <!-- USE THIS ONLY FOR THE FIRST EXECUTION -->
+              <!-- must be set to false in order for binding to process correctly -->
               <clearOutputDir>false</clearOutputDir>
             </configuration>
           </execution>
@@ -55,7 +55,7 @@
               <xmlschema>true</xmlschema>
               <schemaFiles>sm-external-interface.xsd</schemaFiles>
               <staleFile>${project.build.directory}/jaxb2/.schema-smart-metering-external-stale-flag</staleFile>
-              <!-- USE THIS ONLY FOR THE FIRST EXECUTION -->
+              <!-- must be set to false in order for binding to process correctly -->
               <clearOutputDir>false</clearOutputDir>
             </configuration>
           </execution>
@@ -73,7 +73,7 @@
               <wsdl>true</wsdl>
               <xmlschema>false</xmlschema>
               <staleFile>${project.build.directory}/jaxb2/.schema-smart-metering-management-stale-flag</staleFile>
-              <!-- USE THIS ONLY FOR THE FIRST EXECUTION -->
+              <!-- must be set to false in order for binding to process correctly -->
               <clearOutputDir>false</clearOutputDir>
             </configuration>
           </execution>
@@ -90,7 +90,7 @@
               <wsdl>true</wsdl>
               <xmlschema>false</xmlschema>
               <staleFile>${project.build.directory}/jaxb2/.schema-smart-metering-installation-stale-flag</staleFile>
-              <!-- USE THIS ONLY FOR THE FIRST EXECUTION -->
+              <!-- must be set to false in order to postprocess files correctly -->
               <clearOutputDir>false</clearOutputDir>
             </configuration>
           </execution>
@@ -107,7 +107,7 @@
               <wsdl>true</wsdl>
               <xmlschema>false</xmlschema>
               <staleFile>${project.build.directory}/jaxb2/.schema-smart-metering-notification-stale-flag</staleFile>
-              <!-- USE THIS ONLY FOR THE FIRST EXECUTION -->
+              <!-- must be set to false in order for binding to process correctly -->
               <clearOutputDir>false</clearOutputDir>
             </configuration>
           </execution>
@@ -124,7 +124,7 @@
               <wsdl>true</wsdl>
               <xmlschema>false</xmlschema>
               <staleFile>${project.build.directory}/jaxb2/.schema-smart-metering-moitoring-stale-flag</staleFile>
-              <!-- USE THIS ONLY FOR THE FIRST EXECUTION -->
+              <!-- must be set to false in order for binding to process correctly -->
               <clearOutputDir>false</clearOutputDir>
             </configuration>
           </execution>
@@ -141,7 +141,7 @@
               <wsdl>true</wsdl>
               <xmlschema>false</xmlschema>
               <staleFile>${project.build.directory}/jaxb2/.schema-smart-metering-adhoc-stale-flag</staleFile>
-              <!-- USE THIS ONLY FOR THE FIRST EXECUTION -->
+              <!-- must be set to false in order for binding to process correctly -->
               <clearOutputDir>false</clearOutputDir>
             </configuration>
           </execution>
@@ -158,7 +158,7 @@
               <wsdl>true</wsdl>
               <xmlschema>false</xmlschema>
               <staleFile>${project.build.directory}/jaxb2/.schema-smart-metering-configuration-stale-flag</staleFile>
-              <!-- USE THIS ONLY FOR THE FIRST EXECUTION -->
+              <!-- must be set to false in order for binding to process correctly -->
               <clearOutputDir>false</clearOutputDir>
             </configuration>
           </execution>

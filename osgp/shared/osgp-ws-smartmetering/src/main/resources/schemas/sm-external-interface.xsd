@@ -28,10 +28,10 @@
         <xsd:element name="deviceIdentification" type="xsd:string"/>
         <xsd:choice>
           <xsd:element ref="bun:PeriodicMeterReadsResponse"/>
+          <xsd:element ref="bun:FaultResponse"/>
         </xsd:choice>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
 
 </xsd:schema>
-
