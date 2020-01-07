@@ -161,10 +161,10 @@ public abstract class BaseDeviceSteps {
             final DeviceFunctionGroup functionGroup = getEnum(settings, PlatformKeys.KEY_DEVICE_FUNCTION_GROUP,
                     DeviceFunctionGroup.class, DeviceFunctionGroup.OWNER);
             final DeviceAuthorization authorization = device.addAuthorization(organization, functionGroup);
-            final Device savedDevice = this.deviceRepository.save(device);
             this.deviceAuthorizationRepository.save(authorization);
-            ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                    savedDevice.getDeviceIdentification());
+            final Device savedDevice = this.deviceRepository.save(device);
+            ScenarioContext.current()
+                    .put(PlatformKeys.KEY_DEVICE_IDENTIFICATION, savedDevice.getDeviceIdentification());
 
             device = savedDevice;
         }
