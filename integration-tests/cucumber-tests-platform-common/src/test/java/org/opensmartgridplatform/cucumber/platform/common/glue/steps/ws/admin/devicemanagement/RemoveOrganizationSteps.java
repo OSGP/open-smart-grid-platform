@@ -7,11 +7,11 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.admin.devicemanagement;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.Map;
 
-import org.junit.Assert;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.RemoveOrganisationRequest;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.RemoveOrganisationResponse;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
@@ -62,8 +62,8 @@ public class RemoveOrganizationSteps {
      */
     @Then("^the remove organization response is successful$")
     public void theRemoveOrganizationResponseIsSuccessful() throws Throwable {
-        Assert.assertTrue(
-                ScenarioContext.current().get(PlatformCommonKeys.RESPONSE) instanceof RemoveOrganisationResponse);
+        assertThat(ScenarioContext.current().get(PlatformCommonKeys.RESPONSE) instanceof RemoveOrganisationResponse)
+                .isTrue();
     }
 
     /**

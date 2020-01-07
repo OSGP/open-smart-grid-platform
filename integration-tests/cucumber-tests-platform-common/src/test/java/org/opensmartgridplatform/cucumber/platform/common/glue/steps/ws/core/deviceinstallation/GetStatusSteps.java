@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.core.deviceinstallation;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 import static org.opensmartgridplatform.cucumber.platform.core.CorrelationUidHelper.saveCorrelationUidInScenarioContext;
@@ -14,7 +15,6 @@ import static org.opensmartgridplatform.cucumber.platform.core.CorrelationUidHel
 import java.util.Map;
 import java.util.Objects;
 
-import org.junit.Assert;
 import org.opensmartgridplatform.adapter.ws.schema.core.common.AsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.DeviceStatus;
@@ -62,9 +62,9 @@ public class GetStatusSteps {
         final GetStatusAsyncResponse asyncResponse = (GetStatusAsyncResponse) ScenarioContext.current()
                 .get(PlatformKeys.RESPONSE);
 
-        Assert.assertNotNull(asyncResponse.getAsyncResponse().getCorrelationUid());
-        Assert.assertEquals(getString(expectedResponseData, PlatformKeys.KEY_DEVICE_IDENTIFICATION),
-                asyncResponse.getAsyncResponse().getDeviceId());
+        assertThat(asyncResponse.getAsyncResponse().getCorrelationUid()).isNotNull();
+        assertThat(asyncResponse.getAsyncResponse().getDeviceId())
+                .isEqualTo(getString(expectedResponseData, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
 
         saveCorrelationUidInScenarioContext(asyncResponse.getAsyncResponse().getCorrelationUid(),
                 getString(expectedResponseData, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
@@ -82,41 +82,43 @@ public class GetStatusSteps {
 
         final GetStatusResponse response = Wait.untilAndReturn(() -> {
             final GetStatusResponse retval = this.client.getStatusResponse(request);
-            Assert.assertNotNull(retval);
-            Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(PlatformKeys.KEY_RESULT)),
-                    retval.getResult());
+            assertThat(retval).isNotNull();
+            assertThat(retval.getResult())
+                    .isEqualTo(Enum.valueOf(OsgpResultType.class, expectedResult.get(PlatformKeys.KEY_RESULT)));
+
             return retval;
         });
 
         final DeviceStatus deviceStatus = response.getDeviceStatus();
 
-        Assert.assertEquals(getEnum(expectedResult, PlatformKeys.KEY_PREFERRED_LINKTYPE, LinkType.class),
-                deviceStatus.getPreferredLinkType());
-        Assert.assertEquals(getEnum(expectedResult, PlatformKeys.KEY_ACTUAL_LINKTYPE, LinkType.class),
-                deviceStatus.getActualLinkType());
-        Assert.assertEquals(getEnum(expectedResult, PlatformKeys.KEY_LIGHTTYPE, LightType.class),
-                deviceStatus.getLightType());
+        assertThat(deviceStatus.getPreferredLinkType())
+                .isEqualTo(getEnum(expectedResult, PlatformKeys.KEY_PREFERRED_LINKTYPE, LinkType.class));
+        assertThat(deviceStatus.getActualLinkType())
+                .isEqualTo(getEnum(expectedResult, PlatformKeys.KEY_ACTUAL_LINKTYPE, LinkType.class));
+        assertThat(deviceStatus.getLightType())
+                .isEqualTo(getEnum(expectedResult, PlatformKeys.KEY_LIGHTTYPE, LightType.class));
 
         if (expectedResult.containsKey(PlatformKeys.KEY_EVENTNOTIFICATIONTYPES)
                 && !expectedResult.get(PlatformKeys.KEY_EVENTNOTIFICATIONTYPES).isEmpty()) {
-            Assert.assertEquals(
-                    getString(expectedResult, PlatformKeys.KEY_EVENTNOTIFICATIONS,
-                            PlatformDefaults.DEFAULT_EVENTNOTIFICATIONS).split(PlatformKeys.SEPARATOR_COMMA).length,
-                    deviceStatus.getEventNotifications().size());
+            assertThat(deviceStatus.getEventNotifications().size())
+                    .isEqualTo(getString(expectedResult, PlatformKeys.KEY_EVENTNOTIFICATIONS,
+                            PlatformDefaults.DEFAULT_EVENTNOTIFICATIONS).split(PlatformKeys.SEPARATOR_COMMA).length);
+
             for (final String eventNotification : getString(expectedResult, PlatformKeys.KEY_EVENTNOTIFICATIONS,
                     PlatformDefaults.DEFAULT_EVENTNOTIFICATIONS).split(PlatformKeys.SEPARATOR_COMMA)) {
                 final EventNotificationType eventNotificationType = Enum.valueOf(EventNotificationType.class,
                         eventNotification);
-                Assert.assertTrue(deviceStatus.getEventNotifications().contains(eventNotificationType));
+                assertThat(deviceStatus.getEventNotifications().contains(eventNotificationType)).isTrue();
+
             }
         }
 
         if (expectedResult.containsKey(PlatformKeys.KEY_LIGHTVALUES)
                 && !expectedResult.get(PlatformKeys.KEY_LIGHTVALUES).isEmpty()) {
-            Assert.assertEquals(
+            assertThat(deviceStatus.getLightValues().size()).isEqualTo(
                     getString(expectedResult, PlatformKeys.KEY_LIGHTVALUES, PlatformDefaults.DEFAULT_LIGHTVALUES)
-                            .split(PlatformKeys.SEPARATOR_COMMA).length,
-                    deviceStatus.getLightValues().size());
+                            .split(PlatformKeys.SEPARATOR_COMMA).length);
+
             for (final String lightValues : getString(expectedResult, PlatformKeys.KEY_LIGHTVALUES,
                     PlatformDefaults.DEFAULT_LIGHTVALUES).split(PlatformKeys.SEPARATOR_COMMA)) {
 
@@ -135,7 +137,7 @@ public class GetStatusSteps {
                     }
                 }
 
-                Assert.assertTrue(found);
+                assertThat(found).isTrue();
             }
         }
     }

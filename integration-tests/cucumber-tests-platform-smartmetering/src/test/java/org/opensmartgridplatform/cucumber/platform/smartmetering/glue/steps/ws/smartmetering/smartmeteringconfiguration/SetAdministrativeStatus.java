@@ -8,14 +8,9 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetAdministrativeStatusAsyncRequest;
@@ -26,6 +21,9 @@ import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SetAdministrativeStatusRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -46,7 +44,8 @@ public class SetAdministrativeStatus {
 
         LOGGER.info("Set administrative status response is received {}", setAdministrativeStatusAsyncResponse);
 
-        assertNotNull("Set administrative status response should not be null", setAdministrativeStatusAsyncResponse);
+        assertThat(setAdministrativeStatusAsyncResponse).as("Set administrative status response should not be null")
+                .isNotNull();
         ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID,
                 setAdministrativeStatusAsyncResponse.getCorrelationUid());
     }
@@ -59,8 +58,9 @@ public class SetAdministrativeStatus {
                 .retrieveSetAdministrativeStatusResponse(setAdministrativeStatusAsyncRequest);
 
         LOGGER.info("The administrative status result is: {}", setAdministrativeStatusResponse.getResult());
-        assertNotNull("Administrative status type result is null", setAdministrativeStatusResponse.getResult());
-        assertEquals("Administrative status type should be OK", OsgpResultType.OK,
-                setAdministrativeStatusResponse.getResult());
+        assertThat(setAdministrativeStatusResponse.getResult()).as("Administrative status type result is null")
+                .isNotNull();
+        assertThat(setAdministrativeStatusResponse.getResult()).as("Administrative status type should be OK")
+                .isEqualTo(OsgpResultType.OK);
     }
 }

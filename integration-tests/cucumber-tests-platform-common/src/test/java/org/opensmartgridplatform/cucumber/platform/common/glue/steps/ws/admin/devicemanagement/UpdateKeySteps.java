@@ -9,12 +9,12 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.admin.devicemanagement;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getLong;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.Map;
 
-import org.junit.Assert;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.UpdateKeyRequest;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.UpdateKeyResponse;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
@@ -73,7 +73,7 @@ public class UpdateKeySteps {
         // there is no information to check.
         final UpdateKeyResponse response = (UpdateKeyResponse) ScenarioContext.current()
                 .get(PlatformCommonKeys.RESPONSE);
-        Assert.assertNotNull(response);
+        assertThat(response).isNotNull();
     }
 
     /**

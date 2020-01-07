@@ -9,6 +9,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.publiclighting.glue.steps.ws.publiclighting.adhocmanagement;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 import static org.opensmartgridplatform.cucumber.platform.core.CorrelationUidHelper.saveCorrelationUidInScenarioContext;
@@ -19,12 +20,6 @@ import java.util.Map;
 
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-
-import org.junit.Assert;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.SetTransitionAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.SetTransitionAsyncResponse;
@@ -38,6 +33,10 @@ import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.publiclighting.PlatformPubliclightingDefaults;
 import org.opensmartgridplatform.cucumber.platform.publiclighting.PlatformPubliclightingKeys;
 import org.opensmartgridplatform.cucumber.platform.publiclighting.support.ws.publiclighting.PublicLightingAdHocManagementClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -108,8 +107,8 @@ public class SetTransitionSteps {
      *
      * @param expectedResponseData
      *            The table with the expected fields in the response.
-     * @apiNote The response will contain the correlation uid, so store that in the
-     *       current scenario context for later use.
+     * @apiNote The response will contain the correlation uid, so store that in
+     *          the current scenario context for later use.
      * @throws Throwable
      */
     @Then("^the set transition async response contains$")
@@ -117,9 +116,9 @@ public class SetTransitionSteps {
         final SetTransitionAsyncResponse asyncResponse = (SetTransitionAsyncResponse) ScenarioContext.current()
                 .get(PlatformPubliclightingKeys.RESPONSE);
 
-        Assert.assertNotNull(asyncResponse.getAsyncResponse().getCorrelationUid());
-        Assert.assertEquals(getString(expectedResponseData, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION),
-                asyncResponse.getAsyncResponse().getDeviceId());
+        assertThat(asyncResponse.getAsyncResponse().getCorrelationUid()).isNotNull();
+        assertThat(asyncResponse.getAsyncResponse().getDeviceId())
+                .isEqualTo(getString(expectedResponseData, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION));
 
         // Save the returned CorrelationUid in the Scenario related context for
         // further use.
@@ -148,10 +147,9 @@ public class SetTransitionSteps {
             } catch (final Exception e) {
                 // do nothing
             }
-            Assert.assertNotNull(response);
-            Assert.assertEquals(
-                    Enum.valueOf(OsgpResultType.class, expectedResult.get(PlatformPubliclightingKeys.KEY_RESULT)),
-                    response.getResult());
+            assertThat(response).isNotNull();
+            assertThat(response.getResult()).isEqualTo(
+                    Enum.valueOf(OsgpResultType.class, expectedResult.get(PlatformPubliclightingKeys.KEY_RESULT)));
         });
     }
 
@@ -172,10 +170,9 @@ public class SetTransitionSteps {
             } catch (final Exception e) {
                 // do nothing
             }
-            Assert.assertNotNull(response);
-            Assert.assertEquals(
-                    Enum.valueOf(OsgpResultType.class, expectedResult.get(PlatformPubliclightingKeys.KEY_RESULT)),
-                    response.getResult());
+            assertThat(response).isNotNull();
+            assertThat(response.getResult()).isEqualTo(
+                    Enum.valueOf(OsgpResultType.class, expectedResult.get(PlatformPubliclightingKeys.KEY_RESULT)));
         });
     }
 
@@ -184,6 +181,6 @@ public class SetTransitionSteps {
         final SoapFaultClientException response = (SoapFaultClientException) ScenarioContext.current()
                 .get(PlatformPubliclightingKeys.RESPONSE);
 
-        Assert.assertEquals(expectedResult.get(PlatformPubliclightingKeys.KEY_MESSAGE), response.getMessage());
+        assertThat(response.getMessage()).isEqualTo(expectedResult.get(PlatformPubliclightingKeys.KEY_MESSAGE));
     }
 }

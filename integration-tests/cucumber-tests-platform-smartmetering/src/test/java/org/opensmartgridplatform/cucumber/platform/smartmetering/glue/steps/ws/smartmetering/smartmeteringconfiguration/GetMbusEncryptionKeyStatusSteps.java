@@ -7,19 +7,13 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ws.soap.client.SoapFaultClientException;
-
+import org.junit.jupiter.api.Assertions;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusAsyncResponse;
@@ -31,6 +25,10 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartme
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.GetMbusEncryptionKeyStatusRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -51,7 +49,7 @@ public class GetMbusEncryptionKeyStatusSteps {
         final GetMbusEncryptionKeyStatusAsyncResponse asyncResponse = this.smartMeterConfigurationClient
                 .getMbusEncryptionKeyStatus(request);
 
-        assertNotNull(OPERATION + ": Async response should not be null", asyncResponse);
+        assertThat(asyncResponse).as(OPERATION + ": Async response should not be null").isNotNull();
         LOGGER.info(OPERATION + ": Async response is received {}", asyncResponse);
 
         ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
@@ -67,9 +65,10 @@ public class GetMbusEncryptionKeyStatusSteps {
         final GetMbusEncryptionKeyStatusResponse response = this.smartMeterConfigurationClient
                 .retrieveGetMbusEncryptionKeyStatusResponse(asyncRequest);
 
-        assertNotNull(OPERATION + ": Result should not be null", response.getResult());
-        assertEquals(OPERATION + ": Result should be OK", OsgpResultType.OK, response.getResult());
-        assertNotNull(OPERATION + ": Encryption key status should not be null", response.getEncryptionKeyStatus());
+        assertThat(response.getResult()).as(OPERATION + ": Result should not be null").isNotNull();
+        assertThat(response.getResult()).as(OPERATION + ": Result should be OK").isEqualTo(OsgpResultType.OK);
+        assertThat(response.getEncryptionKeyStatus()).as(OPERATION + ": Encryption key status should not be null")
+                .isNotNull();
     }
 
     @Then("^the get M-Bus encryption key status request should return an exception$")
@@ -79,7 +78,7 @@ public class GetMbusEncryptionKeyStatusSteps {
                 .fromScenarioContext();
         try {
             this.smartMeterConfigurationClient.retrieveGetMbusEncryptionKeyStatusResponse(asyncRequest);
-            fail("A SoapFaultClientException should be thrown.");
+            Assertions.fail("A SoapFaultClientException should be thrown.");
         } catch (final SoapFaultClientException e) {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, e);
         }

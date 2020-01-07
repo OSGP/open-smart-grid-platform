@@ -7,17 +7,13 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringinstallation;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
 
+import org.junit.jupiter.api.Assertions;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ws.soap.client.SoapFaultClientException;
-
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusRequest;
@@ -38,6 +34,8 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smar
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -74,8 +72,8 @@ public class AddDeviceSteps extends AbstractSmartMeteringSteps {
 
         this.checkAndSaveCorrelationId(asyncResponse.getCorrelationUid());
 
-        assertEquals("Device identification in response", deviceIdentification,
-                asyncResponse.getDeviceIdentification());
+        assertThat(asyncResponse.getDeviceIdentification()).as("Device identification in response")
+                .isEqualTo(deviceIdentification);
     }
 
     @Then("^the add device response should be returned$")
@@ -92,8 +90,8 @@ public class AddDeviceSteps extends AbstractSmartMeteringSteps {
                 .getAddDeviceResponse(addDeviceAsyncRequest);
 
         final String expectedResult = responseParameters.get(PlatformKeys.KEY_RESULT);
-        assertNotNull("Result", response.getResult());
-        assertEquals("Result", expectedResult, response.getResult().name());
+        assertThat(response.getResult()).as("Result").isNotNull();
+        assertThat(response.getResult().name()).as("Result").isEqualTo(expectedResult);
     }
 
     @Then("^retrieving the AddDevice response results in an exception$")
@@ -103,7 +101,7 @@ public class AddDeviceSteps extends AbstractSmartMeteringSteps {
 
         try {
             this.smartMeteringInstallationClient.getAddDeviceResponse(addDeviceAsyncRequest);
-            fail("A SoapFaultClientException should be thrown");
+            Assertions.fail("A SoapFaultClientException should be thrown");
         } catch (final SoapFaultClientException e) {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, e);
         }
@@ -130,15 +128,16 @@ public class AddDeviceSteps extends AbstractSmartMeteringSteps {
         final GetAdministrativeStatusResponse getAdministrativeStatusResponse = this.smartMeteringConfigurationClient
                 .retrieveGetAdministrativeStatusResponse(asyncRequest);
 
-        assertNotNull("Administrative status should contain information if it is enabled",
-                getAdministrativeStatusResponse.getEnabled());
+        assertThat(getAdministrativeStatusResponse.getEnabled())
+                .as("Administrative status should contain information if it is enabled").isNotNull();
     }
 
     private Device activateDevice() {
         final String deviceIdentification = this.getDeviceIdentificationFromContext();
         final Device device = this.findDeviceByDeviceIdentification(deviceIdentification);
 
-        assertNotNull("Device should be in the core database for identification " + deviceIdentification, device);
+        assertThat(device).as("Device should be in the core database for identification " + deviceIdentification)
+                .isNotNull();
 
         /*
          * The default result of adding a device through a service call is that
@@ -159,9 +158,9 @@ public class AddDeviceSteps extends AbstractSmartMeteringSteps {
         final DlmsDevice dlmsDevice = this.dlmsDeviceRepository
                 .findByDeviceIdentification(device.getDeviceIdentification());
 
-        assertNotNull(
-                "Device should be in the DLMS protocol database for identification " + device.getDeviceIdentification(),
-                dlmsDevice);
+        assertThat(dlmsDevice).as(
+                "Device should be in the DLMS protocol database for identification " + device.getDeviceIdentification())
+                .isNotNull();
 
         dlmsDevice.setIpAddressIsStatic(true);
         dlmsDevice.setPort(PlatformSmartmeteringDefaults.PORT);
@@ -171,14 +170,16 @@ public class AddDeviceSteps extends AbstractSmartMeteringSteps {
     private String getDeviceIdentificationFromContext() {
         final String keyDeviceIdentification = PlatformKeys.KEY_DEVICE_IDENTIFICATION;
         final String deviceIdentification = (String) ScenarioContext.current().get(keyDeviceIdentification);
-        assertNotNull("Device identification must be in the scenario context for key " + keyDeviceIdentification,
-                deviceIdentification);
+
+        assertThat(deviceIdentification)
+                .as("Device identification must be in the scenario context for key " + keyDeviceIdentification)
+                .isNotNull();
         return deviceIdentification;
     }
 
     private Device findDeviceByDeviceIdentification(final String deviceIdentification) {
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-        assertNotNull("Device must exist for identification " + deviceIdentification, device);
+        assertThat(device).as("Device must exist for identification " + deviceIdentification).isNotNull();
         return device;
     }
 }

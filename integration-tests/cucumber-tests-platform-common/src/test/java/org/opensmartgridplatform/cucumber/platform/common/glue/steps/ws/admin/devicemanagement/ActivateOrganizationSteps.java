@@ -7,11 +7,11 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.admin.devicemanagement;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.Map;
 
-import org.junit.Assert;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.ActivateOrganisationRequest;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.ActivateOrganisationResponse;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
@@ -54,7 +54,7 @@ public class ActivateOrganizationSteps {
      */
     @Then("^the activate organization response is successful$")
     public void theActivateOrganizationResponseIsSuccessful() throws Throwable {
-        Assert.assertTrue(
-                ScenarioContext.current().get(PlatformCommonKeys.RESPONSE) instanceof ActivateOrganisationResponse);
+        assertThat(ScenarioContext.current().get(PlatformCommonKeys.RESPONSE) instanceof ActivateOrganisationResponse)
+                .isTrue();
     }
 }

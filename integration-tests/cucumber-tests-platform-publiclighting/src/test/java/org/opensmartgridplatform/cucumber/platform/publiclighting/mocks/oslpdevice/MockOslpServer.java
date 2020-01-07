@@ -35,7 +35,7 @@ import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.config.CoreDeviceConfiguration;
@@ -190,11 +190,11 @@ public class MockOslpServer {
                 LOGGER.info("Sleeping 1s " + count);
                 Thread.sleep(1000);
             } catch (final InterruptedException e) {
-                Assert.fail("Polling for response interrupted");
+                Assertions.fail("Polling for response interrupted");
             }
 
             if (count > this.configuration.getTimeout()) {
-                Assert.fail("Polling for response failed, no reponse found");
+                Assertions.fail("Polling for response failed, no reponse found");
             }
         }
 

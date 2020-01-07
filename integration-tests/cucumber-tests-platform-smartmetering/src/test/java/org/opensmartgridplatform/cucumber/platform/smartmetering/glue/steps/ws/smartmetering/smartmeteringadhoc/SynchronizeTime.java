@@ -7,12 +7,9 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringadhoc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
 
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeAsyncResponse;
@@ -24,6 +21,7 @@ import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.adhoc.SmartMeteringAdHocRequestClient;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.adhoc.SmartMeteringAdHocResponseClient;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.adhoc.SynchronizeTimeRequestFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -42,7 +40,7 @@ public class SynchronizeTime {
         final SynchronizeTimeRequest request = SynchronizeTimeRequestFactory.fromParameterMap(settings);
         final SynchronizeTimeAsyncResponse asyncResponse = this.requestClient.doRequest(request);
 
-        assertNotNull("AsyncResponse should not be null", asyncResponse);
+        assertThat(asyncResponse).as("AsyncResponse should not be null").isNotNull();
         ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
     }
 
@@ -52,6 +50,6 @@ public class SynchronizeTime {
         final SynchronizeTimeAsyncRequest asyncRequest = SynchronizeTimeRequestFactory.fromScenarioContext();
         final SynchronizeTimeResponse response = this.responseClient.getResponse(asyncRequest);
 
-        assertEquals("Results was not as expected", OsgpResultType.OK, response.getResult());
+        assertThat(response.getResult()).as("Results was not as expected").isEqualTo(OsgpResultType.OK);
     }
 }

@@ -8,8 +8,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.glue.steps.database.logging;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.List;
@@ -76,8 +75,8 @@ public class DeviceLogItemSteps {
         final Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE);
         final List<org.opensmartgridplatform.logging.domain.entities.DeviceLogItem> deviceLogItems = this.deviceLogItemRepository
                 .findByDeviceIdentification(deviceIdentification, pageable).getContent();
-        assertTrue("number of device log items for " + deviceIdentification,
-                this.countGetAdministrativeStatusLogItems(deviceLogItems) > 0);
+        assertThat(this.countGetAdministrativeStatusLogItems(deviceLogItems) > 0)
+                .as("number of device log items for " + deviceIdentification).isTrue();
     }
 
     @Then("^the get administrative status communication for device \"([^\"]*)\" should not be in the device_log_item table$")
@@ -87,8 +86,8 @@ public class DeviceLogItemSteps {
         final Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE);
         final List<org.opensmartgridplatform.logging.domain.entities.DeviceLogItem> deviceLogItems = this.deviceLogItemRepository
                 .findByDeviceIdentification(deviceIdentification, pageable).getContent();
-        assertEquals("number of device log items for " + deviceIdentification, 0,
-                this.countGetAdministrativeStatusLogItems(deviceLogItems));
+        assertThat(this.countGetAdministrativeStatusLogItems(deviceLogItems))
+                .as("number of device log items for " + deviceIdentification).isEqualTo(0);
     }
 
     private long countGetAdministrativeStatusLogItems(final List<DeviceLogItem> deviceLogItems) {

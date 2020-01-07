@@ -7,12 +7,12 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.admin.devicemanagement;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.Map;
 
-import org.junit.Assert;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.ChangeOrganisationRequest;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.ChangeOrganisationResponse;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.PlatformDomain;
@@ -71,8 +71,8 @@ public class ChangeOrganizationSteps {
 
     @Then("^the update organization response is successful$")
     public void theUpdateOrganizationResponseIsSuccessful() throws Throwable {
-        Assert.assertTrue(
-                ScenarioContext.current().get(PlatformCommonKeys.RESPONSE) instanceof ChangeOrganisationResponse);
+        assertThat(ScenarioContext.current().get(PlatformCommonKeys.RESPONSE) instanceof ChangeOrganisationResponse)
+                .isTrue();
     }
 
     /**

@@ -7,12 +7,12 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.core.devicemanagement;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Assert;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.SetOwnerRequest;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.SetOwnerResponse;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
@@ -53,9 +53,10 @@ public class SetOwnerSteps {
 
     @Then("^the set owner async response contains$")
     public void theFindDevicesResponseContainsDevices(final Map<String, String> expectedDevice) throws Throwable {
-        Assert.assertTrue(ScenarioContext.current().get(PlatformKeys.RESPONSE) instanceof SetOwnerResponse);
+        assertThat(ScenarioContext.current().get(PlatformKeys.RESPONSE) instanceof SetOwnerResponse).isTrue();
+
         final SetOwnerResponse response = (SetOwnerResponse) ScenarioContext.current().get(PlatformKeys.RESPONSE);
-        Assert.assertNotNull(response);
+        assertThat(response).isNotNull();
     }
 
     @Then("^the owner of device \"([^\"]*)\" has been changed$")
@@ -65,14 +66,12 @@ public class SetOwnerSteps {
         final List<DeviceAuthorization> deviceAuthorization = Wait.untilAndReturn(() -> {
             final List<DeviceAuthorization> retval = this.deviceAuthorizationRepo
                     .findByDevice(this.deviceRepository.findByDeviceIdentification(deviceIdentification));
-            Assert.assertNotNull(retval);
+            assertThat(retval).isNotNull();
             return retval;
         });
 
-        Assert.assertEquals(
-                getString(expectedOrganization, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
-                        PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION),
-                deviceAuthorization.get(0).getOrganisation().getOrganisationIdentification());
-
+        assertThat(deviceAuthorization.get(0).getOrganisation().getOrganisationIdentification())
+                .isEqualTo(getString(expectedOrganization, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
+                        PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
     }
 }

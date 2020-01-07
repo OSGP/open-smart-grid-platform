@@ -9,12 +9,12 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.core.adhocmanagement;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 import static org.opensmartgridplatform.cucumber.platform.core.CorrelationUidHelper.saveCorrelationUidInScenarioContext;
 
 import java.util.Map;
 
-import org.junit.Assert;
 import org.opensmartgridplatform.adapter.ws.schema.core.adhocmanagement.SetRebootAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.adhocmanagement.SetRebootAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.adhocmanagement.SetRebootRequest;
@@ -88,9 +88,9 @@ public class SetRebootSteps {
         final SetRebootAsyncResponse asyncResponse = (SetRebootAsyncResponse) ScenarioContext.current()
                 .get(PlatformKeys.RESPONSE);
 
-        Assert.assertNotNull(asyncResponse.getAsyncResponse().getCorrelationUid());
-        Assert.assertEquals(getString(expectedResponseData, PlatformKeys.KEY_DEVICE_IDENTIFICATION),
-                asyncResponse.getAsyncResponse().getDeviceId());
+        assertThat(asyncResponse.getAsyncResponse().getCorrelationUid()).isNotNull();
+        assertThat(asyncResponse.getAsyncResponse().getDeviceId())
+                .isEqualTo(getString(expectedResponseData, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
 
         // Save the returned CorrelationUid in the Scenario related context for
         // further use.
@@ -118,9 +118,9 @@ public class SetRebootSteps {
             } catch (final Exception e) {
                 // do nothing
             }
-            Assert.assertNotNull(response);
-            Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(PlatformKeys.KEY_RESULT)),
-                    response.getResult());
+            assertThat(response).isNotNull();
+            assertThat(response.getResult())
+                    .isEqualTo(Enum.valueOf(OsgpResultType.class, expectedResult.get(PlatformKeys.KEY_RESULT)));
         });
     }
 
@@ -129,6 +129,6 @@ public class SetRebootSteps {
         final SoapFaultClientException response = (SoapFaultClientException) ScenarioContext.current()
                 .get(PlatformKeys.RESPONSE);
 
-        Assert.assertEquals(expectedResult.get(PlatformKeys.KEY_MESSAGE), response.getMessage());
+        assertThat(response.getMessage()).isEqualTo(expectedResult.get(PlatformKeys.KEY_MESSAGE));
     }
 }

@@ -7,8 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringmonitoring;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getInteger;
 
 import java.math.BigInteger;
@@ -46,7 +45,7 @@ public class ProfileGenericDataSteps {
         final ProfileGenericDataRequest request = ProfileGenericDataRequestFactory.fromParameterMap(settings);
         final ProfileGenericDataAsyncResponse asyncResponse = this.requestClient.doRequest(request);
 
-        assertNotNull("AsyncResponse should not be null", asyncResponse);
+        assertThat(asyncResponse).as("AsyncResponse should not be null").isNotNull();
         ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
     }
 
@@ -56,11 +55,12 @@ public class ProfileGenericDataSteps {
         final ProfileGenericDataAsyncRequest asyncRequest = ProfileGenericDataRequestFactory.fromScenarioContext();
 
         final ProfileGenericDataResponse response = this.responseClient.getResponse(asyncRequest);
-        assertNotNull("ProfileGenericDataResponse should not be null", response);
+        assertThat(response).as("ProfileGenericDataResponse should not be null").isNotNull();
 
         final int expectedNumberOfCaptureObjects = getInteger(settings, "NumberOfCaptureObjects", 0);
         final List<CaptureObject> actualCaptureObjects = response.getCaptureObjectList().getCaptureObjects();
-        assertEquals("Number of capture objects", expectedNumberOfCaptureObjects, actualCaptureObjects.size());
+        assertThat(actualCaptureObjects.size()).as("Number of capture objects")
+                .isEqualTo(expectedNumberOfCaptureObjects);
 
         for (int i = 0; i < expectedNumberOfCaptureObjects; i++) {
             final CaptureObject actualCaptureObject = actualCaptureObjects.get(i);
@@ -69,7 +69,8 @@ public class ProfileGenericDataSteps {
 
         final int expectedNumberOfProfileEntries = getInteger(settings, "NumberOfProfileEntries", 0);
         final List<ProfileEntry> actualProfileEntries = response.getProfileEntryList().getProfileEntries();
-        assertEquals("Number of profile entries", expectedNumberOfProfileEntries, actualProfileEntries.size());
+        assertThat(actualProfileEntries.size()).as("Number of profile entries")
+                .isEqualTo(expectedNumberOfProfileEntries);
 
         if (expectedNumberOfProfileEntries > 0) {
             /*
@@ -77,8 +78,8 @@ public class ProfileGenericDataSteps {
              * number of ProfileEntryValues in a ProfileEntry should match the
              * number of captured objects from the buffer.
              */
-            assertEquals("Number of profile entry values", expectedNumberOfCaptureObjects,
-                    actualProfileEntries.get(0).getProfileEntryValue().size());
+            assertThat(actualProfileEntries.get(0).getProfileEntryValue().size()).as("Number of profile entry values")
+                    .isEqualTo(expectedNumberOfCaptureObjects);
         }
     }
 
@@ -86,24 +87,24 @@ public class ProfileGenericDataSteps {
             final int index) {
 
         final Long expectedClassId = SettingsHelper.getLongValue(settings, "CaptureObject_ClassId", index);
-        assertEquals("ClassId of CaptureObject " + index, expectedClassId,
-                Long.valueOf(actualCaptureObject.getClassId()));
+        assertThat(Long.valueOf(actualCaptureObject.getClassId())).as("ClassId of CaptureObject " + index)
+                .isEqualTo(expectedClassId);
 
         final String expectedLogicalName = SettingsHelper.getStringValue(settings, "CaptureObject_LogicalName", index);
-        assertEquals("LogicalName of CaptureObject " + index, expectedLogicalName,
-                actualCaptureObject.getLogicalName());
+        assertThat(actualCaptureObject.getLogicalName()).as("LogicalName of CaptureObject " + index)
+                .isEqualTo(expectedLogicalName);
 
         final BigInteger expectedAttributeIndex = SettingsHelper.getBigIntegerValue(settings,
                 "CaptureObject_AttributeIndex", index);
-        assertEquals("AttributeIndex of CaptureObject " + index, expectedAttributeIndex,
-                actualCaptureObject.getAttributeIndex());
+        assertThat(actualCaptureObject.getAttributeIndex()).as("AttributeIndex of CaptureObject " + index)
+                .isEqualTo(expectedAttributeIndex);
 
         final Long expectedDataIndex = SettingsHelper.getLongValue(settings, "CaptureObject_DataIndex", index);
-        assertEquals("DataIndex of CaptureObject " + index, expectedDataIndex,
-                Long.valueOf(actualCaptureObject.getDataIndex()));
+        assertThat(Long.valueOf(actualCaptureObject.getDataIndex())).as("DataIndex of CaptureObject " + index)
+                .isEqualTo(expectedDataIndex);
 
         final String expectedUnit = SettingsHelper.getStringValue(settings, "CaptureObject_Unit", index);
-        assertEquals("Unit of CaptureObject " + index, expectedUnit, actualCaptureObject.getUnit().value());
+        assertThat(actualCaptureObject.getUnit().value()).as("Unit of CaptureObject " + index).isEqualTo(expectedUnit);
     }
 
 }

@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.core.devicemanagement;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.io.IOException;
@@ -16,10 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.junit.Assert;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ws.soap.client.SoapFaultClientException;
-
+import org.junit.jupiter.api.Assertions;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindAllOrganisationsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindAllOrganisationsResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindOrganisationRequest;
@@ -33,6 +31,8 @@ import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonKeys;
 import org.opensmartgridplatform.cucumber.platform.common.support.ws.core.CoreDeviceManagementClient;
 import org.opensmartgridplatform.cucumber.platform.glue.steps.ws.GenericResponseSteps;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -94,11 +94,11 @@ public class FindOrganizationsSteps {
                 .get(PlatformCommonKeys.RESPONSE);
 
         if (expectedCount == 0) {
-            Assert.assertNull("Organisation object should be null.", response.getOrganisation());
+            assertThat(response.getOrganisation()).as("Organisation object should be null.").isNull();
         } else if (expectedCount == 1) {
-            Assert.assertNotNull("Organisation object should not be null.", response.getOrganisation());
+            assertThat(response.getOrganisation()).as("Organisation object not should be null.").isNotNull();
         } else {
-            Assert.fail(
+            Assertions.fail(
                     "This Then step should be used to test if an organisation object is null or if there's exactly 1 organisation object. The argument 'expectedCount' with value "
                             + expectedCount + " is not valid for this step.");
         }
@@ -109,7 +109,7 @@ public class FindOrganizationsSteps {
         final FindAllOrganisationsResponse response = (FindAllOrganisationsResponse) ScenarioContext.current()
                 .get(PlatformCommonKeys.RESPONSE);
 
-        Assert.assertEquals((int) expectedCount, response.getOrganisations().size());
+        assertThat(response.getOrganisations().size()).isEqualTo((int) expectedCount);
     }
 
     @Then("^the get own unknown organization response contains soap fault$")
@@ -126,10 +126,9 @@ public class FindOrganizationsSteps {
 
         final Organisation expected = this.createOrganisation(expectedResult);
 
-        Assert.assertTrue(
-                "Expected organization \"" + expected.getOrganisationIdentification()
-                        + "\" was not found as the organization in the response",
-                this.organisationMatches(expected, organisation));
+        assertThat(this.organisationMatches(expected, organisation)).as("Expected organization \""
+                + expected.getOrganisationIdentification() + "\" was not found as the organization in the response")
+                .isTrue();
     }
 
     @Then("^the get all organizations response contains$")
@@ -147,7 +146,7 @@ public class FindOrganizationsSteps {
             }
         }
 
-        Assert.fail("Expected organization \"" + expected.getOrganisationIdentification()
+        Assertions.fail("Expected organization \"" + expected.getOrganisationIdentification()
                 + "\" was not found as one of the " + organisations.size() + " organizations in the response");
     }
 

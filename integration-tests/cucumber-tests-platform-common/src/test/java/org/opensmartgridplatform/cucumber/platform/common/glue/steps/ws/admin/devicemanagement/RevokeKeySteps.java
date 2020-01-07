@@ -9,11 +9,11 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.admin.devicemanagement;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.Map;
 
-import org.junit.Assert;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.RevokeKeyRequest;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.RevokeKeyResponse;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
@@ -67,7 +67,7 @@ public class RevokeKeySteps {
         // there is no information to check.
         final RevokeKeyResponse response = (RevokeKeyResponse) ScenarioContext.current()
                 .get(PlatformCommonKeys.RESPONSE);
-        Assert.assertNotNull(response);
+        assertThat(response).isNotNull();
     }
 
     /**
@@ -79,10 +79,11 @@ public class RevokeKeySteps {
     public void the_revoke_key_response_contains_soap_fault(final Map<String, String> expectedResult) throws Throwable {
         // TODO: Check what the "Revoke Key Response" has to return
 
-        Assert.assertTrue(
-                ScenarioContext.current().get(PlatformCommonKeys.RESPONSE) instanceof SoapFaultClientException);
+        assertThat(ScenarioContext.current().get(PlatformCommonKeys.RESPONSE) instanceof SoapFaultClientException)
+                .isTrue();
+
         final SoapFaultClientException response = (SoapFaultClientException) ScenarioContext.current()
                 .get(PlatformCommonKeys.RESPONSE);
-        Assert.assertEquals(getString(expectedResult, PlatformCommonKeys.KEY_MESSAGE), response.getMessage());
+        assertThat(response.getMessage()).isEqualTo(getString(expectedResult, PlatformCommonKeys.KEY_MESSAGE));
     }
 }

@@ -9,8 +9,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.microgrids.glue.steps.ws.microgrids.adhocmanagement;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
 
@@ -61,7 +60,7 @@ public class SetDataSteps {
         final SetDataResponse response = this.client.setData(setDataAsyncRequest);
 
         final String expectedResult = responseParameters.get(PlatformKeys.KEY_RESULT);
-        assertNotNull("Result", response.getResult());
-        assertEquals("Result", expectedResult, response.getResult().name());
+        assertThat(response.getResult()).as("Result").isNotNull();
+        assertThat(response.getResult().name()).as("Result").isEqualTo(expectedResult);
     }
 }

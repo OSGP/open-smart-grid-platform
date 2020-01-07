@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.core.devicemanagement;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getInteger;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getShort;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
@@ -15,7 +16,6 @@ import java.util.Map;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.junit.Assert;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.LightMeasurementDevice;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -25,93 +25,94 @@ public class DeviceSteps {
 
     public static void checkDevice(final Map<String, String> expectedDevice, final Device actualDevice) {
         if (expectedDevice.containsKey(PlatformKeys.KEY_DEVICE_IDENTIFICATION)) {
-            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_DEVICE_IDENTIFICATION),
-                    actualDevice.getDeviceIdentification());
+            assertThat(actualDevice.getDeviceIdentification())
+                    .isEqualTo(getString(expectedDevice, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
         }
 
         if (expectedDevice.containsKey(PlatformKeys.ALIAS)) {
-            Assert.assertEquals(getString(expectedDevice, PlatformKeys.ALIAS), actualDevice.getAlias());
+            assertThat(actualDevice.getAlias()).isEqualTo(getString(expectedDevice, PlatformKeys.ALIAS));
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_CITY)) {
-            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_CITY),
-                    actualDevice.getContainerAddress().getCity());
+            assertThat(actualDevice.getContainerAddress().getCity())
+                    .isEqualTo(getString(expectedDevice, PlatformKeys.KEY_CITY));
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_MUNICIPALITY)) {
-            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_MUNICIPALITY),
-                    actualDevice.getContainerAddress().getMunicipality());
+            assertThat(actualDevice.getContainerAddress().getMunicipality())
+                    .isEqualTo(getString(expectedDevice, PlatformKeys.KEY_MUNICIPALITY));
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_NUMBER)) {
-            Assert.assertEquals(getInteger(expectedDevice, PlatformKeys.KEY_NUMBER),
-                    actualDevice.getContainerAddress().getNumber());
+            assertThat(actualDevice.getContainerAddress().getNumber())
+                    .isEqualTo(getInteger(expectedDevice, PlatformKeys.KEY_NUMBER));
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_NUMBER_ADDITION)) {
-            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_NUMBER_ADDITION),
-                    actualDevice.getContainerAddress().getNumberAddition());
+            assertThat(actualDevice.getContainerAddress().getNumberAddition())
+                    .isEqualTo(getString(expectedDevice, PlatformKeys.KEY_NUMBER_ADDITION));
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_POSTCODE)) {
-            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_POSTCODE),
-                    actualDevice.getContainerAddress().getPostalCode());
+            assertThat(actualDevice.getContainerAddress().getPostalCode())
+                    .isEqualTo(getString(expectedDevice, PlatformKeys.KEY_POSTCODE));
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_STREET)) {
-            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_STREET),
-                    actualDevice.getContainerAddress().getStreet());
+            assertThat(actualDevice.getContainerAddress().getStreet())
+                    .isEqualTo(getString(expectedDevice, PlatformKeys.KEY_STREET));
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_DEVICE_TYPE)) {
-            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_DEVICE_TYPE), actualDevice.getDeviceType());
+            assertThat(actualDevice.getDeviceType()).isEqualTo(getString(expectedDevice, PlatformKeys.KEY_DEVICE_TYPE));
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_DEVICE_UID)) {
-            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_DEVICE_UID), actualDevice.getDeviceUid());
+            assertThat(actualDevice.getDeviceUid()).isEqualTo(getString(expectedDevice, PlatformKeys.KEY_DEVICE_UID));
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_LATITUDE)) {
-            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_LATITUDE), actualDevice.getGpsLatitude());
+            assertThat(actualDevice.getGpsLatitude()).isEqualTo(getString(expectedDevice, PlatformKeys.KEY_LATITUDE));
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_LONGITUDE)) {
-            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_LONGITUDE), actualDevice.getGpsLongitude());
+            assertThat(actualDevice.getGpsLongitude()).isEqualTo(getString(expectedDevice, PlatformKeys.KEY_LONGITUDE));
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_NETWORKADDRESS)) {
-            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_NETWORKADDRESS),
-                    actualDevice.getNetworkAddress());
+            assertThat(actualDevice.getNetworkAddress())
+                    .isEqualTo(getString(expectedDevice, PlatformKeys.KEY_NETWORKADDRESS));
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_OWNER)) {
-            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_OWNER), actualDevice.getOwner());
+            assertThat(actualDevice.getOwner()).isEqualTo(getString(expectedDevice, PlatformKeys.KEY_OWNER));
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_DEVICE_TYPE)
                 && getString(expectedDevice, PlatformKeys.KEY_DEVICE_TYPE).equals("LMD")) {
             final LightMeasurementDevice lmd = actualDevice.getLightMeasurementDevice();
-            Assert.assertNotNull("Found device has no Light Measurement Device field", lmd);
+            assertThat(lmd).as("Found device has no Light Measurement Device field").isNotNull();
 
             if (expectedDevice.containsKey(PlatformKeys.CODE)) {
-                Assert.assertEquals(getString(expectedDevice, PlatformKeys.CODE), lmd.getCode());
+                assertThat(lmd.getCode()).isEqualTo(getString(expectedDevice, PlatformKeys.CODE));
             }
 
             if (expectedDevice.containsKey(PlatformKeys.KEY_LIGHTMEASUREMENT_COLOR)) {
-                Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_LIGHTMEASUREMENT_COLOR), lmd.getColor());
+                assertThat(lmd.getColor())
+                        .isEqualTo(getString(expectedDevice, PlatformKeys.KEY_LIGHTMEASUREMENT_COLOR));
             }
 
             if (expectedDevice.containsKey(PlatformKeys.KEY_LIGHTMEASUREMENT_DIGITAL_INPUT)) {
-                Assert.assertEquals(getShort(expectedDevice, PlatformKeys.KEY_LIGHTMEASUREMENT_DIGITAL_INPUT),
-                        lmd.getDigitalInput());
+                assertThat(lmd.getDigitalInput())
+                        .isEqualTo(getShort(expectedDevice, PlatformKeys.KEY_LIGHTMEASUREMENT_DIGITAL_INPUT));
             }
 
             if (expectedDevice.containsKey(PlatformKeys.KEY_LIGHTMEASUREMENT_LAST_COMMUNICATION_TIME)) {
                 final XMLGregorianCalendar inputXMLGregorianCalendar = XmlGregorianCalendarInputParser
                         .parse(getString(expectedDevice, PlatformKeys.KEY_LIGHTMEASUREMENT_LAST_COMMUNICATION_TIME));
-                Assert.assertEquals("Last communication time does not match",
-                        inputXMLGregorianCalendar.toGregorianCalendar(),
-                        lmd.getLastCommunicationTime().toGregorianCalendar());
+                assertThat(lmd.getLastCommunicationTime().toGregorianCalendar())
+                        .as("Last communication time does not match")
+                        .isEqualTo(inputXMLGregorianCalendar.toGregorianCalendar());
             }
         }
 

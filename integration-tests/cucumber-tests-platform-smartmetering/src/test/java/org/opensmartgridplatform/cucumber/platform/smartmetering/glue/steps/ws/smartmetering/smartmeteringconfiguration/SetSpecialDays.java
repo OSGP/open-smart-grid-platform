@@ -7,14 +7,9 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysAsyncRequest;
@@ -25,6 +20,9 @@ import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SetSpecialDaysRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -44,7 +42,7 @@ public class SetSpecialDays {
 
         LOGGER.info("Set special days response is received {}", setSpecialDaysAsyncResponse);
 
-        assertNotNull("Set special days response should not be null", setSpecialDaysAsyncResponse);
+        assertThat(setSpecialDaysAsyncResponse).as("Set special days response should not be null").isNotNull();
         ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID,
                 setSpecialDaysAsyncResponse.getCorrelationUid());
     }
@@ -58,7 +56,8 @@ public class SetSpecialDays {
 
         LOGGER.info("Set special days result is: {}", setSpecialDaysResponse.getResult());
 
-        assertNotNull("Set special days result is null", setSpecialDaysResponse.getResult());
-        assertEquals("Set special days result should be OK", OsgpResultType.OK, setSpecialDaysResponse.getResult());
+        assertThat(setSpecialDaysResponse.getResult()).as("Set special days result is null").isNotNull();
+        assertThat(setSpecialDaysResponse.getResult()).as("Set special days result should be OK")
+                .isEqualTo(OsgpResultType.OK);
     }
 }

@@ -9,8 +9,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.microgrids.glue.steps.ws.microgrids.adhocmanagement;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -19,6 +18,7 @@ import java.util.Map;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.assertj.core.data.Offset;
 import org.opensmartgridplatform.adapter.ws.schema.microgrids.adhocmanagement.GetDataAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.microgrids.adhocmanagement.GetDataAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.microgrids.adhocmanagement.GetDataRequest;
@@ -43,7 +43,7 @@ public class GetDataSteps {
      * Delta value for which two measurement values are considered equal if
      * their difference does not exceed it.
      */
-    private static final double DELTA_FOR_MEASUREMENT_VALUE = 0.0001;
+    private static final Offset<Double> DELTA_FOR_MEASUREMENT_VALUE = Offset.offset(0.0001);
 
     private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
@@ -73,8 +73,8 @@ public class GetDataSteps {
         final GetDataResponse response = this.client.getData(getDataAsyncRequest);
 
         final String expectedResult = responseParameters.get(PlatformKeys.KEY_RESULT);
-        assertNotNull("Result", response.getResult());
-        assertEquals("Result", expectedResult, response.getResult().name());
+        assertThat(response.getResult()).as("Result").isNotNull();
+        assertThat(response.getResult().name()).as("Result").isEqualTo(expectedResult);
 
         if (!responseParameters.containsKey(PlatformKeys.KEY_NUMBER_OF_SYSTEMS)) {
             throw new AssertionError("The Step DataTable must contain the expected number of systems with key \""
@@ -84,12 +84,11 @@ public class GetDataSteps {
                 .parseInt(responseParameters.get(PlatformKeys.KEY_NUMBER_OF_SYSTEMS));
 
         final List<GetDataSystemIdentifier> systemIdentifiers = response.getSystem();
-        assertEquals("Number of Systems", expectedNumberOfSystems, systemIdentifiers.size());
+        assertThat(systemIdentifiers.size()).as("Number of Systems").isEqualTo(expectedNumberOfSystems);
 
         for (int i = 0; i < expectedNumberOfSystems; i++) {
             this.assertSystemResponse(responseParameters, systemIdentifiers, i);
         }
-
     }
 
     private void assertSystemResponse(final Map<String, String> responseParameters,
@@ -103,7 +102,7 @@ public class GetDataSteps {
 
         if (responseParameters.containsKey(PlatformKeys.KEY_SYSTEM_TYPE.concat(indexPostfix))) {
             final String expectedType = responseParameters.get(PlatformKeys.KEY_SYSTEM_TYPE.concat(indexPostfix));
-            assertEquals(systemDescription + " type", expectedType, systemIdentifier.getType());
+            assertThat(systemIdentifier.getType()).as(systemDescription + " type").isEqualTo(expectedType);
         }
 
         if (responseParameters.containsKey(PlatformKeys.KEY_NUMBER_OF_MEASUREMENTS.concat(indexPostfix))) {
@@ -123,7 +122,8 @@ public class GetDataSteps {
 
         final int expectedNumberOfMeasurements = Integer
                 .parseInt(responseParameters.get(PlatformKeys.KEY_NUMBER_OF_MEASUREMENTS.concat(indexPostfix)));
-        assertEquals(systemDescription + " number of Measurements", expectedNumberOfMeasurements, measurements.size());
+        assertThat(measurements.size()).as(systemDescription + " number of Measurements")
+                .isEqualTo(expectedNumberOfMeasurements);
         for (int i = 0; i < expectedNumberOfMeasurements; i++) {
             this.assertMeasurementResponse(responseParameters, numberOfSystems, systemIndex, systemDescription,
                     measurements, i);
@@ -143,24 +143,25 @@ public class GetDataSteps {
 
         final Integer expectedId = Integer
                 .valueOf(responseParameters.get(PlatformKeys.KEY_MEASUREMENT_ID.concat(indexPostfix)));
-        assertEquals(measurementDescription + " id", expectedId, measurement.getId());
+        assertThat(measurement.getId()).as(measurementDescription + " id").isEqualTo(expectedId);
 
         final String expectedNode = responseParameters.get(PlatformKeys.KEY_MEASUREMENT_NODE.concat(indexPostfix));
-        assertEquals(measurementDescription + " node", expectedNode, measurement.getNode());
+        assertThat(measurement.getNode()).as(measurementDescription + " node").isEqualTo(expectedNode);
 
         if (responseParameters.containsKey(PlatformKeys.KEY_MEASUREMENT_QUALIFIER)) {
             final int expectedQualifier = Integer
                     .parseInt(responseParameters.get(PlatformKeys.KEY_MEASUREMENT_QUALIFIER.concat(indexPostfix)));
-            assertEquals(measurementDescription + " Qualifier", expectedQualifier, measurement.getQualifier());
+            assertThat(measurement.getQualifier()).as(measurementDescription + " Qualifier")
+                    .isEqualTo(expectedQualifier);
         }
 
-        assertNotNull(measurementDescription + " Time", measurement.getTime());
+        assertThat(measurement.getTime()).as(measurementDescription + " Time").isNotNull();
         assertTimeFormat(measurement.getTime());
 
         if (responseParameters.containsKey(PlatformKeys.KEY_MEASUREMENT_VALUE)) {
             final double expectedValue = Double
                     .parseDouble(responseParameters.get(PlatformKeys.KEY_MEASUREMENT_VALUE.concat(indexPostfix)));
-            assertEquals(measurementDescription + " Value", expectedValue, measurement.getValue(),
+            assertThat(measurement.getValue()).as(measurementDescription + " Value").isCloseTo(expectedValue,
                     DELTA_FOR_MEASUREMENT_VALUE);
         }
     }
@@ -171,7 +172,7 @@ public class GetDataSteps {
 
         final int expectedNumberOfProfiles = Integer
                 .parseInt(responseParameters.get(PlatformKeys.KEY_NUMBER_OF_PROFILES.concat(indexPostfix)));
-        assertEquals(systemDescription + " number of Profiles", expectedNumberOfProfiles, profiles.size());
+        assertThat(profiles.size()).as(systemDescription + " number of Profiles").isEqualTo(expectedNumberOfProfiles);
         for (int i = 0; i < expectedNumberOfProfiles; i++) {
             this.assertProfileResponse(responseParameters, numberOfSystems, systemIndex, systemDescription, profiles,
                     i);

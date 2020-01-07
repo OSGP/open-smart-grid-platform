@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.core.configurationmanagement;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getInteger;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
@@ -15,7 +16,6 @@ import static org.opensmartgridplatform.cucumber.platform.core.CorrelationUidHel
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Assert;
 import org.opensmartgridplatform.adapter.ws.schema.core.common.AsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.core.configurationmanagement.Configuration;
@@ -91,9 +91,9 @@ public class GetConfigurationSteps {
         final GetConfigurationAsyncResponse asyncResponse = (GetConfigurationAsyncResponse) ScenarioContext.current()
                 .get(PlatformKeys.RESPONSE);
 
-        Assert.assertNotNull(asyncResponse.getAsyncResponse().getCorrelationUid());
-        Assert.assertEquals(getString(expectedResponseData, PlatformKeys.KEY_DEVICE_IDENTIFICATION),
-                asyncResponse.getAsyncResponse().getDeviceId());
+        assertThat(asyncResponse.getAsyncResponse().getCorrelationUid()).isNotNull();
+        assertThat(asyncResponse.getAsyncResponse().getDeviceId())
+                .isEqualTo(getString(expectedResponseData, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
 
         // Save the returned CorrelationUid in the Scenario related context for
         // further use.
@@ -128,20 +128,21 @@ public class GetConfigurationSteps {
 
         final GetConfigurationResponse response = Wait.untilAndReturn(() -> {
             final GetConfigurationResponse retval = this.client.getGetConfiguration(request);
-            Assert.assertNotNull(retval);
-            Assert.assertEquals(getEnum(expectedResponseData, PlatformKeys.KEY_RESULT, OsgpResultType.class),
-                    retval.getResult());
+            assertThat(retval).isNotNull();
+            assertThat(retval.getResult())
+                    .isEqualTo(getEnum(expectedResponseData, PlatformKeys.KEY_RESULT, OsgpResultType.class));
+
             return retval;
         });
 
         final Configuration configuration = response.getConfiguration();
-        Assert.assertNotNull(configuration);
+        assertThat(configuration).isNotNull();
 
         if (expectedResponseData.containsKey(PlatformKeys.KEY_LIGHTTYPE)
                 && !expectedResponseData.get(PlatformKeys.KEY_LIGHTTYPE).isEmpty()
                 && configuration.getLightType() != null) {
-            Assert.assertEquals(getEnum(expectedResponseData, PlatformKeys.KEY_LIGHTTYPE, LightType.class),
-                    configuration.getLightType());
+            assertThat(configuration.getLightType())
+                    .isEqualTo(getEnum(expectedResponseData, PlatformKeys.KEY_LIGHTTYPE, LightType.class));
         }
 
         final DaliConfiguration daliConfiguration = configuration.getDaliConfiguration();
@@ -150,8 +151,8 @@ public class GetConfigurationSteps {
             if (expectedResponseData.containsKey(PlatformKeys.DC_LIGHTS)
                     && !expectedResponseData.get(PlatformKeys.DC_LIGHTS).isEmpty()
                     && daliConfiguration.getNumberOfLights() != 0) {
-                Assert.assertEquals((int) getInteger(expectedResponseData, PlatformKeys.DC_LIGHTS),
-                        daliConfiguration.getNumberOfLights());
+                assertThat(daliConfiguration.getNumberOfLights())
+                        .isEqualTo((int) getInteger(expectedResponseData, PlatformKeys.DC_LIGHTS));
             }
 
             if (expectedResponseData.containsKey(PlatformKeys.DC_MAP)
@@ -161,9 +162,11 @@ public class GetConfigurationSteps {
                 final String[] dcMapArray = getString(expectedResponseData, PlatformKeys.DC_MAP).split(";");
                 for (int i = 0; i < dcMapArray.length; i++) {
                     final String[] dcMapArrayElements = dcMapArray[i].split(",");
-                    Assert.assertEquals(Integer.parseInt(dcMapArrayElements[0]), indexAddressMapList.get(i).getIndex());
-                    Assert.assertEquals(Integer.parseInt(dcMapArrayElements[1]),
-                            indexAddressMapList.get(i).getAddress());
+                    assertThat(indexAddressMapList.get(i).getIndex())
+                            .isEqualTo(Integer.parseInt(dcMapArrayElements[0]));
+
+                    assertThat(indexAddressMapList.get(i).getAddress())
+                            .isEqualTo(Integer.parseInt(dcMapArrayElements[1]));
                 }
             }
         }
@@ -179,15 +182,15 @@ public class GetConfigurationSteps {
                 for (int i = 0; i < rcMapArray.length; i++) {
                     final String[] rcMapArrayElements = rcMapArray[i].split(",");
                     if (rcMapArrayElements.length > 0 && relayMapList.size() > 0) {
-                        Assert.assertEquals(Integer.parseInt(rcMapArrayElements[0]), relayMapList.get(i).getIndex());
-                        Assert.assertEquals(Integer.parseInt(rcMapArrayElements[1]), relayMapList.get(i).getAddress());
+                        assertThat(relayMapList.get(i).getIndex()).isEqualTo(Integer.parseInt(rcMapArrayElements[0]));
+
+                        assertThat(relayMapList.get(i).getAddress()).isEqualTo(Integer.parseInt(rcMapArrayElements[1]));
 
                         if (expectedResponseData.containsKey(PlatformKeys.KEY_RELAY_TYPE)
                                 && !expectedResponseData.get(PlatformKeys.KEY_RELAY_TYPE).isEmpty()
                                 && relayMapList.get(i).getRelayType() != null) {
-                            Assert.assertEquals(
-                                    getEnum(expectedResponseData, PlatformKeys.KEY_RELAY_TYPE, RelayType.class),
-                                    relayMapList.get(i).getRelayType());
+                            assertThat(relayMapList.get(i).getRelayType()).isEqualTo(
+                                    getEnum(expectedResponseData, PlatformKeys.KEY_RELAY_TYPE, RelayType.class));
                         }
                     }
                 }
@@ -200,8 +203,8 @@ public class GetConfigurationSteps {
         if (expectedResponseData.containsKey(PlatformKeys.KEY_PREFERRED_LINKTYPE)
                 && !expectedResponseData.get(PlatformKeys.KEY_PREFERRED_LINKTYPE).isEmpty()
                 && configuration.getPreferredLinkType() != null) {
-            Assert.assertEquals(getEnum(expectedResponseData, PlatformKeys.KEY_PREFERRED_LINKTYPE, LinkType.class),
-                    configuration.getPreferredLinkType());
+            assertThat(configuration.getPreferredLinkType())
+                    .isEqualTo(getEnum(expectedResponseData, PlatformKeys.KEY_PREFERRED_LINKTYPE, LinkType.class));
         }
 
         // Note: This piece of code has been made because there are multiple
@@ -219,42 +222,40 @@ public class GetConfigurationSteps {
             } else {
                 meterType = getEnum(expectedResponseData, PlatformKeys.METER_TYPE, MeterType.class);
             }
-            Assert.assertEquals(meterType, configuration.getMeterType());
+            assertThat(configuration.getMeterType()).isEqualTo(meterType);
         }
 
         if (expectedResponseData.containsKey(PlatformKeys.SHORT_INTERVAL)
                 && !expectedResponseData.get(PlatformKeys.SHORT_INTERVAL).isEmpty()
                 && configuration.getShortTermHistoryIntervalMinutes() != null) {
-            Assert.assertEquals(
-                    getInteger(expectedResponseData, PlatformKeys.SHORT_INTERVAL,
-                            PlatformDefaults.DEFAULT_SHORT_INTERVAL),
-                    configuration.getShortTermHistoryIntervalMinutes());
+            assertThat(configuration.getShortTermHistoryIntervalMinutes()).isEqualTo(getInteger(expectedResponseData,
+                    PlatformKeys.SHORT_INTERVAL, PlatformDefaults.DEFAULT_SHORT_INTERVAL));
         }
 
         if (expectedResponseData.containsKey(PlatformKeys.LONG_INTERVAL)
                 && !expectedResponseData.get(PlatformKeys.LONG_INTERVAL).isEmpty()
                 && configuration.getLongTermHistoryInterval() != null) {
-            Assert.assertEquals(getInteger(expectedResponseData, PlatformKeys.LONG_INTERVAL,
-                    PlatformDefaults.DEFAULT_LONG_INTERVAL), configuration.getLongTermHistoryInterval());
+            assertThat(configuration.getLongTermHistoryInterval()).isEqualTo(getInteger(expectedResponseData,
+                    PlatformKeys.LONG_INTERVAL, PlatformDefaults.DEFAULT_LONG_INTERVAL));
         }
 
         if (expectedResponseData.containsKey(PlatformKeys.INTERVAL_TYPE)
                 && !expectedResponseData.get(PlatformKeys.INTERVAL_TYPE).isEmpty()
                 && configuration.getLongTermHistoryIntervalType() != null) {
-            Assert.assertEquals(getEnum(expectedResponseData, PlatformKeys.INTERVAL_TYPE, LongTermIntervalType.class),
-                    configuration.getLongTermHistoryIntervalType());
+            assertThat(configuration.getLongTermHistoryIntervalType())
+                    .isEqualTo(getEnum(expectedResponseData, PlatformKeys.INTERVAL_TYPE, LongTermIntervalType.class));
         }
 
         if (expectedResponseData.containsKey(PlatformKeys.OSGP_IP_ADDRESS)
                 && !expectedResponseData.get(PlatformKeys.OSGP_IP_ADDRESS).isEmpty()) {
-            Assert.assertEquals(getString(expectedResponseData, PlatformKeys.OSGP_IP_ADDRESS),
-                    configuration.getOsgpIpAddress());
+            assertThat(configuration.getOsgpIpAddress())
+                    .isEqualTo(getString(expectedResponseData, PlatformKeys.OSGP_IP_ADDRESS));
         }
 
         if (expectedResponseData.containsKey(PlatformKeys.OSGP_PORT)
                 && !expectedResponseData.get(PlatformKeys.OSGP_PORT).isEmpty()) {
-            Assert.assertEquals(getInteger(expectedResponseData, PlatformKeys.OSGP_PORT),
-                    configuration.getOsgpPortNumber());
+            assertThat(configuration.getOsgpPortNumber())
+                    .isEqualTo(getInteger(expectedResponseData, PlatformKeys.OSGP_PORT));
         }
     }
 
@@ -275,7 +276,7 @@ public class GetConfigurationSteps {
                 // do nothing
             }
 
-            Assert.assertNotNull(response);
+            assertThat(response).isNotNull();
         });
     }
 }

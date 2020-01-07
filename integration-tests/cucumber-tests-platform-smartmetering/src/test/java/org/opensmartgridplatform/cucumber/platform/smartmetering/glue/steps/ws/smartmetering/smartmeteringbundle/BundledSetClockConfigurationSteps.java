@@ -7,8 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringbundle;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
 
@@ -40,7 +39,8 @@ public class BundledSetClockConfigurationSteps extends BaseBundleSteps {
 
         final Response response = this.getNextBundleResponse();
 
-        assertTrue("Not a valid response", response instanceof ActionResponse);
-        assertEquals(OsgpResultType.fromValue(settings.get(PlatformSmartmeteringKeys.RESULT)), response.getResult());
+        assertThat(response instanceof ActionResponse).as("Not a valid response").isTrue();
+        assertThat(response.getResult())
+                .isEqualTo(OsgpResultType.fromValue(settings.get(PlatformSmartmeteringKeys.RESULT)));
     }
 }

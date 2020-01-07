@@ -7,7 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.simulator;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import java.util.Map;
@@ -67,7 +67,7 @@ public class SimulatedConfigurationObjectSteps {
         final ObjectNode actualValue = this.deviceSimulatorSteps.getDlmsAttributeValue(CLASS_ID, OBIS_CODE,
                 ATTRIBUTE_ID_VALUE, OBJECT_DESCRIPTION);
 
-        assertEquals("Simulated ConfigurationObject value", expectedValue, actualValue);
+        assertThat(actualValue).as("Simulated ConfigurationObject value").isEqualTo(expectedValue);
     }
 
     private ObjectNode createStructureForConfigurationObject(final ConfigurationObject configurationObject,

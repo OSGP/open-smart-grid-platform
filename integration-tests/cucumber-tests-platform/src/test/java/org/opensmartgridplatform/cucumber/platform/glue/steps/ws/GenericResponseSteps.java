@@ -7,7 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.glue.steps.ws;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.ArrayList;
@@ -55,10 +55,10 @@ public abstract class GenericResponseSteps {
     private static void assertFaultDetails(final Map<String, String> expected, final Object actualObj) {
 
         if (expected.containsKey(PlatformKeys.KEY_FAULTCODE)) {
-            assertEquals(getString(expected, PlatformKeys.KEY_FAULTCODE), faultCode);
+            assertThat(faultCode).isEqualTo(getString(expected, PlatformKeys.KEY_FAULTCODE));
         }
         if (expected.containsKey(PlatformKeys.KEY_FAULTSTRING)) {
-            assertEquals(getString(expected, PlatformKeys.KEY_FAULTSTRING), faultString);
+            assertThat(faultString).isEqualTo(getString(expected, PlatformKeys.KEY_FAULTSTRING));
         }
 
         if (actualObj instanceof EnumMap) {
@@ -78,7 +78,7 @@ public abstract class GenericResponseSteps {
                 final String expectedValue = expectedEntry.getValue();
                 final String actualValue = actual.get(faultDetailElement);
 
-                assertEquals(localName, expectedValue, actualValue);
+                assertThat(actualValue).as(localName).isEqualTo(expectedValue);
             }
         } else if (actualObj instanceof ArrayList) {
             int externCounter = 0;
@@ -123,9 +123,9 @@ public abstract class GenericResponseSteps {
         final Matcher matcher = pattern.matcher(actualValue);
         if (matcher.find()) {
             final String group = matcher.group(1);
-            assertEquals(localName, expectedValue.replaceAll("('.+\\d+:.+')", group), actualValue);
+            assertThat(actualValue).as(localName).isEqualTo(expectedValue.replaceAll("('.+\\d+:.+')", group));
         } else {
-            assertEquals(localName, expectedValue, actualValue);
+            assertThat(expectedValue).as(localName).isEqualTo(expectedValue);
         }
     }
 }

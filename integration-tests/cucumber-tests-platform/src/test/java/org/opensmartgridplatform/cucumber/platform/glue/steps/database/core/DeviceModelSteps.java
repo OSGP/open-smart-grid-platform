@@ -7,13 +7,14 @@
  */
 package org.opensmartgridplatform.cucumber.platform.glue.steps.database.core;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.core.builders.DeviceModelBuilder;
@@ -69,12 +70,12 @@ public class DeviceModelSteps {
 
         for (final DeviceModel deviceModel : entityList) {
             if (deviceModel.getModelCode().equals(modelCode)) {
-                Assert.assertEquals(modelDescription, deviceModel.getDescription());
-                Assert.assertEquals(modelMetered, deviceModel.isMetered());
+                assertThat(deviceModel.getDescription()).isEqualTo(modelDescription);
+                assertThat(deviceModel.isMetered()).isEqualTo(modelMetered);
                 return;
             }
         }
-        Assert.assertFalse(true);
+        Assertions.fail();
     }
 
     /**
@@ -96,7 +97,7 @@ public class DeviceModelSteps {
         final List<DeviceModel> entityList = this.deviceModelRepository.findByManufacturer(manufacturer);
 
         for (final DeviceModel deviceModel : entityList) {
-            Assert.assertNotEquals(deviceModel.getModelCode(), modelCode);
+            assertThat(deviceModel.getModelCode()).isNotEqualTo(modelCode);
         }
     }
 

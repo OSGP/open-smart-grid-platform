@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.glue.steps.database.core;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
@@ -16,7 +17,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Assert;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -97,29 +97,31 @@ public class OrganizationSteps {
             final Organisation entity = this.organisationRepository
                     .findByOrganisationIdentification(expectedEntity.get(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION));
 
-            Assert.assertEquals(
-                    getString(expectedEntity, PlatformKeys.KEY_NAME, PlatformDefaults.DEFAULT_NEW_ORGANIZATION_NAME),
-                    entity.getName());
+            assertThat(entity.getName()).isEqualTo(
+                    getString(expectedEntity, PlatformKeys.KEY_NAME, PlatformDefaults.DEFAULT_NEW_ORGANIZATION_NAME));
+
             final String prefix = getString(expectedEntity, PlatformKeys.KEY_PREFIX,
                     PlatformDefaults.DEFAULT_ORGANIZATION_PREFIX);
-            Assert.assertEquals((prefix.isEmpty()) ? PlatformDefaults.DEFAULT_ORGANIZATION_PREFIX : prefix,
-                    entity.getPrefix());
+            assertThat(entity.getPrefix())
+                    .isEqualTo((prefix.isEmpty()) ? PlatformDefaults.DEFAULT_ORGANIZATION_PREFIX : prefix);
 
-            Assert.assertEquals(getEnum(expectedEntity, PlatformKeys.KEY_PLATFORM_FUNCTION_GROUP,
-                    org.opensmartgridplatform.domain.core.valueobjects.PlatformFunctionGroup.class,
-                    PlatformDefaults.PLATFORM_FUNCTION_GROUP), entity.getFunctionGroup());
-            Assert.assertEquals(
-                    getBoolean(expectedEntity, PlatformKeys.KEY_ENABLED, PlatformDefaults.DEFAULT_ORGANIZATION_ENABLED),
-                    entity.isEnabled());
+            assertThat(entity.getFunctionGroup())
+                    .isEqualTo(getEnum(expectedEntity, PlatformKeys.KEY_PLATFORM_FUNCTION_GROUP,
+                            org.opensmartgridplatform.domain.core.valueobjects.PlatformFunctionGroup.class,
+                            PlatformDefaults.PLATFORM_FUNCTION_GROUP));
+
+            assertThat(entity.isEnabled()).isEqualTo(getBoolean(expectedEntity, PlatformKeys.KEY_ENABLED,
+                    PlatformDefaults.DEFAULT_ORGANIZATION_ENABLED));
 
             String domains = getString(expectedEntity, PlatformKeys.KEY_DOMAINS, PlatformDefaults.DEFAULT_DOMAINS);
             if (domains.isEmpty()) {
                 domains = PlatformDefaults.DEFAULT_DOMAINS;
             }
             final List<String> expectedDomains = Arrays.asList(domains.split(";"));
-            Assert.assertEquals(expectedDomains.size(), entity.getDomains().size());
+            assertThat(entity.getDomains().size()).isEqualTo(expectedDomains.size());
+
             for (final PlatformDomain domain : entity.getDomains()) {
-                Assert.assertTrue(expectedDomains.contains(domain.toString()));
+                assertThat(expectedDomains.contains(domain.toString())).isTrue();
             }
         });
     }
@@ -138,21 +140,21 @@ public class OrganizationSteps {
                     expectedOrganization.get(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION));
         });
 
-        Assert.assertNotNull(entity);
+        assertThat(entity).isNotNull();
 
         if (expectedOrganization.containsKey(PlatformKeys.KEY_NAME)) {
-            Assert.assertEquals(getString(expectedOrganization, PlatformKeys.KEY_NAME), entity.getName());
+            assertThat(entity.getName()).isEqualTo(getString(expectedOrganization, PlatformKeys.KEY_NAME));
         }
         if (expectedOrganization.containsKey(PlatformKeys.KEY_PLATFORM_FUNCTION_GROUP)) {
-            Assert.assertEquals(getEnum(expectedOrganization, PlatformKeys.KEY_PLATFORM_FUNCTION_GROUP,
-                    PlatformFunctionGroup.class), entity.getFunctionGroup());
+            assertThat(entity.getFunctionGroup()).isEqualTo(getEnum(expectedOrganization,
+                    PlatformKeys.KEY_PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class));
         }
 
         if (expectedOrganization.containsKey(PlatformKeys.KEY_DOMAINS)
                 && !expectedOrganization.get(PlatformKeys.KEY_DOMAINS).isEmpty()) {
             for (final String domain : expectedOrganization.get(PlatformKeys.KEY_DOMAINS)
                     .split(PlatformKeys.SEPARATOR_SEMICOLON)) {
-                Assert.assertTrue(entity.getDomains().contains(PlatformDomain.valueOf(domain)));
+                assertThat(entity.getDomains().contains(PlatformDomain.valueOf(domain))).isTrue();
             }
         }
     }
@@ -162,7 +164,7 @@ public class OrganizationSteps {
      */
     @Then("^the organization with name \"([^\"]*)\" should not be created$")
     public void theOrganizationWithNameShouldNotBeCreated(final String name) {
-        Assert.assertNull(this.organisationRepository.findByName(name));
+        assertThat(this.organisationRepository.findByName(name)).isNull();
     }
 
     /**
@@ -175,7 +177,7 @@ public class OrganizationSteps {
                 .findByOrganisationIdentification(organizationIdentification);
 
         // Note: 'entity' could be 'null'
-        Assert.assertTrue(!entity.isEnabled());
+        assertThat(entity.isEnabled()).isFalse();
     }
 
     /**
@@ -187,6 +189,6 @@ public class OrganizationSteps {
         final Organisation entity = this.organisationRepository
                 .findByOrganisationIdentification(organizationIdentification);
 
-        Assert.assertTrue(entity.isEnabled());
+        assertThat(entity.isEnabled()).isTrue();
     }
 }

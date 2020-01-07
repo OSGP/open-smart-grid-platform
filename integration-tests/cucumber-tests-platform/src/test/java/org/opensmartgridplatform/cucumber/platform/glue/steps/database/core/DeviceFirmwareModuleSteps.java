@@ -7,8 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.glue.steps.database.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getNullOrNonEmptyString;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
@@ -41,14 +40,14 @@ public class DeviceFirmwareModuleSteps {
         final String deviceIdentification = getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
                 PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION);
         final Device device = this.deviceRepository.findByDeviceIdentificationWithFirmwareModules(deviceIdentification);
-        assertNotNull("Device " + deviceIdentification + " not found.", device);
+        assertThat(device).as("Device " + deviceIdentification + " not found.").isNotNull();
 
         final Map<FirmwareModule, String> expectedVersionsByModule = this.getFirmwareModuleVersions(settings);
 
         final Map<FirmwareModule, String> actualVersionsByModule = device.getFirmwareVersions();
 
-        assertEquals("Firmware module versions stored for " + deviceIdentification, expectedVersionsByModule,
-                actualVersionsByModule);
+        assertThat(actualVersionsByModule).as("Firmware module versions stored for " + deviceIdentification)
+                .isEqualTo(expectedVersionsByModule);
     }
 
     public Map<FirmwareModule, String> getFirmwareModuleVersions(final Map<String, String> settings) {
@@ -93,9 +92,11 @@ public class DeviceFirmwareModuleSteps {
         }
         final String mbus = getNullOrNonEmptyString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_MBUS, null);
         final String sec = getNullOrNonEmptyString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_SEC, null);
-        final String mBusDriverActive = getNullOrNonEmptyString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_M_BUS_DRIVER_ACTIVE, null);
+        final String mBusDriverActive = getNullOrNonEmptyString(settings,
+                PlatformKeys.FIRMWARE_MODULE_VERSION_M_BUS_DRIVER_ACTIVE, null);
 
-        final FirmwareModuleData firmwareModuleData = new FirmwareModuleData(comm, func, ma, mbus, sec, mBusDriverActive);
+        final FirmwareModuleData firmwareModuleData = new FirmwareModuleData(comm, func, ma, mbus, sec,
+                mBusDriverActive);
         return firmwareModuleData.getVersionsByModule(this.firmwareModuleRepository, isForSmartMeters);
     }
 }

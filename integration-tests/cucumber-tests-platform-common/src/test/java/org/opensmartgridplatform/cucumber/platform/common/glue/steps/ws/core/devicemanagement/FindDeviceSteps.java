@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.core.devicemanagement;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getInteger;
@@ -14,7 +15,6 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStri
 
 import java.util.Map;
 
-import org.junit.Assert;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.DeviceActivatedFilterType;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.DeviceExternalManagedFilterType;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.DeviceFilter;
@@ -183,7 +183,7 @@ public class FindDeviceSteps {
         final FindDevicesResponse response = (FindDevicesResponse) ScenarioContext.current()
                 .get(PlatformCommonKeys.RESPONSE);
 
-        Assert.assertEquals((int) numberOfDevices, response.getDevices().size());
+        assertThat(response.getDevices().size()).isEqualTo((int) numberOfDevices);
     }
 
     @Then("the find devices response contains at index \"([^\"]*)\"")

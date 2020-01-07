@@ -7,12 +7,12 @@
  */
 package org.opensmartgridplatform.cucumber.platform.glue.steps.database.core;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.Map;
 
-import org.junit.Assert;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.core.builders.ManufacturerBuilder;
@@ -56,11 +56,11 @@ public class ManufacturerSteps {
         final Manufacturer manufacturer = this.manufacturerRepository.findByCode(
                 getString(settings, PlatformKeys.MANUFACTURER_CODE, PlatformDefaults.DEFAULT_MANUFACTURER_CODE));
 
-        Assert.assertEquals(
-                getString(settings, PlatformKeys.MANUFACTURER_NAME, PlatformDefaults.DEFAULT_MANUFACTURER_NAME),
-                manufacturer.getName());
-        Assert.assertEquals(getBoolean(settings, PlatformKeys.MANUFACTURER_USE_PREFIX,
-                PlatformDefaults.DEFAULT_MANUFACTURER_USE_PREFIX), manufacturer.isUsePrefix());
+        assertThat(manufacturer.getName()).isEqualTo(
+                getString(settings, PlatformKeys.MANUFACTURER_NAME, PlatformDefaults.DEFAULT_MANUFACTURER_NAME));
+
+        assertThat(manufacturer.isUsePrefix()).isEqualTo(getBoolean(settings, PlatformKeys.MANUFACTURER_USE_PREFIX,
+                PlatformDefaults.DEFAULT_MANUFACTURER_USE_PREFIX));
     }
 
 }

@@ -8,8 +8,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringadhoc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import java.util.Map;
@@ -47,7 +46,7 @@ public class ScanMbusChannelsSteps {
         final ScanMbusChannelsRequest request = ScanMbusChannelsRequestFactory.fromParameterMap(settings);
         final ScanMbusChannelsAsyncResponse asyncResponse = this.requestClient.doRequest(request);
 
-        assertNotNull("AsyncResponse should not be null", asyncResponse);
+        assertThat(asyncResponse).as("AsyncResponse should not be null").isNotNull();
         ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
     }
 
@@ -55,8 +54,9 @@ public class ScanMbusChannelsSteps {
     public void theFoundMBusDevicesAreInTheResponse(final Map<String, String> settings) throws Throwable {
         final ScanMbusChannelsAsyncRequest asyncRequest = ScanMbusChannelsRequestFactory.fromScenarioContext();
         final ScanMbusChannelsResponse response = this.responseClient.getResponse(asyncRequest);
-        assertEquals("Result is not as expected.", settings.get(PlatformSmartmeteringKeys.RESULT),
-                response.getResult().name());
+        assertThat(response.getResult().name()).as("Result is not as expected.")
+                .isEqualTo(settings.get(PlatformSmartmeteringKeys.RESULT));
+
         this.assertChannelShortIds(settings, response.getChannelShortIds());
     }
 
@@ -89,15 +89,17 @@ public class ScanMbusChannelsSteps {
                 channelPrefix + PlatformSmartmeteringKeys.MBUS_DEVICE_TYPE_IDENTIFICATION);
 
         final MbusShortEquipmentIdentifier shortId = this.findShortIdForChannel(channel, channelShortIds);
-        assertNotNull("An M-Bus Short ID is expected for channel " + channel, shortId);
+        assertThat(shortId).as("An M-Bus Short ID is expected for channel " + channel).isNotNull();
 
-        assertEquals("M-Bus identification number for channel " + channel, expectedIdentificationNumber,
-                shortId.getIdentificationNumber());
-        assertEquals("M-Bus manufacturer identification for channel " + channel, expectedManufacturerIdentification,
-                shortId.getManufacturerIdentification());
-        assertEquals("M-Bus version for channel " + channel, expectedVersion, shortId.getVersionIdentification());
-        assertEquals("M-Bus device type identification for channel " + channel, expectedDeviceTypeIdentification,
-                shortId.getDeviceTypeIdentification());
+        assertThat(shortId.getIdentificationNumber()).as("M-Bus identification number for channel " + channel)
+                .isEqualTo(expectedIdentificationNumber);
+        assertThat(shortId.getManufacturerIdentification())
+                .as("M-Bus manufacturer identification for channel " + channel)
+                .isEqualTo(expectedManufacturerIdentification);
+        assertThat(shortId.getVersionIdentification()).as("M-Bus version for channel " + channel)
+                .isEqualTo(expectedVersion);
+        assertThat(shortId.getDeviceTypeIdentification()).as("M-Bus device type identification for channel " + channel)
+                .isEqualTo(expectedDeviceTypeIdentification);
     }
 
     private MbusShortEquipmentIdentifier findShortIdForChannel(final int channel,
@@ -105,10 +107,7 @@ public class ScanMbusChannelsSteps {
 
         final Predicate<MbusChannelShortEquipmentIdentifier> channelMatches = channelShortId -> channel == channelShortId
                 .getChannel();
-        return channelShortIds.stream()
-                .filter(channelMatches)
-                .map(MbusChannelShortEquipmentIdentifier::getShortId)
-                .findFirst()
-                .orElse(null);
+        return channelShortIds.stream().filter(channelMatches).map(MbusChannelShortEquipmentIdentifier::getShortId)
+                .findFirst().orElse(null);
     }
 }

@@ -7,12 +7,9 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
 
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetClockConfigurationAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetClockConfigurationAsyncResponse;
@@ -22,6 +19,7 @@ import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.ScenarioContextHelper;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SetClockConfigurationRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -36,7 +34,7 @@ public class SetClockConfiguration {
         final SetClockConfigurationRequest request = SetClockConfigurationRequestFactory.fromParameterMap(settings);
         final SetClockConfigurationAsyncResponse asyncResponse = this.client.setClockConfiguration(request);
 
-        assertNotNull(asyncResponse);
+        assertThat(asyncResponse).isNotNull();
         ScenarioContextHelper.saveAsyncResponse(asyncResponse);
     }
 
@@ -49,7 +47,7 @@ public class SetClockConfiguration {
         final SetClockConfigurationResponse response = this.client.getSetClockConfigurationResponse(asyncRequest);
 
         final String expectedResult = settings.get(PlatformKeys.KEY_RESULT);
-        assertNotNull("Result", response.getResult());
-        assertEquals("Result", expectedResult, response.getResult().name());
+        assertThat(response.getResult()).as("Result").isNotNull();
+        assertThat(response.getResult().name()).as("Result").isEqualTo(expectedResult);
     }
 }

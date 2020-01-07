@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.basicosgpfunctions;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
@@ -17,12 +18,7 @@ import java.util.Map;
 
 import javax.naming.OperationNotSupportedException;
 
-import org.junit.Assert;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ws.soap.client.SoapFaultClientException;
-
+import org.junit.jupiter.api.Assertions;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.DeviceAuthorisation;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.DeviceFunctionGroup;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.FindDeviceAuthorisationsRequest;
@@ -51,6 +47,10 @@ import org.opensmartgridplatform.cucumber.platform.common.support.ws.core.CoreDe
 import org.opensmartgridplatform.cucumber.platform.common.support.ws.core.CoreFirmwareManagementClient;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -156,13 +156,13 @@ public class AuthorizeDeviceFunctionsSteps {
     public void theDeviceFunctionResponseIsSuccessful(final Boolean allowed) {
         if (allowed) {
             final Object response = ScenarioContext.current().get(PlatformCommonKeys.RESPONSE);
-            Assert.assertNotNull("Response is null, which indicates an exception occurred", response);
-            Assert.assertFalse(response instanceof SoapFaultClientException);
+            assertThat(response).as("Response is null, which indicates an exception occurred").isNotNull();
+            assertThat(response instanceof SoapFaultClientException).isFalse();
         } else {
-            Assert.assertNotNull(this.exception);
+            assertThat(this.exception).isNotNull();
 
             if (!this.exception.getMessage().equals("METHOD_NOT_ALLOWED_FOR_OWNER")) {
-                Assert.assertEquals("UNAUTHORIZED", this.exception.getMessage());
+                assertThat(this.exception.getMessage()).isEqualTo("UNAUTHORIZED");
             }
         }
     }
@@ -178,12 +178,12 @@ public class AuthorizeDeviceFunctionsSteps {
             try {
                 response = this.adminDeviceManagementClient.findDeviceAuthorisations(findDeviceAuthorisationsRequest);
 
-                Assert.assertEquals(expectedCountDeviceAuthorizations, response.getDeviceAuthorisations().size());
+                assertThat(response.getDeviceAuthorisations().size()).isEqualTo(expectedCountDeviceAuthorizations);
             } catch (final Exception e) {
                 final String message = String.format("An exception occurred while retrieving the authorizations for %s",
                         deviceIdentification);
                 LOGGER.warn(message, e);
-                Assert.fail(message);
+                Assertions.fail(message);
             }
         });
     }

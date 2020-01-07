@@ -7,16 +7,11 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringinstallation;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ws.soap.client.SoapFaultClientException;
-
+import org.junit.jupiter.api.Assertions;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DeCoupleMbusDeviceAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DeCoupleMbusDeviceAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DeCoupleMbusDeviceRequest;
@@ -27,6 +22,8 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.s
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.installation.DeCoupleMbusDeviceRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.installation.SmartMeteringInstallationClient;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -45,7 +42,7 @@ public class DeCoupleDeviceSteps extends AbstractSmartMeteringSteps {
 
         try {
             this.smartMeteringInstallationClient.deCoupleMbusDevice(request);
-            fail("A SoapFaultClientException should be thrown");
+            Assertions.fail("A SoapFaultClientException should be thrown");
         } catch (final SoapFaultClientException e) {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, e);
         }
@@ -60,7 +57,7 @@ public class DeCoupleDeviceSteps extends AbstractSmartMeteringSteps {
 
         try {
             this.smartMeteringInstallationClient.deCoupleMbusDevice(request);
-            fail("A SoapFaultClientException should be thrown");
+            Assertions.fail("A SoapFaultClientException should be thrown");
         } catch (final SoapFaultClientException e) {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, e);
         }
@@ -86,8 +83,8 @@ public class DeCoupleDeviceSteps extends AbstractSmartMeteringSteps {
         final DeCoupleMbusDeviceResponse response = this.smartMeteringInstallationClient
                 .getDeCoupleMbusDeviceResponse(deCoupleMbusDeviceAsyncRequest);
 
-        assertNotNull("Result", response.getResult());
-        assertEquals("Result", status, response.getResult().name());
+        assertThat(response.getResult()).as("Result").isNotNull();
+        assertThat(response.getResult().name()).as("Result").isEqualTo(status);
     }
 
     @Then("^the DeCouple response is \"([^\"]*)\" and contains$")
@@ -99,10 +96,10 @@ public class DeCoupleDeviceSteps extends AbstractSmartMeteringSteps {
         final DeCoupleMbusDeviceResponse response = this.smartMeteringInstallationClient
                 .getDeCoupleMbusDeviceResponse(deCoupleMbusDeviceAsyncRequest);
 
-        assertNotNull("Result", response.getResult());
-        assertEquals("Result", status, response.getResult().name());
-        assertTrue("Description should contain all of " + resultList,
-                this.checkDescription(response.getDescription(), resultList));
+        assertThat(response.getResult()).as("Result").isNotNull();
+        assertThat(response.getResult().name()).as("Result").isEqualTo(status);
+        assertThat(this.checkDescription(response.getDescription(), resultList))
+                .as("Description should contain all of " + resultList).isTrue();
     }
 
     @Then("^retrieving the DeCouple response results in an exception$")
@@ -112,7 +109,7 @@ public class DeCoupleDeviceSteps extends AbstractSmartMeteringSteps {
 
         try {
             this.smartMeteringInstallationClient.getDeCoupleMbusDeviceResponse(asyncRequest);
-            fail("A SoapFaultClientException should be thrown");
+            Assertions.fail("A SoapFaultClientException should be thrown");
         } catch (final SoapFaultClientException e) {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, e);
         }

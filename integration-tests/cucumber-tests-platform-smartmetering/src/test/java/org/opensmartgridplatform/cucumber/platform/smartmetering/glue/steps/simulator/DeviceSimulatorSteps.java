@@ -7,15 +7,14 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.simulator;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.codec.binary.Hex;
+import org.junit.jupiter.api.Assertions;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.adapter.protocol.dlms.simulator.trigger.SimulatorTriggerClient;
@@ -47,7 +46,7 @@ public class DeviceSimulatorSteps {
             this.simulatorTriggerClient.clearDlmsAttributeValues();
         } catch (final SimulatorTriggerClientException stce) {
             LOGGER.error("Error calling simulatorTriggerClient.clearDlmsAttributeValues()", stce);
-            fail("Error clearing DLMS attribute values for simulator");
+            Assertions.fail("Error clearing DLMS attribute values for simulator");
         }
     }
 
@@ -59,7 +58,7 @@ public class DeviceSimulatorSteps {
             LOGGER.error(
                     "Error while getting DLMS attribute values with classId: {} and ObisCode: {} for {} with SimulatorTriggerClient",
                     classId, obisCode, description, stce);
-            fail("Error getting DLMS attribute values for " + description + " on the simulator");
+            Assertions.fail("Error getting DLMS attribute values for " + description + " on the simulator");
         }
         return jsonAttributeValues;
     }
@@ -73,7 +72,7 @@ public class DeviceSimulatorSteps {
             LOGGER.error(
                     "Error while getting DLMS attribute value with classId: {}, ObisCode: {} and attributeId: {} for {} with SimulatorTriggerClient",
                     classId, obisCode, attributeId, description, stce);
-            fail("Error getting DLMS attribute value for " + description + " on the simulator");
+            Assertions.fail("Error getting DLMS attribute value for " + description + " on the simulator");
         }
         return jsonAttributeValue;
     }
@@ -87,7 +86,7 @@ public class DeviceSimulatorSteps {
             LOGGER.error(
                     "Error while setting DLMS attribute values {} with classId: {} and ObisCode: {} for {} with SimulatorTriggerClient",
                     jsonAttributeValues, classId, obisCode, description, stce);
-            fail("Error setting DLMS attribute values for " + description + " on the simulator");
+            Assertions.fail("Error setting DLMS attribute values for " + description + " on the simulator");
         }
     }
 
@@ -100,7 +99,7 @@ public class DeviceSimulatorSteps {
             LOGGER.error(
                     "Error while setting DLMS attribute value {} with classId: {}, ObisCode: {}, and attributeId: {} for {} with SimulatorTriggerClient",
                     jsonAttributeValue, classId, obisCode, attributeId, description, stce);
-            fail("Error setting DLMS attribute value for " + description + " on the simulator");
+            Assertions.fail("Error setting DLMS attribute value for " + description + " on the simulator");
         }
     }
 
@@ -146,8 +145,10 @@ public class DeviceSimulatorSteps {
             final String attributeId = field.getKey();
             final JsonNode expectedAttributeValue = field.getValue();
             final JsonNode actualAttributeValue = attributeValuesNode.get(attributeId);
-            assertNotNull("a value must be available for attributeId: " + attributeId, actualAttributeValue);
-            assertEquals("value for attributeId: " + attributeId, expectedAttributeValue, actualAttributeValue);
+            assertThat(actualAttributeValue).as("a value must be available for attributeId: " + attributeId)
+                    .isNotNull();
+            assertThat(actualAttributeValue).as("value for attributeId: " + attributeId)
+                    .isEqualTo(expectedAttributeValue);
         });
     }
 

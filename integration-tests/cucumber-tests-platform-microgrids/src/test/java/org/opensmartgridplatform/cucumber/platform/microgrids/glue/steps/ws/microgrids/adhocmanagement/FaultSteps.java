@@ -7,10 +7,9 @@
  */
 package org.opensmartgridplatform.cucumber.platform.microgrids.glue.steps.ws.microgrids.adhocmanagement;
 
-import static org.junit.Assert.fail;
-
 import java.util.Map;
 
+import org.junit.jupiter.api.Assertions;
 import org.opensmartgridplatform.adapter.ws.schema.microgrids.adhocmanagement.GetDataAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.microgrids.adhocmanagement.GetDataResponse;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
@@ -40,7 +39,8 @@ public class FaultSteps {
 
         try {
             final GetDataResponse response = this.client.getData(getDataAsyncRequest);
-            fail("Expected a SOAP fault, but got a GetDataResponse with result " + response.getResult().value() + ".");
+            Assertions.fail("Expected a SOAP fault, but got a GetDataResponse with result "
+                    + response.getResult().value() + ".");
         } catch (final SoapFaultClientException e) {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, e);
         }

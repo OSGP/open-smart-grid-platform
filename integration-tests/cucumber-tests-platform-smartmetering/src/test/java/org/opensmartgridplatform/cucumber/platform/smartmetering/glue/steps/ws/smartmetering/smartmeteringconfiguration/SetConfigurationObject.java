@@ -7,14 +7,9 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectAsyncRequest;
@@ -25,6 +20,9 @@ import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SetConfigurationObjectRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -45,7 +43,8 @@ public class SetConfigurationObject {
 
         LOGGER.info("Set configuration object response is received {}", setConfigurationObjectAsyncResponse);
 
-        assertNotNull("Set configuration object response should not be null", setConfigurationObjectAsyncResponse);
+        assertThat(setConfigurationObjectAsyncResponse).as("Set configuration object response should not be null")
+                .isNotNull();
         ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID,
                 setConfigurationObjectAsyncResponse.getCorrelationUid());
     }
@@ -57,6 +56,7 @@ public class SetConfigurationObject {
         final SetConfigurationObjectResponse setConfigurationObjectResponse = this.smartMeteringConfigurationClient
                 .retrieveSetConfigurationObjectResponse(setConfigurationObjectAsyncRequest);
 
-        assertEquals("Set configuration object result", OsgpResultType.OK, setConfigurationObjectResponse.getResult());
+        assertThat(setConfigurationObjectResponse.getResult()).as("Set configuration object result")
+                .isEqualTo(OsgpResultType.OK);
     }
 }

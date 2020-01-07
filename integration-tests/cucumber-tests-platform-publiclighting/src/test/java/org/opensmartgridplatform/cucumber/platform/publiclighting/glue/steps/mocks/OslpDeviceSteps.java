@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.publiclighting.glue.steps.mocks;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getDate;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum;
@@ -27,7 +28,6 @@ import java.util.Map;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTimeZone;
-import org.junit.Assert;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities.OslpDevice;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.repositories.OslpDeviceRepository;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
@@ -63,7 +63,6 @@ import org.opensmartgridplatform.oslp.Oslp.ResumeScheduleRequest;
 import org.opensmartgridplatform.oslp.Oslp.Schedule;
 import org.opensmartgridplatform.oslp.Oslp.SetConfigurationRequest;
 import org.opensmartgridplatform.oslp.Oslp.SetConfigurationResponse;
-import org.opensmartgridplatform.oslp.Oslp.SetRebootRequest;
 import org.opensmartgridplatform.oslp.Oslp.SetScheduleRequest;
 import org.opensmartgridplatform.oslp.Oslp.SetTransitionRequest;
 import org.opensmartgridplatform.oslp.Oslp.Status;
@@ -108,8 +107,8 @@ public class OslpDeviceSteps {
     @Then("^a get configuration \"([^\"]*)\" message is sent to device \"([^\"]*)\"$")
     public void aGetConfigurationOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification) {
         final Message message = this.oslpMockServer.waitForRequest(MessageType.GET_CONFIGURATION);
-        Assert.assertNotNull(message);
-        Assert.assertTrue(message.hasGetConfigurationRequest());
+        assertThat(message).isNotNull();
+        assertThat(message.hasGetConfigurationRequest()).isTrue();
     }
 
     /**
@@ -122,8 +121,8 @@ public class OslpDeviceSteps {
     @Then("^a get firmware version \"([^\"]*)\" message is sent to device \"([^\"]*)\"$")
     public void aGetFirmwareVersionOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification) {
         final Message message = this.oslpMockServer.waitForRequest(MessageType.GET_FIRMWARE_VERSION);
-        Assert.assertNotNull(message);
-        Assert.assertTrue(message.hasGetFirmwareVersionRequest());
+        assertThat(message).isNotNull();
+        assertThat(message.hasGetFirmwareVersionRequest()).isTrue();
 
         message.getGetFirmwareVersionRequest();
     }
@@ -138,29 +137,31 @@ public class OslpDeviceSteps {
     public void aGetPowerUsageHistoryOslpMessageIsSentToTheDevice(final String protocol,
             final Map<String, String> expectedParameters) {
         final Message message = this.oslpMockServer.waitForRequest(MessageType.GET_POWER_USAGE_HISTORY);
-        Assert.assertNotNull(message);
-        Assert.assertTrue(message.hasGetPowerUsageHistoryRequest());
+        assertThat(message).isNotNull();
+        assertThat(message.hasGetPowerUsageHistoryRequest()).isTrue();
 
         final GetPowerUsageHistoryRequest request = message.getGetPowerUsageHistoryRequest();
-        Assert.assertEquals(getEnum(expectedParameters, PlatformPubliclightingKeys.HISTORY_TERM_TYPE,
-                HistoryTermType.class, PlatformPubliclightingDefaults.DEFAULT_OSLP_HISTORY_TERM_TYPE),
-                request.getTermType());
+        assertThat(request.getTermType())
+                .isEqualTo(getEnum(expectedParameters, PlatformPubliclightingKeys.HISTORY_TERM_TYPE,
+                        HistoryTermType.class, PlatformPubliclightingDefaults.DEFAULT_OSLP_HISTORY_TERM_TYPE));
+
         if (expectedParameters.containsKey(PlatformPubliclightingKeys.KEY_PAGE)
                 && !expectedParameters.get(PlatformPubliclightingKeys.KEY_PAGE).isEmpty()) {
-            Assert.assertEquals((int) getInteger(expectedParameters, PlatformPubliclightingKeys.KEY_PAGE),
-                    request.getPage());
+            assertThat(request.getPage())
+                    .isEqualTo((int) getInteger(expectedParameters, PlatformPubliclightingKeys.KEY_PAGE));
+
         }
         if (expectedParameters.containsKey(PlatformPubliclightingKeys.START_TIME)
                 && !expectedParameters.get(PlatformPubliclightingKeys.START_TIME).isEmpty()
                 && expectedParameters.get(PlatformPubliclightingKeys.START_TIME) != null) {
-            Assert.assertEquals(getString(expectedParameters, PlatformPubliclightingKeys.START_TIME),
-                    request.getTimePeriod().getStartTime());
+            assertThat(request.getTimePeriod().getStartTime())
+                    .isEqualTo(getString(expectedParameters, PlatformPubliclightingKeys.START_TIME));
         }
         if (expectedParameters.containsKey(PlatformPubliclightingKeys.END_TIME)
                 && !expectedParameters.get(PlatformPubliclightingKeys.END_TIME).isEmpty()
                 && expectedParameters.get(PlatformPubliclightingKeys.END_TIME) != null) {
-            Assert.assertEquals(getString(expectedParameters, PlatformPubliclightingKeys.END_TIME),
-                    request.getTimePeriod().getEndTime());
+            assertThat(request.getTimePeriod().getEndTime())
+                    .isEqualTo(getString(expectedParameters, PlatformPubliclightingKeys.END_TIME));
         }
     }
 
@@ -174,8 +175,8 @@ public class OslpDeviceSteps {
     @Then("^a get status \"([^\"]*)\" message is sent to device \"([^\"]*)\"$")
     public void aGetStatusOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification) {
         final Message message = this.oslpMockServer.waitForRequest(MessageType.GET_STATUS);
-        Assert.assertNotNull(message);
-        Assert.assertTrue(message.hasGetStatusRequest());
+        assertThat(message).isNotNull();
+        assertThat(message.hasGetStatusRequest()).isTrue();
     }
 
     /**
@@ -188,17 +189,15 @@ public class OslpDeviceSteps {
     @Then("^an update firmware \"([^\"]*)\" message is sent to the device$")
     public void anUpdateFirmwareOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification) {
         final Message message = this.oslpMockServer.waitForRequest(MessageType.UPDATE_FIRMWARE);
-        Assert.assertNotNull(message);
-        Assert.assertTrue(message.hasUpdateFirmwareRequest());
-
-        message.getUpdateFirmwareRequest();
+        assertThat(message).isNotNull();
+        assertThat(message.hasUpdateFirmwareRequest()).isTrue();
     }
 
     @Then("^an update key \"([^\"]*)\" message is sent to device \"([^\"]*)\"$")
     public void anUpdateKeyOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification) {
         final Message message = this.oslpMockServer.waitForRequest(MessageType.UPDATE_KEY);
-        Assert.assertNotNull(message);
-        Assert.assertTrue(message.hasSetDeviceVerificationKeyRequest());
+        assertThat(message).isNotNull();
+        assertThat(message.hasSetDeviceVerificationKeyRequest()).isTrue();
     }
 
     /**
@@ -212,17 +211,17 @@ public class OslpDeviceSteps {
     public void aResumeScheduleOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification,
             final Map<String, String> expectedRequest) {
         final Message message = this.oslpMockServer.waitForRequest(MessageType.RESUME_SCHEDULE);
-        Assert.assertNotNull(message);
-        Assert.assertTrue(message.hasResumeScheduleRequest());
+        assertThat(message).isNotNull();
+        assertThat(message.hasResumeScheduleRequest()).isTrue();
 
         final ResumeScheduleRequest request = message.getResumeScheduleRequest();
         /*
          * resumeScheduleRequest { index: "\000" immediate: false }
          */
-        Assert.assertEquals(getInteger(expectedRequest, PlatformPubliclightingKeys.KEY_INDEX),
-                OslpUtils.byteStringToInteger(request.getIndex()));
-        Assert.assertEquals(getBoolean(expectedRequest, PlatformPubliclightingKeys.KEY_ISIMMEDIATE),
-                request.getImmediate());
+        assertThat(OslpUtils.byteStringToInteger(request.getIndex()))
+                .isEqualTo(getInteger(expectedRequest, PlatformPubliclightingKeys.KEY_INDEX));
+        assertThat(request.getImmediate())
+                .isEqualTo(getBoolean(expectedRequest, PlatformPubliclightingKeys.KEY_ISIMMEDIATE));
     }
 
     /**
@@ -236,8 +235,8 @@ public class OslpDeviceSteps {
     public void aSetConfigurationOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification,
             final Map<String, String> expectedResponseData) {
         final Message receivedMessage = this.oslpMockServer.waitForRequest(MessageType.SET_CONFIGURATION);
-        Assert.assertNotNull(receivedMessage);
-        Assert.assertTrue(receivedMessage.hasSetConfigurationRequest());
+        assertThat(receivedMessage).isNotNull();
+        assertThat(receivedMessage.hasSetConfigurationRequest()).isTrue();
 
         final SetConfigurationRequest receivedConfiguration = receivedMessage.getSetConfigurationRequest();
 
@@ -245,7 +244,7 @@ public class OslpDeviceSteps {
                 && receivedConfiguration.getLightType() != null) {
             final LightType expectedLightType = getEnum(expectedResponseData, PlatformKeys.KEY_LIGHTTYPE,
                     LightType.class);
-            Assert.assertEquals(expectedLightType, receivedConfiguration.getLightType());
+            assertThat(receivedConfiguration.getLightType()).isEqualTo(expectedLightType);
 
             switch (expectedLightType) {
             case DALI:
@@ -253,27 +252,26 @@ public class OslpDeviceSteps {
                 if (receivedDaliConfiguration != null) {
                     if (expectedResponseData.containsKey(PlatformKeys.DC_LIGHTS)
                             && !expectedResponseData.get(PlatformKeys.DC_LIGHTS).isEmpty()) {
-                        Assert.assertEquals(getInteger(expectedResponseData, PlatformKeys.DC_LIGHTS),
-                                OslpUtils.byteStringToInteger(receivedDaliConfiguration.getNumberOfLights()));
+                        assertThat(OslpUtils.byteStringToInteger(receivedDaliConfiguration.getNumberOfLights()))
+                                .isEqualTo(getInteger(expectedResponseData, PlatformKeys.DC_LIGHTS));
                     }
 
                     if (expectedResponseData.containsKey(PlatformKeys.DC_MAP)
                             && !expectedResponseData.get(PlatformKeys.DC_MAP).isEmpty()) {
-                        Assert.assertNotNull(receivedDaliConfiguration.getAddressMapList());
-
+                        assertThat(receivedDaliConfiguration.getAddressMapList()).isNotNull();
                         final String[] expectedDcMapArray = getString(expectedResponseData, PlatformKeys.DC_MAP)
                                 .split(";");
-                        Assert.assertEquals(expectedDcMapArray.length,
-                                receivedDaliConfiguration.getAddressMapList().size());
+                        assertThat(receivedDaliConfiguration.getAddressMapList().size())
+                                .isEqualTo(expectedDcMapArray.length);
 
                         final List<IndexAddressMap> receivedIndexAddressMapList = receivedDaliConfiguration
                                 .getAddressMapList();
                         for (int i = 0; i < expectedDcMapArray.length; i++) {
                             final String[] expectedDcMapArrayElements = expectedDcMapArray[i].split(",");
-                            Assert.assertEquals((Integer) Integer.parseInt(expectedDcMapArrayElements[0]),
-                                    OslpUtils.byteStringToInteger(receivedIndexAddressMapList.get(i).getIndex()));
-                            Assert.assertEquals((Integer) Integer.parseInt(expectedDcMapArrayElements[1]),
-                                    OslpUtils.byteStringToInteger(receivedIndexAddressMapList.get(i).getAddress()));
+                            assertThat(OslpUtils.byteStringToInteger(receivedIndexAddressMapList.get(i).getIndex()))
+                                    .isEqualTo((Integer) Integer.parseInt(expectedDcMapArrayElements[0]));
+                            assertThat(OslpUtils.byteStringToInteger(receivedIndexAddressMapList.get(i).getAddress()))
+                                    .isEqualTo((Integer) Integer.parseInt(expectedDcMapArrayElements[1]));
                         }
                     }
                 }
@@ -299,20 +297,22 @@ public class OslpDeviceSteps {
                                 .convertStringsListToRelayMapList(expectedRelayMapArray);
                         Collections.sort(expectedRelayMapList);
 
-                        Assert.assertEquals("Either the expected or the received relay maps are empty, but not both",
-                                CollectionUtils.isEmpty(expectedRelayMapList),
-                                CollectionUtils.isEmpty(receivedRelayMapList));
+                        assertThat(CollectionUtils.isEmpty(receivedRelayMapList))
+                                .as("Either the expected or the received relay maps are empty, but not both")
+                                .isEqualTo(CollectionUtils.isEmpty(expectedRelayMapList));
 
                         if (!CollectionUtils.isEmpty(receivedRelayMapList)
                                 && !CollectionUtils.isEmpty(expectedRelayMapList)) {
-                            Assert.assertEquals("Size of expected and received relay map list differs",
-                                    expectedRelayMapList.size(), receivedRelayMapList.size());
+                            assertThat(receivedRelayMapList.size())
+                                    .as("Size of expected and received relay map list differs")
+                                    .isEqualTo(expectedRelayMapList.size());
                         }
 
                         // Compare the contents of each relay map
                         for (int i = 0; i < expectedRelayMapList.size(); i++) {
-                            Assert.assertEquals("Expected and received relay map differs for " + i,
-                                    expectedRelayMapList.get(i), receivedRelayMapList.get(i));
+                            assertThat(receivedRelayMapList.get(i))
+                                    .as("Expected and received relay map differs for " + i)
+                                    .isEqualTo(expectedRelayMapList.get(i));
                         }
                     }
                 }
@@ -322,65 +322,63 @@ public class OslpDeviceSteps {
             case ONE_TO_TEN_VOLT_REVERSE:
             case LT_NOT_SET:
             default:
-                Assert.assertEquals(0, receivedConfiguration.getDaliConfiguration().getAddressMapList().size());
-                Assert.assertEquals(0, receivedConfiguration.getRelayConfiguration().getAddressMapList().size());
+                assertThat(receivedConfiguration.getDaliConfiguration().getAddressMapList().size()).isEqualTo(0);
+
+                assertThat(receivedConfiguration.getRelayConfiguration().getAddressMapList().size()).isEqualTo(0);
             }
         }
 
         if (!StringUtils.isEmpty(expectedResponseData.get(PlatformKeys.KEY_PREFERRED_LINKTYPE))
                 && receivedConfiguration.getPreferredLinkType() != null) {
-            Assert.assertEquals(getEnum(expectedResponseData, PlatformKeys.KEY_PREFERRED_LINKTYPE, LinkType.class),
-                    receivedConfiguration.getPreferredLinkType());
+            assertThat(receivedConfiguration.getPreferredLinkType())
+                    .isEqualTo(getEnum(expectedResponseData, PlatformKeys.KEY_PREFERRED_LINKTYPE, LinkType.class));
         }
 
         if (!StringUtils.isEmpty(expectedResponseData.get(PlatformKeys.METER_TYPE))
                 && receivedConfiguration.getMeterType() != null) {
             MeterType meterType;
             meterType = getEnum(expectedResponseData, PlatformKeys.METER_TYPE, MeterType.class);
-            Assert.assertEquals(meterType, receivedConfiguration.getMeterType());
+            assertThat(receivedConfiguration.getMeterType()).isEqualTo(meterType);
         }
 
         if (!StringUtils.isEmpty(expectedResponseData.get(PlatformKeys.SHORT_INTERVAL))
                 && receivedConfiguration.getShortTermHistoryIntervalMinutes() != 0) {
-            Assert.assertEquals(
-                    (int) getInteger(expectedResponseData, PlatformKeys.SHORT_INTERVAL,
-                            PlatformDefaults.DEFAULT_SHORT_INTERVAL),
-                    receivedConfiguration.getShortTermHistoryIntervalMinutes());
+            assertThat(receivedConfiguration.getShortTermHistoryIntervalMinutes())
+                    .isEqualTo((int) getInteger(expectedResponseData, PlatformKeys.SHORT_INTERVAL,
+                            PlatformDefaults.DEFAULT_SHORT_INTERVAL));
         }
 
         if (!StringUtils.isEmpty(expectedResponseData.get(PlatformKeys.LONG_INTERVAL))
                 && receivedConfiguration.getLongTermHistoryInterval() != 0) {
-            Assert.assertEquals(
-                    (int) getInteger(expectedResponseData, PlatformKeys.LONG_INTERVAL,
-                            PlatformDefaults.DEFAULT_LONG_INTERVAL),
-                    receivedConfiguration.getLongTermHistoryInterval());
+            assertThat(receivedConfiguration.getLongTermHistoryInterval())
+                    .isEqualTo((int) getInteger(expectedResponseData, PlatformKeys.LONG_INTERVAL,
+                            PlatformDefaults.DEFAULT_LONG_INTERVAL));
         }
 
         if (!StringUtils.isEmpty(expectedResponseData.get(PlatformKeys.INTERVAL_TYPE))
                 && receivedConfiguration.getLongTermHistoryIntervalType() != null) {
-            Assert.assertEquals(getEnum(expectedResponseData, PlatformKeys.INTERVAL_TYPE, LongTermIntervalType.class),
-                    receivedConfiguration.getLongTermHistoryIntervalType());
+            assertThat(receivedConfiguration.getLongTermHistoryIntervalType())
+                    .isEqualTo(getEnum(expectedResponseData, PlatformKeys.INTERVAL_TYPE, LongTermIntervalType.class));
         }
 
         if (!StringUtils.isEmpty(expectedResponseData.get(PlatformKeys.OSGP_IP_ADDRESS))) {
-            Assert.assertEquals(expectedResponseData.get(PlatformKeys.OSGP_IP_ADDRESS),
-                    this.convertIpAddress(receivedConfiguration.getOspgIpAddress()));
+            assertThat(this.convertIpAddress(receivedConfiguration.getOspgIpAddress()))
+                    .isEqualTo(expectedResponseData.get(PlatformKeys.OSGP_IP_ADDRESS));
         }
 
         if (!StringUtils.isEmpty(expectedResponseData.get(PlatformKeys.OSGP_PORT))) {
-            Assert.assertEquals(Integer.parseInt(expectedResponseData.get(PlatformKeys.OSGP_PORT)),
-                    receivedConfiguration.getOsgpPortNumber());
+            assertThat(receivedConfiguration.getOsgpPortNumber())
+                    .isEqualTo(Integer.parseInt(expectedResponseData.get(PlatformKeys.OSGP_PORT)));
         }
 
         if (!StringUtils.isEmpty(expectedResponseData.get(PlatformKeys.KEY_ASTRONOMICAL_SUNRISE_OFFSET))) {
-            Assert.assertEquals(
-                    Integer.parseInt(expectedResponseData.get(PlatformKeys.KEY_ASTRONOMICAL_SUNRISE_OFFSET)),
-                    receivedConfiguration.getAstroGateSunRiseOffset());
+            assertThat(receivedConfiguration.getAstroGateSunRiseOffset()).isEqualTo(
+                    Integer.parseInt(expectedResponseData.get(PlatformKeys.KEY_ASTRONOMICAL_SUNRISE_OFFSET)));
         }
 
         if (!StringUtils.isEmpty(expectedResponseData.get(PlatformKeys.KEY_ASTRONOMICAL_SUNSET_OFFSET))) {
-            Assert.assertEquals(Integer.parseInt(expectedResponseData.get(PlatformKeys.KEY_ASTRONOMICAL_SUNSET_OFFSET)),
-                    receivedConfiguration.getAstroGateSunSetOffset());
+            assertThat(receivedConfiguration.getAstroGateSunSetOffset())
+                    .isEqualTo(Integer.parseInt(expectedResponseData.get(PlatformKeys.KEY_ASTRONOMICAL_SUNSET_OFFSET)));
         }
     }
 
@@ -395,8 +393,8 @@ public class OslpDeviceSteps {
     public void aSetEventNotificationOslpMessageIsSentToDevice(final String protocol,
             final String deviceIdentification) {
         final Message message = this.oslpMockServer.waitForRequest(MessageType.SET_EVENT_NOTIFICATIONS);
-        Assert.assertNotNull(message);
-        Assert.assertTrue(message.hasSetEventNotificationsRequest());
+        assertThat(message).isNotNull();
+        assertThat(message.hasSetEventNotificationsRequest()).isTrue();
     }
 
     /**
@@ -408,10 +406,10 @@ public class OslpDeviceSteps {
     @Then("^a set light \"([^\"]*)\" message with \"([^\"]*)\" lightvalues is sent to the device$")
     public void aSetLightOslpMessageWithLightValuesIsSentToTheDevice(final String protocol, final int nofLightValues) {
         final Message message = this.oslpMockServer.waitForRequest(MessageType.SET_LIGHT);
-        Assert.assertNotNull(message);
-        Assert.assertTrue(message.hasSetLightRequest());
+        assertThat(message).isNotNull();
+        assertThat(message.hasSetLightRequest()).isTrue();
 
-        Assert.assertEquals(nofLightValues, message.getSetLightRequest().getValuesList().size());
+        assertThat(message.getSetLightRequest().getValuesList().size()).isEqualTo(nofLightValues);
     }
 
     /**
@@ -424,24 +422,23 @@ public class OslpDeviceSteps {
     public void aSetLightOSLPMessageWithOneLightvalueIsSentToTheDevice(final String protocol,
             final Map<String, String> expectedParameters) {
         final Message message = this.oslpMockServer.waitForRequest(MessageType.SET_LIGHT);
-        Assert.assertNotNull(message);
-        Assert.assertTrue(message.hasSetLightRequest());
+        assertThat(message).isNotNull();
+        assertThat(message.hasSetLightRequest()).isTrue();
 
         final LightValue lightValue = message.getSetLightRequest().getValues(0);
 
-        Assert.assertEquals(
-                getInteger(expectedParameters, PlatformPubliclightingKeys.KEY_INDEX,
-                        PlatformPubliclightingDefaults.DEFAULT_INDEX),
-                OslpUtils.byteStringToInteger(lightValue.getIndex()));
+        assertThat(OslpUtils.byteStringToInteger(lightValue.getIndex())).isEqualTo(getInteger(expectedParameters,
+                PlatformPubliclightingKeys.KEY_INDEX, PlatformPubliclightingDefaults.DEFAULT_INDEX));
+
         if (expectedParameters.containsKey(PlatformPubliclightingKeys.KEY_DIMVALUE)
                 && !StringUtils.isEmpty(expectedParameters.get(PlatformPubliclightingKeys.KEY_DIMVALUE))) {
-            Assert.assertEquals(
-                    getInteger(expectedParameters, PlatformPubliclightingKeys.KEY_DIMVALUE,
-                            PlatformPubliclightingDefaults.DEFAULT_DIMVALUE),
-                    OslpUtils.byteStringToInteger(lightValue.getDimValue()));
+
+            assertThat(OslpUtils.byteStringToInteger(lightValue.getDimValue())).isEqualTo(getInteger(expectedParameters,
+                    PlatformPubliclightingKeys.KEY_DIMVALUE, PlatformPubliclightingDefaults.DEFAULT_DIMVALUE));
         }
-        Assert.assertEquals(getBoolean(expectedParameters, PlatformPubliclightingKeys.KEY_ON,
-                PlatformPubliclightingDefaults.DEFAULT_ON), lightValue.getOn());
+
+        assertThat(lightValue.getOn()).isEqualTo(getBoolean(expectedParameters, PlatformPubliclightingKeys.KEY_ON,
+                PlatformPubliclightingDefaults.DEFAULT_ON));
     }
 
     /**
@@ -467,11 +464,8 @@ public class OslpDeviceSteps {
     @Then("^a set reboot \"([^\"]*)\" message is sent to device \"([^\"]*)\"$")
     public void aSetRebootOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification) {
         final Message message = this.oslpMockServer.waitForRequest(MessageType.SET_REBOOT);
-        Assert.assertNotNull(message);
-        Assert.assertTrue(message.hasSetRebootRequest());
-
-        @SuppressWarnings("unused")
-        final SetRebootRequest request = message.getSetRebootRequest();
+        assertThat(message).isNotNull();
+        assertThat(message.hasSetRebootRequest()).isTrue();
     }
 
     /**
@@ -514,14 +508,14 @@ public class OslpDeviceSteps {
     public void aSetTransitionOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification,
             final Map<String, String> expectedResult) {
         final Message message = this.oslpMockServer.waitForRequest(MessageType.SET_TRANSITION);
-        Assert.assertNotNull(message);
-        Assert.assertTrue(message.hasSetTransitionRequest());
+        assertThat(message).isNotNull();
+        assertThat(message.hasSetTransitionRequest()).isTrue();
 
         final SetTransitionRequest request = message.getSetTransitionRequest();
 
-        Assert.assertEquals(
-                getEnum(expectedResult, PlatformPubliclightingKeys.KEY_TRANSITION_TYPE, TransitionType.class),
-                request.getTransitionType());
+        assertThat(request.getTransitionType()).isEqualTo(
+                getEnum(expectedResult, PlatformPubliclightingKeys.KEY_TRANSITION_TYPE, TransitionType.class));
+
         if (expectedResult.containsKey(PlatformPubliclightingKeys.KEY_TIME)) {
             // TODO: How to check the time?
             // Assert.assertEquals(expectedResult.get(Keys.KEY_TIME),
@@ -539,8 +533,8 @@ public class OslpDeviceSteps {
     @Then("^a start device \"([^\"]*)\" message is sent to device \"([^\"]*)\"$")
     public void aStartDeviceOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification) {
         final Message message = this.oslpMockServer.waitForRequest(MessageType.START_SELF_TEST);
-        Assert.assertNotNull(message);
-        Assert.assertTrue(message.hasStartSelfTestRequest());
+        assertThat(message).isNotNull();
+        assertThat(message.hasStartSelfTestRequest()).isTrue();
     }
 
     /**
@@ -553,8 +547,8 @@ public class OslpDeviceSteps {
     @Then("^a stop device \"([^\"]*)\" message is sent to device \"([^\"]*)\"$")
     public void aStopDeviceOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification) {
         final Message message = this.oslpMockServer.waitForRequest(MessageType.STOP_SELF_TEST);
-        Assert.assertNotNull(message);
-        Assert.assertTrue(message.hasStopSelfTestRequest());
+        assertThat(message).isNotNull();
+        assertThat(message.hasStopSelfTestRequest()).isTrue();
     }
 
     /**
@@ -566,34 +560,33 @@ public class OslpDeviceSteps {
 
     private void checkAndValidateRequest(final MessageType type, final Map<String, String> expectedRequest) {
         final Message message = this.oslpMockServer.waitForRequest(type);
-        Assert.assertNotNull(message);
-        Assert.assertTrue(message.hasSetScheduleRequest());
+        assertThat(message).isNotNull();
+        assertThat(message.hasSetScheduleRequest()).isTrue();
 
         final SetScheduleRequest request = message.getSetScheduleRequest();
 
         for (final Schedule schedule : request.getSchedulesList()) {
             if (type == MessageType.SET_LIGHT_SCHEDULE) {
-                Assert.assertEquals(
-                        getEnum(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_WEEKDAY, Weekday.class),
-                        schedule.getWeekday());
+
+                assertThat(schedule.getWeekday()).isEqualTo(
+                        getEnum(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_WEEKDAY, Weekday.class));
             }
             if (StringUtils.isNotBlank(expectedRequest.get(PlatformPubliclightingKeys.SCHEDULE_STARTDAY))) {
                 final String startDay = getDate(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_STARTDAY)
                         .toDateTime(DateTimeZone.UTC).toString("yyyyMMdd");
 
-                Assert.assertEquals(startDay, schedule.getStartDay());
+                assertThat(schedule.getStartDay()).isEqualTo(startDay);
             }
             if (StringUtils.isNotBlank(expectedRequest.get(PlatformPubliclightingKeys.SCHEDULE_ENDDAY))) {
                 final String endDay = getDate(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_ENDDAY)
                         .toDateTime(DateTimeZone.UTC).toString("yyyyMMdd");
 
-                Assert.assertEquals(endDay, schedule.getEndDay());
+                assertThat(schedule.getEndDay()).isEqualTo(endDay);
             }
 
             if (type == MessageType.SET_LIGHT_SCHEDULE) {
-                Assert.assertEquals(
-                        getEnum(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_ACTIONTIME, ActionTime.class),
-                        schedule.getActionTime());
+                assertThat(schedule.getActionTime()).isEqualTo(
+                        getEnum(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_ACTIONTIME, ActionTime.class));
             }
             if (StringUtils.isNotBlank(expectedRequest.get(PlatformPubliclightingKeys.SCHEDULE_TIME))) {
                 String expectedTime = getString(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_TIME).replace(":",
@@ -601,41 +594,42 @@ public class OslpDeviceSteps {
                 if (expectedTime.contains(".")) {
                     expectedTime = expectedTime.substring(0, expectedTime.indexOf("."));
                 }
-                Assert.assertEquals(expectedTime, schedule.getTime());
+
+                assertThat(schedule.getTime()).isEqualTo(expectedTime);
             }
             final String scheduleLightValue = getString(expectedRequest,
                     (type == MessageType.SET_LIGHT_SCHEDULE) ? PlatformPubliclightingKeys.SCHEDULE_LIGHTVALUES
                             : PlatformPubliclightingKeys.SCHEDULE_TARIFFVALUES);
             final String[] scheduleLightValues = scheduleLightValue.split(";");
-            Assert.assertEquals(scheduleLightValues.length, schedule.getValueCount());
+            assertThat(schedule.getValueCount()).isEqualTo(scheduleLightValues.length);
+
             for (int i = 0; i < scheduleLightValues.length; i++) {
                 final Integer index = OslpUtils.byteStringToInteger(schedule.getValue(i).getIndex()),
                         dimValue = OslpUtils.byteStringToInteger(schedule.getValue(i).getDimValue());
                 if (type == MessageType.SET_LIGHT_SCHEDULE) {
-                    Assert.assertEquals(scheduleLightValues[i], String.format("%s,%s,%s", (index != null) ? index : "",
-                            schedule.getValue(i).getOn(), (dimValue != null) ? dimValue : ""));
+                    assertThat(String.format("%s,%s,%s", (index != null) ? index : "", schedule.getValue(i).getOn(),
+                            (dimValue != null) ? dimValue : "")).isEqualTo(scheduleLightValues[i]);
                 } else if (type == MessageType.SET_TARIFF_SCHEDULE) {
-                    Assert.assertEquals(scheduleLightValues[i],
-                            String.format("%s,%s", (index != null) ? index : "", !schedule.getValue(i).getOn()));
+                    assertThat(String.format("%s,%s", (index != null) ? index : "", !schedule.getValue(i).getOn()))
+                            .isEqualTo(scheduleLightValues[i]);
                 }
             }
 
             if (type == MessageType.SET_LIGHT_SCHEDULE) {
-                Assert.assertEquals(
+                assertThat(schedule.getTriggerType()).isEqualTo(
                         (!getString(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_TRIGGERTYPE).isEmpty())
                                 ? getEnum(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_TRIGGERTYPE,
                                         TriggerType.class)
-                                : TriggerType.TT_NOT_SET,
-                        schedule.getTriggerType());
+                                : TriggerType.TT_NOT_SET);
 
                 if (StringUtils.isNotBlank(expectedRequest.get(PlatformPubliclightingKeys.SCHEDULE_TRIGGERWINDOW))) {
                     final String[] windowTypeValues = getString(expectedRequest,
                             PlatformPubliclightingKeys.SCHEDULE_TRIGGERWINDOW).split(",");
                     if (windowTypeValues.length == 2) {
-                        Assert.assertEquals(Integer.parseInt(windowTypeValues[0]),
-                                schedule.getWindow().getMinutesBefore());
-                        Assert.assertEquals(Integer.parseInt(windowTypeValues[1]),
-                                schedule.getWindow().getMinutesAfter());
+                        assertThat(schedule.getWindow().getMinutesBefore())
+                                .isEqualTo(Integer.parseInt(windowTypeValues[0]));
+                        assertThat(schedule.getWindow().getMinutesAfter())
+                                .isEqualTo(Integer.parseInt(windowTypeValues[1]));
                     }
                 }
             }
@@ -958,7 +952,7 @@ public class OslpDeviceSteps {
 
         final EventNotificationResponse response = responseMessage.getEventNotificationResponse();
 
-        Assert.assertEquals(getString(expectedResponse, PlatformPubliclightingKeys.KEY_STATUS), response.getStatus());
+        assertThat(response.getStatus()).isEqualTo(getString(expectedResponse, PlatformPubliclightingKeys.KEY_STATUS));
     }
 
     @Given("^the device sends a register device request to the platform over \"([^\"]*)\"$")
@@ -1103,8 +1097,8 @@ public class OslpDeviceSteps {
 
         final EventNotificationResponse response = responseMessage.getEventNotificationResponse();
 
-        Assert.assertEquals(getString(expectedResponse, PlatformPubliclightingKeys.KEY_STATUS),
-                response.getStatus().name());
+        assertThat(response.getStatus().name())
+                .isEqualTo(getString(expectedResponse, PlatformPubliclightingKeys.KEY_STATUS));
     }
 
     /**
@@ -1116,8 +1110,8 @@ public class OslpDeviceSteps {
 
         final SetConfigurationResponse response = responseMessage.getSetConfigurationResponse();
 
-        Assert.assertEquals(getString(expectedResponse, PlatformPubliclightingKeys.KEY_STATUS),
-                response.getStatus().name());
+        assertThat(response.getStatus().name())
+                .isEqualTo(getString(expectedResponse, PlatformPubliclightingKeys.KEY_STATUS));
     }
 
     @Given("^the device sends an event notification request with sequencenumber \"([^\"]*)\" to the platform over \"([^\"]*)\"$")
@@ -1141,15 +1135,15 @@ public class OslpDeviceSteps {
 
             final RegisterDeviceResponse response = responseMessage.getRegisterDeviceResponse();
 
-            Assert.assertNotNull(response.getCurrentTime());
-            Assert.assertNotNull(response.getLocationInfo().getLongitude());
-            Assert.assertNotNull(response.getLocationInfo().getLatitude());
-            Assert.assertNotNull(response.getLocationInfo().getTimeOffset());
+            assertThat(response.getCurrentTime()).isNotNull();
+            assertThat(response.getLocationInfo().getLongitude()).isNotNull();
+            assertThat(response.getLocationInfo().getLatitude()).isNotNull();
+            assertThat(response.getLocationInfo().getTimeOffset()).isNotNull();
 
-            Assert.assertEquals(getString(expectedResponse, PlatformPubliclightingKeys.KEY_STATUS),
-                    response.getStatus().name());
+            assertThat(response.getStatus().name())
+                    .isEqualTo(getString(expectedResponse, PlatformPubliclightingKeys.KEY_STATUS));
         } else {
-            Assert.assertEquals(getString(expectedResponse, PlatformPubliclightingKeys.MESSAGE), e.getMessage());
+            assertThat(e.getMessage()).isEqualTo(getString(expectedResponse, PlatformPubliclightingKeys.MESSAGE));
         }
 
     }
@@ -1192,15 +1186,15 @@ public class OslpDeviceSteps {
     public void anUpdateFirmwareOSLPMessageIsSentToTheDevice(final String protocol, final String deviceIdentification,
             final Map<String, String> expectedParameters) throws UnknownHostException {
         final Message message = this.oslpMockServer.waitForRequest(MessageType.UPDATE_FIRMWARE);
-        Assert.assertNotNull(message);
-        Assert.assertTrue(message.hasUpdateFirmwareRequest());
+        assertThat(message).isNotNull();
+        assertThat(message.hasUpdateFirmwareRequest()).isTrue();
 
         final UpdateFirmwareRequest request = message.getUpdateFirmwareRequest();
 
         // Check if the URL is equal to the file path as given by
         // 'firmware.path' property of OSGP.
-        Assert.assertEquals(getString(expectedParameters, PlatformPubliclightingKeys.FIRMWARE_URL,
-                PlatformPubliclightingDefaults.FIRMWARE_URL), request.getFirmwareUrl());
+        assertThat(request.getFirmwareUrl()).isEqualTo(getString(expectedParameters,
+                PlatformPubliclightingKeys.FIRMWARE_URL, PlatformPubliclightingDefaults.FIRMWARE_URL));
     }
 
     private String convertIpAddress(final ByteString byteString) {

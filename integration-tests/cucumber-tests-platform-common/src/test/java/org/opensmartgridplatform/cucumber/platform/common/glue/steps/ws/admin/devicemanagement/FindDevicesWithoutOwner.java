@@ -9,11 +9,11 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.admin.devicemanagement;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.Map;
 
-import org.junit.Assert;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.Device;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.FindDevicesWhichHaveNoOwnerRequest;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.FindDevicesWhichHaveNoOwnerResponse;
@@ -64,7 +64,7 @@ public class FindDevicesWithoutOwner {
         final FindDevicesWhichHaveNoOwnerResponse findDevicesWhichHaveNoOwnerResponse = (FindDevicesWhichHaveNoOwnerResponse) ScenarioContext
                 .current().get(PlatformCommonKeys.RESPONSE);
 
-        Assert.assertEquals((int) expectedCount, findDevicesWhichHaveNoOwnerResponse.getDevices().size());
+        assertThat(findDevicesWhichHaveNoOwnerResponse.getDevices().size()).isEqualTo((int) expectedCount);
     }
 
     /**
@@ -80,10 +80,11 @@ public class FindDevicesWithoutOwner {
                 .current().get(PlatformCommonKeys.RESPONSE);
 
         for (final Device device : response.getDevices()) {
-            Assert.assertEquals(getString(expectedResult, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION),
-                    device.getDeviceIdentification());
-            Assert.assertTrue(device.getOrganisations().isEmpty());
-            Assert.assertNull(device.getOwner());
+            assertThat(device.getDeviceIdentification())
+                    .isEqualTo(getString(expectedResult, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION));
+
+            assertThat(device.getOrganisations().isEmpty()).isTrue();
+            assertThat(device.getOwner()).isNull();
         }
     }
 }

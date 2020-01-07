@@ -9,9 +9,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.core.devicemanagement;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getShort;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
@@ -99,8 +97,8 @@ public class UpdateDeviceCdmaSettingsSteps {
             } catch (final WebServiceSecurityException e) {
                 // do nothing
             }
-            assertNotNull(response);
-            assertEquals(expectedResult, response.getResult());
+            assertThat(response).isNotNull();
+            assertThat(response.getResult()).isEqualTo(expectedResult);
         });
     }
 
@@ -121,9 +119,9 @@ public class UpdateDeviceCdmaSettingsSteps {
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
 
         if (expectedCdmaSettings == null) {
-            assertNull(device.getCdmaSettings());
+            assertThat(device.getCdmaSettings()).isNull();
         } else {
-            assertEquals(expectedCdmaSettings, device.getCdmaSettings());
+            assertThat(device.getCdmaSettings()).isEqualTo(expectedCdmaSettings);
         }
     }
 }

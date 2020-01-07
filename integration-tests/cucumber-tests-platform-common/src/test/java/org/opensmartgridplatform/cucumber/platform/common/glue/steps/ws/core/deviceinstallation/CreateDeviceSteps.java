@@ -9,13 +9,13 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.core.deviceinstallation;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getFloat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.Map;
 
-import org.junit.Assert;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.AddDeviceRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.AddDeviceResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.Device;
@@ -69,7 +69,7 @@ public class CreateDeviceSteps {
      */
     @Then("^the add device response is successful$")
     public void theAddDeviceResponseIsSuccessful() {
-        Assert.assertTrue(ScenarioContext.current().get(PlatformKeys.RESPONSE) instanceof AddDeviceResponse);
+        assertThat(ScenarioContext.current().get(PlatformKeys.RESPONSE) instanceof AddDeviceResponse).isTrue();
     }
 
     @When("^receiving an update device request")
@@ -133,7 +133,7 @@ public class CreateDeviceSteps {
      */
     @Then("^the update device response is successful$")
     public void theUpdateDeviceResponseIsSuccessful() {
-        Assert.assertTrue(ScenarioContext.current().get(PlatformKeys.RESPONSE) instanceof UpdateDeviceResponse);
+        assertThat(ScenarioContext.current().get(PlatformKeys.RESPONSE) instanceof UpdateDeviceResponse).isTrue();
     }
 
     /**
@@ -144,7 +144,7 @@ public class CreateDeviceSteps {
      */
     @Then("^the add device response contains$")
     public void theAddDeviceResponseContains(final Map<String, String> expectedResult) {
-        Assert.assertTrue(ScenarioContext.current().get(PlatformKeys.RESPONSE) instanceof AddDeviceResponse);
+        assertThat(ScenarioContext.current().get(PlatformKeys.RESPONSE) instanceof AddDeviceResponse).isTrue();
     }
 
     @Then("^the add device response contains soap fault$")
@@ -154,7 +154,7 @@ public class CreateDeviceSteps {
 
     @Then("^the update device response contains$")
     public void theUpdateDeviceResponseContains(final Map<String, String> expectedResult) {
-        Assert.assertTrue(ScenarioContext.current().get(PlatformKeys.RESPONSE) instanceof UpdateDeviceResponse);
+        assertThat(ScenarioContext.current().get(PlatformKeys.RESPONSE) instanceof UpdateDeviceResponse).isTrue();
     }
 
     /**

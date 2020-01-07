@@ -9,12 +9,12 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.core.devicemanagement;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.Map;
 
-import org.junit.Assert;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.DeviceModel;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Manufacturer;
@@ -109,7 +109,7 @@ public class UpdateDeviceSettingsSteps {
 
     @Then("^the device management update device response is successful$")
     public void theUpdateDeviceResponseIsSuccessful() {
-        Assert.assertTrue(ScenarioContext.current().get(PlatformKeys.RESPONSE) instanceof UpdateDeviceResponse);
+        assertThat(ScenarioContext.current().get(PlatformKeys.RESPONSE) instanceof UpdateDeviceResponse).isTrue();
     }
 
     @Then("^the device management update device response contains soap fault$")

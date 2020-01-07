@@ -7,11 +7,10 @@
  */
 package org.opensmartgridplatform.cucumber.platform.microgrids.glue.steps.ws.microgrids.notification;
 
-import static org.junit.Assert.fail;
-
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.junit.jupiter.api.Assertions;
 import org.opensmartgridplatform.adapter.ws.schema.microgrids.notification.Notification;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
@@ -54,8 +53,8 @@ public class MicrogridsNotificationSteps {
                 TimeUnit.MILLISECONDS);
 
         if (notification == null) {
-            fail("Did not receive a notification within the timeout limit of " + MAX_WAIT_FOR_UNKNOWN_NOTIFICATION
-                    + " milliseconds.");
+            Assertions.fail("Did not receive a notification within the timeout limit of "
+                    + MAX_WAIT_FOR_UNKNOWN_NOTIFICATION + " milliseconds.");
         }
 
         LOGGER.info("Received notification for correlation UID {} for type {} with result {}.",
@@ -116,10 +115,10 @@ public class MicrogridsNotificationSteps {
         }
 
         if (expectCorrelationUid) {
-            fail("Did not receive a notification for correlation UID: " + correlationUid + " within " + maxTimeOut
-                    + " milliseconds");
+            Assertions.fail("Did not receive a notification for correlation UID: " + correlationUid + " within "
+                    + maxTimeOut + " milliseconds");
         } else {
-            fail("Received notification for correlation UID: " + correlationUid);
+            Assertions.fail("Received notification for correlation UID: " + correlationUid);
         }
     }
 }

@@ -7,7 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.glue.steps.database.core;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.DateTimeHelper.getDateTime;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
@@ -97,7 +97,6 @@ public class DeviceFirmwareFileSteps {
             return entity;
         });
 
-        assertEquals(deviceIdentification, deviceFirmwareFile.getDevice().getDeviceIdentification());
-
+        assertThat(deviceFirmwareFile.getDevice().getDeviceIdentification()).isEqualTo(deviceIdentification);
     }
 }
