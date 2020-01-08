@@ -16,10 +16,8 @@ import java.util.concurrent.Semaphore;
 
 import javax.annotation.Resource;
 
-import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.LoggingService;
 import org.opensmartgridplatform.oslp.OslpEnvelope;
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -39,9 +37,6 @@ public abstract class OslpChannelHandler extends SimpleChannelInboundHandler<Osl
 
     @Resource
     protected int connectionTimeout;
-
-    @Autowired
-    protected LoggingService loggingService;
 
     protected final ConcurrentMap<String, OslpCallbackHandler> callbackHandlers = new ConcurrentHashMap<>();
 
