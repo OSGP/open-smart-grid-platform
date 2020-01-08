@@ -14,14 +14,6 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import javax.inject.Provider;
 
-import org.jboss.netty.bootstrap.ServerBootstrap;
-import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.ChannelHandler;
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.Channels;
-import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
-import org.jboss.netty.handler.logging.LoggingHandler;
-import org.jboss.netty.logging.InternalLogLevel;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.threads.RecoverKeyProcess;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.threads.RecoverKeyProcessInitiator;
@@ -33,15 +25,26 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsD
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.networking.DlmsChannelHandlerServer;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.networking.DlmsPushNotificationDecoder;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
+import org.opensmartgridplatform.shared.infra.networking.DisposableNioEventLoopGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 
 /**
  * An application context Java configuration class. The usage of Java
@@ -57,31 +60,49 @@ public class DlmsConfig extends AbstractConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DlmsConfig.class);
 
+    @Bean(name = "protocolAdapterDlmsNettyServerBossGroup")
+    public DisposableNioEventLoopGroup serverBossGroup() {
+        return new DisposableNioEventLoopGroup();
+    }
+
+    @Bean(name = "protocolAdapterDlmsNettyServerWorkerGroup")
+    public DisposableNioEventLoopGroup serverWorkerGroup() {
+        return new DisposableNioEventLoopGroup();
+    }
+
     /**
      * Returns a ServerBootstrap setting up a server pipeline listening for
      * incoming DLMS alarm notifications.
      *
      * @return a DLMS alarm server bootstrap.
      */
-    @Bean(destroyMethod = "releaseExternalResources")
+    @Bean()
     public ServerBootstrap serverBootstrap() {
-        final ChannelFactory factory = new NioServerSocketChannelFactory(Executors.newCachedThreadPool(),
-                Executors.newCachedThreadPool());
+        LOGGER.info("Initializing serverBootstrap bean.");
 
-        final ServerBootstrap bootstrap = new ServerBootstrap(factory);
+        final ServerBootstrap bootstrap = new ServerBootstrap();
+        bootstrap.group(this.serverBossGroup(), this.serverWorkerGroup());
+        bootstrap.channel(NioServerSocketChannel.class);
+        bootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
+            @Override
+            protected void initChannel(final SocketChannel ch) throws Exception {
+                DlmsConfig.this.createChannelPipeline(ch, DlmsConfig.this.dlmsChannelHandlerServer());
+                LOGGER.info("Created new DLMS handler pipeline for server");
+            }
+        });
 
-        bootstrap.setPipelineFactory(this::getPipeline);
-        bootstrap.setOption("child.tcpNoDelay", true);
-        bootstrap.setOption("child.keepAlive", false);
+        bootstrap.childOption(ChannelOption.TCP_NODELAY, true);
+        bootstrap.childOption(ChannelOption.SO_KEEPALIVE, false);
+
         bootstrap.bind(new InetSocketAddress(this.dlmsPortServer()));
 
         return bootstrap;
     }
 
-    private ChannelPipeline createChannelPipeline(final ChannelHandler handler) {
-        final ChannelPipeline pipeline = Channels.pipeline();
+    private ChannelPipeline createChannelPipeline(final SocketChannel channel, final ChannelHandler handler) {
+        final ChannelPipeline pipeline = channel.pipeline();
 
-        pipeline.addLast("loggingHandler", new LoggingHandler(InternalLogLevel.INFO, true));
+        pipeline.addLast("loggingHandler", new LoggingHandler(LogLevel.INFO));
         pipeline.addLast("dlmsPushNotificationDecoder", new DlmsPushNotificationDecoder());
         pipeline.addLast("dlmsChannelHandler", handler);
 
@@ -107,7 +128,6 @@ public class DlmsConfig extends AbstractConfig {
     }
 
     @Bean
-    @Autowired
     public Hls5Connector hls5Connector(final RecoverKeyProcessInitiator recoverKeyProcessInitiator,
             @Value("${jdlms.response_timeout}") final int responseTimeout,
             @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress) {
@@ -116,14 +136,12 @@ public class DlmsConfig extends AbstractConfig {
     }
 
     @Bean
-    @Autowired
     public Lls1Connector lls1Connector(@Value("${jdlms.lls1.response.timeout}") final int responseTimeout,
             @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress) {
         return new Lls1Connector(responseTimeout, logicalDeviceAddress, DlmsDeviceAssociation.MANAGEMENT_CLIENT);
     }
 
     @Bean
-    @Autowired
     public Lls0Connector lls0Connector(@Value("${jdlms.response_timeout}") final int responseTimeout,
             @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress) {
         return new Lls0Connector(responseTimeout, logicalDeviceAddress, DlmsDeviceAssociation.PUBLIC_CLIENT);
@@ -131,7 +149,6 @@ public class DlmsConfig extends AbstractConfig {
 
     @Bean
     @Scope("prototype")
-    @Autowired
     public RecoverKeyProcess recoverKeyProcess(final DomainHelperService domainHelperService,
             final DlmsDeviceRepository dlmsDeviceRepository,
             @Value("${jdlms.response_timeout}") final int responseTimeout,
@@ -141,25 +158,16 @@ public class DlmsConfig extends AbstractConfig {
     }
 
     @Bean
-    @Autowired
-    public RecoverKeyProcessInitiator recoverKeyProcesInitiator(final ScheduledExecutorService executorService,
+    public RecoverKeyProcessInitiator recoverKeyProcesInitiator(
+            @Qualifier("protocolAdapterDlmsScheduleExecutorService") final ScheduledExecutorService executorService,
             final Provider<RecoverKeyProcess> recoverKeyProcessProvider,
             @Value("${key.recovery.delay}") final int recoverKeyDelay) {
         return new RecoverKeyProcessInitiator(executorService, recoverKeyProcessProvider, recoverKeyDelay);
     }
 
-    @Bean
+    @Bean(name = "protocolAdapterDlmsScheduleExecutorService")
     public ScheduledExecutorService
             scheduledExecutorService(@Value("${executor.scheduled.poolsize}") final int poolsize) {
         return Executors.newScheduledThreadPool(poolsize);
-    }
-
-    private ChannelPipeline getPipeline() {
-        final ChannelPipeline pipeline = DlmsConfig.this
-                .createChannelPipeline(DlmsConfig.this.dlmsChannelHandlerServer());
-
-        LOGGER.info("Created new DLMS handler pipeline for server");
-
-        return pipeline;
     }
 }

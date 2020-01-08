@@ -10,25 +10,28 @@ package org.opensmartgridplatform.adapter.protocol.iec61850.application.config;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
+import org.opensmartgridplatform.shared.application.config.AbstractApplicationInitializer;
 import org.springframework.web.WebApplicationInitializer;
 
-import org.opensmartgridplatform.shared.application.config.AbstractApplicationInitializer;
+import io.netty.util.internal.logging.InternalLoggerFactory;
+import io.netty.util.internal.logging.Slf4JLoggerFactory;
 
 /**
  * Web application Java configuration class.
  */
-public class OsgpProtocolAdapterIec61850Initializer extends AbstractApplicationInitializer implements WebApplicationInitializer {
+public class OsgpProtocolAdapterIec61850Initializer extends AbstractApplicationInitializer
+        implements WebApplicationInitializer {
 
     public OsgpProtocolAdapterIec61850Initializer() {
         super(ApplicationContext.class, "java:comp/env/osgp/AdapterProtocolIec61850/log-config");
+        InternalLoggerFactory.setDefaultFactory(Slf4JLoggerFactory.INSTANCE);
     }
-    
+
     /**
-     * 
+     *
      */
     @Override
     public void onStartup(final ServletContext servletContext) throws ServletException {
-        startUp(servletContext);
+        this.startUp(servletContext);
     }
 }
-

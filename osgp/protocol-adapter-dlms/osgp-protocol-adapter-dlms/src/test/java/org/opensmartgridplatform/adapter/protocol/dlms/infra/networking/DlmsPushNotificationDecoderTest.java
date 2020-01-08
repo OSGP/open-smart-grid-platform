@@ -13,18 +13,20 @@ import static org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmType
 import static org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto.PHASE_OUTAGE_DETECTED_L_1;
 import static org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto.REPLACE_BATTERY;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelHandlerContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.opensmartgridplatform.adapter.protocol.dlms.infra.networking.DlmsPushNotificationDecoder.DecodingState;
 import org.opensmartgridplatform.dlms.DlmsPushNotification;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
 
 @ExtendWith(MockitoExtension.class)
 public class DlmsPushNotificationDecoderTest {
@@ -85,15 +87,14 @@ public class DlmsPushNotificationDecoderTest {
         // SETUP
 
         this.decoder = new DlmsPushNotificationDecoder();
-
-        final ChannelBuffer buffer = mock(ChannelBuffer.class);
-        final DecodingState state = DecodingState.EQUIPMENT_IDENTIFIER;
-
+        final ByteBuf buffer = mock(ByteBuf.class);
         final byte[] bytes = this.setupDsmr4Buffer(buffer, IDENTIFIER, logicalName);
 
         // CALL
 
-        final Object pushNotificationObject = this.decoder.decode(this.ctx, this.channel, buffer, state);
+        final List<Object> out = new ArrayList<>();
+        this.decoder.decode(this.ctx, buffer, out);
+        final Object pushNotificationObject = out.get(0);
 
         // VERIFY
 
@@ -113,9 +114,7 @@ public class DlmsPushNotificationDecoderTest {
         // SETUP
 
         this.decoder = new DlmsPushNotificationDecoder();
-
-        final ChannelBuffer buffer = mock(ChannelBuffer.class);
-        final DecodingState state = DecodingState.EQUIPMENT_IDENTIFIER;
+        final ByteBuf buffer = mock(ByteBuf.class);
 
         // Create alarm register with 3 alarms: replace battery and 2 mbus
         // alarms
@@ -125,7 +124,9 @@ public class DlmsPushNotificationDecoderTest {
 
         // CALL
 
-        final Object pushNotificationObject = this.decoder.decode(this.ctx, this.channel, buffer, state);
+        final List<Object> out = new ArrayList<>();
+        this.decoder.decode(this.ctx, buffer, out);
+        final Object pushNotificationObject = out.get(0);
 
         // VERIFY
 
@@ -144,7 +145,7 @@ public class DlmsPushNotificationDecoderTest {
         this.verifyDsmr4BufferCalls(buffer, alarmRegister);
     }
 
-    private byte[] setupDsmr4Buffer(final ChannelBuffer buffer, final String identifier, final byte[] data) {
+    private byte[] setupDsmr4Buffer(final ByteBuf buffer, final String identifier, final byte[] data) {
 
         final byte[] bytes = new byte[EQUIPMENT_IDENTIFIER_LENGTH + COMMA_LENGTH + data.length];
 
@@ -170,7 +171,7 @@ public class DlmsPushNotificationDecoderTest {
         return bytes;
     }
 
-    private void verifyDsmr4BufferCalls(final ChannelBuffer buffer, final byte[] data) {
+    private void verifyDsmr4BufferCalls(final ByteBuf buffer, final byte[] data) {
         verify(buffer, times(1)).readBytes(any(byte[].class), eq(0), eq(EQUIPMENT_IDENTIFIER_LENGTH + 1));
         verify(buffer, times(1)).readBytes(any(byte[].class), eq(0), eq(data.length));
         verify(buffer, times(1)).writerIndex();
@@ -202,9 +203,7 @@ public class DlmsPushNotificationDecoderTest {
         // SETUP
 
         this.decoder = new DlmsPushNotificationDecoder();
-
-        final ChannelBuffer buffer = mock(ChannelBuffer.class);
-        final DecodingState state = DecodingState.EQUIPMENT_IDENTIFIER;
+        final ByteBuf buffer = mock(ByteBuf.class);
 
         // Create alarm register with 4 alarms: replace battery, 2 mbus alarms
         // and phase outage detected (new in SMR5.1)
@@ -214,7 +213,9 @@ public class DlmsPushNotificationDecoderTest {
 
         // CALL
 
-        final Object pushNotificationObject = this.decoder.decode(this.ctx, this.channel, buffer, state);
+        final List<Object> out = new ArrayList<>();
+        this.decoder.decode(this.ctx, buffer, out);
+        final Object pushNotificationObject = out.get(0);
 
         // VERIFY
 
@@ -249,15 +250,15 @@ public class DlmsPushNotificationDecoderTest {
         // SETUP
 
         this.decoder = new DlmsPushNotificationDecoder();
-
-        final ChannelBuffer buffer = mock(ChannelBuffer.class);
-        final DecodingState state = DecodingState.EQUIPMENT_IDENTIFIER;
+        final ByteBuf buffer = mock(ByteBuf.class);
 
         this.setupSmr5Buffer(buffer, IDENTIFIER, logicalName, withDateTime);
 
         // CALL
 
-        final Object pushNotificationObject = this.decoder.decode(this.ctx, this.channel, buffer, state);
+        final List<Object> out = new ArrayList<>();
+        this.decoder.decode(this.ctx, buffer, out);
+        final Object pushNotificationObject = out.get(0);
 
         // VERIFY
 
@@ -280,7 +281,7 @@ public class DlmsPushNotificationDecoderTest {
         }
     }
 
-    private void setupSmr5Buffer(final ChannelBuffer buffer, final String identifier, final byte[] logicalName,
+    private void setupSmr5Buffer(final ByteBuf buffer, final String identifier, final byte[] logicalName,
             final boolean withDateTime) {
         /**
          * Alarm example for SMR5, without alarm register: 0F //
@@ -321,14 +322,14 @@ public class DlmsPushNotificationDecoderTest {
         }).when(buffer).readBytes(any(byte[].class), eq(0), eq(LOGICAL_NAME_LENGTH));
     }
 
-    private void verifySmr5BufferCalls(final ChannelBuffer buffer) {
+    private void verifySmr5BufferCalls(final ByteBuf buffer) {
         verify(buffer, times(1)).getByte(8);
         verify(buffer, times(7)).readByte();
         verify(buffer, times(1)).readBytes(any(byte[].class), eq(0), eq(EQUIPMENT_IDENTIFIER_LENGTH));
         verify(buffer, times(1)).readBytes(any(byte[].class), eq(0), eq(LOGICAL_NAME_LENGTH));
     }
 
-    private void setupSmr5BufferWithAlarm(final ChannelBuffer buffer, final String identifier, final byte[] logicalName,
+    private void setupSmr5BufferWithAlarm(final ByteBuf buffer, final String identifier, final byte[] logicalName,
             final byte[] alarmRegister) {
         /**
          * Alarm example for SMR5, with alarm register: 0F // Data-notification
@@ -372,7 +373,7 @@ public class DlmsPushNotificationDecoderTest {
         }).when(buffer).readBytes(any(byte[].class), eq(0), eq(alarmRegister.length));
     }
 
-    private void verifySmr5BufferCallsWithAlarm(final ChannelBuffer buffer, final byte[] alarmRegister) {
+    private void verifySmr5BufferCallsWithAlarm(final ByteBuf buffer, final byte[] alarmRegister) {
         verify(buffer, times(1)).getByte(8);
         verify(buffer, times(8)).readByte();
         verify(buffer, times(1)).readBytes(any(byte[].class), eq(0), eq(EQUIPMENT_IDENTIFIER_LENGTH));

@@ -11,10 +11,11 @@ package org.opensmartgridplatform.adapter.protocol.dlms.infra.networking;
 import java.nio.ByteBuffer;
 import java.util.Set;
 
-import org.jboss.netty.buffer.ChannelBuffer;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm.AlarmHelperService;
 import org.opensmartgridplatform.dlms.DlmsPushNotification;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto;
+
+import io.netty.buffer.ByteBuf;
 
 public class AlarmDecoder {
 
@@ -27,9 +28,9 @@ public class AlarmDecoder {
     static final String PUSH_CSD_TRIGGER = "Push csd wakeup";
     static final String PUSH_SMS_TRIGGER = "Push sms wakeup";
 
-    void decodeAlarmRegisterData(final ChannelBuffer buffer, final DlmsPushNotification.Builder builder) {
+    void decodeAlarmRegisterData(final ByteBuf buffer, final DlmsPushNotification.Builder builder) {
 
-        final byte[] alarmBytes = read(buffer, NUMBER_OF_BYTES_FOR_ALARM);
+        final byte[] alarmBytes = this.read(buffer, NUMBER_OF_BYTES_FOR_ALARM);
 
         final Set<AlarmTypeDto> alarms = new AlarmHelperService().toAlarmTypes(ByteBuffer.wrap(alarmBytes).getInt());
 
@@ -38,7 +39,7 @@ public class AlarmDecoder {
         builder.appendBytes(alarmBytes);
     }
 
-    byte[] read(ChannelBuffer buffer, int size) {
+    byte[] read(final ByteBuf buffer, final int size) {
         final byte[] result = new byte[size];
         buffer.readBytes(result, 0, size);
         return result;

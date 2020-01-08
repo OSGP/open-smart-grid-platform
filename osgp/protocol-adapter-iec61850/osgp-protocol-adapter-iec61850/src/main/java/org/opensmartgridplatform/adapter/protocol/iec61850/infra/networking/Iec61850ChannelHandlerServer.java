@@ -12,8 +12,6 @@ import java.net.InetAddress;
 import java.util.Map;
 import java.util.UUID;
 
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.MessageEvent;
 import org.opensmartgridplatform.adapter.protocol.iec61850.application.services.DeviceRegistrationService;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.OsgpRequestMessageSender;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.IED;
@@ -27,6 +25,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
+import io.netty.channel.ChannelHandler.Sharable;
+import io.netty.channel.ChannelHandlerContext;
+
+@Sharable
 public class Iec61850ChannelHandlerServer extends Iec61850ChannelHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850ChannelHandlerServer.class);
@@ -51,9 +53,7 @@ public class Iec61850ChannelHandlerServer extends Iec61850ChannelHandler {
     }
 
     @Override
-    public void messageReceived(final ChannelHandlerContext ctx, final MessageEvent e) throws Exception {
-
-        final RegisterDeviceRequest message = (RegisterDeviceRequest) e.getMessage();
+    public void channelRead0(final ChannelHandlerContext ctx, final RegisterDeviceRequest message) throws Exception {
 
         final String correlationId = UUID.randomUUID().toString().replace("-", "");
 
@@ -84,7 +84,7 @@ public class Iec61850ChannelHandlerServer extends Iec61850ChannelHandler {
         final RequestMessage requestMessage = new RequestMessage(correlationId, "no-organisation", deviceIdentification,
                 ipAddress, deviceRegistrationData);
 
-        LOGGER.info("Sending register device request to OSGP with correlation ID: " + correlationId);
+        LOGGER.info("Sending register device request to OSGP with correlation ID: {}", correlationId);
         this.osgpRequestMessageSender.send(requestMessage, MessageType.REGISTER_DEVICE.name());
 
         try {

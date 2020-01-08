@@ -7,19 +7,17 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.networking;
 
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelStateEvent;
-import org.jboss.netty.channel.ExceptionEvent;
-import org.jboss.netty.channel.SimpleChannelHandler;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsLogItemRequestMessage;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsLogItemRequestMessageSender;
+import org.opensmartgridplatform.dlms.DlmsPushNotification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.opensmartgridplatform.dlms.DlmsPushNotification;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
 
-public abstract class DlmsChannelHandler extends SimpleChannelHandler {
+public abstract class DlmsChannelHandler extends SimpleChannelInboundHandler<DlmsPushNotification> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DlmsChannelHandler.class);
 
@@ -27,34 +25,24 @@ public abstract class DlmsChannelHandler extends SimpleChannelHandler {
     private DlmsLogItemRequestMessageSender dlmsLogItemRequestMessageSender;
 
     @Override
-    public void channelOpen(final ChannelHandlerContext ctx, final ChannelStateEvent e) throws Exception {
-        LOGGER.info("{} Channel opened", e.getChannel().getId());
-        super.channelOpen(ctx, e);
+    public void channelActive(final ChannelHandlerContext ctx) throws Exception {
+        final String channelId = ctx.channel().id().asLongText();
+        LOGGER.info("{} Channel active.", channelId);
+        super.channelActive(ctx);
     }
 
     @Override
-    public void channelDisconnected(final ChannelHandlerContext ctx, final ChannelStateEvent e) throws Exception {
-        LOGGER.info("{} Channel disconnected", e.getChannel().getId());
-        super.channelDisconnected(ctx, e);
+    public void channelInactive(final ChannelHandlerContext ctx) throws Exception {
+        final String channelId = ctx.channel().id().asLongText();
+        LOGGER.info("{} Channel inactive.", channelId);
+        super.channelInactive(ctx);
     }
 
     @Override
-    public void channelClosed(final ChannelHandlerContext ctx, final ChannelStateEvent e) throws Exception {
-        LOGGER.info("{} Channel closed", e.getChannel().getId());
-        super.channelClosed(ctx, e);
-    }
-
-    @Override
-    public void channelUnbound(final ChannelHandlerContext ctx, final ChannelStateEvent e) throws Exception {
-        LOGGER.info("{} Channel unbound", e.getChannel().getId());
-        super.channelUnbound(ctx, e);
-    }
-
-    @Override
-    public void exceptionCaught(final ChannelHandlerContext ctx, final ExceptionEvent e) throws Exception {
-        final int channelId = e.getChannel().getId();
-        LOGGER.warn("{} Unexpected exception from downstream. {}", channelId, e.getCause());
-        e.getChannel().close();
+    public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {
+        final String channelId = ctx.channel().id().asLongText();
+        LOGGER.warn("{} Unexpected exception from downstream. {}", channelId, cause);
+        ctx.channel().close();
     }
 
     protected void logMessage(final DlmsPushNotification message) {

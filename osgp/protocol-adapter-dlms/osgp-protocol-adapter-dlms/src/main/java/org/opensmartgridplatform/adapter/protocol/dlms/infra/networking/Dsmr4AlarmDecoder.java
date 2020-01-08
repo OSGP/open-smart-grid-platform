@@ -16,12 +16,13 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dl
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-import org.jboss.netty.buffer.ChannelBuffer;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigDsmr422;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.DlmsPushNotification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.netty.buffer.ByteBuf;
 
 public class Dsmr4AlarmDecoder extends AlarmDecoder {
 
@@ -30,74 +31,75 @@ public class Dsmr4AlarmDecoder extends AlarmDecoder {
     private static final Logger LOGGER = LoggerFactory.getLogger(Dsmr4AlarmDecoder.class);
 
     /**
-     * The elements inside the DSMR4 DLMS Push notification (Alarm or Wakeup SMS are
-     * expressed in bytes separated by a comma (byte 0x2C).
+     * The elements inside the DSMR4 DLMS Push notification (Alarm or Wakeup SMS
+     * are expressed in bytes separated by a comma (byte 0x2C).
      */
     private static final byte COMMA = 0x2C;
 
     private DlmsPushNotification.Builder builder = new DlmsPushNotification.Builder();
 
-    public DlmsPushNotification decodeDsmr4alarm(final ChannelBuffer buffer) throws UnrecognizedMessageDataException {
+    public DlmsPushNotification decodeDsmr4alarm(final ByteBuf buffer) throws UnrecognizedMessageDataException {
 
         this.decodeEquipmentIdentifier(buffer);
         this.decodeReceivedData(buffer);
-        return builder.build();
+        return this.builder.build();
     }
 
-    private void decodeEquipmentIdentifier(final ChannelBuffer buffer) throws UnrecognizedMessageDataException {
+    private void decodeEquipmentIdentifier(final ByteBuf buffer) throws UnrecognizedMessageDataException {
 
-        final byte[] equipmentIdentifierPlusSeparatorBytes = read(buffer, EQUIPMENT_IDENTIFIER_LENGTH + 1);
+        final byte[] equipmentIdentifierPlusSeparatorBytes = this.read(buffer, EQUIPMENT_IDENTIFIER_LENGTH + 1);
 
         if (equipmentIdentifierPlusSeparatorBytes[EQUIPMENT_IDENTIFIER_LENGTH] != COMMA) {
             throw new UnrecognizedMessageDataException("message must start with " + EQUIPMENT_IDENTIFIER_LENGTH
                     + " bytes for the equipment identifier, followed by byte 0x2C (a comma).");
         }
 
-        final byte[] equipmentIdentifierBytes = Arrays
-                .copyOfRange(equipmentIdentifierPlusSeparatorBytes, 0, EQUIPMENT_IDENTIFIER_LENGTH);
+        final byte[] equipmentIdentifierBytes = Arrays.copyOfRange(equipmentIdentifierPlusSeparatorBytes, 0,
+                EQUIPMENT_IDENTIFIER_LENGTH);
         final String equipmentIdentifier = new String(equipmentIdentifierBytes, StandardCharsets.US_ASCII);
         this.builder.withEquipmentIdentifier(equipmentIdentifier);
         this.builder.appendBytes(equipmentIdentifierPlusSeparatorBytes);
     }
 
-    private void decodeReceivedData(final ChannelBuffer buffer) throws UnrecognizedMessageDataException {
-        // SLIM-1711 Is a very weird bug, where readableBytes turns out to be almost MAXINT
-        // Seems like BigEndianHeapChannelBuffer has some kind of overflow/underflow.
+    private void decodeReceivedData(final ByteBuf buffer) throws UnrecognizedMessageDataException {
+        // SLIM-1711 Is a very weird bug, where readableBytes turns out to be
+        // almost MAXINT
+        // Seems like BigEndianHeapChannelBuffer has some kind of
+        // overflow/underflow.
         final int readableBytes = buffer.writerIndex() - buffer.readerIndex();
         if (readableBytes > Math.max(NUMBER_OF_BYTES_FOR_ALARM, NUMBER_OF_BYTES_FOR_LOGICAL_NAME)) {
-            throw new UnrecognizedMessageDataException(
-                    "length of data bytes is not " + NUMBER_OF_BYTES_FOR_ALARM + " (alarm) or "
-                            + NUMBER_OF_BYTES_FOR_LOGICAL_NAME + " (obiscode)");
+            throw new UnrecognizedMessageDataException("length of data bytes is not " + NUMBER_OF_BYTES_FOR_ALARM
+                    + " (alarm) or " + NUMBER_OF_BYTES_FOR_LOGICAL_NAME + " (obiscode)");
         }
 
         if (readableBytes == NUMBER_OF_BYTES_FOR_ALARM) {
-            this.decodeAlarmRegisterData(buffer, builder);
+            this.decodeAlarmRegisterData(buffer, this.builder);
         } else if (readableBytes == NUMBER_OF_BYTES_FOR_LOGICAL_NAME) {
             this.decodeObisCodeData(buffer);
         } else {
-            throw new UnrecognizedMessageDataException("Incorrect amount of bytes: " + readableBytes + ". Expected " +
-                    NUMBER_OF_BYTES_FOR_ALARM + " or " + NUMBER_OF_BYTES_FOR_LOGICAL_NAME);
+            throw new UnrecognizedMessageDataException("Incorrect amount of bytes: " + readableBytes + ". Expected "
+                    + NUMBER_OF_BYTES_FOR_ALARM + " or " + NUMBER_OF_BYTES_FOR_LOGICAL_NAME);
         }
     }
 
-    private void decodeObisCodeData(final ChannelBuffer buffer) throws UnrecognizedMessageDataException {
+    private void decodeObisCodeData(final ByteBuf buffer) throws UnrecognizedMessageDataException {
 
-        final byte[] logicalNameBytes = read(buffer, NUMBER_OF_BYTES_FOR_LOGICAL_NAME);
+        final byte[] logicalNameBytes = this.read(buffer, NUMBER_OF_BYTES_FOR_LOGICAL_NAME);
 
         try {
-            if (isLogicalNameSmsTrigger(logicalNameBytes)) {
+            if (this.isLogicalNameSmsTrigger(logicalNameBytes)) {
                 this.builder.withTriggerType(PUSH_SMS_TRIGGER);
-            } else if (isLogicalNameCsdTrigger(logicalNameBytes)) {
+            } else if (this.isLogicalNameCsdTrigger(logicalNameBytes)) {
                 LOGGER.warn("CSD Push notification not supported");
                 this.builder.withTriggerType(PUSH_CSD_TRIGGER);
-            } else if (isLogicalNameSchedulerTrigger(logicalNameBytes)) {
+            } else if (this.isLogicalNameSchedulerTrigger(logicalNameBytes)) {
                 LOGGER.warn("Scheduler Push notification not supported");
                 this.builder.withTriggerType(PUSH_SCHEDULER_TRIGGER);
             } else {
                 LOGGER.warn("Unknown Push notification not supported. Unable to decode");
                 this.builder.withTriggerType("");
             }
-        } catch (ProtocolAdapterException e) {
+        } catch (final ProtocolAdapterException e) {
             throw new UnrecognizedMessageDataException("Error decoding logical name", e);
         }
 
@@ -105,18 +107,23 @@ public class Dsmr4AlarmDecoder extends AlarmDecoder {
         this.builder.appendBytes(logicalNameBytes);
     }
 
-    private boolean isLogicalNameSmsTrigger(byte[] logicalNameBytes) throws ProtocolAdapterException {
-        // DSMR4 has specific objects for the different external trigger types for SMS and CSD
-        return Arrays.equals(dlmsObjectConfigDsmr422.getObisForObject(EXTERNAL_TRIGGER_SMS).bytes(), logicalNameBytes);
+    private boolean isLogicalNameSmsTrigger(final byte[] logicalNameBytes) throws ProtocolAdapterException {
+        // DSMR4 has specific objects for the different external trigger types
+        // for SMS and CSD
+        return Arrays.equals(this.dlmsObjectConfigDsmr422.getObisForObject(EXTERNAL_TRIGGER_SMS).bytes(),
+                logicalNameBytes);
     }
 
-    private boolean isLogicalNameCsdTrigger(byte[] logicalNameBytes) throws ProtocolAdapterException {
-        // DSMR4 has specific objects for the different external trigger types for SMS and CSD
-        return Arrays.equals(dlmsObjectConfigDsmr422.getObisForObject(EXTERNAL_TRIGGER_CSD).bytes(), logicalNameBytes);
+    private boolean isLogicalNameCsdTrigger(final byte[] logicalNameBytes) throws ProtocolAdapterException {
+        // DSMR4 has specific objects for the different external trigger types
+        // for SMS and CSD
+        return Arrays.equals(this.dlmsObjectConfigDsmr422.getObisForObject(EXTERNAL_TRIGGER_CSD).bytes(),
+                logicalNameBytes);
     }
 
-    private boolean isLogicalNameSchedulerTrigger(byte[] logicalNameBytes) throws ProtocolAdapterException {
-        return Arrays.equals(dlmsObjectConfigDsmr422.getObisForObject(PUSH_SCHEDULER).bytes(), logicalNameBytes) ||
-                Arrays.equals(dlmsObjectConfigDsmr422.getObisForObject(PUSH_SETUP_SCHEDULER).bytes(), logicalNameBytes);
+    private boolean isLogicalNameSchedulerTrigger(final byte[] logicalNameBytes) throws ProtocolAdapterException {
+        return Arrays.equals(this.dlmsObjectConfigDsmr422.getObisForObject(PUSH_SCHEDULER).bytes(), logicalNameBytes)
+                || Arrays.equals(this.dlmsObjectConfigDsmr422.getObisForObject(PUSH_SETUP_SCHEDULER).bytes(),
+                        logicalNameBytes);
     }
 }

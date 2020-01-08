@@ -8,45 +8,35 @@
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.application.config;
 
 import java.net.InetSocketAddress;
-import java.util.concurrent.Executors;
 
-import org.jboss.netty.bootstrap.ClientBootstrap;
-import org.jboss.netty.bootstrap.ServerBootstrap;
-import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.ChannelHandler;
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.Channels;
-import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
-import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
-import org.jboss.netty.handler.logging.LoggingHandler;
-import org.jboss.netty.logging.InternalLogLevel;
-import org.jboss.netty.logging.InternalLoggerFactory;
-import org.jboss.netty.logging.Slf4JLoggerFactory;
-import org.opensmartgridplatform.adapter.protocol.oslp.elster.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.networking.OslpChannelHandlerClient;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.networking.OslpChannelHandlerServer;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.networking.OslpSecurityHandler;
 import org.opensmartgridplatform.oslp.OslpDecoder;
 import org.opensmartgridplatform.oslp.OslpEncoder;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
+import org.opensmartgridplatform.shared.infra.networking.DisposableNioEventLoopGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import io.netty.bootstrap.Bootstrap;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 
 /**
- * An application context Java configuration class. The usage of Java
- * configuration requires Spring Framework 3.0
+ * An application context Java configuration class.
  */
 @Configuration
-@EnableTransactionManagement()
-@PropertySource("classpath:osgp-adapter-protocol-oslp-elster.properties")
-@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
-@PropertySource(value = "file:{osgp/AdapterProtocolOslpElster/config}", ignoreResourceNotFound = true)
 public class OslpConfig extends AbstractConfig {
     private static final String PROPERTY_NAME_OSLP_TIMEOUT_CONNECT = "oslp.timeout.connect";
     private static final String PROPERTY_NAME_OSLP_CONCURRENT_CLIENT_CONNECTIONS_LIMIT_ACTIVE = "oslp.concurrent.client.connections.limit.active";
@@ -70,74 +60,73 @@ public class OslpConfig extends AbstractConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OslpConfig.class);
 
-    @Bean(destroyMethod = "releaseExternalResources")
-    public ClientBootstrap clientBootstrap() {
-        InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
-        final ChannelFactory factory = new NioClientSocketChannelFactory(Executors.newCachedThreadPool(),
-                Executors.newCachedThreadPool());
+    @Bean(name = "protocolAdapterOslpNettyServerBossGroup")
+    public DisposableNioEventLoopGroup serverBossGroup() {
+        return new DisposableNioEventLoopGroup();
+    }
 
-        final ChannelPipelineFactory pipelineFactory = new ChannelPipelineFactory() {
+    @Bean(name = "protocolAdapterOslpNettyServerWorkerGroup")
+    public DisposableNioEventLoopGroup serverWorkerGroup() {
+        return new DisposableNioEventLoopGroup();
+    }
+
+    @Bean(name = "protocolAdapterOslpNettyClientWorkerGroup")
+    public DisposableNioEventLoopGroup clientWorkerGroup() {
+        return new DisposableNioEventLoopGroup();
+    }
+
+    @Bean
+    public Bootstrap clientBootstrap() {
+
+        LOGGER.info("Initializing clientBootstrap bean.");
+
+        final Bootstrap bootstrap = new Bootstrap();
+        bootstrap.group(this.clientWorkerGroup());
+        bootstrap.channel(NioSocketChannel.class);
+        bootstrap.handler(new ChannelInitializer<SocketChannel>() {
             @Override
-            public ChannelPipeline getPipeline() throws ProtocolAdapterException {
-                final ChannelPipeline pipeline = OslpConfig.this
-                        .createChannelPipeline(OslpConfig.this.oslpChannelHandlerClient());
-
-                LOGGER.info("Created client new pipeline");
-
-                return pipeline;
+            protected void initChannel(final SocketChannel ch) throws Exception {
+                OslpConfig.this.createChannelPipeline(ch, OslpConfig.this.oslpChannelHandlerClient());
             }
-        };
+        });
 
-        final ClientBootstrap bootstrap = new ClientBootstrap(factory);
-
-        bootstrap.setOption("tcpNoDelay", true);
-        bootstrap.setOption("keepAlive", false);
-        bootstrap.setOption("connectTimeoutMillis", this.connectionTimeout());
-
-        bootstrap.setPipelineFactory(pipelineFactory);
+        bootstrap.option(ChannelOption.TCP_NODELAY, true);
+        bootstrap.option(ChannelOption.SO_KEEPALIVE, false);
+        bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, this.connectionTimeout());
 
         return bootstrap;
     }
 
-    @Bean(destroyMethod = "releaseExternalResources")
+    @Bean()
     public ServerBootstrap serverBootstrap() {
-        final ChannelFactory factory = new NioServerSocketChannelFactory(Executors.newCachedThreadPool(),
-                Executors.newCachedThreadPool());
 
-        final ServerBootstrap bootstrap = new ServerBootstrap(factory);
+        LOGGER.info("Initializing serverBootstrap bean.");
 
-        bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
+        final ServerBootstrap bootstrap = new ServerBootstrap();
+        bootstrap.group(this.serverBossGroup(), this.serverWorkerGroup());
+        bootstrap.channel(NioServerSocketChannel.class);
+        bootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
             @Override
-            public ChannelPipeline getPipeline() throws ProtocolAdapterException {
-                final ChannelPipeline pipeline = OslpConfig.this
-                        .createChannelPipeline(OslpConfig.this.oslpChannelHandlerServer());
-
+            protected void initChannel(final SocketChannel ch) throws Exception {
+                OslpConfig.this.createChannelPipeline(ch, OslpConfig.this.oslpChannelHandlerServer());
                 LOGGER.info("Created server new pipeline");
-
-                return pipeline;
             }
         });
 
-        bootstrap.setOption("child.tcpNoDelay", true);
-        bootstrap.setOption("child.keepAlive", false);
+        bootstrap.childOption(ChannelOption.TCP_NODELAY, true);
+        bootstrap.childOption(ChannelOption.SO_KEEPALIVE, false);
 
         bootstrap.bind(new InetSocketAddress(this.oslpPortServer()));
 
         return bootstrap;
     }
 
-    private ChannelPipeline createChannelPipeline(final ChannelHandler handler) {
-        final ChannelPipeline pipeline = Channels.pipeline();
-
-        pipeline.addLast("loggingHandler", new LoggingHandler(InternalLogLevel.INFO, false));
-
-        pipeline.addLast("oslpEncoder", new OslpEncoder());
-        pipeline.addLast("oslpDecoder", new OslpDecoder(this.oslpSignature(), this.oslpSignatureProvider()));
-        pipeline.addLast("oslpSecurity", this.oslpSecurityHandler());
-
-        pipeline.addLast("oslpChannelHandler", handler);
-
-        return pipeline;
+    private void createChannelPipeline(final SocketChannel channel, final ChannelHandler handler) {
+        channel.pipeline().addLast("loggingHandler", new LoggingHandler(LogLevel.INFO));
+        channel.pipeline().addLast("oslpEncoder", new OslpEncoder());
+        channel.pipeline().addLast("oslpDecoder", new OslpDecoder(this.oslpSignature(), this.oslpSignatureProvider()));
+        channel.pipeline().addLast("oslpSecurity", this.oslpSecurityHandler());
+        channel.pipeline().addLast("oslpChannelHandler", handler);
     }
 
     @Bean
