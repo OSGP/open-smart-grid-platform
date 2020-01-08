@@ -91,17 +91,10 @@ public class PersistenceConfig extends AbstractConfig {
                     .parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_IDLE_TIMEOUT));
 
             final DefaultConnectionPoolFactory.Builder builder = new DefaultConnectionPoolFactory.Builder()
-                    .withUsername(username)
-                    .withPassword(password)
-                    .withDriverClassName(driverClassName)
-                    .withProtocol(databaseProtocol)
-                    .withDatabaseHost(databaseHost)
-                    .withDatabasePort(databasePort)
-                    .withDatabaseName(databaseName)
-                    .withMinPoolSize(minPoolSize)
-                    .withMaxPoolSize(maxPoolSize)
-                    .withAutoCommit(isAutoCommit)
-                    .withIdleTimeout(idleTimeout);
+                    .withUsername(username).withPassword(password).withDriverClassName(driverClassName)
+                    .withProtocol(databaseProtocol).withDatabaseHost(databaseHost).withDatabasePort(databasePort)
+                    .withDatabaseName(databaseName).withMinPoolSize(minPoolSize).withMaxPoolSize(maxPoolSize)
+                    .withAutoCommit(isAutoCommit).withIdleTimeout(idleTimeout);
             final DefaultConnectionPoolFactory factory = builder.build();
             this.dataSource = factory.getDefaultConnectionPool();
         }
@@ -130,19 +123,17 @@ public class PersistenceConfig extends AbstractConfig {
 
     @Bean(initMethod = "migrate")
     public Flyway loggingFlyway() {
-        final Flyway flyway = new Flyway();
-
-        // Initialization for non-empty schema with no metadata table
-        flyway.setBaselineVersion(MigrationVersion
-                .fromVersion(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INITIAL_VERSION)));
-        flyway.setBaselineDescription(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INITIAL_DESCRIPTION));
-        flyway.setBaselineOnMigrate(
-                Boolean.parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INIT_ON_MIGRATE)));
-        flyway.setTable("schema_version");
-
-        flyway.setDataSource(this.getDataSource());
-
-        return flyway;
+        // @formatter:off
+        return Flyway.configure()
+                .baselineVersion(MigrationVersion
+                        .fromVersion(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INITIAL_VERSION)))
+                .baselineDescription(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INITIAL_DESCRIPTION))
+                .baselineOnMigrate(Boolean
+                        .parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INIT_ON_MIGRATE)))
+                .outOfOrder(true).table("schema_version")
+                .dataSource(this.getDataSource())
+                .load();
+        // @formatter:on
     }
 
     /**

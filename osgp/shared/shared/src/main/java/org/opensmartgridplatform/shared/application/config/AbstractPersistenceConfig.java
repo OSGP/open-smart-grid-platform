@@ -133,17 +133,15 @@ public abstract class AbstractPersistenceConfig extends AbstractConfig {
     }
 
     protected Flyway createFlyway(final DataSource dataSource) {
-        final Flyway flyway = new Flyway();
-
-        // Initialization for non-empty schema with no metadata table
-        flyway.setBaselineVersion(MigrationVersion.fromVersion(this.flywayInitialVersion));
-        flyway.setBaselineDescription(this.flywayInitialDescription);
-        flyway.setBaselineOnMigrate(this.flywayInitOnMigrate);
-        flyway.setOutOfOrder(true);
-        flyway.setTable("schema_version");
-
-        flyway.setDataSource(dataSource);
-        return flyway;
+        // @formatter:off
+        return Flyway.configure()
+                .baselineVersion(MigrationVersion.fromVersion(this.flywayInitialVersion))
+                .baselineDescription(this.flywayInitialDescription)
+                .baselineOnMigrate(this.flywayInitOnMigrate)
+                .outOfOrder(true)
+                .table("schema_version")
+                .dataSource(dataSource).load();
+        // @formatter:on
     }
 
     protected LocalContainerEntityManagerFactoryBean entityManagerFactory(final String persistenceUnitName) {

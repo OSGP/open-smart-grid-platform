@@ -187,19 +187,17 @@ public class ApplicationContext {
 
     @Bean(initMethod = "migrate")
     public Flyway flyway() {
-        final Flyway flyway = new Flyway();
-
-        // Initialization for non-empty schema with no metadata table
-        flyway.setBaselineVersion(MigrationVersion
-                .fromVersion(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INITIAL_VERSION)));
-        flyway.setBaselineDescription(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INITIAL_DESCRIPTION));
-        flyway.setBaselineOnMigrate(
-                Boolean.parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INIT_ON_MIGRATE)));
-        flyway.setTable("schema_version");
-
-        flyway.setDataSource(this.getDataSource());
-
-        return flyway;
+        // @formatter:off
+        return Flyway.configure()
+                .baselineVersion(MigrationVersion
+                        .fromVersion(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INITIAL_VERSION)))
+                .baselineDescription(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INITIAL_DESCRIPTION))
+                .baselineOnMigrate(Boolean
+                        .parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INIT_ON_MIGRATE)))
+                .outOfOrder(true).table("schema_version")
+                .dataSource(this.getDataSource())
+                .load();
+        // @formatter:on
     }
 
     /**
