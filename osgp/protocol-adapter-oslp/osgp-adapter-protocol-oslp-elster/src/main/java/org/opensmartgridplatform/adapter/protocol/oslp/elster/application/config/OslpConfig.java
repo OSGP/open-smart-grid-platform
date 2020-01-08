@@ -31,7 +31,6 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
 
 /**
  * An application context Java configuration class.
@@ -122,7 +121,8 @@ public class OslpConfig extends AbstractConfig {
     }
 
     private void createChannelPipeline(final SocketChannel channel, final ChannelHandler handler) {
-        channel.pipeline().addLast("loggingHandler", new LoggingHandler(LogLevel.INFO));
+        final boolean hexDump = false;
+        channel.pipeline().addLast("loggingHandler", new OslpLoggingHandler(LogLevel.INFO, hexDump));
         channel.pipeline().addLast("oslpEncoder", new OslpEncoder());
         channel.pipeline().addLast("oslpDecoder", new OslpDecoder(this.oslpSignature(), this.oslpSignatureProvider()));
         channel.pipeline().addLast("oslpSecurity", this.oslpSecurityHandler());
