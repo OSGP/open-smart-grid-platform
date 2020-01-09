@@ -9,7 +9,6 @@ package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.rep
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,10 +33,10 @@ import org.springframework.util.CollectionUtils;
 
 public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListener {
 
-    private static final String NODE_NAMES = "(RTU|PV|BATTERY|ENGINE|LOAD|CHP|HEAT_BUFFER|GAS_FURNACE|HEAT_PUMP|BOILER|WIND|PQ)";
+    private static final String NODE_NAMES = "(RTU|PV|BATTERY|ENGINE|LOAD|CHP|HEAT_BUFFER|GAS_FURNACE|HEAT_PUMP|BOILER|WIND|PQ|TFR)";
 
-    private static final Pattern REPORT_PATTERN = Pattern
-            .compile("\\A(.*)" + NODE_NAMES + "([1-9]\\d*+)/LLN0\\.(Status|Measurements|Heartbeat)\\Z");
+    private static final Pattern REPORT_PATTERN = Pattern.compile(
+            "\\A(.*)" + NODE_NAMES + "([1-9]\\d*+)/LLN0\\.(Status|Measurements|Heartbeat|Power|Temperature)\\Z");
 
     private static final Map<String, Class<? extends Iec61850ReportHandler>> REPORT_HANDLERS_MAP = new HashMap<>();
 
@@ -80,8 +79,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
             try {
                 final Constructor<?> ctor = clazz.getConstructor(int.class);
                 return (Iec61850ReportHandler) ctor.newInstance(systemId);
-            } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-                    | InvocationTargetException | NoSuchMethodException ex) {
+            } catch (ReflectiveOperationException | RuntimeException ex) {
                 this.logger.error("Unable to instantiate Iec61850ReportHandler ", ex);
             }
         }
