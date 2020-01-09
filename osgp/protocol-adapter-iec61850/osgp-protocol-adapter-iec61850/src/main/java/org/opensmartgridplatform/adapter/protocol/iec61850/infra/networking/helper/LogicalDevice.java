@@ -66,7 +66,11 @@ public enum LogicalDevice {
     /**
      * Logical Device Pq
      */
-    PQ("PQ");
+    PQ("PQ"),
+    /**
+     * Logical Device Transformer
+     */
+    TFR("TFR");
 
     private String description;
 
