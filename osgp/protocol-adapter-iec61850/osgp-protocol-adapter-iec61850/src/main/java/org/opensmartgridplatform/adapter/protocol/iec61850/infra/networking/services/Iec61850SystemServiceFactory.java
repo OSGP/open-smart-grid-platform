@@ -11,13 +11,12 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.SystemService;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.LogicalDevice;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.SystemFilterDto;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
 public class Iec61850SystemServiceFactory {
@@ -58,6 +57,9 @@ public class Iec61850SystemServiceFactory {
     @Autowired
     private Iec61850PqSystemService iec61850PqSystemService;
 
+    @Autowired
+    private Iec61850TransformerSystemService iec61850TransformerSystemService;
+
     private Map<String, SystemService> systemServices;
 
     public SystemService getSystemService(final SystemFilterDto systemFilter) throws ProtocolAdapterException {
@@ -89,6 +91,7 @@ public class Iec61850SystemServiceFactory {
             this.systemServices.put(LogicalDevice.HEAT_PUMP.name(), this.iec61850HeatPumpSystemService);
             this.systemServices.put(LogicalDevice.WIND.name(), this.iec61850WindSystemService);
             this.systemServices.put(LogicalDevice.PQ.name(), this.iec61850PqSystemService);
+            this.systemServices.put(LogicalDevice.TFR.name(), this.iec61850TransformerSystemService);
         }
         return this.systemServices;
     }

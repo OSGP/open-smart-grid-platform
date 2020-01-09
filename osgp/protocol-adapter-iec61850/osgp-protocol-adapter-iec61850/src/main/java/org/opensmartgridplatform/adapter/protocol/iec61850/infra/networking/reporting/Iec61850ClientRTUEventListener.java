@@ -20,19 +20,17 @@ import java.util.regex.Pattern;
 import org.joda.time.DateTime;
 import org.openmuc.openiec61850.FcModelNode;
 import org.openmuc.openiec61850.Report;
-import org.springframework.util.CollectionUtils;
-
 import org.opensmartgridplatform.adapter.protocol.iec61850.application.config.BeanUtil;
 import org.opensmartgridplatform.adapter.protocol.iec61850.application.services.DeviceManagementService;
 import org.opensmartgridplatform.adapter.protocol.iec61850.application.services.ReportingService;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.entities.Iec61850Device;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
-import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.ReadOnlyNodeContainer;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.GetDataResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.GetDataSystemIdentifierDto;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.MeasurementDto;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.ReportDto;
+import org.springframework.util.CollectionUtils;
 
 public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListener {
 
@@ -59,6 +57,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
         REPORT_HANDLERS_MAP.put("BOILER", Iec61850BoilerReportHandler.class);
         REPORT_HANDLERS_MAP.put("WIND", Iec61850WindReportHandler.class);
         REPORT_HANDLERS_MAP.put("PQ", Iec61850PqReportHandler.class);
+        REPORT_HANDLERS_MAP.put("TFR", Iec61850TransformerReportHandler.class);
     }
 
     public Iec61850ClientRTUEventListener(final String deviceIdentification,
@@ -122,7 +121,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
         this.logReportDetails(report);
         try {
             this.processReport(report, reportDescription, reportHandler);
-        } catch (final ProtocolAdapterException e) {
+        } catch (final RuntimeException e) {
             this.logger.warn("Unable to process report, discarding report", e);
         } catch (final Exception e) {
             this.logger.error("Exception while processing report", e);
@@ -138,7 +137,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
     }
 
     private void processReport(final Report report, final String reportDescription,
-            final Iec61850ReportHandler reportHandler) throws ProtocolAdapterException {
+            final Iec61850ReportHandler reportHandler) {
         final List<FcModelNode> dataSetMembers = report.getValues();
         if (CollectionUtils.isEmpty(dataSetMembers)) {
             this.logger.warn("No dataSet members available for {}", reportDescription);
