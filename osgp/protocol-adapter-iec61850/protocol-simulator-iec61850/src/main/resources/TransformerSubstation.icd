@@ -46,11 +46,13 @@
               <FCDA ldInst="RTU1" prefix="" lnClass="LLN0" doName="Beh" fc="ST" />
               <FCDA ldInst="RTU1" prefix="" lnClass="LLN0" doName="Health" fc="ST" />
             </DataSet>
-            <ReportControl name="ReportStatus" rptID="RTU_Status" datSet="Status" intgPd="60000" confRev="1" buffered="true" bufTime="0" indexed="true">
+<!--
+            <ReportControl name="ReportStatus" rptID="RTU_Status" datSet="Status" intgPd="60000" confRev="1" buffered="false" bufTime="0" indexed="true">
               <TrgOps dchg="true" period="true" gi="true" />
               <OptFields seqNum="true" timeStamp="true" reasonCode="true" dataSet="true" dataRef="true" entryID="true" configRef="true" />
-              <RptEnabled max="2" />
+              <RptEnabled max="1" />
             </ReportControl>
+-->            
             <DOI name="NamPlt">
               <DAI name="ldNs">
                 <Val>IEC 61850-7-4:2007A</Val>
@@ -110,7 +112,7 @@
               <OptFields seqNum="true" timeStamp="true" reasonCode="true" dataSet="true" dataRef="true" entryID="true" configRef="true" />
               <RptEnabled max="1" />
             </ReportControl>
-            <ReportControl name="ReportStatus" rptID="TFR1_Status" datSet="Status" intgPd="0" confRev="1" buffered="true" bufTime="0" indexed="true">
+            <ReportControl name="ReportStatus" rptID="TFR1_Status" datSet="Status" intgPd="0" confRev="1" buffered="false" bufTime="0" indexed="true">
               <TrgOps dchg="true" gi="true" />
               <OptFields seqNum="true" timeStamp="true" reasonCode="true" dataSet="true" dataRef="true" entryID="true" configRef="true" />
               <RptEnabled max="1" />
@@ -170,7 +172,7 @@
               <OptFields seqNum="true" timeStamp="true" reasonCode="true" dataSet="true" dataRef="true" entryID="true" configRef="true" />
               <RptEnabled max="1" />
             </ReportControl>
-            <ReportControl name="ReportStatus" rptID="TFR2_Status" datSet="Status" intgPd="0" confRev="1" buffered="true" bufTime="0" indexed="true">
+            <ReportControl name="ReportStatus" rptID="TFR2_Status" datSet="Status" intgPd="0" confRev="1" buffered="false" bufTime="0" indexed="true">
               <TrgOps dchg="true" gi="true" />
               <OptFields seqNum="true" timeStamp="true" reasonCode="true" dataSet="true" dataRef="true" entryID="true" configRef="true" />
               <RptEnabled max="1" />
