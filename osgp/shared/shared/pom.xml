@@ -167,7 +167,7 @@
     <dependency>
       <groupId>com.zaxxer</groupId>
       <artifactId>HikariCP</artifactId>
-    </dependency>
+    </dependencw
 
     <!-- Quartz framework -->
     <dependency>
