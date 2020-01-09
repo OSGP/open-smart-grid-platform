@@ -8,7 +8,6 @@ import org.openmuc.openiec61850.ServerSap;
 import org.opensmartgridplatform.simulator.protocol.iec61850.domain.valueobjects.FloatMeasurement;
 import org.opensmartgridplatform.simulator.protocol.iec61850.infra.files.CsvFloatMeasurementValueProvider;
 import org.opensmartgridplatform.simulator.protocol.iec61850.server.RtuSimulator;
-import org.opensmartgridplatform.simulator.protocol.iec61850.server.TransformerSimulationConfig;
 import org.opensmartgridplatform.simulator.protocol.iec61850.server.logicaldevices.Transformer;
 import org.opensmartgridplatform.simulator.protocol.iec61850.server.tasks.UpdateTransformerPowerValuesTask;
 import org.opensmartgridplatform.simulator.protocol.iec61850.server.tasks.UpdateTransformerTemperatureValuesTask;
@@ -20,7 +19,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class TransformerSimulationService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TransformerSimulationConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TransformerSimulationService.class);
 
     @Value("${rtu.transformer.simulation.power.update.interval:10000}")
     private long transformerSimulationPowerUpdateInterval;
