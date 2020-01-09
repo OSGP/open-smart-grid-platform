@@ -80,7 +80,8 @@ public class RtuSimulator implements ServerEventListener {
     public RtuSimulator(final int port, final InputStream sclFile, final String serverName,
             final ServerSapEventProducer serverSapEventProducer, final Long updateValuesDelay,
             final Long updateValuesPeriod) throws SclParseException {
-        this.server = ServerSap.getSapsFromSclFile(IcdFileConverter.convertReportsForTesting(sclFile)).get(0);
+        this.server = ServerSap.getSapsFromSclFile(IcdFileConverter.convertReportsForTesting(sclFile))
+                .get(0);
         this.server.setPort(port);
         this.serverName = serverName;
         this.serverSapEventProducer = serverSapEventProducer;
@@ -92,46 +93,63 @@ public class RtuSimulator implements ServerEventListener {
         this.addLogicalDevices(this.serverModel);
     }
 
+    public ServerSap getServer() {
+        return this.server;
+    }
+
+    public List<LogicalDevice> getLogicalDevices() {
+        return this.logicalDevices;
+    }
+
     public void ensureReportsDisabled() {
-        for (final Rcb rcb : this.server.getModelCopy().getBrcbs()) {
+        for (final Rcb rcb : this.server.getModelCopy()
+                .getBrcbs()) {
             this.ensureReportDisabled(rcb);
         }
-        for (final Rcb rcb : this.server.getModelCopy().getUrcbs()) {
+        for (final Rcb rcb : this.server.getModelCopy()
+                .getUrcbs()) {
             this.ensureReportDisabled(rcb);
         }
     }
 
     public void assertAllReportsEnabled() {
-        for (final Rcb rcb : this.server.getModelCopy().getBrcbs()) {
+        for (final Rcb rcb : this.server.getModelCopy()
+                .getBrcbs()) {
             this.assertReportEnabled(rcb);
         }
-        for (final Rcb rcb : this.server.getModelCopy().getUrcbs()) {
+        for (final Rcb rcb : this.server.getModelCopy()
+                .getUrcbs()) {
             this.assertReportEnabled(rcb);
         }
     }
 
     public void assertNoReportsEnabled() {
-        for (final Rcb rcb : this.server.getModelCopy().getBrcbs()) {
+        for (final Rcb rcb : this.server.getModelCopy()
+                .getBrcbs()) {
             this.assertReportNotEnabled(rcb);
         }
-        for (final Rcb rcb : this.server.getModelCopy().getUrcbs()) {
+        for (final Rcb rcb : this.server.getModelCopy()
+                .getUrcbs()) {
             this.assertReportNotEnabled(rcb);
         }
     }
 
     private void ensureReportDisabled(final Rcb rcb) {
-        rcb.getRptEna().setValue(false);
+        rcb.getRptEna()
+                .setValue(false);
         this.server.setValues(Arrays.asList(rcb.getRptEna()));
     }
 
     private void assertReportEnabled(final Rcb rcb) {
-        if (!rcb.getRptEna().getValue()) {
+        if (!rcb.getRptEna()
+                .getValue()) {
             throw new AssertionError("Report " + rcb.getReference() + " should be enabled");
         }
     }
 
     private void assertReportNotEnabled(final Rcb rcb) {
-        if (rcb.getRptEna().getValue()) {
+        if (rcb.getRptEna()
+                .getValue()) {
             throw new AssertionError("Report " + rcb.getReference() + " should not be enabled");
         }
     }
@@ -316,7 +334,7 @@ public class RtuSimulator implements ServerEventListener {
 
         if (lightMeasurementRtuNode != null) {
             // Light Measurement RTU found in the server model.
-            LOGGER.info("Adding lmRtu " + logicalDeviceName);
+            LOGGER.info("Adding lmRtu {}", logicalDeviceName);
             this.logicalDevices.add(new LightMeasurementRtu(this.getDeviceName(), logicalDeviceName, serverModel));
         }
     }
@@ -326,7 +344,7 @@ public class RtuSimulator implements ServerEventListener {
         final ModelNode switchDevice = serverModel.getChild(this.getDeviceName() + logicalDeviceName);
 
         if (switchDevice != null) {
-            LOGGER.info("Adding switchDevice " + this.getDeviceName());
+            LOGGER.info("Adding switchDevice {}", this.getDeviceName());
             this.logicalDevices.add(new SwitchDevice(this.getDeviceName(), logicalDeviceName, serverModel));
         }
     }
@@ -371,7 +389,7 @@ public class RtuSimulator implements ServerEventListener {
     @Override
     public List<ServiceError> write(final List<BasicDataAttribute> bdas) {
         for (final BasicDataAttribute bda : bdas) {
-            LOGGER.info("got a write request: " + bda);
+            LOGGER.info("got a write request: {}", bda);
             this.writeValueAndUpdateRelatedAttributes(bda);
         }
 
@@ -421,7 +439,8 @@ public class RtuSimulator implements ServerEventListener {
         }
         if (!(actual instanceof BasicDataAttribute)) {
             throw new AssertionError("RTU Simulator value has node \"" + node + onLogicalDevice + logicalDeviceName
-                    + "\", but it is not a BasicDataAttribute: " + actual.getClass().getName());
+                    + "\", but it is not a BasicDataAttribute: " + actual.getClass()
+                            .getName());
         }
         final BasicDataAttribute expected = this.getCopyWithNewValue((BasicDataAttribute) actual, value);
         if (!BasicDataAttributesHelper.attributesEqual(expected, (BasicDataAttribute) actual)) {
@@ -465,7 +484,8 @@ public class RtuSimulator implements ServerEventListener {
 
     private LogicalDevice getLogicalDevice(final String logicalDeviceName) {
         for (final LogicalDevice ld : this.logicalDevices) {
-            if (ld.getLogicalDeviceName().equals(logicalDeviceName)) {
+            if (ld.getLogicalDeviceName()
+                    .equals(logicalDeviceName)) {
                 return ld;
             }
         }
@@ -496,7 +516,7 @@ public class RtuSimulator implements ServerEventListener {
     }
 
     private String getDeviceName() {
-        if ((this.serverName != null) && !this.serverName.isEmpty()) {
+        if (this.serverName != null && !this.serverName.isEmpty()) {
             return this.serverName;
         } else {
             return PHYSICAL_DEVICE;

@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.openmuc.openiec61850.SclParseException;
+import org.opensmartgridplatform.simulator.protocol.iec61850.domain.services.TransformerSimulationService;
+import org.opensmartgridplatform.simulator.protocol.iec61850.server.eventproducers.ServerSapEventProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +22,16 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
 
-import org.opensmartgridplatform.simulator.protocol.iec61850.server.eventproducers.ServerSapEventProducer;
-
 @Configuration
 public class RtuSimulatorConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RtuSimulatorConfig.class);
+
+    @Autowired
+    private boolean transformerSimulationEnabled;
+
+    @Autowired
+    private TransformerSimulationService transformerSimulationService;
 
     @Autowired
     private ResourceLoader resourceLoader;
@@ -47,10 +53,12 @@ public class RtuSimulatorConfig {
         final File icdFile = new File(icdFilename);
         if (icdFile.exists()) {
             LOGGER.info("Simulator icd {} found as external file", icdFilename);
-            icdInputStream = this.resourceLoader.getResource("file:" + icdFilename).getInputStream();
+            icdInputStream = this.resourceLoader.getResource("file:" + icdFilename)
+                    .getInputStream();
         } else {
             LOGGER.info("Simulator icd {} not found as external file, load it from the classpath", icdFilename);
-            icdInputStream = this.resourceLoader.getResource("classpath:" + icdFilename).getInputStream();
+            icdInputStream = this.resourceLoader.getResource("classpath:" + icdFilename)
+                    .getInputStream();
         }
         LOGGER.info("Simulator icd file loaded");
 
@@ -60,7 +68,12 @@ public class RtuSimulatorConfig {
             if (stopGeneratingValues) {
                 rtuSimulator.ensurePeriodicDataGenerationIsStopped();
             }
+            if (this.transformerSimulationEnabled) {
+                this.transformerSimulationService.initialize(rtuSimulator);
+            }
+
             rtuSimulator.start();
+
             return rtuSimulator;
         } catch (final SclParseException e) {
             LOGGER.warn("Error parsing SCL/ICD file {}", e);
@@ -70,4 +83,5 @@ public class RtuSimulatorConfig {
 
         return null;
     }
+
 }
