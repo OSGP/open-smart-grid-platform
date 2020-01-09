@@ -8,6 +8,9 @@
  */
 package org.opensmartgridplatform.adapter.kafka.da.application.mapping;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,18 +48,48 @@ public class MeterReadingMapping extends CustomConverter<MeasurementReport, Mete
 
         final List<IntervalReading> intervalReadings = Arrays.asList(this.getIntervalReading(measurementElements));
 
-        // TODO fill readingType with values from the source
-        final ReadingType readingType = new ReadingType("10s", "energy", "M", "W", "Energy MW en 10s", null);
+        final String identification = source.getMeasurementGroups().get(0).getIdentification();
+        final ReadingType readingType = getReadingType(identification);
         final IntervalBlock intervalBlock = new IntervalBlock(readingType, intervalReadings);
 
-        final Long start = intervalReadings.stream().map(IntervalReading::getTimeStamp).min(Long::compareTo).get();
-        final Long end = intervalReadings.stream().map(IntervalReading::getTimeStamp).max(Long::compareTo).get();
+        final Long start = intervalReadings.stream()
+                .map(IntervalReading::getTimeStamp)
+                .min(Long::compareTo)
+                .orElse(dateStringToEpoch("2020-01-13 00:00:00"));
+        final Long end = intervalReadings.stream()
+                .map(IntervalReading::getTimeStamp)
+                .max(Long::compareTo)
+                .orElse(dateStringToEpoch("2020-01-16 00:00:00"));
         final ValuesInterval valuesInterval = new ValuesInterval(start, end);
 
-        // TODO fill usagePoint with values from the source
-        final UsagePoint usagePoint = new UsagePoint("Substation 1 PT 1");
-        return new MeterReading(valuesInterval, null, null, usagePoint, Arrays.asList(intervalBlock));
+        final UsagePoint usagePoint = new UsagePoint(this.getUsagePoint(identification));
+        return new MeterReading(valuesInterval, null, identification, usagePoint, Arrays.asList(intervalBlock));
 
+    }
+
+    private ReadingType getReadingType(String identification) {
+        if (identification.contains("TotW")) {
+            return new ReadingType("10s", "energy", "M", "W", "Energy MW en 10s", null);
+        } else {
+            return new ReadingType("60s", "temperature", "none", "degC", "Temperature transformateur °C en 60s", null);
+        }
+    }
+
+    private static long dateStringToEpoch(final String dateString) {
+        final LocalDateTime localDateTime = LocalDateTime.parse(dateString,
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        return localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+    }
+
+    private CharSequence getUsagePoint(final String identification) {
+        String usagePoint = "Substation 1";
+        if (identification.contains("TFR1")) {
+            usagePoint += "PT 1";
+        }
+        if (identification.contains("TFR2")) {
+            usagePoint += "PT 2";
+        }
+        return usagePoint;
     }
 
     private IntervalReading getIntervalReading(final List<MeasurementElement> measurementElements) {
