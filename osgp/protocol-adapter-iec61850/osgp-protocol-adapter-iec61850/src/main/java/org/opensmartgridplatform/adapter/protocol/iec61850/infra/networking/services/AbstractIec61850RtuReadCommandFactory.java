@@ -365,6 +365,7 @@ public abstract class AbstractIec61850RtuReadCommandFactory
                 case SWITCH_TYPE:
                     break;
                 case TEMPERATURE:
+                    READ_COMMANDS_BY_ATTRIBUTE.put(dataAttribute, new Iec61850TemperatureCommand(ONE));
                     READ_COMMAND_FACTORY_INDEXED_BY_ATTRIBUTE.put(dataAttribute, Iec61850TemperatureCommand::new);
                     break;
                 case TLS_CONFIGURATION:
