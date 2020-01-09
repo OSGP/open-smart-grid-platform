@@ -45,7 +45,12 @@ public class Iec61850ClientEventListenerFactory {
             return new Iec61850ClientRTUEventListener(deviceIdentification, this.deviceManagementService,
                     this.reportingService);
         case DA_RTU:
-            return new Iec61850ClientDaRTUEventListener(deviceIdentification, this.deviceManagementService);
+            // Use the ZOWN event listener, because it uses a generic approach.
+            // The DA event listener is very specific for PQ values.
+            return new Iec61850ClientRTUEventListener(deviceIdentification, this.deviceManagementService,
+                    this.reportingService);
+        // return new Iec61850ClientDaRTUEventListener(deviceIdentification,
+        // this.deviceManagementService);
         default:
             LOGGER.warn("Unknown IED {}, could not create event listener for device {}", ied, deviceIdentification);
             return null;
