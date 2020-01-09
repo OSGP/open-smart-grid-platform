@@ -36,6 +36,12 @@ public class TransformerSimulationService {
     @Value("${rtu.transformer.1.temperature.file:transformer-t.csv}")
     private String transformer1TemperatureValuesFileName;
 
+    @Value("${rtu.transformer.2.power.file:transformer-p.csv}")
+    private String transformer2PowerValuesFileName;
+
+    @Value("${rtu.transformer.2.temperature.file:transformer-t.csv}")
+    private String transformer2TemperatureValuesFileName;
+
     private ThreadPoolTaskScheduler taskScheduler;
 
     public void initialize(final RtuSimulator simulator) {
@@ -57,16 +63,28 @@ public class TransformerSimulationService {
         }
     }
 
-    public ValueProvider<FloatMeasurement> transformer1PowerValueProvider() {
+    private ValueProvider<FloatMeasurement> transformer1PowerValueProvider() {
         LOGGER.info("Initializing transformer1PowerValueProvider bean with file: {}.",
                 this.transformer1PowerValuesFileName);
         return new CsvFloatMeasurementValueProvider(this.transformer1PowerValuesFileName);
     }
 
-    public ValueProvider<FloatMeasurement> transformer1TemperatureValueProvider() {
+    private ValueProvider<FloatMeasurement> transformer1TemperatureValueProvider() {
         LOGGER.info("Initializing transformer1TemperatureValueProvider bean with file: {}.",
                 this.transformer1TemperatureValuesFileName);
         return new CsvFloatMeasurementValueProvider(this.transformer1TemperatureValuesFileName);
+    }
+
+    private ValueProvider<FloatMeasurement> transformer2PowerValueProvider() {
+        LOGGER.info("Initializing transformer1PowerValueProvider bean with file: {}.",
+                this.transformer1PowerValuesFileName);
+        return new CsvFloatMeasurementValueProvider(this.transformer2PowerValuesFileName);
+    }
+
+    private ValueProvider<FloatMeasurement> transformer2TemperatureValueProvider() {
+        LOGGER.info("Initializing transformer1TemperatureValueProvider bean with file: {}.",
+                this.transformer1TemperatureValuesFileName);
+        return new CsvFloatMeasurementValueProvider(this.transformer2TemperatureValuesFileName);
     }
 
     private void initializeScheduler(final ServerSap serverSap, final List<Transformer> transformers) {
@@ -75,14 +93,23 @@ public class TransformerSimulationService {
         scheduler.setPoolSize(10);
         scheduler.setThreadNamePrefix("transformerSubstationTaskScheduler");
 
-        final Runnable updatePowerValuesTask = new UpdateTransformerPowerValuesTask(serverSap, transformers.get(0),
-                this.transformer1PowerValueProvider());
         final Duration powerInterval = this.periodInMillis(this.transformerSimulationPowerUpdateInterval);
-        scheduler.scheduleAtFixedRate(updatePowerValuesTask, powerInterval);
+        final Duration temperatureInterval = this.periodInMillis(this.transformerSimulationTemperatureUpdateInterval);
+
+        final Runnable updateTransformer1PowerValuesTask = new UpdateTransformerPowerValuesTask(serverSap,
+                transformers.get(0), this.transformer1PowerValueProvider());
+        scheduler.scheduleAtFixedRate(updateTransformer1PowerValuesTask, powerInterval);
+
+        final Runnable updateTransformer1TemperatureValuesTask = new UpdateTransformerTemperatureValuesTask(serverSap,
+                transformers.get(0), this.transformer1TemperatureValueProvider());
+        scheduler.scheduleAtFixedRate(updateTransformer1TemperatureValuesTask, temperatureInterval);
+
+        final Runnable updateTransformer2PowerValuesTask = new UpdateTransformerPowerValuesTask(serverSap,
+                transformers.get(1), this.transformer2PowerValueProvider());
+        scheduler.scheduleAtFixedRate(updateTransformer2PowerValuesTask, powerInterval);
 
         final Runnable updateTemperatureValuesTask = new UpdateTransformerTemperatureValuesTask(serverSap,
-                transformers.get(0), this.transformer1TemperatureValueProvider());
-        final Duration temperatureInterval = this.periodInMillis(this.transformerSimulationTemperatureUpdateInterval);
+                transformers.get(1), this.transformer2TemperatureValueProvider());
         scheduler.scheduleAtFixedRate(updateTemperatureValuesTask, temperatureInterval);
 
         this.taskScheduler = scheduler;
