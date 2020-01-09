@@ -1,9 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.shared.exceptionhandling;
 
@@ -57,6 +58,7 @@ public enum FunctionalExceptionType {
     SESSION_INFO_NULL(411, "SESSION_INFO_NULL"),
     ERROR_RETRIEVING_ATTRIBUTE_VALUE(412, "ERROR_RETRIEVING_ATTRIBUTE_VALUE"),
     UNSUPPORTED_COMMUNICATION_SETTING(413, "UNSUPPORTED_COMMUNICATION_SETTING"),
+    UNABLE_TO_PROCESS_REQUEST(414, "UNABLE_TO_PROCESS_REQUEST"),
 
     // Manufacturer exceptions
     UNKNOWN_MANUFACTURER(501, "UNKNOWN_MANUFACTURER"),
@@ -73,7 +75,7 @@ public enum FunctionalExceptionType {
     UNKNOWN_FIRMWARE(701, "UNKNOWN_FIRMWARE"),
     EXISTING_FIRMWARE(702, "EXISTING_FIRMWARE"),
     EXISTING_FIRMWARE_DEVICEFIRMWARE(703, "EXISTING_FIRMWARE_DEVICEFIRMWARE"),
-
+    
     // Key exceptions
     INVALID_DLMS_KEY_ENCRYPTION(801, "INVALID_DLMS_KEY_ENCRYPTION"),
     INVALID_DLMS_KEY_FORMAT(802, "INVALID_DLMS_KEY_FORMAT"),
@@ -81,8 +83,8 @@ public enum FunctionalExceptionType {
     DECRYPTION_EXCEPTION(804, "DECRYPTION_EXCEPTION"),
     READING_KEY_EXCEPTION(805, "READING_KEY_EXCEPTION");
 
-    private int code;
-    private String message;
+    private final int code;
+    private final String message;
 
     private FunctionalExceptionType(final int code, final String message) {
         this.code = code;
