@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Smart Society Services B.V.
+ * Copyright 2020 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -31,7 +31,7 @@ public class InboundDomainResponsesMessagingConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InboundDomainResponsesMessagingConfig.class);
 
-    private JmsConfigurationFactory jmsConfigurationFactory;
+    private final JmsConfigurationFactory jmsConfigurationFactory;
 
     public InboundDomainResponsesMessagingConfig(final Environment environment,
             final DefaultJmsConfiguration defaultJmsConfiguration) throws SSLException {
