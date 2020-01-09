@@ -26,7 +26,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 @Configuration
 @PropertySource("classpath:osgp-adapter-kafka-distributionautomation.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
-@PropertySource(value = "file:${osgp/AdapterWsDistributionAutomation/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/AdapterKafkaDistributionAutomation/config}", ignoreResourceNotFound = true)
 public class PersistenceConfigWs extends AbstractPersistenceConfig {
 
     public PersistenceConfigWs() {

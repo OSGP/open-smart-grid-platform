@@ -8,12 +8,10 @@
 package org.opensmartgridplatform.adapter.kafka.da.application.config;
 
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
-import org.opensmartgridplatform.ws.da.config.DistributionAutomationWebServiceConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
@@ -24,14 +22,14 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
  */
 @Configuration
 @ComponentScan(basePackages = { "org.opensmartgridplatform.shared.domain.services",
-        "org.opensmartgridplatform.domain.da", "org.opensmartgridplatform.adapter.ws.da",
+        "org.opensmartgridplatform.domain.da", "org.opensmartgridplatform.adapter.kafka.da",
         "org.opensmartgridplatform.domain.logging", "org.opensmartgridplatform.domain.core.services",
         "org.opensmartgridplatform.adapter.ws.shared.services", "org.opensmartgridplatform.shared.application.config" })
-@ImportResource("classpath:applicationContext.xml")
-@Import({ DistributionAutomationWebServiceConfig.class })
+@Import({ PersistenceConfigCore.class, PersistenceConfigWs.class, MessagingConfig.class, OsgpSchedulerConfig.class,
+        ResponseDataCleanupScheduledJobConfig.class })
 @PropertySource("classpath:osgp-adapter-kafka-distributionautomation.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
-@PropertySource(value = "file:${osgp/AdapterWsDistributionAutomation/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/AdapterKafkaDistributionAutomation/config}", ignoreResourceNotFound = true)
 public class ApplicationContext extends AbstractConfig {
 
     @Bean

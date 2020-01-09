@@ -16,7 +16,6 @@ import org.opensmartgridplatform.adapter.kafka.da.application.mapping.Distributi
 import org.opensmartgridplatform.adapter.kafka.da.io.kafka.out.MeasurementReadingProducer;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.MeasurementReport;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.notification.NotificationType;
-import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
@@ -35,12 +34,6 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(DomainResponseMessageProcessor.class);
 
     @Autowired
-    private String webserviceNotificationOrganisation;
-
-    @Autowired
-    private NotificationService notificationService;
-
-    @Autowired
     protected DistributionAutomationMapper mapper;
 
     @Autowired
@@ -55,8 +48,6 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
         String organisationIdentification = null;
         String deviceIdentification = null;
 
-        String notificationMessage;
-        NotificationType notificationType;
         ResponseMessageResultType resultType;
         String resultDescription;
         Serializable dataObject;
@@ -71,9 +62,6 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
 
             resultType = ResponseMessageResultType.valueOf(message.getStringProperty(Constants.RESULT));
             resultDescription = message.getStringProperty(Constants.DESCRIPTION);
-
-            notificationMessage = message.getStringProperty(Constants.DESCRIPTION);
-            notificationType = NotificationType.valueOf(messageType);
 
             dataObject = message.getObject();
         } catch (final IllegalArgumentException e) {
@@ -95,12 +83,8 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
                     correlationUid);
             this.handleMessage(ids, messageType, resultType, resultDescription, dataObject);
 
-            // Send notification indicating data is available.
-            this.notificationService.sendNotification(this.webserviceNotificationOrganisation, deviceIdentification,
-                    resultType.name(), correlationUid, notificationMessage, notificationType);
-
         } catch (final RuntimeException e) {
-            handleError(e, correlationUid, notificationType);
+            handleError(e, correlationUid);
         }
     }
 
@@ -127,11 +111,10 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
      * @param notificationType
      *            The message type.
      */
-    private static void handleError(final RuntimeException e, final String correlationUid,
-            final NotificationType notificationType) {
+    private static void handleError(final RuntimeException e, final String correlationUid) {
 
-        LOGGER.warn("Error '{}' occurred while trying to send notification type: {} with correlationUid: {}",
-                e.getMessage(), notificationType, correlationUid, e);
+        LOGGER.warn("Error '{}' occurred while trying to send message with correlationUid: {}", e.getMessage(),
+                correlationUid, e);
     }
 
     /**

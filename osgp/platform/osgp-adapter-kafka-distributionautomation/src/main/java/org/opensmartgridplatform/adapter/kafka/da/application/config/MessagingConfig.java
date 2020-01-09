@@ -20,7 +20,7 @@ import org.springframework.context.annotation.PropertySource;
 @Configuration
 @PropertySource("classpath:osgp-adapter-kafka-distributionautomation.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
-@PropertySource(value = "file:${osgp/AdapterWsDistributionAutomation/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/AdapterKafkaDistributionAutomation/config}", ignoreResourceNotFound = true)
 @Import(value = { InboundDomainResponsesMessagingConfig.class, OutboundDomainRequestsMessagingConfig.class,
         OutboundLoggingRequestsMessagingConfig.class })
 public class MessagingConfig extends AbstractConfig {
