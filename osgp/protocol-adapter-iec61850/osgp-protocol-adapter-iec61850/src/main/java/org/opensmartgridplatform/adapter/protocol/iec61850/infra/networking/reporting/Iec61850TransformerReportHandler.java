@@ -27,7 +27,7 @@ public class Iec61850TransformerReportHandler implements Iec61850ReportHandler {
             DataAttribute.TEMPERATURE);
 
     private static final Pattern NODE_PATTERN = Pattern
-            .compile("\\T(.*)TFR([1-9]\\d*+)/(LLN0|MMXU|TTMP)([1-9]\\d*+)?\\.(.*)\\Z");
+            .compile("\\A(.*)TFR([1-9]\\d*+)/(LLN0|MMXU|TTMP)([1-9]\\d*+)?\\.(.*)\\Z");
 
     private static final int PATTERN_GROUP = 2;
     private static final Iec61850ReportNodeHelper NODE_HELPER = new Iec61850ReportNodeHelper(NODES_USING_ID,

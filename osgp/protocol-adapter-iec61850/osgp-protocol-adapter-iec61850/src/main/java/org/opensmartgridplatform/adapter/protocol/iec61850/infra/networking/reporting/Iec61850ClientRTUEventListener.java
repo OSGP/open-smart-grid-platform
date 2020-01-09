@@ -79,7 +79,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
             try {
                 final Constructor<?> ctor = clazz.getConstructor(int.class);
                 return (Iec61850ReportHandler) ctor.newInstance(systemId);
-            } catch (ReflectiveOperationException | RuntimeException ex) {
+            } catch (ReflectiveOperationException | IllegalArgumentException ex) {
                 this.logger.error("Unable to instantiate Iec61850ReportHandler ", ex);
             }
         }
