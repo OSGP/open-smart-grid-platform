@@ -21,19 +21,17 @@ import org.openmuc.openiec61850.Fc;
 import org.openmuc.openiec61850.FcModelNode;
 import org.openmuc.openiec61850.ModelNode;
 import org.openmuc.openiec61850.Report;
+import org.opensmartgridplatform.adapter.protocol.iec61850.application.services.DeviceManagementService;
 import org.opensmartgridplatform.dto.da.GetPQValuesResponseDto;
 import org.opensmartgridplatform.dto.da.iec61850.DataSampleDto;
 import org.opensmartgridplatform.dto.da.iec61850.LogicalDeviceDto;
 import org.opensmartgridplatform.dto.da.iec61850.LogicalNodeDto;
 import org.springframework.util.CollectionUtils;
 
-import org.opensmartgridplatform.adapter.protocol.iec61850.application.services.DeviceManagementService;
-import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
-
 public class Iec61850ClientDaRTUEventListener extends Iec61850ClientBaseEventListener {
 
     public Iec61850ClientDaRTUEventListener(final String deviceIdentification,
-            final DeviceManagementService deviceManagementService) throws ProtocolAdapterException {
+            final DeviceManagementService deviceManagementService) {
         super(deviceIdentification, deviceManagementService, Iec61850ClientDaRTUEventListener.class);
     }
 
@@ -48,12 +46,12 @@ public class Iec61850ClientDaRTUEventListener extends Iec61850ClientBaseEventLis
         this.logReportDetails(report);
         try {
             this.processReport(report, reportDescription);
-        } catch (final ProtocolAdapterException e) {
+        } catch (final RuntimeException e) {
             this.logger.warn("Unable to process report, discarding report", e);
         }
     }
 
-    private void processReport(final Report report, final String reportDescription) throws ProtocolAdapterException {
+    private void processReport(final Report report, final String reportDescription) {
         final List<FcModelNode> dataSetMembers = report.getValues();
         final List<LogicalDevice> logicalDevices = new ArrayList<>();
 
