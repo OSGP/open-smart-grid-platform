@@ -16,12 +16,17 @@ import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.opensmartgridplatform.adapter.kafka.MeterReading;
+import org.opensmartgridplatform.adapter.kafka.da.application.mapping.DistributionAutomationMapper;
 import org.opensmartgridplatform.domain.da.measurements.MeasurementReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class MeasurementReadingProducer {
     private static final Logger LOGGER = LoggerFactory.getLogger(MeasurementReadingProducer.class);
+
+    @Autowired
+    protected DistributionAutomationMapper mapper;
 
     public void send(final MeasurementReport report) {
         final Properties props = new Properties();
@@ -32,7 +37,7 @@ public class MeasurementReadingProducer {
 
         try (final Producer<String, MeterReading> producer = new KafkaProducer<>(props)) {
 
-            final MeterReading meterReading = new MeterReading();
+            final MeterReading meterReading = this.mapper.map(report, MeterReading.class);
             final ProducerRecord<String, MeterReading> producerRecord = new ProducerRecord<>("hackathon", null,
                     meterReading);
             producer.send(producerRecord, new EventCallback(meterReading));
