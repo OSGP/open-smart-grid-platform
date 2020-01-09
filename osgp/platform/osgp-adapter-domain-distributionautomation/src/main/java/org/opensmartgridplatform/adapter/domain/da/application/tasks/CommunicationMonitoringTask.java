@@ -17,13 +17,12 @@ import org.opensmartgridplatform.domain.core.entities.RtuDevice;
 import org.opensmartgridplatform.domain.core.entities.Task;
 import org.opensmartgridplatform.domain.core.repositories.RtuDeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.TaskRepository;
+import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.TaskStatusType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 
 @Component
 public class CommunicationMonitoringTask implements Runnable {
@@ -72,7 +71,8 @@ public class CommunicationMonitoringTask implements Runnable {
         for (final RtuDevice rtu : rtuDevices) {
             LOGGER.debug("Restoring communication for device {}.", rtu.getDeviceIdentification());
 
-            this.communicationRecoveryService.signalConnectionLost(rtu);
+            LOGGER.info("Disabled the signalConnectionLost method, because it's not useful for the hackathon.");
+            // this.communicationRecoveryService.signalConnectionLost(rtu);
             this.communicationRecoveryService.restoreCommunication(rtu);
         }
 
