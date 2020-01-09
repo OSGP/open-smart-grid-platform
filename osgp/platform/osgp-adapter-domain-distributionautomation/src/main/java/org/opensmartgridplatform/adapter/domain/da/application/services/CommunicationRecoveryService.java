@@ -9,13 +9,13 @@
  */
 package org.opensmartgridplatform.adapter.domain.da.application.services;
 
+import org.opensmartgridplatform.domain.core.entities.RtuDevice;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
+import org.opensmartgridplatform.dto.da.GetHealthStatusRequestDto;
+import org.opensmartgridplatform.dto.da.GetHealthStatusResponseDto;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
-import org.opensmartgridplatform.domain.core.entities.RtuDevice;
-import org.opensmartgridplatform.dto.da.GetHealthStatusRequestDto;
-import org.opensmartgridplatform.dto.da.GetHealthStatusResponseDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,9 +52,9 @@ public class CommunicationRecoveryService extends BaseService {
         final String organisationIdentification = rtu.getOwner().getOrganisationIdentification();
         final String deviceIdentification = rtu.getDeviceIdentification();
 
-        this.deviceManagementService
-                .handleHealthStatusResponse(getHealthStatusResponseDto, deviceIdentification, organisationIdentification, correlationUid,
-                        DeviceFunction.GET_DATA.toString(), ResponseMessageResultType.OK, null);
+        this.deviceManagementService.handleHealthStatusResponse(getHealthStatusResponseDto, deviceIdentification,
+                organisationIdentification, correlationUid, DeviceFunction.GET_DATA.toString(),
+                ResponseMessageResultType.OK, null);
     }
 
     public void restoreCommunication(final RtuDevice rtu) {
@@ -66,7 +66,10 @@ public class CommunicationRecoveryService extends BaseService {
         }
 
         final RequestMessage message = this.createMessage(rtu);
-        this.osgpCoreRequestMessageSender.send(message, DeviceFunction.GET_DATA.toString(), rtu.getIpAddress());
+        // this.osgpCoreRequestMessageSender.send(message,
+        // DeviceFunction.GET_DATA.toString(), rtu.getIpAddress());
+        this.osgpCoreRequestMessageSender.send(message, DeviceFunction.GET_HEALTH_STATUS.toString(),
+                rtu.getIpAddress());
     }
 
     private RequestMessage createMessage(final RtuDevice rtu) {
