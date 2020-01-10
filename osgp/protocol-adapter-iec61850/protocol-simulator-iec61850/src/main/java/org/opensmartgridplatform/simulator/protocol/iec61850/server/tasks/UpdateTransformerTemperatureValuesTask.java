@@ -28,13 +28,13 @@ public class UpdateTransformerTemperatureValuesTask implements Runnable {
 
     @Override
     public void run() {
-        LOGGER.info("Running update power values task.");
+        LOGGER.info("Running update temperature values task.");
         try {
             final FloatMeasurement measurement = this.temperatureValueProvider.getValue();
             final List<BasicDataAttribute> temperatureValues = this.transformer.updateTemperatureValues(measurement);
             this.serverSap.setValues(temperatureValues);
         } catch (final EndOfSimulationException e) {
-            LOGGER.warn("=== NO MORE POWER VALUES AVAILABLE ===");
+            LOGGER.warn("=== NO MORE TEMPERATURE VALUES AVAILABLE ===");
         }
     }
 

@@ -24,12 +24,11 @@ import org.openmuc.openiec61850.BdaTimestamp;
 import org.openmuc.openiec61850.BdaType;
 import org.openmuc.openiec61850.BdaVisibleString;
 import org.openmuc.openiec61850.ServerModel;
+import org.opensmartgridplatform.simulator.protocol.iec61850.server.BasicDataAttributesHelper;
+import org.opensmartgridplatform.simulator.protocol.iec61850.server.QualityType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
-
-import org.opensmartgridplatform.simulator.protocol.iec61850.server.BasicDataAttributesHelper;
-import org.opensmartgridplatform.simulator.protocol.iec61850.server.QualityType;
 
 public abstract class LogicalDevice {
 
@@ -54,27 +53,33 @@ public abstract class LogicalDevice {
 
     public BasicDataAttribute getAttributeAndSetValue(final LogicalDeviceNode node, final String value) {
 
-        if (node.getType().equals(BdaType.BOOLEAN)) {
+        if (node.getType()
+                .equals(BdaType.BOOLEAN)) {
             return this.setBoolean(node, Boolean.parseBoolean(value));
         }
 
-        if (node.getType().equals(BdaType.FLOAT32)) {
+        if (node.getType()
+                .equals(BdaType.FLOAT32)) {
             return this.setFixedFloat(node, Float.parseFloat(value));
         }
 
-        if (node.getType().equals(BdaType.INT8)) {
+        if (node.getType()
+                .equals(BdaType.INT8)) {
             return this.setByte(node, Byte.parseByte(value));
         }
 
-        if (node.getType().equals(BdaType.INT32)) {
+        if (node.getType()
+                .equals(BdaType.INT32)) {
             return this.setInt(node, Integer.parseInt(value));
         }
 
-        if (node.getType().equals(BdaType.QUALITY)) {
+        if (node.getType()
+                .equals(BdaType.QUALITY)) {
             return this.setQuality(node, QualityType.valueOf(value));
         }
 
-        if (node.getType().equals(BdaType.TIMESTAMP)) {
+        if (node.getType()
+                .equals(BdaType.TIMESTAMP)) {
             return this.setTime(node, this.parseDate(value));
         }
 
@@ -116,7 +121,8 @@ public abstract class LogicalDevice {
 
     protected BasicDataAttribute setRandomFloat(final LogicalDeviceNode node, final int min, final int max) {
         final BdaFloat32 value = (BdaFloat32) this.serverModel.findModelNode(this.createNodeName(node), node.getFc());
-        value.setFloat((float) ThreadLocalRandom.current().nextInt(min, max));
+        value.setFloat((float) ThreadLocalRandom.current()
+                .nextInt(min, max));
         return value;
     }
 
@@ -128,7 +134,8 @@ public abstract class LogicalDevice {
 
     protected BasicDataAttribute setRandomByte(final LogicalDeviceNode node, final int min, final int max) {
         final BdaInt8 value = (BdaInt8) this.serverModel.findModelNode(this.createNodeName(node), node.getFc());
-        value.setValue((byte) ThreadLocalRandom.current().nextInt(min, max));
+        value.setValue((byte) ThreadLocalRandom.current()
+                .nextInt(min, max));
         return value;
     }
 
@@ -146,7 +153,8 @@ public abstract class LogicalDevice {
 
     protected BasicDataAttribute setRandomInt(final LogicalDeviceNode node, final int min, final int max) {
         final BdaInt32 value = (BdaInt32) this.serverModel.findModelNode(this.createNodeName(node), node.getFc());
-        value.setValue(ThreadLocalRandom.current().nextInt(min, max));
+        value.setValue(ThreadLocalRandom.current()
+                .nextInt(min, max));
         return value;
     }
 
@@ -176,7 +184,9 @@ public abstract class LogicalDevice {
     }
 
     private byte[] shortToByteArray(final short value) {
-        return ByteBuffer.allocate(2).putShort(value).array();
+        return ByteBuffer.allocate(2)
+                .putShort(value)
+                .array();
     }
 
     protected Date parseDate(final String date) {
@@ -211,8 +221,8 @@ public abstract class LogicalDevice {
      */
     public List<BasicDataAttribute> writeValueAndUpdateRelatedAttributes(final String node,
             final BasicDataAttribute value) {
-        LOGGER.info("No special update action needed for changing node \"" + node + "\" in " + this.logicalDeviceName
-                + " to " + value);
+        LOGGER.info("No special update action needed for changing node \"{}\" in {} to {}.", node,
+                this.logicalDeviceName, value);
 
         return new ArrayList<>();
     }
