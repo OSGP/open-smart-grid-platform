@@ -30,16 +30,16 @@ public class TransformerSimulationService {
     @Value("${rtu.transformer.simulation.speedup.factor:1}")
     private long transformerSimulationSpeedupFactor;
 
-    @Value("${rtu.transformer.1.power.file:transformer-p.csv}")
+    @Value("${rtu.transformer.1.power.file:p_clean.csv}")
     private String transformer1PowerValuesFileName;
 
-    @Value("${rtu.transformer.1.temperature.file:transformer-t.csv}")
+    @Value("${rtu.transformer.1.temperature.file:internTemperature_clean.csv}")
     private String transformer1TemperatureValuesFileName;
 
-    @Value("${rtu.transformer.2.power.file:transformer-p.csv}")
+    @Value("${rtu.transformer.2.power.file:p_defective.csv}")
     private String transformer2PowerValuesFileName;
 
-    @Value("${rtu.transformer.2.temperature.file:transformer-t.csv}")
+    @Value("${rtu.transformer.2.temperature.file:internTemperature_defective.csv}")
     private String transformer2TemperatureValuesFileName;
 
     private ThreadPoolTaskScheduler taskScheduler;
