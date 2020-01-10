@@ -23,13 +23,8 @@ public class Iec61850TransformerCommandFactory extends AbstractIec61850RtuReadCo
         super(rtuCommandMap(), dataAttributesUsingFilterId());
     }
 
-    // Waarschijnlijk niet nodig
     private static final Set<DataAttribute> dataAttributesUsingFilterId() {
-        // Doesn't seem necessary to add any data attributes, because there's
-        // only MMXU1 and TTMP1, there's no index other than 1.
-        return null;
-        // return EnumSet.of(DataAttribute.TEMPERATURE,
-        // DataAttribute.ACTUAL_POWER);
+        return EnumSet.noneOf(DataAttribute.class);
     }
 
     private static Map<String, RtuReadCommand<MeasurementDto>> rtuCommandMap() {

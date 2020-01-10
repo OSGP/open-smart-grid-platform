@@ -23,8 +23,7 @@ public class Iec61850TransformerReportHandler implements Iec61850ReportHandler {
 
     private static final String SYSTEM_TYPE = "TRANSFORMER";
 
-    private static final Set<DataAttribute> NODES_USING_ID = EnumSet.of(DataAttribute.ACTIVE_POWER,
-            DataAttribute.TEMPERATURE);
+    private static final Set<DataAttribute> NODES_USING_ID = EnumSet.noneOf(DataAttribute.class);
 
     private static final Pattern NODE_PATTERN = Pattern
             .compile("\\A(.*)TFR([1-9]\\d*+)/(LLN0|MMXU|TTMP)([1-9]\\d*+)?\\.(.*)\\Z");

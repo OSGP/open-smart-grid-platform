@@ -16,10 +16,9 @@ import org.openmuc.openiec61850.BdaReasonForInclusion;
 import org.openmuc.openiec61850.ClientEventListener;
 import org.openmuc.openiec61850.HexConverter;
 import org.openmuc.openiec61850.Report;
+import org.opensmartgridplatform.adapter.protocol.iec61850.application.services.DeviceManagementService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.opensmartgridplatform.adapter.protocol.iec61850.application.services.DeviceManagementService;
 
 public abstract class Iec61850ClientBaseEventListener implements ClientEventListener {
 
@@ -68,6 +67,7 @@ public abstract class Iec61850ClientBaseEventListener implements ClientEventList
      * part. This method is intended for the default part.
      */
     public void logDefaultReportDetails(final StringBuilder sb, final Report report) {
+        // @formatter:off
         sb.append("\t             RptId:\t").append(report.getRptId()).append(System.lineSeparator());
         sb.append("\t        DataSetRef:\t").append(report.getDataSetRef()).append(System.lineSeparator());
         sb.append("\t           ConfRev:\t").append(report.getConfRev()).append(System.lineSeparator());
@@ -90,12 +90,17 @@ public abstract class Iec61850ClientBaseEventListener implements ClientEventList
         sb.append("\t          SubSqNum:\t").append(report.getSubSqNum()).append(System.lineSeparator());
         sb.append("\t       TimeOfEntry:\t").append(report.getTimeOfEntry()).append(System.lineSeparator());
         if (report.getTimeOfEntry() != null) {
-            sb.append("\t                   \t(")
-                    .append(new DateTime(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET))
-                    .append(')').append(System.lineSeparator());
+            DateTime timeOfEntry;
+            // Hack to make sure time of entry is correctly logged for Transformer reports from simulator.
+            if (report.getRptId().startsWith("TFR")) {
+                timeOfEntry = new DateTime(report.getTimeOfEntry().getTimestampValue());
+            } else {
+                timeOfEntry = new DateTime(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET);
+            }
+            sb.append("\t                   \t(").append(timeOfEntry).append(')').append(System.lineSeparator());
         }
         final List<BdaReasonForInclusion> reasonCodes = report.getReasonCodes();
-        if ((reasonCodes != null) && !reasonCodes.isEmpty()) {
+        if (reasonCodes != null && !reasonCodes.isEmpty()) {
             sb.append("\t       ReasonCodes:").append(System.lineSeparator());
             for (final BdaReasonForInclusion reasonCode : reasonCodes) {
                 sb.append("\t                   \t")
@@ -105,6 +110,7 @@ public abstract class Iec61850ClientBaseEventListener implements ClientEventList
                         .append(System.lineSeparator());
             }
         }
+        // @formatter:on
     }
 
 }

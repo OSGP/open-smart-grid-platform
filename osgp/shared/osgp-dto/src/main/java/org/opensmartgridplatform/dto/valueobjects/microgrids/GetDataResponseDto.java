@@ -16,7 +16,7 @@ public class GetDataResponseDto implements Serializable {
 
     private static final long serialVersionUID = 5903337694184574498L;
 
-    private List<GetDataSystemIdentifierDto> getDataSystemIdentifiers;
+    private final List<GetDataSystemIdentifierDto> getDataSystemIdentifiers;
 
     private final ReportDto report;
 
@@ -31,6 +31,12 @@ public class GetDataResponseDto implements Serializable {
 
     public ReportDto getReport() {
         return this.report;
+    }
+
+    @Override
+    public String toString() {
+        return "GetDataResponseDto [getDataSystemIdentifiers=" + this.getDataSystemIdentifiers + ", report="
+                + this.report + "]";
     }
 
 }

@@ -40,7 +40,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
 
     private static final Map<String, Class<? extends Iec61850ReportHandler>> REPORT_HANDLERS_MAP = new HashMap<>();
 
-    private ReportingService reportingService;
+    private final ReportingService reportingService;
 
     static {
         REPORT_HANDLERS_MAP.put("RTU", Iec61850RtuReportHandler.class);
@@ -99,7 +99,8 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
     public void newReport(final Report report) {
 
         final DateTime timeOfEntry = report.getTimeOfEntry() == null ? null
-                : new DateTime(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET);
+                : new DateTime(report.getTimeOfEntry()
+                        .getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET);
 
         final String reportDescription = this.getReportDescription(report, timeOfEntry);
 
@@ -149,12 +150,16 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
         final List<GetDataSystemIdentifierDto> systems = new ArrayList<>();
         systems.add(systemResult);
 
-        final ReportDto reportDto = new ReportDto(report.getSqNum(),
-                new DateTime(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET),
-                report.getRptId());
+        final ReportDto reportDto = new ReportDto(report.getSqNum(), new DateTime(report.getTimeOfEntry()
+                .getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET), report.getRptId());
 
-        this.deviceManagementService.sendMeasurements(this.deviceIdentification,
-                new GetDataResponseDto(systems, reportDto));
+        if (reportHandler instanceof Iec61850TransformerReportHandler) {
+            this.deviceManagementService.sendMeasurementReport(this.deviceIdentification,
+                    new GetDataResponseDto(systems, reportDto));
+        } else {
+            this.deviceManagementService.sendMeasurements(this.deviceIdentification,
+                    new GetDataResponseDto(systems, reportDto));
+        }
 
         this.reportingService.storeLastReportEntry(report, this.deviceIdentification);
     }
@@ -194,11 +199,13 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
         final List<FcModelNode> dataSetMembers = report.getValues();
         this.logDataSetMembersDetails(report, dataSetMembers, sb);
 
-        this.logger.info(sb.append(System.lineSeparator()).toString());
+        this.logger.info(sb.append(System.lineSeparator())
+                .toString());
     }
 
     private void logDataSetMembersDetails(final Report report, final List<FcModelNode> dataSetMembers,
             final StringBuilder sb) {
+        // @formatter:off
         if (dataSetMembers == null) {
             sb.append("\t           DataSet:\tnull").append(System.lineSeparator());
         } else {
@@ -210,6 +217,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
                 }
             }
         }
+        // @formatter:on
     }
 
     @Override

@@ -10,7 +10,6 @@ package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.ser
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.openmuc.openiec61850.Fc;
-
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.NodeException;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.Iec61850Client;
@@ -38,16 +37,19 @@ public class Iec61850TemperatureCommand implements RtuReadCommand<MeasurementDto
             final LogicalDevice logicalDevice, final int logicalDeviceIndex) throws NodeException {
         final NodeContainer containingNode = connection.getFcModelNode(logicalDevice, logicalDeviceIndex,
                 this.logicalNode, DataAttribute.TEMPERATURE, Fc.MX);
-        client.readNodeDataValues(connection.getConnection().getClientAssociation(), containingNode.getFcmodelNode());
+        client.readNodeDataValues(connection.getConnection()
+                .getClientAssociation(), containingNode.getFcmodelNode());
         return this.translate(containingNode);
     }
 
     @Override
     public MeasurementDto translate(final NodeContainer containingNode) {
         return new MeasurementDto(this.index, DataAttribute.TEMPERATURE.getDescription(),
-                QualityConverter.toShort(containingNode.getQuality(SubDataAttribute.QUALITY).getValue()),
+                QualityConverter.toShort(containingNode.getQuality(SubDataAttribute.QUALITY)
+                        .getValue()),
                 new DateTime(containingNode.getDate(SubDataAttribute.TIME), DateTimeZone.UTC),
-                containingNode.getChild(SubDataAttribute.MAGNITUDE_INSTANTANEOUS).getFloat(SubDataAttribute.FLOAT)
+                containingNode.getChild(SubDataAttribute.MAGNITUDE_INSTANTANEOUS)
+                        .getFloat(SubDataAttribute.FLOAT)
                         .getFloat());
     }
 }

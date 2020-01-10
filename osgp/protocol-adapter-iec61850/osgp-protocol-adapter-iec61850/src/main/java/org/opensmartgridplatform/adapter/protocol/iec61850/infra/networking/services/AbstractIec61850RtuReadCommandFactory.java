@@ -432,8 +432,8 @@ public abstract class AbstractIec61850RtuReadCommandFactory
                 synchronized (attributeCommandsByIndex) {
                     for (int i = indexStart; i <= indexEnd; i++) {
                         if (!attributeCommandsByIndex.containsKey(i)) {
-                            attributeCommandsByIndex.put(i,
-                                    READ_COMMAND_FACTORY_INDEXED_BY_ATTRIBUTE.get(dataAttribute).apply(i));
+                            attributeCommandsByIndex.put(i, READ_COMMAND_FACTORY_INDEXED_BY_ATTRIBUTE.get(dataAttribute)
+                                    .apply(i));
                         }
                         commandsByAttributeName.put(dataAttribute.getDescription() + i,
                                 attributeCommandsByIndex.get(i));

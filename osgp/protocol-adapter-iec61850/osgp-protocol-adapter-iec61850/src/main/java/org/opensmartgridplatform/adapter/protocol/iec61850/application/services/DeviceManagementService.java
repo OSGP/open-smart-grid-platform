@@ -22,6 +22,7 @@ import org.opensmartgridplatform.core.db.api.iec61850.entities.Ssld;
 import org.opensmartgridplatform.core.db.api.iec61850.repositories.LmdDataRepository;
 import org.opensmartgridplatform.core.db.api.iec61850.repositories.SsldDataRepository;
 import org.opensmartgridplatform.dto.da.GetPQValuesResponseDto;
+import org.opensmartgridplatform.dto.da.measurements.MeasurementReportDto;
 import org.opensmartgridplatform.dto.valueobjects.EventNotificationDto;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.GetDataResponseDto;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
@@ -34,6 +35,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import ma.glasnost.orika.MapperFacade;
 
 @Service(value = "iec61850DeviceManagementService")
 public class DeviceManagementService {
@@ -56,6 +59,9 @@ public class DeviceManagementService {
 
     @Autowired
     private DeviceResponseMessageSender responseSender;
+
+    @Autowired
+    private MapperFacade mapper;
 
     public DeviceManagementService() {
         // Parameterless constructor required for transactions...
@@ -87,12 +93,12 @@ public class DeviceManagementService {
      * Send an event notification to OSGP Core.
      *
      * @param deviceIdentification
-     *         The identification of the device.
+     *            The identification of the device.
      * @param eventNotifications
-     *         The event notifications.
+     *            The event notifications.
      *
      * @throws ProtocolAdapterException
-     *         In case the device can not be found in the database.
+     *             In case the device can not be found in the database.
      */
     @Transactional(value = "iec61850OsgpCoreDbApiTransactionManager", readOnly = true)
     public void addEventNotifications(final String deviceIdentification,
@@ -120,12 +126,12 @@ public class DeviceManagementService {
      * Get the device output setting (relay configuration) for a given device.
      *
      * @param deviceIdentification
-     *         The device identification.
+     *            The device identification.
      *
      * @return The {@link DeviceOutputSetting} for the device.
      *
      * @throws ProtocolAdapterException
-     *         In case the device can not be found in the database.
+     *             In case the device can not be found in the database.
      */
     @Transactional(value = "iec61850OsgpCoreDbApiTransactionManager", readOnly = true)
     public List<DeviceOutputSetting> getDeviceOutputSettings(final String deviceIdentification)
@@ -140,28 +146,50 @@ public class DeviceManagementService {
         return ssldDevice.getOutputSettings();
     }
 
+    public void sendMeasurementReport(final String deviceIdentification, final GetDataResponseDto response) {
+        // Correlation ID is not generated here.
+        // Domain and DomainVersion are hard-coded for now
+
+        LOGGER.info("sendMeasurementReport called for device {} and response {}", deviceIdentification, response);
+        final MeasurementReportDto measurementReportDto = this.mapper.map(response, MeasurementReportDto.class);
+
+        LOGGER.info("response converted to MeasurementReportDto: {}", measurementReportDto);
+
+        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder()
+                .dataObject(measurementReportDto)
+                .deviceMessageMetadata(new DeviceMessageMetadata(deviceIdentification, NO_ORGANISATION,
+                        NO_CORRELATION_UID, MessageType.GET_MEASUREMENT_REPORT.name(), 0))
+                .result(ResponseMessageResultType.OK)
+                .domain("DISTRIBUTION_AUTOMATION")
+                .domainVersion("1.0")
+                .build();
+        this.responseSender.send(responseMessage);
+    }
+
     public void sendMeasurements(final String deviceIdentification, final GetDataResponseDto response) {
         // Correlation ID is generated @ WS adapter, domain+version is
-        // hard-coded
-        // for now
-        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder().dataObject(
-                response).deviceMessageMetadata(
-                new DeviceMessageMetadata(deviceIdentification, NO_ORGANISATION, NO_CORRELATION_UID,
-                        MessageType.GET_DATA.name(), 0)).result(ResponseMessageResultType.OK).domain(
-                "MICROGRIDS").domainVersion("1.0").build();
+        // hard-coded for now
+        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder().dataObject(response)
+                .deviceMessageMetadata(new DeviceMessageMetadata(deviceIdentification, NO_ORGANISATION,
+                        NO_CORRELATION_UID, MessageType.GET_DATA.name(), 0))
+                .result(ResponseMessageResultType.OK)
+                .domain("MICROGRIDS")
+                .domainVersion("1.0")
+                .build();
         this.responseSender.send(responseMessage);
     }
 
     public void sendPqValues(final String deviceIdentification, final String reportDataSet,
             final GetPQValuesResponseDto response) {
-        final Iec61850DeviceReportGroup deviceReportGroup =
-                this.deviceReportGroupRepository.findByDeviceIdentificationAndReportDataSet(
-                deviceIdentification, reportDataSet);
-        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder().dataObject(
-                response).deviceMessageMetadata(
-                new DeviceMessageMetadata(deviceIdentification, NO_ORGANISATION, NO_CORRELATION_UID,
-                        MessageType.GET_POWER_QUALITY_VALUES.name(), 0)).result(ResponseMessageResultType.OK).domain(
-                deviceReportGroup.getDomain()).domainVersion(deviceReportGroup.getDomainVersion()).build();
+        final Iec61850DeviceReportGroup deviceReportGroup = this.deviceReportGroupRepository
+                .findByDeviceIdentificationAndReportDataSet(deviceIdentification, reportDataSet);
+        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder().dataObject(response)
+                .deviceMessageMetadata(new DeviceMessageMetadata(deviceIdentification, NO_ORGANISATION,
+                        NO_CORRELATION_UID, MessageType.GET_POWER_QUALITY_VALUES.name(), 0))
+                .result(ResponseMessageResultType.OK)
+                .domain(deviceReportGroup.getDomain())
+                .domainVersion(deviceReportGroup.getDomainVersion())
+                .build();
         this.responseSender.send(responseMessage);
     }
 }
