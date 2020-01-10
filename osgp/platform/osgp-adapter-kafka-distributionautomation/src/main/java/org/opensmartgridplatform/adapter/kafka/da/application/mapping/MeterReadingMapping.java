@@ -48,8 +48,10 @@ public class MeterReadingMapping extends CustomConverter<MeasurementReport, Mete
 
         final List<IntervalReading> intervalReadings = Arrays.asList(this.getIntervalReading(measurementElements));
 
-        final String identification = source.getMeasurementGroups().get(0).getIdentification();
-        final ReadingType readingType = getReadingType(identification);
+        final String identification = source.getMeasurementGroups()
+                .get(0)
+                .getIdentification();
+        final ReadingType readingType = this.getReadingType(identification);
         final IntervalBlock intervalBlock = new IntervalBlock(readingType, intervalReadings);
 
         final Long start = intervalReadings.stream()
@@ -67,8 +69,8 @@ public class MeterReadingMapping extends CustomConverter<MeasurementReport, Mete
 
     }
 
-    private ReadingType getReadingType(String identification) {
-        if (identification.contains("TotW")) {
+    private ReadingType getReadingType(final String identification) {
+        if (identification.contains("Power")) {
             return new ReadingType("10s", "energy", "M", "W", "Energy MW en 10s", null);
         } else {
             return new ReadingType("60s", "temperature", "none", "degC", "Temperature transformateur °C en 60s", null);
@@ -78,7 +80,9 @@ public class MeterReadingMapping extends CustomConverter<MeasurementReport, Mete
     private static long dateStringToEpoch(final String dateString) {
         final LocalDateTime localDateTime = LocalDateTime.parse(dateString,
                 DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        return localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+        return localDateTime.atZone(ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli();
     }
 
     private CharSequence getUsagePoint(final String identification) {
@@ -101,7 +105,8 @@ public class MeterReadingMapping extends CustomConverter<MeasurementReport, Mete
             }
             if (measurementElement instanceof FloatMeasurementElement) {
                 final FloatMeasurementElement floatMeasurement = (FloatMeasurementElement) measurementElement;
-                reading.setValue(floatMeasurement.getValue().toString());
+                reading.setValue(floatMeasurement.getValue()
+                        .toString());
             }
         }
         return reading;
