@@ -14,11 +14,12 @@ import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.kafka.da.application.mapping.DistributionAutomationMapper;
 import org.opensmartgridplatform.adapter.kafka.da.io.kafka.out.MeasurementReadingProducer;
-import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.MeasurementReport;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.notification.NotificationType;
+import org.opensmartgridplatform.domain.da.measurements.MeasurementReport;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +51,7 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
 
         ResponseMessageResultType resultType;
         String resultDescription;
-        Serializable dataObject;
+        ResponseMessage dataObject;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -63,7 +64,7 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
             resultType = ResponseMessageResultType.valueOf(message.getStringProperty(Constants.RESULT));
             resultDescription = message.getStringProperty(Constants.DESCRIPTION);
 
-            dataObject = message.getObject();
+            dataObject = (ResponseMessage) message.getObject();
         } catch (final IllegalArgumentException e) {
             LOGGER.error("UNRECOVERABLE ERROR, received messageType {} is unknown.", messageType, e);
             logDebugInformation(messageType, correlationUid, organisationIdentification, deviceIdentification);
@@ -89,8 +90,9 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
     }
 
     private void handleMessage(final CorrelationIds ids, final String messageType,
-            final ResponseMessageResultType resultType, final String resultDescription, final Serializable dataObject) {
+            final ResponseMessageResultType resultType, final String resultDescription, final ResponseMessage message) {
 
+        final Serializable dataObject = message.getDataObject();
         if (!(dataObject instanceof MeasurementReport)) {
             LOGGER.error("For this component we only handle measurement reports");
         } else {
