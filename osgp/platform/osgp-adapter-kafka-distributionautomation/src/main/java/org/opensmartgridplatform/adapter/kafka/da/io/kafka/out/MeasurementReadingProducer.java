@@ -20,33 +20,67 @@ import org.opensmartgridplatform.adapter.kafka.da.application.mapping.Distributi
 import org.opensmartgridplatform.domain.da.measurements.MeasurementReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
-public class MeasurementReadingProducer {
+public class MeasurementReadingProducer implements InitializingBean, DisposableBean {
     private static final Logger LOGGER = LoggerFactory.getLogger(MeasurementReadingProducer.class);
+
+    @Value("${distributionautomation.kafka.bootstrap.servers:localhost:9092,localhost:9093}")
+    private String bootstrapServers;
+
+    @Value("${distributionautomation.kafka.key.serializer:org.apache.kafka.common.serialization.LongSerializer}")
+    private String keySerializer;
+
+    @Value("${distributionautomation.kafka.value.serializer:io.confluent.kafka.serializers.KafkaAvroSerializer}")
+    private String valueSerializer;
+
+    @Value("${distributionautomation.kafka.schema.registry.url:http://localhost:8081}")
+    private String schemaRegistryUrl;
+
+    @Value("${distributionautomation.kafka.topic.meterreading.transformer.power:hackathon}")
+    private String topicTransformerPower;
+
+    @Value("${distributionautomation.kafka.topic.meterreading.transformer.internaltemperature:hackathon}")
+    private String topicTransformerInternalTemperature;
+
+    private Producer<String, MeterReading> producer;
 
     @Autowired
     protected DistributionAutomationMapper mapper;
 
     public void send(final MeasurementReport report) {
-        final Properties props = new Properties();
-        props.put("bootstrap.servers", "localhost:9092,localhost:9093");
-        props.put("key.serializer", "org.apache.kafka.common.serialization.LongSerializer");
-        props.put("value.serializer", "io.confluent.kafka.serializers.KafkaAvroSerializer");
-        props.put("schema.registry.url", "http://localhost:8081");
-
-        try (final Producer<String, MeterReading> producer = new KafkaProducer<>(props)) {
-
+        try {
+            LOGGER.info("Sending report: {}", report);
             final MeterReading meterReading = this.mapper.map(report, MeterReading.class);
-            final ProducerRecord<String, MeterReading> producerRecord = new ProducerRecord<>("hackathon", null,
-                    meterReading);
-            producer.send(producerRecord, new EventCallback(meterReading));
+            final String topic = this.getTopic(report);
+            final ProducerRecord<String, MeterReading> producerRecord = new ProducerRecord<>(topic, null, meterReading);
+            this.producer.send(producerRecord, new EventCallback(meterReading));
         } catch (final Exception ex) {
             // only log the exception, let the rest of the application run
             LOGGER.error("Exception when sending info", ex);
         }
+    }
+
+    private String getTopic(final MeasurementReport report) {
+        String topic;
+        if (this.isPowerMeterReading(report)) {
+            topic = this.topicTransformerPower;
+        } else {
+            topic = this.topicTransformerInternalTemperature;
+        }
+        return topic;
+    }
+
+    private boolean isPowerMeterReading(final MeasurementReport report) {
+        return report.getMeasurementGroups()
+                .get(0)
+                .getIdentification()
+                .contains("Power");
     }
 
     private class EventCallback implements Callback {
@@ -66,9 +100,23 @@ public class MeasurementReadingProducer {
                 LOGGER.error("Error while sending information meterReading {}, RecordMetadata {}",
                         this.meterReading.getName(), metadata, exception);
             }
-
         }
+    }
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        final Properties props = new Properties();
+        props.put("bootstrap.servers", this.bootstrapServers);
+        props.put("key.serializer", this.keySerializer);
+        props.put("value.serializer", this.valueSerializer);
+        props.put("schema.registry.url", this.schemaRegistryUrl);
+
+        this.producer = new KafkaProducer<>(props);
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        this.producer.close();
     }
 
 }

@@ -88,10 +88,10 @@ public class MeterReadingMapping extends CustomConverter<MeasurementReport, Mete
     private CharSequence getUsagePoint(final String identification) {
         String usagePoint = "Substation 1";
         if (identification.contains("TFR1")) {
-            usagePoint += "PT 1";
+            usagePoint += " PT 1";
         }
         if (identification.contains("TFR2")) {
-            usagePoint += "PT 2";
+            usagePoint += " PT 2";
         }
         return usagePoint;
     }
