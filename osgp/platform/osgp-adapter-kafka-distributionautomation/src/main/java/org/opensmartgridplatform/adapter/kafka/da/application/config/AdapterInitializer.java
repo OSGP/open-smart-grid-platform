@@ -10,9 +10,8 @@ package org.opensmartgridplatform.adapter.kafka.da.application.config;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
-import org.springframework.web.WebApplicationInitializer;
-
 import org.opensmartgridplatform.shared.application.config.AbstractWsAdapterInitializer;
+import org.springframework.web.WebApplicationInitializer;
 
 /**
  * Web application Java configuration class.
@@ -20,7 +19,7 @@ import org.opensmartgridplatform.shared.application.config.AbstractWsAdapterInit
 public class AdapterInitializer extends AbstractWsAdapterInitializer implements WebApplicationInitializer {
 
     public AdapterInitializer() {
-        super(ApplicationContext.class, "java:comp/env/osgp/AdapterWsDistributionAutomation/log-config");
+        super(ApplicationContext.class, "java:comp/env/osgp/AdapterKafkaDistributionAutomation/log-config");
     }
 
     /**
