@@ -34,10 +34,10 @@
     type="java.lang.String" override="true" />
 
   <!-- App config files -->
-  <Environment name="osgp/AdapterWsDistributionAutomation/config"
-    value="/etc/osp/osgp-adapter-ws-distributionautomation.properties" type="java.lang.String"
+  <Environment name="osgp/AdapterKafkaDistributionAutomation/config"
+    value="/etc/osp/osgp-adapter-kafka-distributionautomation.properties" type="java.lang.String"
     override="true" />
-  <Environment name="osgp/AdapterWsDistributionAutomation/log-config"
-    value="/etc/osp/osgp-adapter-ws-distributionautomation-logback.xml" type="java.lang.String"
+  <Environment name="osgp/AdapterKafkaDistributionAutomation/log-config"
+    value="/etc/osp/osgp-adapter-kafka-distributionautomation-logback.xml" type="java.lang.String"
     override="true" />
 </Context>
