@@ -1,5 +1,6 @@
 package org.opensmartgridplatform.simulator.protocol.iec61850.infra.files;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -17,8 +18,6 @@ import org.opensmartgridplatform.simulator.protocol.iec61850.domain.valueobjects
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-//@Component
-//@ConditionalOnProperty(name = "rtu.transformer.simulation.enabled", havingValue = "true")
 public class CsvFloatMeasurementValueProvider implements ValueProvider<FloatMeasurement> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CsvFloatMeasurementValueProvider.class);
@@ -54,17 +53,41 @@ public class CsvFloatMeasurementValueProvider implements ValueProvider<FloatMeas
     }
 
     private void initData() {
-        try (final Stream<String> stream = Files.lines(Paths.get(this.getClass()
-                .getClassLoader()
-                .getResource(this.filename)
-                .toURI()))) {
-            this.values = stream.skip(1)
-                    .map(s -> s.split(";"))
-                    .map(TO_FLOAT_MEASUREMENT)
-                    .collect(Collectors.toList());
+        final File file = new File(this.filename);
+        if (file.exists()) {
+            LOGGER.info("Loading values from file: {}", this.filename);
+            this.loadFileFromPath();
+        } else {
+            LOGGER.info("Loading values from class path: {}", this.filename);
+            this.loadFileFromClassPath();
+        }
+    }
+
+    private void loadFileFromPath() {
+        try (final Stream<String> stream = Files.lines(Paths.get(this.filename))) {
+            this.loadData(stream);
             LOGGER.info("Read {} values from file: {}", this.values.size(), this.filename);
         } catch (final Exception e) {
             LOGGER.error("Exception while reading values from file: ", e);
         }
+    }
+
+    private void loadFileFromClassPath() {
+        try (final Stream<String> stream = Files.lines(Paths.get(this.getClass()
+                .getClassLoader()
+                .getResource(this.filename)
+                .toURI()))) {
+            this.loadData(stream);
+            LOGGER.info("Read {} values from file on class path: {}", this.values.size(), this.filename);
+        } catch (final Exception e) {
+            LOGGER.error("Exception while reading values from file: ", e);
+        }
+    }
+
+    private void loadData(final Stream<String> stream) {
+        this.values = stream.skip(1)
+                .map(s -> s.split(";"))
+                .map(TO_FLOAT_MEASUREMENT)
+                .collect(Collectors.toList());
     }
 }

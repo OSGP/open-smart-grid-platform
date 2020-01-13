@@ -30,6 +30,9 @@ public class TransformerSimulationService {
     @Value("${rtu.transformer.simulation.speedup.factor:1}")
     private long transformerSimulationSpeedupFactor;
 
+    @Value("${rtu.transformer.input.file.path:}")
+    private String transformerInputPath;
+
     @Value("${rtu.transformer.1.power.file:p_clean.csv}")
     private String transformer1PowerValuesFileName;
 
@@ -66,25 +69,27 @@ public class TransformerSimulationService {
     private ValueProvider<FloatMeasurement> transformer1PowerValueProvider() {
         LOGGER.info("Initializing transformer1PowerValueProvider bean with file: {}.",
                 this.transformer1PowerValuesFileName);
-        return new CsvFloatMeasurementValueProvider(this.transformer1PowerValuesFileName);
+        return new CsvFloatMeasurementValueProvider(this.transformerInputPath + this.transformer1PowerValuesFileName);
     }
 
     private ValueProvider<FloatMeasurement> transformer1TemperatureValueProvider() {
         LOGGER.info("Initializing transformer1TemperatureValueProvider bean with file: {}.",
                 this.transformer1TemperatureValuesFileName);
-        return new CsvFloatMeasurementValueProvider(this.transformer1TemperatureValuesFileName);
+        return new CsvFloatMeasurementValueProvider(
+                this.transformerInputPath + this.transformer1TemperatureValuesFileName);
     }
 
     private ValueProvider<FloatMeasurement> transformer2PowerValueProvider() {
         LOGGER.info("Initializing transformer1PowerValueProvider bean with file: {}.",
                 this.transformer1PowerValuesFileName);
-        return new CsvFloatMeasurementValueProvider(this.transformer2PowerValuesFileName);
+        return new CsvFloatMeasurementValueProvider(this.transformerInputPath + this.transformer2PowerValuesFileName);
     }
 
     private ValueProvider<FloatMeasurement> transformer2TemperatureValueProvider() {
         LOGGER.info("Initializing transformer1TemperatureValueProvider bean with file: {}.",
                 this.transformer1TemperatureValuesFileName);
-        return new CsvFloatMeasurementValueProvider(this.transformer2TemperatureValuesFileName);
+        return new CsvFloatMeasurementValueProvider(
+                this.transformerInputPath + this.transformer2TemperatureValuesFileName);
     }
 
     private void initializeScheduler(final ServerSap serverSap, final List<Transformer> transformers) {
