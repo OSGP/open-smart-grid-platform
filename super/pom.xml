@@ -87,7 +87,7 @@
     <maven.war.plugin.version>3.2.3</maven.war.plugin.version>
     <maven.surefire.plugin.version>2.22.1</maven.surefire.plugin.version>
     <maven.failsafe.plugin.version>2.22.1</maven.failsafe.plugin.version>
-    <maven.assembly.plugin.version>3.1.1</maven.assembly.plugin.version>
+    <maven.assembly.plugin.version>3.2.0</maven.assembly.plugin.version>
     <maven.eclipse.plugin.version>2.10</maven.eclipse.plugin.version>
     <maven.exec.plugin.version>1.6.0</maven.exec.plugin.version>
     <apache.activemq.version>5.15.11</apache.activemq.version>
