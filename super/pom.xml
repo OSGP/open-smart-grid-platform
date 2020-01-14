@@ -85,8 +85,8 @@
     <maven.javadoc.version>3.1.0</maven.javadoc.version>
     <maven.jar.plugin.version>3.2.0</maven.jar.plugin.version>
     <maven.war.plugin.version>3.2.3</maven.war.plugin.version>
-    <maven.surefire.plugin.version>2.22.1</maven.surefire.plugin.version>
-    <maven.failsafe.plugin.version>2.22.1</maven.failsafe.plugin.version>
+    <maven.surefire.plugin.version>3.0.0-M4</maven.surefire.plugin.version>
+    <maven.failsafe.plugin.version>3.0.0-M4</maven.failsafe.plugin.version>
     <maven.assembly.plugin.version>3.2.0</maven.assembly.plugin.version>
     <maven.eclipse.plugin.version>2.10</maven.eclipse.plugin.version>
     <maven.exec.plugin.version>1.6.0</maven.exec.plugin.version>
