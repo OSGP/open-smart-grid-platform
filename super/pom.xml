@@ -83,8 +83,8 @@
     <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
     <maven.site.plugin>3.7.1</maven.site.plugin>
     <maven.javadoc.version>3.1.0</maven.javadoc.version>
-    <maven.jar.plugin.version>3.1.1</maven.jar.plugin.version>
-    <maven.war.plugin.version>3.2.2</maven.war.plugin.version>
+    <maven.jar.plugin.version>3.2.0</maven.jar.plugin.version>
+    <maven.war.plugin.version>3.2.3</maven.war.plugin.version>
     <maven.surefire.plugin.version>2.22.1</maven.surefire.plugin.version>
     <maven.failsafe.plugin.version>2.22.1</maven.failsafe.plugin.version>
     <maven.assembly.plugin.version>3.1.1</maven.assembly.plugin.version>
@@ -95,7 +95,7 @@
     <logback.version>1.2.3</logback.version>
     <logback.ext.version>0.1.5</logback.ext.version>
     <apache.commons.schema>2.2.4</apache.commons.schema>
-    <maven.compiler.plugin.version>3.8.0</maven.compiler.plugin.version>
+    <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
     <netty.version>4.1.44.Final</netty.version>
     <openmuc.jdlms.version>1.6.0</openmuc.jdlms.version>
     <openmuc.openiec61850.version>1.6.0</openmuc.openiec61850.version>
