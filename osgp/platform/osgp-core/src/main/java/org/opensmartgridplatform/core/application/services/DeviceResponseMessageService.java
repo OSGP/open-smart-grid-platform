@@ -57,9 +57,9 @@ public class DeviceResponseMessageService {
         LOGGER.info("Processing protocol response message with correlation uid [{}]", message.getCorrelationUid());
 
         try {
-            synchronized (this) {
-                this.deviceCommunicationInformationService.updateDeviceConnectionInformation(message);
-            }
+            // synchronized (this) {
+            // this.deviceCommunicationInformationService.updateDeviceConnectionInformation(message);
+            // }
 
             if (message.isScheduled() && !message.bypassRetry()) {
                 LOGGER.info("Handling scheduled protocol response message.");
@@ -196,8 +196,13 @@ public class DeviceResponseMessageService {
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(message);
 
         return new ProtocolRequestMessage.Builder().deviceMessageMetadata(deviceMessageMetadata)
-                .domain(message.getDomain()).domainVersion(message.getDomainVersion()).ipAddress(device.getIpAddress())
-                .request(messageData).scheduled(message.isScheduled()).retryCount(message.getRetryCount() + 1).build();
+                .domain(message.getDomain())
+                .domainVersion(message.getDomainVersion())
+                .ipAddress(device.getIpAddress())
+                .request(messageData)
+                .scheduled(message.isScheduled())
+                .retryCount(message.getRetryCount() + 1)
+                .build();
     }
 
     private ScheduledTask createScheduledRetryTask(final ProtocolResponseMessage message) {
