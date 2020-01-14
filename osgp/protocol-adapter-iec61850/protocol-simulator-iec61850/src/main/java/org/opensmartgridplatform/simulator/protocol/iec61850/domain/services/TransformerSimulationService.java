@@ -1,6 +1,8 @@
 package org.opensmartgridplatform.simulator.protocol.iec61850.domain.services;
 
 import java.time.Duration;
+import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,6 +28,9 @@ public class TransformerSimulationService {
 
     @Value("${rtu.transformer.simulation.temperature.update.interval:60000}")
     private long transformerSimulationTemperatureUpdateInterval;
+
+    @Value("${rtu.transformer.simulation.delay:60}")
+    private long transformerSimulationDelay;
 
     @Value("${rtu.transformer.simulation.speedup.factor:1}")
     private long transformerSimulationSpeedupFactor;
@@ -98,24 +103,30 @@ public class TransformerSimulationService {
         scheduler.setPoolSize(10);
         scheduler.setThreadNamePrefix("transformerSubstationTaskScheduler");
 
+        final ZonedDateTime startTime = ZonedDateTime.now().plusSeconds(this.transformerSimulationDelay);
+        final Instant startupTime = startTime.toInstant();
+
+        LOGGER.info("Scheduling measurements with a delay of {} seconds, starting at: {}",
+                this.transformerSimulationDelay, startTime);
+
         final Duration powerInterval = this.periodInMillis(this.transformerSimulationPowerUpdateInterval);
         final Duration temperatureInterval = this.periodInMillis(this.transformerSimulationTemperatureUpdateInterval);
 
         final Runnable updateTransformer1PowerValuesTask = new UpdateTransformerPowerValuesTask(serverSap,
                 transformers.get(0), this.transformer1PowerValueProvider());
-        scheduler.scheduleAtFixedRate(updateTransformer1PowerValuesTask, powerInterval);
+        scheduler.scheduleAtFixedRate(updateTransformer1PowerValuesTask, startupTime, powerInterval);
 
         final Runnable updateTransformer1TemperatureValuesTask = new UpdateTransformerTemperatureValuesTask(serverSap,
                 transformers.get(0), this.transformer1TemperatureValueProvider());
-        scheduler.scheduleAtFixedRate(updateTransformer1TemperatureValuesTask, temperatureInterval);
+        scheduler.scheduleAtFixedRate(updateTransformer1TemperatureValuesTask, startupTime, temperatureInterval);
 
         final Runnable updateTransformer2PowerValuesTask = new UpdateTransformerPowerValuesTask(serverSap,
                 transformers.get(1), this.transformer2PowerValueProvider());
-        scheduler.scheduleAtFixedRate(updateTransformer2PowerValuesTask, powerInterval);
+        scheduler.scheduleAtFixedRate(updateTransformer2PowerValuesTask, startupTime, powerInterval);
 
         final Runnable updateTemperatureValuesTask = new UpdateTransformerTemperatureValuesTask(serverSap,
                 transformers.get(1), this.transformer2TemperatureValueProvider());
-        scheduler.scheduleAtFixedRate(updateTemperatureValuesTask, temperatureInterval);
+        scheduler.scheduleAtFixedRate(updateTemperatureValuesTask, startupTime, temperatureInterval);
 
         this.taskScheduler = scheduler;
     }
