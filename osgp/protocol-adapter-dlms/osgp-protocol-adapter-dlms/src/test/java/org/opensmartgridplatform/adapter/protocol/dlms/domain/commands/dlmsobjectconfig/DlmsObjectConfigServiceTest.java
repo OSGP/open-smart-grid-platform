@@ -242,63 +242,6 @@ public class DlmsObjectConfigServiceTest {
         assertThat(attributeAddressForProfile.get().getSelectedObjects()).isEqualTo(this.captureObjectsCombined);
     }
 
-    //@Test
-    public void testProfileWithSelectiveAccessNotSupported() throws Exception {
-        // Filtering is not possible when selective access not supported, so all values will be returned.
-
-        // SETUP
-        final Integer channel = 1;
-        final Medium filterMedium = Medium.GAS;
-
-        // Selective access not supported
-        final SelectiveAccessDescription access = null;
-
-        final AttributeAddress expectedAddress = new AttributeAddress(this.profileCombined.getClassId(),
-                this.profileCombined.getObisCodeAsString(), this.profileCombined.getDefaultAttributeId(), access);
-
-        // CALL
-        final Optional<AttributeAddressForProfile> attributeAddressForProfile =
-                this.service.findAttributeAddressForProfile(
-                this.device422_noSelectiveAccess, DlmsObjectType.DAILY_LOAD_PROFILE, channel, this.from, this.to,
-                filterMedium);
-
-        // VERIFY
-        AttributeAddressAssert.is(attributeAddressForProfile.get().getAttributeAddress(), expectedAddress);
-
-        // All values should be returned.
-        assertThat(attributeAddressForProfile.get().getSelectedObjects()).isEqualTo(this.captureObjectsCombined);
-    }
-
-    //@Test
-    public void testProfileWithSelectingValuesNotSupported() throws Exception {
-        // Filtering is not possible when selecting values is not supported, so all values will be returned.
-
-        // SETUP
-        final Integer channel = 1;
-        final Medium filterMedium = Medium.GAS;
-
-        // Selecting values is not supported
-        final DataObject selectedValues = DataObject.newArrayData(Collections.emptyList());
-
-        final DataObject accessParams = this.getAccessParams(selectedValues);
-
-        final SelectiveAccessDescription access = new SelectiveAccessDescription(1, accessParams);
-
-        final AttributeAddress expectedAddress = new AttributeAddress(this.profileCombined.getClassId(),
-                this.profileCombined.getObisCodeAsString(), this.profileCombined.getDefaultAttributeId(), access);
-
-        // CALL
-        final Optional<AttributeAddressForProfile> attributeAddressForProfile =
-                this.service.findAttributeAddressForProfile(
-                this.device51, DlmsObjectType.DAILY_LOAD_PROFILE, channel, this.from, this.to, filterMedium);
-
-        // VERIFY
-        AttributeAddressAssert.is(attributeAddressForProfile.get().getAttributeAddress(), expectedAddress);
-
-        // All values should be returned.
-        assertThat(attributeAddressForProfile.get().getSelectedObjects()).isEqualTo(this.captureObjectsCombined);
-    }
-
     private ObisCode getObisCodeWithChannel(final String obisAsString, final Integer channel) {
         String obisWithChannel = obisAsString;
 
