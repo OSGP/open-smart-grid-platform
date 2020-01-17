@@ -10,13 +10,13 @@
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.joda.time.DateTime;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.Event;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventLogCategory;
@@ -239,13 +239,15 @@ public class ListEventMappingTest {
                     .get(i);
 
             assertThat(EventType.valueOf(mappedEvent.getEventType().name()).getEventCode())
-                    .as(EVENT_CODE_WITH_MAPPING_OF + originalEvent).isEqualTo(originalEvent.getEventCode().intValue());
+                    .as(EVENT_CODE_WITH_MAPPING_OF + originalEvent)
+                    .isEqualTo(originalEvent.getEventCode().intValue());
 
             assertThat(mappedEvent.getEventCounter()).as(EVENT_COUNTER_WITH_MAPPING_OF + originalEvent)
                     .isEqualTo(originalEvent.getEventCounter());
 
             assertThat(new DateTime(mappedEvent.getTimestamp().toGregorianCalendar()).toString())
-                    .as(TIMESTAMP_WITH_MAPPING_OF + originalEvent).isEqualTo(originalEvent.getTimestamp().toString());
+                    .as(TIMESTAMP_WITH_MAPPING_OF + originalEvent)
+                    .isEqualTo(originalEvent.getTimestamp().toString());
         }
     }
 
@@ -370,10 +372,10 @@ public class ListEventMappingTest {
      */
     @Test
     public void testNullListEventMapping() {
-        Assertions.assertThrows(NullPointerException.class, () -> {
-            // build test data
-            final List<Event> listOriginal = null;
+        // build test data
+        final List<Event> listOriginal = null;
 
+        assertThatExceptionOfType(NullPointerException.class).isThrownBy(() -> {
             // actual mapping
             this.managementMapper.mapAsList(listOriginal,
                     org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event.class);

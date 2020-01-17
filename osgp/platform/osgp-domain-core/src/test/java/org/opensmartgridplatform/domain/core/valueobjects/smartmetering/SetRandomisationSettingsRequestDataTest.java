@@ -1,8 +1,8 @@
 package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 
@@ -19,7 +19,7 @@ public class SetRandomisationSettingsRequestDataTest {
 
     @Test
     public void testInvalidDirectAttach() throws FunctionalException {
-        Assertions.assertThrows(FunctionalException.class, () -> {
+        assertThatExceptionOfType(FunctionalException.class).isThrownBy(() -> {
             new SetRandomisationSettingsRequestData(SetRandomisationSettingsRequestData.MIN_VALUE_DIRECT_ATTACH - 1,
                     SetRandomisationSettingsRequestData.MIN_VALUE_RANDOMIZATION_START_WINDOW,
                     SetRandomisationSettingsRequestData.MIN_VALUE_MULTIPLICATION_FACTOR,
@@ -29,7 +29,7 @@ public class SetRandomisationSettingsRequestDataTest {
 
     @Test
     public void testInvalidMultiplicationFactor() throws FunctionalException {
-        Assertions.assertThrows(FunctionalException.class, () -> {
+        assertThatExceptionOfType(FunctionalException.class).isThrownBy(() -> {
             new SetRandomisationSettingsRequestData(SetRandomisationSettingsRequestData.MIN_VALUE_DIRECT_ATTACH,
                     SetRandomisationSettingsRequestData.MAX_VALUE_RANDOMIZATION_START_WINDOW,
                     SetRandomisationSettingsRequestData.MAX_VALUE_MULTIPLICATION_FACTOR + 1,
@@ -39,7 +39,7 @@ public class SetRandomisationSettingsRequestDataTest {
 
     @Test
     public void testInvalidNumberOfRetries() throws FunctionalException {
-        Assertions.assertThrows(FunctionalException.class, () -> {
+        assertThatExceptionOfType(FunctionalException.class).isThrownBy(() -> {
             new SetRandomisationSettingsRequestData(SetRandomisationSettingsRequestData.MIN_VALUE_DIRECT_ATTACH,
                     SetRandomisationSettingsRequestData.MAX_VALUE_RANDOMIZATION_START_WINDOW,
                     SetRandomisationSettingsRequestData.MAX_VALUE_MULTIPLICATION_FACTOR,
@@ -49,7 +49,7 @@ public class SetRandomisationSettingsRequestDataTest {
 
     @Test
     public void testInvalidRandomisationStartWindow() throws FunctionalException {
-        Assertions.assertThrows(FunctionalException.class, () -> {
+        assertThatExceptionOfType(FunctionalException.class).isThrownBy(() -> {
             new SetRandomisationSettingsRequestData(SetRandomisationSettingsRequestData.MIN_VALUE_DIRECT_ATTACH,
                     SetRandomisationSettingsRequestData.MAX_VALUE_RANDOMIZATION_START_WINDOW + 1,
                     SetRandomisationSettingsRequestData.MIN_VALUE_MULTIPLICATION_FACTOR,

@@ -7,11 +7,11 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging;
 
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -58,17 +58,16 @@ public class DeviceResponseMessageSenderTest {
 
     @Test
     public void shouldCloseAllConnectionsOnBrokerFailure() {
-        Assertions.assertThrows(IllegalStateException.class, () -> {
-            // Arrange
-            final ProtocolResponseMessage responseMessage = this.createDefaultResponseMessage();
-            doThrow(IllegalStateException.class).when(this.jmsTemplate).send(any(MessageCreator.class));
+        // Arrange
+        final ProtocolResponseMessage responseMessage = this.createDefaultResponseMessage();
+        doThrow(IllegalStateException.class).when(this.jmsTemplate).send(any(MessageCreator.class));
 
-            // Act
+        // Act
+        assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> {
             this.messageSender.send(responseMessage);
-
-            // Assert
-            verify(this.clientConnectionService).closeAllConnections();
         });
+        // Assert
+        verify(this.clientConnectionService).closeAllConnections();
     }
 
     private void injectCloseConnectionsOnBrokerFailure(final boolean value) {

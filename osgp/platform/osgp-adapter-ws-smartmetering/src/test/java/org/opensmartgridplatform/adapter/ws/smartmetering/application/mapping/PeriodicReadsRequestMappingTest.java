@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.util.GregorianCalendar;
 
@@ -16,7 +17,6 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PeriodType;
@@ -28,7 +28,7 @@ public class PeriodicReadsRequestMappingTest {
 
     private static final PeriodType PERIODTYPE = PeriodType.DAILY;
     private XMLGregorianCalendar xmlCalendar;
-    private MonitoringMapper monitoringMapper = new MonitoringMapper();
+    private final MonitoringMapper monitoringMapper = new MonitoringMapper();
 
     /**
      * Needed to initialize a XMLGregorianCalendar object.
@@ -82,11 +82,11 @@ public class PeriodicReadsRequestMappingTest {
      */
     @Test
     public void testWithNullPeriodicReadsRequestData() {
-        Assertions.assertThrows(NullPointerException.class, () -> {
-            // build test data
-            final PeriodicReadsRequest periodicReadsRequest = new PeriodicReadsRequest();
-            periodicReadsRequest.setPeriodicReadsRequestData(null);
+        // build test data
+        final PeriodicReadsRequest periodicReadsRequest = new PeriodicReadsRequest();
+        periodicReadsRequest.setPeriodicReadsRequestData(null);
 
+        assertThatExceptionOfType(NullPointerException.class).isThrownBy(() -> {
             // actual mapping
             this.monitoringMapper.map(periodicReadsRequest, PeriodicMeterReadsQuery.class);
         });

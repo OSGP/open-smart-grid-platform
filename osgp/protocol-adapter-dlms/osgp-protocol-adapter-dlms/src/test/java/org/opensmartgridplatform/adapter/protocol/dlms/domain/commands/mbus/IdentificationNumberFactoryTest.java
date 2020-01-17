@@ -9,8 +9,8 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 
@@ -42,14 +42,14 @@ public class IdentificationNumberFactoryTest {
 
     @Test
     public void testFromInvalidLast8DigitsDsmr4() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> {
             IdentificationNumberFactory.create(Protocol.DSMR_4_2_2).fromLast8Digits("123A5678");
         });
     }
 
     @Test
     public void testFromInvalidIdentificationDsmr4() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> {
             IdentificationNumberFactory.create(Protocol.DSMR_4_2_2).fromIdentification(123456789L);
         });
     }
@@ -81,14 +81,14 @@ public class IdentificationNumberFactoryTest {
 
     @Test
     public void testFromInvalidLast8DigitsSmr5() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> {
             IdentificationNumberFactory.create(Protocol.SMR_5_0).fromLast8Digits("1234S678");
         });
     }
 
     @Test
     public void testFromInvalidIdentificationSmr5() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> {
             IdentificationNumberFactory.create(Protocol.SMR_5_0).fromIdentification(123456789100L);
         });
     }

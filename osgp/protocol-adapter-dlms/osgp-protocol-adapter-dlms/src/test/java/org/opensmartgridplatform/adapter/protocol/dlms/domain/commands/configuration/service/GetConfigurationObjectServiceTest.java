@@ -1,12 +1,12 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service;
 
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.Optional;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -61,11 +61,11 @@ public class GetConfigurationObjectServiceTest {
 
     @Test
     public void getConfigurationObjectIOException() throws Exception {
-        Assertions.assertThrows(ConnectionException.class, () -> {
 
-            // SETUP
-            when(this.dlmsConnection.get(any(AttributeAddress.class))).thenThrow(new IOException());
+        // SETUP
+        when(this.dlmsConnection.get(any(AttributeAddress.class))).thenThrow(new IOException());
 
+        assertThatExceptionOfType(ConnectionException.class).isThrownBy(() -> {
             // CALL
             this.instance.getConfigurationObject(this.conn);
         });
@@ -73,11 +73,11 @@ public class GetConfigurationObjectServiceTest {
 
     @Test
     public void getConfigurationObjectGetResultNull() throws Exception {
-        Assertions.assertThrows(ProtocolAdapterException.class, () -> {
 
-            // SETUP
-            when(this.dlmsConnection.get(any(AttributeAddress.class))).thenReturn(null);
+        // SETUP
+        when(this.dlmsConnection.get(any(AttributeAddress.class))).thenReturn(null);
 
+        assertThatExceptionOfType(ProtocolAdapterException.class).isThrownBy(() -> {
             // CALL
             this.instance.getConfigurationObject(this.conn);
         });
@@ -85,12 +85,12 @@ public class GetConfigurationObjectServiceTest {
 
     @Test
     public void getConfigurationObjectGetResultUnsuccessful() throws Exception {
-        Assertions.assertThrows(ProtocolAdapterException.class, () -> {
 
-            // SETUP
-            when(this.getResult.getResultCode()).thenReturn(AccessResultCode.READ_WRITE_DENIED);
-            when(this.dlmsConnection.get(any(AttributeAddress.class))).thenReturn(this.getResult);
+        // SETUP
+        when(this.getResult.getResultCode()).thenReturn(AccessResultCode.READ_WRITE_DENIED);
+        when(this.dlmsConnection.get(any(AttributeAddress.class))).thenReturn(this.getResult);
 
+        assertThatExceptionOfType(ProtocolAdapterException.class).isThrownBy(() -> {
             // CALL
             this.instance.getConfigurationObject(this.conn);
         });

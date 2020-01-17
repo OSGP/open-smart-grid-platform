@@ -9,10 +9,10 @@
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.util.Date;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodType;
@@ -26,12 +26,12 @@ public class PeriodicMeterReadsQueryMappingTest {
     // A beginDate may never be null.
     @Test
     public void testWithNullBeginDate() {
-        Assertions.assertThrows(NullPointerException.class, () -> {
-            final PeriodType periodType = PeriodType.DAILY;
-            final Date beginDate = null;
-            final Date endDate = new Date();
-            final boolean mbusDevice = false;
+        final PeriodType periodType = PeriodType.DAILY;
+        final Date beginDate = null;
+        final Date endDate = new Date();
+        final boolean mbusDevice = false;
 
+        assertThatExceptionOfType(NullPointerException.class).isThrownBy(() -> {
             new PeriodicMeterReadsQuery(periodType, beginDate, endDate, mbusDevice);
         });
     }
@@ -39,13 +39,13 @@ public class PeriodicMeterReadsQueryMappingTest {
     // An endDate may never be null.
     @Test
     public void testWithNullEndDate() {
-        Assertions.assertThrows(NullPointerException.class, () -> {
 
-            final PeriodType periodType = PeriodType.DAILY;
-            final Date beginDate = new Date();
-            final Date endDate = null;
-            final boolean mbusDevice = false;
+        final PeriodType periodType = PeriodType.DAILY;
+        final Date beginDate = new Date();
+        final Date endDate = null;
+        final boolean mbusDevice = false;
 
+        assertThatExceptionOfType(NullPointerException.class).isThrownBy(() -> {
             new PeriodicMeterReadsQuery(periodType, beginDate, endDate, mbusDevice);
         });
     }

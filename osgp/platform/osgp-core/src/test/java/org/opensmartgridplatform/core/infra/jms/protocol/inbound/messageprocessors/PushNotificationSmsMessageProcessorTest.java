@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.core.infra.jms.protocol.inbound.messageprocessors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
@@ -19,7 +20,6 @@ import java.util.Date;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -69,15 +69,18 @@ public class PushNotificationSmsMessageProcessorTest {
 
         this.message = new ObjectMessageBuilder().withCorrelationUid(correlationUid)
                 .withMessageType(MessageType.PUSH_NOTIFICATION_SMS.name())
-                .withDeviceIdentification(DEVICE_IDENTIFICATION).withObject(requestMessage).build();
+                .withDeviceIdentification(DEVICE_IDENTIFICATION)
+                .withObject(requestMessage)
+                .build();
     }
 
     @Test
     public void testProcessMessageSuccess() throws JMSException, UnknownEntityException {
 
         when(this.pushNotificationSms.getIpAddress()).thenReturn(IP_ADDRESS);
-        doNothing().when(this.eventNotificationMessageService).handleEvent(any(String.class), any(Date.class),
-                any(EventType.class), any(String.class), any(Integer.class));
+        doNothing().when(this.eventNotificationMessageService)
+                .handleEvent(any(String.class), any(Date.class), any(EventType.class), any(String.class),
+                        any(Integer.class));
 
         final Device device = new Device(DEVICE_IDENTIFICATION);
 
@@ -94,8 +97,8 @@ public class PushNotificationSmsMessageProcessorTest {
 
     @Test
     public void testUnknownDevice() {
-        Assertions.assertThrows(JMSException.class, () -> {
-            when(this.deviceRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION)).thenReturn(null);
+        when(this.deviceRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION)).thenReturn(null);
+        assertThatExceptionOfType(JMSException.class).isThrownBy(() -> {
             this.pushNotificationSmsMessageProcessor.processMessage(this.message);
         });
     }

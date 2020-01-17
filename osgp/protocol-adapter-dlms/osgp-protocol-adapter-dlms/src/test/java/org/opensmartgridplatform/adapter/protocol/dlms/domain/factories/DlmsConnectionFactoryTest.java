@@ -9,9 +9,9 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.when;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -66,21 +66,21 @@ public class DlmsConnectionFactoryTest {
 
     @Test
     public void getConnection_throwsForHls4Device() throws Exception {
-        Assertions.assertThrows(FunctionalException.class, () -> {
 
-            final DlmsDevice device = new DlmsDeviceBuilder().withHls4Active(true).build();
-            final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
+        final DlmsDevice device = new DlmsDeviceBuilder().withHls4Active(true).build();
+        final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 
+        assertThatExceptionOfType(FunctionalException.class).isThrownBy(() -> {
             this.factory.getConnection(device, listener);
         });
     }
 
     @Test
     public void getConnection_throwsForHls3Device() throws Exception {
-        Assertions.assertThrows(FunctionalException.class, () -> {
-            final DlmsDevice device = new DlmsDeviceBuilder().withHls3Active(true).build();
-            final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
+        final DlmsDevice device = new DlmsDeviceBuilder().withHls3Active(true).build();
+        final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 
+        assertThatExceptionOfType(FunctionalException.class).isThrownBy(() -> {
             this.factory.getConnection(device, listener);
         });
     }
