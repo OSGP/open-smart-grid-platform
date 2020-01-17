@@ -33,8 +33,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class DlmsObjectConfigService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DlmsObjectConfigService.class);
-
     private final DlmsHelper dlmsHelper;
     private final List<DlmsObjectConfig> dlmsObjectConfigs;
 
@@ -111,7 +109,6 @@ public class DlmsObjectConfigService {
         final DlmsObject object = addressRequest.getDlmsObject();
         final DateTime from = addressRequest.getFrom();
         final DateTime to = addressRequest.getTo();
-        final DlmsDevice device = addressRequest.getDevice();
 
         if (!(object instanceof DlmsProfile) || from == null || to == null) {
             return null;
