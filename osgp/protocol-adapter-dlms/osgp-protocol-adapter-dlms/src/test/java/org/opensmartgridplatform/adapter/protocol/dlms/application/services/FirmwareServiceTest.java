@@ -110,7 +110,7 @@ public class FirmwareServiceTest {
             this.firmwareService.updateFirmware(this.dlmsConnectionManagerMock, this.dlmsDeviceMock,
                     firmwareIdentification);
         } catch (final ProtocolAdapterException e) {
-            e.printStackTrace();
+            // Ignore exception.
         }
 
         // Assert
