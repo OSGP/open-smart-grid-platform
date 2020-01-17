@@ -13,7 +13,7 @@ Feature: SmartMetering Monitoring - Get Periodic Meter Reads
       | DeviceIdentification        | TESTG102400000001 |
       | DeviceType                  | SMART_METER_G     |
       | GatewayDeviceIdentification | TEST1024000000001 |
-      | Channel                     |                 1 |
+      | Channel                     | 1                 |
 
   Scenario Outline: Get the periodic meter reads from a device
     When the get "<PeriodType>" meter reads request is received
