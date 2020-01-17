@@ -8,6 +8,7 @@
 package org.opensmartgridplatform.oslp;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -18,7 +19,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.oslp.Oslp.Message;
 import org.opensmartgridplatform.oslp.Oslp.RegisterDeviceResponse;
@@ -205,12 +205,12 @@ public class OslpEnvelopeRsaTest {
     @Test()
     public void buildOslpMessageIncorrectSignature()
             throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            final byte[] deviceId = new byte[] { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 };
-            final byte[] sequenceNumber = new byte[] { 0, 1 };
+        final byte[] deviceId = new byte[] { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 };
+        final byte[] sequenceNumber = new byte[] { 0, 1 };
 
-            final Message message = this.buildRegisterResponse();
+        final Message message = this.buildRegisterResponse();
 
+        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> {
             new OslpEnvelope.Builder().withSignature("Incorrect")
                     .withProvider(PROVIDER)
                     .withPrimaryKey(
@@ -233,12 +233,12 @@ public class OslpEnvelopeRsaTest {
     @Test()
     public void buildOslpMessageIncorrectProvider()
             throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            final byte[] deviceId = new byte[] { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 };
-            final byte[] sequenceNumber = new byte[] { 0, 1 };
+        final byte[] deviceId = new byte[] { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 };
+        final byte[] sequenceNumber = new byte[] { 0, 1 };
 
-            final Message message = this.buildRegisterResponse();
+        final Message message = this.buildRegisterResponse();
 
+        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> {
             new OslpEnvelope.Builder().withSignature(SIGNATURE)
                     .withProvider("Incorrect")
                     .withPrimaryKey(

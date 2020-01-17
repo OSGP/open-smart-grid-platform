@@ -1,9 +1,9 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.when;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -55,10 +55,10 @@ public class GetConfigurationObjectServiceSmr5Test {
 
     @Test
     public void getConfigurationObjectResultDataNull() throws ProtocolAdapterException {
-        Assertions.assertThrows(ProtocolAdapterException.class, () -> {
-            // SETUP
-            when(this.getResult.getResultData()).thenReturn(null);
+        // SETUP
+        when(this.getResult.getResultData()).thenReturn(null);
 
+        assertThatExceptionOfType(ProtocolAdapterException.class).isThrownBy(() -> {
             // CALL
             this.instance.getConfigurationObject(this.getResult);
         });
@@ -66,11 +66,11 @@ public class GetConfigurationObjectServiceSmr5Test {
 
     @Test
     public void getConfigurationObjectResultDataNotBitString() throws ProtocolAdapterException {
-        Assertions.assertThrows(ProtocolAdapterException.class, () -> {
 
-            // SETUP
-            when(this.getResult.getResultData()).thenReturn(this.nonBitString);
+        // SETUP
+        when(this.getResult.getResultData()).thenReturn(this.nonBitString);
 
+        assertThatExceptionOfType(ProtocolAdapterException.class).isThrownBy(() -> {
             // CALL
             this.instance.getConfigurationObject(this.getResult);
         });

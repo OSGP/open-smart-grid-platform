@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.application.servi
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -19,7 +20,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActiveEnergyValues;
@@ -46,10 +46,10 @@ public class PeriodicMeterReadContainerMappingTest {
     // defined
     @Test
     public void testWithNullList() {
-        Assertions.assertThrows(NullPointerException.class, () -> {
-            final List<PeriodicMeterReadsResponseItemDto> meterReads = null;
-            final PeriodTypeDto periodType = PeriodTypeDto.DAILY;
+        final List<PeriodicMeterReadsResponseItemDto> meterReads = null;
+        final PeriodTypeDto periodType = PeriodTypeDto.DAILY;
 
+        assertThatExceptionOfType(NullPointerException.class).isThrownBy(() -> {
             new PeriodicMeterReadsResponseDto(periodType, meterReads);
         });
     }

@@ -9,11 +9,11 @@
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AlarmRegister;
@@ -28,9 +28,8 @@ public class AlarmRegisterMappingTest {
     // Constructor for AlarmRegister(Dto) doesn´t allow a null Set.
     @Test
     public void testWithNullSet() {
-        Assertions.assertThrows(NullPointerException.class, () -> {
-
-            final Set<AlarmTypeDto> alarmTypes = null;
+        final Set<AlarmTypeDto> alarmTypes = null;
+        assertThatExceptionOfType(NullPointerException.class).isThrownBy(() -> {
             new AlarmRegisterResponseDto(alarmTypes);
         });
     }

@@ -8,10 +8,10 @@
 package org.opensmartgridplatform.adapter.domain.publiclighting.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.net.InetAddress;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaBatch;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaBatchDevice;
@@ -22,7 +22,7 @@ public class CdmaBatchTest {
 
     @Test
     public void newBatchNumberNull() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> {
             new CdmaBatch(null);
         });
     }

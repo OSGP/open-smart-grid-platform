@@ -9,12 +9,12 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.DataObject;
@@ -60,13 +60,13 @@ public class DeviceChannelsHelperTest {
 
     @Test
     public void testMakeChannelElementValuesInvalidManufacturerId() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
 
-            final GetResult manufacturerIdentificationInvalid = new GetResultImpl(DataObject.newUInteger16Data(123));
+        final GetResult manufacturerIdentificationInvalid = new GetResultImpl(DataObject.newUInteger16Data(123));
 
-            final List<GetResult> resultList = new ArrayList<>(Arrays.asList(this.primaryAddress,
-                    this.identificationNumber, manufacturerIdentificationInvalid, this.version, this.deviceType));
+        final List<GetResult> resultList = new ArrayList<>(Arrays.asList(this.primaryAddress, this.identificationNumber,
+                manufacturerIdentificationInvalid, this.version, this.deviceType));
 
+        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> {
             this.deviceChannelsHelper.makeChannelElementValues((short) 1, resultList);
         });
     }
