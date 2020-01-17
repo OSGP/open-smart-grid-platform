@@ -8,12 +8,12 @@ Feature: SmartMetering Monitoring - Get Periodic Meter Reads
     Given a dlms device
       | DeviceIdentification     | TEST1024000000001 |
       | DeviceType               | SMART_METER_E     |
-      | SelectiveAccessSupported | false              |
+      | SelectiveAccessSupported | true              |
     And a dlms device
       | DeviceIdentification        | TESTG102400000001 |
       | DeviceType                  | SMART_METER_G     |
       | GatewayDeviceIdentification | TEST1024000000001 |
-      | Channel                     |                 1 |
+      | Channel                     | 1                 |
 
   Scenario Outline: Get the periodic meter reads from a device
     When the get "<PeriodType>" meter reads request is received
