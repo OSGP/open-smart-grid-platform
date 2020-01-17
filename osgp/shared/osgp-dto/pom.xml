@@ -14,6 +14,7 @@
 
   <artifactId>osgp-dto</artifactId>
   <name>osgp-dto</name>
+  <packaging>jar</packaging>
     <!-- Description element is needed for the maven-jxr-plugin to generate a maven site -->
   <description>DTO module.</description>
 
@@ -57,6 +58,17 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${maven.surefire.plugin.version}</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit.version}</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>

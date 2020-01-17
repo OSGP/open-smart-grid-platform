@@ -16,6 +16,7 @@
 
   <artifactId>shared</artifactId>
   <name>shared</name>
+  <packaging>jar</packaging>
   <!-- Description element is needed for the maven-jxr-plugin to generate 
     a maven site -->
   <description>Shared module.</description>
@@ -26,10 +27,6 @@
     <version>5.0.0-SNAPSHOT</version>
     <relativePath>../parent-shared/pom.xml</relativePath>
   </parent>
-
-  <properties>
-    <maven.jar.plugin.version>3.1.1</maven.jar.plugin.version>
-  </properties>
 
   <dependencies>
     <dependency>
