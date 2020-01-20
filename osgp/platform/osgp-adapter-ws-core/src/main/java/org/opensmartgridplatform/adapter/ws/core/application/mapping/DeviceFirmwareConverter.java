@@ -8,7 +8,6 @@
 package org.opensmartgridplatform.adapter.ws.core.application.mapping;
 
 import java.util.GregorianCalendar;
-import java.util.Objects;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -46,7 +45,8 @@ class DeviceFirmwareConverter extends
             final MappingContext mappingContext) {
         final Device device = this.deviceRepository.findByDeviceIdentification(source.getDeviceIdentification());
         final FirmwareFile firmwareFile = this.firmwareFileRepository
-                .findById(Long.valueOf(source.getFirmware().getId())).get();
+                .findById(Long.valueOf(source.getFirmware().getId()))
+                .get();
 
         return new DeviceFirmwareFile(device, firmwareFile,
                 source.getInstallationDate().toGregorianCalendar().getTime(), source.getInstalledBy());
@@ -74,26 +74,5 @@ class DeviceFirmwareConverter extends
         destination.setInstalledBy(source.getInstalledBy());
         destination.setActive(true);
         return destination;
-    }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode() + Objects.hashCode(this.deviceRepository)
-                + Objects.hashCode(this.firmwareFileRepository);
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-
-        if (!(obj instanceof DeviceFirmwareConverter)) {
-            return false;
-        }
-
-        final DeviceFirmwareConverter that = ((DeviceFirmwareConverter) obj);
-        return super.equals(obj) && Objects.equals(this.deviceRepository, that.deviceRepository)
-                && Objects.equals(this.firmwareFileRepository, that.firmwareFileRepository);
     }
 }

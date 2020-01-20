@@ -94,8 +94,8 @@ public class SetSpecialDaysRequestMappingTest {
     }
 
     /**
-     * Tests mapping of a SetSpecialDaysReqeust object, when its
-     * SpecialDaysReqeustData object is null.
+     * Tests mapping of a SetSpecialDaysRequest object, when its
+     * SetSpecialDaysRequest object is null.
      */
     @Test
     public void testSpecialDaysRequestMappingNull() {
@@ -111,8 +111,6 @@ public class SetSpecialDaysRequestMappingTest {
                 SpecialDaysRequest.class);
 
         // check mapping
-        assertThat(specialDaysRequest).isNotNull();
-        assertThat(specialDaysRequest.getDeviceIdentification()).isNotNull();
         assertThat(specialDaysRequest.getDeviceIdentification()).isEqualTo(DEVICE_ID);
         assertThat(specialDaysRequest.getSpecialDaysRequestData()).isNull();
     }

@@ -99,28 +99,15 @@ public class OslpConfig {
 
     @Bean()
     public ServerBootstrap serverBootstrap() {
-
-        final ServerBootstrap bootstrap = new ServerBootstrap();
-        bootstrap.group(this.serverBossGroup(), this.serverWorkerGroup());
-        bootstrap.channel(NioServerSocketChannel.class);
-        bootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
-            @Override
-            protected void initChannel(final SocketChannel ch) throws Exception {
-                OslpConfig.this.createChannelPipeline(ch);
-                LOGGER.info("Created server new pipeline");
-            }
-        });
-
-        bootstrap.childOption(ChannelOption.TCP_NODELAY, true);
-        bootstrap.childOption(ChannelOption.SO_KEEPALIVE, false);
-
-        bootstrap.bind(new InetSocketAddress(this.oslpPortServer()));
-        return bootstrap;
+        return this.createServerBootstrap(this.oslpPortServer());
     }
 
     @Bean()
     public ServerBootstrap serverBootstrapElster() {
+        return this.createServerBootstrap(this.oslpElsterPortServer());
+    }
 
+    private ServerBootstrap createServerBootstrap(final int port) {
         final ServerBootstrap bootstrap = new ServerBootstrap();
         bootstrap.group(this.serverBossGroup(), this.serverWorkerGroup());
         bootstrap.channel(NioServerSocketChannel.class);
@@ -135,7 +122,7 @@ public class OslpConfig {
         bootstrap.childOption(ChannelOption.TCP_NODELAY, true);
         bootstrap.childOption(ChannelOption.SO_KEEPALIVE, false);
 
-        bootstrap.bind(new InetSocketAddress(this.oslpElsterPortServer()));
+        bootstrap.bind(new InetSocketAddress(port));
 
         return bootstrap;
     }
