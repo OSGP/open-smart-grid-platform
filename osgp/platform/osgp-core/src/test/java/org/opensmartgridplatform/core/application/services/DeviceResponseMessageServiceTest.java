@@ -39,25 +39,25 @@ import org.opensmartgridplatform.shared.infra.jms.RetryHeader;
 public class DeviceResponseMessageServiceTest {
 
     private static final String DEVICE_ID = "deviceId";
-
     private static final DeviceMessageMetadata DEVICE_MESSAGE_DATA = new DeviceMessageMetadata(DEVICE_ID,
             "organisationId", "correlationId", "messageType", 4);
-
     private static final String DOMAIN = "Domain";
-
     private static final String DOMAIN_VERSION = "1.0";
-
     private static final String DATA_OBJECT = "data object";
-
     private static final Timestamp SCHEDULED_TIME = new Timestamp(Calendar.getInstance().getTime().getTime());
+
     @Mock
     private DeviceService deviceService;
+
     @Mock
     private DomainResponseService domainResponseMessageSender;
+
     @Mock
     private ScheduledTaskService scheduledTaskService;
+
     @Mock
     private DeviceCommunicationInformationService deviceCommunicationInformationService;
+
     @InjectMocks
     private DeviceResponseMessageService deviceResponseMessageService;
 
@@ -75,15 +75,21 @@ public class DeviceResponseMessageServiceTest {
         final RetryHeader retryHeader = new RetryHeader(1, 1, scheduledRetryTime);
 
         final ProtocolResponseMessage message = new ProtocolResponseMessage.Builder()
-                .deviceMessageMetadata(DEVICE_MESSAGE_DATA).domain(DOMAIN).domainVersion(DOMAIN_VERSION).result(result)
-                .dataObject(DATA_OBJECT).scheduled(true).retryHeader(retryHeader).build();
+                .deviceMessageMetadata(DEVICE_MESSAGE_DATA)
+                .domain(DOMAIN)
+                .domainVersion(DOMAIN_VERSION)
+                .result(result)
+                .dataObject(DATA_OBJECT)
+                .scheduled(true)
+                .retryHeader(retryHeader)
+                .build();
         final ScheduledTask scheduledTask = new ScheduledTask(DEVICE_MESSAGE_DATA, DOMAIN, DOMAIN, DATA_OBJECT,
                 SCHEDULED_TIME);
 
         when(this.scheduledTaskService.findByCorrelationUid(anyString())).thenReturn(scheduledTask);
         this.deviceResponseMessageService.processMessage(message);
 
-        // check if message is send and task is deleted
+        // check if message is sent and task is deleted
         verify(this.domainResponseMessageSender).send(message);
         verify(this.scheduledTaskService).deleteScheduledTask(scheduledTask);
     }
@@ -110,8 +116,15 @@ public class DeviceResponseMessageServiceTest {
         final OsgpException exception = new OsgpException(ComponentType.OSGP_CORE, exceptionMessage);
 
         final ProtocolResponseMessage message = new ProtocolResponseMessage.Builder()
-                .deviceMessageMetadata(DEVICE_MESSAGE_DATA).domain(DOMAIN).domainVersion(DOMAIN_VERSION).result(result)
-                .dataObject(DATA_OBJECT).scheduled(true).retryHeader(retryHeader).osgpException(exception).build();
+                .deviceMessageMetadata(DEVICE_MESSAGE_DATA)
+                .domain(DOMAIN)
+                .domainVersion(DOMAIN_VERSION)
+                .result(result)
+                .dataObject(DATA_OBJECT)
+                .scheduled(true)
+                .retryHeader(retryHeader)
+                .osgpException(exception)
+                .build();
         final ScheduledTask scheduledTask = new ScheduledTask(DEVICE_MESSAGE_DATA, DOMAIN, DOMAIN, DATA_OBJECT,
                 SCHEDULED_TIME);
 
@@ -145,8 +158,13 @@ public class DeviceResponseMessageServiceTest {
     @Test
     public void testProcessScheduledMessageSuccess() {
         final ProtocolResponseMessage message = new ProtocolResponseMessage.Builder()
-                .deviceMessageMetadata(DEVICE_MESSAGE_DATA).domain(DOMAIN).domainVersion(DOMAIN_VERSION)
-                .result(ResponseMessageResultType.OK).dataObject(DATA_OBJECT).scheduled(true).build();
+                .deviceMessageMetadata(DEVICE_MESSAGE_DATA)
+                .domain(DOMAIN)
+                .domainVersion(DOMAIN_VERSION)
+                .result(ResponseMessageResultType.OK)
+                .dataObject(DATA_OBJECT)
+                .scheduled(true)
+                .build();
         final ScheduledTask scheduledTask = new ScheduledTask(DEVICE_MESSAGE_DATA, DOMAIN, DOMAIN, DATA_OBJECT,
                 SCHEDULED_TIME);
         scheduledTask.setPending();
