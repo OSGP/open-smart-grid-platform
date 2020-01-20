@@ -25,11 +25,11 @@ import io.netty.handler.logging.LoggingHandler;
  */
 public class OslpLoggingHandler extends LoggingHandler {
 
-    private static boolean hexDump;
+    private boolean hexDump;
 
     public OslpLoggingHandler(final LogLevel logLevel, final boolean hexDump) {
         super(logLevel);
-        OslpLoggingHandler.hexDump = hexDump;
+        this.hexDump = hexDump;
     }
 
     /**
@@ -56,9 +56,9 @@ public class OslpLoggingHandler extends LoggingHandler {
     @Override
     protected String format(final ChannelHandlerContext ctx, final String eventName, final Object arg) {
         if (arg instanceof ByteBuf) {
-            return formatByteBuf(ctx, eventName, (ByteBuf) arg);
+            return this.formatByteBuf(ctx, eventName, (ByteBuf) arg);
         } else if (arg instanceof ByteBufHolder) {
-            return formatByteBufHolder(ctx, eventName, (ByteBufHolder) arg);
+            return this.formatByteBufHolder(ctx, eventName, (ByteBufHolder) arg);
         } else {
             return formatSimple(ctx, eventName, arg);
         }
@@ -68,7 +68,7 @@ public class OslpLoggingHandler extends LoggingHandler {
      * Generates the default log message of the specified event whose argument
      * is a {@link ByteBuf}.
      */
-    private static String formatByteBuf(final ChannelHandlerContext ctx, final String eventName, final ByteBuf msg) {
+    private String formatByteBuf(final ChannelHandlerContext ctx, final String eventName, final ByteBuf msg) {
         final String chStr = ctx.channel().toString();
         final int length = msg.readableBytes();
         if (length == 0) {
@@ -81,7 +81,7 @@ public class OslpLoggingHandler extends LoggingHandler {
                     chStr.length() + 1 + eventName.length() + 2 + 10 + 1 + 2 + rows * 80);
 
             buf.append(chStr).append(' ').append(eventName).append(": ").append(length).append('B').append(NEWLINE);
-            if (hexDump) {
+            if (this.hexDump) {
                 appendPrettyHexDump(buf, msg);
             }
 
@@ -93,7 +93,7 @@ public class OslpLoggingHandler extends LoggingHandler {
      * Generates the default log message of the specified event whose argument
      * is a {@link ByteBufHolder}.
      */
-    private static String formatByteBufHolder(final ChannelHandlerContext ctx, final String eventName,
+    private String formatByteBufHolder(final ChannelHandlerContext ctx, final String eventName,
             final ByteBufHolder msg) {
         final String chStr = ctx.channel().toString();
         final String msgStr = msg.toString();
@@ -111,7 +111,7 @@ public class OslpLoggingHandler extends LoggingHandler {
 
             buf.append(chStr).append(' ').append(eventName).append(": ").append(msgStr).append(", ").append(length)
                     .append('B').append(NEWLINE);
-            if (hexDump) {
+            if (this.hexDump) {
                 appendPrettyHexDump(buf, content);
             }
 
