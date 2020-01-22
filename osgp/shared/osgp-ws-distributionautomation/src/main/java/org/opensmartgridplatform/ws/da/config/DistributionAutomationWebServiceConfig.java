@@ -22,41 +22,42 @@ public class DistributionAutomationWebServiceConfig {
     private static final String COMMON_XSD_PATH = "schemas/common.xsd";
     private static final String DISTRIBUTION_AUTOMATION_XSD_PATH = "schemas/distributionautomation.xsd";
 
-    private static final String ADHOC_MANAGEMENT_WSDL_PATH = "AdHocManagement.wsdl";
-    private static final String DEVICE_MANAGEMENT_WSDL_PATH = "DeviceManagement.wsdl";
-    private static final String MONITORING_WSDL_PATH = "Monitoring.wsdl";
+    private static final String ADHOC_MANAGEMENT_WSDL_PATH = "DistributionAutomationAdHocManagement.wsdl";
+    private static final String DEVICE_MANAGEMENT_WSDL_PATH = "DistributionAutomationDeviceManagement.wsdl";
+    private static final String MONITORING_WSDL_PATH = "DistributionAutomationMonitoring.wsdl";
 
     @Bean
     public PayloadValidatingInterceptor payloadValidatingInterceptor() {
         final PayloadValidatingInterceptor payloadValidatingInterceptor = new PayloadValidatingInterceptor();
-        final Resource[] resources = new Resource[] { new ClassPathResource( COMMON_XSD_PATH ), new ClassPathResource( DISTRIBUTION_AUTOMATION_XSD_PATH ) };
-        payloadValidatingInterceptor.setSchemas( resources );
+        final Resource[] resources = new Resource[] { new ClassPathResource(COMMON_XSD_PATH),
+                new ClassPathResource(DISTRIBUTION_AUTOMATION_XSD_PATH) };
+        payloadValidatingInterceptor.setSchemas(resources);
         return payloadValidatingInterceptor;
     }
 
     @Bean(name = "common")
     public SimpleXsdSchema commonXsd() {
-        return new SimpleXsdSchema( new ClassPathResource( COMMON_XSD_PATH ) );
+        return new SimpleXsdSchema(new ClassPathResource(COMMON_XSD_PATH));
     }
 
-    @Bean(name = "AdHocManagement")
+    @Bean(name = "DistributionAutomationAdHocManagement")
     public WsdlDefinition adHocManagementWsdl() {
-        return new SimpleWsdl11Definition( new ClassPathResource( ADHOC_MANAGEMENT_WSDL_PATH ) );
+        return new SimpleWsdl11Definition(new ClassPathResource(ADHOC_MANAGEMENT_WSDL_PATH));
     }
 
-    @Bean(name = "Monitoring")
+    @Bean(name = "DistributionAutomationMonitoring")
     public WsdlDefinition monitoringWsdl() {
-        return new SimpleWsdl11Definition( new ClassPathResource( MONITORING_WSDL_PATH ) );
+        return new SimpleWsdl11Definition(new ClassPathResource(MONITORING_WSDL_PATH));
     }
 
-    @Bean(name = "DeviceManagement")
+    @Bean(name = "DistributionAutomationDeviceManagement")
     public WsdlDefinition deviceManagementWsdl() {
-        return new SimpleWsdl11Definition( new ClassPathResource( DEVICE_MANAGEMENT_WSDL_PATH ) );
+        return new SimpleWsdl11Definition(new ClassPathResource(DEVICE_MANAGEMENT_WSDL_PATH));
     }
 
     @Bean(name = "distributionautomation")
     public SimpleXsdSchema distributionAutomationXsd() {
-        return new SimpleXsdSchema( new ClassPathResource( DISTRIBUTION_AUTOMATION_XSD_PATH ) );
+        return new SimpleXsdSchema(new ClassPathResource(DISTRIBUTION_AUTOMATION_XSD_PATH));
     }
 
 }
