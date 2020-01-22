@@ -45,7 +45,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileGenericDa
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileGenericDataResponseDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component()
@@ -69,16 +68,19 @@ public class GetProfileGenericDataCommandExecutor
         SCALER_UNITS_MAP.put(InterfaceClass.DEMAND_REGISTER.id(), DemandRegisterAttribute.SCALER_UNIT.attributeId());
     }
 
-    @Autowired
-    private DlmsHelper dlmsHelper;
+    private final DlmsHelper dlmsHelper;
 
-    public GetProfileGenericDataCommandExecutor() {
+    public GetProfileGenericDataCommandExecutor(final DlmsHelper dlmsHelper) {
         super(ProfileGenericDataRequestDataDto.class);
+
+        this.dlmsHelper = dlmsHelper;
     }
 
     @Override
     public ProfileGenericDataResponseDto execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final ProfileGenericDataRequestDataDto profileGenericDataRequestDataDto) throws ProtocolAdapterException {
+
+        LOGGER.info("executing ProfileGenericDataResponseDto for ", profileGenericDataRequestDataDto.getObisCode());
 
         final ObisCodeValuesDto obisCodeValues = profileGenericDataRequestDataDto.getObisCode();
         final ObisCode obisCode = this.makeObisCode(obisCodeValues);
@@ -86,7 +88,7 @@ public class GetProfileGenericDataCommandExecutor
         final DateTime endDateTime = new DateTime(profileGenericDataRequestDataDto.getEndDate());
         final List<CaptureObjectDefinitionDto> selectedValues = profileGenericDataRequestDataDto.getSelectedValues();
 
-        LOGGER.debug("Retrieving profile generic data for {}, from: {}, to: {}, selected values: {}", obisCodeValues,
+        LOGGER.info("Retrieving profile generic data for {}, from: {}, to: {}, selected values: {}", obisCodeValues,
                 beginDateTime, endDateTime, selectedValues.isEmpty() ? "all capture objects" : selectedValues);
 
         final List<GetResult> captureObjects = this.retrieveCaptureObjects(conn, device, obisCode);
@@ -125,6 +127,8 @@ public class GetProfileGenericDataCommandExecutor
             final List<GetResult> captureObjects, final List<ScalerUnitInfo> scalerUnitInfos,
             final List<CaptureObjectDefinitionDto> selectedValues, final boolean isSelectingValuesSupported,
             final List<GetResult> bufferList) throws ProtocolAdapterException {
+
+        LOGGER.info("GetProfileGenericDataCommandExecutor retrieved {} results ", bufferList.size());
 
         final List<CaptureObjectDto> captureObjectDtos = this
                 .makeCaptureObjects(captureObjects, scalerUnitInfos, selectedValues, isSelectingValuesSupported);
@@ -323,7 +327,7 @@ public class GetProfileGenericDataCommandExecutor
             return this.makeNumericProfileEntryValueDto(dataObject, scalerUnitInfo);
         } else {
             final String dbgInfo = this.dlmsHelper.getDebugInfo(dataObject);
-            LOGGER.debug("creating ProfileEntryDto from " + dbgInfo + " " + scalerUnitInfo);
+            LOGGER.debug("creating ProfileEntryDto from {} {} ", dbgInfo, scalerUnitInfo);
             return new ProfileEntryValueDto(dbgInfo);
         }
     }
@@ -350,7 +354,7 @@ public class GetProfileGenericDataCommandExecutor
                 return new ProfileEntryValueDto(value);
             }
         } catch (final ProtocolAdapterException e) {
-            LOGGER.error("Error creating ProfileEntryDto from " + dataObject + " :" + e);
+            LOGGER.error("Error creating ProfileEntryDto from {}", dataObject, e);
             final String dbgInfo = this.dlmsHelper.getDebugInfo(dataObject);
             return new ProfileEntryValueDto(dbgInfo);
         }

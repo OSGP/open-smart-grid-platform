@@ -1,14 +1,14 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -34,12 +34,7 @@ public class ProfileGenericDataRequestDataDto implements ActionRequestDto {
             this.selectedValues.addAll(selectedValues);
         }
     }
-
-    public ProfileGenericDataRequestDataDto(final ObisCodeValuesDto obisCode, final Date beginDate,
-            final Date endDate) {
-        this(obisCode, beginDate, endDate, Collections.emptyList());
-    }
-
+    
     @Override
     public String toString() {
         return String.format("%s[obisCode=%s, begin=%tF %<tT.%<tL %<tZ, end=%tF %<tT.%<tL %<tZ, selected=%s]",
@@ -62,8 +57,8 @@ public class ProfileGenericDataRequestDataDto implements ActionRequestDto {
         }
         final ProfileGenericDataRequestDataDto other = (ProfileGenericDataRequestDataDto) obj;
         return Objects.equals(this.obisCode, other.obisCode) && Objects.equals(this.beginDate, other.beginDate)
-                && Objects.equals(this.endDate, other.endDate)
-                && Objects.equals(this.selectedValues, other.selectedValues);
+                && Objects.equals(this.endDate, other.endDate) && Objects
+                .equals(this.selectedValues, other.selectedValues);
     }
 
     public ObisCodeValuesDto getObisCode() {
