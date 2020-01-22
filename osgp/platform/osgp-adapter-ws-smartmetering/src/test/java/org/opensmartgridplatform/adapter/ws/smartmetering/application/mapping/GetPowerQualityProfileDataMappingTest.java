@@ -1,9 +1,10 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
@@ -16,12 +17,11 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import org.junit.Test;
-
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CaptureObjectDefinition;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DefinableLoadProfileConfigurationData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ObisCodeValues;
 
-public class DefinableLoadProfileConfigurationDataMappingTest {
+public class GetPowerQualityProfileDataMappingTest {
 
     private static final Long CAPTURE_PERIOD = 86400L;
 
@@ -47,7 +47,7 @@ public class DefinableLoadProfileConfigurationDataMappingTest {
     private static final byte CAPTURE_OBJECT_ATTRIBUTE_INDEX_2 = 2;
     private static final Integer CAPTURE_OBJECT_DATA_INDEX_2 = 0;
 
-    private ConfigurationMapper configurationMapper = new ConfigurationMapper();
+    private final ConfigurationMapper configurationMapper = new ConfigurationMapper();
 
     @Test
     public void testDefinableLoadProfileConfigurationCapturePeriodOnly() {
@@ -55,21 +55,17 @@ public class DefinableLoadProfileConfigurationDataMappingTest {
         final org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.DefinableLoadProfileConfigurationData wsDefinableLoadProfileConfigurationData = this
                 .newDefinableLoadProfileConfigurationDataCapturePeriodOnly();
 
-        final DefinableLoadProfileConfigurationData definableLoadProfileConfigurationData = this.configurationMapper
-                .map(wsDefinableLoadProfileConfigurationData, DefinableLoadProfileConfigurationData.class);
+        final GetPowerQualityProfileData getPowerQualityProfileData = this.configurationMapper
+                .map(wsDefinableLoadProfileConfigurationData, GetPowerQualityProfileData.class);
 
         assertNotNull("Result of mapping DefinableLoadProfileConfigurationData must not be null",
-                definableLoadProfileConfigurationData);
-        assertFalse(
-                "DefinableLoadProfileConfigurationData with capture period only must not contain capture objects: "
-                        + definableLoadProfileConfigurationData,
-                definableLoadProfileConfigurationData.hasCaptureObjects());
-        assertTrue(
-                "DefinableLoadProfileConfigurationData with capture period only must contain capture period: "
-                        + definableLoadProfileConfigurationData,
-                definableLoadProfileConfigurationData.hasCapturePeriod());
+                getPowerQualityProfileData);
+        assertFalse("DefinableLoadProfileConfigurationData with capture period only must not contain capture objects: "
+                + getPowerQualityProfileData, getPowerQualityProfileData.hasCaptureObjects());
+        assertTrue("DefinableLoadProfileConfigurationData with capture period only must contain capture period: "
+                + getPowerQualityProfileData, getPowerQualityProfileData.hasCapturePeriod());
         assertEquals("DefinableLoadProfileConfigurationData capture period", CAPTURE_PERIOD,
-                definableLoadProfileConfigurationData.getCapturePeriod());
+                getPowerQualityProfileData.getCapturePeriod());
     }
 
     @Test
@@ -78,20 +74,16 @@ public class DefinableLoadProfileConfigurationDataMappingTest {
         final org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.DefinableLoadProfileConfigurationData wsDefinableLoadProfileConfigurationData = this
                 .newDefinableLoadProfileConfigurationDataCaptureObjectsOnly();
 
-        final DefinableLoadProfileConfigurationData definableLoadProfileConfigurationData = this.configurationMapper
-                .map(wsDefinableLoadProfileConfigurationData, DefinableLoadProfileConfigurationData.class);
+        final GetPowerQualityProfileData getPowerQualityProfileData = this.configurationMapper
+                .map(wsDefinableLoadProfileConfigurationData, GetPowerQualityProfileData.class);
 
         assertNotNull("Result of mapping DefinableLoadProfileConfigurationData must not be null",
-                definableLoadProfileConfigurationData);
-        assertTrue(
-                "DefinableLoadProfileConfigurationData with capture objects only must contain capture objects: "
-                        + definableLoadProfileConfigurationData,
-                definableLoadProfileConfigurationData.hasCaptureObjects());
-        this.assertCaptureObjects(definableLoadProfileConfigurationData.getCaptureObjects());
-        assertFalse(
-                "DefinableLoadProfileConfigurationData with capture objects only must not contain capture period: "
-                        + definableLoadProfileConfigurationData,
-                definableLoadProfileConfigurationData.hasCapturePeriod());
+                getPowerQualityProfileData);
+        assertTrue("DefinableLoadProfileConfigurationData with capture objects only must contain capture objects: "
+                + getPowerQualityProfileData, getPowerQualityProfileData.hasCaptureObjects());
+        this.assertCaptureObjects(getPowerQualityProfileData.getCaptureObjects());
+        assertFalse("DefinableLoadProfileConfigurationData with capture objects only must not contain capture period: "
+                + getPowerQualityProfileData, getPowerQualityProfileData.hasCapturePeriod());
     }
 
     @Test
@@ -100,22 +92,18 @@ public class DefinableLoadProfileConfigurationDataMappingTest {
         final org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.DefinableLoadProfileConfigurationData wsDefinableLoadProfileConfigurationData = this
                 .newDefinableLoadProfileConfigurationData();
 
-        final DefinableLoadProfileConfigurationData definableLoadProfileConfigurationData = this.configurationMapper
-                .map(wsDefinableLoadProfileConfigurationData, DefinableLoadProfileConfigurationData.class);
+        final GetPowerQualityProfileData getPowerQualityProfileData = this.configurationMapper
+                .map(wsDefinableLoadProfileConfigurationData, GetPowerQualityProfileData.class);
 
         assertNotNull("Result of mapping DefinableLoadProfileConfigurationData must not be null",
-                definableLoadProfileConfigurationData);
-        assertTrue(
-                "DefinableLoadProfileConfigurationData should have capture objects: "
-                        + definableLoadProfileConfigurationData,
-                definableLoadProfileConfigurationData.hasCaptureObjects());
-        this.assertCaptureObjects(definableLoadProfileConfigurationData.getCaptureObjects());
-        assertTrue(
-                "DefinableLoadProfileConfigurationData should have a capture period: "
-                        + definableLoadProfileConfigurationData,
-                definableLoadProfileConfigurationData.hasCapturePeriod());
+                getPowerQualityProfileData);
+        assertTrue("DefinableLoadProfileConfigurationData should have capture objects: " + getPowerQualityProfileData,
+                getPowerQualityProfileData.hasCaptureObjects());
+        this.assertCaptureObjects(getPowerQualityProfileData.getCaptureObjects());
+        assertTrue("DefinableLoadProfileConfigurationData should have a capture period: " + getPowerQualityProfileData,
+                getPowerQualityProfileData.hasCapturePeriod());
         assertEquals("DefinableLoadProfileConfigurationData capture period", CAPTURE_PERIOD,
-                definableLoadProfileConfigurationData.getCapturePeriod());
+                getPowerQualityProfileData.getCapturePeriod());
     }
 
     private org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.DefinableLoadProfileConfigurationData newDefinableLoadProfileConfigurationDataCapturePeriodOnly() {
@@ -188,9 +176,10 @@ public class DefinableLoadProfileConfigurationDataMappingTest {
         assertEquals(captureObjectDescription + "data index", dataIndex, captureObject.getDataIndex());
     }
 
-    private org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ObisCodeValues newLogicalName(final short a,
-            final short b, final short c, final short d, final short e, final short f) {
-        final org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ObisCodeValues obisCodeValues = new org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ObisCodeValues();
+    private org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ObisCodeValues newLogicalName(
+            final short a, final short b, final short c, final short d, final short e, final short f) {
+        final org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ObisCodeValues obisCodeValues =
+                new org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ObisCodeValues();
         obisCodeValues.setA(a);
         obisCodeValues.setB(b);
         obisCodeValues.setC(c);

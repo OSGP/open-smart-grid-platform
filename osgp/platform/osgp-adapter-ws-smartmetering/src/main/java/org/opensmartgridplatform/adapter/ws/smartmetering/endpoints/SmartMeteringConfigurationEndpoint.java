@@ -112,6 +112,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.Activity
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AlarmNotifications;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EncryptionKeyStatusType;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FirmwareVersionResponse;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushNotificationAlarm;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.UpdateFirmwareRequestData;
@@ -176,10 +177,10 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         final GetFirmwareVersionAsyncResponse response = new GetFirmwareVersionAsyncResponse();
 
         try {
-            final String correlationUid = this.configurationService.enqueueGetFirmwareRequest(
-                    organisationIdentification, request.getDeviceIdentification(),
-                    MessagePriorityEnum.getMessagePriority(messagePriority),
-                    this.configurationMapper.map(scheduleTime, Long.class));
+            final String correlationUid = this.configurationService
+                    .enqueueGetFirmwareRequest(organisationIdentification, request.getDeviceIdentification(),
+                            MessagePriorityEnum.getMessagePriority(messagePriority),
+                            this.configurationMapper.map(scheduleTime, Long.class));
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
             this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
@@ -221,17 +222,17 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         final GetFirmwareVersionResponse response = new GetFirmwareVersionResponse();
 
         try {
-            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
+            final ResponseData responseData = this.responseDataService
+                    .dequeue(request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
             if (responseData != null) {
                 response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
 
                 if (responseData.getMessageData() != null) {
                     final List<FirmwareVersion> target = response.getFirmwareVersion();
-                    final FirmwareVersionResponse firmwareVersionResponse =
-                            (FirmwareVersionResponse) responseData.getMessageData();
-                    target.addAll(this.configurationMapper.mapAsList(firmwareVersionResponse.getFirmwareVersions(),
-                            FirmwareVersion.class));
+                    final FirmwareVersionResponse firmwareVersionResponse = (FirmwareVersionResponse) responseData
+                            .getMessageData();
+                    target.addAll(this.configurationMapper
+                            .mapAsList(firmwareVersionResponse.getFirmwareVersions(), FirmwareVersion.class));
                 } else {
                     LOGGER.info("Get Firmware Version firmware is null");
                 }
@@ -256,13 +257,13 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         final UpdateFirmwareAsyncResponse response = new UpdateFirmwareAsyncResponse();
 
         try {
-            final UpdateFirmwareRequestData updateFirmwareRequestData = this.configurationMapper.map(request,
-                    UpdateFirmwareRequestData.class);
+            final UpdateFirmwareRequestData updateFirmwareRequestData = this.configurationMapper
+                    .map(request, UpdateFirmwareRequestData.class);
 
-            final String correlationUid = this.configurationService.enqueueUpdateFirmwareRequest(
-                    organisationIdentification, request.getDeviceIdentification(), updateFirmwareRequestData,
-                    MessagePriorityEnum.getMessagePriority(messagePriority),
-                    this.configurationMapper.map(scheduleTime, Long.class));
+            final String correlationUid = this.configurationService
+                    .enqueueUpdateFirmwareRequest(organisationIdentification, request.getDeviceIdentification(),
+                            updateFirmwareRequestData, MessagePriorityEnum.getMessagePriority(messagePriority),
+                            this.configurationMapper.map(scheduleTime, Long.class));
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
@@ -287,8 +288,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         final org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareResponse response = new org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareResponse();
 
         try {
-            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
+            final ResponseData responseData = this.responseDataService
+                    .dequeue(request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
             this.throwExceptionIfResultNotOk(responseData, "updating firmware");
 
@@ -297,10 +298,10 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
                 if (responseData.getMessageData() != null) {
                     final List<FirmwareVersion> target = response.getFirmwareVersion();
-                    final UpdateFirmwareResponse updateFirmwareResponse =
-                            (UpdateFirmwareResponse) responseData.getMessageData();
-                    target.addAll(this.configurationMapper.mapAsList(updateFirmwareResponse.getFirmwareVersions(),
-                            FirmwareVersion.class));
+                    final UpdateFirmwareResponse updateFirmwareResponse = (UpdateFirmwareResponse) responseData
+                            .getMessageData();
+                    target.addAll(this.configurationMapper
+                            .mapAsList(updateFirmwareResponse.getFirmwareVersions(), FirmwareVersion.class));
                 } else {
                     LOGGER.info("Update Firmware response is null");
                 }
@@ -320,17 +321,18 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
 
         final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AdministrativeStatusType dataRequest =
-                this.configurationMapper.map(
-                request.getEnabled(),
-                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AdministrativeStatusType.class);
+                this.configurationMapper
+                .map(request.getEnabled(),
+                        org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AdministrativeStatusType.class);
 
-        final String correlationUid = this.configurationService.requestSetAdministrativeStatus(
-                organisationIdentification, request.getDeviceIdentification(), dataRequest,
-                MessagePriorityEnum.getMessagePriority(messagePriority),
-                this.configurationMapper.map(scheduleTime, Long.class));
+        final String correlationUid = this.configurationService
+                .requestSetAdministrativeStatus(organisationIdentification, request.getDeviceIdentification(),
+                        dataRequest, MessagePriorityEnum.getMessagePriority(messagePriority),
+                        this.configurationMapper.map(scheduleTime, Long.class));
 
         final SetAdministrativeStatusAsyncResponse asyncResponse =
-                new org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.ObjectFactory().createSetAdministrativeStatusAsyncResponse();
+                new org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.ObjectFactory()
+                .createSetAdministrativeStatusAsyncResponse();
         asyncResponse.setCorrelationUid(correlationUid);
         asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
 
@@ -347,8 +349,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         SetAdministrativeStatusResponse response = null;
         try {
             response = new SetAdministrativeStatusResponse();
-            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
+            final ResponseData responseData = this.responseDataService
+                    .dequeue(request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
             response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
             if (responseData.getMessageData() instanceof String) {
@@ -367,10 +369,10 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             @RequestPayload final GetAdministrativeStatusRequest request, @MessagePriority final String messagePriority,
             @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
 
-        final String correlationUid = this.configurationService.requestGetAdministrativeStatus(
-                organisationIdentification, request.getDeviceIdentification(),
-                MessagePriorityEnum.getMessagePriority(messagePriority),
-                this.configurationMapper.map(scheduleTime, Long.class));
+        final String correlationUid = this.configurationService
+                .requestGetAdministrativeStatus(organisationIdentification, request.getDeviceIdentification(),
+                        MessagePriorityEnum.getMessagePriority(messagePriority),
+                        this.configurationMapper.map(scheduleTime, Long.class));
 
         final GetAdministrativeStatusAsyncResponse asyncResponse = new GetAdministrativeStatusAsyncResponse();
 
@@ -389,14 +391,14 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         GetAdministrativeStatusResponse response = null;
         try {
-            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
+            final ResponseData responseData = this.responseDataService
+                    .dequeue(request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
             this.throwExceptionIfResultNotOk(responseData, "retrieving the administrative status");
 
             response = new GetAdministrativeStatusResponse();
-            final AdministrativeStatusType dataRequest = this.configurationMapper.map(responseData.getMessageData(),
-                    AdministrativeStatusType.class);
+            final AdministrativeStatusType dataRequest = this.configurationMapper
+                    .map(responseData.getMessageData(), AdministrativeStatusType.class);
             response.setEnabled(dataRequest);
 
         } catch (final Exception e) {
@@ -415,13 +417,14 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         final SetSpecialDaysAsyncResponse response = new SetSpecialDaysAsyncResponse();
 
         final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecialDaysRequest dataRequest =
-                this.configurationMapper.map(
-                request, org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecialDaysRequest.class);
+                this.configurationMapper
+                .map(request,
+                        org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecialDaysRequest.class);
 
-        final String correlationUid = this.configurationService.enqueueSetSpecialDaysRequest(organisationIdentification,
-                dataRequest.getDeviceIdentification(), dataRequest,
-                MessagePriorityEnum.getMessagePriority(messagePriority),
-                this.configurationMapper.map(scheduleTime, Long.class));
+        final String correlationUid = this.configurationService
+                .enqueueSetSpecialDaysRequest(organisationIdentification, dataRequest.getDeviceIdentification(),
+                        dataRequest, MessagePriorityEnum.getMessagePriority(messagePriority),
+                        this.configurationMapper.map(scheduleTime, Long.class));
 
         response.setCorrelationUid(correlationUid);
         response.setDeviceIdentification(request.getDeviceIdentification());
@@ -439,8 +442,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         SetSpecialDaysResponse response = null;
         try {
             response = new SetSpecialDaysResponse();
-            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
+            final ResponseData responseData = this.responseDataService
+                    .dequeue(request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
             response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
             if (responseData.getMessageData() instanceof String) {
@@ -461,14 +464,14 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         final SetConfigurationObjectAsyncResponse response = new SetConfigurationObjectAsyncResponse();
 
-        final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest dataRequest = this.configurationMapper.map(
-                request,
-                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest.class);
+        final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest dataRequest = this.configurationMapper
+                .map(request,
+                        org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest.class);
 
-        final String correlationUid = this.configurationService.enqueueSetConfigurationObjectRequest(
-                organisationIdentification, dataRequest.getDeviceIdentification(), dataRequest,
-                MessagePriorityEnum.getMessagePriority(messagePriority),
-                this.configurationMapper.map(scheduleTime, Long.class));
+        final String correlationUid = this.configurationService
+                .enqueueSetConfigurationObjectRequest(organisationIdentification, dataRequest.getDeviceIdentification(),
+                        dataRequest, MessagePriorityEnum.getMessagePriority(messagePriority),
+                        this.configurationMapper.map(scheduleTime, Long.class));
 
         response.setCorrelationUid(correlationUid);
         response.setDeviceIdentification(request.getDeviceIdentification());
@@ -486,8 +489,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         SetConfigurationObjectResponse response = null;
         try {
             response = new SetConfigurationObjectResponse();
-            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
+            final ResponseData responseData = this.responseDataService
+                    .dequeue(request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
             response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
             if (responseData.getMessageData() instanceof String) {
@@ -515,10 +518,10 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             response = new SetEncryptionKeyExchangeOnGMeterAsyncResponse();
             final String deviceIdentification = request.getDeviceIdentification();
 
-            final String correlationUid = this.configurationService.enqueueSetEncryptionKeyExchangeOnGMeterRequest(
-                    organisationIdentification, deviceIdentification,
-                    MessagePriorityEnum.getMessagePriority(messagePriority),
-                    this.configurationMapper.map(scheduleTime, Long.class));
+            final String correlationUid = this.configurationService
+                    .enqueueSetEncryptionKeyExchangeOnGMeterRequest(organisationIdentification, deviceIdentification,
+                            MessagePriorityEnum.getMessagePriority(messagePriority),
+                            this.configurationMapper.map(scheduleTime, Long.class));
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
@@ -542,8 +545,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         SetEncryptionKeyExchangeOnGMeterResponse response = null;
         try {
             response = new SetEncryptionKeyExchangeOnGMeterResponse();
-            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
+            final ResponseData responseData = this.responseDataService
+                    .dequeue(request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
             response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
             if (responseData.getMessageData() instanceof String) {
@@ -568,10 +571,10 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         GetMbusEncryptionKeyStatusAsyncResponse asyncResponse = null;
         try {
-            final String correlationUid = this.configurationService.enqueueGetMbusEncryptionKeyStatusRequest(
-                    organisationIdentification, request.getDeviceIdentification(),
-                    MessagePriorityEnum.getMessagePriority(messagePriority),
-                    this.configurationMapper.map(scheduleTime, Long.class));
+            final String correlationUid = this.configurationService
+                    .enqueueGetMbusEncryptionKeyStatusRequest(organisationIdentification,
+                            request.getDeviceIdentification(), MessagePriorityEnum.getMessagePriority(messagePriority),
+                            this.configurationMapper.map(scheduleTime, Long.class));
 
             asyncResponse = new GetMbusEncryptionKeyStatusAsyncResponse();
 
@@ -592,8 +595,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         GetMbusEncryptionKeyStatusResponse response = null;
         try {
-            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
+            final ResponseData responseData = this.responseDataService
+                    .dequeue(request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
             this.throwExceptionIfResultNotOk(responseData, "retrieving the M-Bus encryption key status.");
 
@@ -622,11 +625,12 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         GetMbusEncryptionKeyStatusByChannelAsyncResponse asyncResponse = null;
         try {
-            final String correlationUid = this.configurationService.enqueueGetMbusEncryptionKeyStatusByChannelRequest(
-                    organisationIdentification, request.getGatewayDeviceIdentification(),
-                    MessagePriorityEnum.getMessagePriority(messagePriority),
-                    this.configurationMapper.map(scheduleTime, Long.class),
-                    request.getGetMbusEncryptionKeyStatusByChannelRequestData().getChannel());
+            final String correlationUid = this.configurationService
+                    .enqueueGetMbusEncryptionKeyStatusByChannelRequest(organisationIdentification,
+                            request.getGatewayDeviceIdentification(),
+                            MessagePriorityEnum.getMessagePriority(messagePriority),
+                            this.configurationMapper.map(scheduleTime, Long.class),
+                            request.getGetMbusEncryptionKeyStatusByChannelRequestData().getChannel());
 
             asyncResponse = new GetMbusEncryptionKeyStatusByChannelAsyncResponse();
 
@@ -648,8 +652,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         GetMbusEncryptionKeyStatusByChannelResponse response = null;
         try {
-            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
+            final ResponseData responseData = this.responseDataService
+                    .dequeue(request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
             this.throwExceptionIfResultNotOk(responseData, "retrieving the M-Bus encryption key status by channel.");
 
@@ -679,14 +683,14 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         final SetPushSetupAlarmRequestData requestData = request.getSetPushSetupAlarmRequestData();
 
         final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupAlarm pushSetupAlarm =
-                this.configurationMapper.map(
-                requestData.getPushSetupAlarm(),
-                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupAlarm.class);
+                this.configurationMapper
+                .map(requestData.getPushSetupAlarm(),
+                        org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupAlarm.class);
 
-        final String correlationUid = this.configurationService.enqueueSetPushSetupAlarmRequest(
-                organisationIdentification, deviceIdentification, pushSetupAlarm,
-                MessagePriorityEnum.getMessagePriority(messagePriority),
-                this.configurationMapper.map(scheduleTime, Long.class));
+        final String correlationUid = this.configurationService
+                .enqueueSetPushSetupAlarmRequest(organisationIdentification, deviceIdentification, pushSetupAlarm,
+                        MessagePriorityEnum.getMessagePriority(messagePriority),
+                        this.configurationMapper.map(scheduleTime, Long.class));
 
         response.setCorrelationUid(correlationUid);
         response.setDeviceIdentification(deviceIdentification);
@@ -708,8 +712,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         SetPushSetupAlarmResponse response = null;
         try {
             response = new SetPushSetupAlarmResponse();
-            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
+            final ResponseData responseData = this.responseDataService
+                    .dequeue(request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
             response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
             if (responseData.getMessageData() instanceof String) {
@@ -736,14 +740,14 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         final SetPushSetupSmsRequestData requestData = request.getSetPushSetupSmsRequestData();
 
         final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupSms pushSetupSms =
-                this.configurationMapper.map(
-                requestData.getPushSetupSms(),
-                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupSms.class);
+                this.configurationMapper
+                .map(requestData.getPushSetupSms(),
+                        org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupSms.class);
 
-        final String correlationUid = this.configurationService.enqueueSetPushSetupSmsRequest(
-                organisationIdentification, deviceIdentification, pushSetupSms,
-                MessagePriorityEnum.getMessagePriority(messagePriority),
-                this.configurationMapper.map(scheduleTime, Long.class));
+        final String correlationUid = this.configurationService
+                .enqueueSetPushSetupSmsRequest(organisationIdentification, deviceIdentification, pushSetupSms,
+                        MessagePriorityEnum.getMessagePriority(messagePriority),
+                        this.configurationMapper.map(scheduleTime, Long.class));
 
         response.setCorrelationUid(correlationUid);
         response.setDeviceIdentification(deviceIdentification);
@@ -765,8 +769,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         SetPushSetupSmsResponse response = null;
         try {
             response = new SetPushSetupSmsResponse();
-            final ResponseData meterResponseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
+            final ResponseData meterResponseData = this.responseDataService
+                    .dequeue(request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
             if (meterResponseData.getMessageData() instanceof String) {
@@ -793,13 +797,13 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             final String deviceIdentification = request.getDeviceIdentification();
             final SetActivityCalendarRequestData requestData = request.getActivityCalendarData();
 
-            final ActivityCalendar activityCalendar = this.configurationMapper.map(requestData.getActivityCalendar(),
-                    ActivityCalendar.class);
+            final ActivityCalendar activityCalendar = this.configurationMapper
+                    .map(requestData.getActivityCalendar(), ActivityCalendar.class);
 
-            final String correlationUid = this.configurationService.enqueueSetActivityCalendarRequest(
-                    organisationIdentification, deviceIdentification, activityCalendar,
-                    MessagePriorityEnum.getMessagePriority(messagePriority),
-                    this.configurationMapper.map(scheduleTime, Long.class));
+            final String correlationUid = this.configurationService
+                    .enqueueSetActivityCalendarRequest(organisationIdentification, deviceIdentification,
+                            activityCalendar, MessagePriorityEnum.getMessagePriority(messagePriority),
+                            this.configurationMapper.map(scheduleTime, Long.class));
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
@@ -824,8 +828,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         SetActivityCalendarResponse response = null;
         try {
             response = new SetActivityCalendarResponse();
-            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
+            final ResponseData responseData = this.responseDataService
+                    .dequeue(request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
             response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
             if (responseData.getMessageData() instanceof String) {
@@ -852,13 +856,13 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             final String deviceIdentification = request.getDeviceIdentification();
             final SetAlarmNotificationsRequestData requestData = request.getSetAlarmNotificationsRequestData();
 
-            final AlarmNotifications alarmNotifications = this.configurationMapper.map(
-                    requestData.getAlarmNotifications(), AlarmNotifications.class);
+            final AlarmNotifications alarmNotifications = this.configurationMapper
+                    .map(requestData.getAlarmNotifications(), AlarmNotifications.class);
 
-            final String correlationUid = this.configurationService.enqueueSetAlarmNotificationsRequest(
-                    organisationIdentification, deviceIdentification, alarmNotifications,
-                    MessagePriorityEnum.getMessagePriority(messagePriority),
-                    this.configurationMapper.map(scheduleTime, Long.class));
+            final String correlationUid = this.configurationService
+                    .enqueueSetAlarmNotificationsRequest(organisationIdentification, deviceIdentification,
+                            alarmNotifications, MessagePriorityEnum.getMessagePriority(messagePriority),
+                            this.configurationMapper.map(scheduleTime, Long.class));
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
@@ -883,8 +887,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         SetAlarmNotificationsResponse response = null;
         try {
             response = new SetAlarmNotificationsResponse();
-            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
+            final ResponseData responseData = this.responseDataService
+                    .dequeue(request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
             response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
             if (responseData.getMessageData() instanceof String) {
@@ -905,17 +909,17 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         ReplaceKeysAsyncResponse asyncResponse = null;
         try {
             final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeysRequestData keySet =
-                    this.configurationMapper.map(
-                    request.getSetKeysRequestData(),
-                    org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeysRequestData.class);
+                    this.configurationMapper
+                    .map(request.getSetKeysRequestData(),
+                            org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeysRequestData.class);
 
-            final String correlationUid = this.configurationService.enqueueReplaceKeysRequest(
-                    organisationIdentification, request.getDeviceIdentification(), keySet,
-                    MessagePriorityEnum.getMessagePriority(messagePriority),
-                    this.configurationMapper.map(scheduleTime, Long.class));
+            final String correlationUid = this.configurationService
+                    .enqueueReplaceKeysRequest(organisationIdentification, request.getDeviceIdentification(), keySet,
+                            MessagePriorityEnum.getMessagePriority(messagePriority),
+                            this.configurationMapper.map(scheduleTime, Long.class));
 
-            asyncResponse =
-                    new org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.ObjectFactory().createReplaceKeysAsyncResponse();
+            asyncResponse = new org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.ObjectFactory()
+                    .createReplaceKeysAsyncResponse();
 
             asyncResponse.setCorrelationUid(correlationUid);
             asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
@@ -934,8 +938,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         ReplaceKeysResponse response = null;
         try {
-            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
+            final ResponseData responseData = this.responseDataService
+                    .dequeue(request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
             this.throwExceptionIfResultNotOk(responseData, "replacing keys on the device");
 
@@ -963,13 +967,13 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             LOGGER.info("Generate and replace keys request received from organisation {} for device {}.",
                     organisationIdentification, request.getDeviceIdentification());
 
-            final String correlationUid = this.configurationService.enqueueGenerateAndReplaceKeysRequest(
-                    organisationIdentification, request.getDeviceIdentification(),
-                    MessagePriorityEnum.getMessagePriority(messagePriority),
-                    this.configurationMapper.map(scheduleTime, Long.class));
+            final String correlationUid = this.configurationService
+                    .enqueueGenerateAndReplaceKeysRequest(organisationIdentification, request.getDeviceIdentification(),
+                            MessagePriorityEnum.getMessagePriority(messagePriority),
+                            this.configurationMapper.map(scheduleTime, Long.class));
 
-            asyncResponse =
-                    new org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.ObjectFactory().createGenerateAndReplaceKeysAsyncResponse();
+            asyncResponse = new org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.ObjectFactory()
+                    .createGenerateAndReplaceKeysAsyncResponse();
 
             asyncResponse.setCorrelationUid(correlationUid);
             asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
@@ -988,8 +992,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         GenerateAndReplaceKeysResponse response = null;
         try {
-            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
+            final ResponseData responseData = this.responseDataService
+                    .dequeue(request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
             response = new GenerateAndReplaceKeysResponse();
             response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
@@ -1015,8 +1019,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         final GetPushNotificationAlarmResponse response = new GetPushNotificationAlarmResponse();
 
         try {
-            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
+            final ResponseData responseData = this.responseDataService
+                    .dequeue(request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
             response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
             if (responseData != null) {
 
@@ -1045,14 +1049,14 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         SetClockConfigurationAsyncResponse asyncResponse = null;
         try {
-            final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetClockConfigurationRequestData clockConfiguration = this.configurationMapper.map(
-                    request.getSetClockConfigurationData(),
-                    org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetClockConfigurationRequestData.class);
+            final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetClockConfigurationRequestData clockConfiguration = this.configurationMapper
+                    .map(request.getSetClockConfigurationData(),
+                            org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetClockConfigurationRequestData.class);
 
-            final String correlationUid = this.configurationService.enqueueSetClockConfigurationRequest(
-                    organisationIdentification, request.getDeviceIdentification(), clockConfiguration,
-                    MessagePriorityEnum.getMessagePriority(messagePriority),
-                    this.configurationMapper.map(scheduleTime, Long.class));
+            final String correlationUid = this.configurationService
+                    .enqueueSetClockConfigurationRequest(organisationIdentification, request.getDeviceIdentification(),
+                            clockConfiguration, MessagePriorityEnum.getMessagePriority(messagePriority),
+                            this.configurationMapper.map(scheduleTime, Long.class));
 
             asyncResponse = new SetClockConfigurationAsyncResponse();
 
@@ -1073,8 +1077,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         SetClockConfigurationResponse response = null;
         try {
-            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
+            final ResponseData responseData = this.responseDataService
+                    .dequeue(request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
             response = new SetClockConfigurationResponse();
             response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
@@ -1097,14 +1101,14 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         final GetConfigurationObjectAsyncResponse response = new GetConfigurationObjectAsyncResponse();
 
-        final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetConfigurationObjectRequest dataRequest = this.configurationMapper.map(
-                request,
-                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetConfigurationObjectRequest.class);
+        final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetConfigurationObjectRequest dataRequest = this.configurationMapper
+                .map(request,
+                        org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetConfigurationObjectRequest.class);
 
-        final String correlationUid = this.configurationService.enqueueGetConfigurationObjectRequest(
-                organisationIdentification, dataRequest.getDeviceIdentification(), dataRequest,
-                MessagePriorityEnum.getMessagePriority(messagePriority),
-                this.configurationMapper.map(scheduleTime, Long.class));
+        final String correlationUid = this.configurationService
+                .enqueueGetConfigurationObjectRequest(organisationIdentification, dataRequest.getDeviceIdentification(),
+                        dataRequest, MessagePriorityEnum.getMessagePriority(messagePriority),
+                        this.configurationMapper.map(scheduleTime, Long.class));
 
         response.setCorrelationUid(correlationUid);
         response.setDeviceIdentification(request.getDeviceIdentification());
@@ -1127,8 +1131,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
             this.throwExceptionIfResultNotOk(responseData, "retrieving the configuration object");
 
-            response = this.configurationMapper.map(responseData.getMessageData(),
-                    GetConfigurationObjectResponse.class);
+            response = this.configurationMapper
+                    .map(responseData.getMessageData(), GetConfigurationObjectResponse.class);
         } catch (final Exception e) {
             this.handleException(e);
         }
@@ -1145,14 +1149,14 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         ConfigureDefinableLoadProfileAsyncResponse asyncResponse = null;
         try {
-            final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DefinableLoadProfileConfigurationData definableLoadProfileConfiguration = this.configurationMapper.map(
-                    request.getDefinableLoadProfileConfigurationData(),
-                    org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DefinableLoadProfileConfigurationData.class);
+            final GetPowerQualityProfileData definableLoadProfileConfiguration = this.configurationMapper
+                    .map(request.getDefinableLoadProfileConfigurationData(), GetPowerQualityProfileData.class);
 
-            final String correlationUid = this.configurationService.enqueueConfigureDefinableLoadProfileRequest(
-                    organisationIdentification, request.getDeviceIdentification(), definableLoadProfileConfiguration,
-                    MessagePriorityEnum.getMessagePriority(messagePriority),
-                    this.configurationMapper.map(scheduleTime, Long.class));
+            final String correlationUid = this.configurationService
+                    .enqueueConfigureDefinableLoadProfileRequest(organisationIdentification,
+                            request.getDeviceIdentification(), definableLoadProfileConfiguration,
+                            MessagePriorityEnum.getMessagePriority(messagePriority),
+                            this.configurationMapper.map(scheduleTime, Long.class));
 
             asyncResponse = new ConfigureDefinableLoadProfileAsyncResponse();
 
@@ -1174,8 +1178,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         ConfigureDefinableLoadProfileResponse response = null;
         try {
-            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
+            final ResponseData responseData = this.responseDataService
+                    .dequeue(request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
             response = new ConfigureDefinableLoadProfileResponse();
             response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
@@ -1200,16 +1204,16 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         SetMbusUserKeyByChannelAsyncResponse response = null;
         try {
-            final SetMbusUserKeyByChannelRequestData setMbusUserKeyByChannelRequestData = this.configurationMapper.map(
-                    request.getSetMbusUserKeyByChannelRequestData(), SetMbusUserKeyByChannelRequestData.class);
+            final SetMbusUserKeyByChannelRequestData setMbusUserKeyByChannelRequestData = this.configurationMapper
+                    .map(request.getSetMbusUserKeyByChannelRequestData(), SetMbusUserKeyByChannelRequestData.class);
 
             response = new SetMbusUserKeyByChannelAsyncResponse();
             final String deviceIdentification = request.getDeviceIdentification();
 
-            final String correlationUid = this.configurationService.enqueueSetMbusUserKeyByChannelRequest(
-                    organisationIdentification, deviceIdentification, setMbusUserKeyByChannelRequestData,
-                    MessagePriorityEnum.getMessagePriority(messagePriority),
-                    this.configurationMapper.map(scheduleTime, Long.class));
+            final String correlationUid = this.configurationService
+                    .enqueueSetMbusUserKeyByChannelRequest(organisationIdentification, deviceIdentification,
+                            setMbusUserKeyByChannelRequestData, MessagePriorityEnum.getMessagePriority(messagePriority),
+                            this.configurationMapper.map(scheduleTime, Long.class));
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
@@ -1233,8 +1237,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         SetMbusUserKeyByChannelResponse response = null;
         try {
             response = new SetMbusUserKeyByChannelResponse();
-            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
+            final ResponseData responseData = this.responseDataService
+                    .dequeue(request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
             response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
             if (responseData.getMessageData() instanceof String) {
@@ -1258,14 +1262,15 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         final SetRandomisationSettingsAsyncResponse response = new SetRandomisationSettingsAsyncResponse();
 
-        final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomisationSettingsRequest dataRequest = this.configurationMapper.map(
-                request,
-                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomisationSettingsRequest.class);
+        final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomisationSettingsRequest dataRequest = this.configurationMapper
+                .map(request,
+                        org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomisationSettingsRequest.class);
 
-        final String correlationUid = this.configurationService.enqueueSetRandomisationSettingsRequest(
-                organisationIdentification, dataRequest.getDeviceIdentification(), dataRequest,
-                MessagePriorityEnum.getMessagePriority(messagePriority),
-                this.configurationMapper.map(scheduleTime, Long.class));
+        final String correlationUid = this.configurationService
+                .enqueueSetRandomisationSettingsRequest(organisationIdentification,
+                        dataRequest.getDeviceIdentification(), dataRequest,
+                        MessagePriorityEnum.getMessagePriority(messagePriority),
+                        this.configurationMapper.map(scheduleTime, Long.class));
 
         response.setCorrelationUid(correlationUid);
         response.setDeviceIdentification(request.getDeviceIdentification());
@@ -1285,8 +1290,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         SetRandomisationSettingsResponse response = null;
         try {
             response = new SetRandomisationSettingsResponse();
-            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
+            final ResponseData responseData = this.responseDataService
+                    .dequeue(request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
             response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
             if (responseData.getMessageData() instanceof String) {

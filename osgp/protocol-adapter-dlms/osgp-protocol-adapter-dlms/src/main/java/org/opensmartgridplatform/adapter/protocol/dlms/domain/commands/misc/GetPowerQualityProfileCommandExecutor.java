@@ -31,22 +31,23 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionExce
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CaptureObjectDefinitionDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.DefinableLoadProfileConfigurationDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileRequestDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ConfigureDefinableLoadProfileCommandExecutor
-        extends AbstractCommandExecutor<DefinableLoadProfileConfigurationDto, Void> {
+public class GetPowerQualityProfileCommandExecutor
+        extends AbstractCommandExecutor<GetPowerQualityProfileRequestDto, Void> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigureDefinableLoadProfileCommandExecutor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetPowerQualityProfileCommandExecutor.class);
 
     private static final int CLASS_ID = InterfaceClass.PROFILE_GENERIC.id();
 
-    private static final ObisCode OBIS_CODE_DSMR4 = new ObisCode("0.1.94.31.6.255");
-    private static final ObisCode OBIS_CODE_SMR5 = new ObisCode("1.0.99.1.2.255");
+    private static final ObisCode OBIS_CODE_DEFINABLE_LOAD_PROFILE = new ObisCode("0.1.94.31.6.255");
+    private static final ObisCode OBIS_CODE_PROFILE_1 = new ObisCode("1.0.99.1.1.255");
+    private static final ObisCode OBIS_CODE_PROFILE_2 = new ObisCode("1.0.99.1.2.255");
 
     private static final String ATTRIBUTE_NAME_CAPTURE_OBJECTS = "capture objects";
     private static final String ATTRIBUTE_NAME_CAPTURE_PERIOD = "capture period";
@@ -62,8 +63,8 @@ public class ConfigureDefinableLoadProfileCommandExecutor
     @Autowired
     private MapperFacade configurationMapper;
 
-    public ConfigureDefinableLoadProfileCommandExecutor() {
-        super(DefinableLoadProfileConfigurationDto.class);
+    public GetPowerQualityProfileCommandExecutor() {
+        super(GetPowerQualityProfileRequestDto.class);
     }
 
     @Override
@@ -77,8 +78,7 @@ public class ConfigureDefinableLoadProfileCommandExecutor
 
     @Override
     public Void execute(final DlmsConnectionManager conn, final DlmsDevice device,
-            final DefinableLoadProfileConfigurationDto definableLoadProfileConfiguration)
-            throws ProtocolAdapterException {
+            final GetPowerQualityProfileRequestDto definableLoadProfileConfiguration) throws ProtocolAdapterException {
 
         final ObisCode profileObisCode = determineProfileForDevice(device);
 
@@ -101,10 +101,10 @@ public class ConfigureDefinableLoadProfileCommandExecutor
 
         switch (protocol) {
         case DSMR_4_2_2:
-            return OBIS_CODE_DSMR4;
+            return OBIS_CODE_DEFINABLE_LOAD_PROFILE;
         case SMR_5_0:
         case SMR_5_1:
-            return OBIS_CODE_SMR5;
+            return OBIS_CODE_PROFILE_2;
         default:
             throw new IllegalArgumentException("Device has unknown protocol " + protocol);
         }

@@ -1,9 +1,10 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
@@ -11,14 +12,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class DefinableLoadProfileConfigurationDto implements ActionRequestDto {
+public class GetPowerQualityProfileRequestDto implements ActionRequestDto {
 
     private static final long serialVersionUID = -4722989892412090306L;
 
     private final List<CaptureObjectDefinitionDto> captureObjects = new ArrayList<>();
     private final Long capturePeriod;
 
-    public DefinableLoadProfileConfigurationDto(final List<CaptureObjectDefinitionDto> captureObjects,
+    public GetPowerQualityProfileRequestDto(final List<CaptureObjectDefinitionDto> captureObjects,
             final Long capturePeriod) {
         if (captureObjects != null) {
             this.captureObjects.addAll(captureObjects);
@@ -48,12 +49,12 @@ public class DefinableLoadProfileConfigurationDto implements ActionRequestDto {
         if (this == obj) {
             return true;
         }
-        if (!(obj instanceof DefinableLoadProfileConfigurationDto)) {
+        if (!(obj instanceof GetPowerQualityProfileRequestDto)) {
             return false;
         }
-        final DefinableLoadProfileConfigurationDto other = (DefinableLoadProfileConfigurationDto) obj;
-        return Objects.equals(this.captureObjects, other.captureObjects)
-                && Objects.equals(this.capturePeriod, other.capturePeriod);
+        final GetPowerQualityProfileRequestDto other = (GetPowerQualityProfileRequestDto) obj;
+        return Objects.equals(this.captureObjects, other.captureObjects) && Objects
+                .equals(this.capturePeriod, other.capturePeriod);
     }
 
     public boolean hasCaptureObjects() {

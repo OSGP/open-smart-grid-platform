@@ -14,6 +14,7 @@ import ma.glasnost.orika.impl.ConfigurableMapper;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ConfigureDefinableLoadProfileRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.AlarmNotifications;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.DefinableLoadProfileConfigurationData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileData;
 import org.springframework.stereotype.Component;
 
 @Component(value = "configurationMapper")
@@ -31,25 +32,22 @@ public class ConfigurationMapper extends ConfigurableMapper {
 
         // This classMap replaces the AlarmNotificationsConverter, is needed
         // because of different field names.
-        mapperFactory
-                .classMap(AlarmNotifications.class,
-                        org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AlarmNotifications.class)
-                .field("alarmNotification", "alarmNotificationsSet").byDefault().register();
+        mapperFactory.classMap(AlarmNotifications.class,
+                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AlarmNotifications.class)
+                     .field("alarmNotification", "alarmNotificationsSet").byDefault().register();
         mapperFactory.getConverterFactory().registerConverter(new AlarmNotificationsConverter());
 
         mapperFactory
                 .classMap(org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ConfigurationFlags.class,
-                        org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.ConfigurationFlags .class)
+                        org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.ConfigurationFlags.class)
                 .field("flags", "configurationFlag").byDefault().register();
 
-        mapperFactory.classMap(ConfigureDefinableLoadProfileRequest.class,
-                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DefinableLoadProfileConfigurationData.class)
-                .fieldAToB(CAPTURE_OBJECTS_CAPTURE_OBJECT, CAPTURE_OBJECTS)
-                .fieldBToA(CAPTURE_OBJECTS, CAPTURE_OBJECTS_CAPTURE_OBJECT).byDefault().register();
-        mapperFactory.classMap(DefinableLoadProfileConfigurationData.class,
-                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DefinableLoadProfileConfigurationData.class)
-                .fieldAToB(CAPTURE_OBJECTS_CAPTURE_OBJECT, CAPTURE_OBJECTS)
-                .fieldBToA(CAPTURE_OBJECTS, CAPTURE_OBJECTS_CAPTURE_OBJECT).byDefault().register();
+        mapperFactory.classMap(ConfigureDefinableLoadProfileRequest.class, GetPowerQualityProfileData.class)
+                     .fieldAToB(CAPTURE_OBJECTS_CAPTURE_OBJECT, CAPTURE_OBJECTS)
+                     .fieldBToA(CAPTURE_OBJECTS, CAPTURE_OBJECTS_CAPTURE_OBJECT).byDefault().register();
+        mapperFactory.classMap(DefinableLoadProfileConfigurationData.class, GetPowerQualityProfileData.class)
+                     .fieldAToB(CAPTURE_OBJECTS_CAPTURE_OBJECT, CAPTURE_OBJECTS)
+                     .fieldBToA(CAPTURE_OBJECTS, CAPTURE_OBJECTS_CAPTURE_OBJECT).byDefault().register();
         mapperFactory.getConverterFactory().registerConverter(new ObisCodeValuesConverter());
 
         // These two converters are needed because they combine two fields
