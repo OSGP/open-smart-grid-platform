@@ -21,9 +21,11 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * An application context Java configuration class.
  */
 @Configuration
-@ComponentScan(basePackages = { "org.opensmartgridplatform.adapter.protocol.iec60870",
-        "org.opensmartgridplatform.shared.domain.services" }, excludeFilters = {
-                @ComponentScan.Filter(type = FilterType.REGEX, pattern = "org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.*") })
+@ComponentScan(
+        basePackages = { "org.opensmartgridplatform.adapter.protocol.iec60870",
+                "org.opensmartgridplatform.shared.domain.services" },
+        excludeFilters = { @ComponentScan.Filter(type = FilterType.REGEX,
+                pattern = "org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.*") })
 @EnableTransactionManagement()
 @Import({ Iec60870MessagingConfig.class, Iec60870Config.class })
 @PropertySource("classpath:osgp-adapter-protocol-iec60870.properties")

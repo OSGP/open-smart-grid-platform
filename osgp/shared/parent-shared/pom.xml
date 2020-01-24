@@ -26,6 +26,7 @@
     <version>5.0.0-SNAPSHOT</version>
     <relativePath>../../../super/pom.xml</relativePath>
   </parent>
+
   <distributionManagement>
     <site>
       <id>shared-components</id>

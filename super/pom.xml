@@ -34,8 +34,8 @@
   <url>${maven.site.url}</url>
   <distributionManagement>
     <site>
-      <id>platform</id>
-      <name>platform</name>
+      <id>super-osgp</id>
+      <name>super-osgp</name>
       <!-- URL is passed in as a maven argument: -Dmaven.site.distributionManagement.site.url=file:////the/path/to/deploy/the/site/to -->
       <url>${maven.site.distributionManagement.site.url}</url>
     </site>

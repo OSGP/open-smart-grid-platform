@@ -83,6 +83,7 @@
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
     </dependency>
+
     <!-- Apache CXF RESTfull WS WebClient -->
     <dependency>
       <groupId>org.apache.cxf</groupId>
