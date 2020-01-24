@@ -7,15 +7,24 @@
         http://www.apache.org/licenses/LICENSE-2.0
 
 -->
-<jxb:bindings
-  version="2.0"
+<jxb:bindings version="2.0"
   xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
   xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-  <jxb:bindings schemaLocation="../schemas/sm-external-interface.xsd">
+  <jxb:bindings
+    schemaLocation="../schemas/sm-external-interface.xsd">
     <jxb:schemaBindings>
-      <jxb:package name="org.opensmartgridplatform.adapter.ws.schema.smartmetering.external_interface" />
+      <jxb:package
+        name="org.opensmartgridplatform.adapter.ws.schema.smartmetering.external_interface" />
     </jxb:schemaBindings>
+    <jxb:bindings
+      node="/xs:schema/xs:element[@name='ExternalInterfaceResultMessage']/xs:complexType/xs:sequence/xs:choice">
+      <jxb:property name="ResponseData" />
+    </jxb:bindings>
+    <jxb:bindings
+      node="/xs:schema/xs:element[@name='ExternalInterfaceRequestMessage']/xs:complexType/xs:sequence/xs:choice">
+      <jxb:property name="RequestData" />
+    </jxb:bindings>
   </jxb:bindings>
 
 </jxb:bindings>
