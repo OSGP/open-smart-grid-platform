@@ -8,10 +8,9 @@
 package org.opensmartgridplatform.adapter.protocol.iec60870.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.exceptions.ClientConnectionAlreadyInCacheException;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnection;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionCache;
@@ -24,7 +23,7 @@ public class Iec60870ClientConnectionCacheTest {
 
     private ClientConnectionCache cache;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.cache = new ClientConnectionCacheImpl();
     }
@@ -32,7 +31,7 @@ public class Iec60870ClientConnectionCacheTest {
     @Test
     public void shouldBeAbleToAddConnectionToCache() throws ClientConnectionAlreadyInCacheException {
         // Arrange
-        final ClientConnection connection = mock(DeviceConnection.class);
+        final ClientConnection connection = new DeviceConnection(null, null);
 
         // Act
         this.cache.addConnection(KEY, connection);
@@ -44,7 +43,7 @@ public class Iec60870ClientConnectionCacheTest {
     @Test
     public void shouldBeAbleToRemoveConnectionFromCache() throws ClientConnectionAlreadyInCacheException {
         // Arrange
-        final ClientConnection connection = mock(DeviceConnection.class);
+        final ClientConnection connection = new DeviceConnection(null, null);
         this.cache.addConnection(KEY, connection);
 
         // Act

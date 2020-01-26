@@ -1,7 +1,8 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -13,12 +14,14 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import org.joda.time.DateTime;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.DlmsConnection;
@@ -39,12 +42,14 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.FindEventsReques
 /**
  * Copyright 2019 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class FindEventsCommandExecutorTest {
 
     @Mock
@@ -71,7 +76,7 @@ public class FindEventsCommandExecutorTest {
     private FindEventsRequestDto findEventsRequestDto;
     private DataObjectToEventListConverter dataObjectToEventListConverter;
 
-    @Before
+    @BeforeEach
     public void before() throws ProtocolAdapterException, IOException {
 
         final DataObject fromDate = mock(DataObject.class);
@@ -90,7 +95,7 @@ public class FindEventsCommandExecutorTest {
         when(this.dlmsConnection.get(any(AttributeAddress.class))).thenReturn(this.getResult);
     }
 
-    @After
+    @AfterEach
     public void after() throws ProtocolAdapterException, IOException {
         verify(this.dlmsHelper).asDataObject(this.findEventsRequestDto.getFrom());
         verify(this.dlmsHelper).asDataObject(this.findEventsRequestDto.getUntil());
@@ -121,22 +126,26 @@ public class FindEventsCommandExecutorTest {
         verify(this.dlmsHelper, times(events.size())).convertDataObjectToDateTime(any(DataObject.class));
     }
 
-    @Test(expected = ProtocolAdapterException.class)
+    @Test
     public void testOtherReasonResult() throws ProtocolAdapterException {
 
         when(this.getResult.getResultCode()).thenReturn(AccessResultCode.OTHER_REASON);
 
-        new FindEventsCommandExecutor(this.dlmsHelper, this.dataObjectToEventListConverter).execute(this.conn,
-                this.dlmsDevice, this.findEventsRequestDto);
+        assertThatExceptionOfType(ProtocolAdapterException.class).isThrownBy(() -> {
+            new FindEventsCommandExecutor(this.dlmsHelper, this.dataObjectToEventListConverter).execute(this.conn,
+                    this.dlmsDevice, this.findEventsRequestDto);
+        });
     }
 
-    @Test(expected = ProtocolAdapterException.class)
+    @Test
     public void testEmptyGetResult() throws ProtocolAdapterException, IOException {
 
         when(this.dlmsConnection.get(any(AttributeAddress.class))).thenReturn(null);
 
-        new FindEventsCommandExecutor(this.dlmsHelper, this.dataObjectToEventListConverter).execute(this.conn,
-                this.dlmsDevice, this.findEventsRequestDto);
+        assertThatExceptionOfType(ProtocolAdapterException.class).isThrownBy(() -> {
+            new FindEventsCommandExecutor(this.dlmsHelper, this.dataObjectToEventListConverter).execute(this.conn,
+                    this.dlmsDevice, this.findEventsRequestDto);
+        });
     }
 
     private List<DataObject> generateDataObjects() {
@@ -145,8 +154,8 @@ public class FindEventsCommandExecutorTest {
 
         IntStream.rangeClosed(77, 89).forEach(code -> {
             final DataObject eventCode = DataObject.newInteger16Data((short) code);
-            final DataObject eventTime = DataObject.newDateTimeData(
-                    new CosemDateTime(2018, 12, 31, 23, code - 60, 0, 0));
+            final DataObject eventTime = DataObject
+                    .newDateTimeData(new CosemDateTime(2018, 12, 31, 23, code - 60, 0, 0));
 
             final DataObject struct = DataObject.newStructureData(eventTime, eventCode);
 

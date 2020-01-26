@@ -11,12 +11,13 @@ import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
-
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup;
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
 
@@ -29,15 +30,16 @@ public class DeviceAuthorization extends AbstractEntity {
     private static final long serialVersionUID = 1468328289658974067L;
 
     @ManyToOne()
-    @JoinColumn()
+    @JoinColumn(name = "device")
     @Cascade(value = { CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.SAVE_UPDATE })
     private Device device;
 
     @ManyToOne()
-    @JoinColumn()
+    @JoinColumn(name = "organisation")
     private Organisation organisation;
 
     @Column()
+    @Enumerated(EnumType.ORDINAL)
     private DeviceFunctionGroup functionGroup;
 
     public DeviceAuthorization() {

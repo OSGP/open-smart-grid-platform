@@ -14,7 +14,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 
-import org.hibernate.ejb.HibernatePersistence;
+import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemPagingRepository;
 import org.opensmartgridplatform.shared.application.config.AbstractCustomConfig;
 import org.opensmartgridplatform.shared.infra.db.DefaultConnectionPoolFactory;
@@ -52,7 +52,7 @@ public class ReadOnlyLoggingConfig extends AbstractCustomConfig {
 
     private static final String PROPERTY_NAME_HIBERNATE_DIALECT = "hibernate.dialect";
     private static final String PROPERTY_NAME_HIBERNATE_FORMAT_SQL = "hibernate.format_sql";
-    private static final String PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY = "hibernate.ejb.naming_strategy";
+    private static final String PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY = "hibernate.physical_naming_strategy";
     private static final String PROPERTY_NAME_HIBERNATE_SHOW_SQL = "hibernate.show_sql";
 
     private static final String PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN = "entitymanager.packages.to.scan.domain_logging";
@@ -116,17 +116,15 @@ public class ReadOnlyLoggingConfig extends AbstractCustomConfig {
      * Method for creating the Transaction Manager.
      *
      * @return JpaTransactionManager
-     * @throws ClassNotFoundException
-     *             when class not found
      */
     @Bean
-    public JpaTransactionManager readableTransactionManager() throws ClassNotFoundException {
+    public JpaTransactionManager readableTransactionManager() {
         final JpaTransactionManager transactionManager = new JpaTransactionManager();
 
         try {
             transactionManager.setEntityManagerFactory(this.readableEntityManagerFactory().getObject());
             transactionManager.setTransactionSynchronization(JpaTransactionManager.SYNCHRONIZATION_ALWAYS);
-        } catch (final ClassNotFoundException e) {
+        } catch (final Exception e) {
             final String msg = "Error in creating transaction manager bean";
             LOGGER.error(msg, e);
             throw e;
@@ -139,18 +137,16 @@ public class ReadOnlyLoggingConfig extends AbstractCustomConfig {
      * Method for creating the Entity Manager Factory Bean.
      *
      * @return LocalContainerEntityManagerFactoryBean
-     * @throws ClassNotFoundException
-     *             when class not found
      */
     @Bean
-    public LocalContainerEntityManagerFactoryBean readableEntityManagerFactory() throws ClassNotFoundException {
+    public LocalContainerEntityManagerFactoryBean readableEntityManagerFactory() {
         final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 
         entityManagerFactoryBean.setPersistenceUnitName("OSGP_DOMAIN_LOGGING");
         entityManagerFactoryBean.setDataSource(this.getReadableDataSource());
         entityManagerFactoryBean
                 .setPackagesToScan(ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN));
-        entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistence.class);
+        entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistenceProvider.class);
 
         final Properties jpaProperties = new Properties();
         jpaProperties.put(PROPERTY_NAME_HIBERNATE_DIALECT,

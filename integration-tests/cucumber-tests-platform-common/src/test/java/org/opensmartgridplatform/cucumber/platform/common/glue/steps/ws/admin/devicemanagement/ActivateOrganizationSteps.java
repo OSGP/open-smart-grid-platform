@@ -7,21 +7,19 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.admin.devicemanagement;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.Map;
 
-import org.junit.Assert;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ws.soap.client.SoapFaultClientException;
-
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.ActivateOrganisationRequest;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.ActivateOrganisationResponse;
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonDefaults;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonKeys;
 import org.opensmartgridplatform.cucumber.platform.common.support.ws.admin.AdminDeviceManagementClient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -29,7 +27,7 @@ import cucumber.api.java.en.When;
 /**
  * Class with all the activate organization steps.
  */
-public class ActivateOrganizationSteps extends GlueBase {
+public class ActivateOrganizationSteps {
 
     @Autowired
     private AdminDeviceManagementClient client;
@@ -56,7 +54,7 @@ public class ActivateOrganizationSteps extends GlueBase {
      */
     @Then("^the activate organization response is successful$")
     public void theActivateOrganizationResponseIsSuccessful() throws Throwable {
-        Assert.assertTrue(
-                ScenarioContext.current().get(PlatformCommonKeys.RESPONSE) instanceof ActivateOrganisationResponse);
+        assertThat(ScenarioContext.current().get(PlatformCommonKeys.RESPONSE) instanceof ActivateOrganisationResponse)
+                .isTrue();
     }
 }

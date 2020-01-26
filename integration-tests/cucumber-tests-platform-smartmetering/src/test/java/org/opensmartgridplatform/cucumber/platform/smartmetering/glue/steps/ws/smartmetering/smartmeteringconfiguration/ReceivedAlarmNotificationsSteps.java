@@ -7,7 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.List;
@@ -85,14 +85,15 @@ public class ReceivedAlarmNotificationsSteps {
 
         final Runnable assertion = () -> {
 
-            final Pageable pageable = new PageRequest(0, Integer.MAX_VALUE);
+            final Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE);
             final Page<DeviceLogItem> deviceLogPage = this.deviceLogItemRepository
                     .findByDeviceIdentification(deviceIdentification, pageable);
             final List<DeviceLogItem> filteredDeviceLogItems = deviceLogPage.getContent().stream().filter(filter)
                     .collect(Collectors.toList());
 
-            assertEquals("Number of DlmsPushNotification DeviceLogItems for alarms from device " + deviceIdentification,
-                    numberOfMatchingLogs, filteredDeviceLogItems.size());
+            assertThat(filteredDeviceLogItems.size())
+                    .as("Number of DlmsPushNotification DeviceLogItems for alarms from device " + deviceIdentification)
+                    .isEqualTo(numberOfMatchingLogs);
         };
 
         final int numberOfRetries = 25;

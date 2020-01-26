@@ -7,7 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.glue.steps.database.core;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.DateTimeHelper.getDateTime;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -31,7 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
-public class DeviceFirmwareFileSteps extends GlueBase {
+public class DeviceFirmwareFileSteps {
 
     @Autowired
     private DeviceFirmwareFileRepository deviceFirmwareFileRepository;
@@ -98,7 +97,6 @@ public class DeviceFirmwareFileSteps extends GlueBase {
             return entity;
         });
 
-        assertEquals(deviceIdentification, deviceFirmwareFile.getDevice().getDeviceIdentification());
-
+        assertThat(deviceFirmwareFile.getDevice().getDeviceIdentification()).isEqualTo(deviceIdentification);
     }
 }

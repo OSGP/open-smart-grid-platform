@@ -17,6 +17,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.annotation.Resource;
@@ -477,7 +478,7 @@ public class FirmwareManagementService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_FIRMWARE);
 
-        return this.firmwareFileRepository.findOne(Long.valueOf(firmwareFileId));
+        return this.firmwareFileRepository.findById(Long.valueOf(firmwareFileId)).get();
     }
 
     /**
@@ -607,14 +608,16 @@ public class FirmwareManagementService {
                     new UnknownEntityException(DeviceModel.class, modelCode));
         }
 
-        FirmwareFile changedFirmwareFile = this.firmwareFileRepository.findOne(Long.valueOf(id));
+        final Optional<FirmwareFile> changedFirmwareFileOptional = this.firmwareFileRepository
+                .findById(Long.valueOf(id));
 
-        if (changedFirmwareFile == null) {
+        if (!changedFirmwareFileOptional.isPresent()) {
             LOGGER.info("FirmwareFile not found for id {}.", id);
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_FIRMWARE, ComponentType.WS_CORE,
                     new UnknownEntityException(FirmwareFile.class, firmwareFileRequest.getFileName()));
         }
 
+        FirmwareFile changedFirmwareFile = changedFirmwareFileOptional.get();
         changedFirmwareFile.setDescription(firmwareFileRequest.getDescription());
         /*
          * A firmware file has been changed to be related to (possibly) multiple
@@ -668,7 +671,7 @@ public class FirmwareManagementService {
         this.domainHelperService.isAllowed(organisation, PlatformFunction.REMOVE_FIRMWARE);
 
         final FirmwareFile removedFirmwareFile = this.firmwareFileRepository
-                .findOne(Long.valueOf(firmwareIdentification));
+                .findById(Long.valueOf(firmwareIdentification)).get();
 
         if (removedFirmwareFile == null) {
             LOGGER.info("FirmwareFile not found for id {}.", firmwareIdentification);
@@ -857,7 +860,7 @@ public class FirmwareManagementService {
                 firmwareFile.setPushToNewDevices(false);
             }
         }
-        this.firmwareFileRepository.save(firmwareFiles);
+        this.firmwareFileRepository.saveAll(firmwareFiles);
     }
 
 }

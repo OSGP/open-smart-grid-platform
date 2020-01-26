@@ -5,11 +5,10 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-
 package org.opensmartgridplatform.core.application.tasks;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -21,13 +20,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.data.domain.Pageable;
-
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.core.application.config.SchedulingConfig;
 import org.opensmartgridplatform.core.application.services.DeviceRequestMessageService;
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -40,33 +37,34 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolRequestMessage;
+import org.springframework.data.domain.Pageable;
 
 /**
  * test class for ScheduledTaskScheduler
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ScheduledTaskSchedulerTest {
+
+    private static final DeviceMessageMetadata DEVICE_MESSAGE_DATA = new DeviceMessageMetadata("deviceId",
+            "organisationId", "correlationId", "messageType", 4);
+
+    private static final String DOMAIN = "Domain";
+
+    private static final String DATA_OBJECT = "data object";
+
+    private static final Timestamp SCHEDULED_TIME = new Timestamp(Calendar.getInstance().getTime().getTime());
 
     @Mock
     private DeviceRequestMessageService deviceRequestMessageService;
 
     @Mock
     private ScheduledTaskRepository scheduledTaskRepository;
-
     @Mock
     private DeviceRepository deviceRepository;
-
     @InjectMocks
     private ScheduledTaskScheduler scheduler;
-
     @Mock
     private SchedulingConfig schedulingConfig;
-
-    private static final DeviceMessageMetadata DEVICE_MESSAGE_DATA = new DeviceMessageMetadata("deviceId",
-            "organisationId", "correlationId", "messageType", 4);
-    private static final String DOMAIN = "Domain";
-    private static final String DATA_OBJECT = "data object";
-    private static final Timestamp SCHEDULED_TIME = new Timestamp(Calendar.getInstance().getTime().getTime());
 
     /**
      * Test the scheduled task runner for the case when the
@@ -98,7 +96,6 @@ public class ScheduledTaskSchedulerTest {
 
         // check if task is deleted
         verify(this.scheduledTaskRepository).delete(scheduledTask);
-
     }
 
 }

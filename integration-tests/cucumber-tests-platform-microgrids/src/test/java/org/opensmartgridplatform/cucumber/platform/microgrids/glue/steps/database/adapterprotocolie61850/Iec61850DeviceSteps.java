@@ -17,7 +17,6 @@ import java.util.Map;
 
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.entities.Iec61850Device;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.glue.steps.database.core.RtuDeviceSteps;
 import org.opensmartgridplatform.cucumber.platform.helpers.SettingsHelper;
@@ -32,7 +31,7 @@ import cucumber.api.java.en.Given;
 /**
  * IEC61850 specific device steps.
  */
-public class Iec61850DeviceSteps extends GlueBase {
+public class Iec61850DeviceSteps {
 
     private static final String DEFAULT_DEVICE_TYPE = "RTU";
     private static final String DEFAULT_PROTOCOL = "IEC61850";

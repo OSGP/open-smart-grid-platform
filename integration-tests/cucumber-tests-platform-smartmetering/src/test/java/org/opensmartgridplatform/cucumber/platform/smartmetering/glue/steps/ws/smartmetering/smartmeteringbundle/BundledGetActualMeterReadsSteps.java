@@ -7,7 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringbundle;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ActualMeterReadsResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetActualMeterReadsRequest;
@@ -31,6 +31,6 @@ public class BundledGetActualMeterReadsSteps extends BaseBundleSteps {
 
         final Response response = this.getNextBundleResponse();
 
-        assertTrue("Not a valid response", response instanceof ActualMeterReadsResponse);
+        assertThat(response instanceof ActualMeterReadsResponse).as("Not a valid response").isTrue();
     }
 }

@@ -14,7 +14,11 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 
-import org.hibernate.ejb.HibernatePersistence;
+import org.hibernate.jpa.HibernatePersistenceProvider;
+import org.opensmartgridplatform.adapter.ws.shared.db.domain.exceptions.SharedDbException;
+import org.opensmartgridplatform.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceRepository;
+import org.opensmartgridplatform.shared.application.config.AbstractCustomConfig;
+import org.opensmartgridplatform.shared.infra.db.DefaultConnectionPoolFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -24,13 +28,10 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import org.opensmartgridplatform.adapter.ws.shared.db.domain.exceptions.SharedDbException;
-import org.opensmartgridplatform.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceRepository;
-import org.opensmartgridplatform.shared.application.config.AbstractCustomConfig;
-import org.opensmartgridplatform.shared.infra.db.DefaultConnectionPoolFactory;
 import com.zaxxer.hikari.HikariDataSource;
 
-@EnableJpaRepositories(entityManagerFactoryRef = "writableEntityManagerFactory", basePackageClasses = { WritableDeviceRepository.class })
+@EnableJpaRepositories(entityManagerFactoryRef = "writableEntityManagerFactory", basePackageClasses = {
+        WritableDeviceRepository.class })
 @Configuration
 @EnableTransactionManagement()
 public class WritablePersistenceConfig extends AbstractCustomConfig {
@@ -52,7 +53,7 @@ public class WritablePersistenceConfig extends AbstractCustomConfig {
 
     private static final String PROPERTY_NAME_HIBERNATE_DIALECT = "hibernate.dialect";
     private static final String PROPERTY_NAME_HIBERNATE_FORMAT_SQL = "hibernate.format_sql";
-    private static final String PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY = "hibernate.ejb.naming_strategy";
+    private static final String PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY = "hibernate.physical_naming_strategy";
     private static final String PROPERTY_NAME_HIBERNATE_SHOW_SQL = "hibernate.show_sql";
 
     private static final String PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN = "entitymanager.packages.to.scan";
@@ -91,14 +92,14 @@ public class WritablePersistenceConfig extends AbstractCustomConfig {
             final int databasePort = Integer.parseInt(ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_DATABASE_PORT));
             final String databaseName = ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_DATABASE_NAME);
 
-            final int minPoolSize = Integer.parseInt(ENVIRONMENT
-                    .getRequiredProperty(PROPERTY_NAME_DATABASE_MIN_POOL_SIZE));
-            final int maxPoolSize = Integer.parseInt(ENVIRONMENT
-                    .getRequiredProperty(PROPERTY_NAME_DATABASE_MAX_POOL_SIZE));
-            final boolean isAutoCommit = Boolean.parseBoolean(ENVIRONMENT
-                    .getRequiredProperty(PROPERTY_NAME_DATABASE_AUTO_COMMIT));
-            final int idleTimeout = Integer.parseInt(ENVIRONMENT
-                    .getRequiredProperty(PROPERTY_NAME_DATABASE_IDLE_TIMEOUT));
+            final int minPoolSize = Integer
+                    .parseInt(ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_DATABASE_MIN_POOL_SIZE));
+            final int maxPoolSize = Integer
+                    .parseInt(ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_DATABASE_MAX_POOL_SIZE));
+            final boolean isAutoCommit = Boolean
+                    .parseBoolean(ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_DATABASE_AUTO_COMMIT));
+            final int idleTimeout = Integer
+                    .parseInt(ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_DATABASE_IDLE_TIMEOUT));
 
             final DefaultConnectionPoolFactory.Builder builder = new DefaultConnectionPoolFactory.Builder()
                     .withUsername(username).withPassword(password).withDriverClassName(driverClassName)
@@ -115,8 +116,8 @@ public class WritablePersistenceConfig extends AbstractCustomConfig {
      * Method for creating the Transaction Manager.
      *
      * @return JpaTransactionManager
-     * @throws ClassNotFoundException
-     *             when class not found
+     * @throws SharedDbException
+     *             When creating entity manager factory fails.
      */
     @Bean
     public JpaTransactionManager writableTransactionManager() throws SharedDbException {
@@ -125,7 +126,7 @@ public class WritablePersistenceConfig extends AbstractCustomConfig {
         try {
             transactionManager.setEntityManagerFactory(this.writableEntityManagerFactory().getObject());
             transactionManager.setTransactionSynchronization(JpaTransactionManager.SYNCHRONIZATION_ALWAYS);
-        } catch (final ClassNotFoundException e) {
+        } catch (final Exception e) {
             final String msg = "Error in creating transaction manager bean";
             LOGGER.error(msg, e);
             throw new SharedDbException(msg, e);
@@ -138,18 +139,16 @@ public class WritablePersistenceConfig extends AbstractCustomConfig {
      * Method for creating the Entity Manager Factory Bean.
      *
      * @return LocalContainerEntityManagerFactoryBean
-     * @throws ClassNotFoundException
-     *             when class not found
      */
     @Bean
-    public LocalContainerEntityManagerFactoryBean writableEntityManagerFactory() throws ClassNotFoundException {
+    public LocalContainerEntityManagerFactoryBean writableEntityManagerFactory() {
         final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 
         entityManagerFactoryBean.setPersistenceUnitName("OSGP_CORE_DB_API");
         entityManagerFactoryBean.setDataSource(this.getWritableDataSource());
-        entityManagerFactoryBean.setPackagesToScan(ENVIRONMENT
-                .getRequiredProperty(PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN));
-        entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistence.class);
+        entityManagerFactoryBean
+                .setPackagesToScan(ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN));
+        entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistenceProvider.class);
 
         final Properties jpaProperties = new Properties();
         jpaProperties.put(PROPERTY_NAME_HIBERNATE_DIALECT,

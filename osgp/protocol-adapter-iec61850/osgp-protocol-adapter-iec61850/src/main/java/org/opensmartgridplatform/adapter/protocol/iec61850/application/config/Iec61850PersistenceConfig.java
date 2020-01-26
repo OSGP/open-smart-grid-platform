@@ -11,8 +11,9 @@ import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
-import org.jboss.netty.logging.InternalLoggerFactory;
-import org.jboss.netty.logging.Slf4JLoggerFactory;
+import org.opensmartgridplatform.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
+import org.opensmartgridplatform.shared.application.config.AbstractPersistenceConfig;
+import org.opensmartgridplatform.shared.infra.db.DefaultConnectionPoolFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,16 +23,13 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import org.opensmartgridplatform.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
-import org.opensmartgridplatform.shared.application.config.AbstractPersistenceConfig;
-import org.opensmartgridplatform.shared.infra.db.DefaultConnectionPoolFactory;
 import com.zaxxer.hikari.HikariDataSource;
 
 /**
  * Persistence configuration for the osgp_adapter_protocol_iec61850 database.
  */
-@EnableJpaRepositories(entityManagerFactoryRef = "iec61850EntityManagerFactory", basePackageClasses = {
-        Iec61850DeviceRepository.class })
+@EnableJpaRepositories(entityManagerFactoryRef = "iec61850EntityManagerFactory",
+        basePackageClasses = { Iec61850DeviceRepository.class })
 @Configuration
 @EnableTransactionManagement()
 public class Iec61850PersistenceConfig extends AbstractPersistenceConfig {
@@ -50,15 +48,13 @@ public class Iec61850PersistenceConfig extends AbstractPersistenceConfig {
 
     private HikariDataSource dataSourceIec61850;
 
-    public Iec61850PersistenceConfig() {
-        InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
-    }
-
     public DataSource getDataSourceIec61850() {
         if (this.dataSourceIec61850 == null) {
             final DefaultConnectionPoolFactory.Builder builder = super.builder().withUsername(this.databaseUsername)
-                    .withPassword(this.databasePassword).withDatabaseHost(this.databaseHost)
-                    .withDatabasePort(this.databasePort).withDatabaseName(this.databaseName);
+                    .withPassword(this.databasePassword)
+                    .withDatabaseHost(this.databaseHost)
+                    .withDatabasePort(this.databasePort)
+                    .withDatabaseName(this.databaseName);
             final DefaultConnectionPoolFactory factory = builder.build();
             this.dataSourceIec61850 = factory.getDefaultConnectionPool();
         }

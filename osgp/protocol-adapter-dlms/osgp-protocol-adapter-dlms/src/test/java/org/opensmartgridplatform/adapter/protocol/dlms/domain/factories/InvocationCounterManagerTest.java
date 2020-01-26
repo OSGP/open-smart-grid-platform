@@ -10,17 +10,17 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Fail.fail;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.refEq;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
@@ -30,7 +30,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.DeviceSessionTerminatedAfterReadingInvocationCounterException;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class InvocationCounterManagerTest {
     private static final AttributeAddress ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE = new AttributeAddress(1,
             new ObisCode(new byte[] { 0, 0, 43, 1, 0, -1 }), 2);
@@ -46,7 +46,7 @@ public class InvocationCounterManagerTest {
     @Mock
     private DlmsDeviceRepository deviceRepository;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.manager = new InvocationCounterManager(this.connectionFactory, this.dlmsHelper, this.deviceRepository);
     }
@@ -59,9 +59,8 @@ public class InvocationCounterManagerTest {
         when(this.connectionFactory.getPublicClientConnection(device, null)).thenReturn(connectionManager);
 
         final DataObject dataObject = DataObject.newInteger32Data(123);
-        when(this.dlmsHelper
-                .getAttributeValue(eq(connectionManager), refEq(ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE)))
-                .thenReturn(dataObject);
+        when(this.dlmsHelper.getAttributeValue(eq(connectionManager),
+                refEq(ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE))).thenReturn(dataObject);
 
         try {
             this.manager.initializeInvocationCounter(device);

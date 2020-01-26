@@ -7,11 +7,9 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringmonitoring;
 
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
 
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterAsyncResponse;
@@ -22,6 +20,7 @@ import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.ReadAlarmRegisterRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.SmartMeteringMonitoringRequestClient;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.SmartMeteringMonitoringResponseClient;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -40,7 +39,7 @@ public class ReadAlarmRegisterSteps {
         final ReadAlarmRegisterRequest request = ReadAlarmRegisterRequestFactory.fromParameterMap(settings);
         final ReadAlarmRegisterAsyncResponse asyncResponse = this.requestClient.doRequest(request);
 
-        assertNotNull("AsyncResponse should not be null", asyncResponse);
+        assertThat(asyncResponse).as("AsyncResponse should not be null").isNotNull();
         ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
     }
 
@@ -50,8 +49,7 @@ public class ReadAlarmRegisterSteps {
         final ReadAlarmRegisterAsyncRequest asyncRequest = ReadAlarmRegisterRequestFactory.fromScenarioContext();
         final ReadAlarmRegisterResponse response = this.responseClient.getResponse(asyncRequest);
 
-        assertNotNull("AlarmTypes should not be null", response.getAlarmTypes());
-        assertNotNull("AlarmType should not be null", response.getAlarmTypes().get(0));
-
+        assertThat(response.getAlarmTypes()).as("AlarmTypes should not be null").isNotNull();
+        assertThat(response.getAlarmTypes().get(0)).as("AlarmType should not be null").isNotNull();
     }
 }

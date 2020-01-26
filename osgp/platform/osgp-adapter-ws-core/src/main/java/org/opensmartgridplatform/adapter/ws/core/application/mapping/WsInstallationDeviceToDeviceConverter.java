@@ -54,7 +54,7 @@ public class WsInstallationDeviceToDeviceConverter
             }
 
             destination.setActivated(source.isActivated());
-            destination.setHasSchedule(this.ssldRepository.findOne(source.getId()).getHasSchedule());
+            destination.setHasSchedule(this.ssldRepository.findById(source.getId()).get().getHasSchedule());
 
             return destination;
         }

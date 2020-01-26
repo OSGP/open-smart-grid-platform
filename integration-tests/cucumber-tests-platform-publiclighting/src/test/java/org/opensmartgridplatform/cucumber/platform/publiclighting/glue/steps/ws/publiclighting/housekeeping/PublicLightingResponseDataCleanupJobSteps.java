@@ -7,10 +7,9 @@
  */
 package org.opensmartgridplatform.cucumber.platform.publiclighting.glue.steps.ws.publiclighting.housekeeping;
 
-import static org.junit.Assert.fail;
-
 import java.util.concurrent.TimeUnit;
 
+import org.junit.jupiter.api.Assertions;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
 import org.opensmartgridplatform.cucumber.core.RetryableAssert;
 import org.opensmartgridplatform.cucumber.platform.publiclighting.glue.steps.database.ws.PublicLightingResponseDataRepository;
@@ -92,8 +91,8 @@ public class PublicLightingResponseDataCleanupJobSteps {
                     .theResponseDataRecordShouldBeDeleted(correlationUid, responseDataRepository), retries, delay,
                     TimeUnit.MILLISECONDS);
         } catch (final AssertionError e) {
-            fail("Cleanup job should have removed response data with correlation uid " + correlationUid + " within "
-                    + RetryableAssert.describeMaxDuration(retries, delay, TimeUnit.MILLISECONDS));
+            Assertions.fail("Cleanup job should have removed response data with correlation uid " + correlationUid
+                    + " within " + RetryableAssert.describeMaxDuration(retries, delay, TimeUnit.MILLISECONDS));
         }
     }
 
@@ -105,7 +104,8 @@ public class PublicLightingResponseDataCleanupJobSteps {
                     .theResponseDataRecordShouldNotBeDeleted(correlationUid, responseDataRepository), 0,
                     retries * delay, TimeUnit.MILLISECONDS);
         } catch (final AssertionError e) {
-            fail("Cleanup job should not have removed response data with correlation uid " + correlationUid + ".");
+            Assertions.fail(
+                    "Cleanup job should not have removed response data with correlation uid " + correlationUid + ".");
         }
     }
 

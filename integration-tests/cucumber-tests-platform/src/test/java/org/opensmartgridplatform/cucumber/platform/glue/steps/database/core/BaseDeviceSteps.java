@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -45,7 +44,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public abstract class BaseDeviceSteps extends GlueBase {
+public abstract class BaseDeviceSteps {
 
     @Autowired
     private CoreDeviceConfiguration configuration;
@@ -162,10 +161,10 @@ public abstract class BaseDeviceSteps extends GlueBase {
             final DeviceFunctionGroup functionGroup = getEnum(settings, PlatformKeys.KEY_DEVICE_FUNCTION_GROUP,
                     DeviceFunctionGroup.class, DeviceFunctionGroup.OWNER);
             final DeviceAuthorization authorization = device.addAuthorization(organization, functionGroup);
-            final Device savedDevice = this.deviceRepository.save(device);
             this.deviceAuthorizationRepository.save(authorization);
-            ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                    savedDevice.getDeviceIdentification());
+            final Device savedDevice = this.deviceRepository.save(device);
+            ScenarioContext.current()
+                    .put(PlatformKeys.KEY_DEVICE_IDENTIFICATION, savedDevice.getDeviceIdentification());
 
             device = savedDevice;
         }

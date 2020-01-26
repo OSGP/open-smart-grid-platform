@@ -78,7 +78,7 @@ public class AdHocManagementService {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
 
-        final PageRequest request = new PageRequest(pageNumber, PAGE_SIZE, Sort.Direction.DESC, "deviceIdentification");
+        final PageRequest request = PageRequest.of(pageNumber, PAGE_SIZE, Sort.Direction.DESC, "deviceIdentification");
         return this.deviceRepository.findAllAuthorized(organisation, request);
     }
 

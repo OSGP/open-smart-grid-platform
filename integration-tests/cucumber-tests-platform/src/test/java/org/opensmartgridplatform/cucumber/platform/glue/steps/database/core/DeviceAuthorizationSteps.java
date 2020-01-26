@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.glue.steps.database.core;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
@@ -14,8 +15,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -32,7 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
-public class DeviceAuthorizationSteps extends GlueBase {
+public class DeviceAuthorizationSteps {
 
     @Autowired
     private DeviceAuthorizationRepository deviceAuthorizationRepository;
@@ -105,9 +104,9 @@ public class DeviceAuthorizationSteps extends GlueBase {
             // given list of expected authorizations, an additional
             // authorization will be retrieved from the database.
             if (authorizationsStringList.contains(DeviceFunctionGroup.OWNER.toString())) {
-                Assert.assertEquals(storedDeviceAuthorizations.size(), authorizations.length);
+                assertThat(storedDeviceAuthorizations.size()).isEqualTo(authorizations.length);
             } else {
-                Assert.assertEquals(storedDeviceAuthorizations.size(), authorizations.length + 1);
+                assertThat(storedDeviceAuthorizations.size()).isEqualTo(authorizations.length + 1);
             }
         });
 
@@ -118,8 +117,8 @@ public class DeviceAuthorizationSteps extends GlueBase {
                 PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION, PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
 
         for (final String authorization : authorizations) {
-            Assert.assertTrue(this.entityDeviceHasAuthorization(authorization, organizationIdentification,
-                    storedDeviceAuthorizations));
+            assertThat(this.entityDeviceHasAuthorization(authorization, organizationIdentification,
+                    storedDeviceAuthorizations)).isTrue();
         }
     }
 
@@ -166,8 +165,8 @@ public class DeviceAuthorizationSteps extends GlueBase {
             final String organizationIdentification = getString(expectedEntity,
                     PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION, PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
 
-            Assert.assertFalse(this.entityDeviceHasAuthorization(expectedAuthorization, organizationIdentification,
-                    storedDeviceAuthorizations));
+            assertThat(this.entityDeviceHasAuthorization(expectedAuthorization, organizationIdentification,
+                    storedDeviceAuthorizations)).isFalse();
         });
     }
 }

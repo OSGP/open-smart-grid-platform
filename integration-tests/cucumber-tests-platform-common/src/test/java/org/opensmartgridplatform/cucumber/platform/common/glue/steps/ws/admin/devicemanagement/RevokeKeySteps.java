@@ -9,21 +9,19 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.admin.devicemanagement;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.Map;
 
-import org.junit.Assert;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ws.soap.client.SoapFaultClientException;
-
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.RevokeKeyRequest;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.RevokeKeyResponse;
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonDefaults;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonKeys;
 import org.opensmartgridplatform.cucumber.platform.common.support.ws.admin.AdminDeviceManagementClient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -31,7 +29,7 @@ import cucumber.api.java.en.When;
 /**
  * Class with all the remove organization requests steps
  */
-public class RevokeKeySteps extends GlueBase {
+public class RevokeKeySteps {
 
     @Autowired
     private AdminDeviceManagementClient client;
@@ -69,7 +67,7 @@ public class RevokeKeySteps extends GlueBase {
         // there is no information to check.
         final RevokeKeyResponse response = (RevokeKeyResponse) ScenarioContext.current()
                 .get(PlatformCommonKeys.RESPONSE);
-        Assert.assertNotNull(response);
+        assertThat(response).isNotNull();
     }
 
     /**
@@ -81,10 +79,11 @@ public class RevokeKeySteps extends GlueBase {
     public void the_revoke_key_response_contains_soap_fault(final Map<String, String> expectedResult) throws Throwable {
         // TODO: Check what the "Revoke Key Response" has to return
 
-        Assert.assertTrue(
-                ScenarioContext.current().get(PlatformCommonKeys.RESPONSE) instanceof SoapFaultClientException);
+        assertThat(ScenarioContext.current().get(PlatformCommonKeys.RESPONSE) instanceof SoapFaultClientException)
+                .isTrue();
+
         final SoapFaultClientException response = (SoapFaultClientException) ScenarioContext.current()
                 .get(PlatformCommonKeys.RESPONSE);
-        Assert.assertEquals(getString(expectedResult, PlatformCommonKeys.KEY_MESSAGE), response.getMessage());
+        assertThat(response.getMessage()).isEqualTo(getString(expectedResult, PlatformCommonKeys.KEY_MESSAGE));
     }
 }

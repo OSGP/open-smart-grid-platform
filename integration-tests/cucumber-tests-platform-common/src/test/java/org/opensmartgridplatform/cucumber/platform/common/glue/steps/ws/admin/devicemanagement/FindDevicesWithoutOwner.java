@@ -9,21 +9,19 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.admin.devicemanagement;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.Map;
 
-import org.junit.Assert;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ws.soap.client.SoapFaultClientException;
-
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.Device;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.FindDevicesWhichHaveNoOwnerRequest;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.FindDevicesWhichHaveNoOwnerResponse;
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonKeys;
 import org.opensmartgridplatform.cucumber.platform.common.support.ws.admin.AdminDeviceManagementClient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -31,7 +29,7 @@ import cucumber.api.java.en.When;
 /**
  * Class with all the remove organization requests steps
  */
-public class FindDevicesWithoutOwner extends GlueBase {
+public class FindDevicesWithoutOwner {
 
     @Autowired
     private AdminDeviceManagementClient client;
@@ -66,7 +64,7 @@ public class FindDevicesWithoutOwner extends GlueBase {
         final FindDevicesWhichHaveNoOwnerResponse findDevicesWhichHaveNoOwnerResponse = (FindDevicesWhichHaveNoOwnerResponse) ScenarioContext
                 .current().get(PlatformCommonKeys.RESPONSE);
 
-        Assert.assertEquals((int) expectedCount, findDevicesWhichHaveNoOwnerResponse.getDevices().size());
+        assertThat(findDevicesWhichHaveNoOwnerResponse.getDevices().size()).isEqualTo((int) expectedCount);
     }
 
     /**
@@ -82,10 +80,11 @@ public class FindDevicesWithoutOwner extends GlueBase {
                 .current().get(PlatformCommonKeys.RESPONSE);
 
         for (final Device device : response.getDevices()) {
-            Assert.assertEquals(getString(expectedResult, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION),
-                    device.getDeviceIdentification());
-            Assert.assertTrue(device.getOrganisations().isEmpty());
-            Assert.assertNull(device.getOwner());
+            assertThat(device.getDeviceIdentification())
+                    .isEqualTo(getString(expectedResult, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION));
+
+            assertThat(device.getOrganisations().isEmpty()).isTrue();
+            assertThat(device.getOwner()).isNull();
         }
     }
 }

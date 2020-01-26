@@ -7,12 +7,7 @@
  */
 package org.opensmartgridplatform.domain.core.services;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
+import java.util.Optional;
 
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
@@ -23,11 +18,17 @@ import org.opensmartgridplatform.domain.core.exceptions.UnregisteredDeviceExcept
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.SmartMeterRepository;
 import org.opensmartgridplatform.domain.core.repositories.SsldRepository;
-import org.opensmartgridplatform.shared.validation.Identification;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
+import org.opensmartgridplatform.shared.validation.Identification;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 @Service
 @Validated
@@ -67,8 +68,8 @@ public class DeviceDomainService {
 
         // For smartmeters, we want to able to communicate no matter what the
         // device life cycle status is.
-        final SmartMeter smartMeter = this.smartMeterRepository.findOne(device.getId());
-        if (smartMeter != null) {
+        final Optional<SmartMeter> smartMeter = this.smartMeterRepository.findById(device.getId());
+        if (smartMeter.isPresent()) {
             return device;
         }
 
@@ -79,8 +80,9 @@ public class DeviceDomainService {
 
         // Note: since this code is still specific for SSLD / PSLD, this null
         // check is needed.
-        final Ssld ssld = this.ssldRepository.findOne(device.getId());
-        if (ssld != null && !ssld.isPublicKeyPresent()) {
+        final Optional<Ssld> ssld = this.ssldRepository.findById(device.getId());
+
+        if (ssld.isPresent() && !ssld.get().isPublicKeyPresent()) {
             throw new FunctionalException(FunctionalExceptionType.UNREGISTERED_DEVICE, osgpComponent,
                     new UnregisteredDeviceException(deviceIdentification));
         }

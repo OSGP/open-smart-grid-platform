@@ -7,13 +7,11 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringbundle;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ActionResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetSpecificAttributeValueRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Response;
@@ -49,7 +47,7 @@ public class BundledGetSpecificAttributeValueSteps extends BaseBundleSteps {
 
         final Response response = this.getNextBundleResponse();
 
-        assertTrue("Not a valid response", response instanceof ActionResponse);
+        assertThat(response instanceof ActionResponse).as("Not a valid response").isTrue();
     }
 
     @Then("^the bundle response should contain a get specific attribute value response with values$")
@@ -58,10 +56,10 @@ public class BundledGetSpecificAttributeValueSteps extends BaseBundleSteps {
 
         final Response response = this.getNextBundleResponse();
 
-        assertEquals("Result is not as expected.", values.get(PlatformSmartmeteringKeys.RESULT),
-                response.getResult().name());
-        assertTrue("Result contains no data.", StringUtils.isNotBlank(response.getResultString()));
-        assertTrue("Result data is not as expected",
-                response.getResultString().contains(values.get(PlatformSmartmeteringKeys.RESPONSE_PART)));
+        assertThat(response.getResult().name()).as("Result is not as expected.")
+                .isEqualTo(values.get(PlatformSmartmeteringKeys.RESULT));
+        assertThat(StringUtils.isNotBlank(response.getResultString())).as("Result contains no data.").isTrue();
+        assertThat(response.getResultString().contains(values.get(PlatformSmartmeteringKeys.RESPONSE_PART)))
+                .as("Result data is not as expected").isTrue();
     }
 }

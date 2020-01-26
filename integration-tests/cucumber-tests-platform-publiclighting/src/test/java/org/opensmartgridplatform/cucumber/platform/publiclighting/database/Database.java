@@ -32,7 +32,7 @@ public class Database {
     private NotificationWebServiceConfigurationRepository notificationWebServiceConfigurationRepository;
 
     private void insertDefaultData() {
-        this.notificationWebServiceConfigurationRepository.save(this.notificationEndpointConfigurations());
+        this.notificationWebServiceConfigurationRepository.saveAll(this.notificationEndpointConfigurations());
     }
 
     private List<NotificationWebServiceConfiguration> notificationEndpointConfigurations() {

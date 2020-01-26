@@ -8,17 +8,16 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringbundle;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
 
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ActionResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ScanMbusChannelsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ScanMbusChannelsResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Response;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringadhoc.ScanMbusChannelsSteps;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -41,8 +40,7 @@ public class BundledScanMbusChannelsSteps extends BaseBundleSteps {
 
         final Response response = this.getNextBundleResponse();
 
-        assertTrue("Not a valid response", response instanceof ActionResponse);
-
+        assertThat(response instanceof ActionResponse).as("Not a valid response").isTrue();
     }
 
     @Then("^the bundle response should contain a scan mbus channels response with values$")

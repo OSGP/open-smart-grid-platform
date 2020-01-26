@@ -7,15 +7,13 @@
  */
 package org.opensmartgridplatform.cucumber.platform.publiclighting.glue.steps.database.ws;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
 import org.opensmartgridplatform.cucumber.core.DateTimeHelper;
@@ -75,7 +73,7 @@ public class PublicLightingResponseDataSteps {
             }
         } catch (final Exception e) {
             LOGGER.error("Exception", e);
-            Assert.fail("Failed to create response data record.");
+            Assertions.fail("Failed to create response data record.");
         }
 
         return responseData;
@@ -100,7 +98,7 @@ public class PublicLightingResponseDataSteps {
             final ResponseDataRepository responseDataRespository) {
         final ResponseData responseData = responseDataRespository.findByCorrelationUid(correlationUid);
 
-        assertNull("Response data should be deleted", responseData);
+        assertThat(responseData).as("Response data should be deleted").isNull();
     }
 
     @Then("^the public lighting response data record with correlation uid \\\"(.*)\\\" should not be deleted$")
@@ -122,7 +120,7 @@ public class PublicLightingResponseDataSteps {
             final ResponseDataRepository responseDataRespository) {
         final ResponseData responseData = responseDataRespository.findByCorrelationUid(correlationUid);
 
-        assertNotNull("Response data should not be deleted", responseData);
+        assertThat(responseData).as("Response data should not be deleted").isNotNull();
     }
 
     @Then("^the public lighting response data has values$")
@@ -158,8 +156,8 @@ public class PublicLightingResponseDataSteps {
 
         final ResponseData responseData = responseDataRespository.findByCorrelationUid(correlationUid);
 
-        assertEquals(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SENT, expectedNumberOfNotificationsSent,
-                responseData.getNumberOfNotificationsSent());
-        assertEquals(PlatformKeys.KEY_MESSAGE_TYPE, expectedMessageType, responseData.getMessageType());
+        assertThat(responseData.getNumberOfNotificationsSent()).as(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SENT)
+                .isEqualTo(expectedNumberOfNotificationsSent);
+        assertThat(responseData.getMessageType()).as(PlatformKeys.KEY_MESSAGE_TYPE).isEqualTo(expectedMessageType);
     }
 }

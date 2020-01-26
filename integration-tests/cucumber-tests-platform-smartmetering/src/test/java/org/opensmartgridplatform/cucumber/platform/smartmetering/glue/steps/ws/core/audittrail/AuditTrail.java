@@ -7,7 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.core.audittrail;
 
-import static org.junit.Assert.assertFalse;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.List;
@@ -46,16 +46,16 @@ public class AuditTrail {
 
         final Runnable assertion = () -> {
 
-            final Pageable pageable = new PageRequest(0, Integer.MAX_VALUE);
+            final Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE);
             final Page<DeviceLogItem> deviceLogPage = this.deviceLogItemRepository
                     .findByDeviceIdentification(deviceIdentification, pageable);
             final List<DeviceLogItem> filteredDeviceLogItems = deviceLogPage.getContent().stream().filter(filter)
                     .collect(Collectors.toList());
 
-            assertFalse(
-                    "Number of matching DeviceLogItems for device " + deviceIdentification + " must be at least "
-                            + minimumNumberReturned + ", but was " + filteredDeviceLogItems.size(),
-                    filteredDeviceLogItems.size() < minimumNumberReturned);
+            assertThat(filteredDeviceLogItems.size() < minimumNumberReturned)
+                    .as("Number of matching DeviceLogItems for device " + deviceIdentification + " must be at least "
+                            + minimumNumberReturned + ", but was " + filteredDeviceLogItems.size())
+                    .isFalse();
         };
         final int numberOfRetries = 600;
         final long delay = 1;

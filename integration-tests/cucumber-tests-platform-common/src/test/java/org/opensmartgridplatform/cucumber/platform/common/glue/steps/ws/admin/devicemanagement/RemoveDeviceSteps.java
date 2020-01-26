@@ -7,30 +7,28 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.admin.devicemanagement;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ws.soap.client.SoapFaultClientException;
-
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.RemoveDeviceRequest;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.RemoveDeviceResponse;
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonDefaults;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonKeys;
 import org.opensmartgridplatform.cucumber.platform.common.support.ws.admin.AdminDeviceManagementClient;
 import org.opensmartgridplatform.cucumber.platform.glue.steps.ws.GenericResponseSteps;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class RemoveDeviceSteps extends GlueBase {
+public class RemoveDeviceSteps {
 
     @Autowired
     private AdminDeviceManagementClient client;
@@ -92,7 +90,7 @@ public class RemoveDeviceSteps extends GlueBase {
      */
     @Then("^the remove device response is successful$")
     public void theRemoveDeviceResponseIsSuccessful() throws Throwable {
-        Assert.assertTrue(ScenarioContext.current().get(PlatformCommonKeys.RESPONSE) instanceof RemoveDeviceResponse);
+        assertThat(ScenarioContext.current().get(PlatformCommonKeys.RESPONSE) instanceof RemoveDeviceResponse).isTrue();
     }
 
     /**

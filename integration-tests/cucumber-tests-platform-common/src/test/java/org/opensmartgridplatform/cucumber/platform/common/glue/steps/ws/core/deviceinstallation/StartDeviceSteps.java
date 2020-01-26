@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.core.deviceinstallation;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 import static org.opensmartgridplatform.cucumber.platform.core.CorrelationUidHelper.saveCorrelationUidInScenarioContext;
@@ -15,17 +16,12 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ws.soap.client.SoapFaultClientException;
-
 import org.opensmartgridplatform.adapter.ws.schema.core.common.AsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.StartDeviceTestAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.StartDeviceTestAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.StartDeviceTestRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.StartDeviceTestResponse;
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
@@ -33,11 +29,13 @@ import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.common.support.ws.core.CoreDeviceInstallationClient;
 import org.opensmartgridplatform.cucumber.platform.glue.steps.ws.GenericResponseSteps;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class StartDeviceSteps extends GlueBase {
+public class StartDeviceSteps {
 
     @Autowired
     private CoreDeviceInstallationClient client;
@@ -72,11 +70,10 @@ public class StartDeviceSteps extends GlueBase {
             } catch (final Exception e) {
                 // do nothing
             }
-            Assert.assertNotNull(response);
-            Assert.assertEquals(getEnum(expectedResult, PlatformKeys.KEY_RESULT, OsgpResultType.class),
-                    response.getResult());
+            assertThat(response).isNotNull();
+            assertThat(response.getResult())
+                    .isEqualTo(getEnum(expectedResult, PlatformKeys.KEY_RESULT, OsgpResultType.class));
         });
-
     }
 
     @Then("^the platform buffers no start device test response message for device \"([^\"]*)\"$")
@@ -95,8 +92,9 @@ public class StartDeviceSteps extends GlueBase {
             } catch (final Exception e) {
                 // do nothing
             }
-            Assert.assertNotNull(response);
-            Assert.assertNotEquals(OsgpResultType.NOT_FOUND, response.getResult());
+            assertThat(response).isNotNull();
+            assertThat(response.getResult()).isNotEqualTo(OsgpResultType.NOT_FOUND);
+
         });
     }
 
@@ -105,9 +103,9 @@ public class StartDeviceSteps extends GlueBase {
         final StartDeviceTestAsyncResponse asyncResponse = (StartDeviceTestAsyncResponse) ScenarioContext.current()
                 .get(PlatformKeys.RESPONSE);
 
-        Assert.assertNotNull(asyncResponse.getAsyncResponse().getCorrelationUid());
-        Assert.assertEquals(getString(expectedResponseData, PlatformKeys.KEY_DEVICE_IDENTIFICATION),
-                asyncResponse.getAsyncResponse().getDeviceId());
+        assertThat(asyncResponse.getAsyncResponse().getCorrelationUid()).isNotNull();
+        assertThat(asyncResponse.getAsyncResponse().getDeviceId())
+                .isEqualTo(getString(expectedResponseData, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
 
         // Save the returned CorrelationUid in the Scenario related context for
         // further use.

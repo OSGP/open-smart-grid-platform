@@ -1,13 +1,11 @@
 package org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.dto.valueobjects.EventNotificationTypeDto;
 
 public class EventTypeTest {
@@ -17,18 +15,21 @@ public class EventTypeTest {
     @Test
     public void testNoFilterForEvents() {
 
-        assertEquals("No filter for events", "", EventType.getEventTypeFilterMask(null));
+        assertThat(EventType.getEventTypeFilterMask(null)).withFailMessage("No filter for events").isEqualTo("");
 
-        assertNull(EventType.getEventTypesForFilter(null));
+        assertThat(EventType.getEventTypesForFilter(null)).isNull();
+
     }
 
     @Test
     public void testFilterForNoEvents() {
 
-        assertEquals("Event filter for no events", "0",
-                EventType.getEventTypeFilterMask(EnumSet.noneOf(EventType.class)));
+        assertThat(EventType.getEventTypeFilterMask(EnumSet.noneOf(EventType.class)))
+                .withFailMessage("Event filter for no events")
+                .isEqualTo("0");
 
-        assertEquals(Collections.emptySet(), EventType.getEventTypesForFilter("0"));
+        assertThat(EventType.getEventTypesForFilter("0")).isEmpty();
+
     }
 
     @Test
@@ -36,10 +37,10 @@ public class EventTypeTest {
 
         final Set<EventType> allEvents = EnumSet.allOf(EventType.class);
 
-        assertEquals("Event filter for all events", FILTER_MASK_FOR_ALL_EVENTS,
-                EventType.getEventTypeFilterMask(allEvents));
+        assertThat(EventType.getEventTypeFilterMask(allEvents)).withFailMessage("Event filter for all events")
+                .isEqualTo(FILTER_MASK_FOR_ALL_EVENTS);
 
-        assertEquals(allEvents, EventType.getEventTypesForFilter(FILTER_MASK_FOR_ALL_EVENTS));
+        assertThat(EventType.getEventTypesForFilter(FILTER_MASK_FOR_ALL_EVENTS)).isEqualTo(allEvents);
     }
 
     @Test
@@ -51,17 +52,19 @@ public class EventTypeTest {
                 EventType.LIGHT_EVENTS_LIGHT_OFF, EventType.TARIFF_EVENTS_TARIFF_ON, EventType.TARIFF_EVENTS_TARIFF_OFF,
                 EventType.MONITOR_EVENTS_LOSS_OF_POWER);
 
-        assertEquals("Event filter for first six events", filterForFirstSixEvents,
-                EventType.getEventTypeFilterMask(firstSixEvents));
+        assertThat(EventType.getEventTypeFilterMask(firstSixEvents))
+                .withFailMessage("Event filter for first six events")
+                .isEqualTo(filterForFirstSixEvents);
 
-        assertEquals(firstSixEvents, EventType.getEventTypesForFilter(filterForFirstSixEvents));
+        assertThat(EventType.getEventTypesForFilter(filterForFirstSixEvents)).isEqualTo(firstSixEvents);
     }
 
     @Test
     public void testFilterForAllEventNotificationTypes() {
 
-        assertEquals("Event filter for all event notification types", FILTER_MASK_FOR_ALL_EVENTS,
-                EventType.getEventTypeFilterMaskForNotificationTypes(EnumSet.allOf(EventNotificationTypeDto.class)));
+        assertThat(EventType.getEventTypeFilterMaskForNotificationTypes(EnumSet.allOf(EventNotificationTypeDto.class)))
+                .withFailMessage("Event filter for all event notification types")
+                .isEqualTo(FILTER_MASK_FOR_ALL_EVENTS);
     }
 
     @Test
@@ -69,8 +72,10 @@ public class EventTypeTest {
 
         final String filterForFirmwareEvents = "1FFFC0";
 
-        assertEquals("Event filter for firmware events", filterForFirmwareEvents, EventType
-                .getEventTypeFilterMaskForNotificationTypes(EnumSet.of(EventNotificationTypeDto.FIRMWARE_EVENTS)));
+        assertThat(EventType
+                .getEventTypeFilterMaskForNotificationTypes(EnumSet.of(EventNotificationTypeDto.FIRMWARE_EVENTS)))
+                        .withFailMessage("Event filter for firmware events")
+                        .isEqualTo(filterForFirmwareEvents);
 
         final Set<EventType> firmwareEvents = EnumSet.of(EventType.FUNCTION_FIRMWARE_EVENTS_ACTIVATING,
                 EventType.FUNCTION_FIRMWARE_EVENTS_AUTHENTICATION_FAIL,
@@ -84,7 +89,7 @@ public class EventTypeTest {
                 EventType.CA_FILE_EVENTS_AUTHENTICATION_FAIL, EventType.CA_FILE_EVENTS_DOWNLOAD_FAILED,
                 EventType.CA_FILE_EVENTS_DOWNLOAD_SUCCESS);
 
-        assertEquals(firmwareEvents, EventType.getEventTypesForFilter(filterForFirmwareEvents));
+        assertThat(EventType.getEventTypesForFilter(filterForFirmwareEvents)).isEqualTo(firmwareEvents);
     }
 
     @Test
@@ -99,7 +104,7 @@ public class EventTypeTest {
         final Set<EventNotificationTypeDto> expectedNotificationTypes = EnumSet
                 .of(EventNotificationTypeDto.LIGHT_EVENTS);
 
-        assertEquals(expectedNotificationTypes, actualNotificationTypes);
+        assertThat(actualNotificationTypes).isEqualTo(expectedNotificationTypes);
     }
 
     @Test
@@ -110,7 +115,7 @@ public class EventTypeTest {
                 .getNotificationTypesForFilter(filterForTariffEvents);
         final Set<EventNotificationTypeDto> expectedNotificationTypes = EnumSet
                 .of(EventNotificationTypeDto.TARIFF_EVENTS);
-        assertEquals(expectedNotificationTypes, actualNotificationTypes);
+        assertThat(actualNotificationTypes).isEqualTo(expectedNotificationTypes);
     }
 
     @Test
@@ -122,7 +127,7 @@ public class EventTypeTest {
                 .getNotificationTypesForFilter(filterForDiagTariffAndSecurityEvents);
         final Set<EventNotificationTypeDto> expectedNotificationTypes = EnumSet.of(EventNotificationTypeDto.DIAG_EVENTS,
                 EventNotificationTypeDto.TARIFF_EVENTS, EventNotificationTypeDto.SECURITY_EVENTS);
-        assertEquals(expectedNotificationTypes, actualNotificationTypes);
+        assertThat(actualNotificationTypes).isEqualTo(expectedNotificationTypes);
     }
 
     @Test
@@ -133,7 +138,7 @@ public class EventTypeTest {
         // HARDWARE_FAILURE notifications not reported, because there's no event
         // with this notification type yet.
         expectedNotificationTypes.remove(EventNotificationTypeDto.HARDWARE_FAILURE);
-        assertEquals(expectedNotificationTypes, actualNotificationTypes);
+        assertThat(actualNotificationTypes).isEqualTo(expectedNotificationTypes);
     }
 
     @Test
@@ -147,6 +152,6 @@ public class EventTypeTest {
         // HARDWARE_FAILURE notifications not reported, because there's no event
         // with this notification type yet.
         expectedNotificationTypes.remove(EventNotificationTypeDto.HARDWARE_FAILURE);
-        assertEquals(expectedNotificationTypes, actualNotificationTypes);
+        assertThat(actualNotificationTypes).isEqualTo(expectedNotificationTypes);
     }
 }

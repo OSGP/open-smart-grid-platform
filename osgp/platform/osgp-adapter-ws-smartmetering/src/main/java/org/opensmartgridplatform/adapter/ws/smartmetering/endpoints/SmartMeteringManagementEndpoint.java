@@ -9,7 +9,8 @@ package org.opensmartgridplatform.adapter.ws.smartmetering.endpoints;
 
 import java.util.List;
 
-import org.hibernate.validator.method.MethodConstraintViolationException;
+import javax.validation.ConstraintViolationException;
+
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
@@ -68,11 +69,6 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
-//MethodConstraintViolationException is deprecated.
-//Will by replaced by equivalent functionality defined
-//by the Bean Validation 1.1 API as of Hibernate Validator 5.
-
-@SuppressWarnings("deprecation")
 @Endpoint
 public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
 
@@ -154,7 +150,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             response.getEvents().addAll(this.managementMapper.mapAsList(events,
                     org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event.class));
 
-        } catch (final MethodConstraintViolationException e) {
+        } catch (final ConstraintViolationException e) {
             LOGGER.error("FindEventsRequest Exception", e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
                     new ValidationException(e.getConstraintViolations()));
@@ -183,7 +179,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             devicePage.getDevices().addAll(this.managementMapper.mapAsList(page.getContent(),
                     org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Device.class));
             response.setDevicePage(devicePage);
-        } catch (final MethodConstraintViolationException e) {
+        } catch (final ConstraintViolationException e) {
             LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_WS_SMART_METERING,
                     new ValidationException(e.getConstraintViolations()));
@@ -247,7 +243,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             if (responseData.getMessageData() instanceof String) {
                 response.setDescription((String) responseData.getMessageData());
             }
-        } catch (final MethodConstraintViolationException e) {
+        } catch (final ConstraintViolationException e) {
             LOGGER.error("EnableDebuggingResponse Exception", e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
                     new ValidationException(e.getConstraintViolations()));
@@ -311,7 +307,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             if (responseData.getMessageData() instanceof String) {
                 response.setDescription((String) responseData.getMessageData());
             }
-        } catch (final MethodConstraintViolationException e) {
+        } catch (final ConstraintViolationException e) {
             LOGGER.error("DisableDebuggingResponse Exception", e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
                     new ValidationException(e.getConstraintViolations()));
@@ -396,7 +392,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             logPage.getMessageLogs().addAll(this.managementMapper.mapAsList(page.getContent(), MessageLog.class));
 
             response.setMessageLogPage(logPage);
-        } catch (final MethodConstraintViolationException e) {
+        } catch (final ConstraintViolationException e) {
             LOGGER.error("FindMessageLogsResponse Exception", e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
                     new ValidationException(e.getConstraintViolations()));
@@ -462,7 +458,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             if (responseData.getMessageData() instanceof String) {
                 response.setDescription((String) responseData.getMessageData());
             }
-        } catch (final MethodConstraintViolationException e) {
+        } catch (final ConstraintViolationException e) {
             LOGGER.error("SetDeviceCommunicationSettingsResponse Exception", e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
                     new ValidationException(e.getConstraintViolations()));
@@ -528,7 +524,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
                     .map(responseData.getMessageData(), SetDeviceLifecycleStatusByChannelResponseData.class));
             response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
 
-        } catch (final MethodConstraintViolationException e) {
+        } catch (final ConstraintViolationException e) {
             LOGGER.error("Set device lifecycle status by channel Exception", e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
                     new ValidationException(e.getConstraintViolations()));

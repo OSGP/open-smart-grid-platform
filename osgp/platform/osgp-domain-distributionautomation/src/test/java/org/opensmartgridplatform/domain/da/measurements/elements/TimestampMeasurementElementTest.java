@@ -8,9 +8,36 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TimestampMeasurementElementTest {
+
+    @Test
+    public void AsZonedDateTimeShouldReturnCorrectZonedDateTimeWhenConstructedUsingTimestamp() {
+        // Arrange
+        final ZonedDateTime expected = ZonedDateTime.of(2020, 2, 20, 21, 59, 59, 0, ZoneOffset.UTC);
+        final long timestamp = expected.toInstant().toEpochMilli();
+
+        // Act
+        final TimestampMeasurementElement element = new TimestampMeasurementElement(timestamp);
+        final ZonedDateTime actual = element.asZonedDateTime();
+
+        // Assert
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void AsZonedDateTimeShouldReturnCorrectZonedDateTimeWhenConstructedUsingZonedDateTime() {
+        // Arrange
+        final ZonedDateTime expected = ZonedDateTime.of(2020, 2, 20, 21, 59, 59, 0, ZoneOffset.UTC);
+
+        // Act
+        final TimestampMeasurementElement element = new TimestampMeasurementElement(expected);
+        final ZonedDateTime actual = element.asZonedDateTime();
+
+        // Assert
+        assertThat(actual).isEqualTo(expected);
+    }
 
     @Test
     public void getValueShouldReturnCorrectValueWhenConstructedUsingTimestamp() {
@@ -35,33 +62,6 @@ public class TimestampMeasurementElementTest {
         // Act
         final TimestampMeasurementElement element = new TimestampMeasurementElement(zonedDateTime);
         final long actual = element.getValue();
-
-        // Assert
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void AsZonedDateTimeShouldReturnCorrectZonedDateTimeWhenConstructedUsingTimestamp() {
-        // Arrange
-        final ZonedDateTime expected = ZonedDateTime.of(2020, 2, 20, 21, 59, 59, 0, ZoneOffset.UTC);
-        final long timestamp = expected.toInstant().toEpochMilli();
-
-        // Act
-        final TimestampMeasurementElement element = new TimestampMeasurementElement(timestamp);
-        final ZonedDateTime actual = element.asZonedDateTime();
-
-        // Assert
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void AsZonedDateTimeShouldReturnCorrectZonedDateTimeWhenConstructedUsingZonedDateTime() {
-        // Arrange
-        final ZonedDateTime expected = ZonedDateTime.of(2020, 2, 20, 21, 59, 59, 0, ZoneOffset.UTC);
-
-        // Act
-        final TimestampMeasurementElement element = new TimestampMeasurementElement(expected);
-        final ZonedDateTime actual = element.asZonedDateTime();
 
         // Assert
         assertThat(actual).isEqualTo(expected);

@@ -10,11 +10,11 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.asdu
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.TypeId;
 import org.opensmartgridplatform.adapter.protocol.iec60870.application.mapping.Iec60870Mapper;
@@ -30,7 +30,7 @@ import org.opensmartgridplatform.dto.da.measurements.MeasurementReportDto;
 
 import ma.glasnost.orika.MapperFacade;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class MeasurementAsduHandlerTest {
 
     private static final String DEVICE_IDENTIFICATION = "TEST-DEVICE-1";
@@ -55,7 +55,7 @@ public class MeasurementAsduHandlerTest {
     @Mock
     private LoggingService loggingService;
 
-    private MapperFacade mapper = new Iec60870Mapper();
+    private final MapperFacade mapper = new Iec60870Mapper();
 
     @Test
     public void shouldSendMeasurementReportAndLogItemWhenHandlingAsdu() {
@@ -64,7 +64,8 @@ public class MeasurementAsduHandlerTest {
         final MeasurementReportDto measurementReportDto = this.mapper.map(asdu, MeasurementReportDto.class);
         final ResponseMetadata responseMetadata = new ResponseMetadata.Builder().withCorrelationUid(CORRELATION_UID)
                 .withDeviceIdentification(DEVICE_IDENTIFICATION)
-                .withOrganisationIdentification(ORGANISATION_IDENTIFICATION).build();
+                .withOrganisationIdentification(ORGANISATION_IDENTIFICATION)
+                .build();
         final LogItem logItem = new LogItem(DEVICE_IDENTIFICATION, ORGANISATION_IDENTIFICATION, true, asdu.toString());
 
         when(this.responseMetadataFactory.createWithNewCorrelationUid(responseMetadata)).thenReturn(responseMetadata);

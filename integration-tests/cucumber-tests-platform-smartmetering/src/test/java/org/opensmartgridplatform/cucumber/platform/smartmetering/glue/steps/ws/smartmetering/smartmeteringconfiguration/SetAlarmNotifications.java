@@ -7,14 +7,9 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsAsyncRequest;
@@ -25,6 +20,9 @@ import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SetAlarmNotificationsRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -45,7 +43,8 @@ public class SetAlarmNotifications {
 
         LOGGER.info("Set alarm notifications response is received {}", setAlarmNotificationsAsyncResponse);
 
-        assertNotNull("Set alarm notifications response should not be null", setAlarmNotificationsAsyncResponse);
+        assertThat(setAlarmNotificationsAsyncResponse).as("Set alarm notifications response should not be null")
+                .isNotNull();
         ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID,
                 setAlarmNotificationsAsyncResponse.getAsyncResponse().getCorrelationUid());
     }
@@ -60,8 +59,9 @@ public class SetAlarmNotifications {
 
         LOGGER.info("The set alarm notifications result is: {}", setAlarmNotificationsResponse.getResult());
 
-        assertNotNull("The set alarm notifications result is null", setAlarmNotificationsResponse.getResult());
-        assertEquals("The set alarm notifications should be OK", OsgpResultType.OK,
-                setAlarmNotificationsResponse.getResult());
+        assertThat(setAlarmNotificationsResponse.getResult()).as("The set alarm notifications result is null")
+                .isNotNull();
+        assertThat(setAlarmNotificationsResponse.getResult()).as("The set alarm notifications should be OK")
+                .isEqualTo(OsgpResultType.OK);
     }
 }

@@ -7,8 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.core.devicemanagement;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.platform.PlatformKeys.KEY_DEVICE_IDENTIFICATION;
 import static org.opensmartgridplatform.cucumber.platform.PlatformKeys.KEY_MESSAGE_TYPE;
 import static org.opensmartgridplatform.cucumber.platform.PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION;
@@ -25,19 +24,18 @@ import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindScheduledTasksRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindScheduledTasksResponse;
 import org.opensmartgridplatform.cucumber.core.DateTimeHelper;
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.common.support.ws.core.CoreDeviceManagementClient;
 import org.opensmartgridplatform.cucumber.platform.glue.steps.database.core.ScheduledTaskSteps;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import cucumber.api.DataTable;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import io.cucumber.datatable.DataTable;
 
-public class FindScheduledTasksSteps extends GlueBase {
+public class FindScheduledTasksSteps {
 
     @Autowired
     private ScheduledTaskSteps scheduledTaskSteps;
@@ -69,38 +67,37 @@ public class FindScheduledTasksSteps extends GlueBase {
 
         final List<Map<String, String>> scheduledTasks = tasks.asMaps(String.class, String.class);
 
-        assertEquals("Lists of scheduled tasks have different sizes.", scheduledTasks.size(),
-                response.getScheduledTask().size());
+        assertThat(response.getScheduledTask().size()).as("Lists of scheduled tasks have different sizes.")
+                .isEqualTo(scheduledTasks.size());
 
         for (final Map<String, String> map : scheduledTasks) {
-            final boolean found = response.getScheduledTask()
-                    .stream()
+            final boolean found = response.getScheduledTask().stream()
                     .anyMatch(hasOrganizationIdentification(map.get(KEY_ORGANIZATION_IDENTIFICATION))
                             .and(hasDeviceIdentification(map.get(KEY_DEVICE_IDENTIFICATION)))
                             .and(hasMessageType(map.get(KEY_MESSAGE_TYPE)))
                             .and(hasScheduledTime(map.get(KEY_SCHEDULED_TIME))));
 
-            assertTrue("No matching scheduled task found.", found);
+            assertThat(found).as("No matching scheduled task found.").isTrue();
         }
     }
 
-    private static final Predicate<org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.ScheduledTask>
-            hasOrganizationIdentification(final String organizationIdentification) {
+    private static final Predicate<org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.ScheduledTask> hasOrganizationIdentification(
+            final String organizationIdentification) {
         return task -> task.getOrganisationIdentification().equals(organizationIdentification);
     }
 
-    private static final Predicate<org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.ScheduledTask>
-            hasDeviceIdentification(final String deviceIdentification) {
+    private static final Predicate<org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.ScheduledTask> hasDeviceIdentification(
+            final String deviceIdentification) {
         return task -> task.getDeviceIdentification().equals(deviceIdentification);
     }
 
-    private static final Predicate<org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.ScheduledTask>
-            hasMessageType(final String messageType) {
+    private static final Predicate<org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.ScheduledTask> hasMessageType(
+            final String messageType) {
         return task -> task.getMessageType().equals(messageType);
     }
 
-    private static final Predicate<org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.ScheduledTask>
-            hasScheduledTime(final String scheduledTime) {
+    private static final Predicate<org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.ScheduledTask> hasScheduledTime(
+            final String scheduledTime) {
         return task -> isEqual(task.getScheduledTime(), scheduledTime);
     }
 

@@ -8,8 +8,8 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.processors;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.same;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -18,11 +18,15 @@ import static org.mockito.Mockito.when;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ConfigurationService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.FirmwareService;
@@ -39,6 +43,8 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ObjectMessageBuilder;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class UpdateFirmwareRequestMessageProcessorTest {
     @Mock
     protected DlmsConnectionHelper connectionHelper;
@@ -72,7 +78,7 @@ public class UpdateFirmwareRequestMessageProcessorTest {
     @InjectMocks
     private UpdateFirmwareRequestMessageProcessor processor;
 
-    @Before
+    @BeforeEach
     public void setup() throws OsgpException {
         MockitoAnnotations.initMocks(this);
 
@@ -94,8 +100,8 @@ public class UpdateFirmwareRequestMessageProcessorTest {
         this.processor.processMessage(message);
 
         // Assert
-        verify(this.osgpRequestMessageSender, times(1))
-                .send(any(RequestMessage.class), any(String.class), any(MessageMetadata.class));
+        verify(this.osgpRequestMessageSender, times(1)).send(any(RequestMessage.class), any(String.class),
+                any(MessageMetadata.class));
     }
 
     @Test
@@ -109,8 +115,8 @@ public class UpdateFirmwareRequestMessageProcessorTest {
         this.processor.processMessage(message);
 
         // Assert
-        verify(this.osgpRequestMessageSender, never())
-                .send(any(RequestMessage.class), any(String.class), any(MessageMetadata.class));
+        verify(this.osgpRequestMessageSender, never()).send(any(RequestMessage.class), any(String.class),
+                any(MessageMetadata.class));
     }
 
     @Test
@@ -124,8 +130,7 @@ public class UpdateFirmwareRequestMessageProcessorTest {
         this.processor.processMessage(message);
 
         // Assert
-        verify(this.configurationService, times(1))
-                .updateFirmware(this.dlmsConnectionManagerMock, this.device, firmwareIdentification);
+        verify(this.configurationService, times(1)).updateFirmware(null, this.device, firmwareIdentification);
     }
 
     @Test
@@ -139,7 +144,7 @@ public class UpdateFirmwareRequestMessageProcessorTest {
         this.processor.processMessage(message);
 
         // Assert
-        verify(this.firmwareService, times(0))
-                .updateFirmware(this.dlmsConnectionManagerMock, this.device, firmwareIdentification);
+        verify(this.firmwareService, times(0)).updateFirmware(this.dlmsConnectionManagerMock, this.device,
+                firmwareIdentification);
     }
 }

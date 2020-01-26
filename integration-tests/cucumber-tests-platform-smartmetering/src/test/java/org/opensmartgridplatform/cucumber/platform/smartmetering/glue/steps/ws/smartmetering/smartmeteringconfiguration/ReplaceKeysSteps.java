@@ -7,12 +7,9 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
 
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GenerateAndReplaceKeysAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GenerateAndReplaceKeysAsyncResponse;
@@ -29,6 +26,7 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.s
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.GenerateAndReplaceKeysRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.ReplaceKeysRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -63,8 +61,8 @@ public class ReplaceKeysSteps extends AbstractSmartMeteringSteps {
                 .getReplaceKeysResponse(replaceKeysAsyncRequest);
 
         final String expectedResult = responseParameters.get(PlatformKeys.KEY_RESULT);
-        assertNotNull("Result", response.getResult());
-        assertEquals("Result", expectedResult, response.getResult().name());
+        assertThat(response.getResult()).as("Result").isNotNull();
+        assertThat(response.getResult().name()).as("Result").isEqualTo(expectedResult);
     }
 
     @Then("^the replace keys response generating an error is received$")
@@ -108,7 +106,7 @@ public class ReplaceKeysSteps extends AbstractSmartMeteringSteps {
                 .getGenerateAndReplaceKeysResponse(generateAndReplaceKeysAsyncRequest);
 
         final String expectedResult = responseParameters.get(PlatformKeys.KEY_RESULT);
-        assertNotNull("Result", response.getResult());
-        assertEquals("Result", expectedResult, response.getResult().name());
+        assertThat(response.getResult()).as("Result").isNotNull();
+        assertThat(response.getResult().name()).as("Result").isEqualTo(expectedResult);
     }
 }

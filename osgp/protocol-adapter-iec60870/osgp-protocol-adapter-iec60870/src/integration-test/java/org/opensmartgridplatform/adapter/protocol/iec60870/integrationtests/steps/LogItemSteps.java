@@ -15,13 +15,15 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.matchers.Lo
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
-import cucumber.api.java.en.Then;
+import io.cucumber.java.en.Then;
 
 public class LogItemSteps {
     private static final Logger LOGGER = LoggerFactory.getLogger(LogItemSteps.class);
 
     @Autowired
+    @Qualifier("protocolIec60870OutboundLogItemRequestsMessageSender")
     private LogItemRequestMessageSender logItemRequestMessageSenderMock;
 
     @Then("I should send a log item with a message containing type {string}")

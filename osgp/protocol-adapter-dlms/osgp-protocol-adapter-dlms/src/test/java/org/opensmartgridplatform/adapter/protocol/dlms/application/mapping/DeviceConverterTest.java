@@ -10,7 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.mapping;
 
 import org.apache.commons.codec.binary.Hex;
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
@@ -27,10 +27,11 @@ public class DeviceConverterTest {
 
         final DlmsDevice expected = this.converted(dto);
 
-        Assertions.assertThat(result).isEqualToIgnoringGivenFields(expected, "creationTime", "modificationTime",
-                "version");
-        Assertions.assertThat(result.getSecurityKeys()).usingElementComparatorIgnoringFields("creationTime",
-                "modificationTime", "version").isEqualTo(expected.getSecurityKeys());
+        Assertions.assertThat(result)
+                .isEqualToIgnoringGivenFields(expected, "creationTime", "modificationTime", "version");
+        Assertions.assertThat(result.getSecurityKeys())
+                .usingElementComparatorIgnoringFields("creationTime", "modificationTime", "version")
+                .isEqualTo(expected.getSecurityKeys());
     }
 
     private DlmsDevice converted(final SmartMeteringDeviceDto dto) {
@@ -46,9 +47,8 @@ public class DeviceConverterTest {
         dlmsDevice.setMbusManufacturerIdentification(dto.getMbusManufacturerIdentification());
         dlmsDevice.setProtocol(dto.getProtocolName(), dto.getProtocolVersion());
 
-        dlmsDevice.addSecurityKey(
-                new SecurityKey(dlmsDevice, SecurityKeyType.E_METER_MASTER, Hex.encodeHexString(dto.getMasterKey()),
-                        dto.getDeliveryDate(), null));
+        dlmsDevice.addSecurityKey(new SecurityKey(dlmsDevice, SecurityKeyType.E_METER_MASTER,
+                Hex.encodeHexString(dto.getMasterKey()), dto.getDeliveryDate(), null));
         dlmsDevice.addSecurityKey(new SecurityKey(dlmsDevice, SecurityKeyType.E_METER_AUTHENTICATION,
                 Hex.encodeHexString(dto.getAuthenticationKey()), dto.getDeliveryDate(), null));
         dlmsDevice.addSecurityKey(new SecurityKey(dlmsDevice, SecurityKeyType.E_METER_ENCRYPTION,

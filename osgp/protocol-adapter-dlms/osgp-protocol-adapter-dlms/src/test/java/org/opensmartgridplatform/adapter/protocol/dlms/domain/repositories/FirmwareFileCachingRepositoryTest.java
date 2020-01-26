@@ -7,25 +7,23 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class FirmwareFileCachingRepositoryTest {
 
     private static final String FIRMWARE_IDENTIFICATION_UNAVAILABLE = "unavailable";
     private static final String FIRMWARE_IDENTIFICATION = "fw";
-    private static final byte[] FIRMWARE_FILE = new byte[] { 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55 };;
+    private static final byte[] FIRMWARE_FILE = new byte[] { 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55 };
 
     private FirmwareFileCachingRepository firmwareFileCachingRepostitory;
 
-    @Before
+    @BeforeEach
     public void setup() {
         final Map<String, byte[]> cache = new ConcurrentHashMap<>();
         cache.put(FIRMWARE_IDENTIFICATION, FIRMWARE_FILE);
@@ -36,26 +34,24 @@ public class FirmwareFileCachingRepositoryTest {
     @Test
     public void isAvailableShouldReturnTrueWhenFirmwareFileInCache() {
         // Arrange
-        final boolean expected = true;
 
         // Act
         final boolean actual = this.firmwareFileCachingRepostitory.isAvailable(FIRMWARE_IDENTIFICATION);
 
         // Assert
-        assertEquals(expected, actual);
+        assertThat(actual).isTrue();
 
     }
 
     @Test
     public void isAvailableShouldReturnFalseWhenFirmwareFileNotInCache() {
         // Arrange
-        final boolean expected = false;
 
         // Act
         final boolean actual = this.firmwareFileCachingRepostitory.isAvailable(FIRMWARE_IDENTIFICATION_UNAVAILABLE);
 
         // Assert
-        assertEquals(expected, actual);
+        assertThat(actual).isFalse();
 
     }
 
@@ -68,7 +64,7 @@ public class FirmwareFileCachingRepositoryTest {
         final byte[] actual = this.firmwareFileCachingRepostitory.retrieve(FIRMWARE_IDENTIFICATION);
 
         // Assert
-        assertArrayEquals(expected, actual);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -80,7 +76,7 @@ public class FirmwareFileCachingRepositoryTest {
         final byte[] actual = this.firmwareFileCachingRepostitory.retrieve(FIRMWARE_IDENTIFICATION_UNAVAILABLE);
 
         // Assert
-        assertNull(actual);
+        assertThat(actual).isNull();
     }
 
     @Test
@@ -99,8 +95,8 @@ public class FirmwareFileCachingRepositoryTest {
                 .containsKey(firmwareIdentificationToAdd);
 
         // Assert
-        assertEquals(expectedSize, actualSize);
-        assertEquals(expectedInCache, actualInCache);
+        assertThat(actualSize).isEqualTo(expectedSize);
+        assertThat(actualInCache).isEqualTo(expectedInCache);
     }
 
 }

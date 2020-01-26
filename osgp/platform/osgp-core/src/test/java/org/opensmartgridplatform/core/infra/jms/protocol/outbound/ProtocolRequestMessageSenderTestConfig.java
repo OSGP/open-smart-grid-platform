@@ -10,10 +10,9 @@ package org.opensmartgridplatform.core.infra.jms.protocol.outbound;
 import static org.mockito.Mockito.mock;
 
 import org.opensmartgridplatform.core.infra.jms.protocol.DefaultProtocolJmsConfiguration;
-import org.opensmartgridplatform.core.infra.jms.protocol.outbound.ProtocolRequestMessageJmsTemplateFactory;
-import org.opensmartgridplatform.core.infra.jms.protocol.outbound.ProtocolRequestMessageSender;
 import org.opensmartgridplatform.core.infra.messaging.CoreLogItemRequestMessageSender;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.jms.core.JmsTemplate;
 
 public class ProtocolRequestMessageSenderTestConfig {
@@ -24,11 +23,17 @@ public class ProtocolRequestMessageSenderTestConfig {
     }
 
     @Bean
+    public Long getPowerUsageHistoryRequestTimeToLive() {
+        return null;
+    }
+
+    @Bean
     public DefaultProtocolJmsConfiguration defaultProtocolJmsConfiguration() {
         return new DefaultProtocolJmsConfiguration();
     }
 
     @Bean
+    @DependsOn("getPowerUsageHistoryRequestTimeToLive")
     public ProtocolRequestMessageSender messageSender() {
         return new ProtocolRequestMessageSender();
     }
@@ -48,8 +53,4 @@ public class ProtocolRequestMessageSenderTestConfig {
         return mock(ProtocolRequestMessageJmsTemplateFactory.class);
     }
 
-    @Bean
-    public Long getPowerUsageHistoryRequestTimeToLive() {
-        return null;
-    }
 }

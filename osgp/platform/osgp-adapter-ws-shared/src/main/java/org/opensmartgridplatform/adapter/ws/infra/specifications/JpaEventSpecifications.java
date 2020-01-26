@@ -17,8 +17,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
-import org.springframework.data.jpa.domain.Specification;
-
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
 import org.opensmartgridplatform.domain.core.entities.Event;
@@ -27,6 +25,7 @@ import org.opensmartgridplatform.domain.core.exceptions.ArgumentNullOrEmptyExcep
 import org.opensmartgridplatform.domain.core.specifications.EventSpecifications;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup;
 import org.opensmartgridplatform.domain.core.valueobjects.EventType;
+import org.springframework.data.jpa.domain.Specification;
 
 public class JpaEventSpecifications implements EventSpecifications {
 
@@ -39,13 +38,7 @@ public class JpaEventSpecifications implements EventSpecifications {
             throw new ArgumentNullOrEmptyException("dateFrom");
         }
 
-        return new Specification<Event>() {
-            @Override
-            public Predicate toPredicate(final Root<Event> eventRoot, final CriteriaQuery<?> query,
-                    final CriteriaBuilder cb) {
-                return cb.greaterThanOrEqualTo(eventRoot.<Date> get("dateTime"), dateFrom);
-            }
-        };
+        return ((eventRoot, query, cb) -> cb.greaterThanOrEqualTo(eventRoot.<Date> get("dateTime"), dateFrom));
     }
 
     @Override
@@ -54,13 +47,8 @@ public class JpaEventSpecifications implements EventSpecifications {
         if (dateUntil == null) {
             throw new ArgumentNullOrEmptyException("dateUntil");
         }
-        return new Specification<Event>() {
-            @Override
-            public Predicate toPredicate(final Root<Event> eventRoot, final CriteriaQuery<?> query,
-                    final CriteriaBuilder cb) {
-                return cb.lessThanOrEqualTo(eventRoot.<Date> get("dateTime"), dateUntil);
-            }
-        };
+
+        return ((eventRoot, query, cb) -> cb.lessThanOrEqualTo(eventRoot.<Date> get("dateTime"), dateUntil));
     }
 
     @Override
@@ -68,13 +56,8 @@ public class JpaEventSpecifications implements EventSpecifications {
         if (device == null) {
             throw new ArgumentNullOrEmptyException(DEVICE);
         }
-        return new Specification<Event>() {
-            @Override
-            public Predicate toPredicate(final Root<Event> eventRoot, final CriteriaQuery<?> query,
-                    final CriteriaBuilder cb) {
-                return cb.equal(eventRoot.<Integer> get(DEVICE), device.getId());
-            }
-        };
+
+        return ((eventRoot, query, cb) -> cb.equal(eventRoot.<Integer> get(DEVICE), device.getId()));
     }
 
     @Override
@@ -84,24 +67,20 @@ public class JpaEventSpecifications implements EventSpecifications {
             throw new ArgumentNullOrEmptyException("organisation");
         }
 
-        return new Specification<Event>() {
-            @Override
-            public Predicate toPredicate(final Root<Event> eventRoot, final CriteriaQuery<?> query,
-                    final CriteriaBuilder cb) {
+        return ((eventRoot, query, cb) -> this.createPredicateForIsAuthorized(eventRoot, query, cb, organisation));
+    }
 
-                final Subquery<Long> subquery = query.subquery(Long.class);
-                final Root<DeviceAuthorization> deviceAuthorizationRoot = subquery.from(DeviceAuthorization.class);
-                subquery.select(deviceAuthorizationRoot.get(DEVICE).get("id").as(Long.class));
-                subquery.where(cb.and(
-                        cb.equal(deviceAuthorizationRoot.get("organisation"), organisation.getId()),
-                        cb.or(cb.equal(deviceAuthorizationRoot.get("functionGroup"),
-                                DeviceFunctionGroup.OWNER.ordinal()),
-                                cb.equal(deviceAuthorizationRoot.get("functionGroup"),
-                                        DeviceFunctionGroup.MANAGEMENT.ordinal()))));
+    private Predicate createPredicateForIsAuthorized(final Root<Event> eventRoot, final CriteriaQuery<?> query,
+            final CriteriaBuilder cb, final Organisation organisation) {
 
-                return cb.in(eventRoot.get(DEVICE)).value(subquery);
-            }
-        };
+        final Subquery<Long> subquery = query.subquery(Long.class);
+        final Root<DeviceAuthorization> deviceAuthorizationRoot = subquery.from(DeviceAuthorization.class);
+        subquery.select(deviceAuthorizationRoot.get(DEVICE).get("id").as(Long.class));
+        subquery.where(cb.and(cb.equal(deviceAuthorizationRoot.get("organisation"), organisation.getId()), cb.or(
+                cb.equal(deviceAuthorizationRoot.get("functionGroup"), DeviceFunctionGroup.OWNER.ordinal()),
+                cb.equal(deviceAuthorizationRoot.get("functionGroup"), DeviceFunctionGroup.MANAGEMENT.ordinal()))));
+
+        return cb.in(eventRoot.get(DEVICE)).value(subquery);
     }
 
     @Override
@@ -110,14 +89,13 @@ public class JpaEventSpecifications implements EventSpecifications {
             throw new ArgumentNullOrEmptyException("eventTypes");
         }
 
-        return new Specification<Event>() {
-            @Override
-            public Predicate toPredicate(final Root<Event> eventRoot, final CriteriaQuery<?> query,
-                    final CriteriaBuilder cb) {
+        return ((eventRoot, query, cb) -> this.createPredicateForHasEventTypes(eventRoot, eventTypes));
+    }
 
-                final Path<Event> eventType = eventRoot.<Event> get("eventType");
-                return eventType.in(eventTypes);
-            }
-        };
+    private Predicate createPredicateForHasEventTypes(final Root<Event> eventRoot, final List<EventType> eventTypes) {
+
+        final Path<Event> eventType = eventRoot.<Event> get("eventType");
+
+        return eventType.in(eventTypes);
     }
 }

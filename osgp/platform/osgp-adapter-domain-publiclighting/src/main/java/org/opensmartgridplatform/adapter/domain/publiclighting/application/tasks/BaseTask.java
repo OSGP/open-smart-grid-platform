@@ -164,7 +164,7 @@ public class BaseTask {
 
         listOfObjectArrays = null;
 
-        final List<Device> devicesToContact = this.deviceRepository.findAll(map.keySet());
+        final List<Device> devicesToContact = this.deviceRepository.findByIdIn(map.keySet());
         LOGGER.info("devicesToContact.size(): {}", devicesToContact.size());
         devicesToContact.sort((a, b) -> a.getDeviceIdentification().compareTo(b.getDeviceIdentification()));
 

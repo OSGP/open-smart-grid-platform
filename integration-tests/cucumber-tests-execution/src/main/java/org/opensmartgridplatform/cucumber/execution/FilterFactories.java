@@ -1,3 +1,10 @@
+/**
+ * Copyright 2018 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.cucumber.execution;
 
 import org.junit.internal.Classes;
@@ -11,7 +18,12 @@ import org.junit.runner.manipulation.Filter;
 /**
  * Utility class whose methods create a {@link FilterFactory}.
  */
-public class FilterFactories {
+public final class FilterFactories {
+
+    private FilterFactories() {
+        // Private constructor to prevent instantiation of this class.
+    }
+
     /**
      * Creates a {@link Filter}.
      *

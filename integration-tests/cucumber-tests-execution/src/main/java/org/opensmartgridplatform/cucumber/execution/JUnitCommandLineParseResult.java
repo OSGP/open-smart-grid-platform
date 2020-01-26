@@ -1,6 +1,14 @@
+/**
+ * Copyright 2018 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.cucumber.execution;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -10,8 +18,16 @@ import org.junit.runner.FilterFactory.FilterNotCreatedException;
 import org.junit.runner.Request;
 import org.junit.runner.manipulation.Filter;
 import org.junit.runners.model.InitializationError;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JUnitCommandLineParseResult {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(JUnitCommandLineParseResult.class);
+
+    private static final String DASH_DASH = "--";
+    private static final String DASH_DASH_FILTER = "--filter";
+
     private final List<String> filterSpecs = new ArrayList<>();
     private final List<Class<?>> classes = new ArrayList<>();
     private final List<Throwable> parserErrors = new ArrayList<>();
@@ -55,48 +71,45 @@ public class JUnitCommandLineParseResult {
     }
 
     String[] parseOptions(final String... args) {
-        for (int i = 0; i != args.length; ++i) {
+        for (int i = 0; i != args.length; i += 2) {
             final String arg = args[i];
+            final int valueIndex = i + 1;
 
-            if (arg.equals("--")) {
-                return this.copyArray(args, i + 1, args.length);
-            } else if (arg.startsWith("--")) {
-                if (arg.startsWith("--filter=") || arg.equals("--filter")) {
-                    String filterSpec;
-                    if (arg.equals("--filter")) {
-                        ++i;
+            LOGGER.info(" argument {}:{}", i, arg);
 
-                        if (i < args.length) {
-                            filterSpec = args[i];
-                        } else {
-                            this.parserErrors.add(new CommandLineParserError(arg + " value not specified"));
-                            break;
-                        }
-                    } else {
-                        filterSpec = arg.substring(arg.indexOf('=') + 1);
-                    }
-
-                    this.filterSpecs.add(filterSpec);
-                } else {
-                    this.parserErrors
-                            .add(new CommandLineParserError("JUnit knows nothing about the " + arg + " option"));
+            if (DASH_DASH.equals(arg)) {
+                return Arrays.copyOfRange(args, valueIndex, args.length);
+            } else if (arg.startsWith(DASH_DASH)) {
+                if (!this.parseFilterSpecs(arg, valueIndex, args)) {
+                    break;
                 }
             } else {
-                return this.copyArray(args, i, args.length);
+                return Arrays.copyOfRange(args, i, args.length);
             }
         }
 
         return new String[] {};
     }
 
-    private String[] copyArray(final String[] args, final int from, final int to) {
-        final ArrayList<String> result = new ArrayList<>();
-
-        for (int j = from; j != to; ++j) {
-            result.add(args[j]);
+    private boolean parseFilterSpecs(final String arg, final int valueIndex, final String... args) {
+        if (arg.startsWith(DASH_DASH_FILTER)) {
+            String filterSpec = "";
+            if (DASH_DASH_FILTER.equals(arg)) {
+                if (valueIndex < args.length) {
+                    filterSpec = args[valueIndex];
+                } else {
+                    this.parserErrors.add(new CommandLineParserError(arg + " value not specified"));
+                    return false;
+                }
+            } else {
+                filterSpec = arg.substring(arg.indexOf('=') + 1);
+            }
+            this.filterSpecs.add(filterSpec);
+        } else {
+            this.parserErrors.add(new CommandLineParserError("JUnit knows nothing about the " + arg + " option"));
         }
 
-        return result.toArray(new String[result.size()]);
+        return true;
     }
 
     void parseParameters(final String[] args) {

@@ -15,21 +15,21 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.opensmartgridplatform.shared.utils.csv.CsvWriter;
 
 public class CsvWriterTest {
 
     private static final String COMMA = ",";
 
-    @Rule
-    public final TemporaryFolder folder = new TemporaryFolder();
+    @TempDir
+    Path folder;
 
     private final CsvWriter csvWriter = new CsvWriter();
 
@@ -39,13 +39,13 @@ public class CsvWriterTest {
 
     private String filePath;
 
-    @Before
+    @BeforeEach
     public void setup() throws IOException {
         this.lines = new ArrayList<>();
         this.lines.add(new String[] { "a1", "a2" });
         this.lines.add(new String[] { "b1", null });
 
-        this.filePath = this.folder.getRoot().getAbsolutePath() + File.separator + this.fileName;
+        this.filePath = this.folder.resolve(this.fileName).toString();
     }
 
     @Test

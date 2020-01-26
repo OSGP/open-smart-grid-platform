@@ -13,8 +13,11 @@ import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationVersion;
-import org.hibernate.ejb.HibernatePersistence;
+import org.hibernate.jpa.HibernatePersistenceProvider;
+import org.opensmartgridplatform.shared.exceptionhandling.DeprecatedPropertyException;
 import org.opensmartgridplatform.shared.infra.db.DefaultConnectionPoolFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -25,6 +28,8 @@ import com.zaxxer.hikari.HikariDataSource;
  * This class provides the basic components used for persistence.
  */
 public abstract class AbstractPersistenceConfig extends AbstractConfig {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPersistenceConfig.class);
 
     private static final String REGEX_COMMA_WITH_OPTIONAL_WHITESPACE = "\\s*+,\\s*+";
 
@@ -78,8 +83,16 @@ public abstract class AbstractPersistenceConfig extends AbstractConfig {
     @Value("${hibernate.format_sql}")
     private String hibernateFormatSql;
 
-    private static final String PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY = "hibernate.ejb.naming_strategy";
+    /**
+     * This is the old property of Hibernate 4.X, replaced by
+     * hibernate.physical_naming_strategy in Hibernate 5.x.
+     */
+    private static final String PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY_DEPRECATED = "hibernate.ejb.naming_strategy";
     @Value("${hibernate.ejb.naming_strategy}")
+    private String hibernateNamingStrategyDeprecated;
+
+    private static final String PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY = "hibernate.physical_naming_strategy";
+    @Value("${hibernate.physical_naming_strategy}")
     private String hibernateNamingStrategy;
 
     private static final String PROPERTY_NAME_HIBERNATE_SHOW_SQL = "hibernate.show_sql";
@@ -120,17 +133,15 @@ public abstract class AbstractPersistenceConfig extends AbstractConfig {
     }
 
     protected Flyway createFlyway(final DataSource dataSource) {
-        final Flyway flyway = new Flyway();
-
-        // Initialization for non-empty schema with no metadata table
-        flyway.setBaselineVersion(MigrationVersion.fromVersion(this.flywayInitialVersion));
-        flyway.setBaselineDescription(this.flywayInitialDescription);
-        flyway.setBaselineOnMigrate(this.flywayInitOnMigrate);
-        flyway.setOutOfOrder(true);
-
-        flyway.setDataSource(dataSource);
-        return flyway;
-
+        // @formatter:off
+        return Flyway.configure()
+                .baselineVersion(MigrationVersion.fromVersion(this.flywayInitialVersion))
+                .baselineDescription(this.flywayInitialDescription)
+                .baselineOnMigrate(this.flywayInitOnMigrate)
+                .outOfOrder(true)
+                .table("schema_version")
+                .dataSource(dataSource).load();
+        // @formatter:on
     }
 
     protected LocalContainerEntityManagerFactoryBean entityManagerFactory(final String persistenceUnitName) {
@@ -144,6 +155,8 @@ public abstract class AbstractPersistenceConfig extends AbstractConfig {
 
     protected LocalContainerEntityManagerFactoryBean entityManagerFactory(final String persistenceUnitName,
             final DataSource dataSource, final String entitymanagerPackagesToScan) {
+        this.checkForDeprecatedHibernateNamingStrategyConfiguration();
+
         final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 
         entityManagerFactoryBean.setPersistenceUnitName(persistenceUnitName);
@@ -154,7 +167,7 @@ public abstract class AbstractPersistenceConfig extends AbstractConfig {
         } else {
             entityManagerFactoryBean.setPackagesToScan(entitymanagerPackagesToScan);
         }
-        entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistence.class);
+        entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistenceProvider.class);
 
         final Properties jpaProperties = new Properties();
         jpaProperties.put(PROPERTY_NAME_HIBERNATE_DIALECT, this.hibernateDialect);
@@ -165,6 +178,26 @@ public abstract class AbstractPersistenceConfig extends AbstractConfig {
         entityManagerFactoryBean.setJpaProperties(jpaProperties);
 
         return entityManagerFactoryBean;
+    }
+
+    private void checkForDeprecatedHibernateNamingStrategyConfiguration() {
+        String deprecatedProperty = null;
+        try {
+            deprecatedProperty = this.environment
+                    .getRequiredProperty(PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY_DEPRECATED);
+        } catch (final IllegalStateException e) {
+            // The property is expected to be absent.
+            LOGGER.debug("IllegalStateException", e);
+            return;
+        }
+
+        final String message = String.format(
+                "Using '%s=%s' is deprecated and no longer works with Hibernate 5.X! Use '%s=%s' instead!",
+                PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY_DEPRECATED, deprecatedProperty,
+                PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY, HibernateNamingStrategy.class.getName());
+
+        LOGGER.error(message);
+        throw new DeprecatedPropertyException(message);
     }
 
     protected void destroyDataSource() {

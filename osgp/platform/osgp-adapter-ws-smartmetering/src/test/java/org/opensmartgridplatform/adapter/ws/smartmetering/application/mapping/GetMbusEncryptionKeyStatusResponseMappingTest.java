@@ -8,11 +8,9 @@
 
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetMbusEncryptionKeyStatusResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EncryptionKeyStatusType;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusResponseData;
@@ -27,20 +25,20 @@ public class GetMbusEncryptionKeyStatusResponseMappingTest {
 
     private final ConfigurationMapper mapper = new ConfigurationMapper();
 
+    private GetMbusEncryptionKeyStatusResponseData makeResponse() {
+
+        return new GetMbusEncryptionKeyStatusResponseData(MBUS_DEVICE_IDENTIFICATION, ENCRYPTION_KEY_STATUS);
+    }
+
     @Test
     public void shouldConvertGetMbusEncryptionKeyStatusResponse() {
         final GetMbusEncryptionKeyStatusResponseData source = this.makeResponse();
         final GetMbusEncryptionKeyStatusResponse result = this.mapper.map(source,
                 GetMbusEncryptionKeyStatusResponse.class);
-        assertNotNull(MAPPED_OBJECT_NULL_MESSAGE, result);
-        assertEquals(MAPPED_FIELD_VALUE_MESSAGE, source.getMbusDeviceIdentification(),
-                result.getMbusDeviceIdentification());
-        assertEquals(MAPPED_FIELD_VALUE_MESSAGE, source.getEncryptionKeyStatus().name(),
-                result.getEncryptionKeyStatus().name());
-    }
-
-    private GetMbusEncryptionKeyStatusResponseData makeResponse() {
-
-        return new GetMbusEncryptionKeyStatusResponseData(MBUS_DEVICE_IDENTIFICATION, ENCRYPTION_KEY_STATUS);
+        assertThat(result).as(MAPPED_OBJECT_NULL_MESSAGE).isNotNull();
+        assertThat(result.getMbusDeviceIdentification()).as(MAPPED_FIELD_VALUE_MESSAGE)
+                .isEqualTo(source.getMbusDeviceIdentification());
+        assertThat(result.getEncryptionKeyStatus().name()).as(MAPPED_FIELD_VALUE_MESSAGE)
+                .isEqualTo(source.getEncryptionKeyStatus().name());
     }
 }

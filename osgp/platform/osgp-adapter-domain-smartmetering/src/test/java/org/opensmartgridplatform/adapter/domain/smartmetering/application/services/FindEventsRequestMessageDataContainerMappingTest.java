@@ -8,16 +8,12 @@
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 
 import org.joda.time.DateTime;
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ManagementMapper;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventLogCategory;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FindEventsRequestData;
@@ -26,7 +22,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.FindEventsReques
 
 public class FindEventsRequestMessageDataContainerMappingTest {
 
-    private ManagementMapper managementMapper = new ManagementMapper();
+    private final ManagementMapper managementMapper = new ManagementMapper();
 
     // Test if mapping with a null List succeeds
     @Test
@@ -34,11 +30,10 @@ public class FindEventsRequestMessageDataContainerMappingTest {
         // build test data
         final FindEventsRequestDataList container = new FindEventsRequestDataList(null);
         // actual mapping
-        final FindEventsRequestList containerDto = this.managementMapper.map(container,
-                FindEventsRequestList.class);
+        final FindEventsRequestList containerDto = this.managementMapper.map(container, FindEventsRequestList.class);
         // test mapping
-        assertNotNull(containerDto);
-        assertNull(containerDto.getFindEventsQueryList());
+        assertThat(containerDto).isNotNull();
+        assertThat(containerDto.getFindEventsQueryList()).isNull();
     }
 
     // Test if mapping with an empty List succeeds
@@ -48,12 +43,11 @@ public class FindEventsRequestMessageDataContainerMappingTest {
         final FindEventsRequestDataList container = new FindEventsRequestDataList(
                 new ArrayList<FindEventsRequestData>());
         // actual mapping
-        final FindEventsRequestList containerDto = this.managementMapper.map(container,
-                FindEventsRequestList.class);
+        final FindEventsRequestList containerDto = this.managementMapper.map(container, FindEventsRequestList.class);
         // test mapping
-        assertNotNull(containerDto);
-        assertNotNull(containerDto.getFindEventsQueryList());
-        assertTrue(containerDto.getFindEventsQueryList().isEmpty());
+        assertThat(containerDto).isNotNull();
+        assertThat(containerDto.getFindEventsQueryList()).isNotNull();
+        assertThat(containerDto.getFindEventsQueryList()).isEmpty();
     }
 
     // Test if mapping with a non-empty List succeeds
@@ -62,21 +56,19 @@ public class FindEventsRequestMessageDataContainerMappingTest {
         // build test data
         final FindEventsRequestData findEventsQuery = new FindEventsRequestData(EventLogCategory.STANDARD_EVENT_LOG,
                 new DateTime(), new DateTime());
-        final ArrayList<FindEventsRequestData> findEventsQueryList = new ArrayList<FindEventsRequestData>();
+        final ArrayList<FindEventsRequestData> findEventsQueryList = new ArrayList<>();
         findEventsQueryList.add(findEventsQuery);
-        final FindEventsRequestDataList container = new FindEventsRequestDataList(
-                findEventsQueryList);
+        final FindEventsRequestDataList container = new FindEventsRequestDataList(findEventsQueryList);
         // actual mapping
-        final FindEventsRequestList containerDto = this.managementMapper.map(container,
-                FindEventsRequestList.class);
+        final FindEventsRequestList containerDto = this.managementMapper.map(container, FindEventsRequestList.class);
         // test mapping
-        assertNotNull(containerDto);
-        assertNotNull(containerDto.getFindEventsQueryList());
-        assertEquals(container.getFindEventsQueryList().get(0).getEventLogCategory().name(), containerDto
-                .getFindEventsQueryList().get(0).getEventLogCategory().name());
-        assertEquals(container.getFindEventsQueryList().get(0).getFrom(), containerDto.getFindEventsQueryList().get(0)
-                .getFrom());
-        assertEquals(container.getFindEventsQueryList().get(0).getUntil(), containerDto.getFindEventsQueryList().get(0)
-                .getUntil());
+        assertThat(containerDto).isNotNull();
+        assertThat(containerDto.getFindEventsQueryList()).isNotNull();
+        assertThat(containerDto.getFindEventsQueryList().get(0).getEventLogCategory().name())
+                .isEqualTo(container.getFindEventsQueryList().get(0).getEventLogCategory().name());
+        assertThat(containerDto.getFindEventsQueryList().get(0).getFrom())
+                .isEqualTo(container.getFindEventsQueryList().get(0).getFrom());
+        assertThat(containerDto.getFindEventsQueryList().get(0).getUntil())
+                .isEqualTo(container.getFindEventsQueryList().get(0).getUntil());
     }
 }

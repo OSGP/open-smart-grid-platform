@@ -21,17 +21,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * An application context Java configuration class.
  */
 @Configuration
-@EnableTransactionManagement()
-@PropertySource("classpath:osgp-adapter-protocol-oslp-elster.properties")
-@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
-@PropertySource(value = "file:${osgp/AdapterProtocolOslpElster/config}", ignoreResourceNotFound = true)
 @Import(value = { InboundOsgpCoreRequestsMessagingConfig.class, InboundOsgpCoreResponsesMessagingConfig.class,
         InboundSigningServerResponsesMessagingConfig.class, OutboundLogItemRequestsMessagingConfig.class,
         OutboundOsgpCoreRequestsMessagingConfig.class, OutboundOsgpCoreResponsesMessagingConfig.class,

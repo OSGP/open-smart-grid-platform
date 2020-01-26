@@ -7,14 +7,9 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterAsyncResponse;
@@ -30,6 +25,9 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartme
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SetMbusUserKeyByChannelRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -48,8 +46,8 @@ public class SetEncryptionKeyExchangeOnGMeterSteps {
         final SetEncryptionKeyExchangeOnGMeterAsyncResponse setEncryptionKeyExchangeOnGMeterAsyncResponse = this.smartMeteringConfigurationClient
                 .setEncryptionKeyExchangeOnGMeter(setEncryptionKeyExchangeOnGMeterRequest);
 
-        assertNotNull("Set encryptionKey exchange on GMeter async response should not be null",
-                setEncryptionKeyExchangeOnGMeterAsyncResponse);
+        assertThat(setEncryptionKeyExchangeOnGMeterAsyncResponse)
+                .as("Set encryptionKey exchange on GMeter async response should not be null").isNotNull();
         ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID,
                 setEncryptionKeyExchangeOnGMeterAsyncResponse.getCorrelationUid());
     }
@@ -62,10 +60,10 @@ public class SetEncryptionKeyExchangeOnGMeterSteps {
                 .retrieveSetEncryptionKeyExchangeOnGMeterResponse(setEncryptionKeyExchangeOnGMeterAsyncRequest);
 
         final String expectedResult = settings.get(PlatformKeys.KEY_RESULT);
-        assertNotNull("Set Encryption Key Exchange On G-Meter result must not be null",
-                setEncryptionKeyExchangeOnGMeterResponse.getResult());
-        assertEquals("Set Encryption Key Exchange On G-Meter result", expectedResult,
-                setEncryptionKeyExchangeOnGMeterResponse.getResult().name());
+        assertThat(setEncryptionKeyExchangeOnGMeterResponse.getResult())
+                .as("Set Encryption Key Exchange On G-Meter result must not be null").isNotNull();
+        assertThat(setEncryptionKeyExchangeOnGMeterResponse.getResult().name())
+                .as("Set Encryption Key Exchange On G-Meter result").isEqualTo(expectedResult);
     }
 
     @When("^the set m-bus user key by channel request is received$")
@@ -75,8 +73,8 @@ public class SetEncryptionKeyExchangeOnGMeterSteps {
         final SetMbusUserKeyByChannelAsyncResponse setMbusUserKeyByChannelAsyncResponse = this.smartMeteringConfigurationClient
                 .setMbusUserKeyByChannel(setMbusUserKeyByChannelRequest);
 
-        assertNotNull("Set M-Bus User Key By Channel async response should not be null",
-                setMbusUserKeyByChannelAsyncResponse);
+        assertThat(setMbusUserKeyByChannelAsyncResponse)
+                .as("Set M-Bus User Key By Channel async response should not be null").isNotNull();
         ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID,
                 setMbusUserKeyByChannelAsyncResponse.getCorrelationUid());
     }
@@ -90,9 +88,9 @@ public class SetEncryptionKeyExchangeOnGMeterSteps {
                 .getSetMbusUserKeyByChannelResponse(setMbusUserKeyByChannelAsyncRequest);
 
         final String expectedResult = settings.get(PlatformKeys.KEY_RESULT);
-        assertNotNull("Set M-Bus User Key By Channel result must not be null",
-                setMbusUserKeyByChannelResponse.getResult());
-        assertEquals("Set M-Bus User Key By Channel result", expectedResult,
-                setMbusUserKeyByChannelResponse.getResult().name());
+        assertThat(setMbusUserKeyByChannelResponse.getResult())
+                .as("Set M-Bus User Key By Channel result must not be null").isNotNull();
+        assertThat(setMbusUserKeyByChannelResponse.getResult().name()).as("Set M-Bus User Key By Channel result")
+                .isEqualTo(expectedResult);
     }
 }

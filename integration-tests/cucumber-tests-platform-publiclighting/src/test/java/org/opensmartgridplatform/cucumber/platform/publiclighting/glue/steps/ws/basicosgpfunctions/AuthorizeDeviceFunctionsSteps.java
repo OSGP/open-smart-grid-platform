@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.publiclighting.glue.steps.ws.basicosgpfunctions;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
@@ -19,12 +20,6 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
 import org.joda.time.DateTime;
-import org.junit.Assert;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ws.soap.client.SoapFaultClientException;
-
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusRequest;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.LightValue;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.ResumeScheduleRequest;
@@ -53,6 +48,10 @@ import org.opensmartgridplatform.cucumber.platform.publiclighting.support.ws.tar
 import org.opensmartgridplatform.cucumber.platform.publiclighting.support.ws.tariffswitching.TariffSwitchingScheduleManagementClient;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -133,14 +132,14 @@ public class AuthorizeDeviceFunctionsSteps {
                 } catch (final Exception ex) {
                     // do nothing
                 }
-                Assert.assertNotNull(response);
-                Assert.assertTrue(!(response instanceof SoapFaultClientException));
+                assertThat(response).isNotNull();
+                assertThat(response instanceof SoapFaultClientException).isFalse();
             });
         } else {
-            Assert.assertNotNull(this.throwable);
+            assertThat(this.throwable).isNotNull();
 
             if (!this.throwable.getMessage().equals("METHOD_NOT_ALLOWED_FOR_OWNER")) {
-                Assert.assertEquals("UNAUTHORIZED", this.throwable.getMessage());
+                assertThat(this.throwable.getMessage()).isEqualTo("UNAUTHORIZED");
             }
         }
     }
@@ -201,7 +200,8 @@ public class AuthorizeDeviceFunctionsSteps {
         tariffValue.setIndex(1);
         schedule.getTariffValue().add(tariffValue);
         schedule.setIndex(0);
-        schedule.setWeekDay(org.opensmartgridplatform.adapter.ws.schema.tariffswitching.schedulemanagement.WeekDayType.ALL);
+        schedule.setWeekDay(
+                org.opensmartgridplatform.adapter.ws.schema.tariffswitching.schedulemanagement.WeekDayType.ALL);
         schedule.setTime(DateTime.now().toString());
         schedule.setIsEnabled(true);
         schedule.setMinimumLightsOn(10);

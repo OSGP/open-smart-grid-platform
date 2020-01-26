@@ -15,14 +15,16 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.matchers.Me
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
-import cucumber.api.java.en.Then;
+import io.cucumber.java.en.Then;
 
 public class ResponseSteps {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ResponseSteps.class);
 
     @Autowired
+    @Qualifier("protocolIec60870OutboundOsgpCoreResponsesMessageSender")
     private DeviceResponseMessageSender responseMessageSenderMock;
 
     @Then("I should send a measurement report of type {string} to the platform")

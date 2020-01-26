@@ -8,14 +8,11 @@
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ClockStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CosemDate;
@@ -38,7 +35,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.WindowElementDto
 
 public class PushSetupAlarmMappingTest {
 
-    private ConfigurationMapper configurationMapper = new ConfigurationMapper();
+    private final ConfigurationMapper configurationMapper = new ConfigurationMapper();
 
     // To test if a PushSetupAlarm can be mapped if instance variables are null.
     @Test
@@ -52,14 +49,14 @@ public class PushSetupAlarmMappingTest {
                 PushSetupAlarmDto.class);
 
         // check values
-        assertNotNull(pushSetupAlarmDto);
-        assertNull(pushSetupAlarmDto.getLogicalName());
-        assertNull(pushSetupAlarmDto.getPushObjectList());
-        assertNull(pushSetupAlarmDto.getSendDestinationAndMethod());
-        assertNull(pushSetupAlarmDto.getCommunicationWindow());
-        assertNull(pushSetupAlarmDto.getRandomisationStartInterval());
-        assertNull(pushSetupAlarmDto.getNumberOfRetries());
-        assertNull(pushSetupAlarmDto.getRepetitionDelay());
+        assertThat(pushSetupAlarmDto).isNotNull();
+        assertThat(pushSetupAlarmDto.getLogicalName()).isNull();
+        assertThat(pushSetupAlarmDto.getPushObjectList()).isNull();
+        assertThat(pushSetupAlarmDto.getSendDestinationAndMethod()).isNull();
+        assertThat(pushSetupAlarmDto.getCommunicationWindow()).isNull();
+        assertThat(pushSetupAlarmDto.getRandomisationStartInterval()).isNull();
+        assertThat(pushSetupAlarmDto.getNumberOfRetries()).isNull();
+        assertThat(pushSetupAlarmDto.getRepetitionDelay()).isNull();
     }
 
     // To test if a PushSetupAlarm can be mapped if instance variables are
@@ -72,7 +69,8 @@ public class PushSetupAlarmMappingTest {
         final ArrayList<WindowElement> communicationWindow = new ArrayList<>();
 
         final PushSetupAlarm pushSetupAlarm = new PushSetupAlarmBuilder()
-                .withEmptyLists(pushObjectList, communicationWindow).build();
+                .withEmptyLists(pushObjectList, communicationWindow)
+                .build();
 
         // actual mapping
         final PushSetupAlarmDto pushSetupAlarmDto = this.configurationMapper.map(pushSetupAlarm,
@@ -83,8 +81,8 @@ public class PushSetupAlarmMappingTest {
         this.checkSendDestinationAndMethodMapping(pushSetupAlarm, pushSetupAlarmDto);
         this.checkIntegerMapping(pushSetupAlarm, pushSetupAlarmDto);
 
-        assertNotNull(pushSetupAlarmDto.getPushObjectList());
-        assertNotNull(pushSetupAlarmDto.getCommunicationWindow());
+        assertThat(pushSetupAlarmDto.getPushObjectList()).isNotNull();
+        assertThat(pushSetupAlarmDto.getCommunicationWindow()).isNotNull();
 
     }
 
@@ -102,7 +100,8 @@ public class PushSetupAlarmMappingTest {
         final WindowElement windowElement = new WindowElement(startTime, endTime);
 
         final PushSetupAlarm pushSetupAlarm = new PushSetupAlarmBuilder()
-                .withFilledLists(cosemObjectDefinition, windowElement).build();
+                .withFilledLists(cosemObjectDefinition, windowElement)
+                .build();
 
         // actual mapping
         final PushSetupAlarmDto pushSetupAlarmDto = this.configurationMapper.map(pushSetupAlarm,
@@ -119,30 +118,31 @@ public class PushSetupAlarmMappingTest {
     private void checkIntegerMapping(final PushSetupAlarm pushSetupAlarm, final PushSetupAlarmDto pushSetupAlarmDto) {
 
         // make sure none is null
-        assertNotNull(pushSetupAlarmDto.getRandomisationStartInterval());
-        assertNotNull(pushSetupAlarmDto.getNumberOfRetries());
-        assertNotNull(pushSetupAlarmDto.getRepetitionDelay());
+        assertThat(pushSetupAlarmDto.getRandomisationStartInterval()).isNotNull();
+        assertThat(pushSetupAlarmDto.getNumberOfRetries()).isNotNull();
+        assertThat(pushSetupAlarmDto.getRepetitionDelay()).isNotNull();
 
         // make sure all values are equal
-        assertEquals(pushSetupAlarm.getRandomisationStartInterval(), pushSetupAlarmDto.getRandomisationStartInterval());
-        assertEquals(pushSetupAlarm.getNumberOfRetries(), pushSetupAlarmDto.getNumberOfRetries());
-        assertEquals(pushSetupAlarm.getRepetitionDelay(), pushSetupAlarmDto.getRepetitionDelay());
+        assertThat(pushSetupAlarmDto.getRandomisationStartInterval())
+                .isEqualTo(pushSetupAlarm.getRandomisationStartInterval());
+        assertThat(pushSetupAlarmDto.getNumberOfRetries()).isEqualTo(pushSetupAlarm.getNumberOfRetries());
+        assertThat(pushSetupAlarmDto.getRepetitionDelay()).isEqualTo(pushSetupAlarm.getRepetitionDelay());
     }
 
     // method to test CosemObisCode object mapping
     private void checkCosemObisCodeMapping(final CosemObisCode cosemObisCode, final CosemObisCodeDto cosemObisCodeDto) {
 
         // make sure neither is null
-        assertNotNull(cosemObisCode);
-        assertNotNull(cosemObisCodeDto);
+        assertThat(cosemObisCode).isNotNull();
+        assertThat(cosemObisCodeDto).isNotNull();
 
         // make sure all instance variables are equal
-        assertEquals(cosemObisCode.getA(), cosemObisCodeDto.getA());
-        assertEquals(cosemObisCode.getB(), cosemObisCodeDto.getB());
-        assertEquals(cosemObisCode.getC(), cosemObisCodeDto.getC());
-        assertEquals(cosemObisCode.getD(), cosemObisCodeDto.getD());
-        assertEquals(cosemObisCode.getE(), cosemObisCodeDto.getE());
-        assertEquals(cosemObisCode.getF(), cosemObisCodeDto.getF());
+        assertThat(cosemObisCodeDto.getA()).isEqualTo(cosemObisCode.getA());
+        assertThat(cosemObisCodeDto.getB()).isEqualTo(cosemObisCode.getB());
+        assertThat(cosemObisCodeDto.getC()).isEqualTo(cosemObisCode.getC());
+        assertThat(cosemObisCodeDto.getD()).isEqualTo(cosemObisCode.getD());
+        assertThat(cosemObisCodeDto.getE()).isEqualTo(cosemObisCode.getE());
+        assertThat(cosemObisCodeDto.getF()).isEqualTo(cosemObisCode.getF());
 
     }
 
@@ -153,14 +153,15 @@ public class PushSetupAlarmMappingTest {
         final SendDestinationAndMethodDto sendDestinationAndMethodDto = pushSetupAlarmDto.getSendDestinationAndMethod();
 
         // make sure neither is null
-        assertNotNull(sendDestinationAndMethod);
-        assertNotNull(sendDestinationAndMethodDto);
+        assertThat(sendDestinationAndMethod).isNotNull();
+        assertThat(sendDestinationAndMethodDto).isNotNull();
 
         // make sure all instance variables are equal
-        assertEquals(sendDestinationAndMethod.getTransportService().name(),
-                sendDestinationAndMethodDto.getTransportService().name());
-        assertEquals(sendDestinationAndMethod.getMessage().name(), sendDestinationAndMethodDto.getMessage().name());
-        assertEquals(sendDestinationAndMethod.getDestination(), sendDestinationAndMethodDto.getDestination());
+        assertThat(sendDestinationAndMethodDto.getTransportService().name())
+                .isEqualTo(sendDestinationAndMethod.getTransportService().name());
+        assertThat(sendDestinationAndMethodDto.getMessage().name())
+                .isEqualTo(sendDestinationAndMethod.getMessage().name());
+        assertThat(sendDestinationAndMethodDto.getDestination()).isEqualTo(sendDestinationAndMethod.getDestination());
     }
 
     // method to test non-empty list mapping
@@ -168,22 +169,23 @@ public class PushSetupAlarmMappingTest {
             final PushSetupAlarmDto pushSetupAlarmDto) {
 
         // test pushObjectList mapping
-        assertNotNull(pushSetupAlarm.getPushObjectList());
-        assertNotNull(pushSetupAlarmDto.getPushObjectList());
-        assertEquals(pushSetupAlarm.getPushObjectList().size(), pushSetupAlarmDto.getPushObjectList().size());
+        assertThat(pushSetupAlarm.getPushObjectList()).isNotNull();
+        assertThat(pushSetupAlarmDto.getPushObjectList()).isNotNull();
+        assertThat(pushSetupAlarmDto.getPushObjectList().size()).isEqualTo(pushSetupAlarm.getPushObjectList().size());
 
         final CosemObjectDefinition cosemObjectDefinition = pushSetupAlarm.getPushObjectList().get(0);
         final CosemObjectDefinitionDto cosemObjectDefinitionDto = pushSetupAlarmDto.getPushObjectList().get(0);
-        assertEquals(cosemObjectDefinition.getAttributeIndex(), cosemObjectDefinitionDto.getAttributeIndex());
-        assertEquals(cosemObjectDefinition.getClassId(), cosemObjectDefinitionDto.getClassId());
-        assertEquals(cosemObjectDefinition.getDataIndex(), cosemObjectDefinitionDto.getDataIndex());
+        assertThat(cosemObjectDefinitionDto.getAttributeIndex()).isEqualTo(cosemObjectDefinition.getAttributeIndex());
+        assertThat(cosemObjectDefinitionDto.getClassId()).isEqualTo(cosemObjectDefinition.getClassId());
+        assertThat(cosemObjectDefinitionDto.getDataIndex()).isEqualTo(cosemObjectDefinition.getDataIndex());
         this.checkCosemObisCodeMapping(cosemObjectDefinition.getLogicalName(),
                 cosemObjectDefinitionDto.getLogicalName());
 
         // test communicationWindow mapping
-        assertNotNull(pushSetupAlarm.getCommunicationWindow());
-        assertNotNull(pushSetupAlarmDto.getCommunicationWindow());
-        assertEquals(pushSetupAlarm.getCommunicationWindow().size(), pushSetupAlarmDto.getCommunicationWindow().size());
+        assertThat(pushSetupAlarm.getCommunicationWindow()).isNotNull();
+        assertThat(pushSetupAlarmDto.getCommunicationWindow()).isNotNull();
+        assertThat(pushSetupAlarmDto.getCommunicationWindow().size())
+                .isEqualTo(pushSetupAlarm.getCommunicationWindow().size());
 
         final WindowElement windowElement = pushSetupAlarm.getCommunicationWindow().get(0);
         final WindowElementDto windowElementDto = pushSetupAlarmDto.getCommunicationWindow().get(0);
@@ -197,30 +199,24 @@ public class PushSetupAlarmMappingTest {
     private void checkCosemDateTimeMapping(final CosemDateTime cosemDateTime, final CosemDateTimeDto cosemDateTimeDto) {
 
         // make sure neither is null
-        assertNotNull(cosemDateTime);
-        assertNotNull(cosemDateTimeDto);
+        assertThat(cosemDateTime).isNotNull();
+        assertThat(cosemDateTimeDto).isNotNull();
 
         // check variables
-        assertEquals(cosemDateTime.getDeviation(), cosemDateTimeDto.getDeviation());
+        assertThat(cosemDateTimeDto.getDeviation()).isEqualTo(cosemDateTime.getDeviation());
 
         final ClockStatus clockStatus = cosemDateTime.getClockStatus();
         final ClockStatusDto clockStatusDto = cosemDateTimeDto.getClockStatus();
-        assertEquals(clockStatus.getStatus(), clockStatusDto.getStatus());
-        assertEquals(clockStatus.isSpecified(), clockStatusDto.isSpecified());
+        assertThat(clockStatusDto.getStatus()).isEqualTo(clockStatus.getStatus());
+        assertThat(clockStatusDto.isSpecified()).isEqualTo(clockStatus.isSpecified());
 
         final CosemDate cosemDate = cosemDateTime.getDate();
         final CosemDateDto cosemDateDto = cosemDateTimeDto.getDate();
-        assertEquals(cosemDate.getYear(), cosemDateDto.getYear());
-        assertEquals(cosemDate.getMonth(), cosemDateDto.getMonth());
-        assertEquals(cosemDate.getDayOfMonth(), cosemDateDto.getDayOfMonth());
-        assertEquals(cosemDate.getDayOfWeek(), cosemDateDto.getDayOfWeek());
+        assertThat(cosemDateDto).isEqualToComparingFieldByField(cosemDate);
 
         final CosemTime cosemTime = cosemDateTime.getTime();
         final CosemTimeDto cosemTimeDto = cosemDateTimeDto.getTime();
-        assertEquals(cosemTime.getHour(), cosemTimeDto.getHour());
-        assertEquals(cosemTime.getMinute(), cosemTimeDto.getMinute());
-        assertEquals(cosemTime.getSecond(), cosemTimeDto.getSecond());
-        assertEquals(cosemTime.getHundredths(), cosemTimeDto.getHundredths());
+        assertThat(cosemTimeDto).isEqualToComparingFieldByField(cosemTime);
     }
 
 }

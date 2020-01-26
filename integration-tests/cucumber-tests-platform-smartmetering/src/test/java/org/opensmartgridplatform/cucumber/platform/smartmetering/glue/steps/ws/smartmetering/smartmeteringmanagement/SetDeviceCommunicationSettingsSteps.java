@@ -7,17 +7,14 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringmanagement;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getInteger;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import java.util.Map;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.SetDeviceCommunicationSettingsAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.SetDeviceCommunicationSettingsAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.SetDeviceCommunicationSettingsRequest;
@@ -28,6 +25,7 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartme
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.management.SetDeviceCommunicationSettingsRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.management.SmartMeteringManagementRequestClient;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.management.SmartMeteringManagementResponseClient;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -53,8 +51,8 @@ public class SetDeviceCommunicationSettingsSteps {
         final SetDeviceCommunicationSettingsAsyncResponse setDeviceCommunicationSettingsAsyncResponse = this.smManagementRequestClientSetDeviceCommunicationSettings
                 .doRequest(setDeviceCommunicationSettingsRequest);
 
-        assertNotNull("setDeviceCommunicationSettingsAsyncResponse should not be null",
-                setDeviceCommunicationSettingsAsyncResponse);
+        assertThat(setDeviceCommunicationSettingsAsyncResponse)
+                .as("setDeviceCommunicationSettingsAsyncResponse should not be null").isNotNull();
         ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID,
                 setDeviceCommunicationSettingsAsyncResponse.getCorrelationUid());
     }
@@ -67,9 +65,10 @@ public class SetDeviceCommunicationSettingsSteps {
         final SetDeviceCommunicationSettingsResponse setDeviceCommunicationSettingsResponse = this.smManagementResponseClientSetDeviceCommunicationSettings
                 .getResponse(setDeviceCommunicationSettingsAsyncRequest);
 
-        assertNotNull("SetDeviceCommunicationSettingsResponse should not be null",
-                setDeviceCommunicationSettingsResponse);
-        assertNotNull("Expected OsgpResultType should not be null", setDeviceCommunicationSettingsResponse.getResult());
+        assertThat(setDeviceCommunicationSettingsResponse)
+                .as("SetDeviceCommunicationSettingsResponse should not be null").isNotNull();
+        assertThat(setDeviceCommunicationSettingsResponse.getResult()).as("Expected OsgpResultType should not be null")
+                .isNotNull();
     }
 
     @Then("^the device \"([^\"]*)\" should be in the database with attributes$")
@@ -79,18 +78,19 @@ public class SetDeviceCommunicationSettingsSteps {
 
         final int expectedResult = getInteger(settings, PlatformSmartmeteringKeys.CHALLENGE_LENGTH,
                 PlatformSmartmeteringDefaults.CHALLENGE_LENGTH);
-        assertEquals("Number of challenge length should match", expectedResult, device.getChallengeLength().intValue());
 
-        assertEquals("With list supported should match",
-                getBoolean(settings, PlatformSmartmeteringKeys.WITH_LIST_SUPPORTED), device.isWithListSupported());
-        assertEquals("Selective access supported should match",
-                getBoolean(settings, PlatformSmartmeteringKeys.SELECTIVE_ACCESS_SUPPORTED),
-                device.isSelectiveAccessSupported());
-        assertEquals("IP address is static should match",
-                getBoolean(settings, PlatformSmartmeteringKeys.IP_ADDRESS_IS_STATIC), device.isIpAddressIsStatic());
-        assertEquals("Use SN should match", getBoolean(settings, PlatformSmartmeteringKeys.USE_SN), device.isUseSn());
-        assertEquals("Use HDLC should match", getBoolean(settings, PlatformSmartmeteringKeys.USE_HDLC),
-                device.isUseHdlc());
+        assertThat(device.getChallengeLength().intValue()).as("Number of challenge length should match")
+                .isEqualTo(expectedResult);
+        assertThat(device.isWithListSupported()).as("With list supported should match")
+                .isEqualTo(getBoolean(settings, PlatformSmartmeteringKeys.WITH_LIST_SUPPORTED));
+        assertThat(device.isSelectiveAccessSupported()).as("Selective access supported should match")
+                .isEqualTo(getBoolean(settings, PlatformSmartmeteringKeys.SELECTIVE_ACCESS_SUPPORTED));
+        assertThat(device.isIpAddressIsStatic()).as("IP address is static should match")
+                .isEqualTo(getBoolean(settings, PlatformSmartmeteringKeys.IP_ADDRESS_IS_STATIC));
+        assertThat(device.isUseSn()).as("Use SN should match")
+                .isEqualTo(getBoolean(settings, PlatformSmartmeteringKeys.USE_SN));
+        assertThat(device.isUseHdlc()).as("Use HDLC should match")
+                .isEqualTo(getBoolean(settings, PlatformSmartmeteringKeys.USE_HDLC));
     }
 
 }

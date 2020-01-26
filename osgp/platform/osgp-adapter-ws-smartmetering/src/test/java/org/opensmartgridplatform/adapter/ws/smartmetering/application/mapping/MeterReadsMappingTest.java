@@ -8,14 +8,12 @@
 
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpUnitType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.MeterValue;
@@ -26,11 +24,21 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.OsgpUnit
 
 public class MeterReadsMappingTest {
 
-    private MonitoringMapper monitoringMapper = new MonitoringMapper();
     private static final Date DATE = new Date();
     private static final BigDecimal VALUE = new BigDecimal(1.0);
     private static final OsgpUnit OSGP_UNIT = OsgpUnit.M3;
     private static final OsgpUnitType OSGP_UNITTYPE = OsgpUnitType.M_3;
+    private MonitoringMapper monitoringMapper = new MonitoringMapper();
+
+    /**
+     * Method checks mapping of OsgpMeterValue objects to MeterValue objects.
+     */
+    private void checkOsgpMeterValueMapping(final MeterValue meterValue) {
+
+        assertThat(meterValue).isNotNull();
+        assertThat(meterValue.getUnit()).isEqualTo(OSGP_UNITTYPE);
+        assertThat(meterValue.getValue()).isEqualTo(VALUE);
+    }
 
     /**
      * Tests if a MeterReads object can be mapped.
@@ -40,16 +48,16 @@ public class MeterReadsMappingTest {
 
         // build test data
         final OsgpMeterValue osgpMeterValue = new OsgpMeterValue(VALUE, OSGP_UNIT);
-        final MeterReads meterReads = new MeterReads(DATE, new ActiveEnergyValues(osgpMeterValue, osgpMeterValue, osgpMeterValue,
-                osgpMeterValue, osgpMeterValue, osgpMeterValue));
+        final MeterReads meterReads = new MeterReads(DATE, new ActiveEnergyValues(osgpMeterValue, osgpMeterValue,
+                osgpMeterValue, osgpMeterValue, osgpMeterValue, osgpMeterValue));
 
         // actual mapping
         final ActualMeterReadsResponse actualMeterReadsResponse = this.monitoringMapper.map(meterReads,
                 ActualMeterReadsResponse.class);
 
         // check mapping
-        assertNotNull(actualMeterReadsResponse);
-        assertNotNull(actualMeterReadsResponse.getLogTime());
+        assertThat(actualMeterReadsResponse).isNotNull();
+        assertThat(actualMeterReadsResponse.getLogTime()).isNotNull();
         this.checkOsgpMeterValueMapping(actualMeterReadsResponse.getActiveEnergyExport());
         this.checkOsgpMeterValueMapping(actualMeterReadsResponse.getActiveEnergyExportTariffOne());
         this.checkOsgpMeterValueMapping(actualMeterReadsResponse.getActiveEnergyExportTariffTwo());
@@ -58,18 +66,6 @@ public class MeterReadsMappingTest {
         this.checkOsgpMeterValueMapping(actualMeterReadsResponse.getActiveEnergyImportTariffTwo());
         // For more information on the mapping of Date to XmlGregorianCalendar
         // objects, refer to the DateMappingTest
-
-    }
-
-    /**
-     * Method checks mapping of OsgpMeterValue objects to MeterValue objects.
-     */
-    private void checkOsgpMeterValueMapping(final MeterValue meterValue) {
-
-        assertNotNull(meterValue);
-        assertEquals(OSGP_UNITTYPE, meterValue.getUnit());
-        assertEquals(VALUE, meterValue.getValue());
-
     }
 
 }

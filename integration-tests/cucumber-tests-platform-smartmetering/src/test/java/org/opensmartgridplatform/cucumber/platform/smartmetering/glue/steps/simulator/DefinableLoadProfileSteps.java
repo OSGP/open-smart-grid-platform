@@ -12,11 +12,9 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.opensmartgridplatform.cucumber.core.GlueBase;
-
 import cucumber.api.java.en.Then;
 
-public class DefinableLoadProfileSteps extends GlueBase {
+public class DefinableLoadProfileSteps {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefinableLoadProfileSteps.class);
 

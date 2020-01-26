@@ -7,27 +7,26 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.core.deviceinstallation;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.List;
 import java.util.Map;
-
-import org.junit.Assert;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.Device;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.FindRecentDevicesRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.FindRecentDevicesResponse;
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonKeys;
 import org.opensmartgridplatform.cucumber.platform.common.support.ws.core.CoreDeviceInstallationClient;
 import org.opensmartgridplatform.cucumber.platform.glue.steps.ws.GenericResponseSteps;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class FindRecentDeviceSteps extends GlueBase {
+public class FindRecentDeviceSteps {
 
     @Autowired
     private CoreDeviceInstallationClient client;
@@ -49,7 +48,7 @@ public class FindRecentDeviceSteps extends GlueBase {
                 .get(PlatformCommonKeys.RESPONSE);
 
         final List<Device> devices = response.getDevices();
-        Assert.assertEquals((int) numberOfDevices, (devices != null) ? devices.size() : 0);
+        assertThat((devices != null) ? devices.size() : 0).isEqualTo((int) numberOfDevices);
     }
 
     @Then("the find recent devices response contains at index \"([^\"]*)\"")
@@ -59,7 +58,7 @@ public class FindRecentDeviceSteps extends GlueBase {
                 .get(PlatformCommonKeys.RESPONSE);
 
         final Device device = response.getDevices().get(index - 1);
-        Assert.assertNotNull(device);
+        assertThat(device).isNotNull();
         DeviceSteps.checkDevice(expectedDevice, device);
     }
 

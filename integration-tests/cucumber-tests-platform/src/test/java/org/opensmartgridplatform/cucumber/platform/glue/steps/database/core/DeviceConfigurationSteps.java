@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.domain.core.entities.DeviceOutputSetting;
@@ -26,7 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import cucumber.api.java.en.Given;
 
-public class DeviceConfigurationSteps extends GlueBase {
+public class DeviceConfigurationSteps {
 
     @Autowired
     private SsldRepository ssldRepository;

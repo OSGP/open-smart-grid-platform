@@ -9,15 +9,12 @@
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 
 import org.joda.time.DateTime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ManagementMapper;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventMessagesResponse;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDto;
@@ -35,8 +32,8 @@ public class EventMessageDataContainerMappingTest {
         // actual mapping
         final EventMessagesResponse container = this.managementMapper.map(containerDto, EventMessagesResponse.class);
         // test mapping
-        assertNotNull(container);
-        assertNull(container.getEvents());
+        assertThat(container).isNotNull();
+        assertThat(container.getEvents()).isNull();
 
     }
 
@@ -48,9 +45,9 @@ public class EventMessageDataContainerMappingTest {
         // actual mapping
         final EventMessagesResponse container = this.managementMapper.map(containerDto, EventMessagesResponse.class);
         // test mapping
-        assertNotNull(container);
-        assertNotNull(container.getEvents());
-        assertTrue(container.getEvents().isEmpty());
+        assertThat(container).isNotNull();
+        assertThat(container.getEvents()).isNotNull();
+        assertThat(container.getEvents()).isEmpty();
 
     }
 
@@ -59,17 +56,20 @@ public class EventMessageDataContainerMappingTest {
     public void testWithFilledList() {
         // build test data
         final EventDto event = new EventDto(new DateTime(), new Integer(1), new Integer(2), "STANDARD_EVENT_LOG");
-        final ArrayList<EventDto> events = new ArrayList<EventDto>();
+        final ArrayList<EventDto> events = new ArrayList<>();
         events.add(event);
         final EventMessageDataResponseDto containerDto = new EventMessageDataResponseDto(events);
         // actual mapping
         final EventMessagesResponse container = this.managementMapper.map(containerDto, EventMessagesResponse.class);
         // test mapping
-        assertNotNull(container);
-        assertNotNull(container.getEvents());
-        assertEquals(containerDto.getEvents().get(0).getTimestamp(), container.getEvents().get(0).getTimestamp());
-        assertEquals(containerDto.getEvents().get(0).getEventCode(), container.getEvents().get(0).getEventCode());
-        assertEquals(containerDto.getEvents().get(0).getEventCounter(), container.getEvents().get(0).getEventCounter());
+        assertThat(container).isNotNull();
+        assertThat(container.getEvents()).isNotNull();
+        assertThat(container.getEvents().get(0).getTimestamp())
+                .isEqualTo(containerDto.getEvents().get(0).getTimestamp());
+        assertThat(container.getEvents().get(0).getEventCode())
+                .isEqualTo(containerDto.getEvents().get(0).getEventCode());
+        assertThat(container.getEvents().get(0).getEventCounter())
+                .isEqualTo(containerDto.getEvents().get(0).getEventCounter());
     }
 
 }

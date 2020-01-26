@@ -7,7 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringmanagement;
 
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
 
@@ -59,7 +59,7 @@ public class GetDebugInformation {
         final FindMessageLogsAsyncResponse findMessageLogsAsyncResponse = this.smartMeteringManagementRequestClient
                 .doRequest(findMessageLogsRequest);
 
-        assertNotNull("AsyncResponse should not be null", findMessageLogsAsyncResponse);
+        assertThat(findMessageLogsAsyncResponse).as("AsyncResponse should not be null").isNotNull();
         ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID,
                 findMessageLogsAsyncResponse.getCorrelationUid());
     }
@@ -71,7 +71,7 @@ public class GetDebugInformation {
         final FindMessageLogsResponse findMessageLogsResponse = this.smartMeteringManagementResponseClient
                 .getResponse(findMessageLogsAsyncRequest);
 
-        assertNotNull("FindMessageLogsRequestResponse should not be null", findMessageLogsResponse);
-        assertNotNull("Expected logs", findMessageLogsResponse.getMessageLogPage());
+        assertThat(findMessageLogsResponse).as("FindMessageLogsRequestResponse should not be null").isNotNull();
+        assertThat(findMessageLogsResponse.getMessageLogPage()).as("Expected logs").isNotNull();
     }
 }

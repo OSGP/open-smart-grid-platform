@@ -16,7 +16,7 @@ import cucumber.api.SnippetType;
 import cucumber.api.junit.Cucumber;
 
 @RunWith(Cucumber.class)
-@CucumberOptions(features = { "classpath:features/common" }, tags = { "~@Skip", "~@NightlyBuildOnly" }, glue = {
+@CucumberOptions(features = { "classpath:features/common" }, tags = { "not @Skip", "not @NightlyBuildOnly" }, glue = {
         "classpath:org.opensmartgridplatform.cucumber.platform.glue",
         "classpath:org.opensmartgridplatform.cucumber.platform.common.glue" }, plugin = { "pretty",
                 "html:target/output/Cucumber-report", "html:target/output/Cucumber-html-report.html",

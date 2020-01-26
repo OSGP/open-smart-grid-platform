@@ -10,18 +10,19 @@ package org.opensmartgridplatform.adapter.protocol.jasper.infra.ws;
 
 import java.util.List;
 
-import com.jasperwireless.api.ws.service.GetSMSDetailsRequest;
-import com.jasperwireless.api.ws.service.GetSMSDetailsResponse;
-import com.jasperwireless.api.ws.service.ObjectFactory;
-import com.jasperwireless.api.ws.service.SendSMSRequest;
-import com.jasperwireless.api.ws.service.SendSMSResponse;
 import org.apache.ws.security.WSConstants;
 import org.opensmartgridplatform.adapter.protocol.jasper.config.JasperWirelessAccess;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
-import org.springframework.ws.soap.security.wss4j.Wss4jSecurityInterceptor;
+import org.springframework.ws.soap.security.wss4j2.Wss4jSecurityInterceptor;
+
+import com.jasperwireless.api.ws.service.GetSMSDetailsRequest;
+import com.jasperwireless.api.ws.service.GetSMSDetailsResponse;
+import com.jasperwireless.api.ws.service.ObjectFactory;
+import com.jasperwireless.api.ws.service.SendSMSRequest;
+import com.jasperwireless.api.ws.service.SendSMSResponse;
 
 public class JasperWirelessSmsClient {
 
@@ -50,7 +51,7 @@ public class JasperWirelessSmsClient {
         sendSMSRequest.setSentToIccid(iccId);
         sendSMSRequest.setVersion(this.jasperWirelessAccess.getApiVersion());
 
-        setInterceptorUsernameTokens();
+        this.setInterceptorUsernameTokens();
 
         // override default uri
         this.jasperWebServiceTemplate.setDefaultUri(this.jasperWirelessAccess.getUri());
@@ -63,7 +64,7 @@ public class JasperWirelessSmsClient {
 
         for (final ClientInterceptor interceptor : this.jasperWebServiceTemplate.getInterceptors()) {
             if (interceptor instanceof Wss4jSecurityInterceptor) {
-                setUsernameToken((Wss4jSecurityInterceptor) interceptor, this.jasperWirelessAccess.getUsername(),
+                this.setUsernameToken((Wss4jSecurityInterceptor) interceptor, this.jasperWirelessAccess.getUsername(),
                         this.jasperWirelessAccess.getPassword());
             }
         }
@@ -82,7 +83,7 @@ public class JasperWirelessSmsClient {
         getSMSDetailsRequest.setMessageTextEncoding("");
         getSMSDetailsRequest.setVersion(this.jasperWirelessAccess.getApiVersion());
 
-        setInterceptorUsernameTokens();
+        this.setInterceptorUsernameTokens();
 
         // override default uri
         this.jasperWebServiceTemplate.setDefaultUri(this.jasperWirelessAccess.getUri());

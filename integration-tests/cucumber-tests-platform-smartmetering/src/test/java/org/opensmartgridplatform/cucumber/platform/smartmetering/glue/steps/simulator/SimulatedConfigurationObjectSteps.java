@@ -7,7 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.simulator;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import java.util.Map;
@@ -15,15 +15,13 @@ import java.util.Map;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.interfaceclass.InterfaceClass;
 import org.openmuc.jdlms.interfaceclass.attribute.DataAttribute;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.ConfigurationFlag;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.ConfigurationFlags;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.ConfigurationObject;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GprsOperationModeType;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.ConfigurationObjectFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -33,8 +31,6 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
 public class SimulatedConfigurationObjectSteps {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SimulatedConfigurationObjectSteps.class);
 
     private static final int CLASS_ID = InterfaceClass.DATA.id();
     private static final ObisCode OBIS_CODE = new ObisCode(0, 1, 94, 31, 3, 255);
@@ -71,7 +67,7 @@ public class SimulatedConfigurationObjectSteps {
         final ObjectNode actualValue = this.deviceSimulatorSteps.getDlmsAttributeValue(CLASS_ID, OBIS_CODE,
                 ATTRIBUTE_ID_VALUE, OBJECT_DESCRIPTION);
 
-        assertEquals("Simulated ConfigurationObject value", expectedValue, actualValue);
+        assertThat(actualValue).as("Simulated ConfigurationObject value").isEqualTo(expectedValue);
     }
 
     private ObjectNode createStructureForConfigurationObject(final ConfigurationObject configurationObject,

@@ -7,15 +7,15 @@
  */
 package org.opensmartgridplatform.simulator.protocol.iec60870.server;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -28,9 +28,9 @@ import org.opensmartgridplatform.iec60870.Iec60870ConnectionRegistry;
 import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870ASduFactory;
 import org.opensmartgridplatform.simulator.protocol.iec60870.server.handlers.Iec60870InterrogationCommandASduHandler;
 import org.opensmartgridplatform.simulator.protocol.iec60870.server.handlers.Iec60870SingleCommandASduHandler;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 public class Iec60870ConnectionEventListenerTest {
     @Mock
     private Iec60870ConnectionRegistry iec60870ConnectionRegistry;
@@ -47,11 +47,11 @@ public class Iec60870ConnectionEventListenerTest {
     @Mock
     private Connection connection;
 
-    private Iec60870ASduFactory iec60870aSduFactory = new Iec60870ASduFactory();
+    private final Iec60870ASduFactory iec60870aSduFactory = new Iec60870ASduFactory();
 
     private Iec60870ConnectionEventListener iec60870ConnectionEventListener;
 
-    @Before
+    @BeforeEach
     public void setup() throws IOException {
         MockitoAnnotations.initMocks(this);
         this.iec60870ConnectionEventListener = new Iec60870ConnectionEventListener(this.connection,

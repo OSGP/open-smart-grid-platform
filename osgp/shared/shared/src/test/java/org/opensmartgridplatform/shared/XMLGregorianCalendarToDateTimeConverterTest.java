@@ -7,14 +7,16 @@
  */
 package org.opensmartgridplatform.shared;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.joda.time.DateTime;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
 
 import ma.glasnost.orika.MapperFacade;
@@ -59,7 +61,7 @@ public class XMLGregorianCalendarToDateTimeConverterTest {
      * {@link DateTimeToStringConverter}. The former is the class under test.
      * The latter is just part of the unit tests.
      */
-    @Before
+    @BeforeEach
     public void before() {
         this.mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
         this.mapperFactory.getConverterFactory().registerConverter(new DateTimeToStringConverter());
@@ -75,7 +77,7 @@ public class XMLGregorianCalendarToDateTimeConverterTest {
 
         // Try to map to Joda version.
         final DateTime mappedJodaDateTime = this.mapper.map(xmlGregorianCalendar, DateTime.class);
-        Assert.assertEquals(dateTime, mappedJodaDateTime);
+        assertThat(mappedJodaDateTime).isEqualTo(dateTime);
     }
 
     @Test
@@ -87,7 +89,7 @@ public class XMLGregorianCalendarToDateTimeConverterTest {
 
         // Try to map to Joda version.
         final DateTime mappedJodaDateTime = this.mapper.map(xmlGregorianCalendar, DateTime.class);
-        Assert.assertEquals(dateTime, mappedJodaDateTime);
+        assertThat(mappedJodaDateTime).isEqualTo(dateTime);
     }
 
     @Test
@@ -100,9 +102,9 @@ public class XMLGregorianCalendarToDateTimeConverterTest {
             // Try to map to XML version.
             final XMLGregorianCalendar mappedXMLGregorianCalendar = this.mapper.map(dateTime,
                     XMLGregorianCalendar.class);
-            Assert.assertEquals(xmlGregorianCalendar, mappedXMLGregorianCalendar);
+            assertThat(mappedXMLGregorianCalendar).isEqualTo(xmlGregorianCalendar);
         } catch (final DatatypeConfigurationException e) {
-            Assert.fail(e.getMessage());
+            fail(e.getMessage());
         }
     }
 
@@ -112,7 +114,7 @@ public class XMLGregorianCalendarToDateTimeConverterTest {
 
         // Try to map to Joda version.
         final DateTime mappedJodaTime = this.mapper.map(stringTime, DateTime.class);
-        Assert.assertNotNull("Not expecting NULL but a DateTime instance.", mappedJodaTime);
+        assertThat(mappedJodaTime).withFailMessage("Not expecting NULL but a DateTime instance.").isNotNull();
     }
 
     @Test
@@ -121,6 +123,6 @@ public class XMLGregorianCalendarToDateTimeConverterTest {
 
         // Try to map to String version.
         final String mappedStringTime = this.mapper.map(dateTime, String.class);
-        Assert.assertNotNull("Not expecting NULL but a date time as string.", mappedStringTime);
+        assertThat(mappedStringTime).withFailMessage("Not expecting NULL but a date time as string.").isNotNull();
     }
 }

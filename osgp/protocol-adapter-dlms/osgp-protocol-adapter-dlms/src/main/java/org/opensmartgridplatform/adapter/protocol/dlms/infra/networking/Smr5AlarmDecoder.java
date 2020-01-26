@@ -17,12 +17,13 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dl
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-import org.jboss.netty.buffer.ChannelBuffer;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigSmr50;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.DlmsPushNotification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.netty.buffer.ByteBuf;
 
 public class Smr5AlarmDecoder extends AlarmDecoder {
 
@@ -42,65 +43,69 @@ public class Smr5AlarmDecoder extends AlarmDecoder {
 
     private DlmsPushNotification.Builder builder = new DlmsPushNotification.Builder();
 
-    public DlmsPushNotification decodeSmr5alarm(final ChannelBuffer buffer) throws UnrecognizedMessageDataException {
+    public DlmsPushNotification decodeSmr5alarm(final ByteBuf buffer) throws UnrecognizedMessageDataException {
 
         // Skip addressing, the 0x0F byte and the invoke-id-and-priority bytes
         buffer.skipBytes(SMR5_NUMBER_OF_BYTES_FOR_ADDRESSING + 1 + SMR5_NUMBER_OF_BYTES_FOR_INVOKE_ID);
 
         // Datetime is not used, so can be skipped as well
-        skipDateTime(buffer);
+        this.skipDateTime(buffer);
 
         // Next byte should indicate a Structure
-        byte dataTypeByte = buffer.readByte();
+        final byte dataTypeByte = buffer.readByte();
         if (dataTypeByte != STRUCTURE) {
             throw new UnrecognizedMessageDataException("Expected a structure (0x02), but encountered: " + dataTypeByte);
         }
         this.builder.appendByte(dataTypeByte);
 
-        // Next byte should indicate the amount of elements in the structure: 2 or 3
-        byte dataLength = buffer.readByte();
+        // Next byte should indicate the amount of elements in the structure: 2
+        // or 3
+        final byte dataLength = buffer.readByte();
         if (dataLength != 2 && dataLength != 3) {
-            throw new UnrecognizedMessageDataException("Expected a structure with 2 or 3 elements, but amount is " + dataLength);
+            throw new UnrecognizedMessageDataException(
+                    "Expected a structure with 2 or 3 elements, but amount is " + dataLength);
         }
         this.builder.appendByte(dataLength);
 
-        // If the alarm contains 3 elements, then the 3rd element is the alarm register
-        boolean alarmRegisterExpected = (dataLength == 3);
+        // If the alarm contains 3 elements, then the 3rd element is the alarm
+        // register
+        final boolean alarmRegisterExpected = (dataLength == 3);
 
         // Decode elements
-        decodeEquipmentIdentifier(buffer);
-        decodeLogicalName(buffer, alarmRegisterExpected);
+        this.decodeEquipmentIdentifier(buffer);
+        this.decodeLogicalName(buffer, alarmRegisterExpected);
 
         if (alarmRegisterExpected) {
-            decodeAlarms(buffer);
+            this.decodeAlarms(buffer);
         }
 
         return this.builder.build();
     }
 
-    private void skipDateTime(final ChannelBuffer buffer) {
+    private void skipDateTime(final ByteBuf buffer) {
 
         // The first byte of the datetime is the length byte
-        byte dateTimeLength = buffer.readByte();
+        final byte dateTimeLength = buffer.readByte();
 
         // Skip the rest of the datetime bytes
         buffer.skipBytes(dateTimeLength);
     }
 
-    private void decodeEquipmentIdentifier(final ChannelBuffer buffer) throws UnrecognizedMessageDataException {
+    private void decodeEquipmentIdentifier(final ByteBuf buffer) throws UnrecognizedMessageDataException {
 
         // First byte should indicate octet-string
-        byte dataTypeByte = buffer.readByte();
+        final byte dataTypeByte = buffer.readByte();
         if (dataTypeByte != OCTET_STRING) {
-            throw new UnrecognizedMessageDataException("Expected an octet-string (0x09), but encountered: " + dataTypeByte);
+            throw new UnrecognizedMessageDataException(
+                    "Expected an octet-string (0x09), but encountered: " + dataTypeByte);
         }
         this.builder.appendByte(dataTypeByte);
 
         // Next byte should be the length of the octet-string
-        byte dataLength = buffer.readByte();
+        final byte dataLength = buffer.readByte();
         if (dataLength != EQUIPMENT_IDENTIFIER_LENGTH) {
-            throw new UnrecognizedMessageDataException("Expected an identifier with length " + EQUIPMENT_IDENTIFIER_LENGTH +
-                    ", but specified length is: " + dataLength);
+            throw new UnrecognizedMessageDataException("Expected an identifier with length "
+                    + EQUIPMENT_IDENTIFIER_LENGTH + ", but specified length is: " + dataLength);
         }
         this.builder.appendByte(dataLength);
 
@@ -112,58 +117,62 @@ public class Smr5AlarmDecoder extends AlarmDecoder {
         this.builder.appendBytes(equipmentIdentifierBytes);
     }
 
-    private void decodeLogicalName(final ChannelBuffer buffer, boolean alarmExpected) throws UnrecognizedMessageDataException {
+    private void decodeLogicalName(final ByteBuf buffer, final boolean alarmExpected)
+            throws UnrecognizedMessageDataException {
         // First byte should indicate octet-string
-        byte dataTypeByte = buffer.readByte();
+        final byte dataTypeByte = buffer.readByte();
         if (dataTypeByte != OCTET_STRING) {
-            throw new UnrecognizedMessageDataException("Expected an octet-string (0x09), but encountered: " + dataTypeByte);
+            throw new UnrecognizedMessageDataException(
+                    "Expected an octet-string (0x09), but encountered: " + dataTypeByte);
         }
         this.builder.appendByte(dataTypeByte);
 
         // Next byte should be the length of the octet-string
-        byte dataLength = buffer.readByte();
+        final byte dataLength = buffer.readByte();
         if (dataLength != NUMBER_OF_BYTES_FOR_LOGICAL_NAME) {
-            throw new UnrecognizedMessageDataException("Expected a logical name with length " + NUMBER_OF_BYTES_FOR_LOGICAL_NAME +
-                    ", but specified length is: " + dataLength);
+            throw new UnrecognizedMessageDataException("Expected a logical name with length "
+                    + NUMBER_OF_BYTES_FOR_LOGICAL_NAME + ", but specified length is: " + dataLength);
         }
         this.builder.appendByte(dataLength);
 
         // Next bytes are the logical name
-        decodeObisCodeData(buffer, alarmExpected);
+        this.decodeObisCodeData(buffer, alarmExpected);
     }
 
-    private void decodeAlarms(final ChannelBuffer buffer) throws UnrecognizedMessageDataException {
+    private void decodeAlarms(final ByteBuf buffer) throws UnrecognizedMessageDataException {
         // First byte should indicate double-long-unsigned
-        byte dataTypeByte = buffer.readByte();
+        final byte dataTypeByte = buffer.readByte();
         if (dataTypeByte != DOUBLE_LONG_UNSIGNED) {
-            throw new UnrecognizedMessageDataException("Expected a double-long-unsigned (0x06), but encountered: " + dataTypeByte);
+            throw new UnrecognizedMessageDataException(
+                    "Expected a double-long-unsigned (0x06), but encountered: " + dataTypeByte);
         }
         this.builder.appendByte(dataTypeByte);
 
         // Next bytes are the alarm
-        decodeAlarmRegisterData(buffer, builder);
+        this.decodeAlarmRegisterData(buffer, this.builder);
     }
 
-    private void decodeObisCodeData(final ChannelBuffer buffer, boolean alarmRegisterExpected) throws UnrecognizedMessageDataException {
+    private void decodeObisCodeData(final ByteBuf buffer, final boolean alarmRegisterExpected)
+            throws UnrecognizedMessageDataException {
 
-        final byte[] logicalNameBytes = read(buffer, NUMBER_OF_BYTES_FOR_LOGICAL_NAME);
+        final byte[] logicalNameBytes = this.read(buffer, NUMBER_OF_BYTES_FOR_LOGICAL_NAME);
 
         try {
-            if (!alarmRegisterExpected && isLogicalNameSmsTrigger(logicalNameBytes)) {
+            if (!alarmRegisterExpected && this.isLogicalNameSmsTrigger(logicalNameBytes)) {
                 this.builder.withTriggerType(PUSH_SMS_TRIGGER);
-            } else if (!alarmRegisterExpected && isLogicalNameCsdTrigger(logicalNameBytes)) {
+            } else if (!alarmRegisterExpected && this.isLogicalNameCsdTrigger(logicalNameBytes)) {
                 LOGGER.warn("CSD Push notification not supported");
                 this.builder.withTriggerType(PUSH_CSD_TRIGGER);
-            } else if (!alarmRegisterExpected && isLogicalNameSchedulerTrigger(logicalNameBytes)) {
+            } else if (!alarmRegisterExpected && this.isLogicalNameSchedulerTrigger(logicalNameBytes)) {
                 LOGGER.warn("Scheduler Push notification not supported");
                 this.builder.withTriggerType(PUSH_SCHEDULER_TRIGGER);
-            } else if (alarmRegisterExpected && isLogicalNameAlarmTrigger(logicalNameBytes)) {
+            } else if (alarmRegisterExpected && this.isLogicalNameAlarmTrigger(logicalNameBytes)) {
                 this.builder.withTriggerType(PUSH_ALARM_TRIGGER);
             } else {
                 LOGGER.warn("Unknown Push notification not supported. Unable to decode");
                 this.builder.withTriggerType("");
             }
-        } catch (ProtocolAdapterException e) {
+        } catch (final ProtocolAdapterException e) {
             throw new UnrecognizedMessageDataException("Error decoding logical name", e);
         }
 
@@ -171,23 +180,26 @@ public class Smr5AlarmDecoder extends AlarmDecoder {
         this.builder.appendBytes(logicalNameBytes);
     }
 
-    private boolean isLogicalNameSmsTrigger(byte[] logicalNameBytes) throws ProtocolAdapterException {
+    private boolean isLogicalNameSmsTrigger(final byte[] logicalNameBytes) throws ProtocolAdapterException {
         // SMR5 has one general object for the SMS and CSD triggers
-        return Arrays.equals(dlmsObjectConfigSmr50.getObisForObject(EXTERNAL_TRIGGER).bytes(), logicalNameBytes);
+        return Arrays.equals(this.dlmsObjectConfigSmr50.getObisForObject(EXTERNAL_TRIGGER).bytes(), logicalNameBytes);
     }
 
-    private boolean isLogicalNameCsdTrigger(byte[] logicalNameBytes) throws ProtocolAdapterException {
+    private boolean isLogicalNameCsdTrigger(final byte[] logicalNameBytes) throws ProtocolAdapterException {
         // SMR5 has one general object for the SMS and CSD triggers
-        return Arrays.equals(dlmsObjectConfigSmr50.getObisForObject(EXTERNAL_TRIGGER).bytes(), logicalNameBytes);
+        return Arrays.equals(this.dlmsObjectConfigSmr50.getObisForObject(EXTERNAL_TRIGGER).bytes(), logicalNameBytes);
     }
 
-    private boolean isLogicalNameSchedulerTrigger(byte[] logicalNameBytes) throws ProtocolAdapterException {
-        return Arrays.equals(dlmsObjectConfigSmr50.getObisForObject(PUSH_SCHEDULER).bytes(), logicalNameBytes) ||
-                Arrays.equals(dlmsObjectConfigSmr50.getObisForObject(PUSH_SETUP_SCHEDULER).bytes(), logicalNameBytes);
+    private boolean isLogicalNameSchedulerTrigger(final byte[] logicalNameBytes) throws ProtocolAdapterException {
+        return Arrays.equals(this.dlmsObjectConfigSmr50.getObisForObject(PUSH_SCHEDULER).bytes(), logicalNameBytes)
+                || Arrays.equals(this.dlmsObjectConfigSmr50.getObisForObject(PUSH_SETUP_SCHEDULER).bytes(),
+                        logicalNameBytes);
     }
 
-    private boolean isLogicalNameAlarmTrigger(byte[] logicalNameBytes) throws ProtocolAdapterException {
-        return Arrays.equals(dlmsObjectConfigSmr50.getObisForObject(INTERNAL_TRIGGER_ALARM).bytes(), logicalNameBytes) ||
-                Arrays.equals(dlmsObjectConfigSmr50.getObisForObject(PUSH_SETUP_ALARM).bytes(), logicalNameBytes);
+    private boolean isLogicalNameAlarmTrigger(final byte[] logicalNameBytes) throws ProtocolAdapterException {
+        return Arrays.equals(this.dlmsObjectConfigSmr50.getObisForObject(INTERNAL_TRIGGER_ALARM).bytes(),
+                logicalNameBytes)
+                || Arrays.equals(this.dlmsObjectConfigSmr50.getObisForObject(PUSH_SETUP_ALARM).bytes(),
+                        logicalNameBytes);
     }
 }

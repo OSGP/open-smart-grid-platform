@@ -9,7 +9,8 @@
 package org.opensmartgridplatform.core.infra.jms.protocol.inbound.messageprocessors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -19,14 +20,15 @@ import java.util.Date;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.opensmartgridplatform.core.application.services.EventNotificationMessageService;
-import org.opensmartgridplatform.core.infra.jms.protocol.inbound.messageprocessors.PushNotificationSmsMessageProcessor;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.exceptions.UnknownEntityException;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
@@ -36,8 +38,13 @@ import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ObjectMessageBuilder;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class PushNotificationSmsMessageProcessorTest {
+
+    private static final String DEVICE_IDENTIFICATION = "dvc-1";
+
+    private static final String IP_ADDRESS = "127.0.0.1";
 
     @Mock
     private PushNotificationSmsDto pushNotificationSms;
@@ -47,16 +54,13 @@ public class PushNotificationSmsMessageProcessorTest {
 
     @Mock
     private DeviceRepository deviceRepository;
-
     @InjectMocks
     private PushNotificationSmsMessageProcessor pushNotificationSmsMessageProcessor;
-
-    private static final String DEVICE_IDENTIFICATION = "dvc-1";
-    private static final String IP_ADDRESS = "127.0.0.1";
     private ObjectMessage message;
 
-    @Before
+    @BeforeEach
     public void init() throws JMSException {
+
         final String correlationUid = "corr-uid-1";
         final String organisationIdentification = "test-org";
 
@@ -91,11 +95,11 @@ public class PushNotificationSmsMessageProcessorTest {
         verify(this.deviceRepository).save(device);
     }
 
-    @Test(expected = JMSException.class)
-    public void testUnknownDevice() throws JMSException {
-
+    @Test
+    public void testUnknownDevice() {
         when(this.deviceRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION)).thenReturn(null);
-        this.pushNotificationSmsMessageProcessor.processMessage(this.message);
+        assertThatExceptionOfType(JMSException.class).isThrownBy(() -> {
+            this.pushNotificationSmsMessageProcessor.processMessage(this.message);
+        });
     }
-
 }

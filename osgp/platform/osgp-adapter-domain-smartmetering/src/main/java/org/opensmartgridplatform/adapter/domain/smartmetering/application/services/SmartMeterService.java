@@ -72,7 +72,7 @@ public class SmartMeterService {
         final SmartMeter device = this.smartMeteringDeviceRepository
                 .findByDeviceIdentification(deviceMessageMetadata.getDeviceIdentification());
 
-        this.deviceAuthorizationRepository.delete(device.getAuthorizations());
+        this.deviceAuthorizationRepository.deleteAll(device.getAuthorizations());
         this.smartMeteringDeviceRepository.delete(device);
     }
 

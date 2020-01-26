@@ -1,11 +1,19 @@
+/**
+ * Copyright 2017 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.shared.security;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.util.Arrays;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
@@ -13,9 +21,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
-import org.junit.Assert;
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 
 public class EncryptionServiceTest {
@@ -59,7 +65,7 @@ public class EncryptionServiceTest {
     /**
      * Test decryption of master, encryption and authentication keys using
      * 'secret.aes'.
-     * 
+     *
      * @throws FunctionalException
      */
     @Test
@@ -93,7 +99,7 @@ public class EncryptionServiceTest {
         final byte[] originalKeyBytes = originalKey.getEncoded();
 
         // Check if the decrypted key matches the original key.
-        Assert.assertTrue(assertMsg, Arrays.equals(originalKeyBytes, decryptedKeyBytes));
+        assertThat(decryptedKeyBytes).withFailMessage(assertMsg).isEqualTo(originalKeyBytes);
     }
 
     @Test
@@ -109,7 +115,7 @@ public class EncryptionServiceTest {
 
         final byte[] encrypted = encryptionService.encrypt(TEST_CONTENT.getBytes());
         final byte[] decrypted = encryptionService.decrypt(encrypted);
-        Assert.assertEquals(TEST_CONTENT, new String(decrypted));
+        assertThat(new String(decrypted)).isEqualTo(TEST_CONTENT);
     }
 
     @Test
@@ -123,7 +129,7 @@ public class EncryptionServiceTest {
         final SecretKeySpec secretKey = this.createSecretKeySpec(keyBytes);
         final byte[] enc = new TestableEncService(secretKey).encrypt(TEST_CONTENT.getBytes());
 
-        Assert.assertEquals(TEST_CONTENT, new String(new TestableEncService(secretKey).decrypt(enc)));
+        assertThat(new String(new TestableEncService(secretKey).decrypt(enc))).isEqualTo(TEST_CONTENT);
     }
 
     @Test
@@ -132,7 +138,7 @@ public class EncryptionServiceTest {
         final SecretKeySpec secretKey = this.createSecretKeySpec(new File(SRC_TEST_RESOURCES_SECRET));
         final byte[] enc = new TestableEncService(secretKey).encrypt(TEST_CONTENT.getBytes());
 
-        Assert.assertEquals(TEST_CONTENT, new String(new TestableEncService(secretKey).decrypt(enc)));
+        assertThat(new String(new TestableEncService(secretKey).decrypt(enc))).isEqualTo(TEST_CONTENT);
     }
 
     @Test
@@ -142,7 +148,8 @@ public class EncryptionServiceTest {
         final SecretKeySpec secretKey = this.createSecretKeySpec(new File(SRC_TEST_RESOURCES_SECRET).getPath());
         final byte[] decrypted = new TestableEncService(secretKey).decrypt(encrypted);
 
-        Assert.assertEquals("hallo", new String(decrypted));
+        assertThat(new String(decrypted)).isEqualTo("hallo");
+
     }
 
     @Test
@@ -155,7 +162,7 @@ public class EncryptionServiceTest {
 
         // in this specific case the length of the decrypted bytes should become
         // 16, after 0 bytes are stripped of
-        Assert.assertEquals(16, decrypted_prepended.length);
+        assertThat(decrypted_prepended.length).isEqualTo(16);
 
     }
 

@@ -7,93 +7,58 @@
         http://www.apache.org/licenses/LICENSE-2.0
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-shared</artifactId>
-    <version>4.40.0-SNAPSHOT</version>
+    <version>5.0.0-SNAPSHOT</version>
     <relativePath>../parent-shared/pom.xml</relativePath>
   </parent>
 
   <artifactId>osgp-ws-publiclighting</artifactId>
+  <packaging>jar</packaging>
+
   <build>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>${maven.jar.plugin.version}</version>
+      </plugin>
+      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>jaxb2-maven-plugin</artifactId>
-        <version>1.5</version>
+        <version>${jaxb2.maven.plugin.version}</version>
         <executions>
           <execution>
-            <id>public-lighting-ad-hoc-management</id>
             <goals>
               <goal>xjc</goal>
             </goals>
             <configuration>
-              <bindingDirectory>src/main/resources/schemas</bindingDirectory>
-              <bindingFiles>pl-adhocmanagement.xjb</bindingFiles>
-              <schemaDirectory>src/main/resources</schemaDirectory>
-              <schemaFiles>PublicLightingAdHocManagement.wsdl</schemaFiles>
-              <wsdl>true</wsdl>
-              <xmlschema>false</xmlschema>
-              <staleFile>${project.build.directory}/jaxb2/.schema-public-lighting-ad-hoc-management-stale-flag</staleFile>
-              <!-- USE THIS ONLY FOR THE FIRST EXECUTION -->
-              <clearOutputDir>true</clearOutputDir>
-            </configuration>
-          </execution>
-          <execution>
-            <id>public-lighting-schedule-management</id>
-            <goals>
-              <goal>xjc</goal>
-            </goals>
-            <configuration>
-              <bindingDirectory>src/main/resources/schemas</bindingDirectory>
-              <bindingFiles>pl-schedulemanagement.xjb</bindingFiles>
-              <schemaDirectory>src/main/resources</schemaDirectory>
-              <schemaFiles>PublicLightingScheduleManagement.wsdl</schemaFiles>
-              <wsdl>true</wsdl>
-              <xmlschema>false</xmlschema>
-              <staleFile>${project.build.directory}/jaxb2/.schema-public-lighting-schedule-management-stale-flag</staleFile>
-              <!-- USE THIS FOR ALL EXECUTIONS EXCEPT THE FIRST -->
-              <clearOutputDir>false</clearOutputDir>
-            </configuration>
-          </execution>
-          <execution>
-            <id>public-lighting-device-monitoring</id>
-            <goals>
-              <goal>xjc</goal>
-            </goals>
-            <configuration>
-              <bindingDirectory>src/main/resources/schemas</bindingDirectory>
-              <bindingFiles>pl-devicemonitoring.xjb</bindingFiles>
-              <schemaDirectory>src/main/resources</schemaDirectory>
-              <schemaFiles>PublicLightingDeviceMonitoring.wsdl</schemaFiles>
-              <wsdl>true</wsdl>
-              <xmlschema>false</xmlschema>
-              <staleFile>${project.build.directory}/jaxb2/.schema-publiclighting-device-monitoring-stale-flag</staleFile>
-              <!-- USE THIS FOR ALL EXECUTIONS EXCEPT THE FIRST -->
-              <clearOutputDir>false</clearOutputDir>
-            </configuration>
-          </execution>
-          <execution>
-            <id>public-lighting-notification</id>
-            <goals>
-              <goal>xjc</goal>
-            </goals>
-            <configuration>
-              <bindingDirectory>src/main/resources/schemas</bindingDirectory>
-              <bindingFiles>pl-notification.xjb</bindingFiles>
-              <schemaDirectory>src/main/resources</schemaDirectory>
-              <schemaFiles>PublicLightingNotification.wsdl</schemaFiles>
-              <wsdl>true</wsdl>
-              <xmlschema>false</xmlschema>
-              <staleFile>${project.build.directory}/jaxb2/.schema-public-lighting-notification-stale-flag</staleFile>
-              <!-- USE THIS ONLY FOR THE FIRST EXECUTION -->
-              <clearOutputDir>false</clearOutputDir>
+              <sources>
+                <source>src/main/resources/schemas</source>
+              </sources>
+              <xjbSources>
+                <xjbSource>src/main/resources/bindings</xjbSource>
+              </xjbSources>
             </configuration>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${maven.surefire.plugin.version}</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit.version}</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>

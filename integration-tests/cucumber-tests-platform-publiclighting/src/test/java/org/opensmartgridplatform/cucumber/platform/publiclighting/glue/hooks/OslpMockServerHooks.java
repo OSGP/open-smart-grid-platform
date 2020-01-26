@@ -7,13 +7,12 @@
  */
 package org.opensmartgridplatform.cucumber.platform.publiclighting.glue.hooks;
 
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.platform.publiclighting.mocks.oslpdevice.MockOslpServer;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import cucumber.api.java.Before;
 
-public class OslpMockServerHooks extends GlueBase {
+public class OslpMockServerHooks {
 
     @Autowired
     private MockOslpServer mockServer;

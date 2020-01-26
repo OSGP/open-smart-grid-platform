@@ -17,14 +17,15 @@ Feature: AdminDeviceManagement Update Key
     When receiving an update key request
       | DeviceIdentification | TEST1024000000002 |
       | PublicKey            | abcdef123456      |
-    Then the update key response contains
-      | DeviceIdentification | TEST1024000000002 |
+    Then the update key response contains soap fault
+      | FaultCode    | SOAP-ENV:Server                                                       |
+      | FaultString  | org.opensmartgridplatform.shared.exceptionhandling.TechnicalException |
 
   Scenario Outline: Update Key For Device With Invalid Public Key
     Given an ssld device
-      | DeviceIdentification | TEST1024000000001 |
+      | DeviceIdentification | TEST1024000000003 |
     When receiving an update key request
-      | DeviceIdentification | TEST1024000000001 |
+      | DeviceIdentification | TEST1024000000003 |
       | PublicKey            | <PublicKey>       |
     Then the update key response contains soap fault
       | FaultCode    | SOAP-ENV:Server                                       |

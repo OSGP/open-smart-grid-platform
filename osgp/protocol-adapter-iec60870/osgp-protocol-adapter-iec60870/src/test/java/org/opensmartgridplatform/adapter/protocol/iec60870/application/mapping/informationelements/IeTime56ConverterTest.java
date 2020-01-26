@@ -12,13 +12,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmuc.j60870.IeTime56;
 import org.opensmartgridplatform.dto.da.measurements.elements.TimestampMeasurementElementDto;
 
 public class IeTime56ConverterTest {
 
-    private IeTime56Converter converter = new IeTime56Converter();
+    private final IeTime56Converter converter = new IeTime56Converter();
 
     @Test
     public void shouldConvertIeTime56ToTimestamp() {

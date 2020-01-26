@@ -7,16 +7,17 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging;
 
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionService;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
@@ -26,7 +27,7 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.test.util.ReflectionTestUtils;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DeviceResponseMessageSenderTest {
 
     @InjectMocks
@@ -38,7 +39,7 @@ public class DeviceResponseMessageSenderTest {
     @Mock
     private ClientConnectionService clientConnectionService;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.injectCloseConnectionsOnBrokerFailure(true);
     }
@@ -55,15 +56,16 @@ public class DeviceResponseMessageSenderTest {
         verify(this.jmsTemplate).send(any(MessageCreator.class));
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldCloseAllConnectionsOnBrokerFailure() {
         // Arrange
         final ProtocolResponseMessage responseMessage = this.createDefaultResponseMessage();
         doThrow(IllegalStateException.class).when(this.jmsTemplate).send(any(MessageCreator.class));
 
         // Act
-        this.messageSender.send(responseMessage);
-
+        assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> {
+            this.messageSender.send(responseMessage);
+        });
         // Assert
         verify(this.clientConnectionService).closeAllConnections();
     }
@@ -75,10 +77,16 @@ public class DeviceResponseMessageSenderTest {
 
     private ProtocolResponseMessage createDefaultResponseMessage() {
         final DeviceMessageMetadata metadata = DeviceMessageMetadata.newBuilder()
-                .withDeviceIdentification("TEST-DEVICE-1").withCorrelationUid("TEST-CORR-1")
-                .withOrganisationIdentification("TEST-ORG-1").withMessageType("GET_MEASUREMENT_REPORT").build();
+                .withDeviceIdentification("TEST-DEVICE-1")
+                .withCorrelationUid("TEST-CORR-1")
+                .withOrganisationIdentification("TEST-ORG-1")
+                .withMessageType("GET_MEASUREMENT_REPORT")
+                .build();
 
-        return new ProtocolResponseMessage.Builder().deviceMessageMetadata(metadata).domain("DistributionAutomation")
-                .domainVersion("1.0").result(ResponseMessageResultType.OK).build();
+        return new ProtocolResponseMessage.Builder().deviceMessageMetadata(metadata)
+                .domain("DistributionAutomation")
+                .domainVersion("1.0")
+                .result(ResponseMessageResultType.OK)
+                .build();
     }
 }

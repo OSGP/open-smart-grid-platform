@@ -7,9 +7,11 @@
  */
 package org.opensmartgridplatform.cucumber.core;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.joda.time.DateTime;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestGetDateTime {
 
@@ -19,10 +21,10 @@ public class TestGetDateTime {
             final DateTime nowPlus4 = new DateTime().plusMinutes(4);
             final DateTime nowPlus6 = new DateTime().plusMinutes(6);
             final DateTime dt = DateTimeHelper.getDateTime("now + 5 minutes");
-            Assert.assertTrue(nowPlus4.getMillis() < dt.getMillis());
-            Assert.assertTrue(nowPlus6.getMillis() > dt.getMillis());
+            assertThat(nowPlus4.getMillis() < dt.getMillis()).isTrue();
+            assertThat(nowPlus6.getMillis() > dt.getMillis()).isTrue();
         } catch (final Exception e) {
-            Assert.fail("error parsing date " + e);
+            Assertions.fail("error parsing date " + e);
         }
     }
 }

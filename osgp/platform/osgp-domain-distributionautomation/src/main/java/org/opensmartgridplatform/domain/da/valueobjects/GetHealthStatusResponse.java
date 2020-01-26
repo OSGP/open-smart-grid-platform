@@ -10,7 +10,13 @@ package org.opensmartgridplatform.domain.da.valueobjects;
 import java.io.Serializable;
 
 public class GetHealthStatusResponse implements Serializable {
-    private String healthStatus;
+
+    /**
+     * Serial Version UID.
+     */
+    private static final long serialVersionUID = -6231137161758023435L;
+
+    private final String healthStatus;
 
     public GetHealthStatusResponse(final String healthStatus) {
         this.healthStatus = healthStatus;

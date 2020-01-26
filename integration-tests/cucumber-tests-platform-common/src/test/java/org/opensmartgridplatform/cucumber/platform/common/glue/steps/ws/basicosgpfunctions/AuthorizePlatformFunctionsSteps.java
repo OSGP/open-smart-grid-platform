@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.basicosgpfunctions;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
@@ -16,7 +17,6 @@ import java.util.Map;
 
 import javax.naming.OperationNotSupportedException;
 
-import org.junit.Assert;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.ChangeOrganisationRequest;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.CreateOrganisationRequest;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.FindDevicesWhichHaveNoOwnerRequest;
@@ -182,9 +182,9 @@ public class AuthorizePlatformFunctionsSteps {
     public void theDeviceFunctionResponseIsSuccessful(final Boolean allowed) {
         if (allowed) {
             final Object response = ScenarioContext.current().get(PlatformCommonKeys.RESPONSE);
-            Assert.assertTrue(!(response instanceof SoapFaultClientException));
+            assertThat(!(response instanceof SoapFaultClientException)).isTrue();
         } else {
-            Assert.assertNotNull(this.throwable);
+            assertThat(this.throwable).isNotNull();
         }
     }
 

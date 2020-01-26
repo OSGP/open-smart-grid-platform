@@ -47,11 +47,12 @@ public final class OslpUtils {
     public static final String FALLBACK_DIGEST = "SHA-512";
 
     /**
-     * List of signature types which do not allow trailing data and need to be truncated.
+     * List of signature types which do not allow trailing data and need to be
+     * truncated.
      */
     private static final String[] TRUNCATE_SIGNATURES = { "NONEwithECDSA", "SHA1withECDSA", "SHA256withECDSA",
             "SHA384withECDSA", "SHA512withECDSA" };
-    
+
     private OslpUtils() {
         // Empty constructor for static helper class.
     }
@@ -165,21 +166,49 @@ public final class OslpUtils {
         final Signature signatureBuilder = Signature.getInstance(signature, provider);
         signatureBuilder.initVerify(publicKey);
         signatureBuilder.update(message);
-        
+
         int signatureLength = securityKey.length;
-        
+
         if (ArrayUtils.contains(TRUNCATE_SIGNATURES, signature)) {
             // Fix for https://bugs.openjdk.java.net/browse/JDK-8161571
-            // Read 2nd byte as length indicator for the actual signature bytes, include 2 bytes for 1st 2 bytes
-            // Ensure the byte (which is signed) is converted correctly to a positive int
-            signatureLength = securityKey[1]+2 & 0xFF;
+            // Read 2nd byte as length indicator for the actual signature bytes,
+            // include 2 bytes for 1st 2 bytes
+            // Ensure the byte (which is signed) is converted correctly to a
+            // positive int
+            signatureLength = securityKey[1] + 2 & 0xFF;
             if (signatureLength > securityKey.length) {
-                throw new GeneralSecurityException("Size indicator in ASN.1 DSA signature to large [" + signatureLength + "]");
+                throw new GeneralSecurityException(
+                        "Size indicator in ASN.1 DSA signature to large [" + signatureLength + "]");
             }
         }
         // Truncate the string to actual ASN.1 DSA length, removing padding
-        byte[] truncated = Arrays.copyOf(securityKey, signatureLength);
+        final byte[] truncated = Arrays.copyOf(securityKey, signatureLength);
         return signatureBuilder.verify(truncated);
+    }
+
+    public static boolean isOslpResponse(final OslpEnvelope envelope) {
+        return envelope.getPayloadMessage().hasRegisterDeviceResponse()
+                || envelope.getPayloadMessage().hasConfirmRegisterDeviceResponse()
+                || envelope.getPayloadMessage().hasStartSelfTestResponse()
+                || envelope.getPayloadMessage().hasStopSelfTestResponse()
+                || envelope.getPayloadMessage().hasUpdateFirmwareResponse()
+                || envelope.getPayloadMessage().hasSetLightResponse()
+                || envelope.getPayloadMessage().hasSetEventNotificationsResponse()
+                || envelope.getPayloadMessage().hasEventNotificationResponse()
+                || envelope.getPayloadMessage().hasSetScheduleResponse()
+                || envelope.getPayloadMessage().hasGetFirmwareVersionResponse()
+                || envelope.getPayloadMessage().hasGetStatusResponse()
+                || envelope.getPayloadMessage().hasResumeScheduleResponse()
+                || envelope.getPayloadMessage().hasSetRebootResponse()
+                || envelope.getPayloadMessage().hasSetTransitionResponse()
+                || envelope.getPayloadMessage().hasSetConfigurationResponse()
+                || envelope.getPayloadMessage().hasGetConfigurationResponse()
+                || envelope.getPayloadMessage().hasSwitchConfigurationResponse()
+                || envelope.getPayloadMessage().hasGetActualPowerUsageResponse()
+                || envelope.getPayloadMessage().hasGetPowerUsageHistoryResponse()
+                || envelope.getPayloadMessage().hasSwitchFirmwareResponse()
+                || envelope.getPayloadMessage().hasUpdateDeviceSslCertificationResponse()
+                || envelope.getPayloadMessage().hasSetDeviceVerificationKeyResponse();
     }
 
     private static byte[] createEncryptedHash(final byte[] message, final PrivateKey privateKey)

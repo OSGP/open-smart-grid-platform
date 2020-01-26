@@ -7,13 +7,13 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.core.deviceinstallation;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getInteger;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.Map;
 
-import org.junit.Assert;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.Device;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 
@@ -35,7 +35,7 @@ public class DeviceSteps {
             }
 
             if (expectedObj != null) {
-                Assert.assertEquals(expectedObj, actualValue);
+                assertThat(actualValue).isEqualTo(expectedObj);
             }
         }
     }
@@ -60,63 +60,63 @@ public class DeviceSteps {
 
     public static void checkDeviceOld(final Map<String, String> expectedDevice, final Device actualDevice) {
         if (expectedDevice.containsKey(PlatformKeys.KEY_DEVICE_IDENTIFICATION)) {
-            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_DEVICE_IDENTIFICATION),
-                    actualDevice.getDeviceIdentification());
+            assertThat(actualDevice.getDeviceIdentification())
+                    .isEqualTo(getString(expectedDevice, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION)) {
-            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION),
-                    actualDevice.getDeviceIdentification());
+            assertThat(actualDevice.getDeviceIdentification())
+                    .isEqualTo(getString(expectedDevice, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION));
         }
 
         if (expectedDevice.containsKey(PlatformKeys.ALIAS)) {
-            Assert.assertEquals(getString(expectedDevice, PlatformKeys.ALIAS), actualDevice.getAlias());
+            assertThat(actualDevice.getAlias()).isEqualTo(getString(expectedDevice, PlatformKeys.ALIAS));
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_CITY)) {
-            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_CITY),
-                    actualDevice.getContainerAddress().getCity());
+            assertThat(actualDevice.getContainerAddress().getCity())
+                    .isEqualTo(getString(expectedDevice, PlatformKeys.KEY_CITY));
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_MUNICIPALITY)) {
-            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_MUNICIPALITY),
-                    actualDevice.getContainerAddress().getMunicipality());
+            assertThat(actualDevice.getContainerAddress().getMunicipality())
+                    .isEqualTo(getString(expectedDevice, PlatformKeys.KEY_MUNICIPALITY));
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_NUMBER)) {
-            Assert.assertEquals(getInteger(expectedDevice, PlatformKeys.KEY_NUMBER),
-                    actualDevice.getContainerAddress().getNumber());
+            assertThat(actualDevice.getContainerAddress().getNumber())
+                    .isEqualTo(getInteger(expectedDevice, PlatformKeys.KEY_NUMBER));
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_NUMBER_ADDITION)) {
-            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_NUMBER_ADDITION),
-                    actualDevice.getContainerAddress().getNumberAddition());
+            assertThat(actualDevice.getContainerAddress().getNumberAddition())
+                    .isEqualTo(getString(expectedDevice, PlatformKeys.KEY_NUMBER_ADDITION));
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_POSTCODE)) {
-            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_POSTCODE),
-                    actualDevice.getContainerAddress().getPostalCode());
+            assertThat(actualDevice.getContainerAddress().getPostalCode())
+                    .isEqualTo(getString(expectedDevice, PlatformKeys.KEY_POSTCODE));
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_STREET)) {
-            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_STREET),
-                    actualDevice.getContainerAddress().getStreet());
+            assertThat(actualDevice.getContainerAddress().getStreet())
+                    .isEqualTo(getString(expectedDevice, PlatformKeys.KEY_STREET));
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_DEVICE_UID)) {
-            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_DEVICE_UID), actualDevice.getDeviceUid());
+            assertThat(actualDevice.getDeviceUid()).isEqualTo(getString(expectedDevice, PlatformKeys.KEY_DEVICE_UID));
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_LATITUDE)) {
-            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_LATITUDE), actualDevice.getGpsLatitude());
+            assertThat(actualDevice.getGpsLatitude()).isEqualTo(getString(expectedDevice, PlatformKeys.KEY_LATITUDE));
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_LONGITUDE)) {
-            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_LONGITUDE), actualDevice.getGpsLongitude());
+            assertThat(actualDevice.getGpsLongitude()).isEqualTo(getString(expectedDevice, PlatformKeys.KEY_LONGITUDE));
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_OWNER)) {
-            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_OWNER), actualDevice.getOwner());
+            assertThat(actualDevice.getOwner()).isEqualTo(getString(expectedDevice, PlatformKeys.KEY_OWNER));
         }
     }
 }

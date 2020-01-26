@@ -75,7 +75,7 @@ public class BaseService {
     }
 
     protected RtuDevice findRtuDeviceForDevice(final Device device) {
-        return this.rtuDeviceRepository.findById(device.getId());
+        return this.rtuDeviceRepository.findById(device.getId()).get();
     }
 
     protected OsgpException ensureOsgpException(final Throwable t, final String defaultMessage) {

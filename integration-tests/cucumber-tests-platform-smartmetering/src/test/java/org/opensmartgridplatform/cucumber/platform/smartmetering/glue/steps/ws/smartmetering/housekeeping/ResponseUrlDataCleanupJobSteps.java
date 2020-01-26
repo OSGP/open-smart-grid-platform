@@ -7,15 +7,13 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.housekeeping;
 
-import static org.junit.Assert.fail;
-
 import java.util.concurrent.TimeUnit;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-
+import org.junit.jupiter.api.Assertions;
 import org.opensmartgridplatform.cucumber.core.RetryableAssert;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.ws.ResponseUrlDataSteps;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -56,7 +54,8 @@ public class ResponseUrlDataCleanupJobSteps {
                     () -> this.responseUrlDataSteps.theResponseUrlDataRecordShouldBeDeleted(correlationUid), retries,
                     delay, TIME_UNIT_RESPONSE_CLEANUP_DELAY);
         } catch (final AssertionError e) {
-            fail("Cleanup job should have removed response url data with correlation uid " + correlationUid + " within "
+            Assertions.fail("Cleanup job should have removed response url data with correlation uid " + correlationUid
+                    + " within "
                     + RetryableAssert.describeMaxDuration(retries, delay, TIME_UNIT_RESPONSE_CLEANUP_DELAY));
         }
     }
@@ -69,7 +68,8 @@ public class ResponseUrlDataCleanupJobSteps {
                     () -> this.responseUrlDataSteps.theResponseUrlDataRecordShouldNotBeDeleted(correlationUid), 0,
                     retries * delay, TIME_UNIT_RESPONSE_CLEANUP_DELAY);
         } catch (final AssertionError e) {
-            fail("Cleanup job should not have removed response url data with correlation uid " + correlationUid + ".");
+            Assertions.fail("Cleanup job should not have removed response url data with correlation uid "
+                    + correlationUid + ".");
         }
     }
 

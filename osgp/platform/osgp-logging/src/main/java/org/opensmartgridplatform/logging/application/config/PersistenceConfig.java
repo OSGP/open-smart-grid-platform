@@ -14,7 +14,7 @@ import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationVersion;
-import org.hibernate.ejb.HibernatePersistence;
+import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.opensmartgridplatform.logging.domain.repositories.WebServiceMonitorLogRepository;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.infra.db.DefaultConnectionPoolFactory;
@@ -52,7 +52,7 @@ public class PersistenceConfig extends AbstractConfig {
 
     private static final String PROPERTY_NAME_HIBERNATE_DIALECT = "hibernate.dialect";
     private static final String PROPERTY_NAME_HIBERNATE_FORMAT_SQL = "hibernate.format_sql";
-    private static final String PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY = "hibernate.ejb.naming_strategy";
+    private static final String PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY = "hibernate.physical_naming_strategy";
     private static final String PROPERTY_NAME_HIBERNATE_SHOW_SQL = "hibernate.show_sql";
 
     private static final String PROPERTY_NAME_FLYWAY_INITIAL_VERSION = "flyway.initial.version";
@@ -91,17 +91,10 @@ public class PersistenceConfig extends AbstractConfig {
                     .parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_IDLE_TIMEOUT));
 
             final DefaultConnectionPoolFactory.Builder builder = new DefaultConnectionPoolFactory.Builder()
-                    .withUsername(username)
-                    .withPassword(password)
-                    .withDriverClassName(driverClassName)
-                    .withProtocol(databaseProtocol)
-                    .withDatabaseHost(databaseHost)
-                    .withDatabasePort(databasePort)
-                    .withDatabaseName(databaseName)
-                    .withMinPoolSize(minPoolSize)
-                    .withMaxPoolSize(maxPoolSize)
-                    .withAutoCommit(isAutoCommit)
-                    .withIdleTimeout(idleTimeout);
+                    .withUsername(username).withPassword(password).withDriverClassName(driverClassName)
+                    .withProtocol(databaseProtocol).withDatabaseHost(databaseHost).withDatabasePort(databasePort)
+                    .withDatabaseName(databaseName).withMinPoolSize(minPoolSize).withMaxPoolSize(maxPoolSize)
+                    .withAutoCommit(isAutoCommit).withIdleTimeout(idleTimeout);
             final DefaultConnectionPoolFactory factory = builder.build();
             this.dataSource = factory.getDefaultConnectionPool();
         }
@@ -130,18 +123,17 @@ public class PersistenceConfig extends AbstractConfig {
 
     @Bean(initMethod = "migrate")
     public Flyway loggingFlyway() {
-        final Flyway flyway = new Flyway();
-
-        // Initialization for non-empty schema with no metadata table
-        flyway.setBaselineVersion(MigrationVersion
-                .fromVersion(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INITIAL_VERSION)));
-        flyway.setBaselineDescription(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INITIAL_DESCRIPTION));
-        flyway.setBaselineOnMigrate(
-                Boolean.parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INIT_ON_MIGRATE)));
-
-        flyway.setDataSource(this.getDataSource());
-
-        return flyway;
+        // @formatter:off
+        return Flyway.configure()
+                .baselineVersion(MigrationVersion
+                        .fromVersion(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INITIAL_VERSION)))
+                .baselineDescription(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INITIAL_DESCRIPTION))
+                .baselineOnMigrate(Boolean
+                        .parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INIT_ON_MIGRATE)))
+                .outOfOrder(true).table("schema_version")
+                .dataSource(this.getDataSource())
+                .load();
+        // @formatter:on
     }
 
     /**
@@ -156,7 +148,7 @@ public class PersistenceConfig extends AbstractConfig {
         entityManagerFactoryBean.setDataSource(this.getDataSource());
         entityManagerFactoryBean
                 .setPackagesToScan(this.environment.getRequiredProperty(PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN));
-        entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistence.class);
+        entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistenceProvider.class);
 
         final Properties jpaProperties = new Properties();
         jpaProperties.put(PROPERTY_NAME_HIBERNATE_DIALECT,

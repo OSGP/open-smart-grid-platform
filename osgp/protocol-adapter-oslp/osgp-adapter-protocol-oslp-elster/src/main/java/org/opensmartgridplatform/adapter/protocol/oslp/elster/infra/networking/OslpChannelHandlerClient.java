@@ -10,27 +10,29 @@ package org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.networking;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
-import org.jboss.netty.bootstrap.ClientBootstrap;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelFutureListener;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelStateEvent;
-import org.jboss.netty.channel.MessageEvent;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.DeviceRegistrationService;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.oslp.OslpEnvelope;
+import org.opensmartgridplatform.oslp.OslpUtils;
 import org.opensmartgridplatform.shared.exceptionhandling.NoDeviceResponseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandler.Sharable;
+import io.netty.channel.ChannelHandlerContext;
+
+@Sharable
 public class OslpChannelHandlerClient extends OslpChannelHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OslpChannelHandlerClient.class);
 
     @Autowired
-    private ClientBootstrap bootstrap;
+    private Bootstrap bootstrap;
 
     @Autowired
     private DeviceRegistrationService deviceRegistrationService;
@@ -43,33 +45,34 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
         this.deviceRegistrationService = deviceRegistrationService;
     }
 
-    public ClientBootstrap getBootstrap() {
+    public Bootstrap getBootstrap() {
         return this.bootstrap;
     }
 
-    public void setBootstrap(final ClientBootstrap bootstrap) {
+    public void setBootstrap(final Bootstrap bootstrap) {
         this.bootstrap = bootstrap;
     }
 
     @Override
-    public void channelDisconnected(final ChannelHandlerContext ctx, final ChannelStateEvent e) throws Exception {
-        final int channelId = e.getChannel().getId();
+    public void channelInactive(final ChannelHandlerContext ctx) throws Exception {
+        final String channelId = ctx.channel().id().asLongText();
         if (this.callbackHandlers.containsKey(channelId)) {
-            this.callbackHandlers.get(channelId).getDeviceResponseHandler()
+            this.callbackHandlers.get(channelId)
+                    .getDeviceResponseHandler()
                     .handleException(new NoDeviceResponseException());
             this.callbackHandlers.remove(channelId);
         }
-        super.channelDisconnected(ctx, e);
+        super.channelInactive(ctx);
     }
 
     @Override
-    public void messageReceived(final ChannelHandlerContext ctx, final MessageEvent e) {
+    public void channelRead0(final ChannelHandlerContext ctx, final OslpEnvelope message) {
+        final String channelId = ctx.channel().id().asLongText();
 
-        final OslpEnvelope message = (OslpEnvelope) e.getMessage();
-        final Integer channelId = e.getChannel().getId();
+        LOGGER.info("channelRead0 called for channel{}.", channelId);
 
         if (message.isValid()) {
-            if (this.isOslpResponse(message)) {
+            if (OslpUtils.isOslpResponse(message)) {
                 LOGGER.info("{} Received OSLP Response (before callback): {}", channelId, message.getPayloadMessage());
 
                 // Check the sequence number
@@ -90,7 +93,7 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
                 }
 
                 this.callbackHandlers.remove(channelId);
-                e.getChannel().close();
+                ctx.channel().close();
 
             } else {
                 LOGGER.warn("{} Received OSLP Request, which is not expected: {}", channelId,
@@ -108,7 +111,7 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
         // Open connection and send message.
         final ChannelFuture channelFuture = this.bootstrap.connect(address);
 
-        this.callbackHandlers.put(channelFuture.getChannel().getId(), new OslpCallbackHandler(responseHandler));
+        this.callbackHandlers.put(channelFuture.channel().id().asLongText(), new OslpCallbackHandler(responseHandler));
 
         channelFuture.addListener(new ChannelFutureListener() {
 
@@ -118,7 +121,7 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
                 if (future.isSuccess()) {
                     OslpChannelHandlerClient.this.write(future, address, request);
                     // What is this call below good for?
-                    future.getChannel().getId();
+                    future.channel().id();
                 } else {
                     LOGGER.info("The connection to the device {} is not successful", deviceIdentification);
                     throw new IOException("ChannelFuture - Unable to connect");
@@ -129,22 +132,22 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
 
     private void write(final ChannelFuture channelFuture, final InetSocketAddress address, final OslpEnvelope request)
             throws IOException {
-        final Channel channel = channelFuture.getChannel();
+        final Channel channel = channelFuture.channel();
 
-        if (channel != null && channel.isConnected()) {
-            LOGGER.info("{} Connection established to: {}", channelFuture.getChannel().getId(), address);
+        if (channel != null && channel.isActive()) {
+            LOGGER.info("Channel [{}] - Connection established to: {}", channelFuture.channel().id(), address);
         } else {
             LOGGER.info("The connection for device {} is not successful", request.getDeviceId());
-            LOGGER.warn("{} Unable to connect to: {}", channelFuture.getChannel().getId(), address);
+            LOGGER.warn("Channel [{}] - Unable to connect to: {}", channelFuture.channel().id(), address);
             throw new IOException("Channel - Unable to connect");
         }
 
         try {
-            channel.write(request);
+            channel.writeAndFlush(request);
 
         } catch (final Exception e) {
-            LOGGER.error("{} Exception while writing request: {}", channelFuture.getChannel().getId(), e.getCause(), e);
-            this.callbackHandlers.remove(channel.getId());
+            LOGGER.error("{} Exception while writing request: {}", channelFuture.channel().id(), e.getCause(), e);
+            this.callbackHandlers.remove(channel.id().asLongText());
 
             throw e;
         }
