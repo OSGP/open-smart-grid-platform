@@ -112,7 +112,7 @@
         <wsdl:port binding="tns:DistributionAutomationDeviceManagementPortSoap11"
             name="DistributionAutomationDeviceManagementPortSoap11">
             <soap:address
-                location="http://localhost:8080/osgp-adapter-ws-distributionautomation/distributionautomation/devicemanagement/"
+                location="https://localhost:443/osgp-adapter-ws-distributionautomation/distributionautomation/devicemanagement/"
             />
         </wsdl:port>
     </wsdl:service>
