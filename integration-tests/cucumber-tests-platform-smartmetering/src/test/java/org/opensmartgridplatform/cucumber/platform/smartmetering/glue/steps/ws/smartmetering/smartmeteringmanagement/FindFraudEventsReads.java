@@ -15,8 +15,8 @@ import java.util.Map;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.EventLogCategory;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.EventType;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 public class FindFraudEventsReads extends AbstractFindEventsReads {
 

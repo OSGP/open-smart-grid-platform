@@ -21,6 +21,7 @@ import java.util.Map;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.SetTransitionAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.SetTransitionAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.SetTransitionRequest;
@@ -38,8 +39,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 /**
  * Class with all the set light requests steps
@@ -67,13 +68,13 @@ public class SetTransitionSteps {
                         PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         if (requestParameters.containsKey(PlatformPubliclightingKeys.KEY_TRANSITION_TYPE)
-                && !requestParameters.get(PlatformPubliclightingKeys.KEY_TRANSITION_TYPE).isEmpty()) {
+                && StringUtils.isNotBlank(requestParameters.get(PlatformPubliclightingKeys.KEY_TRANSITION_TYPE))) {
             request.setTransitionType(getEnum(requestParameters, PlatformPubliclightingKeys.KEY_TRANSITION_TYPE,
                     TransitionType.class, PlatformPubliclightingDefaults.DEFAULT_TRANSITION_TYPE));
         }
 
         if (requestParameters.containsKey(PlatformPubliclightingKeys.KEY_TIME)
-                && !requestParameters.get(PlatformPubliclightingKeys.KEY_TIME).isEmpty()) {
+                && StringUtils.isNotBlank(requestParameters.get(PlatformPubliclightingKeys.KEY_TIME))) {
             final GregorianCalendar gcal = new GregorianCalendar();
             gcal.add(Calendar.HOUR,
                     Integer.parseInt(requestParameters.get(PlatformPubliclightingKeys.KEY_TIME).substring(0, 2)));
@@ -96,8 +97,8 @@ public class SetTransitionSteps {
     public void receivingASetTransitionRequestByAnUnknownOrganization(final Map<String, String> requestParameters)
             throws Throwable {
         // Force the request being send to the platform as a given organization.
-        ScenarioContext.current().put(PlatformPubliclightingKeys.KEY_ORGANIZATION_IDENTIFICATION,
-                "unknown-organization");
+        ScenarioContext.current()
+                .put(PlatformPubliclightingKeys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
 
         this.receivingASetTransitionRequest(requestParameters);
     }

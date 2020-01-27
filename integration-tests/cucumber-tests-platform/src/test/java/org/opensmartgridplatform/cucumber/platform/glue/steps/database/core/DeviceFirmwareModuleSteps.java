@@ -23,7 +23,7 @@ import org.opensmartgridplatform.domain.core.repositories.FirmwareModuleReposito
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleData;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import cucumber.api.java.en.Then;
+import io.cucumber.java.en.Then;
 
 public class DeviceFirmwareModuleSteps {
 

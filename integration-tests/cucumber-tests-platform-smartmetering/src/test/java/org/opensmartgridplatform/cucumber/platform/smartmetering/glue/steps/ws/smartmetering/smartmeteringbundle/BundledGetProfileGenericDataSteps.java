@@ -22,8 +22,8 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.Prof
 import org.opensmartgridplatform.cucumber.platform.helpers.SettingsHelper;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.builders.GetProfileGenericDataRequestBuilder;
 
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
 
 public class BundledGetProfileGenericDataSteps extends BaseBundleSteps {
 

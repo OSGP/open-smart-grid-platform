@@ -10,7 +10,7 @@ package org.opensmartgridplatform.cucumber.platform.publiclighting.glue.hooks;
 import org.opensmartgridplatform.cucumber.platform.publiclighting.mocks.oslpdevice.MockOslpServer;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import cucumber.api.java.Before;
+import io.cucumber.java.Before;
 
 public class OslpMockServerHooks {
 

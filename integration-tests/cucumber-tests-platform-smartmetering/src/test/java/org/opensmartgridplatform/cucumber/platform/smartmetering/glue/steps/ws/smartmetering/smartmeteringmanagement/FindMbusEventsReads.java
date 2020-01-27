@@ -18,8 +18,8 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Even
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.EventType;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 public class FindMbusEventsReads extends AbstractFindEventsReads {
     private static final List<EventType> allowed = Collections.unmodifiableList(Arrays.asList(

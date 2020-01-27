@@ -32,7 +32,7 @@ import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import cucumber.api.java.en.Given;
+import io.cucumber.java.en.Given;
 
 public class ScheduledTaskSteps extends BaseDeviceSteps {
 

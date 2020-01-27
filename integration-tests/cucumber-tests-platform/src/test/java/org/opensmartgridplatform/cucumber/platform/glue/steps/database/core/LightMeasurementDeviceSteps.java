@@ -21,7 +21,7 @@ import org.opensmartgridplatform.domain.core.repositories.LightMeasurementDevice
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import cucumber.api.java.en.Given;
+import io.cucumber.java.en.Given;
 
 public class LightMeasurementDeviceSteps extends BaseDeviceSteps {
 

@@ -21,8 +21,8 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.support.Service
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import cucumber.api.java.After;
-import cucumber.api.java.Before;
+import io.cucumber.java.After;
+import io.cucumber.java.Before;
 
 /**
  * Class with all the scenario hooks when each scenario runs.

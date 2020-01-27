@@ -31,8 +31,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 public class ReceivedAlarmNotificationsSteps {
     private static final Logger LOGGER = LoggerFactory.getLogger(ReceivedAlarmNotificationsSteps.class);

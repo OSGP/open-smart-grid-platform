@@ -45,8 +45,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 /**
  * Class with all the set configuration requests steps
@@ -151,7 +151,7 @@ public class SetConfigurationSteps {
         config.setPreferredLinkType(preferredLinkType);
 
         if (requestParameters.containsKey(PlatformKeys.METER_TYPE)
-                && !requestParameters.get(PlatformKeys.METER_TYPE).isEmpty()) {
+                && StringUtils.isNotBlank(getString(requestParameters, PlatformKeys.METER_TYPE))) {
             // Note: This piece of code has been made because there are multiple
             // enumerations with the name MeterType, but not all of them has all
             // values the same. Some with underscore and some without.
@@ -168,17 +168,17 @@ public class SetConfigurationSteps {
             config.setMeterType(meterType);
         }
         if (requestParameters.containsKey(PlatformKeys.SHORT_INTERVAL)
-                && !requestParameters.get(PlatformKeys.SHORT_INTERVAL).isEmpty()) {
+                && StringUtils.isNotBlank(requestParameters.get(PlatformKeys.SHORT_INTERVAL))) {
             config.setShortTermHistoryIntervalMinutes(
                     getInteger(requestParameters, PlatformKeys.SHORT_INTERVAL, PlatformCommonDefaults.SHORT_INTERVAL));
         }
 
         if (requestParameters.containsKey(PlatformKeys.INTERVAL_TYPE)
-                && !requestParameters.get(PlatformKeys.INTERVAL_TYPE).isEmpty()) {
+                && StringUtils.isNotBlank(requestParameters.get(PlatformKeys.INTERVAL_TYPE))) {
             final LongTermIntervalType intervalType = getEnum(requestParameters, PlatformKeys.INTERVAL_TYPE,
                     LongTermIntervalType.class, PlatformCommonDefaults.INTERVAL_TYPE);
             if (requestParameters.containsKey(PlatformKeys.LONG_INTERVAL)
-                    && !requestParameters.get(PlatformKeys.LONG_INTERVAL).isEmpty()) {
+                    && StringUtils.isNotBlank(requestParameters.get(PlatformKeys.LONG_INTERVAL))) {
                 config.setLongTermHistoryInterval(getInteger(requestParameters, PlatformKeys.LONG_INTERVAL,
                         PlatformCommonDefaults.LONG_INTERVAL));
                 config.setLongTermHistoryIntervalType(intervalType);

@@ -30,8 +30,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 public class StopDeviceSteps {
 
@@ -76,7 +76,7 @@ public class StopDeviceSteps {
         GenericResponseSteps.verifySoapFault(expectedResult);
     }
 
-    @Then("the platform buffers a stop device response message for device \"([^\"]*)\"")
+    @Then("the platform buffers a stop device response message for device {string}")
     public void thePlatformBuffersAStopDeviceResponseMessageForDevice(final String deviceIdentification,
             final Map<String, String> expectedResult) throws Throwable {
         final StopDeviceTestAsyncRequest request = new StopDeviceTestAsyncRequest();

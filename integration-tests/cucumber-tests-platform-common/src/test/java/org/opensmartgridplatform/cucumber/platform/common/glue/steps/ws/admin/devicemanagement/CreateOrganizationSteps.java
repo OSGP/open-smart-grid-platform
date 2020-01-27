@@ -20,6 +20,7 @@ import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.Organi
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.PlatformDomain;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.PlatformFunctionGroup;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
+import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonDefaults;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonKeys;
 import org.opensmartgridplatform.cucumber.platform.common.support.ws.admin.AdminDeviceManagementClient;
@@ -27,8 +28,8 @@ import org.opensmartgridplatform.cucumber.platform.glue.steps.ws.GenericResponse
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 /**
  * Class with all the create organization requests steps
@@ -68,10 +69,8 @@ public class CreateOrganizationSteps {
         }
 
         // Optional fields
-        if (requestSettings.containsKey(PlatformCommonKeys.KEY_ENABLED)
-                && !requestSettings.get(PlatformCommonKeys.KEY_ENABLED).isEmpty()) {
-            organization.setEnabled(getBoolean(requestSettings, PlatformCommonKeys.KEY_ENABLED));
-        }
+        organization.setEnabled(getBoolean(requestSettings, PlatformCommonKeys.KEY_ENABLED,
+                PlatformDefaults.DEFAULT_ORGANIZATION_ENABLED));
 
         request.setOrganisation(organization);
 

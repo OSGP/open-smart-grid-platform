@@ -8,6 +8,9 @@
 package org.opensmartgridplatform.cucumber.platform.glue.steps.database.core;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getFloat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.List;
@@ -26,7 +29,7 @@ import org.opensmartgridplatform.domain.core.repositories.SsldRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import cucumber.api.java.en.Then;
+import io.cucumber.java.en.Then;
 
 public class DeviceSteps extends BaseDeviceSteps {
 
@@ -68,61 +71,63 @@ public class DeviceSteps extends BaseDeviceSteps {
         });
 
         if (settings.containsKey(PlatformKeys.ALIAS)) {
-            assertThat(device.getAlias()).isEqualTo(settings.get(PlatformKeys.ALIAS));
+            assertThat(device.getAlias()).isEqualTo(getString(settings, PlatformKeys.ALIAS));
         }
         if (settings.containsKey(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION)) {
             assertThat(device.getOwner().getOrganisationIdentification())
-                    .isEqualTo(settings.get(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION));
+                    .isEqualTo(getString(settings, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION));
         }
         if (settings.containsKey(PlatformKeys.CONTAINER_POSTALCODE)) {
             assertThat(device.getContainerAddress().getPostalCode())
-                    .isEqualTo(settings.get(PlatformKeys.CONTAINER_POSTALCODE));
+                    .isEqualTo(getString(settings, PlatformKeys.CONTAINER_POSTALCODE));
         }
         if (settings.containsKey(PlatformKeys.CONTAINER_CITY)) {
-            assertThat(device.getContainerAddress().getCity()).isEqualTo(settings.get(PlatformKeys.CONTAINER_CITY));
+            assertThat(device.getContainerAddress().getCity())
+                    .isEqualTo(getString(settings, PlatformKeys.CONTAINER_CITY));
         }
         if (settings.containsKey(PlatformKeys.CONTAINER_STREET)) {
-            assertThat(device.getContainerAddress().getStreet()).isEqualTo(settings.get(PlatformKeys.CONTAINER_STREET));
+            assertThat(device.getContainerAddress().getStreet())
+                    .isEqualTo(getString(settings, PlatformKeys.CONTAINER_STREET));
         }
         if (settings.containsKey(PlatformKeys.CONTAINER_NUMBER)) {
-            assertThat(device.getContainerAddress().getNumber()).isEqualTo(settings.get(PlatformKeys.CONTAINER_NUMBER));
+            assertThat(device.getContainerAddress().getNumber())
+                    .isEqualTo(getString(settings, PlatformKeys.CONTAINER_NUMBER));
         }
         if (settings.containsKey(PlatformKeys.CONTAINER_MUNICIPALITY)) {
             assertThat(device.getContainerAddress().getMunicipality())
-                    .isEqualTo(settings.get(PlatformKeys.CONTAINER_MUNICIPALITY));
+                    .isEqualTo(getString(settings, PlatformKeys.CONTAINER_MUNICIPALITY));
         }
         if (settings.containsKey(PlatformKeys.KEY_LATITUDE)) {
-            assertThat(Float.parseFloat(settings.get(PlatformKeys.KEY_LATITUDE)) == device.getGpsCoordinates()
-                    .getLatitude()).isTrue();
+            assertThat(device.getGpsCoordinates().getLatitude())
+                    .isEqualTo(getFloat(settings, PlatformKeys.KEY_LATITUDE));
         }
         if (settings.containsKey(PlatformKeys.KEY_LONGITUDE)) {
-            assertThat(Float.parseFloat(settings.get(PlatformKeys.KEY_LONGITUDE)) == device.getGpsCoordinates()
-                    .getLongitude()).isTrue();
+            assertThat(device.getGpsCoordinates().getLongitude())
+                    .isEqualTo(getFloat(settings, PlatformKeys.KEY_LONGITUDE));
         }
         if (settings.containsKey(PlatformKeys.KEY_ACTIVATED)) {
-            assertThat(Boolean.parseBoolean(settings.get(PlatformKeys.KEY_ACTIVATED)) == device.isActivated()).isTrue();
+            assertThat(device.isActivated()).isEqualTo(getBoolean(settings, PlatformKeys.KEY_ACTIVATED));
         }
         if (settings.containsKey(PlatformKeys.KEY_DEVICE_LIFECYCLE_STATUS)) {
-            assertThat(DeviceLifecycleStatus.valueOf(settings.get(PlatformKeys.KEY_DEVICE_LIFECYCLE_STATUS)) == device
-                    .getDeviceLifecycleStatus()).isTrue();
+            assertThat(device.getDeviceLifecycleStatus()).isEqualTo(
+                    getEnum(settings, PlatformKeys.KEY_DEVICE_LIFECYCLE_STATUS, DeviceLifecycleStatus.class));
         }
         if (settings.containsKey(PlatformKeys.KEY_HAS_SCHEDULE)
                 || settings.containsKey(PlatformKeys.KEY_PUBLICKEYPRESENT)) {
             final Ssld ssld = this.ssldRepository
-                    .findByDeviceIdentification(settings.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));
+                    .findByDeviceIdentification(getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
 
             if (settings.containsKey(PlatformKeys.KEY_HAS_SCHEDULE)) {
-                assertThat(Boolean.parseBoolean(settings.get(PlatformKeys.KEY_HAS_SCHEDULE)) == ssld.getHasSchedule())
-                        .isTrue();
+                assertThat(ssld.getHasSchedule()).isEqualTo(getBoolean(settings, PlatformKeys.KEY_HAS_SCHEDULE));
             }
             if (settings.containsKey(PlatformKeys.KEY_PUBLICKEYPRESENT)) {
-                assertThat(Boolean.parseBoolean(settings.get(PlatformKeys.KEY_PUBLICKEYPRESENT)) == ssld
-                        .isPublicKeyPresent()).isTrue();
+                assertThat(ssld.isPublicKeyPresent())
+                        .isEqualTo(getBoolean(settings, PlatformKeys.KEY_PUBLICKEYPRESENT));
             }
         }
         if (settings.containsKey(PlatformKeys.KEY_DEVICE_MODEL_MODELCODE)) {
             assertThat(device.getDeviceModel().getModelCode())
-                    .isEqualTo(settings.get(PlatformKeys.KEY_DEVICE_MODEL_MODELCODE));
+                    .isEqualTo(getString(settings, PlatformKeys.KEY_DEVICE_MODEL_MODELCODE));
         }
     }
 

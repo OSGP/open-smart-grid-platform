@@ -78,9 +78,9 @@ import org.springframework.util.CollectionUtils;
 
 import com.google.protobuf.ByteString;
 
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 /**
  * Class which holds all the OSLP device mock steps in order to let the device
@@ -251,13 +251,13 @@ public class OslpDeviceSteps {
                 final DaliConfiguration receivedDaliConfiguration = receivedConfiguration.getDaliConfiguration();
                 if (receivedDaliConfiguration != null) {
                     if (expectedResponseData.containsKey(PlatformKeys.DC_LIGHTS)
-                            && !expectedResponseData.get(PlatformKeys.DC_LIGHTS).isEmpty()) {
+                            && StringUtils.isNotBlank(expectedResponseData.get(PlatformKeys.DC_LIGHTS))) {
                         assertThat(OslpUtils.byteStringToInteger(receivedDaliConfiguration.getNumberOfLights()))
                                 .isEqualTo(getInteger(expectedResponseData, PlatformKeys.DC_LIGHTS));
                     }
 
                     if (expectedResponseData.containsKey(PlatformKeys.DC_MAP)
-                            && !expectedResponseData.get(PlatformKeys.DC_MAP).isEmpty()) {
+                            && StringUtils.isNotBlank(expectedResponseData.get(PlatformKeys.DC_MAP))) {
                         assertThat(receivedDaliConfiguration.getAddressMapList()).isNotNull();
                         final String[] expectedDcMapArray = getString(expectedResponseData, PlatformKeys.DC_MAP)
                                 .split(";");
@@ -741,8 +741,12 @@ public class OslpDeviceSteps {
         final Map<String, String[]> requestMap = new HashMap<>();
 
         for (final String key : requestParameters.keySet()) {
-            final String[] values = requestParameters.get(key)
-                    .split(PlatformPubliclightingKeys.SEPARATOR_SPACE_COLON_SPACE);
+            final String[] values;
+            if (requestParameters.get(key) == null) {
+                values = new String[] { "" };
+            } else {
+                values = requestParameters.get(key).split(PlatformPubliclightingKeys.SEPARATOR_SPACE_COLON_SPACE);
+            }
             requestMap.put(key, values);
         }
 
