@@ -43,7 +43,7 @@ public class SimulatedConfigurationObjectSteps {
     @Autowired
     private JsonObjectCreator jsonObjectCreator;
 
-    @Given("device simulation of \"([^\"]*)\" with configuration object")
+    @Given("device simulation of {string} with configuration object")
     public void deviceSimulationOfConfigurationObject(final String deviceIdentification,
             final Map<String, String> settings) {
 
@@ -56,7 +56,7 @@ public class SimulatedConfigurationObjectSteps {
                 OBJECT_DESCRIPTION);
     }
 
-    @Then("device simulation of \"([^\"]*)\" should be with configuration object")
+    @Then("device simulation of {string} should be with configuration object")
     public void deviceSimulationOfShouldBeWithConfigurationObject(final String deviceIdentification,
             final Map<String, String> settings) {
 
