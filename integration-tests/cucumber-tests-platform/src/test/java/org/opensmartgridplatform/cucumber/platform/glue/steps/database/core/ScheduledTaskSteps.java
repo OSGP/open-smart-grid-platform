@@ -44,7 +44,7 @@ public class ScheduledTaskSteps extends BaseDeviceSteps {
     @Autowired
     private ScheduledTaskRepository scheduledTaskRepository;
 
-    @Given("a scheduled \"([^\"]*)\" task")
+    @Given("a scheduled {string} task")
     public void givenAScheduledTask(final String messageType, final Map<String, String> settings) {
         final ScheduledTask scheduledTask = SCHEDULED_TASK_CREATOR_MAP.get(messageType).apply(settings);
         this.scheduledTaskRepository.save(scheduledTask);
