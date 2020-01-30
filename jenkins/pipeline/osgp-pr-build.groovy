@@ -36,7 +36,7 @@ pipeline {
                       contextSource: [$class: 'ManuallyEnteredCommitContextSource']])
             }
         }
-        
+
         stage ('Maven Build') {
             steps {
                 withMaven(
@@ -124,7 +124,7 @@ pipeline {
                         string(name: 'BRANCH', value: branchReleaseRepo)]
             }
         }
-       
+
         stage('Run Tests') {
             steps {
                 sh '''echo Searching for specific Cucumber tags in git commit.
@@ -138,12 +138,13 @@ pipeline {
 # - Search for [<tags>]
 # - Remove brackets []
 # - Replace new-lines with spaces
-# - Replace spaces with --tags
+# - Replace spaces with and, commas with or surrounded with parentheses
+# - Replace ~@ with not @ surrounded with parentheses
 # - Output to cucumber-tags.txt, which is imported as environment variables
 
-EXTRACTED_TAGS=`echo $ghprbPullLongDescription | grep -o \'\\[@.*\\]\' | sed \'s/\\[/ /g\' | sed \'s/\\]//g\' | sed \':a;N;$!ba;s/\\n/ /g\' | sed \'s/ / --tags /g\'`
+EXTRACTED_TAGS=`echo $ghprbPullLongDescription | grep -o \'\\[@.*\\]\' | sed \'s/\\[/ /g\' | sed \'s/\\]//g\' | sed \':a;N;$!ba;s/\\n/ /g\' | sed \'s/ / and /g\' | sed \'s/\\([^[:blank:]]\\+,[^[:blank:]]\\+\)/\\(\\1\\)/g\' | sed \'s/,/ or /g\' | sed \'s/~\\(@[^[:blank:]]\\+\\)/\\(not \\1\\)/g\'`
 
-echo "$EXTRACTED_TAGS --tags 'not @NightlyBuildOnly'" > "${WORKSPACE}/cucumber-tags"
+echo "$EXTRACTED_TAGS and not @NightlyBuildOnly" > "${WORKSPACE}/cucumber-tags"
 
 echo Found cucumber tags: [$EXTRACTED_TAGS]'''
                 sh "ssh-keygen -f \"$HOME/.ssh/known_hosts\" -R ${servername}-instance.dev.osgp.cloud"
