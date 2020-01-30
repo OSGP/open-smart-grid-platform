@@ -142,7 +142,7 @@ pipeline {
 # - Replace ~@ with not @ surrounded with parentheses
 # - Output to cucumber-tags.txt, which is imported as environment variables
 
-EXTRACTED_TAGS=`echo $ghprbPullLongDescription | grep -o \'\\[@.*\\]\' | sed \'s/\\[/ /g\' | sed \'s/\\]//g\' | sed \':a;N;$!ba;s/\\n/ /g\' | sed \'s/ / and /g\' | sed \'s/\\([^[:blank:]]\\+,[^[:blank:]]\\+\)/\\(\\1\\)/g\' | sed \'s/,/ or /g\' | sed \'s/~\\(@[^[:blank:]]\\+\\)/\\(not \\1\\)/g\'`
+EXTRACTED_TAGS=`echo $ghprbPullLongDescription | grep -o \'\\[@.*\\]\' | sed \'s/\\[/ /g\' | sed \'s/\\]//g\' | sed \':a;N;$!ba;s/\\n/ /g\' | sed \'s/ / and /g\' | sed \'s/\\([^[:blank:]]\\+,[^[:blank:]]\\+\\)/\\(\\1\\)/g\' | sed \'s/,/ or /g\' | sed \'s/~\\(@[^[:blank:]]\\+\\)/\\(not \\1\\)/g\'`
 
 echo "$EXTRACTED_TAGS and not @NightlyBuildOnly" > "${WORKSPACE}/cucumber-tags"
 
