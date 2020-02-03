@@ -724,8 +724,10 @@ public class OslpDeviceSteps {
                         PlatformPubliclightingDefaults.SHORT_INTERVAL),
                 getInteger(requestParameters, PlatformPubliclightingKeys.LONG_INTERVAL,
                         PlatformPubliclightingDefaults.LONG_INTERVAL),
-                getEnum(requestParameters, PlatformPubliclightingKeys.INTERVAL_TYPE, LongTermIntervalType.class,
-                        PlatformPubliclightingDefaults.DEFAULT_INTERVAL_TYPE),
+                requestParameters.containsKey(PlatformPubliclightingKeys.INTERVAL_TYPE)
+                        ? getEnum(requestParameters, PlatformPubliclightingKeys.INTERVAL_TYPE,
+                                LongTermIntervalType.class)
+                        : PlatformPubliclightingDefaults.DEFAULT_INTERVAL_TYPE,
                 osgpIpAddressMock, getInteger(requestParameters, PlatformPubliclightingKeys.OSGP_PORT,
                         PlatformPubliclightingDefaults.DEFAULT_OSLP_PORT));
     }
