@@ -172,8 +172,8 @@ public class MockOslpServer {
     public void stop() {
         this.serverWorkerGroup.destroy();
         this.serverBossGroup.destroy();
-        this.channelHandler = null;
         this.resetServer();
+        this.channelHandler = null;
         LOGGER.info("OSLP Mock servers shutdown.");
     }
 
