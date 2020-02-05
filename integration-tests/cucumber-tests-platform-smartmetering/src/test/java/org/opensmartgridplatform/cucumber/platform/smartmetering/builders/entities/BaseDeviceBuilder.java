@@ -12,6 +12,7 @@ import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.inputparsers.DateInputParser;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
@@ -201,14 +202,12 @@ public abstract class BaseDeviceBuilder<T extends BaseDeviceBuilder<T>> {
         }
 
         if (inputSettings.containsKey(PlatformSmartmeteringKeys.NETWORK_ADDRESS)) {
-            if (inputSettings.get(PlatformSmartmeteringKeys.NETWORK_ADDRESS).isEmpty()) {
+            if (StringUtils.isBlank(inputSettings.get(PlatformSmartmeteringKeys.NETWORK_ADDRESS))) {
                 this.setNetworkAddress(null);
             } else {
                 try {
-                    if (inputSettings.containsKey(PlatformSmartmeteringKeys.NETWORK_ADDRESS)) {
-                        this.setNetworkAddress(
-                                InetAddress.getByName(inputSettings.get(PlatformSmartmeteringKeys.NETWORK_ADDRESS)));
-                    }
+                    this.setNetworkAddress(
+                            InetAddress.getByName(inputSettings.get(PlatformSmartmeteringKeys.NETWORK_ADDRESS)));
                 } catch (final UnknownHostException e) {
                     LOGGER.error("Exception occured while setting InetAddress for device.", e);
                 }
