@@ -1,8 +1,8 @@
-#@TariffSwitching @Platform @NightlyBuildOnly @Housekeeping
-#Feature: TariffSwitching Housekeeping - Response Data Cleanup Job
-  #As open smart grid platform
-  #I want to clean up the response data
-  #So that obsolete data is removed
+@Skip @TariffSwitching @Platform @NightlyBuildOnly @Housekeeping
+Feature: TariffSwitching Housekeeping - Response Data Cleanup Job
+  As open smart grid platform
+  I want to clean up the response data
+  So that obsolete data is removed
 #
   #Scenario: Clean obsolete response data
     #Given a tariff switching response data record

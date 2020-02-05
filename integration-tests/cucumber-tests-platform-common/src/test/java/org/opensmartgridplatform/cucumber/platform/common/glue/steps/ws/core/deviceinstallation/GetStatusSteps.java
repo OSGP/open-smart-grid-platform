@@ -15,6 +15,7 @@ import static org.opensmartgridplatform.cucumber.platform.core.CorrelationUidHel
 import java.util.Map;
 import java.util.Objects;
 
+import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.adapter.ws.schema.core.common.AsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.DeviceStatus;
@@ -34,8 +35,8 @@ import org.opensmartgridplatform.cucumber.platform.common.support.ws.core.CoreDe
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 public class GetStatusSteps {
 
@@ -71,7 +72,7 @@ public class GetStatusSteps {
                         PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
     }
 
-    @Then("the platform buffers a device installation get status response message for device \"([^\"]*)\"")
+    @Then("the platform buffers a device installation get status response message for device {string}")
     public void thePlatformBuffersADeviceInstallationGetStatusResponseMessageForDevice(
             final String deviceIdentification, final Map<String, String> expectedResult) throws Throwable {
         final GetStatusAsyncRequest request = new GetStatusAsyncRequest();
@@ -99,7 +100,7 @@ public class GetStatusSteps {
                 .isEqualTo(getEnum(expectedResult, PlatformKeys.KEY_LIGHTTYPE, LightType.class));
 
         if (expectedResult.containsKey(PlatformKeys.KEY_EVENTNOTIFICATIONTYPES)
-                && !expectedResult.get(PlatformKeys.KEY_EVENTNOTIFICATIONTYPES).isEmpty()) {
+                && StringUtils.isNotBlank(expectedResult.get(PlatformKeys.KEY_EVENTNOTIFICATIONTYPES))) {
             assertThat(deviceStatus.getEventNotifications().size())
                     .isEqualTo(getString(expectedResult, PlatformKeys.KEY_EVENTNOTIFICATIONS,
                             PlatformDefaults.DEFAULT_EVENTNOTIFICATIONS).split(PlatformKeys.SEPARATOR_COMMA).length);
@@ -114,7 +115,7 @@ public class GetStatusSteps {
         }
 
         if (expectedResult.containsKey(PlatformKeys.KEY_LIGHTVALUES)
-                && !expectedResult.get(PlatformKeys.KEY_LIGHTVALUES).isEmpty()) {
+                && StringUtils.isNotBlank(expectedResult.get(PlatformKeys.KEY_LIGHTVALUES))) {
             assertThat(deviceStatus.getLightValues().size()).isEqualTo(
                     getString(expectedResult, PlatformKeys.KEY_LIGHTVALUES, PlatformDefaults.DEFAULT_LIGHTVALUES)
                             .split(PlatformKeys.SEPARATOR_COMMA).length);

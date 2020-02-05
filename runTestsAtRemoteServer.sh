@@ -45,7 +45,7 @@ echo "  [${CMD}]"
 ${CMD}
 
 echo "- Executing cucumber project ${PROJECT} remote on ${SERVER} ..."
-CMD="sudo ${XVFB} java -javaagent:/usr/share/tomcat/lib/jacocoagent.jar=destfile=target/code-coverage/jacoco-it.exec ${ADDITIONAL_PARAMETERS} -Dcucumber.options=\"--tags 'not @Skip' --strict ${ADDITIONAL_CUCUMBER_OPTIONS}\" -DskipITs=false -Dtimeout=30 -DskipITCoverage=false -jar cucumber-*-test-jar-with-dependencies.jar -report target/output; sudo chown -R ${USER}:${USER} /data/software/${PROJECT}/*"
+CMD="sudo ${XVFB} java -javaagent:/usr/share/tomcat/lib/jacocoagent.jar=destfile=target/code-coverage/jacoco-it.exec ${ADDITIONAL_PARAMETERS} -Dcucumber.execution.strict=true -Dcucumber.filter.tags=\"not @Skip ${ADDITIONAL_CUCUMBER_OPTIONS}\" -DskipITs=false -Dtimeout=30 -DskipITCoverage=false -jar cucumber-*-test-jar-with-dependencies.jar -report target/output; sudo chown -R ${USER}:${USER} /data/software/${PROJECT}/*"
 echo "  [${CMD}]"
 CMD="ssh -oStrictHostKeyChecking=no -oTCPKeepAlive=yes -oServerAliveInterval=50 ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"cd /data/software/${PROJECT} && ${CMD}\"\""
 ${CMD}

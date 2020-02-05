@@ -33,9 +33,9 @@ import org.opensmartgridplatform.cucumber.platform.microgrids.support.ws.microgr
 import org.opensmartgridplatform.cucumber.platform.microgrids.support.ws.microgrids.adhocmanagement.GetDataRequestBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import cucumber.api.PendingException;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.PendingException;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 public class GetDataSteps {
 

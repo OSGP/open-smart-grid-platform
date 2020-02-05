@@ -17,7 +17,7 @@
   <version>5.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>super-osgp</name>
-  <!-- Description, Organization, Licences, URL and Distribution Management 
+  <!-- Description, Organization, Licences, URL and Distribution Management
     elements are needed for the maven-jxr-plugin to generate a maven site -->
   <description>Super pom for OSGP components.</description>
   <organization>
@@ -118,7 +118,7 @@
     <SunriseSunsetCalculator.version>1.2</SunriseSunsetCalculator.version>
     <ant.junit.version>1.10.5</ant.junit.version>
     <args4j.version>2.33</args4j.version>
-    <cucumber.version>4.2.6</cucumber.version>
+    <cucumber.version>5.1.2</cucumber.version>
     <sun.httpserver.version>20070405</sun.httpserver.version>
     <postgresql.version>42.2.9</postgresql.version>
   </properties>
@@ -710,6 +710,13 @@
         <version>${junit.version}</version>
         <scope>test</scope>
       </dependency>
+      <!-- Cucumber tests depend on JUnit 4, add the vintage engine -->
+      <dependency>
+        <groupId>org.junit.vintage</groupId>
+        <artifactId>junit-vintage-engine</artifactId>
+        <version>${junit.version}</version>
+        <scope>test</scope>
+      </dependency>
       <dependency>
         <groupId>org.junit.platform</groupId>
         <artifactId>junit-platform-launcher</artifactId>
@@ -783,11 +790,6 @@
       <dependency>
         <groupId>io.cucumber</groupId>
         <artifactId>cucumber-java</artifactId>
-        <version>${cucumber.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.cucumber</groupId>
-        <artifactId>cucumber-core</artifactId>
         <version>${cucumber.version}</version>
       </dependency>
       <dependency>

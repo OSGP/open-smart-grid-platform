@@ -23,8 +23,8 @@ import org.opensmartgridplatform.cucumber.platform.glue.steps.ws.GenericResponse
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 public class FindRecentDeviceSteps {
 
@@ -42,7 +42,7 @@ public class FindRecentDeviceSteps {
         }
     }
 
-    @Then("the find recent devices response contains \"([^\"]*)\" devices?")
+    @Then("the find recent devices response contains \"{int}\" device(s)")
     public void theFindRecentDevicesResponseContains(final Integer numberOfDevices) {
         final FindRecentDevicesResponse response = (FindRecentDevicesResponse) ScenarioContext.current()
                 .get(PlatformCommonKeys.RESPONSE);
@@ -51,7 +51,7 @@ public class FindRecentDeviceSteps {
         assertThat((devices != null) ? devices.size() : 0).isEqualTo((int) numberOfDevices);
     }
 
-    @Then("the find recent devices response contains at index \"([^\"]*)\"")
+    @Then("the find recent devices response contains at index \"{int}\"")
     public void theFindRecentDevicesResponseContainsAtIndex(final Integer index,
             final Map<String, String> expectedDevice) throws Throwable {
         final FindRecentDevicesResponse response = (FindRecentDevicesResponse) ScenarioContext.current()

@@ -27,8 +27,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
 
 public class SimulatedConfigurationObjectSteps {
 
@@ -43,7 +43,7 @@ public class SimulatedConfigurationObjectSteps {
     @Autowired
     private JsonObjectCreator jsonObjectCreator;
 
-    @Given("device simulation of \"([^\"]*)\" with configuration object")
+    @Given("device simulation of {string} with configuration object")
     public void deviceSimulationOfConfigurationObject(final String deviceIdentification,
             final Map<String, String> settings) {
 
@@ -56,7 +56,7 @@ public class SimulatedConfigurationObjectSteps {
                 OBJECT_DESCRIPTION);
     }
 
-    @Then("device simulation of \"([^\"]*)\" should be with configuration object")
+    @Then("device simulation of {string} should be with configuration object")
     public void deviceSimulationOfShouldBeWithConfigurationObject(final String deviceIdentification,
             final Map<String, String> settings) {
 

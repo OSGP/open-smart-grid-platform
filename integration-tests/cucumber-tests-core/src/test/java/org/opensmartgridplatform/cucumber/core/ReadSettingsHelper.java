@@ -48,7 +48,7 @@ public class ReadSettingsHelper {
      *            The default value if the key wasn't found.
      */
     public static Boolean getBoolean(final Map<String, String> settings, final String key, final Boolean defaultValue) {
-        if (!settings.containsKey(key)) {
+        if (!settings.containsKey(key) || StringUtils.isBlank(settings.get(key))) {
             return defaultValue;
         }
 
@@ -80,7 +80,7 @@ public class ReadSettingsHelper {
      * @return The date time.
      */
     public static DateTime getDate(final Map<String, String> settings, final String key, final DateTime defaultDate) {
-        if (!settings.containsKey(key)) {
+        if (!settings.containsKey(key) || StringUtils.isBlank(settings.get(key))) {
             return defaultDate;
         }
 
@@ -116,7 +116,7 @@ public class ReadSettingsHelper {
      * @return The Double object.
      */
     public static Double getDouble(final Map<String, String> settings, final String key, final Double defaultValue) {
-        if (!settings.containsKey(key)) {
+        if (!settings.containsKey(key) || StringUtils.isBlank(settings.get(key))) {
             return defaultValue;
         }
 
@@ -152,7 +152,7 @@ public class ReadSettingsHelper {
      * @return The Float object.
      */
     public static Float getFloat(final Map<String, String> settings, final String key, final Float defaultValue) {
-        if (!settings.containsKey(key)) {
+        if (!settings.containsKey(key) || StringUtils.isBlank(settings.get(key))) {
             return defaultValue;
         }
 
@@ -168,7 +168,7 @@ public class ReadSettingsHelper {
 
     public static Integer getInteger(final Map<String, String> settings, final String key, final Integer defaultValue) {
 
-        if (!settings.containsKey(key) || settings.get(key).isEmpty()) {
+        if (!settings.containsKey(key) || StringUtils.isBlank(settings.get(key))) {
             return defaultValue;
         }
 
@@ -206,7 +206,7 @@ public class ReadSettingsHelper {
      */
     public static Long getLong(final Map<String, String> settings, final String key, final Long defaultValue) {
 
-        if (!settings.containsKey(key)) {
+        if (!settings.containsKey(key) || StringUtils.isBlank(settings.get(key))) {
             return defaultValue;
         }
 
@@ -234,7 +234,7 @@ public class ReadSettingsHelper {
      */
     public static Short getShort(final Map<String, String> settings, final String key, final Short defaultValue) {
 
-        if (!settings.containsKey(key)) {
+        if (!settings.containsKey(key) || StringUtils.isBlank(settings.get(key))) {
             return defaultValue;
         }
 
@@ -243,7 +243,15 @@ public class ReadSettingsHelper {
 
     public static String getString(final Map<String, String> settings, final String key) {
         String value = null;
-        if (settings.containsKey(key) && !settings.get(key).equalsIgnoreCase("null")) {
+        if (settings.containsKey(key) && settings.get(key) == null) {
+            /*
+             * Empty values in feature files were a blank string by default,
+             * which has changed to null. Handling this situation here is a way
+             * to work around this, without updating feature definitions.
+             */
+            value = "";
+        } else if (settings.containsKey(key) && settings.get(key) != null
+                && !settings.get(key).equalsIgnoreCase("null")) {
             value = settings.get(key);
         }
 
@@ -275,7 +283,7 @@ public class ReadSettingsHelper {
 
     public static Byte getByte(final Map<String, String> settings, final String key, final Byte defaultValue) {
 
-        if (!settings.containsKey(key)) {
+        if (!settings.containsKey(key) || StringUtils.isBlank(settings.get(key))) {
             return defaultValue;
         }
 
@@ -290,7 +298,7 @@ public class ReadSettingsHelper {
 
     public static <E extends Enum<E>> E getEnum(final Map<String, String> settings, final String key,
             final Class<E> enumType) {
-        if (!settings.containsKey(key) || settings.get(key).isEmpty()) {
+        if (!settings.containsKey(key) || StringUtils.isBlank(settings.get(key))) {
             return null;
         }
 
@@ -299,7 +307,7 @@ public class ReadSettingsHelper {
 
     public static <E extends Enum<E>> E getEnum(final Map<String, String> settings, final String key,
             final Class<E> enumType, final E defaultValue) {
-        if (!settings.containsKey(key)) {
+        if (!settings.containsKey(key) || StringUtils.isBlank(settings.get(key))) {
             return defaultValue;
         }
 

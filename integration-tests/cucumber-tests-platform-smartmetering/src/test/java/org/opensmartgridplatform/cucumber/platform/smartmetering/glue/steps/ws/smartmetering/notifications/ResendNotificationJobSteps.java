@@ -7,7 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.notifications;
 
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.When;
 
 public class ResendNotificationJobSteps {
 

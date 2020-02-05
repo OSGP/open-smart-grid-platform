@@ -32,8 +32,8 @@ import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityExce
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 /**
  * Class with all the create organization requests steps

@@ -56,9 +56,9 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.ScenarioContext
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.bundle.SmartMeteringBundleClient;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 public class BundleSteps extends BaseBundleSteps {
 

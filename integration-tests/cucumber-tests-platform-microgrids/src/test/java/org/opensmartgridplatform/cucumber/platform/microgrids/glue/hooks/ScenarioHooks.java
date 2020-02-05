@@ -12,8 +12,8 @@ import org.opensmartgridplatform.cucumber.platform.microgrids.database.Database;
 import org.opensmartgridplatform.cucumber.platform.microgrids.support.ws.microgrids.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import cucumber.api.java.After;
-import cucumber.api.java.Before;
+import io.cucumber.java.After;
+import io.cucumber.java.Before;
 
 /**
  * Class with all the scenario hooks when each scenario runs.

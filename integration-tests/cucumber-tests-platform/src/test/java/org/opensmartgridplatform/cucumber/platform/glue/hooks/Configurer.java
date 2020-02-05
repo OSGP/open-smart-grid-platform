@@ -8,49 +8,23 @@
 package org.opensmartgridplatform.cucumber.platform.glue.hooks;
 
 import java.lang.reflect.Type;
-import java.util.Locale;
-import java.util.Map;
 
-import cucumber.api.TypeRegistry;
-import cucumber.api.TypeRegistryConfigurer;
-import io.cucumber.cucumberexpressions.ParameterByTypeTransformer;
-import io.cucumber.datatable.TableCellByTypeTransformer;
-import io.cucumber.datatable.TableEntryByTypeTransformer;
-import io.cucumber.datatable.dependency.com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class Configurer implements TypeRegistryConfigurer {
-    @Override
-    public void configureTypeRegistry(final TypeRegistry registry) {
+import io.cucumber.java.DefaultDataTableCellTransformer;
+import io.cucumber.java.DefaultDataTableEntryTransformer;
+import io.cucumber.java.DefaultParameterTransformer;
 
-        final JacksonTableTransformer jacksonTableTransformer = new JacksonTableTransformer();
-        registry.setDefaultParameterTransformer(jacksonTableTransformer);
-        registry.setDefaultDataTableEntryTransformer(jacksonTableTransformer);
-        registry.setDefaultDataTableCellTransformer(jacksonTableTransformer);
-    }
+public class Configurer {
 
-    @Override
-    public Locale locale() {
-        return Locale.ENGLISH;
-    }
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private static final class JacksonTableTransformer
-            implements ParameterByTypeTransformer, TableEntryByTypeTransformer, TableCellByTypeTransformer {
-        private final ObjectMapper objectMapper = new ObjectMapper();
-
-        @Override
-        public <T> T transform(final Map<String, String> entry, final Class<T> type,
-                final TableCellByTypeTransformer cellTransformer) {
-            return this.objectMapper.convertValue(entry, type);
-        }
-
-        @Override
-        public <T> T transform(final String value, final Class<T> cellType) {
-            return this.objectMapper.convertValue(value, cellType);
-        }
-
-        @Override
-        public Object transform(final String value, final Type type) throws Throwable {
-            return this.objectMapper.convertValue(value, this.objectMapper.constructType(type));
-        }
+    @DefaultParameterTransformer
+    @DefaultDataTableEntryTransformer
+    @DefaultDataTableCellTransformer
+    public Object defaultTransformer(final Object fromValue, final Type toValueType) {
+        final JavaType javaType = this.objectMapper.constructType(toValueType);
+        return this.objectMapper.convertValue(fromValue, javaType);
     }
 }

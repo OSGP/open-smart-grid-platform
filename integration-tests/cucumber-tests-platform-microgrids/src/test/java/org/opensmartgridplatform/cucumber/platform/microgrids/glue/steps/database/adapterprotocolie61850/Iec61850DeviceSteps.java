@@ -26,7 +26,7 @@ import org.opensmartgridplatform.cucumber.platform.microgrids.config.Iec61850Moc
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import cucumber.api.java.en.Given;
+import io.cucumber.java.en.Given;
 
 /**
  * IEC61850 specific device steps.

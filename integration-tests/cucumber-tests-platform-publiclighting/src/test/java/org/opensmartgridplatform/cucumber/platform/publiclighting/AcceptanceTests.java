@@ -11,17 +11,21 @@ package org.opensmartgridplatform.cucumber.platform.publiclighting;
 
 import org.junit.runner.RunWith;
 
-import cucumber.api.CucumberOptions;
-import cucumber.api.SnippetType;
-import cucumber.api.junit.Cucumber;
+import io.cucumber.junit.Cucumber;
+import io.cucumber.junit.CucumberOptions;
+import io.cucumber.junit.CucumberOptions.SnippetType;
 
 @RunWith(Cucumber.class)
-@CucumberOptions(features = { "classpath:features/publiclighting" }, tags = { "not @Skip",
-        "not @NightlyBuildOnly" }, glue = { "classpath:org.opensmartgridplatform.cucumber.platform.glue",
+@CucumberOptions(features = { "classpath:features/publiclighting" },
+        tags = { "not @Skip", "not @NightlyBuildOnly" },
+        glue = { "classpath:org.opensmartgridplatform.cucumber.platform.glue",
                 "classpath:org.opensmartgridplatform.cucumber.platform.common.glue",
-                "classpath:org.opensmartgridplatform.cucumber.platform.publiclighting.glue" }, plugin = { "pretty",
-                        "html:target/output/Cucumber-report", "html:target/output/Cucumber-html-report.html",
-                        "json:target/output/cucumber.json" }, snippets = SnippetType.CAMELCASE, dryRun = false)
+                "classpath:org.opensmartgridplatform.cucumber.platform.publiclighting.glue" },
+        plugin = { "pretty", "html:target/output/Cucumber-report", "html:target/output/Cucumber-html-report.html",
+                "json:target/output/cucumber.json" },
+        snippets = SnippetType.CAMELCASE,
+        strict = true,
+        dryRun = false)
 public class AcceptanceTests {
 
 }

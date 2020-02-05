@@ -10,7 +10,7 @@ package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.basicos
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.When;
 
 /**
  * Class with all the AuthorizeDeviceFunctions steps
