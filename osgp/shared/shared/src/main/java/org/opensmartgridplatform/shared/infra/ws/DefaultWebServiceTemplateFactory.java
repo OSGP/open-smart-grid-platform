@@ -15,10 +15,12 @@ import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.conn.ssl.DefaultHostnameVerifier;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
@@ -57,6 +59,7 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
     private int maxConnectionsTotal;
     private int connectionTimeout;
     private CircuitBreaker circuitBreaker;
+    private WebServiceTemplateHostnameVerificationStrategy webServiceTemplateHostnameVerificationStrategy;
 
     private DefaultWebServiceTemplateFactory() {
         this.webServiceTemplates = new HashMap<>();
@@ -88,6 +91,7 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
         private int maxConnectionsTotal = 20;
         private int connectionTimeout = 120000;
         private CircuitBreaker circuitBreaker;
+        private WebServiceTemplateHostnameVerificationStrategy webServiceTemplateHostnameVerificationStrategy = WebServiceTemplateHostnameVerificationStrategy.ALLOW_ALL_HOSTNAMES;
 
         public Builder setApplicationName(final String applicationName) {
             this.applicationName = applicationName;
@@ -154,6 +158,12 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
             return this;
         }
 
+        public Builder setWebServiceTemplateHostnameVerificationStrategy(
+                final WebServiceTemplateHostnameVerificationStrategy webServiceTemplateHostnameVerificationStrategy) {
+            this.webServiceTemplateHostnameVerificationStrategy = webServiceTemplateHostnameVerificationStrategy;
+            return this;
+        }
+
         public DefaultWebServiceTemplateFactory build() {
             final DefaultWebServiceTemplateFactory webServiceTemplateFactory = new DefaultWebServiceTemplateFactory();
             webServiceTemplateFactory.marshaller = this.marshaller;
@@ -171,6 +181,7 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
             webServiceTemplateFactory.maxConnectionsTotal = this.maxConnectionsTotal;
             webServiceTemplateFactory.connectionTimeout = this.connectionTimeout;
             webServiceTemplateFactory.circuitBreaker = this.circuitBreaker;
+            webServiceTemplateFactory.webServiceTemplateHostnameVerificationStrategy = this.webServiceTemplateHostnameVerificationStrategy;
             return webServiceTemplateFactory;
         }
     }
@@ -274,7 +285,7 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
 
     private SSLConnectionSocketFactory getSSLConnectionSocketFactory(final String keystore)
             throws GeneralSecurityException, IOException {
-        // Open keystore, assuming same identity
+        // Open key store, assuming same identity
         final KeyStoreFactoryBean keyStoreFactory = new KeyStoreFactoryBean();
         keyStoreFactory.setType(this.keyStoreType);
         keyStoreFactory.setLocation(new FileSystemResource(this.keyStoreLocation + "/" + keystore + ".pfx"));
@@ -286,12 +297,25 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
             throw new KeyStoreException("Key store is empty");
         }
 
-        // Setup SSL context, load trust and keystore and build the message
+        // Setup SSL context, load trust and key store and build the message
         // sender
         final SSLContext sslContext = SSLContexts.custom()
                 .loadKeyMaterial(keyStore, this.keyStorePassword.toCharArray())
                 .loadTrustMaterial(this.trustStoreFactory.getObject(), new TrustSelfSignedStrategy()).build();
 
-        return new SSLConnectionSocketFactory(sslContext, new NoopHostnameVerifier());
+        final HostnameVerifier hostnameVerifier = this.getHostnameVerifier();
+
+        return new SSLConnectionSocketFactory(sslContext, hostnameVerifier);
+    }
+
+    private HostnameVerifier getHostnameVerifier() throws GeneralSecurityException {
+        switch (this.webServiceTemplateHostnameVerificationStrategy) {
+        case ALLOW_ALL_HOSTNAMES:
+            return new NoopHostnameVerifier();
+        case BROWSER_COMPATIBLE_HOSTNAMES:
+            return new DefaultHostnameVerifier();
+        default:
+            throw new GeneralSecurityException("No hostname verification stategy set.");
+        }
     }
 }
