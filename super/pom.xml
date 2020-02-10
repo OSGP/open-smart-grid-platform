@@ -75,6 +75,7 @@
     <flyway.version>6.1.4</flyway.version>
     <slf4j.version>1.7.26</slf4j.version>
     <apache.commons.lang.version>3.8.1</apache.commons.lang.version>
+    <apache.commons.text.version>1.8</apache.commons.text.version>
     <apache.httpcomponents.version>4.5.7</apache.httpcomponents.version>
     <apache.httpcomponents.httpcore.version>4.4.11</apache.httpcomponents.httpcore.version>
     <commons.codec.version>1.12</commons.codec.version>
@@ -778,6 +779,11 @@
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
         <version>${apache.commons.lang.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-text</artifactId>
+        <version>${apache.commons.text.version}</version>
       </dependency>
 
       <!-- Cucumber Framework -->
