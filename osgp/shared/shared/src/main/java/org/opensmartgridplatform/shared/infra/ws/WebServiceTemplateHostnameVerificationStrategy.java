@@ -1,5 +1,3 @@
-package org.opensmartgridplatform.shared.infra.ws;
-
 /**
  * Copyright 2020 Smart Society Services B.V.
  *
@@ -9,6 +7,8 @@ package org.opensmartgridplatform.shared.infra.ws;
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
+package org.opensmartgridplatform.shared.infra.ws;
 
 public enum WebServiceTemplateHostnameVerificationStrategy {
 
