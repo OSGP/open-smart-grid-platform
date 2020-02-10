@@ -173,7 +173,7 @@ public class SoapRequestHelper {
         } else if (BROWSER_COMPATIBLE_HOSTNAMES.equals(this.webServiceHostnameVerificationStrategy)) {
             return new DefaultHostnameVerifier();
         } else {
-            throw new GeneralSecurityException("No hostname verification stragegy set!");
+            throw new GeneralSecurityException("No hostname verification strategy set!");
         }
     }
 
