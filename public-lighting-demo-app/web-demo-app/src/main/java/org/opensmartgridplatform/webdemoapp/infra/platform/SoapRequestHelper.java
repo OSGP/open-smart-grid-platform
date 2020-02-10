@@ -7,17 +7,18 @@
  */
 package org.opensmartgridplatform.webdemoapp.infra.platform;
 
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
+import java.security.GeneralSecurityException;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 
+import org.apache.http.conn.ssl.DefaultHostnameVerifier;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.SSLContextBuilder;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContexts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,6 +35,9 @@ import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 public class SoapRequestHelper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SoapRequestHelper.class);
+
+    private static final String ALLOW_ALL_HOSTNAMES = "ALLOW_ALL_HOSTNAMES";
+    private static final String BROWSER_COMPATIBLE_HOSTNAMES = "BROWSER_COMPATIBLE_HOSTNAMES";
 
     @Value("${organisation.identification}")
     private String organisationIdentifcation;
@@ -52,6 +56,9 @@ public class SoapRequestHelper {
 
     @Value("${web.service.template.default.uri.publiclighting.adhocmanagement}")
     private String publicLightingWebServiceAdHocManagementUri;
+
+    @Value("${web.service.hostname.verification.strategy}")
+    private String webServiceHostnameVerificationStrategy;
 
     private Jaxb2Marshaller marshaller;
     private final KeyStoreHelper keyStoreHelper;
@@ -143,17 +150,31 @@ public class SoapRequestHelper {
         final HttpClientBuilder builder = HttpClients.custom();
         builder.addInterceptorFirst(new ContentLengthHeaderRemoveInterceptor());
         try {
-            final SSLContext sslContext = new SSLContextBuilder()
+            final SSLContext sslContext = SSLContexts.custom()
                     .loadKeyMaterial(this.keyStoreHelper.getKeyStore(), this.keyStoreHelper.getKeyStorePwAsChar())
-                    .loadTrustMaterial(this.keyStoreHelper.getTrustStore()).build();
-            final SSLConnectionSocketFactory sslConnectionFactory = new SSLConnectionSocketFactory(sslContext);
+                    .loadTrustMaterial(this.keyStoreHelper.getTrustStore(), new TrustSelfSignedStrategy()).build();
+
+            final HostnameVerifier hostnameVerifier = this.getHostnameVerifier();
+
+            final SSLConnectionSocketFactory sslConnectionFactory = new SSLConnectionSocketFactory(sslContext,
+                    hostnameVerifier);
             builder.setSSLSocketFactory(sslConnectionFactory);
             sender.setHttpClient(builder.build());
-        } catch (KeyManagementException | UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException e) {
+        } catch (final GeneralSecurityException e) {
             LOGGER.error("Unbale to create SSL context", e);
         }
 
         return sender;
+    }
+
+    public HostnameVerifier getHostnameVerifier() throws GeneralSecurityException {
+        if (ALLOW_ALL_HOSTNAMES.equals(this.webServiceHostnameVerificationStrategy)) {
+            return new NoopHostnameVerifier();
+        } else if (BROWSER_COMPATIBLE_HOSTNAMES.equals(this.webServiceHostnameVerificationStrategy)) {
+            return new DefaultHostnameVerifier();
+        } else {
+            throw new GeneralSecurityException("No hostname verification stragegy set!");
+        }
     }
 
     /**
