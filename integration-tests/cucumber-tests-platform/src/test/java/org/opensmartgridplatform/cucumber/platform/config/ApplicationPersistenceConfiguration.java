@@ -1,9 +1,10 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.cucumber.platform.config;
 
@@ -11,6 +12,7 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.opensmartgridplatform.cucumber.core.config.BaseApplicationConfiguration;
 import org.opensmartgridplatform.shared.infra.db.DefaultConnectionPoolFactory;
@@ -20,8 +22,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-
-import com.zaxxer.hikari.HikariDataSource;
 
 /**
  * Base class for the application persistence configuration.
@@ -74,8 +74,14 @@ public abstract class ApplicationPersistenceConfiguration extends BaseApplicatio
     protected String hibernateNamingStrategy;
 
     protected static final String PROPERTY_NAME_HIBERNATE_SHOW_SQL = "hibernate.show_sql";
+
     @Value("${hibernate.show_sql}")
     protected String hibernateShowSql;
+
+    protected static final String PROPERTY_ENABLE_LAZY_LOAD_TRANS = "enable_lazy_load_no_trans";
+
+    @Value("${enable_lazy_load_no_trans:false}")
+    protected String enableLazyLoadNoTrans;
 
     protected abstract String getDatabaseName();
 
@@ -114,12 +120,14 @@ public abstract class ApplicationPersistenceConfiguration extends BaseApplicatio
      * Method for creating the Entity Manager Factory Bean.
      *
      * @return LocalContainerEntityManagerFactoryBean
+     *
      * @throws ClassNotFoundException
-     *             when class not found
+     *         when class not found
      */
     protected LocalContainerEntityManagerFactoryBean makeEntityManager(final String unitName,
             final DataSource dataSource) throws ClassNotFoundException {
-        final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
+        final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean =
+                new LocalContainerEntityManagerFactoryBean();
 
         entityManagerFactoryBean.setPersistenceUnitName(unitName);
         entityManagerFactoryBean.setDataSource(dataSource);
@@ -132,6 +140,7 @@ public abstract class ApplicationPersistenceConfiguration extends BaseApplicatio
         jpaProperties.put(PROPERTY_NAME_HIBERNATE_FORMAT_SQL, this.hibernateFormatSql);
         jpaProperties.put(PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY, this.hibernateNamingStrategy);
         jpaProperties.put(PROPERTY_NAME_HIBERNATE_SHOW_SQL, this.hibernateShowSql);
+        jpaProperties.put(PROPERTY_ENABLE_LAZY_LOAD_TRANS, this.enableLazyLoadNoTrans);
 
         entityManagerFactoryBean.setJpaProperties(jpaProperties);
 
