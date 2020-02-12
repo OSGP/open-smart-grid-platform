@@ -10,6 +10,7 @@ Feature: CoreConfigurationManagement SetConfiguration
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | <Protocol>        |
     And the device returns a set configuration status "OK" over "<Protocol>"
+    And the device returns a set reboot response "OK" over "<Protocol>"
     When receiving a set configuration request
       | DeviceIdentification | TEST1024000000001   |
       | LightType            | <LightType>         |
@@ -37,6 +38,7 @@ Feature: CoreConfigurationManagement SetConfiguration
       | IntervalType      | <IntervalType>      |
       | OsgpIpAddress     | <OsgpIpAddress>     |
       | OsgpPort          | <OsgpPort>          |
+    And a set reboot "<Protocol>" message is sent to device "TEST1024000000001"
     And the platform buffers a set configuration response message for device "TEST1024000000001"
       | Result | OK |
 
