@@ -176,7 +176,7 @@ echo Found cucumber tags: [$EXTRACTED_TAGS]'''
                 archiveArtifacts '**/target/*.tgz'
 
                 // Check the console log for failed tests
-                step([$class: 'LogParserPublisher', projectRulePath: 'console-test-result-rules', unstableOnWarning: true, useProjectRule: true])
+                step([$class: 'LogParserPublisher', projectRulePath: 'console-test-result-rules', unstableOnWarning: true, failBuildOnError: true, useProjectRule: true])
             }
         }
     } // stages
