@@ -7,19 +7,21 @@
  */
 package org.opensmartgridplatform.cucumber.platform.glue.steps.database.core;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Map;
 
 import org.joda.time.DateTime;
-import org.junit.Assert;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.core.factories.RelayStatusFactory;
 import org.opensmartgridplatform.domain.core.entities.RelayStatus;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
 
 public class RelayStatusSteps extends BaseDeviceSteps {
 
@@ -61,24 +63,28 @@ public class RelayStatusSteps extends BaseDeviceSteps {
             // Check if the last known state time is at most 3 minutes in the
             // past
             final Date startDate = DateTime.now().minusMinutes(3).toDate();
-            Assert.assertTrue(actual.getLastKnownStateTime().after(startDate));
-            Assert.assertEquals(expected.isLastKnownState(), actual.isLastKnownState());
+            assertThat(actual.getLastKnownStateTime().after(startDate)).isTrue();
+            assertThat(actual.isLastKnownState()).isEqualTo(expected.isLastKnownState());
         });
     }
 
     private void assertLastSwitchingEventEquals(final RelayStatus expected, final RelayStatus actual) {
         if (expected != null && expected.getLastSwitchingEventTime() != null) {
-            Assert.assertNotNull(actual);
-            Assert.assertEquals(expected.getLastSwitchingEventTime(), actual.getLastSwitchingEventTime());
-            Assert.assertEquals(expected.isLastSwitchingEventState(), actual.isLastSwitchingEventState());
+            assertThat(actual).isNotNull();
+
+            final Timestamp timestamp = new Timestamp(expected.getLastSwitchingEventTime().getTime());
+            assertThat(actual.getLastSwitchingEventTime()).isEqualTo(timestamp);
+            assertThat(actual.isLastSwitchingEventState()).isEqualTo(expected.isLastSwitchingEventState());
         }
     }
 
     private void assertLastKnownStateEquals(final RelayStatus expected, final RelayStatus actual) {
         if (expected != null && expected.getLastKnownStateTime() != null) {
-            Assert.assertNotNull(actual);
-            Assert.assertEquals(expected.getLastKnownStateTime(), actual.getLastKnownStateTime());
-            Assert.assertEquals(expected.isLastKnownState(), actual.isLastKnownState());
+            assertThat(actual).isNotNull();
+
+            final Timestamp timestamp = new Timestamp(expected.getLastKnownStateTime().getTime());
+            assertThat(actual.getLastKnownStateTime()).isEqualTo(timestamp);
+            assertThat(actual.isLastKnownState()).isEqualTo(expected.isLastKnownState());
         }
     }
 }

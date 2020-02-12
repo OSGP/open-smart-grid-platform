@@ -29,6 +29,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import io.netty.channel.ChannelId;
+
 @Service
 public class OslpSigningService {
 
@@ -76,11 +78,11 @@ public class OslpSigningService {
      * have the envelope signed by the signing server.
      */
     public void buildAndSignEnvelope(final byte[] deviceId, final byte[] sequenceNumber,
-            final Oslp.Message payloadMessage, final Integer channelId,
+            final Oslp.Message payloadMessage, final ChannelId channelId,
             final OslpChannelHandlerServer oslpChannelHandlerServer) {
 
         this.oslpChannelHandlerServer = oslpChannelHandlerServer;
-        final String correlationUid = channelId.toString();
+        final String correlationUid = channelId.asLongText();
 
         // Create DTO to transfer data using request message.
         final UnsignedOslpEnvelopeDto unsignedOslpEnvelopeDto = new UnsignedOslpEnvelopeDto(sequenceNumber, deviceId,
@@ -180,9 +182,12 @@ public class OslpSigningService {
                 unsignedOslpEnvelopeDto.getOrganisationIdentification(), unsignedOslpEnvelopeDto.getCorrelationUid(),
                 unsignedOslpEnvelopeDto.getMessageType(), responseMessage.getMessagePriority());
         final ProtocolResponseMessage protocolResponseMessage = ProtocolResponseMessage.newBuilder()
-                .domain(unsignedOslpEnvelopeDto.getDomain()).domainVersion(unsignedOslpEnvelopeDto.getDomainVersion())
-                .deviceMessageMetadata(deviceMessageMetadata).result(responseMessage.getResult())
-                .osgpException(responseMessage.getOsgpException()).scheduled(unsignedOslpEnvelopeDto.isScheduled())
+                .domain(unsignedOslpEnvelopeDto.getDomain())
+                .domainVersion(unsignedOslpEnvelopeDto.getDomainVersion())
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .result(responseMessage.getResult())
+                .osgpException(responseMessage.getOsgpException())
+                .scheduled(unsignedOslpEnvelopeDto.isScheduled())
                 .build();
         this.deviceResponseMessageSender.send(protocolResponseMessage);
     }

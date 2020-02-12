@@ -7,17 +7,12 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.core.firmwaremanagement;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 import static org.opensmartgridplatform.cucumber.platform.core.CorrelationUidHelper.saveCorrelationUidInScenarioContext;
 
 import java.util.Map;
-
-import org.junit.Assert;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import org.opensmartgridplatform.adapter.ws.schema.core.common.AsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.common.OsgpResultType;
@@ -33,9 +28,13 @@ import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.common.support.ws.core.CoreFirmwareManagementClient;
 import org.opensmartgridplatform.cucumber.platform.glue.steps.ws.GenericResponseSteps;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
 
 /**
  * Class with all the firmware requests steps
@@ -73,8 +72,8 @@ public class GetFirmwareVersionSteps {
      *
      * @param expectedResponseData
      *            The table with the expected fields in the response.
-     * @apiNote The response will contain the correlation uid, so store that in the
-     *       current scenario context for later use.
+     * @apiNote The response will contain the correlation uid, so store that in
+     *          the current scenario context for later use.
      * @throws Throwable
      */
     @Then("^the get firmware version async response contains$")
@@ -82,9 +81,9 @@ public class GetFirmwareVersionSteps {
         final GetFirmwareVersionAsyncResponse asyncResponse = (GetFirmwareVersionAsyncResponse) ScenarioContext
                 .current().get(PlatformKeys.RESPONSE);
 
-        Assert.assertEquals(getString(expectedResponseData, PlatformKeys.KEY_DEVICE_IDENTIFICATION),
-                asyncResponse.getAsyncResponse().getDeviceId());
-        Assert.assertNotNull(asyncResponse.getAsyncResponse().getCorrelationUid());
+        assertThat(asyncResponse.getAsyncResponse().getDeviceId())
+                .isEqualTo(getString(expectedResponseData, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
+        assertThat(asyncResponse.getAsyncResponse().getCorrelationUid()).isNotNull();
 
         // Save the returned CorrelationUid in the Scenario related context for
         // further use.
@@ -106,21 +105,20 @@ public class GetFirmwareVersionSteps {
 
         final GetFirmwareVersionResponse response = Wait.untilAndReturn(() -> {
             final GetFirmwareVersionResponse retval = this.client.getGetFirmwareVersion(request);
-            Assert.assertNotNull(retval);
-            Assert.assertEquals(getEnum(expectedResponseData, PlatformKeys.KEY_RESULT, OsgpResultType.class),
-                    retval.getResult());
+            assertThat(retval).isNotNull();
+            assertThat(retval.getResult())
+                    .isEqualTo(getEnum(expectedResponseData, PlatformKeys.KEY_RESULT, OsgpResultType.class));
             return retval;
         });
 
         if (response.getFirmwareVersion() != null) {
             final FirmwareVersion fwv = response.getFirmwareVersion().get(0);
             if (fwv.getVersion() != null) {
-                Assert.assertEquals(getString(expectedResponseData, PlatformKeys.FIRMWARE_VERSION), fwv.getVersion());
+                assertThat(fwv.getVersion()).isEqualTo(getString(expectedResponseData, PlatformKeys.FIRMWARE_VERSION));
             }
             if (fwv.getFirmwareModuleType() != null) {
-                Assert.assertEquals(
-                        getEnum(expectedResponseData, PlatformKeys.KEY_FIRMWARE_MODULE_TYPE, FirmwareModuleType.class),
-                        fwv.getFirmwareModuleType());
+                assertThat(fwv.getFirmwareModuleType()).isEqualTo(
+                        getEnum(expectedResponseData, PlatformKeys.KEY_FIRMWARE_MODULE_TYPE, FirmwareModuleType.class));
             }
         }
     }

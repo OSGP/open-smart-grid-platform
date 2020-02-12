@@ -17,7 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import org.opensmartgridplatform.cucumber.platform.inputparsers.XmlGregorianCalendarInputParser;
 
-import cucumber.api.DataTable;
+import io.cucumber.datatable.DataTable;
 
 /**
  * Helper class to deal with settings from Cucumber scenarios.

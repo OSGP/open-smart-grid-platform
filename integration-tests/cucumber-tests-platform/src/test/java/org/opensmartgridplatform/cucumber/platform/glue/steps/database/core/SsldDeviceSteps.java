@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.glue.steps.database.core;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.DateTimeHelper.getDateTime2;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum;
@@ -19,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.joda.time.DateTime;
-import org.junit.Assert;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -32,8 +32,8 @@ import org.opensmartgridplatform.domain.core.valueobjects.RelayType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
 
 public class SsldDeviceSteps extends BaseDeviceSteps {
 
@@ -135,7 +135,7 @@ public class SsldDeviceSteps extends BaseDeviceSteps {
             final Ssld ssld = this.ssldRepository
                     .findByDeviceIdentification(getString(expectedEntity, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
 
-            Assert.assertEquals(getBoolean(expectedEntity, PlatformKeys.KEY_HAS_SCHEDULE), ssld.getHasSchedule());
+            assertThat(ssld.getHasSchedule()).isEqualTo(getBoolean(expectedEntity, PlatformKeys.KEY_HAS_SCHEDULE));
         });
 
         this.deviceSteps.theDeviceContains(expectedEntity);

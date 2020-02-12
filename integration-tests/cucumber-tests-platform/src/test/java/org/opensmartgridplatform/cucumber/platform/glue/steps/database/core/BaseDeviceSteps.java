@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.opensmartgridplatform.cucumber.core.GlueBase;
+import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -45,7 +45,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public abstract class BaseDeviceSteps extends GlueBase {
+public abstract class BaseDeviceSteps {
 
     @Autowired
     private CoreDeviceConfiguration configuration;
@@ -81,7 +81,7 @@ public abstract class BaseDeviceSteps extends GlueBase {
 
         // Now set the optional stuff
         if (settings.containsKey(PlatformKeys.KEY_TECHNICAL_INSTALLATION_DATE)
-                && !settings.get(PlatformKeys.KEY_TECHNICAL_INSTALLATION_DATE).isEmpty()) {
+                && StringUtils.isNotBlank(settings.get(PlatformKeys.KEY_TECHNICAL_INSTALLATION_DATE))) {
             device.setTechnicalInstallationDate(
                     getDate(settings, PlatformKeys.KEY_TECHNICAL_INSTALLATION_DATE).toDate());
         }
@@ -140,12 +140,12 @@ public abstract class BaseDeviceSteps extends GlueBase {
                 getString(settings, PlatformKeys.KEY_MUNICIPALITY, PlatformDefaults.DEFAULT_CONTAINER_MUNICIPALITY)),
                 new GpsCoordinates(
                         (settings.containsKey(PlatformKeys.KEY_LATITUDE)
-                                && !settings.get(PlatformKeys.KEY_LATITUDE).isEmpty())
+                                && StringUtils.isNotBlank(settings.get(PlatformKeys.KEY_LATITUDE)))
                                         ? getFloat(settings, PlatformKeys.KEY_LATITUDE,
                                                 PlatformDefaults.DEFAULT_LATITUDE)
                                         : null,
                         (settings.containsKey(PlatformKeys.KEY_LONGITUDE)
-                                && !settings.get(PlatformKeys.KEY_LONGITUDE).isEmpty())
+                                && StringUtils.isNotBlank(settings.get(PlatformKeys.KEY_LONGITUDE)))
                                         ? getFloat(settings, PlatformKeys.KEY_LONGITUDE,
                                                 PlatformDefaults.DEFAULT_LONGITUDE)
                                         : null));
@@ -162,10 +162,10 @@ public abstract class BaseDeviceSteps extends GlueBase {
             final DeviceFunctionGroup functionGroup = getEnum(settings, PlatformKeys.KEY_DEVICE_FUNCTION_GROUP,
                     DeviceFunctionGroup.class, DeviceFunctionGroup.OWNER);
             final DeviceAuthorization authorization = device.addAuthorization(organization, functionGroup);
-            final Device savedDevice = this.deviceRepository.save(device);
             this.deviceAuthorizationRepository.save(authorization);
-            ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                    savedDevice.getDeviceIdentification());
+            final Device savedDevice = this.deviceRepository.save(device);
+            ScenarioContext.current()
+                    .put(PlatformKeys.KEY_DEVICE_IDENTIFICATION, savedDevice.getDeviceIdentification());
 
             device = savedDevice;
         }

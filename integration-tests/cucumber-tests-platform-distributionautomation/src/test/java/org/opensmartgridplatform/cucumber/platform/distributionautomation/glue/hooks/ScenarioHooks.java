@@ -7,19 +7,18 @@
  */
 package org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.hooks;
 
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.distributionautomation.database.Database;
 import org.opensmartgridplatform.cucumber.platform.distributionautomation.support.ws.distributionautomation.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import cucumber.api.java.After;
-import cucumber.api.java.Before;
+import io.cucumber.java.After;
+import io.cucumber.java.Before;
 
 /**
  * Class with all the scenario hooks when each scenario runs.
  */
-public class ScenarioHooks extends GlueBase {
+public class ScenarioHooks {
 
     @Autowired
     private Database databaseSteps;

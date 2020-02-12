@@ -17,6 +17,7 @@ import org.opensmartgridplatform.dto.da.GetDeviceModelResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.BaseNotificationMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.NotificationResponseMessageSender;
@@ -89,8 +90,11 @@ public class GetDeviceModelResponseMessageProcessor extends BaseNotificationMess
 
             final GetDeviceModelResponseDto dataResponse = (GetDeviceModelResponseDto) dataObject;
 
-            this.adHocManagementService.handleGetDeviceModelResponse(dataResponse, deviceIdentification,
-                    organisationIdentification, correlationUid, messageType, responseMessageResultType, osgpException);
+            final CorrelationIds correlationIds = new CorrelationIds(organisationIdentification, deviceIdentification,
+                    correlationUid);
+
+            this.adHocManagementService.handleGetDeviceModelResponse(dataResponse, correlationIds, messageType,
+                    responseMessageResultType, osgpException);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);

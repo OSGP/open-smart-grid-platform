@@ -7,169 +7,63 @@
         http://www.apache.org/licenses/LICENSE-2.0
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-shared</artifactId>
-    <version>4.40.0-SNAPSHOT</version>
+    <version>5.0.0-SNAPSHOT</version>
     <relativePath>../parent-shared/pom.xml</relativePath>
   </parent>
 
   <artifactId>osgp-ws-smartmetering</artifactId>
+  <packaging>jar</packaging>
 
   <build>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>${maven.jar.plugin.version}</version>
+      </plugin>
+      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>jaxb2-maven-plugin</artifactId>
-        <version>1.5</version>
+        <version>${jaxb2.maven.plugin.version}</version>
         <executions>
           <execution>
-            <id>smart-metering-bundle</id>
             <goals>
               <goal>xjc</goal>
             </goals>
             <configuration>
-              <bindingDirectory>src/main/resources/schemas</bindingDirectory>
-              <bindingFiles>sm-bundle.xjb</bindingFiles>
-              <schemaDirectory>src/main/resources</schemaDirectory>
-              <schemaFiles>SmartMeteringBundle.wsdl</schemaFiles>
-              <wsdl>true</wsdl>
-              <xmlschema>false</xmlschema>
-              <staleFile>${project.build.directory}/jaxb2/.schema-smart-metering-bundle-stale-flag</staleFile>
-              <!-- must be set to false in order for binding to process correctly -->
-              <clearOutputDir>false</clearOutputDir>
-            </configuration>
-          </execution>
-          <execution>
-            <id>smart-metering-external-interface-integration</id>
-            <goals>
-              <goal>xjc</goal>
-            </goals>
-            <configuration>
-              <bindingDirectory>src/main/resources/schemas</bindingDirectory>
-              <bindingFiles>sm-external-interface.xjb</bindingFiles>
-              <schemaDirectory>src/main/resources/schemas</schemaDirectory>
-              <xmlschema>true</xmlschema>
-              <schemaFiles>sm-external-interface.xsd</schemaFiles>
-              <staleFile>${project.build.directory}/jaxb2/.schema-smart-metering-external-stale-flag</staleFile>
-              <!-- must be set to false in order for binding to process correctly -->
-              <clearOutputDir>false</clearOutputDir>
-            </configuration>
-          </execution>
-
-          <execution>
-            <id>smart-metering-management</id>
-            <goals>
-              <goal>xjc</goal>
-            </goals>
-            <configuration>
-              <bindingDirectory>src/main/resources/schemas</bindingDirectory>
-              <bindingFiles>sm-management.xjb</bindingFiles>
-              <schemaDirectory>src/main/resources</schemaDirectory>
-              <schemaFiles>SmartMeteringManagement.wsdl</schemaFiles>
-              <wsdl>true</wsdl>
-              <xmlschema>false</xmlschema>
-              <staleFile>${project.build.directory}/jaxb2/.schema-smart-metering-management-stale-flag</staleFile>
-              <!-- must be set to false in order for binding to process correctly -->
-              <clearOutputDir>false</clearOutputDir>
-            </configuration>
-          </execution>
-          <execution>
-            <id>smart-metering-installation</id>
-            <goals>
-              <goal>xjc</goal>
-            </goals>
-            <configuration>
-              <bindingDirectory>src/main/resources/schemas</bindingDirectory>
-              <bindingFiles>sm-installation.xjb</bindingFiles>
-              <schemaDirectory>src/main/resources</schemaDirectory>
-              <schemaFiles>SmartMeteringInstallation.wsdl</schemaFiles>
-              <wsdl>true</wsdl>
-              <xmlschema>false</xmlschema>
-              <staleFile>${project.build.directory}/jaxb2/.schema-smart-metering-installation-stale-flag</staleFile>
-              <!-- must be set to false in order to postprocess files correctly -->
-              <clearOutputDir>false</clearOutputDir>
-            </configuration>
-          </execution>
-          <execution>
-            <id>smart-metering-notification</id>
-            <goals>
-              <goal>xjc</goal>
-            </goals>
-            <configuration>
-              <bindingDirectory>src/main/resources/schemas</bindingDirectory>
-              <bindingFiles>sm-notification.xjb</bindingFiles>
-              <schemaDirectory>src/main/resources</schemaDirectory>
-              <schemaFiles>SmartMeteringNotification.wsdl</schemaFiles>
-              <wsdl>true</wsdl>
-              <xmlschema>false</xmlschema>
-              <staleFile>${project.build.directory}/jaxb2/.schema-smart-metering-notification-stale-flag</staleFile>
-              <!-- must be set to false in order for binding to process correctly -->
-              <clearOutputDir>false</clearOutputDir>
-            </configuration>
-          </execution>
-          <execution>
-            <id>smart-metering-monitoring</id>
-            <goals>
-              <goal>xjc</goal>
-            </goals>
-            <configuration>
-              <bindingDirectory>src/main/resources/schemas</bindingDirectory>
-              <bindingFiles>sm-monitoring.xjb</bindingFiles>
-              <schemaDirectory>src/main/resources</schemaDirectory>
-              <schemaFiles>SmartMeteringMonitoring.wsdl</schemaFiles>
-              <wsdl>true</wsdl>
-              <xmlschema>false</xmlschema>
-              <staleFile>${project.build.directory}/jaxb2/.schema-smart-metering-moitoring-stale-flag</staleFile>
-              <!-- must be set to false in order for binding to process correctly -->
-              <clearOutputDir>false</clearOutputDir>
-            </configuration>
-          </execution>
-          <execution>
-            <id>smart-metering-adhoc</id>
-            <goals>
-              <goal>xjc</goal>
-            </goals>
-            <configuration>
-              <bindingDirectory>src/main/resources/schemas</bindingDirectory>
-              <bindingFiles>sm-adhoc.xjb</bindingFiles>
-              <schemaDirectory>src/main/resources</schemaDirectory>
-              <schemaFiles>SmartMeteringAdhoc.wsdl</schemaFiles>
-              <wsdl>true</wsdl>
-              <xmlschema>false</xmlschema>
-              <staleFile>${project.build.directory}/jaxb2/.schema-smart-metering-adhoc-stale-flag</staleFile>
-              <!-- must be set to false in order for binding to process correctly -->
-              <clearOutputDir>false</clearOutputDir>
-            </configuration>
-          </execution>
-          <execution>
-            <id>smart-metering-configuration</id>
-            <goals>
-              <goal>xjc</goal>
-            </goals>
-            <configuration>
-              <bindingDirectory>src/main/resources/schemas</bindingDirectory>
-              <bindingFiles>sm-configuration.xjb</bindingFiles>
-              <schemaDirectory>src/main/resources</schemaDirectory>
-              <schemaFiles>SmartMeteringConfiguration.wsdl</schemaFiles>
-              <wsdl>true</wsdl>
-              <xmlschema>false</xmlschema>
-              <staleFile>${project.build.directory}/jaxb2/.schema-smart-metering-configuration-stale-flag</staleFile>
-              <!-- must be set to false in order for binding to process correctly -->
-              <clearOutputDir>false</clearOutputDir>
+              <sources>
+                <source>src/main/resources/schemas</source>
+              </sources>
+              <xjbSources>
+                <xjbSource>src/main/resources/bindings</xjbSource>
+              </xjbSources>
             </configuration>
           </execution>
         </executions>
       </plugin>
-
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${maven.surefire.plugin.version}</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
     </plugins>
   </build>
 
   <dependencies>
-
     <!-- Spring Framework -->
     <dependency>
       <groupId>org.springframework</groupId>

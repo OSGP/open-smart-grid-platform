@@ -37,8 +37,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Sort;
-import org.hibernate.annotations.SortType;
+import org.hibernate.annotations.SortNatural;
 import org.hibernate.annotations.Type;
 import org.opensmartgridplatform.domain.core.valueobjects.Address;
 import org.opensmartgridplatform.domain.core.valueobjects.CdmaSettings;
@@ -156,7 +155,7 @@ public class Device extends AbstractEntity {
     private final List<String> organisations = new ArrayList<>();
 
     @ManyToOne()
-    @JoinColumn()
+    @JoinColumn(name = "device_model")
     private DeviceModel deviceModel;
 
     /**
@@ -173,11 +172,11 @@ public class Device extends AbstractEntity {
     private DeviceLifecycleStatus deviceLifecycleStatus = DeviceLifecycleStatus.NEW_IN_INVENTORY;
 
     @OneToMany(mappedBy = "device", cascade = CascadeType.ALL)
-    @Sort(type = SortType.NATURAL)
+    @SortNatural
     private final SortedSet<DeviceFirmwareFile> deviceFirmwareFiles = new TreeSet<>();
 
     @OneToMany(mappedBy = "device", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Sort(type = SortType.NATURAL)
+    @SortNatural
     private final SortedSet<DeviceFirmwareModule> deviceFirmwareModules = new TreeSet<>();
 
     @Column

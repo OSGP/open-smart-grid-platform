@@ -7,20 +7,19 @@
  */
 package org.opensmartgridplatform.core.infra.jms.protocol.outbound;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.opensmartgridplatform.core.infra.jms.protocol.outbound.ProtocolRequestMessageSender;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = { ProtocolRequestMessageSenderTestConfig.class })
 public class ProtocolRequestMessageSenderTest {
 
@@ -37,22 +36,9 @@ public class ProtocolRequestMessageSenderTest {
             final String messageGroupId = this.messageSender.getMessageGroupId(uuid);
             final int actual = Integer.valueOf(messageGroupId);
 
-            assertTrue("Message group id should be between 0 and cache size " + this.messageGroupCacheSize,
-                    actual >= 0 && actual < this.messageGroupCacheSize);
+            assertThat(actual >= 0 && actual < this.messageGroupCacheSize)
+                    .as("Message group id should be between 0 and cache size " + this.messageGroupCacheSize).isTrue();
         }
-    }
-
-    @Test
-    public void testNumberOfMessageGroupsShouldNotExceedCacheSize() {
-        final Set<String> groupIds = new HashSet<>();
-
-        for (int i = 0; i < 10000; i++) {
-            final String uuid = UUID.randomUUID().toString();
-            groupIds.add(this.messageSender.getMessageGroupId(uuid));
-        }
-        final int actual = groupIds.size();
-        assertTrue("Number of message groups should not exceed cache size " + this.messageGroupCacheSize,
-                actual <= this.messageGroupCacheSize);
     }
 
     @Test
@@ -64,6 +50,19 @@ public class ProtocolRequestMessageSenderTest {
             groupIds.add(this.messageSender.getMessageGroupId(deviceId));
         }
         final int actual = groupIds.size();
-        assertTrue("Message group id should be the same for same device", actual == 1);
+        assertThat(actual == 1).as("Message group id should be the same for same device").isTrue();
+    }
+
+    @Test
+    public void testNumberOfMessageGroupsShouldNotExceedCacheSize() {
+        final Set<String> groupIds = new HashSet<>();
+
+        for (int i = 0; i < 10000; i++) {
+            final String uuid = UUID.randomUUID().toString();
+            groupIds.add(this.messageSender.getMessageGroupId(uuid));
+        }
+        final int actual = groupIds.size();
+        assertThat(actual <= this.messageGroupCacheSize)
+                .as("Number of message groups should not exceed cache size " + this.messageGroupCacheSize).isTrue();
     }
 }

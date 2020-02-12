@@ -1,7 +1,8 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -10,12 +11,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.DlmsConnection;
@@ -39,12 +42,14 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetRandomisation
 /**
  * Copyright 2019 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class SetRandomisationSettingsCommandExecutorTest {
 
     @Mock
@@ -71,75 +76,82 @@ public class SetRandomisationSettingsCommandExecutorTest {
     private SetRandomisationSettingsRequestDataDto dataDto;
     private DlmsDevice device;
 
-    @Before
+    @BeforeEach
     public void init() throws ProtocolAdapterException, IOException {
 
         // SETUP
-        Protocol smr51 = Protocol.SMR_5_1;
-        device = createDlmsDevice(smr51);
+        final Protocol smr51 = Protocol.SMR_5_1;
+        this.device = this.createDlmsDevice(smr51);
 
-        AttributeAddress address = new AttributeAddress(1, new ObisCode("0.1.94.31.12.255"), 1);
+        final AttributeAddress address = new AttributeAddress(1, new ObisCode("0.1.94.31.12.255"), 1);
 
-        dataDto = new SetRandomisationSettingsRequestDataDto(0, 1, 1, 1);
+        this.dataDto = new SetRandomisationSettingsRequestDataDto(0, 1, 1, 1);
 
-        ConfigurationFlagsDto currentConfigurationFlagsDto = new ConfigurationFlagsDto(getFlags());
-        ConfigurationObjectDto currentConfigurationObjectDto = new ConfigurationObjectDto(currentConfigurationFlagsDto);
+        final ConfigurationFlagsDto currentConfigurationFlagsDto = new ConfigurationFlagsDto(this.getFlags());
+        final ConfigurationObjectDto currentConfigurationObjectDto = new ConfigurationObjectDto(
+                currentConfigurationFlagsDto);
 
-        when(protocolServiceLookup.lookupGetService(smr51)).thenReturn(getConfigurationObjectService);
-        when(protocolServiceLookup.lookupSetService(smr51)).thenReturn(setConfigurationObjectService);
-        when(getConfigurationObjectService.getConfigurationObject(dlmsConnectionManager)).thenReturn(
-                currentConfigurationObjectDto);
-        when(setConfigurationObjectService.setConfigurationObject(any(DlmsConnectionManager.class),
-                any(ConfigurationObjectDto.class), any(ConfigurationObjectDto.class))).thenReturn(
-                AccessResultCode.SUCCESS);
-        when(dlmsObjectConfigService.findAttributeAddress(device, DlmsObjectType.RANDOMISATION_SETTINGS,
+        when(this.protocolServiceLookup.lookupGetService(smr51)).thenReturn(this.getConfigurationObjectService);
+        when(this.protocolServiceLookup.lookupSetService(smr51)).thenReturn(this.setConfigurationObjectService);
+        when(this.getConfigurationObjectService.getConfigurationObject(this.dlmsConnectionManager))
+                .thenReturn(currentConfigurationObjectDto);
+        when(this.setConfigurationObjectService.setConfigurationObject(any(DlmsConnectionManager.class),
+                any(ConfigurationObjectDto.class), any(ConfigurationObjectDto.class)))
+                        .thenReturn(AccessResultCode.SUCCESS);
+        when(this.dlmsObjectConfigService.findAttributeAddress(this.device, DlmsObjectType.RANDOMISATION_SETTINGS,
                 null)).thenReturn(Optional.of(address));
 
-        when(dlmsConnectionManager.getConnection()).thenReturn(dlmsConnection);
-        when(dlmsConnection.set(any(SetParameter.class))).thenReturn(AccessResultCode.SUCCESS);
+        when(this.dlmsConnectionManager.getConnection()).thenReturn(this.dlmsConnection);
+        when(this.dlmsConnection.set(any(SetParameter.class))).thenReturn(AccessResultCode.SUCCESS);
     }
 
     @Test
     public void testExecuteSuccess() throws ProtocolAdapterException {
 
         // CALL
-        AccessResultCode resultCode = executor.execute(dlmsConnectionManager, device, dataDto);
+        final AccessResultCode resultCode = this.executor.execute(this.dlmsConnectionManager, this.device,
+                this.dataDto);
 
         // ASSERT
         assertThat(resultCode).isEqualTo(AccessResultCode.SUCCESS);
     }
 
-    @Test(expected = ProtocolAdapterException.class)
+    @Test
     public void testExecuteFailConfiguration() throws ProtocolAdapterException {
-
         // SETUP
-        when(setConfigurationObjectService.setConfigurationObject(any(DlmsConnectionManager.class),
-                any(ConfigurationObjectDto.class), any(ConfigurationObjectDto.class))).thenReturn(
-                AccessResultCode.OTHER_REASON);
+        when(this.setConfigurationObjectService.setConfigurationObject(any(DlmsConnectionManager.class),
+                any(ConfigurationObjectDto.class), any(ConfigurationObjectDto.class)))
+                        .thenReturn(AccessResultCode.OTHER_REASON);
 
-        // CALL
-        executor.execute(dlmsConnectionManager, device, dataDto);
+        assertThatExceptionOfType(ProtocolAdapterException.class).isThrownBy(() -> {
+            // CALL
+            this.executor.execute(this.dlmsConnectionManager, this.device, this.dataDto);
+        });
     }
 
-    @Test(expected = ProtocolAdapterException.class)
+    @Test
     public void testExecuteFailSetRandomisationSettings() throws ProtocolAdapterException, IOException {
 
         // SETUP
-        when(dlmsConnection.set(any(SetParameter.class))).thenReturn(AccessResultCode.OTHER_REASON);
+        when(this.dlmsConnection.set(any(SetParameter.class))).thenReturn(AccessResultCode.OTHER_REASON);
 
-        // CALL
-        executor.execute(dlmsConnectionManager, device, dataDto);
+        assertThatExceptionOfType(ProtocolAdapterException.class).isThrownBy(() -> {
+            // CALL
+            this.executor.execute(this.dlmsConnectionManager, this.device, this.dataDto);
+        });
     }
 
-    @Test(expected = ProtocolAdapterException.class)
+    @Test
     public void testUnknownAttribute() throws ProtocolAdapterException {
 
         // SETUP
-        when(dlmsObjectConfigService.findAttributeAddress(device, DlmsObjectType.RANDOMISATION_SETTINGS,
+        when(this.dlmsObjectConfigService.findAttributeAddress(this.device, DlmsObjectType.RANDOMISATION_SETTINGS,
                 null)).thenReturn(Optional.empty());
 
-        // CALL
-        executor.execute(dlmsConnectionManager, device, dataDto);
+        assertThatExceptionOfType(ProtocolAdapterException.class).isThrownBy(() -> {
+            // CALL
+            this.executor.execute(this.dlmsConnectionManager, this.device, this.dataDto);
+        });
     }
 
     private DlmsDevice createDlmsDevice(final Protocol protocol) {
@@ -151,8 +163,9 @@ public class SetRandomisationSettingsCommandExecutorTest {
 
     private List<ConfigurationFlagDto> getFlags() {
 
-        return Arrays.stream(ConfigurationFlagTypeDto.values()).map(
-                flagType -> new ConfigurationFlagDto(flagType, true)).collect(Collectors.toList());
+        return Arrays.stream(ConfigurationFlagTypeDto.values())
+                .map(flagType -> new ConfigurationFlagDto(flagType, true))
+                .collect(Collectors.toList());
 
     }
 }

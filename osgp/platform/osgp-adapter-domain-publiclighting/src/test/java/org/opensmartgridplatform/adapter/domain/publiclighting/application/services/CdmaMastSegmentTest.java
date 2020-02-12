@@ -7,14 +7,12 @@
  */
 package org.opensmartgridplatform.adapter.domain.publiclighting.application.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.net.InetAddress;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaBatch;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaBatchDevice;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaMastSegment;
@@ -23,9 +21,11 @@ public class CdmaMastSegmentTest {
 
     private final InetAddress loopbackAddress = InetAddress.getLoopbackAddress();
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void newNameNull() {
-        new CdmaMastSegment(null);
+        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> {
+            new CdmaMastSegment(null);
+        });
     }
 
     @Test
@@ -35,7 +35,8 @@ public class CdmaMastSegmentTest {
         final CdmaBatchDevice cd1 = new CdmaBatchDevice("cd1", this.loopbackAddress);
         mastSegment.addCdmaBatchDevice(null, cd1);
         final CdmaBatch cdmaBatch = mastSegment.popCdmaBatch();
-        assertEquals("Batch should get maximum batch number", CdmaBatch.MAX_BATCH_NUMBER, cdmaBatch.getBatchNumber());
+        assertThat(cdmaBatch.getBatchNumber()).withFailMessage("Batch should get maximum batch number")
+                .isEqualTo(CdmaBatch.MAX_BATCH_NUMBER);
     }
 
     @Test
@@ -45,8 +46,8 @@ public class CdmaMastSegmentTest {
         final CdmaBatchDevice cd1 = new CdmaBatchDevice("cd1", this.loopbackAddress);
         mastSegment.addCdmaBatchDevice((short) 1, cd1);
 
-        assertEquals("200/1", mastSegment.getMastSegment());
-        assertFalse("MastSegment should contain 1 device", mastSegment.empty());
+        assertThat(mastSegment.getMastSegment()).isEqualTo("200/1");
+        assertThat(mastSegment.empty()).withFailMessage("MastSegment should contain 1 device").isFalse();
     }
 
     @Test
@@ -60,18 +61,19 @@ public class CdmaMastSegmentTest {
         mastSegment.addCdmaBatchDevice((short) 1, cd2);
 
         final CdmaBatch batch = mastSegment.popCdmaBatch();
-        assertEquals(2, batch.getCdmaBatchDevices().size());
+        assertThat(batch.getCdmaBatchDevices().size()).isEqualTo(2);
 
         // popCdmaBatch should remove the batch from the mast segment,
         // there should be no more batch left in the mast segment.
-        assertTrue("MastSegment should not contain any devices", mastSegment.empty());
+        assertThat(mastSegment.empty()).withFailMessage("MastSegment should not contain any devices").isTrue();
     }
 
     @Test
     public void equalsWhenSegmentNameMatch() {
         final CdmaMastSegment mastSegment1 = new CdmaMastSegment("200/1");
         final CdmaMastSegment mastSegment2 = new CdmaMastSegment("200/1");
-        assertEquals("Mast segments with the same name should be equal", mastSegment1, mastSegment2);
+        assertThat(mastSegment1).withFailMessage("Mast segments with the same name should be equal")
+                .isEqualTo(mastSegment2);
     }
 
     @Test
@@ -79,8 +81,9 @@ public class CdmaMastSegmentTest {
         final CdmaMastSegment mastSegmentDefault = new CdmaMastSegment(CdmaMastSegment.DEFAULT_MASTSEGMENT);
         final CdmaMastSegment mastSegmentNormal = new CdmaMastSegment("zzzMast");
 
-        assertTrue("An empty mast segment should be bigger than all other mast segments",
-                mastSegmentDefault.compareTo(mastSegmentNormal) > 0);
+        assertThat(mastSegmentDefault.compareTo(mastSegmentNormal) > 0)
+                .withFailMessage("An empty mast segment should be bigger than all other mast segments")
+                .isTrue();
     }
 
     @Test
@@ -92,9 +95,9 @@ public class CdmaMastSegmentTest {
         }
 
         for (int batchNo = 0; batchNo < 10; batchNo++) {
-            Assert.assertFalse("There should be at least one CdmaBatch left", mastSegment.empty());
+            assertThat(mastSegment.empty()).withFailMessage("There should be at least one CdmaBatch left").isFalse();
             mastSegment.popCdmaBatch();
         }
-        assertTrue("All CdmaBatches should have been removed by now", mastSegment.empty());
+        assertThat(mastSegment.empty()).withFailMessage("All CdmaBatches should have been removed by now").isTrue();
     }
 }

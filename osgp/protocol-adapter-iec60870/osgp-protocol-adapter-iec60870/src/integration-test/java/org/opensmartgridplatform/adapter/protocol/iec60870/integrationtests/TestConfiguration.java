@@ -71,11 +71,6 @@ public class TestConfiguration {
         return false;
     }
 
-    @Bean
-    public LoggingService deviceMessageLoggingService() {
-        return new Iec60870LoggingService();
-    }
-
     @Bean(name = "protocolIec60870OutboundLogItemRequestsConnectionFactory")
     public ConnectionFactory logItemRequestsConnectionFactory() {
         return mock(PooledConnectionFactory.class);
@@ -92,6 +87,11 @@ public class TestConfiguration {
     }
 
     @Bean
+    public LoggingService deviceMessageLoggingService() {
+        return new Iec60870LoggingService();
+    }
+
+    @Bean
     public CorrelationIdProviderService correlationIdProviderService() {
         return new CorrelationIdProviderTimestampService();
     }
@@ -102,6 +102,11 @@ public class TestConfiguration {
     }
 
     @Bean
+    public Iec60870DeviceRepository iec60870DeviceRepository() {
+        return mock(Iec60870DeviceRepository.class);
+    }
+
+    @Bean
     public ClientConnectionService iec60870ClientConnectionService() {
         return new ClientConnectionServiceImpl();
     }
@@ -109,11 +114,6 @@ public class TestConfiguration {
     @Bean
     public Connection connection() {
         return mock(Connection.class);
-    }
-
-    @Bean
-    public Iec60870DeviceRepository iec60870DeviceRepository() {
-        return mock(Iec60870DeviceRepository.class);
     }
 
     @Bean

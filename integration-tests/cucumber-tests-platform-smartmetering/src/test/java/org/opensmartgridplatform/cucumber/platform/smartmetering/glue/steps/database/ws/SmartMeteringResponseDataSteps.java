@@ -7,15 +7,13 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.ws;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
 import org.opensmartgridplatform.cucumber.core.DateTimeHelper;
@@ -29,8 +27,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
 
 public class SmartMeteringResponseDataSteps extends BaseDeviceSteps {
 
@@ -61,7 +59,7 @@ public class SmartMeteringResponseDataSteps extends BaseDeviceSteps {
             }
         } catch (final Exception e) {
             LOGGER.error("Exception", e);
-            Assert.fail("Failed to create response data record.");
+            Assertions.fail("Failed to create response data record.");
         }
 
         return responseData;
@@ -71,14 +69,14 @@ public class SmartMeteringResponseDataSteps extends BaseDeviceSteps {
     public void theResponseDataRecordShouldBeDeleted(final String correlationUid) {
         final ResponseData responseData = this.responseDataRepository.findByCorrelationUid(correlationUid);
 
-        assertNull("Response data should be deleted", responseData);
+        assertThat(responseData).as("Response data should be deleted").isNull();
     }
 
     @Then("^the response data record with correlation uid \\\"(.*)\\\" should not be deleted$")
     public void theResponseDataRecordShouldNotBeDeleted(final String correlationUid) {
         final ResponseData responseData = this.responseDataRepository.findByCorrelationUid(correlationUid);
 
-        assertNotNull("Response data should not be deleted", responseData);
+        assertThat(responseData).as("Response data should not be deleted").isNotNull();
     }
 
     @Then("^the response data has values$")
@@ -99,9 +97,9 @@ public class SmartMeteringResponseDataSteps extends BaseDeviceSteps {
 
         final ResponseData responseData = this.responseDataRepository.findByCorrelationUid(correlationUid);
 
-        assertEquals(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SENT, expectedNumberOfNotificationsSent,
-                responseData.getNumberOfNotificationsSent());
-        assertEquals(PlatformKeys.KEY_MESSAGE_TYPE, expectedMessageType, responseData.getMessageType());
+        assertThat(responseData.getNumberOfNotificationsSent()).as(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SENT)
+                .isEqualTo(expectedNumberOfNotificationsSent);
 
+        assertThat(responseData.getMessageType()).as(PlatformKeys.KEY_MESSAGE_TYPE).isEqualTo(expectedMessageType);
     }
 }

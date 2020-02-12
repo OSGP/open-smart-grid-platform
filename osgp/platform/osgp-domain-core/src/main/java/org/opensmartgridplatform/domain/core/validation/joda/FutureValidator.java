@@ -11,7 +11,6 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import javax.validation.constraints.Future;
 
-import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.ReadableInstant;
@@ -29,7 +28,7 @@ public class FutureValidator implements ConstraintValidator<Future, ReadableInst
             return true;
         }
 
-        final DateTime checkDate = new DateMidnight(DateTimeZone.UTC).toDateTime();
+        final DateTime checkDate = DateTime.now(DateTimeZone.UTC).withTimeAtStartOfDay();
 
         return value.isEqual(checkDate) || value.isAfter(checkDate);
     }

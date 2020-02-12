@@ -36,7 +36,7 @@ public class FindMessageLogsSyncRequestExecutor extends SyncRequestExecutor {
             final String correlationUid, final int pageNumber) {
 
         try {
-            final PageRequest request = new PageRequest(pageNumber, this.pagingSettings.getMaximumPageSize(),
+            final PageRequest request = PageRequest.of(pageNumber, this.pagingSettings.getMaximumPageSize(),
                     Sort.Direction.DESC, "modificationTime");
 
             Page<DeviceLogItem> pages = null;

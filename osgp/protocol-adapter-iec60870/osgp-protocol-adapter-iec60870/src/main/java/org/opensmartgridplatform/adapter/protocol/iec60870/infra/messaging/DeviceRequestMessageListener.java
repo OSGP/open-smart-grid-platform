@@ -38,6 +38,7 @@ public class DeviceRequestMessageListener implements MessageListener {
     private MessageProcessorMap messageProcessorMap;
 
     @Autowired
+    @Qualifier("protocolIec60870OutboundOsgpCoreResponsesMessageSender")
     private DeviceResponseMessageSender deviceResponseMessageSender;
 
     /*

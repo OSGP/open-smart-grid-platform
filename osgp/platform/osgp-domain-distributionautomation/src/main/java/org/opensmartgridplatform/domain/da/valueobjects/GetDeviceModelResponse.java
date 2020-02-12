@@ -7,11 +7,17 @@
  */
 package org.opensmartgridplatform.domain.da.valueobjects;
 
-import org.opensmartgridplatform.domain.da.valueobjects.iec61850.PhysicalDevice;
-
 import java.io.Serializable;
 
+import org.opensmartgridplatform.domain.da.valueobjects.iec61850.PhysicalDevice;
+
 public class GetDeviceModelResponse implements Serializable {
+
+    /**
+     * Serial Version UID.
+     */
+    private static final long serialVersionUID = 4881970943059881408L;
+
     private final PhysicalDevice physicalDevice;
 
     public GetDeviceModelResponse(final PhysicalDevice physicalDevice) {

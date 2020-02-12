@@ -7,8 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringbundle;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
 
@@ -18,8 +17,8 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Response
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.bundle.SetAlarmNotificationsRequestBuilder;
 
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
 
 public class BundledSetAlarmNotificationsSteps extends BaseBundleSteps {
 
@@ -45,7 +44,7 @@ public class BundledSetAlarmNotificationsSteps extends BaseBundleSteps {
     public void theBundleResponseShouldContainASetAlarmNotificationsResponse() throws Throwable {
         final Response response = this.getNextBundleResponse();
 
-        assertTrue("Not a valid response", response instanceof ActionResponse);
+        assertThat(response instanceof ActionResponse).as("Not a valid response").isTrue();
     }
 
     @Then("^the bundle response should contain a set alarm notifications response with values$")
@@ -54,9 +53,9 @@ public class BundledSetAlarmNotificationsSteps extends BaseBundleSteps {
 
         final Response response = this.getNextBundleResponse();
 
-        assertTrue("Not a valid response", response instanceof ActionResponse);
-        assertEquals("Result is not as expected.", values.get(PlatformSmartmeteringKeys.RESULT),
-                response.getResult().name());
+        assertThat(response instanceof ActionResponse).as("Not a valid response").isTrue();
+        assertThat(response.getResult().name()).as("Result is not as expected.")
+                .isEqualTo(values.get(PlatformSmartmeteringKeys.RESULT));
     }
 
 }

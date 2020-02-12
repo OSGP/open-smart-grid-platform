@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.core.devicemanagement;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getInteger;
@@ -14,7 +15,6 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStri
 
 import java.util.Map;
 
-import org.junit.Assert;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.DeviceActivatedFilterType;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.DeviceExternalManagedFilterType;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.DeviceFilter;
@@ -22,7 +22,6 @@ import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.DeviceI
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindDevicesRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindDevicesResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FirmwareModuleFilterType;
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonKeys;
@@ -30,10 +29,10 @@ import org.opensmartgridplatform.cucumber.platform.common.support.ws.core.CoreDe
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
-public class FindDeviceSteps extends GlueBase {
+public class FindDeviceSteps {
 
     @Autowired
     private CoreDeviceManagementClient client;
@@ -179,15 +178,15 @@ public class FindDeviceSteps extends GlueBase {
         }
     }
 
-    @Then("the find devices response contains \"([^\"]*)\" devices")
+    @Then("the find devices response contains \"{int}\" device(s)")
     public void theFindDevicesResponseContainsDevices(final Integer numberOfDevices) throws Throwable {
         final FindDevicesResponse response = (FindDevicesResponse) ScenarioContext.current()
                 .get(PlatformCommonKeys.RESPONSE);
 
-        Assert.assertEquals((int) numberOfDevices, response.getDevices().size());
+        assertThat(response.getDevices().size()).isEqualTo((int) numberOfDevices);
     }
 
-    @Then("the find devices response contains at index \"([^\"]*)\"")
+    @Then("the find devices response contains at index \"{int}\"")
     public void theFindDevicesResponseContainsAtIndex(final Integer index, final Map<String, String> expectedDevice)
             throws Throwable {
         final FindDevicesResponse response = (FindDevicesResponse) ScenarioContext.current()

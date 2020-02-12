@@ -15,8 +15,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.joda.time.DateTime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -40,7 +40,7 @@ public class TransactionalEventServiceTest {
     @Mock
     private EventRepository eventRepository;
 
-    @Before
+    @BeforeEach
     public void initMocks() {
         MockitoAnnotations.initMocks(this);
     }
@@ -48,7 +48,7 @@ public class TransactionalEventServiceTest {
     @Test
     public void serviceReturnsOneEvent() {
         final Slice<Event> mockSlice = this.mockSliceOfEvents(1);
-        final PageRequest pageRequest = new PageRequest(0, 10, Sort.Direction.DESC, "id");
+        final PageRequest pageRequest = PageRequest.of(0, 10, Sort.Direction.DESC, "id");
         Mockito.when(this.eventRepository.findByDateTimeBefore(this.now, pageRequest)).thenReturn(mockSlice);
 
         final List<Event> events = this.transactionalEventService.getEventsBeforeDate(this.now, 10);
@@ -58,7 +58,7 @@ public class TransactionalEventServiceTest {
     @Test
     public void serviceReturnsTenEvents() {
         final Slice<Event> mockSlice = this.mockSliceOfEvents(10);
-        final PageRequest pageRequest = new PageRequest(0, 10, Sort.Direction.DESC, "id");
+        final PageRequest pageRequest = PageRequest.of(0, 10, Sort.Direction.DESC, "id");
         Mockito.when(this.eventRepository.findByDateTimeBefore(this.now, pageRequest)).thenReturn(mockSlice);
 
         final List<Event> events = this.transactionalEventService.getEventsBeforeDate(this.now, 10);

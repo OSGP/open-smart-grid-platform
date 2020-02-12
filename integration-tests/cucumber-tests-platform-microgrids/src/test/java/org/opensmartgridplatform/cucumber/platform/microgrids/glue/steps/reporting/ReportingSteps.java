@@ -2,25 +2,23 @@ package org.opensmartgridplatform.cucumber.platform.microgrids.glue.steps.report
 
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
 import org.opensmartgridplatform.adapter.ws.schema.microgrids.adhocmanagement.GetDataAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.microgrids.adhocmanagement.GetDataAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.microgrids.adhocmanagement.GetDataRequest;
 import org.opensmartgridplatform.adapter.ws.schema.microgrids.common.AsyncRequest;
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.platform.microgrids.PlatformMicrogridsKeys;
 import org.opensmartgridplatform.cucumber.platform.microgrids.mocks.iec61850.Iec61850MockServer;
 import org.opensmartgridplatform.cucumber.platform.microgrids.support.ws.microgrids.NotificationService;
 import org.opensmartgridplatform.cucumber.platform.microgrids.support.ws.microgrids.adhocmanagement.AdHocManagementClient;
 import org.opensmartgridplatform.simulator.protocol.iec61850.server.QualityType;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
-public class ReportingSteps extends GlueBase {
+public class ReportingSteps {
 
     @Autowired
     Iec61850DeviceRepository iec61850DeviceRepository;

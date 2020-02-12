@@ -9,8 +9,8 @@ package org.opensmartgridplatform.adapter.ws.core.application.mapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.Device;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
 import org.opensmartgridplatform.domain.core.valueobjects.Address;
@@ -32,7 +32,42 @@ public class DeviceInstallationMapperTest {
 
     DeviceInstallationMapper mapper = new DeviceInstallationMapper();
 
-    @Before
+    private Address createAddress() {
+        return new Address(CITY, POSTAL_CODE, STREET, NUMBER, NUMBER_ADDITION, MUNICIPALITY);
+    }
+
+    private Ssld createSsld() {
+        final Address containerAddress = this.createAddress();
+        final GpsCoordinates gps = new GpsCoordinates(GPS_LATITUDE, GPS_LONGITUDE);
+
+        final Ssld ssld = new Ssld(DEVICE_IDENTIFICATION, ALIAS, containerAddress, gps, null);
+        ssld.setPublicKeyPresent(PUBLIC_KEY_PRESENT);
+        return ssld;
+    }
+
+    private org.opensmartgridplatform.adapter.ws.schema.core.common.Address createWsAddress() {
+        final org.opensmartgridplatform.adapter.ws.schema.core.common.Address address = new org.opensmartgridplatform.adapter.ws.schema.core.common.Address();
+        address.setCity(CITY);
+        address.setPostalCode(POSTAL_CODE);
+        address.setStreet(STREET);
+        address.setNumber(NUMBER);
+        address.setNumberAddition(NUMBER_ADDITION);
+        address.setMunicipality(MUNICIPALITY);
+        return address;
+    }
+
+    private Device createWsDevice() {
+        final Device device = new Device();
+        device.setDeviceIdentification(DEVICE_IDENTIFICATION);
+        device.setAlias(ALIAS);
+        device.setContainerAddress(this.createWsAddress());
+        device.setGpsLatitude(GPS_LATITUDE);
+        device.setGpsLongitude(GPS_LONGITUDE);
+        device.setPublicKeyPresent(PUBLIC_KEY_PRESENT);
+        return device;
+    }
+
+    @BeforeEach
     public void setup() {
         this.mapper.initialize();
     }
@@ -48,40 +83,5 @@ public class DeviceInstallationMapperTest {
 
         // Assert
         assertThat(actual).isEqualToIgnoringGivenFields(expected, "creationTime", "modificationTime");
-    }
-
-    private Ssld createSsld() {
-        final Address containerAddress = this.createAddress();
-        final GpsCoordinates gps = new GpsCoordinates(GPS_LATITUDE, GPS_LONGITUDE);
-
-        final Ssld ssld = new Ssld(DEVICE_IDENTIFICATION, ALIAS, containerAddress, gps, null);
-        ssld.setPublicKeyPresent(PUBLIC_KEY_PRESENT);
-        return ssld;
-    }
-
-    private Address createAddress() {
-        return new Address(CITY, POSTAL_CODE, STREET, NUMBER, NUMBER_ADDITION, MUNICIPALITY);
-    }
-
-    private Device createWsDevice() {
-        final Device device = new Device();
-        device.setDeviceIdentification(DEVICE_IDENTIFICATION);
-        device.setAlias(ALIAS);
-        device.setContainerAddress(this.createWsAddress());
-        device.setGpsLatitude(GPS_LATITUDE);
-        device.setGpsLongitude(GPS_LONGITUDE);
-        device.setPublicKeyPresent(PUBLIC_KEY_PRESENT);
-        return device;
-    }
-
-    private org.opensmartgridplatform.adapter.ws.schema.core.common.Address createWsAddress() {
-        final org.opensmartgridplatform.adapter.ws.schema.core.common.Address address = new org.opensmartgridplatform.adapter.ws.schema.core.common.Address();
-        address.setCity(CITY);
-        address.setPostalCode(POSTAL_CODE);
-        address.setStreet(STREET);
-        address.setNumber(NUMBER);
-        address.setNumberAddition(NUMBER_ADDITION);
-        address.setMunicipality(MUNICIPALITY);
-        return address;
     }
 }

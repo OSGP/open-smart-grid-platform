@@ -8,10 +8,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.core.devicemanagement;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.DateTimeHelper.getDateTime;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getInteger;
@@ -26,7 +23,6 @@ import java.util.Map;
 import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindEventsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindEventsResponse;
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
@@ -41,14 +37,14 @@ import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityExce
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 /**
  * Class with all the create organization requests steps
  */
-public class RetrieveReceivedEventNotifications extends GlueBase {
+public class RetrieveReceivedEventNotifications {
 
     @Autowired
     private DeviceRepository deviceRepository;
@@ -124,16 +120,16 @@ public class RetrieveReceivedEventNotifications extends GlueBase {
         final List<org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Event> events = response
                 .getEvents();
 
-        assertFalse(events.isEmpty());
+        assertThat(events.isEmpty()).isFalse();
 
         for (final org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Event e : events) {
-            assertNotNull(e.getTimestamp());
-            assertEquals(getString(expectedResponse, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                    PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION), e.getDeviceIdentification());
-            assertEquals(getString(expectedResponse, PlatformKeys.EVENT_TYPE), e.getEventType().value());
-            assertEquals(getString(expectedResponse, PlatformKeys.KEY_DESCRIPTION), e.getDescription());
-            assertEquals(getInteger(expectedResponse, PlatformKeys.KEY_INDEX, PlatformDefaults.DEFAULT_INDEX),
-                    e.getIndex());
+            assertThat(e.getTimestamp()).isNotNull();
+            assertThat(e.getDeviceIdentification()).isEqualTo(getString(expectedResponse,
+                    PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+            assertThat(e.getEventType().value()).isEqualTo(getString(expectedResponse, PlatformKeys.EVENT_TYPE));
+            assertThat(e.getDescription()).isEqualTo(getString(expectedResponse, PlatformKeys.KEY_DESCRIPTION));
+            assertThat(e.getIndex())
+                    .isEqualTo(getInteger(expectedResponse, PlatformKeys.KEY_INDEX, PlatformDefaults.DEFAULT_INDEX));
         }
     }
 
@@ -144,7 +140,7 @@ public class RetrieveReceivedEventNotifications extends GlueBase {
                 .get(getString(expectedResponse, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
                         PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION).concat("_").concat(PlatformKeys.RESPONSE));
 
-        assertEquals(totalPages, (response.getPage().getTotalPages()));
+        assertThat(response.getPage().getTotalPages()).isEqualTo(totalPages);
     }
 
     @Then("^the retrieve event notifications response should contain (\\d+) events on the current page and a total of (\\d+) pages$")
@@ -155,9 +151,8 @@ public class RetrieveReceivedEventNotifications extends GlueBase {
                 .get(getString(expectedResponse, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
                         PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION).concat("_").concat(PlatformKeys.RESPONSE));
 
-        assertEquals(totalPages, (response.getPage().getTotalPages()));
-        assertEquals(numberOfEvents, (response.getEvents().size()));
-
+        assertThat(response.getPage().getTotalPages()).isEqualTo(totalPages);
+        assertThat(response.getEvents().size()).isEqualTo(numberOfEvents);
     }
 
     @Then("^the stored events from \"([^\"]*)\" are filtered and retrieved$")
@@ -174,7 +169,7 @@ public class RetrieveReceivedEventNotifications extends GlueBase {
             }
         }
 
-        assertEquals((int) getInteger(expectedResponse, PlatformKeys.KEY_RESULT), events.size());
+        assertThat(events.size()).isEqualTo((int) getInteger(expectedResponse, PlatformKeys.KEY_RESULT));
     }
 
     @Then("^the stored events from \"([^\"]*)\" are retrieved and contain$")
@@ -183,16 +178,18 @@ public class RetrieveReceivedEventNotifications extends GlueBase {
 
         final List<Event> events = Wait.untilAndReturn(() -> {
             final List<Event> retval = this.retrieveStoredEvents(deviceIdentification);
-            assertNotNull(retval);
-            assertTrue(retval.size() > 0);
+            assertThat(retval).isNotNull();
+            assertThat(retval.size() > 0).isTrue();
             return retval;
         });
 
         for (final Event e : events) {
-            assertEquals(getEnum(expectedResponse, PlatformKeys.EVENT_TYPE, EventType.class), e.getEventType());
-            assertEquals(getString(expectedResponse, PlatformKeys.KEY_DESCRIPTION), e.getDescription());
-            assertEquals((int) getInteger(expectedResponse, PlatformKeys.KEY_INDEX, PlatformDefaults.DEFAULT_INDEX),
-                    (int) e.getIndex());
+            assertThat(e.getEventType()).isEqualTo(getEnum(expectedResponse, PlatformKeys.EVENT_TYPE, EventType.class));
+
+            assertThat(e.getDescription()).isEqualTo(getString(expectedResponse, PlatformKeys.KEY_DESCRIPTION));
+
+            assertThat((int) e.getIndex()).isEqualTo(
+                    (int) getInteger(expectedResponse, PlatformKeys.KEY_INDEX, PlatformDefaults.DEFAULT_INDEX));
         }
     }
 
@@ -206,7 +203,7 @@ public class RetrieveReceivedEventNotifications extends GlueBase {
             events = this.retrieveStoredEvents(getString(expectedResponse, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
         }
 
-        assertEquals((int) getInteger(expectedResponse, PlatformKeys.KEY_RESULT), events.size());
+        assertThat(events.size()).isEqualTo((int) getInteger(expectedResponse, PlatformKeys.KEY_RESULT));
     }
 
     public List<Event> retrieveStoredEvents(final String deviceIdentification) {

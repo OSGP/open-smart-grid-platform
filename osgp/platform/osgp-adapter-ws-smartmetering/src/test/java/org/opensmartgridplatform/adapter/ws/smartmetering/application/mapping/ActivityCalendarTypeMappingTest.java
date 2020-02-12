@@ -8,13 +8,11 @@
 
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigInteger;
 
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.ActivityCalendarType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.DayProfileActionType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.DayProfileActionsType;
@@ -28,42 +26,13 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.WeekProf
 
 public class ActivityCalendarTypeMappingTest {
 
-    private ConfigurationMapper configurationMapper = new ConfigurationMapper();
     private static final String CALENDARNAME = "calendar1";
     private static final String SEASONPROFILENAME = "seasonProfile1";
     private static final String WEEKPROFILENAME = "weekProfile1";
     private static final byte[] COSEMDATETIME_BYTE_ARRAY = { (byte) 0x07, (byte) 0xE0, 4, 7, (byte) 0xFF, 10, 34, 35,
             10, -1, -120, (byte) 0xFF };
     private static final byte[] COSEMTIME_BYTE_ARRAY = { 10, 34, 35, 10 };
-
-    /**
-     * Method to test mapping from ActivityCalendarType to ActivityCalendar.
-     */
-    @Test
-    public void testActivityCalendarTypeMapping() {
-
-        // build test data
-        final ActivityCalendarType activityCalendarType = this.buildActivityCalendarTypeObject();
-
-        // actual mapping
-        final ActivityCalendar activityCalendar = this.configurationMapper.map(activityCalendarType,
-                ActivityCalendar.class);
-
-        // check mapping
-        assertNotNull(activityCalendar);
-        assertNotNull(activityCalendar.getSeasonProfileList());
-        assertNotNull(activityCalendar.getSeasonProfileList().get(0));
-
-        // For more info on byte[] to CosemDateTime object mapping, refer to the
-        // CosemDateTimeConverterTest.
-        assertNotNull(activityCalendar.getActivatePassiveCalendarTime());
-        assertNotNull(activityCalendar.getSeasonProfileList().get(0).getSeasonStart());
-
-        assertEquals(CALENDARNAME, activityCalendar.getCalendarName());
-        assertEquals(SEASONPROFILENAME, activityCalendar.getSeasonProfileList().get(0).getSeasonProfileName());
-
-        this.checkWeekProfileMapping(activityCalendar.getSeasonProfileList().get(0).getWeekProfile());
-    }
+    private ConfigurationMapper configurationMapper = new ConfigurationMapper();
 
     /**
      * Method to build an ActivityCalendarType object
@@ -109,11 +78,29 @@ public class ActivityCalendarTypeMappingTest {
     }
 
     /**
+     * Method to check DayType mapping
+     */
+    private void checkDayTypeMapping(final DayProfile dayProfile) {
+        assertThat(dayProfile).isNotNull();
+        assertThat(dayProfile.getDayId()).isNotNull();
+        assertThat(dayProfile.getDayProfileActionList()).isNotNull();
+        assertThat(dayProfile.getDayProfileActionList().get(0)).isNotNull();
+
+        assertThat(dayProfile.getDayId()).isEqualTo(new Integer(BigInteger.TEN.intValue()));
+        assertThat(dayProfile.getDayProfileActionList().get(0).getScriptSelector())
+                .isEqualTo(new Integer(BigInteger.ZERO.intValue()));
+
+        // For more info on byte[] to CosemTime object mapping, refer to the
+        // CosemTimeConverterTest.
+        assertThat(dayProfile.getDayProfileActionList().get(0).getStartTime()).isNotNull();
+    }
+
+    /**
      * Method to check WeekProfile mapping
      */
     private void checkWeekProfileMapping(final WeekProfile weekProfile) {
-        assertNotNull(weekProfile);
-        assertEquals(WEEKPROFILENAME, weekProfile.getWeekProfileName());
+        assertThat(weekProfile).isNotNull();
+        assertThat(weekProfile.getWeekProfileName()).isEqualTo(WEEKPROFILENAME);
         this.checkDayTypeMapping(weekProfile.getSunday());
         this.checkDayTypeMapping(weekProfile.getMonday());
         this.checkDayTypeMapping(weekProfile.getTuesday());
@@ -121,26 +108,35 @@ public class ActivityCalendarTypeMappingTest {
         this.checkDayTypeMapping(weekProfile.getThursday());
         this.checkDayTypeMapping(weekProfile.getFriday());
         this.checkDayTypeMapping(weekProfile.getSaturday());
-
     }
 
     /**
-     * Method to check DayType mapping
+     * Method to test mapping from ActivityCalendarType to ActivityCalendar.
      */
-    private void checkDayTypeMapping(final DayProfile dayProfile) {
+    @Test
+    public void testActivityCalendarTypeMapping() {
 
-        assertNotNull(dayProfile);
-        assertNotNull(dayProfile.getDayId());
-        assertNotNull(dayProfile.getDayProfileActionList());
-        assertNotNull(dayProfile.getDayProfileActionList().get(0));
+        // build test data
+        final ActivityCalendarType activityCalendarType = this.buildActivityCalendarTypeObject();
 
-        assertEquals(new Integer(BigInteger.TEN.intValue()), dayProfile.getDayId());
-        assertEquals(new Integer(BigInteger.ZERO.intValue()), dayProfile.getDayProfileActionList().get(0)
-                .getScriptSelector());
+        // actual mapping
+        final ActivityCalendar activityCalendar = this.configurationMapper.map(activityCalendarType,
+                ActivityCalendar.class);
 
-        // For more info on byte[] to CosemTime object mapping, refer to the
-        // CosemTimeConverterTest.
-        assertNotNull(dayProfile.getDayProfileActionList().get(0).getStartTime());
+        // check mapping
+        assertThat(activityCalendar).isNotNull();
+        assertThat(activityCalendar.getSeasonProfileList()).isNotNull();
+        assertThat(activityCalendar.getSeasonProfileList().get(0)).isNotNull();
+
+        // For more info on byte[] to CosemDateTime object mapping, refer to the
+        // CosemDateTimeConverterTest.
+        assertThat(activityCalendar.getActivatePassiveCalendarTime()).isNotNull();
+        assertThat(activityCalendar.getSeasonProfileList().get(0).getSeasonStart()).isNotNull();
+
+        assertThat(activityCalendar.getCalendarName()).isEqualTo(CALENDARNAME);
+        assertThat(activityCalendar.getSeasonProfileList().get(0).getSeasonProfileName()).isEqualTo(SEASONPROFILENAME);
+
+        this.checkWeekProfileMapping(activityCalendar.getSeasonProfileList().get(0).getWeekProfile());
     }
 
 }

@@ -7,9 +7,15 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringmonitoring;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.*;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Map;
+
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PeriodType;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasResponse;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringmanagement.AbstractFindEventsReads;
@@ -20,10 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 public class PeriodicMeterReadsGasSteps {
     protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractFindEventsReads.class);
@@ -41,7 +45,7 @@ public class PeriodicMeterReadsGasSteps {
         final PeriodicMeterReadsGasRequest request = PeriodicMeterReadsGasRequestFactory.fromParameterMap(settings);
 
         final PeriodicMeterReadsGasAsyncResponse asyncResponse = this.requestClient.doRequest(request);
-        assertNotNull(asyncResponse);
+        assertThat(asyncResponse).isNotNull();
         ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
     }
 
@@ -56,8 +60,8 @@ public class PeriodicMeterReadsGasSteps {
 
         final PeriodicMeterReadsGasResponse response = this.responseClient.getResponse(asyncRequest);
 
-        assertNotNull("PeriodicMeterReadsGasResponse should not be null", response);
-        assertEquals("PeriodType should match", PeriodType.fromValue(periodType), response.getPeriodType());
-        assertNotNull("Expected periodic meter reads gas", response.getPeriodicMeterReadsGas());
+        assertThat(response).as("PeriodicMeterReadsGasResponse should not be null").isNotNull();
+        assertThat(response.getPeriodType()).as("PeriodType should match").isEqualTo(PeriodType.fromValue(periodType));
+        assertThat(response.getPeriodicMeterReadsGas()).as("Expected periodic meter reads gas").isNotNull();
     }
 }

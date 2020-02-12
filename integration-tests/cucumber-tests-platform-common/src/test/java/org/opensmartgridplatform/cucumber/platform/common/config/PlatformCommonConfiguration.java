@@ -7,16 +7,14 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.config;
 
+import org.opensmartgridplatform.cucumber.platform.config.AbstractPlatformApplicationConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
-
-import org.opensmartgridplatform.cucumber.platform.config.AbstractPlatformApplicationConfiguration;
 
 @Configuration
-@PropertySources({ @PropertySource("classpath:cucumber-tests-platform-common.properties"),
-        @PropertySource(value = "file:/etc/osp/test/global-cucumber.properties", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:/etc/osp/test/cucumber-tests-platform-common.properties", ignoreResourceNotFound = true), })
+@PropertySource("classpath:cucumber-tests-platform-common.properties")
+@PropertySource(value = "file:/etc/osp/test/global-cucumber.properties", ignoreResourceNotFound = true)
+@PropertySource(value = "file:/etc/osp/test/cucumber-tests-platform-common.properties", ignoreResourceNotFound = true)
 public class PlatformCommonConfiguration extends AbstractPlatformApplicationConfiguration {
 
 }

@@ -8,26 +8,23 @@
 
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigInteger;
 
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.PushSetupSms;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.MessageType;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.TransportServiceType;
 
 public class PushSetupSmsMappingTest {
 
-    private ConfigurationMapper configurationMapper = new ConfigurationMapper();
     private static final String HOST = "host";
     private static final BigInteger PORT = BigInteger.TEN;
     private static final String DESTINATION = "host:10";
     private static final TransportServiceType TRANSPORTSERVICETYPE = TransportServiceType.TCP;
     private static final MessageType MESSAGETYPE = MessageType.MANUFACTURER_SPECIFIC;
+    private ConfigurationMapper configurationMapper = new ConfigurationMapper();
 
     /**
      * Tests if a PushSetupSms object can be mapped successfully.
@@ -42,31 +39,31 @@ public class PushSetupSmsMappingTest {
 
         // actual mapping
         final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupSms pushSetupSmsMapped = this.configurationMapper
-                .map(pushSetupSmsOriginal, org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupSms.class);
+                .map(pushSetupSmsOriginal,
+                        org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupSms.class);
 
         // check mapping
-        assertNotNull(pushSetupSmsMapped);
-        assertNotNull(pushSetupSmsMapped.getSendDestinationAndMethod());
-        assertNotNull(pushSetupSmsMapped.getSendDestinationAndMethod().getDestination());
-        assertNotNull(pushSetupSmsMapped.getSendDestinationAndMethod().getTransportService());
-        assertNotNull(pushSetupSmsMapped.getSendDestinationAndMethod().getMessage());
+        assertThat(pushSetupSmsMapped).isNotNull();
+        assertThat(pushSetupSmsMapped.getSendDestinationAndMethod()).isNotNull();
+        assertThat(pushSetupSmsMapped.getSendDestinationAndMethod().getDestination()).isNotNull();
+        assertThat(pushSetupSmsMapped.getSendDestinationAndMethod().getTransportService()).isNotNull();
+        assertThat(pushSetupSmsMapped.getSendDestinationAndMethod().getMessage()).isNotNull();
 
         // Only a SendDestinationAndMethod is mapped:
-        assertNull(pushSetupSmsMapped.getLogicalName());
-        assertNull(pushSetupSmsMapped.getCommunicationWindow());
-        assertNull(pushSetupSmsMapped.getNumberOfRetries());
-        assertNull(pushSetupSmsMapped.getPushObjectList());
-        assertNull(pushSetupSmsMapped.getRandomisationStartInterval());
-        assertNull(pushSetupSmsMapped.getRepetitionDelay());
+        assertThat(pushSetupSmsMapped.getLogicalName()).isNull();
+        assertThat(pushSetupSmsMapped.getCommunicationWindow()).isNull();
+        assertThat(pushSetupSmsMapped.getNumberOfRetries()).isNull();
+        assertThat(pushSetupSmsMapped.getPushObjectList()).isNull();
+        assertThat(pushSetupSmsMapped.getRandomisationStartInterval()).isNull();
+        assertThat(pushSetupSmsMapped.getRepetitionDelay()).isNull();
 
         // port and host are combined into destination. The converter sets
         // default values for the other two variables of a
         // SendDestinationAndMethod.
-        assertEquals(DESTINATION, pushSetupSmsMapped.getSendDestinationAndMethod().getDestination());
-        assertEquals(TRANSPORTSERVICETYPE.name(), pushSetupSmsMapped.getSendDestinationAndMethod()
-                .getTransportService().name());
-        assertEquals(MESSAGETYPE.name(), pushSetupSmsMapped.getSendDestinationAndMethod().getMessage().name());
-
+        assertThat(pushSetupSmsMapped.getSendDestinationAndMethod().getDestination()).isEqualTo(DESTINATION);
+        assertThat(pushSetupSmsMapped.getSendDestinationAndMethod().getTransportService().name())
+                .isEqualTo(TRANSPORTSERVICETYPE.name());
+        assertThat(pushSetupSmsMapped.getSendDestinationAndMethod().getMessage().name()).isEqualTo(MESSAGETYPE.name());
     }
 
 }

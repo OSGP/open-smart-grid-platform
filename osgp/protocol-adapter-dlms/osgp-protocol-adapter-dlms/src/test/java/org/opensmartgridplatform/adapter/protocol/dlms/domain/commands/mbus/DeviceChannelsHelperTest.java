@@ -9,12 +9,13 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.testutil.GetResultImpl;
@@ -23,8 +24,8 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementVa
 
 public class DeviceChannelsHelperTest {
 
-    private DlmsHelper dlmsHelper = new DlmsHelper();
-    private DeviceChannelsHelper deviceChannelsHelper = new DeviceChannelsHelper(dlmsHelper);
+    private final DlmsHelper dlmsHelper = new DlmsHelper();
+    private final DeviceChannelsHelper deviceChannelsHelper = new DeviceChannelsHelper(this.dlmsHelper);
 
     private static final short PRIMARY_ADDRESS = 1;
     private static final long IDENTIFICATION_NUMBER = 16137489L;
@@ -33,19 +34,22 @@ public class DeviceChannelsHelperTest {
     private static final short VERSION = 2;
     private static final short DEVICE_TYPE = 3;
 
-    private GetResult primaryAddress = new GetResultImpl(DataObject.newUInteger8Data(PRIMARY_ADDRESS));
-    private GetResult identificationNumber = new GetResultImpl(DataObject.newUInteger32Data(IDENTIFICATION_NUMBER));
-    private GetResult manufacturerIdentification = new GetResultImpl(DataObject.newUInteger16Data(MANUFACTURER_IDENTIFICATION));
-    private GetResult version = new GetResultImpl(DataObject.newUInteger8Data(VERSION));
-    private GetResult deviceType = new GetResultImpl(DataObject.newUInteger8Data(DEVICE_TYPE));
+    private final GetResult primaryAddress = new GetResultImpl(DataObject.newUInteger8Data(PRIMARY_ADDRESS));
+    private final GetResult identificationNumber = new GetResultImpl(
+            DataObject.newUInteger32Data(IDENTIFICATION_NUMBER));
+    private final GetResult manufacturerIdentification = new GetResultImpl(
+            DataObject.newUInteger16Data(MANUFACTURER_IDENTIFICATION));
+    private final GetResult version = new GetResultImpl(DataObject.newUInteger8Data(VERSION));
+    private final GetResult deviceType = new GetResultImpl(DataObject.newUInteger8Data(DEVICE_TYPE));
 
     @Test
     public void testMakeChannelElementValues() throws Exception {
 
-        List<GetResult> resultList = new ArrayList<>(Arrays.asList(primaryAddress, identificationNumber,
-                manufacturerIdentification, version, deviceType));
+        final List<GetResult> resultList = new ArrayList<>(Arrays.asList(this.primaryAddress, this.identificationNumber,
+                this.manufacturerIdentification, this.version, this.deviceType));
 
-        ChannelElementValuesDto values = deviceChannelsHelper.makeChannelElementValues((short)1, resultList);
+        final ChannelElementValuesDto values = this.deviceChannelsHelper.makeChannelElementValues((short) 1,
+                resultList);
 
         assertThat(values.getPrimaryAddress()).isEqualTo(PRIMARY_ADDRESS);
         assertThat(values.getIdentificationNumber()).isEqualTo(String.valueOf(IDENTIFICATION_NUMBER));
@@ -54,28 +58,30 @@ public class DeviceChannelsHelperTest {
         assertThat(values.getDeviceTypeIdentification()).isEqualTo(DEVICE_TYPE);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testMakeChannelElementValuesInvalidManufacturerId() throws Exception {
 
-        GetResult manufacturerIdentificationInvalid = new GetResultImpl(DataObject.newUInteger16Data(123));
+        final GetResult manufacturerIdentificationInvalid = new GetResultImpl(DataObject.newUInteger16Data(123));
 
-        List<GetResult> resultList = new ArrayList<>(Arrays.asList(primaryAddress, identificationNumber,
-                manufacturerIdentificationInvalid, version, deviceType));
+        final List<GetResult> resultList = new ArrayList<>(Arrays.asList(this.primaryAddress, this.identificationNumber,
+                manufacturerIdentificationInvalid, this.version, this.deviceType));
 
-        deviceChannelsHelper.makeChannelElementValues((short) 1, resultList);
+        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> {
+            this.deviceChannelsHelper.makeChannelElementValues((short) 1, resultList);
+        });
     }
 
     @Test
     public void testMakeChannelElementValuesIdenfiticationNumberNull() throws Exception {
 
-        GetResult identificationNumberNull = new GetResultImpl(null);
+        final GetResult identificationNumberNull = new GetResultImpl(null);
 
-        List<GetResult> resultList = new ArrayList<>(Arrays.asList(primaryAddress, identificationNumberNull,
-                manufacturerIdentification, version, deviceType));
+        final List<GetResult> resultList = new ArrayList<>(Arrays.asList(this.primaryAddress, identificationNumberNull,
+                this.manufacturerIdentification, this.version, this.deviceType));
 
-        ChannelElementValuesDto values = deviceChannelsHelper.makeChannelElementValues((short) 1, resultList);
+        final ChannelElementValuesDto values = this.deviceChannelsHelper.makeChannelElementValues((short) 1,
+                resultList);
 
         assertThat(values.getIdentificationNumber()).isEqualTo(null);
     }
 }
-

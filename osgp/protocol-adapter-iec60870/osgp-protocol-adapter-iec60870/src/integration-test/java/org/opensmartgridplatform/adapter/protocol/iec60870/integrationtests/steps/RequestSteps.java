@@ -18,7 +18,7 @@ import org.opensmartgridplatform.dto.da.GetHealthStatusRequestDto;
 import org.opensmartgridplatform.shared.infra.jms.ObjectMessageBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.When;
 
 public class RequestSteps {
     @Autowired

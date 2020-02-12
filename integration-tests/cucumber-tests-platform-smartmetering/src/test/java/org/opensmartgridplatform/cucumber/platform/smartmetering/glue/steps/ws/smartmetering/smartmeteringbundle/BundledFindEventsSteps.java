@@ -7,7 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringbundle;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
 
@@ -16,8 +16,8 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.FindEven
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Response;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.bundle.FindEventsRequestBuilder;
 
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
 
 public class BundledFindEventsSteps extends BaseBundleSteps {
 
@@ -39,7 +39,7 @@ public class BundledFindEventsSteps extends BaseBundleSteps {
     public void theBundleResponseShouldContainAFindEventsResponse() throws Throwable {
         final Response response = this.getNextBundleResponse();
 
-        assertTrue("Not a valid response", response instanceof FindEventsResponse);
+        assertThat(response instanceof FindEventsResponse).as("Not a valid response").isTrue();
     }
 
 }

@@ -327,7 +327,7 @@ public class DeviceManagementService {
         final Organisation organisation = this.findOrganisation(organisationIdentification);
         this.isAllowed(organisation, PlatformFunction.GET_MESSAGES);
 
-        final PageRequest request = new PageRequest(pageNumber, this.pagingSettings.getMaximumPageSize(),
+        final PageRequest request = PageRequest.of(pageNumber, this.pagingSettings.getMaximumPageSize(),
                 Sort.Direction.DESC, "modificationTime");
 
         if (!StringUtils.isEmpty(deviceIdentification)) {
@@ -435,7 +435,7 @@ public class DeviceManagementService {
 
             final DeviceAuthorization authorization = ssld.addAuthorization(organisation, DeviceFunctionGroup.OWNER);
 
-            final ProtocolInfo protocolInfo = this.protocolRepository.findOne(protocolInfoId);
+            final ProtocolInfo protocolInfo = this.protocolRepository.findById(protocolInfoId).get();
             ssld.updateProtocol(protocolInfo);
 
             this.authorizationRepository.save(authorization);
@@ -510,7 +510,7 @@ public class DeviceManagementService {
         final Organisation organisation = this.findOrganisation(organisationIdentification);
         this.isAllowed(organisation, PlatformFunction.GET_PROTOCOL_INFOS);
 
-        return this.protocolRepository.findAll(new Sort(Direction.ASC, "protocol", "protocolVersion"));
+        return this.protocolRepository.findAll(Sort.by(Direction.ASC, "protocol", "protocolVersion"));
     }
 
     public void updateDeviceProtocol(final String organisationIdentification,

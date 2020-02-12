@@ -7,17 +7,16 @@
  */
 package org.opensmartgridplatform.cucumber.platform.microgrids.glue.steps.housekeeping;
 
-import static org.junit.Assert.fail;
-
 import java.util.concurrent.TimeUnit;
 
+import org.junit.jupiter.api.Assertions;
 import org.opensmartgridplatform.cucumber.core.RetryableAssert;
 import org.opensmartgridplatform.cucumber.platform.microgrids.glue.steps.database.ws.MicrogridsResponseDataSteps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 public class MicrogridsResponseDataCleanupJobSteps {
 
@@ -53,8 +52,8 @@ public class MicrogridsResponseDataCleanupJobSteps {
                     () -> this.responseDataSteps.theResponseDataRecordShouldBeDeleted(correlationUid), retries, delay,
                     TimeUnit.MILLISECONDS);
         } catch (final AssertionError e) {
-            fail("Cleanup job should have removed response data with correlation uid " + correlationUid + " within "
-                    + RetryableAssert.describeMaxDuration(retries, delay, TimeUnit.MILLISECONDS));
+            Assertions.fail("Cleanup job should have removed response data with correlation uid " + correlationUid
+                    + " within " + RetryableAssert.describeMaxDuration(retries, delay, TimeUnit.MILLISECONDS));
         }
     }
 
@@ -66,7 +65,8 @@ public class MicrogridsResponseDataCleanupJobSteps {
                     () -> this.responseDataSteps.theResponseDataRecordShouldNotBeDeleted(correlationUid), 0,
                     retries * delay, TimeUnit.MILLISECONDS);
         } catch (final AssertionError e) {
-            fail("Cleanup job should not have removed response data with correlation uid " + correlationUid + ".");
+            Assertions.fail(
+                    "Cleanup job should not have removed response data with correlation uid " + correlationUid + ".");
         }
     }
 }

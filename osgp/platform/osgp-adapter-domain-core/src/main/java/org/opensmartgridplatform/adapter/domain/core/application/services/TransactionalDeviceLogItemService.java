@@ -36,7 +36,7 @@ public class TransactionalDeviceLogItemService {
     private DeviceLogItemSlicingRepository deviceLogItemSlicingRepository;
 
     public List<DeviceLogItem> findDeviceLogItemsBeforeDate(final Date date, final int pageSize) {
-        final PageRequest pageRequest = new PageRequest(0, pageSize, Sort.Direction.DESC, "id");
+        final PageRequest pageRequest = PageRequest.of(0, pageSize, Sort.Direction.DESC, "id");
         final Slice<DeviceLogItem> slice = this.deviceLogItemSlicingRepository.findByCreationTimeBefore(date,
                 pageRequest);
         final List<DeviceLogItem> deviceLogItems = slice.getContent();
@@ -47,7 +47,7 @@ public class TransactionalDeviceLogItemService {
 
     public void deleteDeviceLogItems(final List<DeviceLogItem> deviceLogItems) {
         final int size = deviceLogItems.size();
-        this.deviceLogItemSlicingRepository.delete(deviceLogItems);
+        this.deviceLogItemSlicingRepository.deleteAll(deviceLogItems);
         LOGGER.info("{} device log items deleted.", size);
     }
 }

@@ -8,41 +8,23 @@
 
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
-
-
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetKeysRequestData;
 
 public class KeySetMappingTest {
 
-    private ConfigurationMapper configurationMapper = new ConfigurationMapper();
     private static final byte[] BYTE_ARRAY = { 1, 64, 127 };
+    private ConfigurationMapper configurationMapper = new ConfigurationMapper();
 
-    /** Tests the mapping of a KeySet object with filled byte arrays. */
-    @Test
-    public void testWithFilledArrays() {
+    /** Method to check mapping of filled byte arrays. */
+    private void checkMappingFilledArray(final byte[] byteArray) {
 
-        // build test data
-        final SetKeysRequestData keySetOriginal = new SetKeysRequestData();
-        final byte[] authenticationKey = BYTE_ARRAY;
-        keySetOriginal.setAuthenticationKey(authenticationKey);
-        final byte[] encryptionKey = BYTE_ARRAY;
-        keySetOriginal.setEncryptionKey(encryptionKey);
-
-        // actual mapping
-        final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeysRequestData keySetMapped = this.configurationMapper
-                .map(keySetOriginal, org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeysRequestData.class);
-
-        // check mapping
-        assertNotNull(keySetMapped);
-        this.checkMappingFilledArray(keySetMapped.getAuthenticationKey());
-        this.checkMappingFilledArray(keySetMapped.getEncryptionKey());
-
+        assertThat(byteArray).isNotNull();
+        assertThat(byteArray[0]).isEqualTo(BYTE_ARRAY[0]);
+        assertThat(byteArray[1]).isEqualTo(BYTE_ARRAY[1]);
+        assertThat(byteArray[2]).isEqualTo(BYTE_ARRAY[2]);
     }
 
     /** Tests the mapping of a KeySet object with empty byte arrays. */
@@ -58,14 +40,37 @@ public class KeySetMappingTest {
 
         // actual mapping
         final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeysRequestData keySetMapped = this.configurationMapper
-                .map(keySetOriginal, org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeysRequestData.class);
+                .map(keySetOriginal,
+                        org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeysRequestData.class);
 
         // check mapping
-        assertNotNull(keySetMapped);
-        assertNotNull(keySetMapped.getAuthenticationKey());
-        assertTrue(keySetMapped.getAuthenticationKey().length == 0);
-        assertNotNull(keySetMapped.getEncryptionKey());
-        assertTrue(keySetMapped.getEncryptionKey().length == 0);
+        assertThat(keySetMapped).isNotNull();
+        assertThat(keySetMapped.getAuthenticationKey()).isNotNull();
+        assertThat(keySetMapped.getAuthenticationKey().length == 0).isTrue();
+        assertThat(keySetMapped.getEncryptionKey()).isNotNull();
+        assertThat(keySetMapped.getEncryptionKey().length == 0).isTrue();
+    }
+
+    /** Tests the mapping of a KeySet object with filled byte arrays. */
+    @Test
+    public void testWithFilledArrays() {
+
+        // build test data
+        final SetKeysRequestData keySetOriginal = new SetKeysRequestData();
+        final byte[] authenticationKey = BYTE_ARRAY;
+        keySetOriginal.setAuthenticationKey(authenticationKey);
+        final byte[] encryptionKey = BYTE_ARRAY;
+        keySetOriginal.setEncryptionKey(encryptionKey);
+
+        // actual mapping
+        final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeysRequestData keySetMapped = this.configurationMapper
+                .map(keySetOriginal,
+                        org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeysRequestData.class);
+
+        // check mapping
+        assertThat(keySetMapped).isNotNull();
+        this.checkMappingFilledArray(keySetMapped.getAuthenticationKey());
+        this.checkMappingFilledArray(keySetMapped.getEncryptionKey());
     }
 
     /** Tests the mapping of a KeySet object with byte arrays that are null. */
@@ -82,21 +87,12 @@ public class KeySetMappingTest {
 
         // actual mapping
         final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeysRequestData keySetMapped = this.configurationMapper
-                .map(keySetOriginal, org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeysRequestData.class);
+                .map(keySetOriginal,
+                        org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeysRequestData.class);
 
         // check mapping
-        assertNotNull(keySetMapped);
-        assertNull(keySetMapped.getAuthenticationKey());
-        assertNull(keySetMapped.getEncryptionKey());
-    }
-
-    /** Method to check mapping of filled byte arrays. */
-    private void checkMappingFilledArray(final byte[] byteArray) {
-
-        assertNotNull(byteArray);
-        assertEquals(BYTE_ARRAY[0], byteArray[0]);
-        assertEquals(BYTE_ARRAY[1], byteArray[1]);
-        assertEquals(BYTE_ARRAY[2], byteArray[2]);
-
+        assertThat(keySetMapped).isNotNull();
+        assertThat(keySetMapped.getAuthenticationKey()).isNull();
+        assertThat(keySetMapped.getEncryptionKey()).isNull();
     }
 }

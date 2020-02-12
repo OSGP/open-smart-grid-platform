@@ -19,7 +19,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>super-osgp</artifactId>
-    <version>4.40.0-SNAPSHOT</version>
+    <version>5.0.0-SNAPSHOT</version>
     <relativePath>../../super/pom.xml</relativePath>
   </parent>
   <distributionManagement>
@@ -32,14 +32,14 @@
   </distributionManagement>
 
   <properties>
-    <!-- Default always skip integration tests, to ensure all developer data 
+    <!-- Default always skip integration tests, to ensure all developer data
       is retained -->
     <skipITs>true</skipITs>
 
-    <!-- Skip code coverage gathering with Jacoco on IT tests from Tomcat. 
+    <!-- Skip code coverage gathering with Jacoco on IT tests from Tomcat.
       Requires jacoco-agent to be setup on remote Tomcat -->
     <skipITCoverage>true</skipITCoverage>
-    
+
     <!-- Default always skip creating a test jar with dependencies tests -->
     <skipTestJarWithDependenciesAssembly>true</skipTestJarWithDependenciesAssembly>
 
@@ -237,8 +237,8 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
           <configuration>
-            <source>1.8</source>
-            <target>1.8</target>
+            <source>${java.version}</source>
+            <target>${java.version}</target>
             <encoding>${project.build.sourceEncoding}</encoding>
           </configuration>
           <version>${maven.compiler.plugin.version}</version>
@@ -268,7 +268,7 @@
           <artifactId>jacoco-maven-plugin</artifactId>
           <version>${jacoco.version}</version>
           <executions>
-            <!-- Prepares the property pointing to the JaCoCo runtime agent 
+            <!-- Prepares the property pointing to the JaCoCo runtime agent
               which is passed as VM argument when Maven the Surefire plugin is executed. -->
             <execution>
               <id>pre-unit-test</id>
@@ -276,10 +276,10 @@
                 <goal>prepare-agent</goal>
               </goals>
               <configuration>
-                <!-- Sets the path to the file which contains the execution 
+                <!-- Sets the path to the file which contains the execution
                   data. -->
                 <destFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</destFile>
-                <!-- Sets the name of the property containing the settings 
+                <!-- Sets the name of the property containing the settings
                   for JaCoCo runtime agent. -->
                 <propertyName>surefireArgLine</propertyName>
                 <skipTests>${skipTests}</skipTests>
@@ -292,7 +292,7 @@
                 <goal>report</goal>
               </goals>
               <configuration>
-                <!-- Sets the path to the file which contains the execution 
+                <!-- Sets the path to the file which contains the execution
                   data. -->
                 <dataFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</dataFile>
                 <!-- Sets the output directory for the code coverage report. -->
@@ -300,7 +300,7 @@
                 <skipTests>${skipTests}</skipTests>
               </configuration>
             </execution>
-            <!-- Ensures that the code coverage report for unit tests is 
+            <!-- Ensures that the code coverage report for unit tests is
               created after unit tests have been run. -->
             <execution>
               <id>post-unit-test</id>
@@ -309,7 +309,7 @@
                 <goal>report</goal>
               </goals>
               <configuration>
-                <!-- Sets the path to the file which contains the execution 
+                <!-- Sets the path to the file which contains the execution
                   data. -->
                 <dataFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</dataFile>
                 <!-- Sets the output directory for the code coverage report. -->
@@ -317,7 +317,7 @@
                 <skipTests>${skipTests}</skipTests>
               </configuration>
             </execution>
-            <!-- Reset the code coverage before the integration tests are 
+            <!-- Reset the code coverage before the integration tests are
               started. Ensures Tomcat startup code execution is ignored in report -->
             <execution>
               <id>pre-integration-test</id>

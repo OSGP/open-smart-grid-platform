@@ -9,19 +9,19 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware;
 
 import static java.util.Arrays.asList;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.refEq;
-import static org.mockito.Matchers.same;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.refEq;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
 
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
@@ -34,7 +34,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessa
 import org.opensmartgridplatform.dto.valueobjects.FirmwareModuleType;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class GetFirmwareVersionsCommandExecutorTest {
     private static final int CLASS_ID = 1;
     private static final int ATTRIBUTE_ID = 2;
@@ -55,7 +55,7 @@ public class GetFirmwareVersionsCommandExecutorTest {
 
     private DlmsConnectionManager connectionHolder;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.executor = new GetFirmwareVersionsCommandExecutor(this.helperService);
         this.connectionHolder = new DlmsConnectionManager(null, null, this.listener, null);
@@ -74,19 +74,17 @@ public class GetFirmwareVersionsCommandExecutorTest {
                 refEq(new AttributeAddress(CLASS_ID, OBIS_CODE_MODULE_ACTIVE_FIRMWARE_VERSION, ATTRIBUTE_ID)),
                 refEq(new AttributeAddress(CLASS_ID, OBIS_CODE_COMMUNICATION_MODULE_ACTIVE_FIRMWARE_VERSION,
                         ATTRIBUTE_ID)))).thenReturn(asList(getResult1, getResult2, getResult3));
-        when(this.helperService
-                .readString(getResult1.getResultData(), FirmwareModuleType.ACTIVE_FIRMWARE.getDescription()))
-                .thenReturn("string1");
-        when(this.helperService
-                .readString(getResult2.getResultData(), FirmwareModuleType.MODULE_ACTIVE.getDescription()))
-                .thenReturn("string2");
-        when(this.helperService
-                .readString(getResult3.getResultData(), FirmwareModuleType.COMMUNICATION.getDescription()))
-                .thenReturn("string3");
+        when(this.helperService.readString(getResult1.getResultData(),
+                FirmwareModuleType.ACTIVE_FIRMWARE.getDescription())).thenReturn("string1");
+        when(this.helperService.readString(getResult2.getResultData(),
+                FirmwareModuleType.MODULE_ACTIVE.getDescription())).thenReturn("string2");
+        when(this.helperService.readString(getResult3.getResultData(),
+                FirmwareModuleType.COMMUNICATION.getDescription())).thenReturn("string3");
 
         final List<FirmwareVersionDto> result = this.executor.execute(this.connectionHolder, device, null);
 
-        Assertions.assertThat(result).usingRecursiveFieldByFieldElementComparator()
+        Assertions.assertThat(result)
+                .usingRecursiveFieldByFieldElementComparator()
                 .containsExactly(new FirmwareVersionDto(FirmwareModuleType.ACTIVE_FIRMWARE, "string1"),
                         new FirmwareVersionDto(FirmwareModuleType.MODULE_ACTIVE, "string2"),
                         new FirmwareVersionDto(FirmwareModuleType.COMMUNICATION, "string3"));
@@ -108,27 +106,23 @@ public class GetFirmwareVersionsCommandExecutorTest {
                 refEq(new AttributeAddress(CLASS_ID, OBIS_CODE_COMMUNICATION_MODULE_ACTIVE_FIRMWARE_VERSION,
                         ATTRIBUTE_ID)),
                 refEq(new AttributeAddress(CLASS_ID, OBIS_CODE_MBUS_DRIVER_ACTIVE_FIRMWARE_VERSION, ATTRIBUTE_ID))))
-                .thenReturn(asList(getResult1, getResult2, getResult3, getResult4));
-        when(this.helperService
-                .readString(getResult1.getResultData(), FirmwareModuleType.ACTIVE_FIRMWARE.getDescription()))
-                .thenReturn("string1");
-        when(this.helperService
-                .readString(getResult2.getResultData(), FirmwareModuleType.MODULE_ACTIVE.getDescription()))
-                .thenReturn("string2");
-        when(this.helperService
-                .readString(getResult3.getResultData(), FirmwareModuleType.COMMUNICATION.getDescription()))
-                .thenReturn("string3");
-        when(this.helperService
-                .readString(getResult4.getResultData(), FirmwareModuleType.M_BUS_DRIVER_ACTIVE.getDescription()))
-                .thenReturn("string4");
+                        .thenReturn(asList(getResult1, getResult2, getResult3, getResult4));
+        when(this.helperService.readString(getResult1.getResultData(),
+                FirmwareModuleType.ACTIVE_FIRMWARE.getDescription())).thenReturn("string1");
+        when(this.helperService.readString(getResult2.getResultData(),
+                FirmwareModuleType.MODULE_ACTIVE.getDescription())).thenReturn("string2");
+        when(this.helperService.readString(getResult3.getResultData(),
+                FirmwareModuleType.COMMUNICATION.getDescription())).thenReturn("string3");
+        when(this.helperService.readString(getResult4.getResultData(),
+                FirmwareModuleType.M_BUS_DRIVER_ACTIVE.getDescription())).thenReturn("string4");
 
         final List<FirmwareVersionDto> result = this.executor.execute(this.connectionHolder, device, null);
 
-        Assertions.assertThat(result).usingRecursiveFieldByFieldElementComparator()
+        Assertions.assertThat(result)
+                .usingRecursiveFieldByFieldElementComparator()
                 .containsExactly(new FirmwareVersionDto(FirmwareModuleType.ACTIVE_FIRMWARE, "string1"),
                         new FirmwareVersionDto(FirmwareModuleType.MODULE_ACTIVE, "string2"),
                         new FirmwareVersionDto(FirmwareModuleType.COMMUNICATION, "string3"),
                         new FirmwareVersionDto(FirmwareModuleType.M_BUS_DRIVER_ACTIVE, "string4"));
     }
 }
-

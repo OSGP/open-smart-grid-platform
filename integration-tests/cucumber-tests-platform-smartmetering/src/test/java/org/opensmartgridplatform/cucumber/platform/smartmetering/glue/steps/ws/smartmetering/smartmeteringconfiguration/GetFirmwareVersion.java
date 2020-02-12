@@ -7,8 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import java.util.Map;
@@ -31,8 +30,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 public class GetFirmwareVersion {
     protected static final Logger LOGGER = LoggerFactory.getLogger(GetFirmwareVersion.class);
@@ -54,7 +53,8 @@ public class GetFirmwareVersion {
         final GetFirmwareVersionAsyncResponse getFirmwareVersionAsyncResponse = this.smartMeteringConfigurationClient
                 .getFirmwareVersion(getFirmwareVersionRequest);
 
-        assertNotNull("Get firmware version asyncResponse should not be null", getFirmwareVersionAsyncResponse);
+        assertThat(getFirmwareVersionAsyncResponse).as("Get firmware version asyncResponse should not be null")
+                .isNotNull();
         LOGGER.info("Get firmware version asyncResponse is received {}", getFirmwareVersionAsyncResponse);
 
         ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID,
@@ -68,8 +68,9 @@ public class GetFirmwareVersion {
         final GetFirmwareVersionResponse getFirmwareVersionResponse = this.smartMeteringConfigurationClient
                 .retrieveGetFirmwareVersionResponse(getFirmwareVersionAsyncRequest);
 
-        assertNotNull("Get firmware version response has result null", getFirmwareVersionResponse.getResult());
-        assertEquals("Response should be OK", OsgpResultType.OK, getFirmwareVersionResponse.getResult());
+        assertThat(getFirmwareVersionResponse.getResult()).as("Get firmware version response has result null")
+                .isNotNull();
+        assertThat(getFirmwareVersionResponse.getResult()).as("Response should be OK").isEqualTo(OsgpResultType.OK);
 
         final List<FirmwareVersion> firmwareVersions = getFirmwareVersionResponse.getFirmwareVersion();
 
@@ -82,23 +83,26 @@ public class GetFirmwareVersion {
         final Map<FirmwareModule, String> expectedVersionsByModule = this.deviceFirmwareModuleSteps
                 .getFirmwareModuleVersions(settings, true);
 
-        assertEquals("Number of firmware modules", expectedVersionsByModule.size(), firmwareVersions.size());
+        assertThat(firmwareVersions.size()).as("Number of firmware modules").isEqualTo(expectedVersionsByModule.size());
 
         for (final FirmwareVersion receivedFirmwareVersion : firmwareVersions) {
-            assertNotNull("The received firmware module type is null", receivedFirmwareVersion.getFirmwareModuleType());
-            assertNotNull("The received firmware version is null", receivedFirmwareVersion.getVersion());
+            assertThat(receivedFirmwareVersion.getFirmwareModuleType()).as("The received firmware module type is null")
+                    .isNotNull();
+
+            assertThat(receivedFirmwareVersion.getVersion()).as("The received firmware version is null").isNotNull();
             final String moduleDescription = receivedFirmwareVersion.getFirmwareModuleType().name();
             final String moduleVersion = receivedFirmwareVersion.getVersion();
 
             final FirmwareModule firmwareModule = this.firmwareModuleRepository
                     .findByDescriptionIgnoreCase(moduleDescription);
-            assertNotNull("Received version \"" + moduleVersion + "\" for unknown firmware module \""
-                    + moduleDescription + "\"", firmwareModule);
+            assertThat(firmwareModule).as("Received version \"" + moduleVersion + "\" for unknown firmware module \""
+                    + moduleDescription + "\"").isNotNull();
 
             final String expectedVersion = expectedVersionsByModule.get(firmwareModule);
-            assertNotNull("Received version \"" + moduleVersion + "\" for firmware module \"" + moduleDescription
-                    + "\" which was not expected", expectedVersion);
-            assertEquals("Version for firmware module \"" + moduleDescription + "\"", expectedVersion, moduleVersion);
+            assertThat(expectedVersion).as("Received version \"" + moduleVersion + "\" for firmware module \""
+                    + moduleDescription + "\" which was not expected").isNotNull();
+            assertThat(moduleVersion).as("Version for firmware module \"" + moduleDescription + "\"")
+                    .isEqualTo(expectedVersion);
         }
     }
 

@@ -22,7 +22,7 @@ public class Ean extends AbstractEntity {
     private static final long serialVersionUID = 2569469187462546946L;
 
     @ManyToOne()
-    @JoinColumn()
+    @JoinColumn(name = "device")
     private Device device;
 
     @Column(nullable = false)

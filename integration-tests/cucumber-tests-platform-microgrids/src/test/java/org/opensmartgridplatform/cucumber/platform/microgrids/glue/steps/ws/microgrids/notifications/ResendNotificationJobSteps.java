@@ -7,7 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.microgrids.glue.steps.ws.microgrids.notifications;
 
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.When;
 
 public class ResendNotificationJobSteps {
 

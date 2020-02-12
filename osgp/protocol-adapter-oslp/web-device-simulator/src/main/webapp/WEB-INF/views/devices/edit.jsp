@@ -113,7 +113,7 @@ body {
 							<legend>
 								<spring:message code="device.edit.page.device.label" />
 							</legend>
-							<form:form commandName="device" method="POST" class="form-horizontal">
+							<form:form modelAttribute="device" method="POST" class="form-horizontal">
 								<form:hidden id="deviceId" path="id" />
 								<div class="control-group">
 									<form:label path="deviceIdentification" class="control-label">
@@ -314,7 +314,7 @@ body {
                     url : '/web-device-simulator/devices/commands/get-sequence-number',
                     contentType : 'application/json',
                     data : JSON.stringify(request),
-                    async : false,
+                    async : true,
                     success : function(data) {
                         var div = $('#feedback');
                         if (data <= -1) {
@@ -346,7 +346,7 @@ body {
                     url : '/web-device-simulator/devices/commands/set-sequence-number',
                     contentType : 'application/json',
                     data : JSON.stringify(request),
-                    async : false,
+                    async : true,
                     success : function(data) {
                         var div = $('#feedback');
                         if (data <= -1) {
@@ -378,7 +378,7 @@ body {
                     url : '/web-device-simulator/devices/commands/register',
                     contentType : 'application/json',
                     data : JSON.stringify(request),
-                    async : false,
+                    async : true,
                     success : function(data) {
                         var div = $('#feedback');
                         if (data.indexOf("ERROR") == 0) {
@@ -408,7 +408,7 @@ body {
                     url : '/web-device-simulator/devices/commands/register/confirm',
                     contentType : 'application/json',
                     data : JSON.stringify(request),
-                    async : false,
+                    async : true,
                     success : function(data) {
                         var div = $('#feedback');
                         if (data.indexOf("ERROR") == 0) {
@@ -442,7 +442,7 @@ body {
                     url : '/web-device-simulator/devices/commands/sendnotification',
                     contentType : 'application/json',
                     data : JSON.stringify(request),
-                    async : false,
+                    async : true,
                     success : function(data) {
                         var div = $('#feedback');
                         if (data.indexOf("ERROR") == 0) {

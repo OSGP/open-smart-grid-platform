@@ -1,3 +1,10 @@
+/**
+ * Copyright 2018 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.cucumber.execution;
 
 import java.io.File;
@@ -6,8 +13,6 @@ import java.util.TimeZone;
 
 import org.apache.tools.ant.taskdefs.optional.junit.XMLJUnitResultFormatter;
 import org.joda.time.DateTimeZone;
-import org.junit.internal.JUnitSystem;
-import org.junit.internal.RealSystem;
 import org.junit.runner.Computer;
 import org.junit.runner.Description;
 import org.junit.runner.JUnitCore;
@@ -29,11 +34,14 @@ public abstract class AppBase {
     @Option(name = "-report", metaVar = "DIR", usage = "Directory to produce test reports")
     private File reportDir;
 
-    @Option(name = "-skip-xml-report",
-            metaVar = "DIR",
-            usage = "Suppress the JUnit XML report generation (for more logging)")
+    @Option(name = "-skip-xml-report", metaVar = "DIR", usage = "Suppress the JUnit XML report generation (for more logging)")
     private boolean skipXmlReport;
 
+    /**
+     * SonarQube reports issue S106 about using stderr/stdout. These issues are
+     * suppressed.
+     */
+    @SuppressWarnings("squid:S106")
     public static int run(final AppBase app, final String[] testClasses, final String... args) {
         // Ensure the tests are executed in UTC time
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
@@ -64,9 +72,7 @@ public abstract class AppBase {
 
         final JUnitCore junit = new JUnitCore();
 
-        final JUnitSystem system = new RealSystem();
-
-        system.out().println("JUnit version " + Version.id());
+        LOGGER.info("JUnit version {}", Version.id());
 
         final JUnitCommandLineParseResult jUnitCommandLineParseResult = JUnitCommandLineParseResult.parse(testClasses);
 

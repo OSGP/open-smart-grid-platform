@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.publiclighting.glue.steps.database.adapterprotocoloslp;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.nio.charset.StandardCharsets;
@@ -14,23 +15,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
-import org.junit.Assert;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities.OslpDevice;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.repositories.OslpDeviceRepository;
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.glue.steps.database.core.SsldDeviceSteps;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
 
 /**
  * OSLP device specific steps.
  */
-public class OslpDeviceSteps extends GlueBase {
+public class OslpDeviceSteps {
 
     public static final String DEFAULT_DEVICE_UID = "dGVzdDEyMzQ1Njc4";
     private static final String DEVICE_PUBLIC_KEY = "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEFhUImXFJdqmputquVAc2CPdnn9Ju"
@@ -88,8 +87,8 @@ public class OslpDeviceSteps extends GlueBase {
             final OslpDevice entity = this.oslpDeviceRepository
                     .findByDeviceIdentification(getString(expectedEntity, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
 
-            Assert.assertEquals(getString(expectedEntity, PlatformKeys.KEY_DEVICE_TYPE), entity.getDeviceType());
-            Assert.assertEquals(getString(expectedEntity, PlatformKeys.KEY_DEVICE_UID), entity.getDeviceUid());
+            assertThat(entity.getDeviceType()).isEqualTo(getString(expectedEntity, PlatformKeys.KEY_DEVICE_TYPE));
+            assertThat(entity.getDeviceUid()).isEqualTo(getString(expectedEntity, PlatformKeys.KEY_DEVICE_UID));
         });
 
         this.ssldDeviceSteps.theSsldDeviceContains(expectedEntity);

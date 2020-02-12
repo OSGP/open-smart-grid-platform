@@ -11,7 +11,9 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
-import org.hibernate.ejb.HibernatePersistence;
+import org.hibernate.jpa.HibernatePersistenceProvider;
+import org.opensmartgridplatform.cucumber.core.config.BaseApplicationConfiguration;
+import org.opensmartgridplatform.shared.infra.db.DefaultConnectionPoolFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,8 +21,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import org.opensmartgridplatform.cucumber.core.config.BaseApplicationConfiguration;
-import org.opensmartgridplatform.shared.infra.db.DefaultConnectionPoolFactory;
 import com.zaxxer.hikari.HikariDataSource;
 
 /**
@@ -69,8 +69,8 @@ public abstract class ApplicationPersistenceConfiguration extends BaseApplicatio
     @Value("${hibernate.format_sql}")
     protected String hibernateFormatSql;
 
-    protected static final String PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY = "hibernate.ejb.naming_strategy";
-    @Value("${hibernate.ejb.naming_strategy}")
+    protected static final String PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY = "hibernate.physical_naming_strategy";
+    @Value("${hibernate.physical_naming_strategy}")
     protected String hibernateNamingStrategy;
 
     protected static final String PROPERTY_NAME_HIBERNATE_SHOW_SQL = "hibernate.show_sql";
@@ -125,7 +125,7 @@ public abstract class ApplicationPersistenceConfiguration extends BaseApplicatio
         entityManagerFactoryBean.setDataSource(dataSource);
         entityManagerFactoryBean
                 .setPackagesToScan(this.getEntitymanagerPackagesToScan().split(REGEX_COMMA_WITH_OPTIONAL_WHITESPACE));
-        entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistence.class);
+        entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistenceProvider.class);
 
         final Properties jpaProperties = new Properties();
         jpaProperties.put(PROPERTY_NAME_HIBERNATE_DIALECT, this.hibernateDialect);

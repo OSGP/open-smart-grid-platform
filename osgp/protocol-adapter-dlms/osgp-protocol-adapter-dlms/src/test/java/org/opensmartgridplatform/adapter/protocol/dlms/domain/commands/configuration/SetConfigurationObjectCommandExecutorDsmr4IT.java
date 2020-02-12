@@ -7,10 +7,10 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.BitString;
@@ -27,13 +27,13 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFla
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObjectDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GprsOperationModeTypeDto;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class SetConfigurationObjectCommandExecutorDsmr4IT extends SetConfigurationObjectCommandExecutorITBase {
 
     private static final int INDEX_OF_GPRS_OPERATION_MODE = 0;
     private static final int INDEX_OF_CONFIGURATION_FLAGS = 1;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         final DlmsHelper dlmsHelper = new DlmsHelper();
         final GetConfigurationObjectService getService = new GetConfigurationObjectServiceDsmr4(dlmsHelper);

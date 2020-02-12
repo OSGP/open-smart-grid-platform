@@ -15,22 +15,22 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class EventRetrievalScheduledTaskTest {
 
     @InjectMocks
     private EventRetrievalScheduledTask task;
 
-    @Before
+    @BeforeEach
     public void initProperties() {
         ReflectionTestUtils.setField(this.task, "eventRetrievalScheduledTaskBackOffMultiplier", 2);
         ReflectionTestUtils.setField(this.task, "eventRetrievalScheduledTaskDefaultWaitTime", 30);

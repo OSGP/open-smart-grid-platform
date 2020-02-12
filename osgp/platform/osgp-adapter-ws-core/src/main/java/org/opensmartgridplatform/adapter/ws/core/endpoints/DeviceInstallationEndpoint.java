@@ -9,15 +9,7 @@ package org.opensmartgridplatform.adapter.ws.core.endpoints;
 
 import java.util.List;
 
-import org.hibernate.validator.method.MethodConstraintViolationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.ws.server.endpoint.annotation.Endpoint;
-import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
-import org.springframework.ws.server.endpoint.annotation.RequestPayload;
-import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
+import javax.validation.ConstraintViolationException;
 
 import org.opensmartgridplatform.adapter.ws.core.application.mapping.DeviceInstallationMapper;
 import org.opensmartgridplatform.adapter.ws.core.application.services.DeviceInstallationService;
@@ -56,11 +48,15 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.ws.server.endpoint.annotation.Endpoint;
+import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
+import org.springframework.ws.server.endpoint.annotation.RequestPayload;
+import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
-// MethodConstraintViolationException is deprecated.
-// Will by replaced by equivalent functionality defined
-// by the Bean Validation 1.1 API as of Hibernate Validator 5.
-@SuppressWarnings("deprecation")
 @Endpoint
 public class DeviceInstallationEndpoint {
 
@@ -128,13 +124,10 @@ public class DeviceInstallationEndpoint {
                     .dequeueGetStatusResponse(request.getAsyncRequest().getCorrelationUid());
             if (message != null) {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
-
-                if (message.getDataObject() != null) {
-                    final DeviceStatus deviceStatus = (DeviceStatus) message.getDataObject();
-                    if (deviceStatus != null) {
-                        response.setDeviceStatus(this.deviceInstallationMapper.map(deviceStatus,
-                                org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.DeviceStatus.class));
-                    }
+                final DeviceStatus deviceStatus = (DeviceStatus) message.getDataObject();
+                if (deviceStatus != null) {
+                    response.setDeviceStatus(this.deviceInstallationMapper.map(deviceStatus,
+                            org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.DeviceStatus.class));
                 }
             }
         } catch (final Exception e) {
@@ -157,7 +150,7 @@ public class DeviceInstallationEndpoint {
 
             this.deviceInstallationService.addDevice(organisationIdentification, device,
                     ownerOrganisationIdentification);
-        } catch (final MethodConstraintViolationException e) {
+        } catch (final ConstraintViolationException e) {
             LOGGER.error(EXCEPTION_WHILE_ADDING_DEVICE, e.getMessage(), request.getDevice().getDeviceIdentification(),
                     organisationIdentification, e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
@@ -183,7 +176,7 @@ public class DeviceInstallationEndpoint {
 
             this.deviceInstallationService.updateDevice(organisationIdentification, device);
 
-        } catch (final MethodConstraintViolationException e) {
+        } catch (final ConstraintViolationException e) {
             LOGGER.error("Exception update Device: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
@@ -218,7 +211,7 @@ public class DeviceInstallationEndpoint {
                     .findRecentDevices(organisationIdentification);
             response.getDevices().addAll(this.deviceInstallationMapper.mapAsList(recentDevices,
                     org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.Device.class));
-        } catch (final MethodConstraintViolationException e) {
+        } catch (final ConstraintViolationException e) {
             LOGGER.error("Exception find recent device: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
@@ -253,7 +246,7 @@ public class DeviceInstallationEndpoint {
             asyncResponse.setDeviceId(request.getDeviceIdentification());
             response.setAsyncResponse(asyncResponse);
 
-        } catch (final MethodConstraintViolationException e) {
+        } catch (final ConstraintViolationException e) {
             LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
@@ -311,7 +304,7 @@ public class DeviceInstallationEndpoint {
             asyncResponse.setDeviceId(request.getDeviceIdentification());
             response.setAsyncResponse(asyncResponse);
 
-        } catch (final MethodConstraintViolationException e) {
+        } catch (final ConstraintViolationException e) {
             LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));

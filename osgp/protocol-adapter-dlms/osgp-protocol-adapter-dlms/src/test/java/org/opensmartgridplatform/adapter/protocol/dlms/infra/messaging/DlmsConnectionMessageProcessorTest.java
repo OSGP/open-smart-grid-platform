@@ -13,11 +13,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDeviceBuilder;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHelper;
@@ -25,7 +25,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DlmsConnectionMessageProcessorTest {
     private DlmsConnectionMessageProcessorImpl processor;
 
@@ -37,7 +37,7 @@ public class DlmsConnectionMessageProcessorTest {
 
     private DlmsMessageListener messageListener;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.messageListener = new InvocationCountingDlmsMessageListener();
         this.processor = new DlmsConnectionMessageProcessorImpl(this.connectionHelper, this.messageListener,
@@ -89,4 +89,3 @@ public class DlmsConnectionMessageProcessorTest {
         assertThat(device.getInvocationCounter()).isEqualTo(111);
     }
 }
-

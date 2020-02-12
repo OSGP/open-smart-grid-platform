@@ -7,11 +7,9 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringmonitoring;
 
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
 
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsAsyncResponse;
@@ -22,9 +20,10 @@ import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.ActualMeterReadsRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.SmartMeteringMonitoringRequestClient;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.SmartMeteringMonitoringResponseClient;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 public class ActualMeterReadsSteps {
 
@@ -40,7 +39,7 @@ public class ActualMeterReadsSteps {
 
         final ActualMeterReadsAsyncResponse asyncResponse = this.requestClient.doRequest(request);
 
-        assertNotNull("AsyncResponse should not be null", asyncResponse);
+        assertThat(asyncResponse).as("AsyncResponse should not be null").isNotNull();
         ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
     }
 
@@ -54,7 +53,7 @@ public class ActualMeterReadsSteps {
 
         final ActualMeterReadsAsyncRequest actualMeterReadsAsyncRequest = ActualMeterReadsRequestFactory
                 .fromScenarioContext();
-        assertNotNull("ActualMeterReadsAsyncRequest should not be null", actualMeterReadsAsyncRequest);
+        assertThat(actualMeterReadsAsyncRequest).as("ActualMeterReadsAsyncRequest should not be null").isNotNull();
 
         try {
             this.responseClient.getResponse(actualMeterReadsAsyncRequest);
@@ -69,13 +68,17 @@ public class ActualMeterReadsSteps {
         final ActualMeterReadsAsyncRequest asyncRequest = ActualMeterReadsRequestFactory.fromScenarioContext();
         final ActualMeterReadsResponse response = this.responseClient.getResponse(asyncRequest);
 
-        assertNotNull("ActualMeterReadsResponse should not be null", response);
-        assertNotNull("ActiveEnergyExport should not be null", response.getActiveEnergyExport());
-        assertNotNull("ActiveEnergyExportTariffOne should not be null", response.getActiveEnergyExportTariffOne());
-        assertNotNull("ActiveEnergyExportTariffTwo should not be null", response.getActiveEnergyExportTariffTwo());
-        assertNotNull("ActiveEnergyImport should not be null", response.getActiveEnergyImport());
-        assertNotNull("ActiveEnergyImportTariffOne should not be null", response.getActiveEnergyImportTariffOne());
-        assertNotNull("ActiveEnergyimportTariffTwo should not be null", response.getActiveEnergyImportTariffTwo());
-        assertNotNull("LogTime should not be null", response.getLogTime());
+        assertThat(response).as("ActualMeterReadsResponse should not be null").isNotNull();
+        assertThat(response.getActiveEnergyExport()).as("ActiveEnergyExport should not be null").isNotNull();
+        assertThat(response.getActiveEnergyExportTariffOne()).as("ActiveEnergyExportTariffOne should not be null")
+                .isNotNull();
+        assertThat(response.getActiveEnergyExportTariffTwo()).as("ActiveEnergyExportTariffTwo should not be null")
+                .isNotNull();
+        assertThat(response.getActiveEnergyImport()).as("ActiveEnergyImport should not be null").isNotNull();
+        assertThat(response.getActiveEnergyImportTariffOne()).as("ActiveEnergyImportTariffOne should not be null")
+                .isNotNull();
+        assertThat(response.getActiveEnergyImportTariffTwo()).as("ActiveEnergyimportTariffTwo should not be null")
+                .isNotNull();
+        assertThat(response.getLogTime()).as("LogTime should not be null").isNotNull();
     }
 }

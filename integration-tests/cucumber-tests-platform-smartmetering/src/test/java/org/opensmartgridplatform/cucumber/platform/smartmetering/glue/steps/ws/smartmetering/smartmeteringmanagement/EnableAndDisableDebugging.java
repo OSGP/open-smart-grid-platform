@@ -7,16 +7,12 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringmanagement;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.DisableDebuggingAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.DisableDebuggingAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.DisableDebuggingRequest;
@@ -32,9 +28,10 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smar
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.management.EnableDebuggingRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.management.SmartMeteringManagementRequestClient;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.management.SmartMeteringManagementResponseClient;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 public class EnableAndDisableDebugging {
 
@@ -61,7 +58,7 @@ public class EnableAndDisableDebugging {
         final EnableDebuggingAsyncResponse enableDebuggingAsyncResponse = this.smartMeteringManagementRequestClientEnableDebugging
                 .doRequest(enableDebuggingRequest);
 
-        assertNotNull("AsyncResponse should not be null", enableDebuggingAsyncResponse);
+        assertThat(enableDebuggingAsyncResponse).as("AsyncResponse should not be null").isNotNull();
         ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID,
                 enableDebuggingAsyncResponse.getCorrelationUid());
     }
@@ -71,7 +68,7 @@ public class EnableAndDisableDebugging {
         final DlmsDevice device = this.dlmsDeviceRepository.findByDeviceIdentification(
                 ScenarioContext.current().get(PlatformKeys.KEY_DEVICE_IDENTIFICATION).toString());
 
-        assertTrue("Debug mode", device.isInDebugMode());
+        assertThat(device.isInDebugMode()).as("Debug mode").isTrue();
     }
 
     @Then("^the enable debug response should be \"([^\"]*)\"$")
@@ -81,8 +78,8 @@ public class EnableAndDisableDebugging {
         final EnableDebuggingResponse enableDebuggingResponse = this.smartMeteringManagementResponseClientEnableDebugging
                 .getResponse(enableDebuggingAsyncRequest);
 
-        assertNotNull("EnableDebugRequestResponse should not be null", enableDebuggingResponse);
-        assertNotNull("Expected results", enableDebuggingResponse.getResult());
+        assertThat(enableDebuggingResponse).as("EnableDebugRequestResponse should not be null").isNotNull();
+        assertThat(enableDebuggingResponse.getResult()).as("Expected results").isNotNull();
     }
 
     @When("^the disable Debug request is received$")
@@ -92,7 +89,7 @@ public class EnableAndDisableDebugging {
         final DisableDebuggingAsyncResponse disableDebuggingAsyncResponse = this.smartMeteringManagementRequestClientDisableDebugging
                 .doRequest(disableDebuggingRequest);
 
-        assertNotNull("AsyncResponse should not be null", disableDebuggingAsyncResponse);
+        assertThat(disableDebuggingAsyncResponse).as("AsyncResponse should not be null").isNotNull();
         ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID,
                 disableDebuggingAsyncResponse.getCorrelationUid());
     }
@@ -102,7 +99,7 @@ public class EnableAndDisableDebugging {
         final DlmsDevice device = this.dlmsDeviceRepository.findByDeviceIdentification(
                 ScenarioContext.current().get(PlatformKeys.KEY_DEVICE_IDENTIFICATION).toString());
 
-        assertFalse("Debug mode", device.isInDebugMode());
+        assertThat(device.isInDebugMode()).as("Debug mode").isFalse();
     }
 
     @Then("^the disable debug response should be \"([^\"]*)\"$")
@@ -112,7 +109,8 @@ public class EnableAndDisableDebugging {
         final DisableDebuggingResponse disableDebuggingResponse = this.smartMeteringManagementResponseClientDisableDebugging
                 .getResponse(disableDebuggingAsyncRequest);
 
-        assertNotNull("DisableDebugRequestResponse should not be null", disableDebuggingResponse);
-        assertNotNull("Expected result", disableDebuggingResponse.getResult());
+        assertThat(disableDebuggingResponse).as("DisableDebugRequestResponse should not be null").isNotNull();
+
+        assertThat(disableDebuggingResponse.getResult()).as("Expected result").isNotNull();
     }
 }

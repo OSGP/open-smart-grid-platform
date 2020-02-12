@@ -7,13 +7,11 @@
  */
 package org.opensmartgridplatform.cucumber.platform.microgrids.glue.steps.ws.microgrids.notification;
 
-import static org.junit.Assert.fail;
-
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.junit.jupiter.api.Assertions;
 import org.opensmartgridplatform.adapter.ws.schema.microgrids.notification.Notification;
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -22,10 +20,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
-public class MicrogridsNotificationSteps extends GlueBase {
+public class MicrogridsNotificationSteps {
 
     private static final int MAX_WAIT_FOR_NOTIFICATION = 65_000;
     /*
@@ -55,8 +53,8 @@ public class MicrogridsNotificationSteps extends GlueBase {
                 TimeUnit.MILLISECONDS);
 
         if (notification == null) {
-            fail("Did not receive a notification within the timeout limit of " + MAX_WAIT_FOR_UNKNOWN_NOTIFICATION
-                    + " milliseconds.");
+            Assertions.fail("Did not receive a notification within the timeout limit of "
+                    + MAX_WAIT_FOR_UNKNOWN_NOTIFICATION + " milliseconds.");
         }
 
         LOGGER.info("Received notification for correlation UID {} for type {} with result {}.",
@@ -117,10 +115,10 @@ public class MicrogridsNotificationSteps extends GlueBase {
         }
 
         if (expectCorrelationUid) {
-            fail("Did not receive a notification for correlation UID: " + correlationUid + " within " + maxTimeOut
-                    + " milliseconds");
+            Assertions.fail("Did not receive a notification for correlation UID: " + correlationUid + " within "
+                    + maxTimeOut + " milliseconds");
         } else {
-            fail("Received notification for correlation UID: " + correlationUid);
+            Assertions.fail("Received notification for correlation UID: " + correlationUid);
         }
     }
 }

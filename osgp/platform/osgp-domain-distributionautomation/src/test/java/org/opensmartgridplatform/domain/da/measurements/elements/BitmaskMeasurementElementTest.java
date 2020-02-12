@@ -8,45 +8,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.EnumSet;
 import java.util.Set;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.domain.da.measurements.elements.BitmaskMeasurementElement.BitmaskFlag;
 
 public class BitmaskMeasurementElementTest {
 
     @Test
-    public void getValueShouldReturnCorrectValue() {
+    public void asEnumSetShouldReturnCorrectEnumSetForAllFlagsSet() {
         // Arrange
-        final Byte expected = 1;
-        final BitmaskMeasurementElement element = new BitmaskMeasurementElement(expected);
-
-        // Act
-        final Byte actual = element.getValue();
-
-        // Assert
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void asEnumSetShouldReturnCorrectEnumSetWhenNoFlagsSet() {
-        // Arrange
-        final Byte bitmask = 0;
+        final Byte bitmask = (byte) 255;
         final BitmaskMeasurementElement element = new BitmaskMeasurementElement(bitmask);
-        final EnumSet<BitmaskFlag> expected = EnumSet.noneOf(BitmaskFlag.class);
-
-        // Act
-        final Set<BitmaskFlag> actual = element.asEnumSet();
-
-        // Assert
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void asEnumSetShouldReturnCorrectEnumSetWhenFlag1Set() {
-        // Arrange
-        final Byte bitmask = 1;
-        final BitmaskMeasurementElement element = new BitmaskMeasurementElement(bitmask);
-        final EnumSet<BitmaskFlag> expected = EnumSet.noneOf(BitmaskFlag.class);
-        expected.add(BitmaskFlag.FLAG_1);
+        final EnumSet<BitmaskFlag> expected = EnumSet.allOf(BitmaskFlag.class);
 
         // Act
         final Set<BitmaskFlag> actual = element.asEnumSet();
@@ -71,11 +43,26 @@ public class BitmaskMeasurementElementTest {
     }
 
     @Test
-    public void asEnumSetShouldReturnCorrectEnumSetForAllFlagsSet() {
+    public void asEnumSetShouldReturnCorrectEnumSetWhenFlag1Set() {
         // Arrange
-        final Byte bitmask = (byte) 255;
+        final Byte bitmask = 1;
         final BitmaskMeasurementElement element = new BitmaskMeasurementElement(bitmask);
-        final EnumSet<BitmaskFlag> expected = EnumSet.allOf(BitmaskFlag.class);
+        final EnumSet<BitmaskFlag> expected = EnumSet.noneOf(BitmaskFlag.class);
+        expected.add(BitmaskFlag.FLAG_1);
+
+        // Act
+        final Set<BitmaskFlag> actual = element.asEnumSet();
+
+        // Assert
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void asEnumSetShouldReturnCorrectEnumSetWhenNoFlagsSet() {
+        // Arrange
+        final Byte bitmask = 0;
+        final BitmaskMeasurementElement element = new BitmaskMeasurementElement(bitmask);
+        final EnumSet<BitmaskFlag> expected = EnumSet.noneOf(BitmaskFlag.class);
 
         // Act
         final Set<BitmaskFlag> actual = element.asEnumSet();
@@ -96,7 +83,6 @@ public class BitmaskMeasurementElementTest {
 
         // Assert
         assertThat(actual).isEqualTo(expected);
-
     }
 
     @Test
@@ -111,6 +97,18 @@ public class BitmaskMeasurementElementTest {
 
         // Assert
         assertThat(actual).isEqualTo(expected);
+    }
 
+    @Test
+    public void getValueShouldReturnCorrectValue() {
+        // Arrange
+        final Byte expected = 1;
+        final BitmaskMeasurementElement element = new BitmaskMeasurementElement(expected);
+
+        // Act
+        final Byte actual = element.getValue();
+
+        // Assert
+        assertThat(actual).isEqualTo(expected);
     }
 }

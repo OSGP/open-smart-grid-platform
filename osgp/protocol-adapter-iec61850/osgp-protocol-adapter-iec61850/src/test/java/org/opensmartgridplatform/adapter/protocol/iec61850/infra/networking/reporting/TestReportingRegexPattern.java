@@ -7,13 +7,12 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.reporting;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TestReportingRegexPattern {
 
@@ -26,32 +25,32 @@ public class TestReportingRegexPattern {
     @Test
     public void testOriginalPattern() {
         final Pattern pattern = Pattern.compile("\\AWAGO61850ServerRTU([1-9]\\d*+)/LLN0\\$Status\\Z");
-        Matcher reportMatcher = pattern.matcher(DATA_SET_REF_RTU);
+        final Matcher reportMatcher = pattern.matcher(DATA_SET_REF_RTU);
         final boolean patternMatches = reportMatcher.matches();
-        assertTrue(patternMatches);
+        assertThat(patternMatches).isTrue();
         final Integer value = Integer.parseInt(reportMatcher.group(1));
-        assertEquals(new Integer(1), value);
+        assertThat(value).isEqualTo(Integer.valueOf(1));
     }
 
     @Test
     public void testNewPatternRtu() {
         final String patternString = "\\A(.*)" + NODE_NAMES + "([1-9]\\d*+)/LLN0\\$Status\\Z";
         final Pattern pattern = Pattern.compile(patternString);
-        Matcher reportMatcher = pattern.matcher(DATA_SET_REF_RTU);
+        final Matcher reportMatcher = pattern.matcher(DATA_SET_REF_RTU);
         final boolean patternMatches = reportMatcher.matches();
-        assertTrue(patternMatches);
+        assertThat(patternMatches).isTrue();
         final Integer value = Integer.parseInt(reportMatcher.group(3));
-        assertEquals(new Integer(1), value);
+        assertThat(value).isEqualTo(Integer.valueOf(1));
     }
 
     @Test
     public void testNewPatternGasFurnace() {
         final String patternString = "\\A(.*)" + NODE_NAMES + "([1-9]\\d*+)/LLN0\\$Status\\Z";
         final Pattern pattern = Pattern.compile(patternString);
-        Matcher reportMatcher = pattern.matcher(DATA_SET_REF_GA_FURNACE);
+        final Matcher reportMatcher = pattern.matcher(DATA_SET_REF_GA_FURNACE);
         final boolean patternMatches = reportMatcher.matches();
-        assertTrue(patternMatches);
+        assertThat(patternMatches).isTrue();
         final Integer value = Integer.parseInt(reportMatcher.group(3));
-        assertEquals(new Integer(2), value);
+        assertThat(value).isEqualTo(Integer.valueOf(2));
     }
 }

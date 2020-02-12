@@ -7,15 +7,11 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringadhoc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueRequest;
@@ -26,9 +22,10 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartme
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.adhoc.SmartMeteringAdHocRequestClient;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.adhoc.SmartMeteringAdHocResponseClient;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.adhoc.SpecificAttributeValueRequestFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 public class SpecificAttributeValue {
 
@@ -45,7 +42,7 @@ public class SpecificAttributeValue {
                 .fromParameterMap(settings);
         final GetSpecificAttributeValueAsyncResponse asyncResponse = this.requestClient.doRequest(request);
 
-        assertNotNull("AsyncResponse should not be null", asyncResponse);
+        assertThat(asyncResponse).as("AsyncResponse should not be null").isNotNull();
         ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
     }
 
@@ -57,12 +54,15 @@ public class SpecificAttributeValue {
                 .fromScenarioContext();
         final GetSpecificAttributeValueResponse response = this.responseClient.getResponse(asyncRequest);
 
-        assertEquals("Result is not as expected.", settings.get(PlatformSmartmeteringKeys.RESULT),
-                response.getResult().name());
+        assertThat(response.getResult().name()).as("Result is not as expected.")
+                .isEqualTo(settings.get(PlatformSmartmeteringKeys.RESULT));
+
         final String actual = response.getAttributeValueData();
-        assertTrue("Result contains no data.", StringUtils.isNotBlank(actual));
+        assertThat(StringUtils.isNotBlank(actual)).as("Result contains no data.").isTrue();
+
         final String expected = settings.get(PlatformSmartmeteringKeys.RESPONSE_PART);
-        assertTrue("Result data is not as expected; expected '" + expected + "' to be part of '" + actual + "'",
-                actual.contains(expected));
+        assertThat(actual.contains(expected))
+                .as("Result data is not as expected; expected '" + expected + "' to be part of '" + actual + "'")
+                .isTrue();
     }
 }

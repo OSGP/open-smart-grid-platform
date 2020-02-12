@@ -49,7 +49,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import cucumber.api.java.en.Given;
+import io.cucumber.java.en.Given;
 
 public class SmartMeterSteps extends BaseDeviceSteps {
 

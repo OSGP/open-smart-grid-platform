@@ -17,6 +17,7 @@ import org.opensmartgridplatform.dto.da.GetDeviceModelRequestDto;
 import org.opensmartgridplatform.dto.da.GetDeviceModelResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
@@ -59,15 +60,18 @@ public class AdHocManagementService extends BaseService {
     }
 
     public void handleGetDeviceModelResponse(final GetDeviceModelResponseDto getDeviceModelResponseDto,
-            final String deviceIdentification, final String organisationIdentification, final String correlationUid,
-            final String messageType, final ResponseMessageResultType responseMessageResultType,
-            final OsgpException osgpException) {
+            final CorrelationIds correlationIds, final String messageType,
+            final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException) {
 
         LOGGER.info("handleResponse for MessageType: {}", messageType);
 
+        final String deviceIdentification = correlationIds.getDeviceIdentification();
+        final String organisationIdentification = correlationIds.getOrganisationIdentification();
+        final String correlationUid = correlationIds.getCorrelationUid();
+
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         GetDeviceModelResponse getDeviceModelResponse = null;
-        OsgpException exception = null;
+        OsgpException exception = osgpException;
 
         try {
             if (responseMessageResultType == ResponseMessageResultType.NOT_OK || osgpException != null) {

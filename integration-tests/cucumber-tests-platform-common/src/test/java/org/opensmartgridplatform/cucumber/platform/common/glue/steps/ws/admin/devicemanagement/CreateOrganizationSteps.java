@@ -7,35 +7,34 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.admin.devicemanagement;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.Map;
 
-import org.junit.Assert;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ws.soap.client.SoapFaultClientException;
-
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.CreateOrganisationRequest;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.CreateOrganisationResponse;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.Organisation;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.PlatformDomain;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.PlatformFunctionGroup;
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
+import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonDefaults;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonKeys;
 import org.opensmartgridplatform.cucumber.platform.common.support.ws.admin.AdminDeviceManagementClient;
 import org.opensmartgridplatform.cucumber.platform.glue.steps.ws.GenericResponseSteps;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 /**
  * Class with all the create organization requests steps
  */
-public class CreateOrganizationSteps extends GlueBase {
+public class CreateOrganizationSteps {
 
     @Autowired
     private AdminDeviceManagementClient client;
@@ -70,10 +69,8 @@ public class CreateOrganizationSteps extends GlueBase {
         }
 
         // Optional fields
-        if (requestSettings.containsKey(PlatformCommonKeys.KEY_ENABLED)
-                && !requestSettings.get(PlatformCommonKeys.KEY_ENABLED).isEmpty()) {
-            organization.setEnabled(getBoolean(requestSettings, PlatformCommonKeys.KEY_ENABLED));
-        }
+        organization.setEnabled(getBoolean(requestSettings, PlatformCommonKeys.KEY_ENABLED,
+                PlatformDefaults.DEFAULT_ORGANIZATION_ENABLED));
 
         request.setOrganisation(organization);
 
@@ -106,8 +103,8 @@ public class CreateOrganizationSteps extends GlueBase {
      */
     @Then("^the create organization response is successful$")
     public void theCreateOrganizationResponseIsSuccessful() throws Throwable {
-        Assert.assertTrue(
-                ScenarioContext.current().get(PlatformCommonKeys.RESPONSE) instanceof CreateOrganisationResponse);
+        assertThat(ScenarioContext.current().get(PlatformCommonKeys.RESPONSE) instanceof CreateOrganisationResponse)
+                .isTrue();
     }
 
     /**

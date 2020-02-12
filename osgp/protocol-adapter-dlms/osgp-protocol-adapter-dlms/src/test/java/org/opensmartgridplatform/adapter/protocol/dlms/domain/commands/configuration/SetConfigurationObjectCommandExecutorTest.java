@@ -3,11 +3,11 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configur
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmuc.jdlms.AccessResultCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service.GetConfigurationObjectService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service.ProtocolServiceLookup;
@@ -18,7 +18,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObjectDto;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class SetConfigurationObjectCommandExecutorTest {
 
     @InjectMocks
@@ -50,8 +50,8 @@ public class SetConfigurationObjectCommandExecutorTest {
 
         when(this.protocolServiceLookup.lookupSetService(protocol)).thenReturn(this.setService);
         final AccessResultCode accessResultCode = AccessResultCode.SUCCESS;
-        when(this.setService.setConfigurationObject(this.conn, this.configurationToSet,
-                this.configurationOnDevice)).thenReturn(accessResultCode);
+        when(this.setService.setConfigurationObject(this.conn, this.configurationToSet, this.configurationOnDevice))
+                .thenReturn(accessResultCode);
 
         // CALL
         final AccessResultCode result = this.instance.execute(this.conn, device, this.configurationToSet);

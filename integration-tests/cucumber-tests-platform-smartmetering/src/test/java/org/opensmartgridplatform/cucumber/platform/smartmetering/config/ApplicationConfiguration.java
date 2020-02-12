@@ -7,20 +7,18 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.config;
 
+import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
-
-import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 
 /**
  * Base class for the application configuration.
  */
 @Configuration
-@PropertySources({ @PropertySource("classpath:cucumber-tests-platform-smartmetering.properties"),
-        @PropertySource(value = "file:/etc/osp/test/global-cucumber.properties", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:/etc/osp/test/cucumber-tests-platform-smartmetering.properties", ignoreResourceNotFound = true), })
+@PropertySource("classpath:cucumber-tests-platform-smartmetering.properties")
+@PropertySource(value = "file:/etc/osp/test/global-cucumber.properties", ignoreResourceNotFound = true)
+@PropertySource(value = "file:/etc/osp/test/cucumber-tests-platform-smartmetering.properties", ignoreResourceNotFound = true)
 public class ApplicationConfiguration extends AbstractConfig {
 
     @Value("${web.service.template.default.uri.smartmetering.adhoc}")

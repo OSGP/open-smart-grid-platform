@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.http.client.config.RequestConfig;
@@ -97,12 +98,12 @@ public class NotificationWebServiceTemplateFactory {
     private WebServiceTemplate createTemplate(final NotificationWebServiceLookupKey id)
             throws WebServiceSecurityException {
 
-        final NotificationWebServiceConfiguration config = this.configRepository.findOne(id);
-        if (config == null) {
+        final Optional<NotificationWebServiceConfiguration> config = this.configRepository.findById(id);
+        if (!config.isPresent()) {
             LOGGER.warn("Unable to create template: no web service configuration data available for {}", id);
             return null;
         }
-        return this.createTemplate(config);
+        return this.createTemplate(config.get());
     }
 
     private WebServiceTemplate createTemplate(final NotificationWebServiceConfiguration config)
@@ -167,8 +168,8 @@ public class NotificationWebServiceTemplateFactory {
         template.setMessageSender(new HttpComponentsMessageSender(clientBuilder.build()));
     }
 
-    private LayeredConnectionSocketFactory createSslConnectionSocketFactory(final NotificationWebServiceConfiguration config)
-            throws WebServiceSecurityException {
+    private LayeredConnectionSocketFactory createSslConnectionSocketFactory(
+            final NotificationWebServiceConfiguration config) throws WebServiceSecurityException {
 
         final SSLContextBuilder sslContextBuilder = SSLContexts.custom();
         this.loadKeyMaterial(sslContextBuilder, config);
@@ -182,8 +183,8 @@ public class NotificationWebServiceTemplateFactory {
         }
     }
 
-    private void loadKeyMaterial(final SSLContextBuilder sslContextBuilder, final NotificationWebServiceConfiguration config)
-            throws WebServiceSecurityException {
+    private void loadKeyMaterial(final SSLContextBuilder sslContextBuilder,
+            final NotificationWebServiceConfiguration config) throws WebServiceSecurityException {
 
         if (!config.isUseKeyStore()) {
             return;
@@ -240,7 +241,8 @@ public class NotificationWebServiceTemplateFactory {
         clientBuilder.addInterceptorFirst(new HttpComponentsMessageSender.RemoveSoapHeadersInterceptor());
     }
 
-    private void setRequestConfig(final HttpClientBuilder clientBuilder, final NotificationWebServiceConfiguration config) {
+    private void setRequestConfig(final HttpClientBuilder clientBuilder,
+            final NotificationWebServiceConfiguration config) {
         final RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(config.getConnectionTimeout())
                 .build();
         clientBuilder.setDefaultRequestConfig(requestConfig);

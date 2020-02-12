@@ -7,20 +7,20 @@
  */
 package org.opensmartgridplatform.adapter.domain.publiclighting.application.services;
 
-import static org.junit.Assert.assertFalse;
-import static org.mockito.Matchers.eq;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 
 import java.net.InetAddress;
 import java.util.Iterator;
 import java.util.concurrent.Executors;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.mapping.DomainPublicLightingMapper;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaMastSegment;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaRun;
@@ -29,7 +29,7 @@ import org.opensmartgridplatform.domain.core.repositories.SsldRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.CdmaDevice;
 import org.opensmartgridplatform.domain.core.valueobjects.TransitionType;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class CdmaRunTest {
 
     @Mock
@@ -52,7 +52,9 @@ public class CdmaRunTest {
     @Test
     public void empty() {
         final CdmaRun run = new CdmaRun();
-        assertFalse("Empty CdmaRun iterator should not have items", run.getMastSegmentIterator().hasNext());
+        assertThat(run.getMastSegmentIterator().hasNext())
+                .withFailMessage("Empty CdmaRun iterator should not have items")
+                .isFalse();
 
         this.service.setTransitionForCdmaRun(run, "LianderNetManagement", "zero-devices-cdma-run-test",
                 TransitionType.DAY_NIGHT);
@@ -71,7 +73,7 @@ public class CdmaRunTest {
             iterator.next();
         }
 
-        assertFalse("Iterator should not have any items left", iterator.hasNext());
+        assertThat(iterator.hasNext()).withFailMessage("Iterator should not have any items left").isFalse();
     }
 
     @Test
@@ -128,7 +130,7 @@ public class CdmaRunTest {
     private void verifySentMessages(final int noOfCalls) {
         // Verify the number of calls to the method, which sends out an ActiveMQ
         // message
-        Mockito.verify(this.osgpCoreRequestMessageSender, Mockito.timeout(1000).times(noOfCalls)).send(Mockito.any(),
-                eq(SET_TRANSITION), eq(0), eq(IP_ADDRESS));
+        Mockito.verify(this.osgpCoreRequestMessageSender, Mockito.timeout(1000).times(noOfCalls))
+                .send(Mockito.any(), eq(SET_TRANSITION), eq(0), eq(IP_ADDRESS));
     }
 }

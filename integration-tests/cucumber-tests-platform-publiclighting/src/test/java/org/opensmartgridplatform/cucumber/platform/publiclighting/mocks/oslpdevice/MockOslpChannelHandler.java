@@ -21,13 +21,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.jboss.netty.bootstrap.ClientBootstrap;
-import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelStateEvent;
-import org.jboss.netty.channel.ExceptionEvent;
-import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.SimpleChannelHandler;
 import org.joda.time.DateTime;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -39,7 +32,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Transient;
 
-public class MockOslpChannelHandler extends SimpleChannelHandler {
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandler.Sharable;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
+
+@Sharable
+public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope> {
 
     private static class Callback {
 
@@ -102,8 +102,8 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(MockOslpChannelHandler.class);
     @Transient
     private static final Integer SEQUENCE_NUMBER_MAXIMUM = 65535;
-    private final ConcurrentMap<Integer, Callback> callbacks = new ConcurrentHashMap<>();
-    private final ClientBootstrap clientBootstrap;
+    private final ConcurrentMap<String, Callback> callbacks = new ConcurrentHashMap<>();
+    private final Bootstrap clientBootstrap;
     private final int connectionTimeout;
     private final Lock lock = new ReentrantLock();
     private final ConcurrentMap<MessageType, Message> mockResponses;
@@ -131,7 +131,7 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
     public MockOslpChannelHandler(final String oslpSignature, final String oslpSignatureProvider,
             final int connectionTimeout, final Integer sequenceNumberWindow, final Integer sequenceNumberMaximum,
             final Long responseDelayTime, final Long reponseDelayRandomRange, final PrivateKey privateKey,
-            final ClientBootstrap clientBootstrap, final ConcurrentMap<MessageType, Message> mockResponses,
+            final Bootstrap clientBootstrap, final ConcurrentMap<MessageType, Message> mockResponses,
             final ConcurrentMap<MessageType, Message> receivedRequests, final List<Message> receivedResponses) {
         this.oslpSignature = oslpSignature;
         this.oslpSignatureProvider = oslpSignatureProvider;
@@ -147,38 +147,26 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
     }
 
     @Override
-    public void channelClosed(final ChannelHandlerContext ctx, final ChannelStateEvent e) throws Exception {
-        LOGGER.debug("Channel {} closed", e.getChannel().getId());
-        super.channelClosed(ctx, e);
+    public void channelActive(final ChannelHandlerContext ctx) throws Exception {
+        LOGGER.debug("Channel {} active", ctx.channel().id().asLongText());
+        super.channelActive(ctx);
     }
 
     @Override
-    public void channelDisconnected(final ChannelHandlerContext ctx, final ChannelStateEvent e) throws Exception {
-        LOGGER.debug("Channel {} disconnected", e.getChannel().getId());
-        super.channelDisconnected(ctx, e);
+    public void channelInactive(final ChannelHandlerContext ctx) throws Exception {
+        LOGGER.debug("Channel {} inactive", ctx.channel().id().asLongText());
+        super.channelInactive(ctx);
     }
 
     @Override
-    public void channelOpen(final ChannelHandlerContext ctx, final ChannelStateEvent e) throws Exception {
-        LOGGER.debug("Channel {} opened", e.getChannel().getId());
-        super.channelOpen(ctx, e);
-    }
-
-    @Override
-    public void channelUnbound(final ChannelHandlerContext ctx, final ChannelStateEvent e) throws Exception {
-        LOGGER.debug("Channel {} unbound", e.getChannel().getId());
-        super.channelUnbound(ctx, e);
-    }
-
-    @Override
-    public void exceptionCaught(final ChannelHandlerContext ctx, final ExceptionEvent e) {
-        if (this.isConnectionReset(e.getCause())) {
+    public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
+        if (this.isConnectionReset(cause)) {
             LOGGER.debug("Connection was (as expected) reset by the device.");
         } else {
-            LOGGER.warn("Unexpected exception from downstream.", e.getCause());
+            LOGGER.warn("Unexpected exception from downstream.", cause);
         }
 
-        e.getChannel().close();
+        ctx.channel().close();
     }
 
     public ConcurrentMap<MessageType, Message> getMap() {
@@ -189,9 +177,13 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         return this.sequenceNumber;
     }
 
+    public Integer getSequenceNumberMaximum() {
+        return this.sequenceNumberMaximum;
+    }
+
     /**
-     * Get an OutOfSequenceEvent for given device id. The OutOfSequenceEvent
-     * instance will be removed from the list, before the instance is returned.
+     * Get an OutOfSequenceEvent for given device id. The OutOfSequenceEvent instance will be removed from the list,
+     * before the instance is returned.
      *
      * @param deviceId
      *            The id of the device.
@@ -220,15 +212,14 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
     }
 
     @Override
-    public void messageReceived(final ChannelHandlerContext ctx, final MessageEvent e) throws Exception {
-        final OslpEnvelope message = (OslpEnvelope) e.getMessage();
+    public void channelRead0(final ChannelHandlerContext ctx, final OslpEnvelope message) throws Exception {
 
         if (message.isValid()) {
             if (this.isOslpResponse(message)) {
                 LOGGER.debug("Received OSLP Response (before callback): {}", message.getPayloadMessage());
 
-                // Lookup correct callback and call handle method
-                final Integer channelId = e.getChannel().getId();
+                // Lookup correct callback and call handle method.
+                final String channelId = ctx.channel().id().asLongText();
                 final Callback callback = this.callbacks.remove(channelId);
                 if (callback == null) {
                     LOGGER.warn("Callback for channel {} does not longer exist, dropping response.", channelId);
@@ -242,25 +233,27 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
 
                     final byte[] deviceId = message.getDeviceId();
 
-                    // Build the OslpEnvelope
+                    // Build the OslpEnvelope.
                     final OslpEnvelope.Builder responseBuilder = new OslpEnvelope.Builder()
-                            .withSignature(this.oslpSignature).withProvider(this.oslpSignatureProvider)
-                            .withPrimaryKey(this.privateKey).withDeviceId(deviceId);
+                            .withSignature(this.oslpSignature)
+                            .withProvider(this.oslpSignatureProvider)
+                            .withPrimaryKey(this.privateKey)
+                            .withDeviceId(deviceId);
 
                     // Pass the incremented sequence number to the
                     // handleRequest() function for checking.
                     responseBuilder.withPayloadMessage(this.handleRequest(message));
-                    // Add the new sequence number to the OslpEnvelope
-                    responseBuilder.withSequenceNumber(this.convertIntegerToByteArray(this.sequenceNumber));
+                    // Add the new sequence number to the OslpEnvelope.
+                    responseBuilder.withSequenceNumber(convertIntegerToByteArray(this.sequenceNumber));
 
                     final OslpEnvelope response = responseBuilder.build();
 
                     LOGGER.debug("sending OSLP response with sequence number: {}",
-                            this.convertByteArrayToInteger(response.getSequenceNumber()));
+                            convertByteArrayToInteger(response.getSequenceNumber()));
 
                     // wait for the response to actually be written. This
                     // improves stability of the tests
-                    final ChannelFuture future = e.getChannel().write(response);
+                    final ChannelFuture future = ctx.channel().writeAndFlush(response);
                     future.await();
 
                     LOGGER.debug("Send OSLP Response: {}", response.getPayloadMessage().toString().split(" ")[0]);
@@ -284,7 +277,7 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         try {
             channelFuture = this.clientBootstrap.connect(address);
             channelFuture.awaitUninterruptibly(this.connectionTimeout, TimeUnit.MILLISECONDS);
-            if (channelFuture.getChannel() != null && channelFuture.getChannel().isConnected()) {
+            if (channelFuture.channel() != null && channelFuture.channel().isActive()) {
                 LOGGER.debug("Connection established to: {}", address);
             } else {
                 LOGGER.debug("The connnection to the device {} is not successfull", deviceIdentification);
@@ -292,8 +285,8 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
                 throw new IOException("Unable to connect");
             }
 
-            this.callbacks.put(channelFuture.getChannel().getId(), callback);
-            channelFuture.getChannel().write(request);
+            this.callbacks.put(channelFuture.channel().id().asLongText(), callback);
+            channelFuture.channel().writeAndFlush(request);
         } finally {
             this.lock.unlock();
         }
@@ -304,11 +297,10 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
             LOGGER.debug("Received OSLP response (after callback): {}", response.getPayloadMessage());
 
             /*
-             * Devices expect the channel to be closed if (and only if) the
-             * platform initiated the conversation. If the device initiated the
-             * conversation it needs to close the channel itself.
+             * Devices expect the channel to be closed if (and only if) the platform initiated the conversation. If the
+             * device initiated the conversation it needs to close the channel itself.
              */
-            channelFuture.getChannel().close();
+            channelFuture.channel().close();
 
             this.receivedResponses.add(response.getPayloadMessage());
 
@@ -316,7 +308,7 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         } catch (final IOException | DeviceSimulatorException e) {
             LOGGER.error("send exception", e);
             // Remove callback when exception has occurred
-            this.callbacks.remove(channelFuture.getChannel().getId());
+            this.callbacks.remove(channelFuture.channel().id().asLongText());
             throw e;
         }
     }
@@ -334,7 +326,7 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
     }
 
     // Note: This method is for other classes which are executing this method
-    // WITH a sequencenumber
+    // WITH a sequence number
     public Oslp.Message handleRequest(final OslpEnvelope message, final int sequenceNumber)
             throws DeviceSimulatorException, IOException, ParseException {
         return this.handleRequest(message);
@@ -439,7 +431,8 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
 
         if (ScenarioContext.current().get(PlatformKeys.NUMBER_TO_ADD_TO_SEQUENCE_NUMBER) != null) {
             final String numberToAddAsNextSequenceNumber = ScenarioContext.current()
-                    .get(PlatformKeys.NUMBER_TO_ADD_TO_SEQUENCE_NUMBER).toString();
+                    .get(PlatformKeys.NUMBER_TO_ADD_TO_SEQUENCE_NUMBER)
+                    .toString();
             if (!numberToAddAsNextSequenceNumber.isEmpty()) {
                 numberToAddToSequenceNumberValue = Integer.parseInt(numberToAddAsNextSequenceNumber);
             }
@@ -456,11 +449,10 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
                 next = SEQUENCE_NUMBER_MAXIMUM - sequenceNumberMaximumCross + 1;
             }
         }
-
         return this.sequenceNumber = next;
     }
 
-    private byte[] convertIntegerToByteArray(final Integer value) {
+    private static byte[] convertIntegerToByteArray(final Integer value) {
         // See: platform.service.SequenceNumberUtils
         final byte[] bytes = new byte[2];
         bytes[0] = (byte) (value >>> 8);
@@ -468,7 +460,7 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         return bytes;
     }
 
-    private Integer convertByteArrayToInteger(final byte[] array) {
+    private static Integer convertByteArrayToInteger(final byte[] array) {
         // See: platform.service.SequenceNumberUtils
         return (array[0] & 0xFF) << 8 | (array[1] & 0xFF);
     }

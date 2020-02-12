@@ -107,7 +107,7 @@ public class Device implements Serializable {
         return Objects.equals(this.deviceIdentification, device.deviceIdentification);
     }
 
-    public final Date getCreationTime() {
+    public Date getCreationTime() {
         return (Date) this.creationTime.clone();
     }
 
@@ -123,15 +123,15 @@ public class Device implements Serializable {
         return this.gpsLongitude;
     }
 
-    public final Long getId() {
+    public Long getId() {
         return this.id;
     }
 
-    public final Date getModificationTime() {
+    public Date getModificationTime() {
         return (Date) this.modificationTime.clone();
     }
 
-    public final Long getVersion() {
+    public Long getVersion() {
         return this.version;
     }
 

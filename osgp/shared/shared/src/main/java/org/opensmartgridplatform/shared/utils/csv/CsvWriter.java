@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.text.StringEscapeUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -109,7 +110,7 @@ public class CsvWriter {
     }
 
     private String convertToCsv(final String[] line) {
-        return Stream.of(line).map(value -> this.escapeText(value)).collect(Collectors.joining(COMMA));
+        return Stream.of(line).map(this::escapeText).collect(Collectors.joining(COMMA));
     }
 
     private String escapeText(final String text) {
@@ -117,6 +118,6 @@ public class CsvWriter {
             return "";
         }
 
-        return text.replaceAll("\\r\\n|\\r|\\n|,", "");
+        return StringEscapeUtils.escapeCsv(text);
     }
 }

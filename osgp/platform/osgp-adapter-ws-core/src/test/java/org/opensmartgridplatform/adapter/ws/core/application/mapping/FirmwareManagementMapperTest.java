@@ -8,36 +8,34 @@
 package org.opensmartgridplatform.adapter.ws.core.application.mapping;
 
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FirmwareModuleDataBuilder;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleData;
-
 
 public class FirmwareManagementMapperTest {
     private FirmwareManagementMapper mapper;
 
-    @Before
-    public void setUp() throws Exception {
-        mapper = new FirmwareManagementMapper();
-        mapper.initialize();
+    private FirmwareModuleData map(
+            final org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FirmwareModuleData source) {
+        return new FirmwareModuleData(source.getModuleVersionComm(), source.getModuleVersionFunc(),
+                source.getModuleVersionMa(), source.getModuleVersionMbus(), source.getModuleVersionSec(),
+                source.getModuleVersionMBusDriverActive());
     }
 
     @Test
     public void mapsFirmwareModuleData() {
-        org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FirmwareModuleData source =
-                new FirmwareModuleDataBuilder().build();
+        final org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FirmwareModuleData source = new FirmwareModuleDataBuilder()
+                .build();
 
-        FirmwareModuleData mappedValue = map(source);
-        Assertions.assertThat(mapper.map(source, FirmwareModuleData.class))
+        final FirmwareModuleData mappedValue = this.map(source);
+        Assertions.assertThat(this.mapper.map(source, FirmwareModuleData.class))
                 .isEqualToComparingFieldByFieldRecursively(mappedValue);
     }
 
-    private FirmwareModuleData map(
-            org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FirmwareModuleData source) {
-        return new FirmwareModuleData(source.getModuleVersionComm(),
-                source.getModuleVersionFunc(), source.getModuleVersionMa(), source.getModuleVersionMbus(),
-                source.getModuleVersionSec(), source.getModuleVersionMBusDriverActive());
+    @BeforeEach
+    public void setUp() throws Exception {
+        this.mapper = new FirmwareManagementMapper();
+        this.mapper.initialize();
     }
 }

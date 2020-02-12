@@ -9,9 +9,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.core.devicemanagement;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getShort;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
@@ -23,7 +21,6 @@ import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateD
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceCdmaSettingsAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceCdmaSettingsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceCdmaSettingsResponse;
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
@@ -37,10 +34,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
-public class UpdateDeviceCdmaSettingsSteps extends GlueBase {
+public class UpdateDeviceCdmaSettingsSteps {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UpdateDeviceCdmaSettingsSteps.class);
 
@@ -100,8 +97,8 @@ public class UpdateDeviceCdmaSettingsSteps extends GlueBase {
             } catch (final WebServiceSecurityException e) {
                 // do nothing
             }
-            assertNotNull(response);
-            assertEquals(expectedResult, response.getResult());
+            assertThat(response).isNotNull();
+            assertThat(response.getResult()).isEqualTo(expectedResult);
         });
     }
 
@@ -122,9 +119,9 @@ public class UpdateDeviceCdmaSettingsSteps extends GlueBase {
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
 
         if (expectedCdmaSettings == null) {
-            assertNull(device.getCdmaSettings());
+            assertThat(device.getCdmaSettings()).isNull();
         } else {
-            assertEquals(expectedCdmaSettings, device.getCdmaSettings());
+            assertThat(device.getCdmaSettings()).isEqualTo(expectedCdmaSettings);
         }
     }
 }

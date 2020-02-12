@@ -7,15 +7,11 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Date;
 
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ObisCodeValues;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileGenericDataRequest;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ObisCodeValuesDto;
@@ -23,26 +19,29 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileGenericDa
 
 public class ProfileGenericDataRequestMapperTest {
 
-    private MonitoringMapper mapper = new MonitoringMapper();
+    private final MonitoringMapper mapper = new MonitoringMapper();
 
     private static final Date DATE = new Date();
     private static final String DEVICE_NAME = "TEST10240000001";
+    private static final String MAPPED_VALUE_MESSAGE = "mapped values should be identical.";
 
     @Test
     public void testConvertProfileGenericDataRequestDto() {
-        ProfileGenericDataRequest profileGenericDateRequest = this.makeRequest();
-        Object result = this.mapper.map(profileGenericDateRequest, ProfileGenericDataRequestDto.class);
-        assertNotNull("mapping ProfileGenericDataRequest should not return null", result);
-        assertThat("mapping ProfileGenericDataRequest should return correct type", result,
-                instanceOf(ProfileGenericDataRequestDto.class));
+        final ProfileGenericDataRequest profileGenericDateRequest = this.makeRequest();
+        final Object result = this.mapper.map(profileGenericDateRequest, ProfileGenericDataRequestDto.class);
+        assertThat(result).withFailMessage("mapping ProfileGenericDataRequest should not return null").isNotNull();
+
+        assertThat(result).withFailMessage("mapping ProfileGenericDataRequest should return correct type")
+                .isOfAnyClassIn(ProfileGenericDataRequestDto.class);
 
         final ProfileGenericDataRequestDto profileGenericDataRequestDto = (ProfileGenericDataRequestDto) result;
-        assertEquals("mapped values should be identical", profileGenericDataRequestDto.getBeginDate(), DATE);
-        assertEquals("mapped values should be identical", profileGenericDataRequestDto.getEndDate(), DATE);
-        assertEquals("mapped values should be identical", profileGenericDataRequestDto.getDeviceIdentification(),
-                DEVICE_NAME);
+        assertThat(profileGenericDataRequestDto.getBeginDate()).withFailMessage(MAPPED_VALUE_MESSAGE).isEqualTo(DATE);
+        assertThat(profileGenericDataRequestDto.getEndDate()).withFailMessage(MAPPED_VALUE_MESSAGE).isEqualTo(DATE);
+        assertThat(profileGenericDataRequestDto.getDeviceIdentification()).withFailMessage(MAPPED_VALUE_MESSAGE)
+                .isEqualTo(DEVICE_NAME);
         final ObisCodeValuesDto obisCodeValuesDto = profileGenericDataRequestDto.getObisCode();
-        assertEquals("mapped values should be identical", obisCodeValuesDto.getA(), profileGenericDateRequest.getObisCode().getA());
+        assertThat(profileGenericDataRequestDto.getObisCode().getA()).withFailMessage(MAPPED_VALUE_MESSAGE)
+                .isEqualTo(obisCodeValuesDto.getA());
     }
 
     private ProfileGenericDataRequest makeRequest() {

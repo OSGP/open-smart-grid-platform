@@ -7,12 +7,11 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ObisCodeValues;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileGenericDataRequestData;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileGenericDataRequestDataDto;
@@ -26,7 +25,7 @@ public class ProfileGenericDataRequestDataMapperTest {
     private static final ObisCodeValues OBIS_CODE_VALUES = new ObisCodeValues((byte) 1, (byte) 2, (byte) 3, (byte) 4,
             (byte) 5, (byte) 6);
 
-    private MonitoringMapper mapper = new MonitoringMapper();
+    private final MonitoringMapper mapper = new MonitoringMapper();
 
     @Test
     public void shouldConvertValueObjectToDto() {
@@ -34,14 +33,20 @@ public class ProfileGenericDataRequestDataMapperTest {
                 BEGIN_DATE.toDate(), END_DATE.toDate());
         final ProfileGenericDataRequestDataDto result = this.mapper.map(source, ProfileGenericDataRequestDataDto.class);
 
-        assertEquals(MAPPED_FIELD_VALUE_MESSAGE, result.getBeginDate(), BEGIN_DATE.toDate());
-        assertEquals(MAPPED_FIELD_VALUE_MESSAGE, result.getEndDate(), END_DATE.toDate());
-        assertEquals(MAPPED_FIELD_VALUE_MESSAGE, result.getObisCode().getA(), OBIS_CODE_VALUES.getA());
-        assertEquals(MAPPED_FIELD_VALUE_MESSAGE, result.getObisCode().getB(), OBIS_CODE_VALUES.getB());
-        assertEquals(MAPPED_FIELD_VALUE_MESSAGE, result.getObisCode().getC(), OBIS_CODE_VALUES.getC());
-        assertEquals(MAPPED_FIELD_VALUE_MESSAGE, result.getObisCode().getD(), OBIS_CODE_VALUES.getD());
-        assertEquals(MAPPED_FIELD_VALUE_MESSAGE, result.getObisCode().getE(), OBIS_CODE_VALUES.getE());
-        assertEquals(MAPPED_FIELD_VALUE_MESSAGE, result.getObisCode().getF(), OBIS_CODE_VALUES.getF());
+        assertThat(result.getBeginDate()).withFailMessage(MAPPED_FIELD_VALUE_MESSAGE).isEqualTo(BEGIN_DATE.toDate());
+        assertThat(result.getEndDate()).withFailMessage(MAPPED_FIELD_VALUE_MESSAGE).isEqualTo(END_DATE.toDate());
+        assertThat(result.getObisCode().getA()).withFailMessage(MAPPED_FIELD_VALUE_MESSAGE)
+                .isEqualTo(OBIS_CODE_VALUES.getA());
+        assertThat(result.getObisCode().getB()).withFailMessage(MAPPED_FIELD_VALUE_MESSAGE)
+                .isEqualTo(OBIS_CODE_VALUES.getB());
+        assertThat(result.getObisCode().getC()).withFailMessage(MAPPED_FIELD_VALUE_MESSAGE)
+                .isEqualTo(OBIS_CODE_VALUES.getC());
+        assertThat(result.getObisCode().getD()).withFailMessage(MAPPED_FIELD_VALUE_MESSAGE)
+                .isEqualTo(OBIS_CODE_VALUES.getD());
+        assertThat(result.getObisCode().getE()).withFailMessage(MAPPED_FIELD_VALUE_MESSAGE)
+                .isEqualTo(OBIS_CODE_VALUES.getE());
+        assertThat(result.getObisCode().getF()).withFailMessage(MAPPED_FIELD_VALUE_MESSAGE)
+                .isEqualTo(OBIS_CODE_VALUES.getF());
     }
 
 }

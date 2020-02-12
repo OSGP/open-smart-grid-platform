@@ -39,9 +39,9 @@ class JmsPropertyReader {
         if (property == null) {
             LOGGER.debug("Property {} not found, trying default property.", fullPropertyName);
             property = this.getDefault(propertyName, targetType);
-            LOGGER.info("Found default value {} for property {}", property, propertyName);
+            LOGGER.debug("Found default value {} for property {}", property, propertyName);
         } else {
-            LOGGER.info("Found value {} for property {}.{}", property, this.propertyPrefix, propertyName);
+            LOGGER.debug("Found value {} for property {}.{}", property, this.propertyPrefix, propertyName);
         }
 
         return property;

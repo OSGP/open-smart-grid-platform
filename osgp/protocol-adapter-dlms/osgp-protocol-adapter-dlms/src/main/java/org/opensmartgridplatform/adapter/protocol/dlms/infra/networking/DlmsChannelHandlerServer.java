@@ -11,8 +11,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.infra.networking;
 import java.net.InetSocketAddress;
 import java.util.UUID;
 
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.MessageEvent;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.requests.to.core.OsgpRequestMessageSender;
 import org.opensmartgridplatform.dlms.DlmsPushNotification;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushNotificationAlarmDto;
@@ -23,6 +21,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import io.netty.channel.ChannelHandler.Sharable;
+import io.netty.channel.ChannelHandlerContext;
+
+@Sharable
 public class DlmsChannelHandlerServer extends DlmsChannelHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DlmsChannelHandlerServer.class);
@@ -34,9 +36,7 @@ public class DlmsChannelHandlerServer extends DlmsChannelHandler {
     private OsgpRequestMessageSender osgpRequestMessageSender;
 
     @Override
-    public void messageReceived(final ChannelHandlerContext ctx, final MessageEvent e) throws Exception {
-
-        final DlmsPushNotification message = (DlmsPushNotification) e.getMessage();
+    public void channelRead0(final ChannelHandlerContext ctx, final DlmsPushNotification message) throws Exception {
 
         final String correlationId = UUID.randomUUID().toString().replace("-", "");
         final String deviceIdentification = message.getEquipmentIdentifier();
@@ -88,7 +88,7 @@ public class DlmsChannelHandlerServer extends DlmsChannelHandler {
     private String retrieveIpAddress(final ChannelHandlerContext ctx, final String deviceIdentification) {
         String ipAddress = null;
         try {
-            ipAddress = ((InetSocketAddress) ctx.getChannel().getRemoteAddress()).getHostString();
+            ipAddress = ((InetSocketAddress) ctx.channel().remoteAddress()).getHostString();
             LOGGER.info("Push notification for device {} received from IP address {}", deviceIdentification, ipAddress);
         } catch (final Exception ex) {
             LOGGER.info("Unable to determine IP address of the meter sending a push notification: ", ex);

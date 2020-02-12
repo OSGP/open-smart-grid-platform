@@ -22,7 +22,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
@@ -42,12 +41,12 @@ import ma.glasnost.orika.impl.DefaultMapperFactory;
  * </ul>
  */
 @Configuration
-@ComponentScan(basePackages = {"org.opensmartgridplatform.webdemoapp"})
+@ComponentScan(basePackages = { "org.opensmartgridplatform.webdemoapp" })
 @EnableWebMvc
 @ImportResource("classpath:applicationContext.xml")
-@PropertySources({ @PropertySource("classpath:web-demo-app.properties"),
-        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:${osgp/WebDemoApp/config}", ignoreResourceNotFound = true), })
+@PropertySource("classpath:web-demo-app.properties")
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/WebDemoApp/config}", ignoreResourceNotFound = true)
 public class ApplicationContext {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContext.class);

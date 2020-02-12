@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.core.configurationmanagement;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getInteger;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
@@ -15,12 +16,6 @@ import static org.opensmartgridplatform.cucumber.platform.core.CorrelationUidHel
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ws.soap.client.SoapFaultClientException;
-
 import org.opensmartgridplatform.adapter.ws.schema.core.common.AsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.core.configurationmanagement.Configuration;
@@ -45,9 +40,13 @@ import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonKeys;
 import org.opensmartgridplatform.cucumber.platform.common.support.ws.core.CoreConfigurationManagementClient;
 import org.opensmartgridplatform.cucumber.platform.glue.steps.ws.GenericResponseSteps;
 import org.opensmartgridplatform.domain.core.exceptions.ArgumentNullOrEmptyException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 /**
  * Class with all the set configuration requests steps
@@ -152,7 +151,7 @@ public class SetConfigurationSteps {
         config.setPreferredLinkType(preferredLinkType);
 
         if (requestParameters.containsKey(PlatformKeys.METER_TYPE)
-                && !requestParameters.get(PlatformKeys.METER_TYPE).isEmpty()) {
+                && StringUtils.isNotBlank(getString(requestParameters, PlatformKeys.METER_TYPE))) {
             // Note: This piece of code has been made because there are multiple
             // enumerations with the name MeterType, but not all of them has all
             // values the same. Some with underscore and some without.
@@ -169,17 +168,17 @@ public class SetConfigurationSteps {
             config.setMeterType(meterType);
         }
         if (requestParameters.containsKey(PlatformKeys.SHORT_INTERVAL)
-                && !requestParameters.get(PlatformKeys.SHORT_INTERVAL).isEmpty()) {
+                && StringUtils.isNotBlank(requestParameters.get(PlatformKeys.SHORT_INTERVAL))) {
             config.setShortTermHistoryIntervalMinutes(
                     getInteger(requestParameters, PlatformKeys.SHORT_INTERVAL, PlatformCommonDefaults.SHORT_INTERVAL));
         }
 
         if (requestParameters.containsKey(PlatformKeys.INTERVAL_TYPE)
-                && !requestParameters.get(PlatformKeys.INTERVAL_TYPE).isEmpty()) {
+                && StringUtils.isNotBlank(requestParameters.get(PlatformKeys.INTERVAL_TYPE))) {
             final LongTermIntervalType intervalType = getEnum(requestParameters, PlatformKeys.INTERVAL_TYPE,
                     LongTermIntervalType.class, PlatformCommonDefaults.INTERVAL_TYPE);
             if (requestParameters.containsKey(PlatformKeys.LONG_INTERVAL)
-                    && !requestParameters.get(PlatformKeys.LONG_INTERVAL).isEmpty()) {
+                    && StringUtils.isNotBlank(requestParameters.get(PlatformKeys.LONG_INTERVAL))) {
                 config.setLongTermHistoryInterval(getInteger(requestParameters, PlatformKeys.LONG_INTERVAL,
                         PlatformCommonDefaults.LONG_INTERVAL));
                 config.setLongTermHistoryIntervalType(intervalType);
@@ -210,8 +209,8 @@ public class SetConfigurationSteps {
      *
      * @param expectedResponseData
      *            The table with the expected fields in the response.
-     * @apiNote The response will contain the correlation uid, so store that in the
-     *       current scenario context for later use.
+     * @apiNote The response will contain the correlation uid, so store that in
+     *          the current scenario context for later use.
      * @throws Throwable
      */
     @Then("^the set configuration async response contains$")
@@ -219,8 +218,9 @@ public class SetConfigurationSteps {
         final SetConfigurationAsyncResponse asyncResponse = (SetConfigurationAsyncResponse) ScenarioContext.current()
                 .get(PlatformKeys.RESPONSE);
 
-        Assert.assertNotNull(asyncResponse.getAsyncResponse().getCorrelationUid());
-        Assert.assertEquals(getString(expectedResponseData, PlatformKeys.KEY_DEVICE_IDENTIFICATION),
+        assertThat(asyncResponse.getAsyncResponse().getCorrelationUid()).isNotNull();
+        assertThat(asyncResponse.getAsyncResponse().getDeviceId()).isEqualTo(
+                getString(expectedResponseData, PlatformKeys.KEY_DEVICE_IDENTIFICATION),
                 asyncResponse.getAsyncResponse().getDeviceId());
 
         // Save the returned CorrelationUid in the Scenario related context for
@@ -243,12 +243,12 @@ public class SetConfigurationSteps {
 
         final SetConfigurationResponse response = Wait.untilAndReturn(() -> {
             final SetConfigurationResponse retval = this.client.getSetConfiguration(request);
-            Assert.assertNotNull(retval);
+            assertThat(retval).isNotNull();
             return retval;
         });
 
-        Assert.assertEquals(getEnum(expectedResponseData, PlatformKeys.KEY_RESULT, OsgpResultType.class),
-                response.getResult());
+        assertThat(response.getResult())
+                .isEqualTo(getEnum(expectedResponseData, PlatformKeys.KEY_RESULT, OsgpResultType.class));
     }
 
     @Then("^the platform buffers a set configuration response message for device \"([^\"]*)\" contains soap fault$")
