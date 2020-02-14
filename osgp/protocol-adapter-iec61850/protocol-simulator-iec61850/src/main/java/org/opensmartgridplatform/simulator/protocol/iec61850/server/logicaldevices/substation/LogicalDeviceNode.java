@@ -20,8 +20,8 @@ public class LogicalDeviceNode {
         this.serverModel = serverModel;
         this.serverName = serverModel.getChildren()
                 .stream()
-                .map(ModelNode::getName)
                 .findFirst()
+                .map(ModelNode::getName)
                 .orElseThrow(() -> new NoSuchElementException(
                         "ServerModel does not contain any children, could not determine serverName."));
     }
