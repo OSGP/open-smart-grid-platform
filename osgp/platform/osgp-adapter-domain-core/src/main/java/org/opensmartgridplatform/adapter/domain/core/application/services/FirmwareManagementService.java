@@ -150,8 +150,8 @@ public class FirmwareManagementService extends AbstractService {
     private static FirmwareModuleType getFirmwareModuleType(final Map<FirmwareModule, String> firmwareModuleVersions) {
         return firmwareModuleVersions.keySet()
                 .stream()
-                .map(fwModuleVersion -> FirmwareModuleType.valueOf(fwModuleVersion.getDescription().toUpperCase()))
                 .findFirst()
+                .map(fwModuleVersion -> FirmwareModuleType.valueOf(fwModuleVersion.getDescription().toUpperCase()))
                 .orElseThrow(() -> new NoSuchElementException("No entries present in firmwareModuleVersions map."));
     }
 
