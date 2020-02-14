@@ -9,6 +9,7 @@ package org.opensmartgridplatform.cucumber.execution;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.time.Duration;
 import java.util.TimeZone;
 
 import org.apache.tools.ant.taskdefs.optional.junit.XMLJUnitResultFormatter;
@@ -17,6 +18,7 @@ import org.junit.runner.Computer;
 import org.junit.runner.Description;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
+import org.junit.runner.notification.Failure;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
@@ -34,7 +36,9 @@ public abstract class AppBase {
     @Option(name = "-report", metaVar = "DIR", usage = "Directory to produce test reports")
     private File reportDir;
 
-    @Option(name = "-skip-xml-report", metaVar = "DIR", usage = "Suppress the JUnit XML report generation (for more logging)")
+    @Option(name = "-skip-xml-report",
+            metaVar = "DIR",
+            usage = "Suppress the JUnit XML report generation (for more logging)")
     private boolean skipXmlReport;
 
     /**
@@ -92,6 +96,35 @@ public abstract class AppBase {
         }
 
         final Result result = junit.run(jUnitCommandLineParseResult.createRequest(new Computer()));
+        if (!result.getFailures().isEmpty()) {
+            LOGGER.info("JUnit runner result for {} test(s) run, {} test(s) ignored, {} test(s) failed in {}:",
+                    result.getRunCount(), result.getIgnoreCount(), result.getFailureCount(),
+                    Duration.ofMillis(result.getRunTime()));
+            result.getFailures().forEach(this::logFailureDetails);
+        }
         return result.wasSuccessful() ? 0 : 1;
+    }
+
+    private void logFailureDetails(final Failure failure) {
+        final Description description = failure.getDescription();
+        final Throwable thrownException = failure.getException();
+        final String failureDescription = this.failureDescription(description);
+        LOGGER.warn("Failure: {}", failureDescription, thrownException);
+    }
+
+    private String failureDescription(final Description description) {
+        final StringBuilder sb = new StringBuilder();
+        sb.append(description.getDisplayName()).append(System.lineSeparator());
+        sb.append("\tclassName: ").append(description.getClassName()).append(System.lineSeparator());
+        sb.append("\tmethodName: ").append(description.getMethodName()).append(System.lineSeparator());
+        sb.append("\ttestClass: ")
+                .append(description.getTestClass() == null ? "" : description.getTestClass().getName())
+                .append(System.lineSeparator());
+        sb.append("\ttype: ")
+                .append(description.isTest() ? "test" : "suite with " + description.getChildren().size() + " children");
+        if (description.equals(Description.TEST_MECHANISM)) {
+            sb.append(" (resulted from a step in the test-running mechanism that went wrong)");
+        }
+        return sb.toString();
     }
 }
