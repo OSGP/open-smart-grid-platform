@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -57,7 +58,7 @@ import org.springframework.util.Assert;
 @Transactional(value = "transactionManager")
 public class FirmwareManagementService extends AbstractService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FirmwareManagementService.class);
 
     private static final String INSTALLER = "Inserted to match the version reported by the device.";
 
@@ -147,12 +148,18 @@ public class FirmwareManagementService extends AbstractService {
     }
 
     private static FirmwareModuleType getFirmwareModuleType(final Map<FirmwareModule, String> firmwareModuleVersions) {
-        final FirmwareModule firmwareModule = firmwareModuleVersions.keySet().stream().findFirst().get();
-        return FirmwareModuleType.valueOf(firmwareModule.getDescription().toUpperCase());
+        return firmwareModuleVersions.keySet()
+                .stream()
+                .map(fwModuleVersion -> FirmwareModuleType.valueOf(fwModuleVersion.getDescription().toUpperCase()))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("No entries present in firmwareModuleVersions map."));
     }
 
     private static String getFirmwareVersion(final Map<FirmwareModule, String> firmwareModuleVersions) {
-        return firmwareModuleVersions.values().stream().findFirst().get();
+        return firmwareModuleVersions.values()
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("No entries present in firmwareModuleVersions map."));
     }
 
     public void handleSsldPendingFirmwareUpdate(final String deviceIdentification) {
@@ -364,8 +371,9 @@ public class FirmwareManagementService extends AbstractService {
     }
 
     private static FirmwareModule createFirmwareModule(final FirmwareVersion firmwareVersion) {
-        final String description = firmwareVersion.getFirmwareModuleType().getDescription().toLowerCase(
-                Locale.getDefault());
+        final String description = firmwareVersion.getFirmwareModuleType()
+                .getDescription()
+                .toLowerCase(Locale.getDefault());
         return new FirmwareModule(description);
     }
 
