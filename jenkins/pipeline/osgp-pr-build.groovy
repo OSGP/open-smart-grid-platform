@@ -17,7 +17,6 @@ pipeline {
     environment {
         // Default the pom version
         POMVERSION="latest"
-        FIXED_LIB_UPGRADE_VERSION="4.40.0-SNAPSHOT"
     }
 
     options {
@@ -74,11 +73,13 @@ pipeline {
                 // Download missing artifacts from artifactory for the same version
                 // - The following artifacts are not in this repository
                 sh "cd release && plays/download-artifacts.yml -e artifactstodownload='{{ configuration_artifacts }}' -e deployment_type=snapshot -e osgp_version=${POMVERSION} -e tmp_artifacts_directory=../../target/artifacts"
-                sh "cd release && plays/download-artifacts.yml -e artifactstodownload='{{ dlms_simulator_artifacts }}' -e deployment_type=snapshot -e osgp_version=${FIXED_LIB_UPGRADE_VERSION} -e tmp_artifacts_directory=../../target/artifacts"
+                sh "cd release && plays/download-artifacts.yml -e artifactstodownload='{{ dlms_simulator_artifacts }}' -e deployment_type=snapshot -e osgp_version=${POMVERSION} -e tmp_artifacts_directory=../../target/artifacts"
                 // Make sure a standalone version of the dlms device simulator is present
 // Ruud, temporarily modify the version number by copying the DLMS simulator files
-                sh "cp -p target/artifacts/dlms-device-simulator-${FIXED_LIB_UPGRADE_VERSION}.jar target/artifacts/dlms-device-simulator-${POMVERSION}-standalone.jar"
-                sh "cp -p target/artifacts/osgp-simulator-dlms-triggered-${FIXED_LIB_UPGRADE_VERSION}.war target/artifacts/osgp-simulator-dlms-triggered-${POMVERSION}.war"
+                sh "cp -p target/artifacts/dlms-device-simulator-${POMVERSION}.jar target/artifacts/dlms-device-simulator-${POMVERSION}-standalone.jar"
+                
+                // I think this step is superfluous now. The build fails with error: cp: ‘target/artifacts/osgp-simulator-dlms-triggered-5.0.0-SNAPSHOT.war’ and ‘target/artifacts/osgp-simulator-dlms-triggered-5.0.0-SNAPSHOT.war’ are the same file
+                //sh "cp -p target/artifacts/osgp-simulator-dlms-triggered-${POMVERSION}.war target/artifacts/osgp-simulator-dlms-triggered-${POMVERSION}.war"
 
                 // Now create a new single instance (not stream specific) and put all the artifacts in /data/software/artifacts
                 sh "cd release && plays/deploy-files-to-system.yml -e osgp_version=${POMVERSION} -e deployment_name=${servername} -e directory_to_deploy=../../target/artifacts -e tomcat_restart=false -e ec2_instance_type=m4.large -e ami_name=CentOS6SingleInstance -e ami_owner=self"
