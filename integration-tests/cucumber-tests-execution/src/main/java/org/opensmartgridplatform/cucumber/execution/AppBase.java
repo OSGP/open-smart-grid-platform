@@ -9,8 +9,9 @@ package org.opensmartgridplatform.cucumber.execution;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.time.Duration;
+import java.util.List;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 
 import org.apache.tools.ant.taskdefs.optional.junit.XMLJUnitResultFormatter;
 import org.joda.time.DateTimeZone;
@@ -28,6 +29,11 @@ import org.slf4j.LoggerFactory;
 import junit.runner.Version;
 
 public abstract class AppBase {
+
+    private static final int SUCCESS = 0;
+    private static final int FAILURE = 1;
+    private static final int INCORRECT_USAGE = -1;
+    private static final int ISSUES_IN_TEST_MECHANISM = -2;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AppBase.class);
 
@@ -63,7 +69,7 @@ public abstract class AppBase {
             LOGGER.error("Incorrect usage", e);
             LOGGER.error("java -jar <...>.jar [opts] ...");
             p.printUsage(System.err);
-            return -1;
+            return INCORRECT_USAGE;
         } catch (final Exception e) {
             LOGGER.error("Caught Exception", e);
             final int retval = 1;
@@ -96,13 +102,39 @@ public abstract class AppBase {
         }
 
         final Result result = junit.run(jUnitCommandLineParseResult.createRequest(new Computer()));
-        if (!result.getFailures().isEmpty()) {
-            LOGGER.info("JUnit runner result for {} test(s) run, {} test(s) ignored, {} test(s) failed in {}:",
-                    result.getRunCount(), result.getIgnoreCount(), result.getFailureCount(),
-                    Duration.ofMillis(result.getRunTime()));
-            result.getFailures().forEach(this::logFailureDetails);
+
+        final List<Failure> failuresLinkedToTestMechanism = result.getFailures()
+                .stream()
+                .filter(failure -> Description.TEST_MECHANISM.equals(failure.getDescription()))
+                .collect(Collectors.toList());
+
+        final int testMechanismRelatedFailureCount = failuresLinkedToTestMechanism.size();
+        if (testMechanismRelatedFailureCount > 0) {
+            LOGGER.warn("The test run has lead to {} failure(s) related to the test mechanism",
+                    testMechanismRelatedFailureCount);
+            failuresLinkedToTestMechanism.forEach(this::logFailureDetails);
         }
-        return result.wasSuccessful() ? 0 : 1;
+
+        final int failureCount = result.getFailureCount();
+        if (result.getRunCount() == 0 && failureCount > 0) {
+            LOGGER.error(
+                    "Test result has {} failures, while no tests were executed. "
+                            + "Fail the build since this probably indicates issues in setting up the test context.",
+                    failureCount);
+            return FAILURE;
+        }
+
+        final int failuresLinkedToTests = failureCount - testMechanismRelatedFailureCount;
+
+        if (failureCount > 0 && failuresLinkedToTests == 0) {
+            LOGGER.error(
+                    "Test result has {} failures, while none of these were directly related to tests that were executed. "
+                            + "Returning exceptional value {} instead of {} to indicate issues without failing the build.",
+                    failureCount, ISSUES_IN_TEST_MECHANISM, SUCCESS);
+            return ISSUES_IN_TEST_MECHANISM;
+        }
+
+        return failuresLinkedToTests == 0 ? SUCCESS : FAILURE;
     }
 
     private void logFailureDetails(final Failure failure) {
