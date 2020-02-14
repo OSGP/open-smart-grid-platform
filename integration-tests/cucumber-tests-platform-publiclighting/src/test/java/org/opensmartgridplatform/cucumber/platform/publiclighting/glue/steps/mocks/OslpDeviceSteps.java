@@ -573,15 +573,13 @@ public class OslpDeviceSteps {
             }
             if (StringUtils.isNotBlank(expectedRequest.get(PlatformPubliclightingKeys.SCHEDULE_STARTDAY))) {
                 final String startDay = getDate(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_STARTDAY)
-                        .toDateTime(DateTimeZone.UTC)
-                        .toString("yyyyMMdd");
+                        .toDateTime(DateTimeZone.UTC).toString("yyyyMMdd");
 
                 assertThat(schedule.getStartDay()).isEqualTo(startDay);
             }
             if (StringUtils.isNotBlank(expectedRequest.get(PlatformPubliclightingKeys.SCHEDULE_ENDDAY))) {
                 final String endDay = getDate(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_ENDDAY)
-                        .toDateTime(DateTimeZone.UTC)
-                        .toString("yyyyMMdd");
+                        .toDateTime(DateTimeZone.UTC).toString("yyyyMMdd");
 
                 assertThat(schedule.getEndDay()).isEqualTo(endDay);
             }
@@ -652,8 +650,7 @@ public class OslpDeviceSteps {
 
         final EventNotification eventNotification = EventNotification.newBuilder()
                 .setDescription(getString(settings, PlatformPubliclightingKeys.KEY_DESCRIPTION, ""))
-                .setEvent(getEnum(settings, PlatformPubliclightingKeys.KEY_EVENT, Event.class))
-                .build();
+                .setEvent(getEnum(settings, PlatformPubliclightingKeys.KEY_EVENT, Event.class)).build();
 
         final Message message = Oslp.Message.newBuilder()
                 .setEventNotificationRequest(EventNotificationRequest.newBuilder().addNotifications(eventNotification))
@@ -792,8 +789,7 @@ public class OslpDeviceSteps {
                 final LightValue lightValue = LightValue.newBuilder()
                         .setIndex(OslpUtils.integerToByteString(Integer.parseInt(parts[0])))
                         .setOn(parts[1].toLowerCase().equals("true"))
-                        .setDimValue(OslpUtils.integerToByteString(Integer.parseInt(parts[2])))
-                        .build();
+                        .setDimValue(OslpUtils.integerToByteString(Integer.parseInt(parts[2]))).build();
 
                 lightValues.add(lightValue);
             }
@@ -813,8 +809,7 @@ public class OslpDeviceSteps {
 
                 final LightValue tariffValue = LightValue.newBuilder()
                         .setIndex(OslpUtils.integerToByteString(Integer.parseInt(parts[0])))
-                        .setOn(parts[1].toLowerCase().equals("true"))
-                        .build();
+                        .setOn(parts[1].toLowerCase().equals("true")).build();
 
                 tariffValues.add(tariffValue);
             }
@@ -986,7 +981,7 @@ public class OslpDeviceSteps {
                                                                     PlatformPubliclightingDefaults.LOCALHOST))
                                                     .getAddress()))
                                             .setDeviceType(getEnum(settings, PlatformPubliclightingKeys.KEY_DEVICE_TYPE,
-                                                    DeviceType.class, DeviceType.PSLD))
+                                                    DeviceType.class, DeviceType.SSLD))
                                             .setHasSchedule(
                                                     getBoolean(settings, PlatformPubliclightingKeys.KEY_HAS_SCHEDULE,
                                                             PlatformPubliclightingDefaults.DEFAULT_HASSCHEDULE))
@@ -1019,18 +1014,13 @@ public class OslpDeviceSteps {
             final int randomPlatform = oslpDevice.getRandomPlatform();
 
             final Oslp.ConfirmRegisterDeviceRequest confirmRegisterDeviceRequest = Oslp.ConfirmRegisterDeviceRequest
-                    .newBuilder()
-                    .setRandomDevice(randomDevice)
-                    .setRandomPlatform(randomPlatform)
-                    .build();
+                    .newBuilder().setRandomDevice(randomDevice).setRandomPlatform(randomPlatform).build();
 
-            final Message message = Message.newBuilder()
-                    .setConfirmRegisterDeviceRequest(confirmRegisterDeviceRequest)
+            final Message message = Message.newBuilder().setConfirmRegisterDeviceRequest(confirmRegisterDeviceRequest)
                     .build();
 
             final OslpEnvelope request = this.createEnvelopeBuilder(deviceUid, this.oslpMockServer.getSequenceNumber())
-                    .withPayloadMessage(message)
-                    .build();
+                    .withPayloadMessage(message).build();
 
             this.send(request, settings);
         } catch (final IOException | IllegalArgumentException e) {
@@ -1171,8 +1161,7 @@ public class OslpDeviceSteps {
 
         return new OslpEnvelope.Builder().withSignature(this.oslpMockServer.getOslpSignature())
                 .withProvider(this.oslpMockServer.getOslpSignatureProvider())
-                .withPrimaryKey(this.oslpMockServer.privateKey())
-                .withDeviceId(Base64.decodeBase64(deviceUid))
+                .withPrimaryKey(this.oslpMockServer.privateKey()).withDeviceId(Base64.decodeBase64(deviceUid))
                 .withSequenceNumber(sequenceNumberBytes);
     }
 
