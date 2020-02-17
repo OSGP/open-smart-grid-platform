@@ -52,8 +52,9 @@ public interface DeviceService {
 
     void setConfiguration(SetConfigurationDeviceRequest deviceRequest);
 
-    void doSetConfiguration(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
-            DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
+    void doSetConfiguration(OslpEnvelope oslpRequest, DeviceRequest setConfigurationDeviceRequest,
+            DeviceRequest setRebootDeviceRequest, DeviceResponseHandler setConfigurationDeviceResponseHandler,
+            DeviceResponseHandler setRebootDeviceResponseHandler, String ipAddress) throws IOException;
 
     void switchConfiguration(SwitchConfigurationBankRequest deviceRequest);
 

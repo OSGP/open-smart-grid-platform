@@ -59,13 +59,13 @@ public class OslpMockServerConfig extends AbstractPlatformApplicationConfigurati
     private Long responseDelayTime;
 
     @Value("${response.delay.random.range}")
-    private Long reponseDelayRandomRange;
+    private Long responseDelayRandomRange;
 
     @Bean(destroyMethod = "stop", initMethod = "start")
     public MockOslpServer mockOslpServer() {
         return new MockOslpServer(this.configuration, this.oslpPortServer, this.oslpElsterPortServer,
                 this.oslpSignature, this.oslpSignatureProvider, this.connectionTimeout, this.signKeyPath,
                 this.verifyKeyPath, this.keytype, this.sequenceNumberWindow, this.sequenceNumberMaximum,
-                this.responseDelayTime, this.reponseDelayRandomRange);
+                this.responseDelayTime, this.responseDelayRandomRange);
     }
 }

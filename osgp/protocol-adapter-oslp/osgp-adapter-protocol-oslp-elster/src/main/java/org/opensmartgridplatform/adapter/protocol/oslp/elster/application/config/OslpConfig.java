@@ -54,6 +54,8 @@ public class OslpConfig extends AbstractConfig {
 
     private static final String PROPERTY_NAME_OSLP_EXECUTE_RESUME_SCHEDULE_AFTER_SET_LIGHT = "oslp.execute.resume.schedule.after.set.light";
 
+    private static final String PROPERTY_NAME_OSLP_EXECUTE_REBOOT_AFTER_SET_CONFIGURATION = "oslp.execute.reboot.after.set.configuration";
+
     private static final String PROPERTY_NAME_OSLP_DEFAULT_LATITUDE = "oslp.default.latitude";
     private static final String PROPERTY_NAME_OSLP_DEFAULT_LONGITUDE = "oslp.default.longitude";
 
@@ -96,7 +98,7 @@ public class OslpConfig extends AbstractConfig {
         return bootstrap;
     }
 
-    @Bean()
+    @Bean
     public ServerBootstrap serverBootstrap() {
 
         LOGGER.info("Initializing serverBootstrap bean.");
@@ -214,6 +216,12 @@ public class OslpConfig extends AbstractConfig {
     public boolean executeResumeScheduleAfterSetLight() {
         return Boolean.parseBoolean(
                 this.environment.getRequiredProperty(PROPERTY_NAME_OSLP_EXECUTE_RESUME_SCHEDULE_AFTER_SET_LIGHT));
+    }
+
+    @Bean
+    public boolean executeRebootAfterSetConfiguration() {
+        return Boolean.parseBoolean(
+                this.environment.getRequiredProperty(PROPERTY_NAME_OSLP_EXECUTE_REBOOT_AFTER_SET_CONFIGURATION));
     }
 
     @Bean
