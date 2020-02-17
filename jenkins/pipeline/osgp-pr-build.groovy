@@ -17,7 +17,6 @@ pipeline {
     environment {
         // Default the pom version
         POMVERSION="latest"
-        FIXED_LIB_UPGRADE_VERSION="4.40.0-SNAPSHOT"
     }
 
     options {
@@ -35,7 +34,7 @@ pipeline {
                 step([$class: 'GitHubSetCommitStatusBuilder',
                       contextSource: [$class: 'ManuallyEnteredCommitContextSource']])
             }
-        }
+        } // stage
 
         stage ('Maven Build') {
             steps {
@@ -74,56 +73,62 @@ pipeline {
                 // Download missing artifacts from artifactory for the same version
                 // - The following artifacts are not in this repository
                 sh "cd release && plays/download-artifacts.yml -e artifactstodownload='{{ configuration_artifacts }}' -e deployment_type=snapshot -e osgp_version=${POMVERSION} -e tmp_artifacts_directory=../../target/artifacts"
-                sh "cd release && plays/download-artifacts.yml -e artifactstodownload='{{ dlms_simulator_artifacts }}' -e deployment_type=snapshot -e osgp_version=${FIXED_LIB_UPGRADE_VERSION} -e tmp_artifacts_directory=../../target/artifacts"
+                sh "cd release && plays/download-artifacts.yml -e artifactstodownload='{{ dlms_simulator_artifacts }}' -e deployment_type=snapshot -e osgp_version=${POMVERSION} -e tmp_artifacts_directory=../../target/artifacts"
                 // Make sure a standalone version of the dlms device simulator is present
 // Ruud, temporarily modify the version number by copying the DLMS simulator files
-                sh "cp -p target/artifacts/dlms-device-simulator-${FIXED_LIB_UPGRADE_VERSION}.jar target/artifacts/dlms-device-simulator-${POMVERSION}-standalone.jar"
-                sh "cp -p target/artifacts/osgp-simulator-dlms-triggered-${FIXED_LIB_UPGRADE_VERSION}.war target/artifacts/osgp-simulator-dlms-triggered-${POMVERSION}.war"
+                sh "cp -p target/artifacts/dlms-device-simulator-${POMVERSION}.jar target/artifacts/dlms-device-simulator-${POMVERSION}-standalone.jar"
+                
+                // I think this step is superfluous now. The build fails with error: cp: ‘target/artifacts/osgp-simulator-dlms-triggered-5.0.0-SNAPSHOT.war’ and ‘target/artifacts/osgp-simulator-dlms-triggered-5.0.0-SNAPSHOT.war’ are the same file
+                //sh "cp -p target/artifacts/osgp-simulator-dlms-triggered-${POMVERSION}.war target/artifacts/osgp-simulator-dlms-triggered-${POMVERSION}.war"
 
                 // Now create a new single instance (not stream specific) and put all the artifacts in /data/software/artifacts
                 sh "cd release && plays/deploy-files-to-system.yml -e osgp_version=${POMVERSION} -e deployment_name=${servername} -e directory_to_deploy=../../target/artifacts -e tomcat_restart=false -e ec2_instance_type=m4.large -e ami_name=CentOS6SingleInstance -e ami_owner=self"
             }
-        }
+        } // stage
 
-        stage ('Sonar Analysis') {
-            steps {
-                withSonarQubeEnv('SonarQube local') {
-                    withMaven(
-                        maven: 'Apache Maven 3.6.2',
-                        mavenLocalRepo: '.repository',
-                        options: [
-                                artifactsPublisher(disabled: true),
-                                junitPublisher(disabled: true),
-                                findbugsPublisher(disabled: true),
-                                openTasksPublisher(disabled: true),
-                                dependenciesFingerprintPublisher(disabled: true),
-                                concordionPublisher(disabled: true),
-                                invokerPublisher(disabled: true),
-                                jgivenPublisher(disabled: true),
-                                jacocoPublisher(disabled: true)
-                        ]) {
-                        sh "mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.2:sonar -B -Dmaven.test.failure.ignore=true -Dclirr=true " +
-                          "-Dsonar.github.repository=OSGP/open-smart-grid-platform -Dsonar.analysis.mode=preview " +
-                          "-Dsonar.issuesReport.console.enable=true -Dsonar.forceUpdate=true -Dsonar.github.pullRequest=$ghprbPullId " +
-                          "${SONAR_EXTRA_PROPS}"
+        stage('Parallel Stages') {
+            parallel {
+                stage ('Sonar Analysis') {
+                    steps {
+                        withSonarQubeEnv('SonarQube local') {
+                            withMaven(
+                                maven: 'Apache Maven 3.6.2',
+                                mavenLocalRepo: '.repository',
+                                options: [
+                                        artifactsPublisher(disabled: true),
+                                        junitPublisher(disabled: true),
+                                        findbugsPublisher(disabled: true),
+                                        openTasksPublisher(disabled: true),
+                                        dependenciesFingerprintPublisher(disabled: true),
+                                        concordionPublisher(disabled: true),
+                                        invokerPublisher(disabled: true),
+                                        jgivenPublisher(disabled: true),
+                                        jacocoPublisher(disabled: true)
+                                ]) {
+                                sh "mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.2:sonar -B -Dmaven.test.failure.ignore=true -Dclirr=true " +
+                                  "-Dsonar.github.repository=OSGP/open-smart-grid-platform -Dsonar.analysis.mode=preview " +
+                                  "-Dsonar.issuesReport.console.enable=true -Dsonar.forceUpdate=true -Dsonar.github.pullRequest=$ghprbPullId " +
+                                  "${SONAR_EXTRA_PROPS}"
+                            }
+                        }
                     }
-                }
-            }
-        }
+                } // stage
 
-        stage ('Deploy AWS System') {
-            steps {
-                // Deploy stream specific system using the local artifacts from /data/software/artifacts on the system
-                build job: 'Deploy an AWS System', parameters: [
-                        string(name: 'SERVERNAME', value: servername),
-                        string(name: 'PLAYBOOK', value: playbook),
-                        booleanParam(name: 'INSTALL_FROM_LOCAL_DIR', value: true),
-                        string(name: 'ARTIFACT_DIRECTORY', value: "/data/software/artifacts"),
-                        string(name: 'OSGP_VERSION', value: POMVERSION),
-                        booleanParam(name: 'ARTIFACT_DIRECTORY_REMOTE_SRC', value: true),
-                        string(name: 'BRANCH', value: branchReleaseRepo)]
-            }
-        }
+                stage ('Deploy AWS System') {
+                    steps {
+                        // Deploy stream specific system using the local artifacts from /data/software/artifacts on the system
+                        build job: 'Deploy an AWS System', parameters: [
+                                string(name: 'SERVERNAME', value: servername),
+                                string(name: 'PLAYBOOK', value: playbook),
+                                booleanParam(name: 'INSTALL_FROM_LOCAL_DIR', value: true),
+                                string(name: 'ARTIFACT_DIRECTORY', value: "/data/software/artifacts"),
+                                string(name: 'OSGP_VERSION', value: POMVERSION),
+                                booleanParam(name: 'ARTIFACT_DIRECTORY_REMOTE_SRC', value: true),
+                                string(name: 'BRANCH', value: branchReleaseRepo)]
+                    }
+                } // stage
+            } // parallel
+        } // stage
 
         stage('Run Tests') {
             steps {
@@ -153,7 +158,7 @@ echo Found cucumber tags: [$EXTRACTED_TAGS]'''
                 sh "./runMicrogridsTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-microgrids centos \"OSGP Development.pem\" \"\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
                 sh "./runSmartMeteringTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-smartmetering centos \"OSGP Development.pem\" \"\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
             }
-        }
+        } // stage
 
         stage ('Collect Coverage') {
             steps {
@@ -167,7 +172,7 @@ echo Found cucumber tags: [$EXTRACTED_TAGS]'''
                     sh "mvn -Djacoco.destFile=target/code-coverage/jacoco-it.exec -Djacoco.address=${servername}.dev.osgp.cloud org.jacoco:jacoco-maven-plugin:0.7.9:dump"
                 }
             }
-        }
+        } // stage
 
         stage('Reporting') {
             steps {
@@ -176,9 +181,9 @@ echo Found cucumber tags: [$EXTRACTED_TAGS]'''
                 archiveArtifacts '**/target/*.tgz'
 
                 // Check the console log for failed tests
-                step([$class: 'LogParserPublisher', projectRulePath: 'console-test-result-rules', unstableOnWarning: true, useProjectRule: true])
+                step([$class: 'LogParserPublisher', projectRulePath: 'console-test-result-rules', unstableOnWarning: true, failBuildOnError: true, useProjectRule: true])
             }
-        }
+        } // stage
     } // stages
 
     post {
@@ -207,4 +212,3 @@ echo Found cucumber tags: [$EXTRACTED_TAGS]'''
         }
     } // post
 } // pipeline
-
