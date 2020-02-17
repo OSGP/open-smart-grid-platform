@@ -14,7 +14,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -125,8 +125,12 @@ public class FirmwareManagementService extends AbstractService {
             final Map<FirmwareModule, String> firmwareModuleVersions = firmwareFile.getModuleVersions();
             Assert.isTrue(firmwareModuleVersions.size() == 1,
                     "Expected 1 firmware module for: " + firmwareModuleVersions);
-            final String firmwareVersion = getFirmwareVersion(firmwareModuleVersions);
-            final FirmwareModuleType firmwareModuleType = getFirmwareModuleType(firmwareModuleVersions);
+            final Entry<FirmwareModule, String> firmwareModuleVersion = firmwareModuleVersions.entrySet()
+                    .iterator()
+                    .next();
+            final FirmwareModuleType firmwareModuleType = FirmwareModuleType
+                    .valueOf(firmwareModuleVersion.getKey().getDescription().toUpperCase());
+            final String firmwareVersion = firmwareModuleVersion.getValue();
 
             SsldPendingFirmwareUpdate ssldPendingFirmwareUpdate = new SsldPendingFirmwareUpdate(
                     ids.getDeviceIdentification(), firmwareModuleType, firmwareVersion,
@@ -145,21 +149,6 @@ public class FirmwareManagementService extends AbstractService {
         final String[] split = firmwareUrl.split("/");
         Assert.isTrue(split.length >= 1, "Splitting URL on / failed!");
         return split[split.length - 1];
-    }
-
-    private static FirmwareModuleType getFirmwareModuleType(final Map<FirmwareModule, String> firmwareModuleVersions) {
-        return firmwareModuleVersions.keySet()
-                .stream()
-                .findFirst()
-                .map(fwModuleVersion -> FirmwareModuleType.valueOf(fwModuleVersion.getDescription().toUpperCase()))
-                .orElseThrow(() -> new NoSuchElementException("No entries present in firmwareModuleVersions map."));
-    }
-
-    private static String getFirmwareVersion(final Map<FirmwareModule, String> firmwareModuleVersions) {
-        return firmwareModuleVersions.values()
-                .stream()
-                .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("No entries present in firmwareModuleVersions map."));
     }
 
     public void handleSsldPendingFirmwareUpdate(final String deviceIdentification) {
