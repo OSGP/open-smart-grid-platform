@@ -74,9 +74,7 @@ public class GetPowerQualityProfileRequestDataMapperTest {
     }
 
     private GetPowerQualityProfileData newDefinableLoadProfileConfigurationData() {
-        final GetPowerQualityProfileData definableLoadProfileConfigurationData = new GetPowerQualityProfileData(
-                this.newCaptureObjects(), CAPTURE_PERIOD);
-        return definableLoadProfileConfigurationData;
+        return new GetPowerQualityProfileData(this.newCaptureObjects(), CAPTURE_PERIOD);
     }
 
     private List<CaptureObjectDefinition> newCaptureObjects() {

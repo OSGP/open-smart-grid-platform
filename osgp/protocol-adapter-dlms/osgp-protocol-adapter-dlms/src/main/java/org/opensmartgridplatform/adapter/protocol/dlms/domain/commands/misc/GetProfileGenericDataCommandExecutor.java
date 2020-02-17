@@ -30,6 +30,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractC
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ScalerUnitInfo;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CaptureObjectDefinitionDto;
@@ -57,6 +58,10 @@ public class GetProfileGenericDataCommandExecutor
 
     private static final int ACCESS_SELECTOR_RANGE_DESCRIPTOR = 1;
 
+    private static final ObisCode OBIS_CODE_DEFINABLE_LOAD_PROFILE = new ObisCode("0.1.94.31.6.255");
+    private static final ObisCode OBIS_CODE_PROFILE_1 = new ObisCode("1.0.99.1.1.255");
+    private static final ObisCode OBIS_CODE_PROFILE_2 = new ObisCode("1.0.99.1.2.255");
+
     private static final byte[] OBIS_BYTES_CLOCK = new byte[] { 0, 0, 1, 0, 0, (byte) 255 };
 
     private static final Map<Integer, Integer> SCALER_UNITS_MAP = new HashMap<>();
@@ -82,6 +87,8 @@ public class GetProfileGenericDataCommandExecutor
 
         LOGGER.info("executing ProfileGenericDataResponseDto for ", profileGenericDataRequestDataDto.getObisCode());
 
+        final ObisCode profileObisCode = determineProfileForDevice(device);
+
         final ObisCodeValuesDto obisCodeValues = profileGenericDataRequestDataDto.getObisCode();
         final ObisCode obisCode = this.makeObisCode(obisCodeValues);
         final DateTime beginDateTime = new DateTime(profileGenericDataRequestDataDto.getBeginDate());
@@ -97,6 +104,21 @@ public class GetProfileGenericDataCommandExecutor
                 .retrieveBuffer(conn, device, obisCode, beginDateTime, endDateTime, selectedValues);
         return this.processData(obisCodeValues, captureObjects, scalerUnitInfos, selectedValues,
                 device.isSelectiveAccessSupported(), bufferList);
+    }
+
+    private ObisCode determineProfileForDevice(final DlmsDevice device) {
+
+        final Protocol protocol = Protocol.forDevice(device);
+
+        switch (protocol) {
+        case DSMR_4_2_2:
+            return OBIS_CODE_DEFINABLE_LOAD_PROFILE;
+        case SMR_5_0:
+        case SMR_5_1:
+            return OBIS_CODE_PROFILE_2;
+        default:
+            throw new IllegalArgumentException("Device has unknown protocol " + protocol);
+        }
     }
 
     private List<GetResult> retrieveCaptureObjects(final DlmsConnectionManager conn, final DlmsDevice device,

@@ -25,31 +25,28 @@ import org.openmuc.jdlms.interfaceclass.attribute.ProfileGenericAttribute;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CaptureObjectDefinitionDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileRequestDto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.DefinableLoadProfileConfigurationDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class GetPowerQualityProfileCommandExecutor
-        extends AbstractCommandExecutor<GetPowerQualityProfileRequestDto, Void> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetPowerQualityProfileCommandExecutor.class);
+public class ConfigureDefinableLoadProfileCommandExecutor
+        extends AbstractCommandExecutor<DefinableLoadProfileConfigurationDto, Void> {
 
     private static final int CLASS_ID = InterfaceClass.PROFILE_GENERIC.id();
+    private static final ObisCode LOGICAL_NAME = new ObisCode("0.1.94.31.6.255");
 
-    private static final ObisCode OBIS_CODE_DEFINABLE_LOAD_PROFILE = new ObisCode("0.1.94.31.6.255");
-    private static final ObisCode OBIS_CODE_PROFILE_1 = new ObisCode("1.0.99.1.1.255");
-    private static final ObisCode OBIS_CODE_PROFILE_2 = new ObisCode("1.0.99.1.2.255");
-
+    private static final AttributeAddress ATTRIBUTE_CAPTURE_OBJECTS = new AttributeAddress(CLASS_ID, LOGICAL_NAME,
+            ProfileGenericAttribute.CAPTURE_OBJECTS.attributeId());
     private static final String ATTRIBUTE_NAME_CAPTURE_OBJECTS = "capture objects";
+
+    private static final AttributeAddress ATTRIBUTE_CAPTURE_PERIOD = new AttributeAddress(CLASS_ID, LOGICAL_NAME,
+            ProfileGenericAttribute.CAPTURE_PERIOD.attributeId());
     private static final String ATTRIBUTE_NAME_CAPTURE_PERIOD = "capture period";
 
     private static final ObisCode LOGICAL_NAME_CLOCK = new ObisCode("0.0.1.0.0.255");
@@ -63,8 +60,8 @@ public class GetPowerQualityProfileCommandExecutor
     @Autowired
     private MapperFacade configurationMapper;
 
-    public GetPowerQualityProfileCommandExecutor() {
-        super(GetPowerQualityProfileRequestDto.class);
+    public ConfigureDefinableLoadProfileCommandExecutor() {
+        super(DefinableLoadProfileConfigurationDto.class);
     }
 
     @Override
@@ -78,47 +75,25 @@ public class GetPowerQualityProfileCommandExecutor
 
     @Override
     public Void execute(final DlmsConnectionManager conn, final DlmsDevice device,
-            final GetPowerQualityProfileRequestDto definableLoadProfileConfiguration) throws ProtocolAdapterException {
-
-        final ObisCode profileObisCode = determineProfileForDevice(device);
-
-        LOGGER.info("--- Determined profileObiscode for device {}", profileObisCode);
+            final DefinableLoadProfileConfigurationDto definableLoadProfileConfiguration)
+            throws ProtocolAdapterException {
 
         if (definableLoadProfileConfiguration.hasCaptureObjects()) {
-            this.writeCaptureObjects(conn, definableLoadProfileConfiguration.getCaptureObjects(), profileObisCode);
+            this.writeCaptureObjects(conn, definableLoadProfileConfiguration.getCaptureObjects());
         }
 
         if (definableLoadProfileConfiguration.hasCapturePeriod()) {
-            this.writeCapturePeriod(conn, definableLoadProfileConfiguration.getCapturePeriod(), profileObisCode);
+            this.writeCapturePeriod(conn, definableLoadProfileConfiguration.getCapturePeriod());
         }
 
         return null;
     }
 
-    private ObisCode determineProfileForDevice(final DlmsDevice device) {
-
-        final Protocol protocol = Protocol.forDevice(device);
-
-        switch (protocol) {
-        case DSMR_4_2_2:
-            return OBIS_CODE_DEFINABLE_LOAD_PROFILE;
-        case SMR_5_0:
-        case SMR_5_1:
-            return OBIS_CODE_PROFILE_2;
-        default:
-            throw new IllegalArgumentException("Device has unknown protocol " + protocol);
-        }
-    }
-
     private void writeCaptureObjects(final DlmsConnectionManager conn,
-            final List<CaptureObjectDefinitionDto> captureObjects, final ObisCode profileObisCode)
-            throws ProtocolAdapterException {
+            final List<CaptureObjectDefinitionDto> captureObjects) throws ProtocolAdapterException {
 
-        final AttributeAddress attributeCaptureObjects = new AttributeAddress(CLASS_ID, profileObisCode,
-                ProfileGenericAttribute.CAPTURE_OBJECTS.attributeId());
-
-        this.dlmsLogWrite(conn, attributeCaptureObjects, ATTRIBUTE_NAME_CAPTURE_OBJECTS);
-        this.writeAttribute(conn, new SetParameter(attributeCaptureObjects,
+        this.dlmsLogWrite(conn, ATTRIBUTE_CAPTURE_OBJECTS, ATTRIBUTE_NAME_CAPTURE_OBJECTS);
+        this.writeAttribute(conn, new SetParameter(ATTRIBUTE_CAPTURE_OBJECTS,
                 DataObject.newArrayData(this.mapCaptureObjects(captureObjects))), ATTRIBUTE_NAME_CAPTURE_OBJECTS);
     }
 
@@ -144,14 +119,12 @@ public class GetPowerQualityProfileCommandExecutor
                 && ATTRIBUTE_INDEX_CLOCK_TIME == captureObject.getAttributeIndex();
     }
 
-    private void writeCapturePeriod(final DlmsConnectionManager conn, final long capturePeriod,
-            final ObisCode profileObisCode) throws ProtocolAdapterException {
+    private void writeCapturePeriod(final DlmsConnectionManager conn, final long capturePeriod)
+            throws ProtocolAdapterException {
 
-        final AttributeAddress attributeCapturePeriod = new AttributeAddress(CLASS_ID, profileObisCode,
-                ProfileGenericAttribute.CAPTURE_PERIOD.attributeId());
-
-        this.dlmsLogWrite(conn, attributeCapturePeriod, ATTRIBUTE_NAME_CAPTURE_PERIOD);
-        this.writeAttribute(conn, new SetParameter(attributeCapturePeriod, DataObject.newUInteger32Data(capturePeriod)),
+        this.dlmsLogWrite(conn, ATTRIBUTE_CAPTURE_PERIOD, ATTRIBUTE_NAME_CAPTURE_PERIOD);
+        this.writeAttribute(conn,
+                new SetParameter(ATTRIBUTE_CAPTURE_PERIOD, DataObject.newUInteger32Data(capturePeriod)),
                 ATTRIBUTE_NAME_CAPTURE_PERIOD);
     }
 

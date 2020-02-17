@@ -12,14 +12,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class GetPowerQualityProfileRequestDto implements ActionRequestDto {
+public class DefinableLoadProfileConfigurationDto implements ActionRequestDto {
 
     private static final long serialVersionUID = -4722989892412090306L;
 
     private final List<CaptureObjectDefinitionDto> captureObjects = new ArrayList<>();
     private final Long capturePeriod;
 
-    public GetPowerQualityProfileRequestDto(final List<CaptureObjectDefinitionDto> captureObjects,
+    public DefinableLoadProfileConfigurationDto(final List<CaptureObjectDefinitionDto> captureObjects,
             final Long capturePeriod) {
         if (captureObjects != null) {
             this.captureObjects.addAll(captureObjects);
@@ -49,10 +49,10 @@ public class GetPowerQualityProfileRequestDto implements ActionRequestDto {
         if (this == obj) {
             return true;
         }
-        if (!(obj instanceof GetPowerQualityProfileRequestDto)) {
+        if (!(obj instanceof DefinableLoadProfileConfigurationDto)) {
             return false;
         }
-        final GetPowerQualityProfileRequestDto other = (GetPowerQualityProfileRequestDto) obj;
+        final DefinableLoadProfileConfigurationDto other = (DefinableLoadProfileConfigurationDto) obj;
         return Objects.equals(this.captureObjects, other.captureObjects) && Objects
                 .equals(this.capturePeriod, other.capturePeriod);
     }

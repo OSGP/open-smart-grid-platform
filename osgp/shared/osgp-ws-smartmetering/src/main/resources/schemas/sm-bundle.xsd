@@ -205,10 +205,10 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
-  <xsd:element name="GetProfileGenericDataRequest">
+  <xsd:element name="GetPowerQualityProfileRequest">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="smmon:ProfileGenericDataRequestData"></xsd:extension>
+        <xsd:extension base="smmon:PowerQualityProfileRequestData"></xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -307,7 +307,7 @@
         <xsd:element ref="tns:GetAssociationLnObjectsRequest"/>
         <xsd:element ref="tns:SetClockConfigurationRequest"/>
         <xsd:element ref="tns:GetConfigurationObjectRequest"/>
-        <xsd:element ref="tns:GetProfileGenericDataRequest"/>
+        <xsd:element ref="tns:GetPowerQualityProfileRequest"/>
         <xsd:element ref="tns:GenerateAndReplaceKeysRequest"/>
         <xsd:element ref="tns:ConfigureDefinableLoadProfileRequest"/>
         <xsd:element ref="tns:SetMbusUserKeyByChannelRequest"/>
@@ -463,7 +463,7 @@
   <xsd:element name="ProfileGenericDataResponse">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="smmon:ProfileGenericDataResponseData"></xsd:extension>
+        <xsd:extension base="smmon:GetPowerQualityProfileResponseData"></xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
