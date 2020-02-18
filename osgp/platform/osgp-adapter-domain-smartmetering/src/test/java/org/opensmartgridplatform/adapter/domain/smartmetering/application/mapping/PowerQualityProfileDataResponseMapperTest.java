@@ -15,13 +15,13 @@ import java.util.Date;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileEntryValue;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileResponseData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileEntryValue;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CaptureObjectDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ObisCodeValuesDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryValueDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileResponseDto;
 
 public class PowerQualityProfileDataResponseMapperTest {
 
@@ -31,7 +31,7 @@ public class PowerQualityProfileDataResponseMapperTest {
             Long.class };
 
     @Test
-    public void testConvertProfileGenericDataResponseVo() {
+    public void testConvertGetPowerQualityProfileResponseVo() {
         final GetPowerQualityProfileResponseDto responseDto = this.makeResponseDto();
         final GetPowerQualityProfileResponseData responseVo = this.mapper.map(responseDto, GetPowerQualityProfileResponseData.class);
         assertThat(responseVo).withFailMessage("response object should not be null").isNotNull();
@@ -52,14 +52,12 @@ public class PowerQualityProfileDataResponseMapperTest {
     private GetPowerQualityProfileResponseDto makeResponseDto() {
         final ObisCodeValuesDto obisCodeValuesDto = new ObisCodeValuesDto((byte) 1, (byte) 1, (byte) 1, (byte) 1,
                 (byte) 1, (byte) 1);
-        final GetPowerQualityProfileResponseDto result = new GetPowerQualityProfileResponseDto(obisCodeValuesDto,
+        return new GetPowerQualityProfileResponseDto(obisCodeValuesDto,
                 this.makeCaptureObjectDtos(), this.makeProfileEntryDtos());
-        return result;
     }
 
     private List<CaptureObjectDto> makeCaptureObjectDtos() {
-        final List<CaptureObjectDto> result = new ArrayList<>();
-        return result;
+        return new ArrayList<>();
     }
 
     private List<ProfileEntryDto> makeProfileEntryDtos() {

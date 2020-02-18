@@ -9,15 +9,14 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.application.confi
 
 import javax.annotation.PreDestroy;
 
+import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
+import org.opensmartgridplatform.shared.application.config.AbstractPersistenceConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-
-import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
-import org.opensmartgridplatform.shared.application.config.AbstractPersistenceConfig;
 
 @EnableJpaRepositories(entityManagerFactoryRef = "entityManagerFactory", basePackageClasses = {
         DeviceRepository.class })

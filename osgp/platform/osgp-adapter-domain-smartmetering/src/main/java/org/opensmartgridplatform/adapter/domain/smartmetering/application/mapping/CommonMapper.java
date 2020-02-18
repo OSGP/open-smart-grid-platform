@@ -7,13 +7,11 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping;
 
-import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.CosemObisCodeConverter;
-import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.FaultResponseConverter;
-
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.ConfigurableMapper;
+import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.CosemObisCodeConverter;
+import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.FaultResponseConverter;
+import org.springframework.stereotype.Component;
 
 @Component(value = "CommmonMapper")
 public class CommonMapper extends ConfigurableMapper {

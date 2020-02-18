@@ -15,9 +15,6 @@ import java.util.Date;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileRequestData;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigureDefinableLoadProfileRequestDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileRequestDataDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ObisCodeValuesDto;
 
 public class GetPowerQualityProfileRequestMapperTest {
 
@@ -28,10 +25,10 @@ public class GetPowerQualityProfileRequestMapperTest {
     private static final String MAPPED_VALUE_MESSAGE = "mapped values should be identical.";
 
     @Test
-    public void testConvertProfileGenericDataRequestDto() {
-        final GetPowerQualityProfileRequest profileGenericDateRequest = this.makeRequest();
+    public void testGetPowerQualityProfileRequest() {
+        final GetPowerQualityProfileRequest getPowerQualityProfileRequest = this.makeRequest();
         final GetPowerQualityProfileRequestData result = this.mapper
-                .map(profileGenericDateRequest, GetPowerQualityProfileRequestData.class);
+                .map(getPowerQualityProfileRequest, GetPowerQualityProfileRequestData.class);
         assertThat(result).withFailMessage("mapping GetPowerQualityProfileRequest should not return null").isNotNull();
 
         assertThat(result).withFailMessage("mapping GetPowerQualityProfileRequest should return correct type")

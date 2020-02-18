@@ -8,6 +8,7 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
+import ma.glasnost.orika.MapperFactory;
 import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
 import org.opensmartgridplatform.domain.core.entities.Manufacturer;
@@ -30,8 +31,6 @@ import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import ma.glasnost.orika.MapperFactory;
 
 @Service(value = "domainSmartMeteringSmartMeterService")
 @Transactional(value = "transactionManager")

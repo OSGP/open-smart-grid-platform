@@ -19,14 +19,14 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ProfileGenericDataRequestMessageProcessor extends BaseRequestMessageProcessor {
+public class GetPowerQualityProfileRequestMessageProcessor extends BaseRequestMessageProcessor {
 
     @Autowired
     @Qualifier("domainSmartMeteringMonitoringService")
     private MonitoringService monitoringService;
 
     @Autowired
-    protected ProfileGenericDataRequestMessageProcessor(
+    protected GetPowerQualityProfileRequestMessageProcessor(
             @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(messageProcessorMap, MessageType.GET_PROFILE_GENERIC_DATA);
     }
@@ -37,6 +37,6 @@ public class ProfileGenericDataRequestMessageProcessor extends BaseRequestMessag
 
         final GetPowerQualityProfileRequest periodicMeterReadsRequest = (GetPowerQualityProfileRequest) dataObject;
 
-        this.monitoringService.requestProfileGenericData(deviceMessageMetadata, periodicMeterReadsRequest);
+        this.monitoringService.requestPowerQualityProfile(deviceMessageMetadata, periodicMeterReadsRequest);
     }
 }

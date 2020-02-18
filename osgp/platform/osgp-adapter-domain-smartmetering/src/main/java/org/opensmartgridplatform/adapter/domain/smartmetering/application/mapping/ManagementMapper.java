@@ -9,11 +9,9 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.application.mappi
 
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.ConfigurableMapper;
-
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.EventsConverter;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.FindEventsRequestDataConverter;
+import org.springframework.stereotype.Component;
 
 @Component(value = "managementMapper")
 public class ManagementMapper extends ConfigurableMapper {

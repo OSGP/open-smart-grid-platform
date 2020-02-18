@@ -7,9 +7,9 @@
  */
 package org.opensmartgridplatform.domain.da.valueobjects;
 
-import org.joda.time.DateTime;
-
 import java.io.Serializable;
+
+import org.joda.time.DateTime;
 
 public class GetPQValuesPeriodicRequest implements Serializable {
     private static final long serialVersionUID = 4776483459295815846L;
