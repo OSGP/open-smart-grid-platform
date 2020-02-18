@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -57,7 +58,7 @@ import org.springframework.util.Assert;
 @Transactional(value = "transactionManager")
 public class FirmwareManagementService extends AbstractService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FirmwareManagementService.class);
 
     private static final String INSTALLER = "Inserted to match the version reported by the device.";
 
@@ -124,8 +125,12 @@ public class FirmwareManagementService extends AbstractService {
             final Map<FirmwareModule, String> firmwareModuleVersions = firmwareFile.getModuleVersions();
             Assert.isTrue(firmwareModuleVersions.size() == 1,
                     "Expected 1 firmware module for: " + firmwareModuleVersions);
-            final String firmwareVersion = getFirmwareVersion(firmwareModuleVersions);
-            final FirmwareModuleType firmwareModuleType = getFirmwareModuleType(firmwareModuleVersions);
+            final Entry<FirmwareModule, String> firmwareModuleVersion = firmwareModuleVersions.entrySet()
+                    .iterator()
+                    .next();
+            final FirmwareModuleType firmwareModuleType = FirmwareModuleType
+                    .valueOf(firmwareModuleVersion.getKey().getDescription().toUpperCase());
+            final String firmwareVersion = firmwareModuleVersion.getValue();
 
             SsldPendingFirmwareUpdate ssldPendingFirmwareUpdate = new SsldPendingFirmwareUpdate(
                     ids.getDeviceIdentification(), firmwareModuleType, firmwareVersion,
@@ -144,15 +149,6 @@ public class FirmwareManagementService extends AbstractService {
         final String[] split = firmwareUrl.split("/");
         Assert.isTrue(split.length >= 1, "Splitting URL on / failed!");
         return split[split.length - 1];
-    }
-
-    private static FirmwareModuleType getFirmwareModuleType(final Map<FirmwareModule, String> firmwareModuleVersions) {
-        final FirmwareModule firmwareModule = firmwareModuleVersions.keySet().stream().findFirst().get();
-        return FirmwareModuleType.valueOf(firmwareModule.getDescription().toUpperCase());
-    }
-
-    private static String getFirmwareVersion(final Map<FirmwareModule, String> firmwareModuleVersions) {
-        return firmwareModuleVersions.values().stream().findFirst().get();
     }
 
     public void handleSsldPendingFirmwareUpdate(final String deviceIdentification) {
@@ -364,8 +360,9 @@ public class FirmwareManagementService extends AbstractService {
     }
 
     private static FirmwareModule createFirmwareModule(final FirmwareVersion firmwareVersion) {
-        final String description = firmwareVersion.getFirmwareModuleType().getDescription().toLowerCase(
-                Locale.getDefault());
+        final String description = firmwareVersion.getFirmwareModuleType()
+                .getDescription()
+                .toLowerCase(Locale.getDefault());
         return new FirmwareModule(description);
     }
 
