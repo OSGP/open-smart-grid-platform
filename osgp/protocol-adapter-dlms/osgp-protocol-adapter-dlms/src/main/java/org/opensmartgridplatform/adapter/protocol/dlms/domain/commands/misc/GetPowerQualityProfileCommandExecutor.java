@@ -89,7 +89,7 @@ public class GetPowerQualityProfileCommandExecutor
             final GetPowerQualityProfileRequestDataDto getPowerQualityProfileRequestDataDto)
             throws ProtocolAdapterException {
 
-        LOGGER.info("executing ProfileGenericDataResponseDto for ",
+        LOGGER.info("executing GetPowerQualityProfileResponseDto for {}",
                 getPowerQualityProfileRequestDataDto.getProfileType());
 
         final ObisCodeValuesDto obisCodeValues = determineProfileForDevice(device);
@@ -154,7 +154,7 @@ public class GetPowerQualityProfileCommandExecutor
             final List<CaptureObjectDefinitionDto> selectedValues, final boolean isSelectingValuesSupported,
             final List<GetResult> bufferList) throws ProtocolAdapterException {
 
-        LOGGER.info("GetProfileGenericDataCommandExecutor retrieved {} results ", bufferList.size());
+        LOGGER.info("GetPowerQualityProfileCommandExecutor retrieved {} results ", bufferList.size());
 
         final List<CaptureObjectDto> captureObjectDtos = this
                 .makeCaptureObjects(captureObjects, scalerUnitInfos, selectedValues, isSelectingValuesSupported);

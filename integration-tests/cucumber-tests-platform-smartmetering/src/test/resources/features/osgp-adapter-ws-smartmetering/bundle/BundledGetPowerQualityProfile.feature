@@ -11,7 +11,7 @@ Feature: SmartMetering Bundle - GetPowerQualityProfile
   Scenario: Retrieve power quality profile data as part of a bundled request
     Given a bundle request
       | DeviceIdentification | TEST1024000000001   |
-    And the bundle request contains a get power quality profile request action with parameters
+    And the bundle request contains a get power quality profile request with parameters
       | ObisCodeA            |                   1 |
       | ObisCodeB            |                   0 |
       | ObisCodeC            |                  99 |

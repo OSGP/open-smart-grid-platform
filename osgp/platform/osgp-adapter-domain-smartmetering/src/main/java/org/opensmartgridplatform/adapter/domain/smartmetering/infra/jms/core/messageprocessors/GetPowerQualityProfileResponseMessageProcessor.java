@@ -24,14 +24,14 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ProfileGenericDataResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
+public class GetPowerQualityProfileResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
     @Autowired
     @Qualifier("domainSmartMeteringMonitoringService")
     private MonitoringService monitoringService;
 
     @Autowired
-    protected ProfileGenericDataResponseMessageProcessor(
+    protected GetPowerQualityProfileResponseMessageProcessor(
             WebServiceResponseMessageSender responseMessageSender,
             @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.GET_PROFILE_GENERIC_DATA,
@@ -53,12 +53,12 @@ public class ProfileGenericDataResponseMessageProcessor extends OsgpCoreResponse
             final GetPowerQualityProfileResponseDto getPowerQualityProfileResponseDto = (GetPowerQualityProfileResponseDto) responseMessage
                     .getDataObject();
 
-            this.monitoringService.handleProfileGenericDataResponse(deviceMessageMetadata, responseMessage.getResult(),
+            this.monitoringService.handleGetPowerQualityProfileResponse(deviceMessageMetadata, responseMessage.getResult(),
                     osgpException, getPowerQualityProfileResponseDto);
         } else {
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
                     ComponentType.DOMAIN_SMART_METERING, new OsgpException(ComponentType.DOMAIN_SMART_METERING,
-                            "DataObject for response message should be of type ProfileGenericDataResponseDto"));
+                            "DataObject for response message should be of type GetPowerQualityProfileResponseDto"));
         }
     }
 }

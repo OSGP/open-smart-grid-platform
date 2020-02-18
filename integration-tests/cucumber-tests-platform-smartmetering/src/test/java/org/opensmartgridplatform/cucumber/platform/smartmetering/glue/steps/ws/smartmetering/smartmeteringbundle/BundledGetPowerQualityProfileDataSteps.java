@@ -26,7 +26,7 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.builders.GetPow
 
 public class BundledGetPowerQualityProfileDataSteps extends BaseBundleSteps {
 
-    @Given("^the bundle request contains a get power quality profile request action with parameters$")
+    @Given("^the bundle request contains a get power quality profile request with parameters$")
     public void theBundleRequestContainsAGetPowerQualityProfileRequestAction(final Map<String, String> parameters)
             throws Throwable {
 

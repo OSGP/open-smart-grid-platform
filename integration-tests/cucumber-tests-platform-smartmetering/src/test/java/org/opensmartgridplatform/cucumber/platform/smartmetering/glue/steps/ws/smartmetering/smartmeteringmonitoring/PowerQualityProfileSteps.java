@@ -30,7 +30,7 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smar
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.SmartMeteringMonitoringResponseClient;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class ProfileGenericDataSteps {
+public class PowerQualityProfileSteps {
 
     @Autowired
     private SmartMeteringMonitoringRequestClient<GetPowerQualityProfileAsyncResponse, GetPowerQualityProfileRequestData> requestClient;
@@ -39,7 +39,7 @@ public class ProfileGenericDataSteps {
     private SmartMeteringMonitoringResponseClient<GetPowerQualityProfileResponseData, GetPowerQualityProfileAsyncRequest> responseClient;
 
     @When("^the get power quality profile request data is received$")
-    public void theGetProfileGetPowerQualityProfileRequestDataIsReceived(final Map<String, String> settings) throws Throwable {
+    public void theGetPowerQualityProfileRequestDataIsReceived(final Map<String, String> settings) throws Throwable {
 
         final GetPowerQualityProfileRequestData request = GetPowerQualityProfileRequestFactory.fromParameterMap(settings);
         final GetPowerQualityProfileAsyncResponse asyncResponse = this.requestClient.doRequest(request);
@@ -54,7 +54,7 @@ public class ProfileGenericDataSteps {
         final GetPowerQualityProfileAsyncRequest asyncRequest = GetPowerQualityProfileRequestFactory.fromScenarioContext();
 
         final GetPowerQualityProfileResponseData response = this.responseClient.getResponse(asyncRequest);
-        assertThat(response).as("ProfileGenericDataResponse should not be null").isNotNull();
+        assertThat(response).as("GetPowerQualityProfileResponseData should not be null").isNotNull();
 
         final int expectedNumberOfCaptureObjects = getInteger(settings, "NumberOfCaptureObjects", 0);
         final List<CaptureObject> actualCaptureObjects =
