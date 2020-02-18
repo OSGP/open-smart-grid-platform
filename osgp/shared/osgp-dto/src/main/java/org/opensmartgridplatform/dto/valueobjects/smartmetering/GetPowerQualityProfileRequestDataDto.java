@@ -16,35 +16,35 @@ import java.util.Objects;
 /**
  * request for ProfileGenericData
  */
-public class ProfileGenericDataRequestDataDto implements ActionRequestDto {
+public class GetPowerQualityProfileRequestDataDto implements ActionRequestDto {
 
-    protected final ObisCodeValuesDto obisCode;
+    protected final String profileType;
     protected final Date beginDate;
     protected final Date endDate;
     protected final ArrayList<CaptureObjectDefinitionDto> selectedValues = new ArrayList<>();
 
     private static final long serialVersionUID = -2483665562035897062L;
 
-    public ProfileGenericDataRequestDataDto(final ObisCodeValuesDto obisCode, final Date beginDate, final Date endDate,
+    public GetPowerQualityProfileRequestDataDto(final String profileType, final Date beginDate, final Date endDate,
             final List<CaptureObjectDefinitionDto> selectedValues) {
-        this.obisCode = obisCode;
+        this.profileType = profileType;
         this.beginDate = new Date(beginDate.getTime());
         this.endDate = new Date(endDate.getTime());
         if (selectedValues != null) {
             this.selectedValues.addAll(selectedValues);
         }
     }
-    
+
     @Override
     public String toString() {
-        return String.format("%s[obisCode=%s, begin=%tF %<tT.%<tL %<tZ, end=%tF %<tT.%<tL %<tZ, selected=%s]",
-                ProfileGenericDataRequestDataDto.class.getSimpleName(), this.obisCode, this.beginDate, this.endDate,
-                this.selectedValues.isEmpty() ? "all capture objects" : this.selectedValues);
+        return String.format("%s[profileType=%s, begin=%tF %<tT.%<tL %<tZ, end=%tF %<tT.%<tL %<tZ, selected=%s]",
+                GetPowerQualityProfileRequestDataDto.class.getSimpleName(), this.profileType, this.beginDate,
+                this.endDate, this.selectedValues.isEmpty() ? "all capture objects" : this.selectedValues);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.obisCode, this.beginDate, this.endDate, this.selectedValues);
+        return Objects.hash(this.profileType, this.beginDate, this.endDate, this.selectedValues);
     }
 
     @Override
@@ -52,17 +52,17 @@ public class ProfileGenericDataRequestDataDto implements ActionRequestDto {
         if (this == obj) {
             return true;
         }
-        if (!(obj instanceof ProfileGenericDataRequestDataDto)) {
+        if (!(obj instanceof GetPowerQualityProfileRequestDataDto)) {
             return false;
         }
-        final ProfileGenericDataRequestDataDto other = (ProfileGenericDataRequestDataDto) obj;
-        return Objects.equals(this.obisCode, other.obisCode) && Objects.equals(this.beginDate, other.beginDate)
+        final GetPowerQualityProfileRequestDataDto other = (GetPowerQualityProfileRequestDataDto) obj;
+        return Objects.equals(this.profileType, other.profileType) && Objects.equals(this.beginDate, other.beginDate)
                 && Objects.equals(this.endDate, other.endDate) && Objects
                 .equals(this.selectedValues, other.selectedValues);
     }
 
-    public ObisCodeValuesDto getObisCode() {
-        return this.obisCode;
+    public String getProfileType() {
+        return this.profileType;
     }
 
     public Date getBeginDate() {

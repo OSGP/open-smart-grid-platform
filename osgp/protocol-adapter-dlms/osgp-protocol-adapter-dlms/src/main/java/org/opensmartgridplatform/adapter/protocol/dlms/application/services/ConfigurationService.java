@@ -22,8 +22,8 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.GetMBusDeviceOnChannelCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.GetMbusEncryptionKeyStatusByChannelCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.GetMbusEncryptionKeyStatusCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.ConfigureDefinableLoadProfileCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.GetAdministrativeStatusCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.GetPowerQualityProfileCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.SetAdministrativeStatusCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.pushsetup.SetPushSetupAlarmCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.pushsetup.SetPushSetupSmsCommandExecutor;
@@ -40,6 +40,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmNotificatio
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementValuesDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagsDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObjectDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.DefinableLoadProfileConfigurationDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GMeterInfoDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetConfigurationObjectResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMBusDeviceOnChannelRequestDataDto;
@@ -47,7 +48,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptio
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusResponseDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GprsOperationModeTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupAlarmDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupSmsDto;
@@ -124,7 +124,7 @@ public class ConfigurationService {
     private GenerateAndReplaceKeyCommandExecutor generateAndReplaceKeyCommandExecutor;
 
     @Autowired
-    private GetPowerQualityProfileCommandExecutor getPowerQualityProfileCommandExecutor;
+    private ConfigureDefinableLoadProfileCommandExecutor configureDefinableLoadProfileCommandExecutor;
 
     @Autowired
     private GetMbusEncryptionKeyStatusCommandExecutor getMbusEncryptionKeyStatusCommandExecutor;
@@ -162,8 +162,8 @@ public class ConfigurationService {
             final SetConfigurationObjectRequestDto setConfigurationObjectRequest) throws ProtocolAdapterException {
 
         // Configuration Object towards the Smart Meter
-        final ConfigurationObjectDto configurationObject = setConfigurationObjectRequest
-                .getSetConfigurationObjectRequestData().getConfigurationObject();
+        final ConfigurationObjectDto configurationObject =
+                setConfigurationObjectRequest.getSetConfigurationObjectRequestData().getConfigurationObject();
 
         final GprsOperationModeTypeDto gprsOperationModeType = configurationObject.getGprsOperationMode();
         final ConfigurationFlagsDto configurationFlags = configurationObject.getConfigurationFlags();
@@ -180,8 +180,8 @@ public class ConfigurationService {
         }
         LOGGER.info(VISUAL_SEPARATOR);
 
-        final AccessResultCode accessResultCode = this.setConfigurationObjectCommandExecutor
-                .execute(conn, device, configurationObject);
+        final AccessResultCode accessResultCode = this.setConfigurationObjectCommandExecutor.execute(conn, device,
+                configurationObject);
         if (!AccessResultCode.SUCCESS.equals(accessResultCode)) {
             throw new ProtocolAdapterException("Set configuration object reported result is: " + accessResultCode);
         }
@@ -193,8 +193,8 @@ public class ConfigurationService {
 
         LOGGER.info("Device for Set Administrative Status is: {}", device);
 
-        final AccessResultCode accessResultCode = this.setAdministrativeStatusCommandExecutor
-                .execute(conn, device, administrativeStatusType);
+        final AccessResultCode accessResultCode = this.setAdministrativeStatusCommandExecutor.execute(conn, device,
+                administrativeStatusType);
         if (AccessResultCode.SUCCESS != accessResultCode) {
             throw new ProtocolAdapterException(
                     "AccessResultCode for set administrative status was not SUCCESS: " + accessResultCode);
@@ -206,8 +206,8 @@ public class ConfigurationService {
 
         LOGGER.info("Alarm Notifications to set on the device: {}", alarmNotifications);
 
-        final AccessResultCode accessResultCode = this.setAlarmNotificationsCommandExecutor
-                .execute(conn, device, alarmNotifications);
+        final AccessResultCode accessResultCode = this.setAlarmNotificationsCommandExecutor.execute(conn, device,
+                alarmNotifications);
         if (AccessResultCode.SUCCESS != accessResultCode) {
             throw new ProtocolAdapterException(
                     "AccessResultCode for set alarm notifications was not SUCCESS: " + accessResultCode);
@@ -233,8 +233,8 @@ public class ConfigurationService {
 
         LOGGER.info("Device for Set M-Bus User Key By Channel is: {}", device);
 
-        final GMeterInfoDto gMeterInfo = this
-                .getMbusKeyExchangeData(conn, device, setMbusUserKeyByChannelRequestDataDto);
+        final GMeterInfoDto gMeterInfo = this.getMbusKeyExchangeData(conn, device,
+                setMbusUserKeyByChannelRequestDataDto);
 
         this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, gMeterInfo);
 
@@ -246,13 +246,13 @@ public class ConfigurationService {
 
         final GetMBusDeviceOnChannelRequestDataDto mbusDeviceOnChannelRequest =
                 new GetMBusDeviceOnChannelRequestDataDto(
-                device.getDeviceIdentification(), setMbusUserKeyByChannelRequestData.getChannel());
-        final ChannelElementValuesDto channelElementValues = this.getMBusDeviceOnChannelCommandExecutor
-                .execute(conn, device, mbusDeviceOnChannelRequest);
+                        device.getDeviceIdentification(), setMbusUserKeyByChannelRequestData.getChannel());
+        final ChannelElementValuesDto channelElementValues = this.getMBusDeviceOnChannelCommandExecutor.execute(conn,
+                device, mbusDeviceOnChannelRequest);
 
-        final DlmsDevice mbusDevice = this.domainHelperService
-                .findMbusDevice(Long.valueOf(channelElementValues.getIdentificationNumber()),
-                        channelElementValues.getManufacturerIdentification());
+        final DlmsDevice mbusDevice = this.domainHelperService.findMbusDevice(
+                Long.valueOf(channelElementValues.getIdentificationNumber()),
+                channelElementValues.getManufacturerIdentification());
 
         return new GMeterInfoDto(setMbusUserKeyByChannelRequestData.getChannel(), mbusDevice.getDeviceIdentification());
     }
@@ -274,8 +274,8 @@ public class ConfigurationService {
 
         LOGGER.info("Push Setup Alarm to set on the device: {}", pushSetupAlarm);
 
-        final AccessResultCode accessResultCode = this.setPushSetupAlarmCommandExecutor
-                .execute(conn, device, pushSetupAlarm);
+        final AccessResultCode accessResultCode = this.setPushSetupAlarmCommandExecutor.execute(conn, device,
+                pushSetupAlarm);
 
         if (AccessResultCode.SUCCESS != accessResultCode) {
             throw new ProtocolAdapterException(
@@ -288,8 +288,8 @@ public class ConfigurationService {
 
         LOGGER.info("Push Setup Sms to set on the device: {}", pushSetupSms);
 
-        final AccessResultCode accessResultCode = this.setPushSetupSmsCommandExecutor
-                .execute(conn, device, pushSetupSms);
+        final AccessResultCode accessResultCode = this.setPushSetupSmsCommandExecutor.execute(conn, device,
+                pushSetupSms);
 
         if (AccessResultCode.SUCCESS != accessResultCode) {
             throw new ProtocolAdapterException(
@@ -358,9 +358,10 @@ public class ConfigurationService {
     }
 
     public void configureDefinableLoadProfile(final DlmsConnectionManager conn, final DlmsDevice device,
-            final GetPowerQualityProfileRequestDto definableLoadProfileConfiguration) throws ProtocolAdapterException {
+            final DefinableLoadProfileConfigurationDto definableLoadProfileConfiguration)
+            throws ProtocolAdapterException {
         try {
-            this.getPowerQualityProfileCommandExecutor.execute(conn, device, definableLoadProfileConfiguration);
+            this.configureDefinableLoadProfileCommandExecutor.execute(conn, device, definableLoadProfileConfiguration);
         } catch (final ProtocolAdapterException e) {
             LOGGER.error("Unexpected exception while configuring definable load profile.", e);
             throw e;
@@ -379,16 +380,16 @@ public class ConfigurationService {
             final GetMbusEncryptionKeyStatusByChannelRequestDataDto getMbusEncryptionKeyStatusByChannelRequest)
             throws OsgpException {
 
-        return this.getMbusEncryptionKeyStatusByChannelCommandExecutor
-                .execute(conn, device, getMbusEncryptionKeyStatusByChannelRequest);
+        return this.getMbusEncryptionKeyStatusByChannelCommandExecutor.execute(conn, device,
+                getMbusEncryptionKeyStatusByChannelRequest);
     }
 
-    public void requestSetRandomizationSettings(final DlmsConnectionManager conn, final DlmsDevice device,
-            final SetRandomisationSettingsRequestDataDto setRandomisationSettingsRequestDataDto)
+    public void requestSetRandomizationSettings(DlmsConnectionManager conn, DlmsDevice device,
+            SetRandomisationSettingsRequestDataDto setRandomisationSettingsRequestDataDto)
             throws ProtocolAdapterException {
 
-        final AccessResultCode accessResultCode = this.setRandomisationSettingsCommandExecutor
-                .execute(conn, device, setRandomisationSettingsRequestDataDto);
+        AccessResultCode accessResultCode = this.setRandomisationSettingsCommandExecutor.execute(conn, device,
+                setRandomisationSettingsRequestDataDto);
 
         if (AccessResultCode.SUCCESS != accessResultCode) {
             throw new ProtocolAdapterException(

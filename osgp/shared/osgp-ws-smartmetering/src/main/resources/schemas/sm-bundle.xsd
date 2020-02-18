@@ -460,7 +460,7 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
-  <xsd:element name="ProfileGenericDataResponse">
+  <xsd:element name="GetPowerQualityProfileResponse">
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension base="smmon:GetPowerQualityProfileResponseData"></xsd:extension>
@@ -522,7 +522,7 @@
         <xsd:element ref="tns:UpdateFirmwareResponse"/>
         <xsd:element ref="tns:AssociationLnObjectsResponse"/>
         <xsd:element ref="tns:GetConfigurationObjectResponse"/>
-        <xsd:element ref="tns:ProfileGenericDataResponse"/>
+        <xsd:element ref="tns:GetPowerQualityProfileResponse"/>
         <xsd:element ref="tns:CoupleMbusDeviceByChannelResponse"/>
         <xsd:element ref="tns:GetMbusEncryptionKeyStatusByChannelResponse"/>
         <xsd:element ref="tns:SetDeviceLifecycleStatusByChannelResponse"/>

@@ -13,7 +13,8 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Moni
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileGenericDataRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigureDefinableLoadProfileRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileRequestDataDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,10 +37,10 @@ public class ProfileGenericDataRequestMessageProcessor extends DeviceRequestMess
     protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException {
 
-        this.assertRequestObjectType(ProfileGenericDataRequestDto.class, requestObject);
+        this.assertRequestObjectType(ConfigureDefinableLoadProfileRequestDto.class, requestObject);
 
-        final ProfileGenericDataRequestDto periodicMeterReadsQuery = (ProfileGenericDataRequestDto) requestObject;
+        final GetPowerQualityProfileRequestDataDto getPowerQualityProfileRequestDataDto = (GetPowerQualityProfileRequestDataDto) requestObject;
 
-        return this.monitoringService.requestProfileGenericData(conn, device, periodicMeterReadsQuery);
+        return this.monitoringService.requestPowerQualityProfile(conn, device, getPowerQualityProfileRequestDataDto);
     }
 }

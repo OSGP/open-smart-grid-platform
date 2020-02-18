@@ -9,7 +9,7 @@ package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
 import java.util.List;
 
-public class ProfileGenericDataResponseDto extends ActionResponseDto {
+public class GetPowerQualityProfileResponseDto extends ActionResponseDto {
 
     private static final long serialVersionUID = -156966569210717654L;
 
@@ -17,7 +17,7 @@ public class ProfileGenericDataResponseDto extends ActionResponseDto {
     private final List<CaptureObjectDto> captureObjects;
     private final List<ProfileEntryDto> profileEntries;
 
-    public ProfileGenericDataResponseDto(final ObisCodeValuesDto logicalName,
+    public GetPowerQualityProfileResponseDto(final ObisCodeValuesDto logicalName,
             final List<CaptureObjectDto> captureObjects, final List<ProfileEntryDto> profileEntries) {
         super();
         this.logicalName = logicalName;

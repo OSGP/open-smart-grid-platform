@@ -14,51 +14,51 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.CaptureObject;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ProfileEntry;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataAsyncRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataAsyncResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileRequestData;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileResponseData;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.helpers.SettingsHelper;
-import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.ProfileGenericDataRequestFactory;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.GetPowerQualityProfileRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.SmartMeteringMonitoringRequestClient;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.SmartMeteringMonitoringResponseClient;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import io.cucumber.java.en.Then;
-import io.cucumber.java.en.When;
-
 public class ProfileGenericDataSteps {
 
     @Autowired
-    private SmartMeteringMonitoringRequestClient<ProfileGenericDataAsyncResponse, ProfileGenericDataRequest> requestClient;
+    private SmartMeteringMonitoringRequestClient<GetPowerQualityProfileAsyncResponse, GetPowerQualityProfileRequestData> requestClient;
 
     @Autowired
-    private SmartMeteringMonitoringResponseClient<ProfileGenericDataResponse, ProfileGenericDataAsyncRequest> responseClient;
+    private SmartMeteringMonitoringResponseClient<GetPowerQualityProfileResponseData, GetPowerQualityProfileAsyncRequest> responseClient;
 
-    @When("^the get profile generic data request is received$")
-    public void theGetProfileGenericDataRequestIsReceived(final Map<String, String> settings) throws Throwable {
+    @When("^the get power quality profile request data is received$")
+    public void theGetProfileGetPowerQualityProfileRequestDataIsReceived(final Map<String, String> settings) throws Throwable {
 
-        final ProfileGenericDataRequest request = ProfileGenericDataRequestFactory.fromParameterMap(settings);
-        final ProfileGenericDataAsyncResponse asyncResponse = this.requestClient.doRequest(request);
+        final GetPowerQualityProfileRequestData request = GetPowerQualityProfileRequestFactory.fromParameterMap(settings);
+        final GetPowerQualityProfileAsyncResponse asyncResponse = this.requestClient.doRequest(request);
 
         assertThat(asyncResponse).as("AsyncResponse should not be null").isNotNull();
         ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
     }
 
-    @Then("^the profile generic data result should be returned$")
-    public void theProfileGenericDataResultShouldBeReturned(final Map<String, String> settings) throws Throwable {
+    @Then("^the power quality profile response data should be returned$")
+    public void theGetPowerQualityProfileResponseDataShouldBeReturned(final Map<String, String> settings) throws Throwable {
 
-        final ProfileGenericDataAsyncRequest asyncRequest = ProfileGenericDataRequestFactory.fromScenarioContext();
+        final GetPowerQualityProfileAsyncRequest asyncRequest = GetPowerQualityProfileRequestFactory.fromScenarioContext();
 
-        final ProfileGenericDataResponse response = this.responseClient.getResponse(asyncRequest);
+        final GetPowerQualityProfileResponseData response = this.responseClient.getResponse(asyncRequest);
         assertThat(response).as("ProfileGenericDataResponse should not be null").isNotNull();
 
         final int expectedNumberOfCaptureObjects = getInteger(settings, "NumberOfCaptureObjects", 0);
-        final List<CaptureObject> actualCaptureObjects = response.getCaptureObjectList().getCaptureObjects();
+        final List<CaptureObject> actualCaptureObjects =
+                response.getPowerQualityProfileData().getCaptureObjectList().getCaptureObjects();
         assertThat(actualCaptureObjects.size()).as("Number of capture objects")
                 .isEqualTo(expectedNumberOfCaptureObjects);
 
@@ -68,7 +68,8 @@ public class ProfileGenericDataSteps {
         }
 
         final int expectedNumberOfProfileEntries = getInteger(settings, "NumberOfProfileEntries", 0);
-        final List<ProfileEntry> actualProfileEntries = response.getProfileEntryList().getProfileEntries();
+        final List<ProfileEntry> actualProfileEntries =
+                response.getPowerQualityProfileData().getProfileEntryList().getProfileEntries();
         assertThat(actualProfileEntries.size()).as("Number of profile entries")
                 .isEqualTo(expectedNumberOfProfileEntries);
 

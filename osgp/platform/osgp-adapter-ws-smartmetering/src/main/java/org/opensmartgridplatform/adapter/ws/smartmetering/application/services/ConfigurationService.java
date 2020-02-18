@@ -16,9 +16,9 @@ import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActivityCalendar;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AdministrativeStatusType;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AlarmNotifications;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DefinableLoadProfileConfigurationData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetConfigurationObjectRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestData;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupAlarm;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupSms;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetClockConfigurationRequestData;
@@ -72,15 +72,15 @@ public class ConfigurationService {
                 "enqueueSetAdministrativeStatus called with organisation {} and device {}, set administrative status "
                         + "to {}", organisationIdentification, deviceIdentification, requestData);
 
-        final String correlationUid = this.correlationIdProviderService
-                .getCorrelationId(organisationIdentification, deviceIdentification);
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, MessageType.SET_ADMINISTRATIVE_STATUS.name(),
                 messagePriority, scheduleTime);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
+                deviceMessageMetadata).request(requestData).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -119,15 +119,15 @@ public class ConfigurationService {
         LOGGER.debug("enqueueGetFirmwareRequest called with organisation {} and device {}", organisationIdentification,
                 deviceIdentification);
 
-        final String correlationUid = this.correlationIdProviderService
-                .getCorrelationId(organisationIdentification, deviceIdentification);
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, MessageType.GET_FIRMWARE_VERSION.name(), messagePriority,
                 scheduleTime);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).build();
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
+                deviceMessageMetadata).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -144,15 +144,15 @@ public class ConfigurationService {
         LOGGER.debug("enqueueUpdateFirmwareRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
 
-        final String correlationUid = this.correlationIdProviderService
-                .getCorrelationId(organisationIdentification, deviceIdentification);
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, MessageType.UPDATE_FIRMWARE.name(), messagePriority,
                 scheduleTime);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(updateFirmwareRequestData).build();
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
+                deviceMessageMetadata).request(updateFirmwareRequestData).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -176,15 +176,15 @@ public class ConfigurationService {
         LOGGER.debug("enqueueGetAdministrativeStatus called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
 
-        final String correlationUid = this.correlationIdProviderService
-                .getCorrelationId(organisationIdentification, deviceIdentification);
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, MessageType.GET_ADMINISTRATIVE_STATUS.name(),
                 messagePriority, scheduleTime);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(AdministrativeStatusType.UNDEFINED).build();
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
+                deviceMessageMetadata).request(AdministrativeStatusType.UNDEFINED).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -200,15 +200,15 @@ public class ConfigurationService {
         LOGGER.debug("enqueueSetSpecialDaysRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
 
-        final String correlationUid = this.correlationIdProviderService
-                .getCorrelationId(organisationIdentification, deviceIdentification);
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, MessageType.SET_SPECIAL_DAYS.name(), messagePriority,
                 scheduleTime);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
+                deviceMessageMetadata).request(requestData).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -224,15 +224,15 @@ public class ConfigurationService {
         LOGGER.debug("enqueueSetConfigurationObjectRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
 
-        final String correlationUid = this.correlationIdProviderService
-                .getCorrelationId(organisationIdentification, deviceIdentification);
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, MessageType.SET_CONFIGURATION_OBJECT.name(),
                 messagePriority, scheduleTime);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
+                deviceMessageMetadata).request(requestData).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -248,15 +248,15 @@ public class ConfigurationService {
         LOGGER.debug("enqueueSetPushSetupAlarmRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
 
-        final String correlationUid = this.correlationIdProviderService
-                .getCorrelationId(organisationIdentification, deviceIdentification);
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, MessageType.SET_PUSH_SETUP_ALARM.name(), messagePriority,
                 scheduleTime);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(pushSetupAlarm).build();
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
+                deviceMessageMetadata).request(pushSetupAlarm).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -272,15 +272,15 @@ public class ConfigurationService {
         LOGGER.debug("enqueueSetPushSetupSmsRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
 
-        final String correlationUid = this.correlationIdProviderService
-                .getCorrelationId(organisationIdentification, deviceIdentification);
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, MessageType.SET_PUSH_SETUP_SMS.name(), messagePriority,
                 scheduleTime);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(pushSetupSms).build();
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
+                deviceMessageMetadata).request(pushSetupSms).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -296,15 +296,15 @@ public class ConfigurationService {
         LOGGER.debug("enqueueSetAlarmNotificationsRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
 
-        final String correlationUid = this.correlationIdProviderService
-                .getCorrelationId(organisationIdentification, deviceIdentification);
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, MessageType.SET_ALARM_NOTIFICATIONS.name(), messagePriority,
                 scheduleTime);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(alarmSwitches).build();
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
+                deviceMessageMetadata).request(alarmSwitches).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -321,15 +321,15 @@ public class ConfigurationService {
         LOGGER.debug("enqueueSetEncryptionKeyExchangeOnGMeterRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
 
-        final String correlationUid = this.correlationIdProviderService
-                .getCorrelationId(organisationIdentification, deviceIdentification);
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, MessageType.SET_ENCRYPTION_KEY_EXCHANGE_ON_G_METER.name(),
                 messagePriority, scheduleTime);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).build();
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
+                deviceMessageMetadata).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -345,15 +345,15 @@ public class ConfigurationService {
         LOGGER.debug("enqueueGetMbusEncryptionKeyStatusRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
 
-        final String correlationUid = this.correlationIdProviderService
-                .getCorrelationId(organisationIdentification, deviceIdentification);
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, MessageType.GET_MBUS_ENCRYPTION_KEY_STATUS.name(),
                 messagePriority, scheduleTime);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).build();
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
+                deviceMessageMetadata).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -370,16 +370,15 @@ public class ConfigurationService {
         LOGGER.debug("enqueueGetMbusEncryptionKeyStatusByChannelRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
 
-        final String correlationUid = this.correlationIdProviderService
-                .getCorrelationId(organisationIdentification, deviceIdentification);
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid,
                 MessageType.GET_MBUS_ENCRYPTION_KEY_STATUS_BY_CHANNEL.name(), messagePriority, scheduleTime);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata)
-                .request(new GetMbusEncryptionKeyStatusByChannelRequestData(channel)).build();
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
+                deviceMessageMetadata).request(new GetMbusEncryptionKeyStatusByChannelRequestData(channel)).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -395,15 +394,15 @@ public class ConfigurationService {
         LOGGER.debug("enqueueSetActivityCalendarRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
 
-        final String correlationUid = this.correlationIdProviderService
-                .getCorrelationId(organisationIdentification, deviceIdentification);
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, MessageType.SET_ACTIVITY_CALENDAR.name(), messagePriority,
                 scheduleTime);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(activityCalendar).build();
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
+                deviceMessageMetadata).request(activityCalendar).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -419,15 +418,15 @@ public class ConfigurationService {
         LOGGER.debug("enqueueReplaceKeysRequest called with organisation {} and device {}", organisationIdentification,
                 deviceIdentification);
 
-        final String correlationUid = this.correlationIdProviderService
-                .getCorrelationId(organisationIdentification, deviceIdentification);
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, MessageType.REPLACE_KEYS.name(), messagePriority,
                 scheduleTime);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(keySet).build();
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
+                deviceMessageMetadata).request(keySet).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -444,15 +443,15 @@ public class ConfigurationService {
         LOGGER.debug("enqueueSetClockConfigurationRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
 
-        final String correlationUid = this.correlationIdProviderService
-                .getCorrelationId(organisationIdentification, deviceIdentification);
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, MessageType.SET_CLOCK_CONFIGURATION.name(), messagePriority,
                 scheduleTime);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(clockConfigurationRequestData).build();
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
+                deviceMessageMetadata).request(clockConfigurationRequestData).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -468,15 +467,15 @@ public class ConfigurationService {
         LOGGER.debug("enqueueGetConfigurationObjectRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
 
-        final String correlationUid = this.correlationIdProviderService
-                .getCorrelationId(organisationIdentification, deviceIdentification);
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, MessageType.GET_CONFIGURATION_OBJECT.name(),
                 messagePriority, scheduleTime);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
+                deviceMessageMetadata).request(requestData).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -513,15 +512,15 @@ public class ConfigurationService {
         LOGGER.debug("Enqueue generate and replace keys request called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
 
-        final String correlationUid = this.correlationIdProviderService
-                .getCorrelationId(organisationIdentification, deviceIdentification);
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, MessageType.GENERATE_AND_REPLACE_KEYS.name(),
                 messagePriority, scheduleTime);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).build();
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
+                deviceMessageMetadata).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -529,7 +528,8 @@ public class ConfigurationService {
     }
 
     public String enqueueConfigureDefinableLoadProfileRequest(final String organisationIdentification,
-            final String deviceIdentification, final GetPowerQualityProfileData getPowerQualityProfileData,
+            final String deviceIdentification,
+            final DefinableLoadProfileConfigurationData definableLoadProfileConfigurationData,
             final int messagePriority, final Long scheduleTime) throws FunctionalException {
 
         checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.CONFIGURE_DEFINABLE_LOAD_PROFILE);
@@ -537,15 +537,15 @@ public class ConfigurationService {
         LOGGER.debug("enqueueConfigureDefinableLoadProfileRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
 
-        final String correlationUid = this.correlationIdProviderService
-                .getCorrelationId(organisationIdentification, deviceIdentification);
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, MessageType.CONFIGURE_DEFINABLE_LOAD_PROFILE.name(),
                 messagePriority, scheduleTime);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(getPowerQualityProfileData).build();
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
+                deviceMessageMetadata).request(definableLoadProfileConfigurationData).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -562,15 +562,15 @@ public class ConfigurationService {
         LOGGER.debug("enqueueSetMbusUserKeyByChannelRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
 
-        final String correlationUid = this.correlationIdProviderService
-                .getCorrelationId(organisationIdentification, deviceIdentification);
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, MessageType.SET_MBUS_USER_KEY_BY_CHANNEL.name(),
                 messagePriority, scheduleTime);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(setMbusUserKeyByChannelRequestData).build();
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
+                deviceMessageMetadata).request(setMbusUserKeyByChannelRequestData).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -586,23 +586,23 @@ public class ConfigurationService {
         LOGGER.debug("enqueueSetRandomisationSettingsRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
 
-        final String correlationUid = this.correlationIdProviderService
-                .getCorrelationId(organisationIdentification, deviceIdentification);
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, MessageType.SET_RANDOMISATION_SETTINGS.name(),
                 messagePriority, scheduleTime);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
+                deviceMessageMetadata).request(requestData).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
     }
 
-    private void checkAllowed(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final DeviceFunction setConfigurationObject)
+    private void checkAllowed(@Identification String organisationIdentification,
+            @Identification String deviceIdentification, DeviceFunction setConfigurationObject)
             throws FunctionalException {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);

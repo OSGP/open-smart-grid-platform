@@ -32,7 +32,7 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetMbusE
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetMbusEncryptionKeyStatusRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetPeriodicMeterReadsGasRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetPeriodicMeterReadsRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetProfileGenericDataRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetPowerQualityProfileRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetSpecificAttributeValueRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ReadAlarmRegisterRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ScanMbusChannelsRequest;
@@ -52,7 +52,6 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetSpeci
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SynchronizeTimeRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.UpdateFirmwareRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Action;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataRequest;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping.AdhocMapper;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping.ConfigurationMapper;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping.InstallationMapper;
@@ -64,6 +63,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualMe
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualMeterReadsRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AdministrativeStatusTypeData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DefinableLoadProfileConfigurationData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FindEventsRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GenerateAndReplaceKeysRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetAdministrativeStatusData;
@@ -73,10 +73,9 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetConfi
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetFirmwareVersionRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusRequestData;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGasRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileGenericDataRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ReadAlarmRegisterData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ScanMbusChannelsRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetAlarmNotificationsRequestData;
@@ -198,8 +197,10 @@ public class ActionMapperService {
                 .put(org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasData.class,
                         this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(GetActualMeterReadsGasRequest.class, this.monitoringMapper);
-        CLASS_TO_MAPPER_MAP.put(ProfileGenericDataRequest.class, this.monitoringMapper);
-        CLASS_TO_MAPPER_MAP.put(GetProfileGenericDataRequest.class, this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(GetPowerQualityProfileRequest.class, this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP
+                .put(org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileRequestData.class,
+                        this.monitoringMapper);
         CLASS_TO_MAPPER_MAP
                 .put(org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ClearAlarmRegisterData.class,
                         this.monitoringMapper);
@@ -364,7 +365,7 @@ public class ActionMapperService {
                         GetConfigurationObjectRequestData.class);
         CLASS_MAP
                 .put(org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.DefinableLoadProfileConfigurationData.class,
-                        GetPowerQualityProfileData.class);
+                        DefinableLoadProfileConfigurationData.class);
         CLASS_MAP
                 .put(org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelRequestData.class,
                         CoupleMbusDeviceByChannelRequestData.class);
@@ -396,9 +397,9 @@ public class ActionMapperService {
         CLASS_MAP.put(GetSpecificAttributeValueRequest.class, SpecificAttributeValueRequestData.class);
         CLASS_MAP.put(SetClockConfigurationRequest.class, SetClockConfigurationRequestData.class);
         CLASS_MAP.put(GetConfigurationObjectRequest.class, GetConfigurationObjectRequestData.class);
-        CLASS_MAP.put(GetProfileGenericDataRequest.class, ProfileGenericDataRequestData.class);
+        CLASS_MAP.put(GetPowerQualityProfileRequest.class, GetPowerQualityProfileRequestData.class);
         CLASS_MAP.put(GenerateAndReplaceKeysRequest.class, GenerateAndReplaceKeysRequestData.class);
-        CLASS_MAP.put(ConfigureDefinableLoadProfileRequest.class, GetPowerQualityProfileData.class);
+        CLASS_MAP.put(ConfigureDefinableLoadProfileRequest.class, DefinableLoadProfileConfigurationData.class);
         CLASS_MAP.put(CoupleMbusDeviceByChannelRequest.class, CoupleMbusDeviceByChannelRequestData.class);
         CLASS_MAP.put(GetMbusEncryptionKeyStatusRequest.class, GetMbusEncryptionKeyStatusRequestData.class);
         CLASS_MAP.put(SetDeviceLifecycleStatusByChannelRequest.class,

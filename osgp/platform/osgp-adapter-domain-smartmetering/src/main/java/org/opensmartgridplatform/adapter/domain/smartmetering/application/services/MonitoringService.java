@@ -19,8 +19,8 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.MeterRea
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileGenericDataRequest;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileRequest;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualMeterReadsQueryDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmRegisterResponseDto;
@@ -32,8 +32,8 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadGasResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileGenericDataRequestDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileGenericDataResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigureDefinableLoadProfileRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ReadAlarmRegisterRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
@@ -327,7 +327,7 @@ public class MonitoringService {
     }
 
     public void requestProfileGenericData(final DeviceMessageMetadata deviceMessageMetadata,
-            final ProfileGenericDataRequest request) throws FunctionalException {
+            final GetPowerQualityProfileRequest request) throws FunctionalException {
 
         LOGGER.info("requestProfileGenericData for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
@@ -335,8 +335,8 @@ public class MonitoringService {
         final SmartMeter smartMeter = this.domainHelperService
                 .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
 
-        final ProfileGenericDataRequestDto requestDto = this.monitoringMapper.map(request,
-                ProfileGenericDataRequestDto.class);
+        final ConfigureDefinableLoadProfileRequestDto requestDto = this.monitoringMapper.map(request,
+                ConfigureDefinableLoadProfileRequestDto.class);
 
         final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
@@ -348,7 +348,7 @@ public class MonitoringService {
 
     public void handleProfileGenericDataResponse(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType deviceResult, final OsgpException exception,
-            final ProfileGenericDataResponseDto profileGenericDataResponseDto) {
+            final GetPowerQualityProfileResponseDto getPowerQualityProfileResponseDto) {
 
         LOGGER.info("handleProfileGenericDataResponse for MessageType: {}", deviceMessageMetadata.getMessageType());
 
@@ -358,8 +358,8 @@ public class MonitoringService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        final ProfileGenericDataResponse profileGenericDataResponse = this.monitoringMapper
-                .map(profileGenericDataResponseDto, ProfileGenericDataResponse.class);
+        final GetPowerQualityProfileResponseData getPowerQualityProfileResponseData = this.monitoringMapper
+                .map(getPowerQualityProfileResponseDto, GetPowerQualityProfileResponseData.class);
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
@@ -367,7 +367,7 @@ public class MonitoringService {
                 .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
                 .withResult(result)
                 .withOsgpException(exception)
-                .withDataObject(profileGenericDataResponse)
+                .withDataObject(getPowerQualityProfileResponseData)
                 .withMessagePriority(deviceMessageMetadata.getMessagePriority())
                 .build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());

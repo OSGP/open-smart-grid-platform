@@ -487,7 +487,7 @@
     <xsd:complexContent>
       <xsd:extension base="common:Query">
         <xsd:sequence>
-          <xsd:element name="ProfileType" type="tns:PowerQualityProfileType"/>
+          <xsd:element name="ProfileType" type="xsd:string"/>
           <xsd:element name="BeginDate" type="xsd:dateTime"/>
           <xsd:element name="EndDate" type="xsd:dateTime"/>
           <xsd:element name="SelectedValues" type="common:CaptureObjectDefinitions" minOccurs="0"/>
@@ -495,13 +495,6 @@
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
-
-  <xsd:simpleType name="PowerQualityProfileType">
-    <xsd:restriction base="xsd:string">
-      <xsd:enumeration value="PUBLIC"/>
-      <xsd:enumeration value="PRIVATE"/>
-    </xsd:restriction>
-  </xsd:simpleType>
 
   <xsd:element name="GetPowerQualityProfileAsyncResponse">
     <xsd:complexType>
@@ -531,13 +524,13 @@
     <xsd:complexContent>
       <xsd:extension base="common:Response">
         <xsd:sequence>
-          <xsd:element name="PowerQualityProfileResponseData" type="tns:PowerQualityProfileResponseData"/>
+          <xsd:element name="PowerQualityProfileData" type="tns:PowerQualityProfileData"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
 
-  <xsd:complexType name="PowerQualityProfileResponseData">
+  <xsd:complexType name="PowerQualityProfileData">
     <xsd:sequence>
       <xsd:element name="LogicalName" type="common:ObisCodeValues"/>
       <xsd:element name="CaptureObjects" type="common:CaptureObjects" minOccurs="1" maxOccurs="1"/>

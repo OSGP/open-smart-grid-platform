@@ -10,7 +10,8 @@ package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 import java.io.Serializable;
 import java.util.List;
 
-public class ProfileGenericData extends ActionResponse implements Serializable {
+// ProfileGenericData
+public class PowerQualityProfileData extends ActionResponse implements Serializable {
 
     private static final long serialVersionUID = -156966569210717657L;
 
@@ -18,7 +19,7 @@ public class ProfileGenericData extends ActionResponse implements Serializable {
     private final List<CaptureObject> captureObjects;
     private final List<ProfileEntry> profileEntries;
 
-    public ProfileGenericData(final ObisCodeValues logicalName, final List<CaptureObject> captureObjects,
+    public PowerQualityProfileData(final ObisCodeValues logicalName, final List<CaptureObject> captureObjects,
             final List<ProfileEntry> profileEntries) {
         super();
         this.logicalName = logicalName;

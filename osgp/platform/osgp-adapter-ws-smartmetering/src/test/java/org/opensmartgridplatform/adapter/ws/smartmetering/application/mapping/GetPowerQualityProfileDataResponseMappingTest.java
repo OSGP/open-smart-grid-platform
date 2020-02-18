@@ -1,9 +1,10 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
@@ -23,12 +24,12 @@ import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpUnitType;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CaptureObject;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ObisCodeValues;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileEntry;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileEntryValue;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse;
 
-public class GetProfileGenericDataResponseMappingTest {
+public class GetPowerQualityProfileDataResponseMappingTest {
 
     private static final String MAPPED_FIELD_VALUE_MESSAGE = "Mapped fields should have the same value.";
     private static final String MAPPED_LIST_SIZE_MESSAGE = "Mapped lists should have the same size.";
@@ -40,13 +41,13 @@ public class GetProfileGenericDataResponseMappingTest {
             final CaptureObject sourceCaptureObject) throws AssertionError {
 
         assertThat(actualCaptureObject.getClassId()).as(MAPPED_FIELD_VALUE_MESSAGE)
-                .isEqualTo(sourceCaptureObject.getClassId());
+                                                    .isEqualTo(sourceCaptureObject.getClassId());
         assertThat(actualCaptureObject.getLogicalName()).as(MAPPED_FIELD_VALUE_MESSAGE)
-                .isEqualTo(sourceCaptureObject.getLogicalName());
-        assertThat(actualCaptureObject.getAttributeIndex().intValue()).as(MAPPED_FIELD_VALUE_MESSAGE)
-                .isEqualTo(sourceCaptureObject.getAttributeIndex());
+                                                        .isEqualTo(sourceCaptureObject.getLogicalName());
+        assertThat(actualCaptureObject.getAttributeIndex().intValue()).as(MAPPED_FIELD_VALUE_MESSAGE).isEqualTo(
+                sourceCaptureObject.getAttributeIndex());
         assertThat(actualCaptureObject.getDataIndex()).as(MAPPED_FIELD_VALUE_MESSAGE)
-                .isEqualTo(sourceCaptureObject.getDataIndex());
+                                                      .isEqualTo(sourceCaptureObject.getDataIndex());
     }
 
     private void assertCaptureObjects(
@@ -85,8 +86,8 @@ public class GetProfileGenericDataResponseMappingTest {
             final org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ProfileEntry actualProfileEntry,
             final ProfileEntry sourceProfileEntry) throws AssertionError {
 
-        assertThat(actualProfileEntry.getProfileEntryValue().size()).as(MAPPED_LIST_SIZE_MESSAGE)
-                .isEqualTo(sourceProfileEntry.getProfileEntryValues().size());
+        assertThat(actualProfileEntry.getProfileEntryValue().size()).as(MAPPED_LIST_SIZE_MESSAGE).isEqualTo(
+                sourceProfileEntry.getProfileEntryValues().size());
         for (int i = 0; i < actualProfileEntry.getProfileEntryValue().size(); i++) {
             this.assertProfileEntryValue(actualProfileEntry.getProfileEntryValue().get(i),
                     sourceProfileEntry.getProfileEntryValues().get(i));
@@ -143,19 +144,20 @@ public class GetProfileGenericDataResponseMappingTest {
         final List<CaptureObject> captureObjects = this.makeCaptureObjects();
         final List<ProfileEntry> profileEntries = this.makeProfileEntries();
 
-        final ProfileGenericDataResponse source = new ProfileGenericDataResponse(obisCode, captureObjects,
-                profileEntries);
+        final GetPowerQualityProfileResponseData source = new GetPowerQualityProfileResponseData(obisCode,
+                captureObjects, profileEntries);
 
         // Act
-        final org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ProfileGenericDataResponse target = this.monitoringMapper
+        final org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetPowerQualityProfileResponse target
+                = this.monitoringMapper
                 .map(source,
-                        org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ProfileGenericDataResponse.class);
+                        org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetPowerQualityProfileResponse.class);
 
         // Assert
-        this.assertObisCode(target.getProfileGenericData().getLogicalName(), obisCode);
-        this.assertCaptureObjects(target.getProfileGenericData().getCaptureObjectList().getCaptureObjects(),
+        this.assertObisCode(target.getPowerQualityProfileData().getLogicalName(), obisCode);
+        this.assertCaptureObjects(target.getPowerQualityProfileData().getCaptureObjectList().getCaptureObjects(),
                 captureObjects);
-        this.assertProfileEntries(target.getProfileGenericData().getProfileEntryList().getProfileEntries(),
+        this.assertProfileEntries(target.getPowerQualityProfileData().getProfileEntryList().getProfileEntries(),
                 profileEntries);
 
     }

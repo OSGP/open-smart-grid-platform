@@ -25,24 +25,24 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CaptureO
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.OsgpUnit;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileEntry;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileEntryValue;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileResponseData;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CaptureObjectDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ObisCodeValuesDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryValueDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileGenericDataResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileResponseDto;
 
-public class ProfileGenericDataResponseMappingTest {
+public class PowerQualityProfileDataResponseMappingTest {
 
     private final MonitoringMapper mapper = new MonitoringMapper();
 
     @Test
     public void testConvertProfileGenericDataResponseDto() {
-        final ProfileGenericDataResponseDto dto = this.makeProfileGenericDataResponseDto();
-        final ProfileGenericDataResponse result = this.mapper.map(dto, ProfileGenericDataResponse.class);
+        final GetPowerQualityProfileResponseDto dto = this.makeProfileGenericDataResponseDto();
+        final GetPowerQualityProfileResponseData result = this.mapper.map(dto, GetPowerQualityProfileResponseData.class);
         assertThat(result).withFailMessage("mapping ProfileGenericDataResponse should not return null").isNotNull();
         assertThat(result).withFailMessage("mapping ProfileGenericDataResponse should return correct type")
-                .isOfAnyClassIn(ProfileGenericDataResponse.class);
+                .isOfAnyClassIn(GetPowerQualityProfileResponseData.class);
     }
 
     @Test
@@ -69,8 +69,8 @@ public class ProfileGenericDataResponseMappingTest {
                 .isOfAnyClassIn(ProfileEntry.class);
     }
 
-    private ProfileGenericDataResponseDto makeProfileGenericDataResponseDto() {
-        final ProfileGenericDataResponseDto dto = new ProfileGenericDataResponseDto(this.obisCodeDto(),
+    private GetPowerQualityProfileResponseDto makeProfileGenericDataResponseDto() {
+        final GetPowerQualityProfileResponseDto dto = new GetPowerQualityProfileResponseDto(this.obisCodeDto(),
                 this.makeCaptureObjectsDto(), this.makeProfileEntryDtoList());
         return dto;
     }

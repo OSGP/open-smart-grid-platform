@@ -16,14 +16,14 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileEntryValue;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileResponseData;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CaptureObjectDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ObisCodeValuesDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryValueDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileGenericDataResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileResponseDto;
 
-public class ProfileGenericDataResponseMapperTest {
+public class PowerQualityProfileDataResponseMapperTest {
 
     private final MonitoringMapper mapper = new MonitoringMapper();
 
@@ -32,8 +32,8 @@ public class ProfileGenericDataResponseMapperTest {
 
     @Test
     public void testConvertProfileGenericDataResponseVo() {
-        final ProfileGenericDataResponseDto responseDto = this.makeResponseDto();
-        final ProfileGenericDataResponse responseVo = this.mapper.map(responseDto, ProfileGenericDataResponse.class);
+        final GetPowerQualityProfileResponseDto responseDto = this.makeResponseDto();
+        final GetPowerQualityProfileResponseData responseVo = this.mapper.map(responseDto, GetPowerQualityProfileResponseData.class);
         assertThat(responseVo).withFailMessage("response object should not be null").isNotNull();
 
         assertThat(responseVo.getProfileEntries().get(0).getProfileEntryValues().size())
@@ -49,10 +49,10 @@ public class ProfileGenericDataResponseMapperTest {
         }
     }
 
-    private ProfileGenericDataResponseDto makeResponseDto() {
+    private GetPowerQualityProfileResponseDto makeResponseDto() {
         final ObisCodeValuesDto obisCodeValuesDto = new ObisCodeValuesDto((byte) 1, (byte) 1, (byte) 1, (byte) 1,
                 (byte) 1, (byte) 1);
-        final ProfileGenericDataResponseDto result = new ProfileGenericDataResponseDto(obisCodeValuesDto,
+        final GetPowerQualityProfileResponseDto result = new GetPowerQualityProfileResponseDto(obisCodeValuesDto,
                 this.makeCaptureObjectDtos(), this.makeProfileEntryDtos());
         return result;
     }

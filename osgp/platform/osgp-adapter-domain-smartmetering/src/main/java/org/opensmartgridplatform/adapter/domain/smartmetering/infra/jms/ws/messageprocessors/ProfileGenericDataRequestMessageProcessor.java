@@ -9,7 +9,7 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.mess
 
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.MonitoringService;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.BaseRequestMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileGenericDataRequest;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileRequest;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
@@ -35,7 +35,7 @@ public class ProfileGenericDataRequestMessageProcessor extends BaseRequestMessag
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
             throws FunctionalException {
 
-        final ProfileGenericDataRequest periodicMeterReadsRequest = (ProfileGenericDataRequest) dataObject;
+        final GetPowerQualityProfileRequest periodicMeterReadsRequest = (GetPowerQualityProfileRequest) dataObject;
 
         this.monitoringService.requestProfileGenericData(deviceMessageMetadata, periodicMeterReadsRequest);
     }

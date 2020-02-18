@@ -15,7 +15,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CaptureObjectDefinition;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DefinableLoadProfileConfigurationData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ObisCodeValues;
 
 public class GetPowerQualityProfileDataMappingTest {
@@ -148,8 +148,8 @@ public class GetPowerQualityProfileDataMappingTest {
         final org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.DefinableLoadProfileConfigurationData wsDefinableLoadProfileConfigurationData = this
                 .newDefinableLoadProfileConfigurationData();
 
-        final GetPowerQualityProfileData definableLoadProfileConfigurationData = this.configurationMapper
-                .map(wsDefinableLoadProfileConfigurationData, GetPowerQualityProfileData.class);
+        final DefinableLoadProfileConfigurationData definableLoadProfileConfigurationData = this.configurationMapper
+                .map(wsDefinableLoadProfileConfigurationData, DefinableLoadProfileConfigurationData.class);
 
         assertThat(definableLoadProfileConfigurationData)
                 .as("Result of mapping DefinableLoadProfileConfigurationData must not be null").isNotNull();
@@ -171,8 +171,8 @@ public class GetPowerQualityProfileDataMappingTest {
         final org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.DefinableLoadProfileConfigurationData wsDefinableLoadProfileConfigurationData = this
                 .newDefinableLoadProfileConfigurationDataCaptureObjectsOnly();
 
-        final GetPowerQualityProfileData definableLoadProfileConfigurationData = this.configurationMapper
-                .map(wsDefinableLoadProfileConfigurationData, GetPowerQualityProfileData.class);
+        final DefinableLoadProfileConfigurationData definableLoadProfileConfigurationData = this.configurationMapper
+                .map(wsDefinableLoadProfileConfigurationData, DefinableLoadProfileConfigurationData.class);
 
         assertThat(definableLoadProfileConfigurationData)
                 .as("Result of mapping DefinableLoadProfileConfigurationData must not be null").isNotNull();
@@ -192,8 +192,8 @@ public class GetPowerQualityProfileDataMappingTest {
         final org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.DefinableLoadProfileConfigurationData wsDefinableLoadProfileConfigurationData = this
                 .newDefinableLoadProfileConfigurationDataCapturePeriodOnly();
 
-        final GetPowerQualityProfileData definableLoadProfileConfigurationData = this.configurationMapper
-                .map(wsDefinableLoadProfileConfigurationData, GetPowerQualityProfileData.class);
+        final DefinableLoadProfileConfigurationData definableLoadProfileConfigurationData = this.configurationMapper
+                .map(wsDefinableLoadProfileConfigurationData, DefinableLoadProfileConfigurationData.class);
 
         assertThat(definableLoadProfileConfigurationData)
                 .as("Result of mapping DefinableLoadProfileConfigurationData must not be null").isNotNull();

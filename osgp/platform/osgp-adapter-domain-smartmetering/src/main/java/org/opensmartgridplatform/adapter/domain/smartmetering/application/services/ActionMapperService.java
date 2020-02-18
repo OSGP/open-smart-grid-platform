@@ -34,6 +34,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.BundleMe
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ClearAlarmRegisterData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DefinableLoadProfileConfigurationData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FindEventsRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GenerateAndReplaceKeysRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetAdministrativeStatusData;
@@ -43,11 +44,10 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetConfi
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetFirmwareVersionRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusRequestData;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.MbusActionRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGasRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileGenericDataRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ReadAlarmRegisterData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ScanMbusChannelsRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetAlarmNotificationsRequestData;
@@ -59,7 +59,6 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeysR
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetPushSetupAlarmRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetPushSetupSmsRequestData;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomisationSettingsRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecialDaysRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecificAttributeValueRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SynchronizeTimeRequestData;
@@ -75,6 +74,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.AdministrativeSt
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.BundleMessagesRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClearAlarmRegisterRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestDataDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.DefinableLoadProfileConfigurationDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FindEventsRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GenerateAndReplaceKeysRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetAdministrativeStatusDataDto;
@@ -84,9 +84,8 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetConfiguration
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusRequestDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDataDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileGenericDataRequestDataDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ReadAlarmRegisterDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ScanMbusChannelsRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetAlarmNotificationsRequestDto;
@@ -97,7 +96,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeysRequestDt
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetPushSetupAlarmRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetPushSetupSmsRequestDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetRandomisationSettingsRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecificAttributeValueRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
@@ -171,9 +169,9 @@ public class ActionMapperService {
         CLASS_MAP.put(CoupleMbusDeviceRequestData.class, GetAssociationLnObjectsRequestDto.class);
         CLASS_MAP.put(SetClockConfigurationRequestData.class, SetClockConfigurationRequestDto.class);
         CLASS_MAP.put(GetConfigurationObjectRequestData.class, GetConfigurationObjectRequestDataDto.class);
-        CLASS_MAP.put(ProfileGenericDataRequestData.class, ProfileGenericDataRequestDataDto.class);
+        CLASS_MAP.put(GetPowerQualityProfileRequestData.class, GetPowerQualityProfileRequestDataDto.class);
         CLASS_MAP.put(GenerateAndReplaceKeysRequestData.class, GenerateAndReplaceKeysRequestDataDto.class);
-        CLASS_MAP.put(GetPowerQualityProfileData.class, GetPowerQualityProfileRequestDto.class);
+        CLASS_MAP.put(DefinableLoadProfileConfigurationData.class, DefinableLoadProfileConfigurationDto.class);
         CLASS_MAP.put(SetMbusUserKeyByChannelRequestData.class, SetMbusUserKeyByChannelRequestDataDto.class);
         CLASS_MAP.put(CoupleMbusDeviceByChannelRequestData.class, CoupleMbusDeviceByChannelRequestDataDto.class);
         CLASS_MAP.put(GetMbusEncryptionKeyStatusRequestData.class, GetMbusEncryptionKeyStatusRequestDto.class);
@@ -183,7 +181,6 @@ public class ActionMapperService {
         CLASS_MAP.put(SetDeviceLifecycleStatusByChannelRequestData.class,
                 SetDeviceLifecycleStatusByChannelRequestDataDto.class);
         CLASS_MAP.put(ScanMbusChannelsRequestData.class, ScanMbusChannelsRequestDataDto.class);
-        CLASS_MAP.put(SetRandomisationSettingsRequestData.class, SetRandomisationSettingsRequestDataDto.class);
     }
 
     /**
@@ -192,8 +189,8 @@ public class ActionMapperService {
     @PostConstruct
     private void postConstruct() {
 
-        CUSTOM_CONVERTER_FOR_CLASS
-                .put(PeriodicMeterReadsGasRequestData.class, this.periodicReadsRequestGasDataConverter);
+        CUSTOM_CONVERTER_FOR_CLASS.put(PeriodicMeterReadsGasRequestData.class,
+                this.periodicReadsRequestGasDataConverter);
         CUSTOM_CONVERTER_FOR_CLASS.put(ActualMeterReadsGasRequestData.class, this.actualReadsRequestGasDataConverter);
         CUSTOM_CONVERTER_FOR_CLASS.put(SetEncryptionKeyExchangeOnGMeterRequestData.class,
                 this.setEncryptionKeyExchangeOnGMeterDataConverter);
@@ -219,9 +216,9 @@ public class ActionMapperService {
         CLASS_TO_MAPPER_MAP.put(GetAssociationLnObjectsRequestData.class, this.commonMapper);
         CLASS_TO_MAPPER_MAP.put(SetClockConfigurationRequestData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(GetConfigurationObjectRequestData.class, this.commonMapper);
-        CLASS_TO_MAPPER_MAP.put(ProfileGenericDataRequestData.class, this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(GetPowerQualityProfileRequestData.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(GenerateAndReplaceKeysRequestData.class, this.configurationMapper);
-        CLASS_TO_MAPPER_MAP.put(GetPowerQualityProfileData.class, this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(DefinableLoadProfileConfigurationData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(SetMbusUserKeyByChannelRequestData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(CoupleMbusDeviceByChannelRequestData.class, this.commonMapper);
         CLASS_TO_MAPPER_MAP.put(GetMbusEncryptionKeyStatusRequestData.class, this.configurationMapper);
@@ -229,11 +226,10 @@ public class ActionMapperService {
         CLASS_TO_MAPPER_MAP.put(GetMbusEncryptionKeyStatusByChannelRequestData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(SetDeviceLifecycleStatusByChannelRequestData.class, this.managementMapper);
         CLASS_TO_MAPPER_MAP.put(ScanMbusChannelsRequestData.class, this.configurationMapper);
-        CLASS_TO_MAPPER_MAP.put(SetRandomisationSettingsRequestData.class, this.configurationMapper);
     }
 
-    BundleMessagesRequestDto mapAllActions(final BundleMessageRequest bundleMessageRequest, final SmartMeter smartMeter)
-            throws FunctionalException {
+    public BundleMessagesRequestDto mapAllActions(final BundleMessageRequest bundleMessageRequest,
+            final SmartMeter smartMeter) throws FunctionalException {
 
         final List<ActionDto> actionValueObjectDtoList = new ArrayList<>();
 
@@ -243,13 +239,12 @@ public class ActionMapperService {
         return new BundleMessagesRequestDto(actionValueObjectDtoList);
     }
 
-    private ActionDto mapActionWithMapper(final SmartMeter smartMeter, final ActionRequest action)
-            throws FunctionalException {
+    private ActionDto mapActionWithMapper(final SmartMeter smartMeter, final ActionRequest action) throws FunctionalException {
         @SuppressWarnings("unchecked")
         // TODO: fix this
         final CustomValueToDtoConverter<ActionRequest, ActionRequestDto> customValueToDtoConverter =
-                (CustomValueToDtoConverter<ActionRequest, ActionRequestDto>) CUSTOM_CONVERTER_FOR_CLASS
-                .get(action.getClass());
+                (CustomValueToDtoConverter<ActionRequest, ActionRequestDto>) CUSTOM_CONVERTER_FOR_CLASS.get(
+                        action.getClass());
 
         if (customValueToDtoConverter != null) {
             return new ActionDto(customValueToDtoConverter.convert(action, smartMeter));
@@ -265,13 +260,14 @@ public class ActionMapperService {
         if (mapper != null) {
             return this.mapActionWithMapper(smartMeter, action, clazz, mapper);
         } else {
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.DOMAIN_SMART_METERING,
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
+                    ComponentType.DOMAIN_SMART_METERING,
                     new AssertionError(String.format("No mapper defined for class: %s", clazz.getName())));
         }
     }
 
-    private ActionDto mapActionWithMapper(final SmartMeter smartMeter, final ActionRequest action,
-            final Class<? extends ActionRequestDto> clazz, final ConfigurableMapper mapper) throws FunctionalException {
+    private ActionDto mapActionWithMapper(final SmartMeter smartMeter, final ActionRequest action, final Class<? extends ActionRequestDto> clazz,
+            final ConfigurableMapper mapper) throws FunctionalException {
         if (action instanceof MbusActionRequest) {
             this.verifyAndFindChannelForMbusRequest((MbusActionRequest) action, smartMeter);
         }

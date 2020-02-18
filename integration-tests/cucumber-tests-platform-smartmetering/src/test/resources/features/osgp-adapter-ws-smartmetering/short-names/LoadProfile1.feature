@@ -37,7 +37,7 @@ Feature: SmartMetering short names - Load profile 1
       | Port                 |              1026 |
       | Hls5active           | false             |
       | Lls1active           | true              |
-    When the get profile generic data request is received
+    When the get power quality profile request data is received
       | DeviceIdentification | TEST1024000000005 |
       | ClassId              |                 7 |
       | ObisCodeA            |                 1 |
@@ -49,7 +49,7 @@ Feature: SmartMetering short names - Load profile 1
       | Attribute            |                 2 |
       | BeginDate            | 2015-09-06T23:59  |
       | EndDate              | 2015-09-08T00:01  |
-    Then the profile generic data result should be returned
+    Then the power quality profile response data should be returned
       | DeviceIdentification           | TEST1024000000005 |
       | Result                         | OK                |
       | NumberOfProfileEntries         |               289 |

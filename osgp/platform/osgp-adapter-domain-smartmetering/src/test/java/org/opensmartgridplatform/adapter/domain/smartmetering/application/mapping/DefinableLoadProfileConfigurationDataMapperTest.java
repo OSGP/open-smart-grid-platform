@@ -1,10 +1,9 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping;
 
@@ -15,12 +14,13 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CaptureObjectDefinition;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DefinableLoadProfileConfigurationData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ObisCodeValues;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CaptureObjectDefinitionDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.DefinableLoadProfileConfigurationDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ObisCodeValuesDto;
 
-public class GetPowerQualityProfileRequestDataMapperTest {
+public class DefinableLoadProfileConfigurationDataMapperTest {
 
     private static final Long CAPTURE_PERIOD = 86400L;
 
@@ -50,31 +50,36 @@ public class GetPowerQualityProfileRequestDataMapperTest {
 
     @Test
     public void testDefinableLoadProfileConfigurationMapping() {
-        final GetPowerQualityProfileData definableLoadProfileConfigurationData = this
+        final DefinableLoadProfileConfigurationData definableLoadProfileConfigurationData = this
                 .newDefinableLoadProfileConfigurationData();
 
-        final GetPowerQualityProfileData definableLoadProfileConfigurationDto = this.mapper
-                .map(definableLoadProfileConfigurationData, GetPowerQualityProfileData.class);
+        final DefinableLoadProfileConfigurationDto definableLoadProfileConfigurationDto = this.mapper
+                .map(definableLoadProfileConfigurationData, DefinableLoadProfileConfigurationDto.class);
 
         assertThat(definableLoadProfileConfigurationDto)
                 .withFailMessage("Result of mapping DefinableLoadProfileConfigurationData must not be null")
                 .isNotNull();
 
-        assertThat(definableLoadProfileConfigurationDto.hasCaptureObjects()).withFailMessage(
-                "DefinableLoadProfileConfigurationDto should have capture objects: "
-                        + definableLoadProfileConfigurationDto).isTrue();
+        assertThat(definableLoadProfileConfigurationDto.hasCaptureObjects())
+                .withFailMessage("DefinableLoadProfileConfigurationDto should have capture objects: "
+                        + definableLoadProfileConfigurationDto)
+                .isTrue();
 
         this.assertCaptureObjects(definableLoadProfileConfigurationDto.getCaptureObjects());
-        assertThat(definableLoadProfileConfigurationDto.hasCapturePeriod()).withFailMessage(
-                "DefinableLoadProfileConfigurationDto should have a capture period: "
-                        + definableLoadProfileConfigurationDto).isTrue();
+        assertThat(definableLoadProfileConfigurationDto.hasCapturePeriod())
+                .withFailMessage("DefinableLoadProfileConfigurationDto should have a capture period: "
+                        + definableLoadProfileConfigurationDto)
+                .isTrue();
 
         assertThat(definableLoadProfileConfigurationDto.getCapturePeriod())
-                .withFailMessage("DefinableLoadProfileConfigurationDto capture period").isEqualTo(CAPTURE_PERIOD);
+                .withFailMessage("DefinableLoadProfileConfigurationDto capture period")
+                .isEqualTo(CAPTURE_PERIOD);
     }
 
-    private GetPowerQualityProfileData newDefinableLoadProfileConfigurationData() {
-        return new GetPowerQualityProfileData(this.newCaptureObjects(), CAPTURE_PERIOD);
+    private DefinableLoadProfileConfigurationData newDefinableLoadProfileConfigurationData() {
+        final DefinableLoadProfileConfigurationData definableLoadProfileConfigurationData = new DefinableLoadProfileConfigurationData(
+                this.newCaptureObjects(), CAPTURE_PERIOD);
+        return definableLoadProfileConfigurationData;
     }
 
     private List<CaptureObjectDefinition> newCaptureObjects() {
@@ -90,7 +95,7 @@ public class GetPowerQualityProfileRequestDataMapperTest {
         return captureObjects;
     }
 
-    private void assertCaptureObjects(final List<CaptureObjectDefinition> captureObjects) {
+    private void assertCaptureObjects(final List<CaptureObjectDefinitionDto> captureObjects) {
         assertThat(captureObjects).withFailMessage("Capture objects").isNotNull();
         assertThat(captureObjects.size()).withFailMessage("Number of capture objects")
                                          .isEqualTo(NUMBER_OF_CAPTURE_OBJECTS);

@@ -11,9 +11,9 @@ import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ProfileGenericDataResponseMessageProcessor extends DomainResponseMessageProcessor {
+public class GetPowerQualityProfileResponseMessageProcessor extends DomainResponseMessageProcessor {
 
-    protected ProfileGenericDataResponseMessageProcessor() {
+    protected GetPowerQualityProfileResponseMessageProcessor() {
         super(MessageType.GET_PROFILE_GENERIC_DATA);
     }
 

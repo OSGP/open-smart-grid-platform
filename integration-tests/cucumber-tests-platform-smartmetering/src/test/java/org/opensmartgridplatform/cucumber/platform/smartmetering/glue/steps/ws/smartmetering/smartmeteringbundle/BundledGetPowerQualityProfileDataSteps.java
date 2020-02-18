@@ -13,43 +13,42 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetProfileGenericDataRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ProfileGenericDataResponse;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetPowerQualityProfileRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetPowerQualityProfileResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.CaptureObject;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ProfileEntry;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Response;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ProfileGenericData;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PowerQualityProfileData;
 import org.opensmartgridplatform.cucumber.platform.helpers.SettingsHelper;
-import org.opensmartgridplatform.cucumber.platform.smartmetering.builders.GetProfileGenericDataRequestBuilder;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.builders.GetPowerQualityProfileRequestBuilder;
 
-import io.cucumber.java.en.Given;
-import io.cucumber.java.en.Then;
+public class BundledGetPowerQualityProfileDataSteps extends BaseBundleSteps {
 
-public class BundledGetProfileGenericDataSteps extends BaseBundleSteps {
-
-    @Given("^the bundle request contains a get profile generic data action with parameters$")
-    public void theBundleRequestContainsAGetProfileGenericDataAction(final Map<String, String> parameters)
+    @Given("^the bundle request contains a get power quality profile request action with parameters$")
+    public void theBundleRequestContainsAGetPowerQualityProfileRequestAction(final Map<String, String> parameters)
             throws Throwable {
 
-        final GetProfileGenericDataRequest action = new GetProfileGenericDataRequestBuilder()
+        final GetPowerQualityProfileRequest action = new GetPowerQualityProfileRequestBuilder()
                 .fromParameterMap(parameters).build();
 
         this.addActionToBundleRequest(action);
     }
 
-    @Then("^the bundle response should contain a profile generic data response with values$")
-    public void theBundleResponseShouldContainAProfileGenericDataResponse(final Map<String, String> values)
+    @Then("^the bundle response should contain a power quality profile response with values$")
+    public void theBundleResponseShouldContainAGetPowerQualityProfileResponse(final Map<String, String> values)
             throws Throwable {
 
         final Response response = this.getNextBundleResponse();
 
-        assertThat(response instanceof ProfileGenericDataResponse).as("Not a valid response").isTrue();
+        assertThat(response instanceof GetPowerQualityProfileResponse).as("Not a valid response").isTrue();
 
-        final ProfileGenericDataResponse profileGenericDataResponse = (ProfileGenericDataResponse) response;
-        final ProfileGenericData profileGenericData = profileGenericDataResponse.getProfileGenericData();
+        final GetPowerQualityProfileResponse getPowerQualityProfileResponse = (GetPowerQualityProfileResponse) response;
+        final PowerQualityProfileData powerQualityProfileData = getPowerQualityProfileResponse.getPowerQualityProfileData();
 
-        this.assertEqualCaptureObjects(profileGenericData.getCaptureObjectList().getCaptureObjects(), values);
-        this.assertEqualProfileEntries(profileGenericData.getProfileEntryList().getProfileEntries(), values);
+        this.assertEqualCaptureObjects(powerQualityProfileData.getCaptureObjectList().getCaptureObjects(), values);
+        this.assertEqualProfileEntries(powerQualityProfileData.getProfileEntryList().getProfileEntries(), values);
     }
 
     private void assertEqualCaptureObjects(final List<CaptureObject> actualCaptureObjects,

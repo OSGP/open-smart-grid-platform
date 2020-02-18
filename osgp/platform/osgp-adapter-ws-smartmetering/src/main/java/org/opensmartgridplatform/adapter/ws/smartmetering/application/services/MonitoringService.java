@@ -18,8 +18,8 @@ import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualMeterReadsQuery;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ClearAlarmRegisterRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileGenericDataRequest;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileRequest;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
@@ -134,7 +134,7 @@ public class MonitoringService {
     }
 
     public String enqueueProfileGenericDataRequestData(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final ProfileGenericDataRequest requestData,
+            @Identification final String deviceIdentification, final GetPowerQualityProfileRequest requestData,
             final int messagePriority, final Long scheduleTime) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
@@ -161,7 +161,7 @@ public class MonitoringService {
     }
 
     public ResponseData dequeueProfileGenericDataResponse(final String correlationUid) throws CorrelationUidException {
-        return this.responseDataService.dequeue(correlationUid, ProfileGenericDataResponse.class,
+        return this.responseDataService.dequeue(correlationUid, GetPowerQualityProfileResponseData.class,
                 ComponentType.WS_SMART_METERING);
     }
 

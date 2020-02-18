@@ -1,17 +1,17 @@
 @SmartMetering @Platform
-Feature: SmartMetering Bundle - GetProfileGenericData
+Feature: SmartMetering Bundle - GetPowerQualityProfile
   As a grid operator
-  I want to be able to retrieve profile generic data from a meter via a bundle request
+  I want to be able to retrieve power quality profile data from a meter via a bundle request
 
   Background: 
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
 
-  Scenario: Retrieve profile generic data as part of a bundled request
+  Scenario: Retrieve power quality profile data as part of a bundled request
     Given a bundle request
       | DeviceIdentification | TEST1024000000001   |
-    And the bundle request contains a get profile generic data action with parameters
+    And the bundle request contains a get power quality profile request action with parameters
       | ObisCodeA            |                   1 |
       | ObisCodeB            |                   0 |
       | ObisCodeC            |                  99 |
@@ -21,7 +21,7 @@ Feature: SmartMetering Bundle - GetProfileGenericData
       | BeginDate            | 2015-01-01 00:00:00 |
       | EndDate              | 2017-01-10 00:00:00 |
     When the bundle request is received
-    Then the bundle response should contain a profile generic data response with values
+    Then the bundle response should contain a power quality profile response with values
       | DeviceIdentification           | TEST1024000000001 |
       | NumberOfCaptureObjects         |                 4 |
       | CaptureObject_ClassId_1        |                 8 |

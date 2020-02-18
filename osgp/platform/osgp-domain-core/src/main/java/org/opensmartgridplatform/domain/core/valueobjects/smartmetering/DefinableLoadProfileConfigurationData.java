@@ -1,10 +1,9 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
@@ -19,14 +18,15 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 
-public class GetPowerQualityProfileData implements Serializable, ActionRequest {
+public class DefinableLoadProfileConfigurationData implements Serializable, ActionRequest {
 
     private static final long serialVersionUID = -2735837696949265144L;
 
     private final List<CaptureObjectDefinition> captureObjects = new ArrayList<>();
     private final Long capturePeriod;
 
-    public GetPowerQualityProfileData(final List<CaptureObjectDefinition> captureObjects, final Long capturePeriod) {
+    public DefinableLoadProfileConfigurationData(final List<CaptureObjectDefinition> captureObjects,
+            final Long capturePeriod) {
         if (captureObjects != null) {
             this.captureObjects.addAll(captureObjects);
         }
@@ -54,7 +54,7 @@ public class GetPowerQualityProfileData implements Serializable, ActionRequest {
         if (!(this.hasCaptureObjects() || this.hasCapturePeriod())) {
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.DOMAIN_SMART_METERING,
                     new OsgpException(ComponentType.DOMAIN_SMART_METERING,
-                            "Some attribute has to be given a non-null value configuring the power quality profile."));
+                            "Some attribute has to be given a non-null value configuring the definable load profile."));
         }
     }
 
@@ -65,7 +65,7 @@ public class GetPowerQualityProfileData implements Serializable, ActionRequest {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("PowerQualityProfile[");
+        final StringBuilder sb = new StringBuilder("DefinableLoadProfile[");
         if (this.hasCaptureObjects()) {
             sb.append("captureObjects=").append(this.captureObjects);
         }
@@ -85,11 +85,11 @@ public class GetPowerQualityProfileData implements Serializable, ActionRequest {
         if (this == obj) {
             return true;
         }
-        if (!(obj instanceof GetPowerQualityProfileData)) {
+        if (!(obj instanceof DefinableLoadProfileConfigurationData)) {
             return false;
         }
-        final GetPowerQualityProfileData other = (GetPowerQualityProfileData) obj;
-        return Objects.equals(this.captureObjects, other.captureObjects) && Objects
-                .equals(this.capturePeriod, other.capturePeriod);
+        final DefinableLoadProfileConfigurationData other = (DefinableLoadProfileConfigurationData) obj;
+        return Objects.equals(this.captureObjects, other.captureObjects)
+                && Objects.equals(this.capturePeriod, other.capturePeriod);
     }
 }

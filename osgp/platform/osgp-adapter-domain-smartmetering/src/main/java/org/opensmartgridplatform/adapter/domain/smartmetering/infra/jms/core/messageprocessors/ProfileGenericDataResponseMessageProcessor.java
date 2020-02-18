@@ -10,7 +10,7 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.me
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.MonitoringService;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileGenericDataResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
@@ -41,20 +41,20 @@ public class ProfileGenericDataResponseMessageProcessor extends OsgpCoreResponse
     @Override
     protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
         final Object dataObject = responseMessage.getDataObject();
-        return dataObject instanceof ProfileGenericDataResponseDto;
+        return dataObject instanceof GetPowerQualityProfileResponseDto;
     }
 
     @Override
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessage responseMessage, final OsgpException osgpException) throws FunctionalException {
 
-        if (responseMessage.getDataObject() instanceof ProfileGenericDataResponseDto) {
+        if (responseMessage.getDataObject() instanceof GetPowerQualityProfileResponseDto) {
 
-            final ProfileGenericDataResponseDto profileGenericDataResponseDto = (ProfileGenericDataResponseDto) responseMessage
+            final GetPowerQualityProfileResponseDto getPowerQualityProfileResponseDto = (GetPowerQualityProfileResponseDto) responseMessage
                     .getDataObject();
 
             this.monitoringService.handleProfileGenericDataResponse(deviceMessageMetadata, responseMessage.getResult(),
-                    osgpException, profileGenericDataResponseDto);
+                    osgpException, getPowerQualityProfileResponseDto);
         } else {
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
                     ComponentType.DOMAIN_SMART_METERING, new OsgpException(ComponentType.DOMAIN_SMART_METERING,

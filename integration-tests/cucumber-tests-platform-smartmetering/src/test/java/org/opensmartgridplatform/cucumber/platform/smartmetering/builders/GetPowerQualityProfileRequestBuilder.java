@@ -6,23 +6,23 @@ import java.util.Map;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetProfileGenericDataRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetPowerQualityProfileRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.CaptureObjectDefinitions;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ObisCodeValues;
 import org.opensmartgridplatform.cucumber.platform.helpers.DateConverter;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.ObisCodeValuesFactory;
 
-public class GetProfileGenericDataRequestBuilder {
+public class GetPowerQualityProfileRequestBuilder {
 
     private static String DATE_FORMAT = "yyyy-MM-dd hh:mm:ss";
 
-    private ObisCodeValues obisCodeValues;
+    private String profileType;
     private XMLGregorianCalendar beginDate;
     private XMLGregorianCalendar endDate;
     private CaptureObjectDefinitions selectedValues;
 
-    public GetProfileGenericDataRequestBuilder fromParameterMap(final Map<String, String> parameterMap)
+    public GetPowerQualityProfileRequestBuilder fromParameterMap(final Map<String, String> parameterMap)
             throws ParseException {
 
         final SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
@@ -31,34 +31,34 @@ public class GetProfileGenericDataRequestBuilder {
                 .createXMLGregorianCalendar(sdf.parse(parameterMap.get(PlatformSmartmeteringKeys.KEY_BEGIN_DATE)));
         this.endDate = DateConverter
                 .createXMLGregorianCalendar(sdf.parse(parameterMap.get(PlatformSmartmeteringKeys.KEY_END_DATE)));
-        this.obisCodeValues = ObisCodeValuesFactory.fromParameterMap(parameterMap);
+        this.profileType = parameterMap.get(PlatformSmartmeteringKeys.KEY_POWER_QUALITY_PROFILE_TYPE);
 
         return this;
     }
 
-    public GetProfileGenericDataRequestBuilder withObisCodeValues(final ObisCodeValues obisCodeValues) {
-        this.obisCodeValues = obisCodeValues;
+    public GetPowerQualityProfileRequestBuilder withProfileType(final String profileType) {
+        this.profileType = profileType;
         return this;
     }
 
-    public GetProfileGenericDataRequestBuilder withBeginDate(final XMLGregorianCalendar beginDate) {
+    public GetPowerQualityProfileRequestBuilder withBeginDate(final XMLGregorianCalendar beginDate) {
         this.beginDate = beginDate;
         return this;
     }
 
-    public GetProfileGenericDataRequestBuilder withEndDate(final XMLGregorianCalendar endDate) {
+    public GetPowerQualityProfileRequestBuilder withEndDate(final XMLGregorianCalendar endDate) {
         this.endDate = endDate;
         return this;
     }
 
-    public GetProfileGenericDataRequestBuilder withSelectedValues(final CaptureObjectDefinitions selectedValues) {
+    public GetPowerQualityProfileRequestBuilder withSelectedValues(final CaptureObjectDefinitions selectedValues) {
         this.selectedValues = selectedValues;
         return this;
     }
 
-    public GetProfileGenericDataRequest build() {
-        final GetProfileGenericDataRequest request = new GetProfileGenericDataRequest();
-        request.setObisCode(this.obisCodeValues);
+    public GetPowerQualityProfileRequest build() {
+        final  GetPowerQualityProfileRequest request = new  GetPowerQualityProfileRequest();
+        request.setProfileType(this.profileType);
         request.setBeginDate(this.beginDate);
         request.setEndDate(this.endDate);
         request.setSelectedValues(this.selectedValues);

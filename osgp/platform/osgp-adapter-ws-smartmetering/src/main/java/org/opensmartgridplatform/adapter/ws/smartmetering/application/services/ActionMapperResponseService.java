@@ -57,7 +57,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.MeterRea
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.MeterReadsGas;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ScanMbusChannelsResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.UpdateFirmwareResponse;
@@ -111,7 +111,7 @@ public class ActionMapperResponseService {
         CLASS_TO_MAPPER_MAP.put(UpdateFirmwareResponse.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(AssociationLnObjectsResponseData.class, this.adhocMapper);
         CLASS_TO_MAPPER_MAP.put(GetConfigurationObjectResponse.class, this.configurationMapper);
-        CLASS_TO_MAPPER_MAP.put(ProfileGenericDataResponse.class, this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(GetPowerQualityProfileResponseData.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(CoupleMbusDeviceByChannelResponse.class, this.installationMapper);
         CLASS_TO_MAPPER_MAP.put(GetMbusEncryptionKeyStatusResponseData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(GetMbusEncryptionKeyStatusByChannelResponseData.class, this.configurationMapper);
@@ -143,8 +143,8 @@ public class ActionMapperResponseService {
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.AssociationLnObjectsResponse.class);
         CLASS_MAP.put(GetConfigurationObjectResponse.class,
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetConfigurationObjectResponse.class);
-        CLASS_MAP.put(ProfileGenericDataResponse.class,
-                org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ProfileGenericDataResponse.class);
+        CLASS_MAP.put(GetPowerQualityProfileResponseData.class,
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetPowerQualityProfileResponse.class);
         CLASS_MAP.put(CoupleMbusDeviceByChannelResponse.class,
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.CoupleMbusDeviceByChannelResponse.class);
         CLASS_MAP.put(GetMbusEncryptionKeyStatusResponseData.class, GetMbusEncryptionKeyStatusResponse.class);
