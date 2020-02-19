@@ -273,7 +273,7 @@ public class AuthorizePlatformFunctionsSteps {
         final UpdateKeyRequest request = new UpdateKeyRequest();
         request.setDeviceIdentification(getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION,
                 PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
-        request.setProtocolInfoId(PlatformCommonDefaults.DEFAULT_PROTOCOL_INFO_ID);
+        request.setProtocolInfoId(PlatformCommonDefaults.NON_EXISTENT_PROTOCOL_INFO_ID);
         request.setPublicKey(PlatformCommonDefaults.DEFAULT_PUBLIC_KEY);
 
         ScenarioContext.current()

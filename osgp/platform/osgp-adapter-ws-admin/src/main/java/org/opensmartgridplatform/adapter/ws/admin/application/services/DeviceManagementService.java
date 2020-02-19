@@ -9,6 +9,7 @@ package org.opensmartgridplatform.adapter.ws.admin.application.services;
 
 import java.util.List;
 
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceException;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
@@ -435,7 +436,10 @@ public class DeviceManagementService {
 
             final DeviceAuthorization authorization = ssld.addAuthorization(organisation, DeviceFunctionGroup.OWNER);
 
-            this.protocolRepository.findById(protocolInfoId).ifPresent(ssld::updateProtocol);
+            final ProtocolInfo protocolInfo = this.protocolRepository.findById(protocolInfoId)
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            "No protocol info record found with ID: " + protocolInfoId));
+            ssld.updateProtocol(protocolInfo);
 
             this.authorizationRepository.save(authorization);
         }

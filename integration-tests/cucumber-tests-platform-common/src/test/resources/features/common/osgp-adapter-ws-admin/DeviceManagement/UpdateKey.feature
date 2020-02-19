@@ -13,10 +13,11 @@ Feature: AdminDeviceManagement Update Key
     Then the update key response contains
       | DeviceIdentification | TEST1024000000001 |
 
-  Scenario: Update Key with unknown device identification
+  Scenario: Receive update key request containing invalid protocol info ID for unknown device
     When receiving an update key request
       | DeviceIdentification | TEST1024000000002 |
       | PublicKey            | abcdef123456      |
+      | ProtocolInfoId       | -1                |
     Then the update key response contains soap fault
       | FaultCode    | SOAP-ENV:Server                                                       |
       | FaultString  | org.opensmartgridplatform.shared.exceptionhandling.TechnicalException |
