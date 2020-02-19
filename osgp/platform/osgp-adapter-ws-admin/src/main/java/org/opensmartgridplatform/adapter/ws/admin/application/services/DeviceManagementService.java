@@ -118,10 +118,10 @@ public class DeviceManagementService {
     }
 
     public void addOrganisation(@Identification final String organisationIdentification,
-            @Valid final Organisation newOrganisation) throws FunctionalException {
+            @Valid @NotNull final Organisation newOrganisation) throws FunctionalException {
 
         LOGGER.debug("addOrganisation called with organisation {} and new organisation {}", organisationIdentification,
-                newOrganisation != null ? newOrganisation.getOrganisationIdentification() : "null");
+                newOrganisation.getOrganisationIdentification());
 
         final Organisation organisation = this.findOrganisation(organisationIdentification);
 
@@ -435,8 +435,7 @@ public class DeviceManagementService {
 
             final DeviceAuthorization authorization = ssld.addAuthorization(organisation, DeviceFunctionGroup.OWNER);
 
-            final ProtocolInfo protocolInfo = this.protocolRepository.findById(protocolInfoId).get();
-            ssld.updateProtocol(protocolInfo);
+            this.protocolRepository.findById(protocolInfoId).ifPresent(ssld::updateProtocol);
 
             this.authorizationRepository.save(authorization);
         }
