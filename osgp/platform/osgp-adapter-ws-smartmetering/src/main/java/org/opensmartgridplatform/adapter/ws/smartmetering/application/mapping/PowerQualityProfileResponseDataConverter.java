@@ -20,18 +20,21 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ObisCode
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ProfileEntries;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ProfileEntry;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ProfileEntryValue;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PowerQualityProfileData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PowerQualityProfileData;
 
-public class PowerQualityProfileDataConverter extends
-        CustomConverter<org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PowerQualityProfileData,
-                PowerQualityProfileData> {
+public class PowerQualityProfileResponseDataConverter extends
+        CustomConverter<PowerQualityProfileData,
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PowerQualityProfileData> {
 
     @Override
-    public PowerQualityProfileData convert(
-            org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PowerQualityProfileData source,
-            Type<? extends PowerQualityProfileData> type, MappingContext mappingContext) {
+    public org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PowerQualityProfileData convert(
+            final PowerQualityProfileData source,
+            final Type<?
+                    extends org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PowerQualityProfileData> destinationType,
+            final MappingContext mappingContext) {
 
-        final PowerQualityProfileData result = new PowerQualityProfileData();
+        final org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PowerQualityProfileData result =
+                new org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PowerQualityProfileData();
         result.setLogicalName(this.mapperFacade.map(source.getLogicalName(), ObisCodeValues.class));
 
         final CaptureObjects captureObjects = new CaptureObjects();
@@ -46,7 +49,7 @@ public class PowerQualityProfileDataConverter extends
         return result;
     }
 
-    private List<ProfileEntry> mapProfileEntries(final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PowerQualityProfileData source) {
+    private List<ProfileEntry> mapProfileEntries(final PowerQualityProfileData source) {
         final List<ProfileEntry> result = new ArrayList<>();
         for (final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileEntry profileEntryValuesVo : source
                 .getProfileEntries()) {

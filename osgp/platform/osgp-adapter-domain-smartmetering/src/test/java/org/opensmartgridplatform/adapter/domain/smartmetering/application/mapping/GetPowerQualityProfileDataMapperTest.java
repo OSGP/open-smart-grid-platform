@@ -1,9 +1,10 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping;
 
@@ -28,7 +29,8 @@ public class GetPowerQualityProfileDataMapperTest {
     public void shouldConvertValueObjectToDto() {
         final GetPowerQualityProfileRequestData source = new GetPowerQualityProfileRequestData("PUBLIC",
                 BEGIN_DATE.toDate(), END_DATE.toDate());
-        final GetPowerQualityProfileRequestDataDto result = this.mapper.map(source, GetPowerQualityProfileRequestDataDto.class);
+        final GetPowerQualityProfileRequestDataDto result = this.mapper
+                .map(source, GetPowerQualityProfileRequestDataDto.class);
 
         assertThat(result.getBeginDate()).withFailMessage(MAPPED_FIELD_VALUE_MESSAGE).isEqualTo(BEGIN_DATE.toDate());
         assertThat(result.getEndDate()).withFailMessage(MAPPED_FIELD_VALUE_MESSAGE).isEqualTo(END_DATE.toDate());

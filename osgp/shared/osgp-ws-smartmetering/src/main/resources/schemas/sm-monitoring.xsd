@@ -524,7 +524,9 @@
     <xsd:complexContent>
       <xsd:extension base="common:Response">
         <xsd:sequence>
-          <xsd:element name="PowerQualityProfileData" type="tns:PowerQualityProfileData"/>
+          <xsd:element name="PowerQualityProfileDatas" type="tns:PowerQualityProfileData"
+                       minOccurs="1"
+                       maxOccurs="2"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>

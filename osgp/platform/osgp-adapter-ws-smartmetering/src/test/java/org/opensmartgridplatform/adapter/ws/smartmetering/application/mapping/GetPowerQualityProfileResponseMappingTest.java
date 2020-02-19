@@ -14,6 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -24,17 +25,18 @@ import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpUnitType;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CaptureObject;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileResponseData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ObisCodeValues;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PowerQualityProfileData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileEntry;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileEntryValue;
 
-public class GetPowerQualityProfileDataResponseMappingTest {
+public class GetPowerQualityProfileResponseMappingTest {
 
     private static final String MAPPED_FIELD_VALUE_MESSAGE = "Mapped fields should have the same value.";
     private static final String MAPPED_LIST_SIZE_MESSAGE = "Mapped lists should have the same size.";
 
-    private MonitoringMapper monitoringMapper = new MonitoringMapper();
+    private final MonitoringMapper monitoringMapper = new MonitoringMapper();
 
     private void assertCaptureObject(
             final org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.CaptureObject actualCaptureObject,
@@ -138,14 +140,17 @@ public class GetPowerQualityProfileDataResponseMappingTest {
     }
 
     @Test
-    public void shouldConvertProfileGenericDataResponse() {
+    public void shouldConvertGetPowerQualityProfileResponse() {
         // Arrange
         final ObisCodeValues obisCode = this.makeObisCode();
         final List<CaptureObject> captureObjects = this.makeCaptureObjects();
         final List<ProfileEntry> profileEntries = this.makeProfileEntries();
 
-        final GetPowerQualityProfileResponseData source = new GetPowerQualityProfileResponseData(obisCode,
-                captureObjects, profileEntries);
+        final PowerQualityProfileData responseData = new PowerQualityProfileData(obisCode, captureObjects,
+                profileEntries);
+
+        final GetPowerQualityProfileResponse source = new GetPowerQualityProfileResponse(
+                Collections.singletonList(responseData));
 
         // Act
         final org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetPowerQualityProfileResponse target
@@ -154,11 +159,12 @@ public class GetPowerQualityProfileDataResponseMappingTest {
                         org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetPowerQualityProfileResponse.class);
 
         // Assert
-        this.assertObisCode(target.getPowerQualityProfileData().getLogicalName(), obisCode);
-        this.assertCaptureObjects(target.getPowerQualityProfileData().getCaptureObjectList().getCaptureObjects(),
-                captureObjects);
-        this.assertProfileEntries(target.getPowerQualityProfileData().getProfileEntryList().getProfileEntries(),
-                profileEntries);
+        final org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PowerQualityProfileData mappedResponseData = target
+                .getPowerQualityProfileDatas().get(0);
+
+        this.assertObisCode(mappedResponseData.getLogicalName(), obisCode);
+        this.assertCaptureObjects(mappedResponseData.getCaptureObjectList().getCaptureObjects(), captureObjects);
+        this.assertProfileEntries(mappedResponseData.getProfileEntryList().getProfileEntries(), profileEntries);
 
     }
 }

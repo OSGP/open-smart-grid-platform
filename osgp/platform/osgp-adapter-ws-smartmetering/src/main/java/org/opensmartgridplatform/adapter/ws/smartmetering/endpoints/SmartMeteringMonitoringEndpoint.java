@@ -239,9 +239,9 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
             asyncResponse = gas
                     ? new org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ObjectFactory()
-                            .createActualMeterReadsGasAsyncResponse()
+                    .createActualMeterReadsGasAsyncResponse()
                     : new org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ObjectFactory()
-                            .createActualMeterReadsAsyncResponse();
+                    .createActualMeterReadsAsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
             asyncResponse.setDeviceIdentification(deviceIdentification);
             this.responseUrlService.saveResponseUrlIfNeeded(correlationUid, responseUrl);
@@ -409,7 +409,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
                             GetPowerQualityProfileRequest.class);
 
             final int msgPrio = MessagePriorityEnum.getMessagePriority(messagePriority);
-            final String correlationUid = this.monitoringService.enqueueProfileGenericDataRequestData(
+            final String correlationUid = this.monitoringService.enqueueGetPowerQualityProfileRequest(
                     organisationIdentification, request.getDeviceIdentification(), dataRequest, msgPrio,
                     this.monitoringMapper.map(scheduleTime, Long.class));
 
@@ -438,7 +438,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
         GetPowerQualityProfileResponse response = null;
         try {
             final ResponseData responseData = this.monitoringService
-                    .dequeueProfileGenericDataResponse(request.getCorrelationUid());
+                    .dequeueGetPowerQualityProfileDataResponseData(request.getCorrelationUid());
 
             this.throwExceptionIfResultNotOk(responseData, "retrieving power quality profile");
 

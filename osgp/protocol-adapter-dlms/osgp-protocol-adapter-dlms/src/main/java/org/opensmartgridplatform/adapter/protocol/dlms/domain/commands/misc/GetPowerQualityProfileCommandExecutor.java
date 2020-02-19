@@ -30,7 +30,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractC
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ScalerUnitInfo;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CaptureObjectDefinitionDto;
@@ -39,18 +38,19 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemObjectDefinitionDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DlmsMeterValueDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DlmsUnitTypeDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileRequestDataDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.PowerQualityProfileDataDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileResponseDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ObisCodeValuesDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryValueDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileRequestDataDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileResponseDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component()
 public class GetPowerQualityProfileCommandExecutor
-        extends AbstractCommandExecutor<GetPowerQualityProfileRequestDataDto, GetPowerQualityProfileResponseDto> {
+        extends AbstractCommandExecutor<GetPowerQualityProfileRequestDataDto, GetPowerQualityProfileResponseDataDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPowerQualityProfileCommandExecutor.class);
 
@@ -85,43 +85,54 @@ public class GetPowerQualityProfileCommandExecutor
     }
 
     @Override
-    public GetPowerQualityProfileResponseDto execute(final DlmsConnectionManager conn, final DlmsDevice device,
+    public GetPowerQualityProfileResponseDataDto execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final GetPowerQualityProfileRequestDataDto getPowerQualityProfileRequestDataDto)
             throws ProtocolAdapterException {
 
-        LOGGER.info("executing GetPowerQualityProfileResponseDto for {}",
-                getPowerQualityProfileRequestDataDto.getProfileType());
+        final String profileType = getPowerQualityProfileRequestDataDto.getProfileType();
 
-        final ObisCodeValuesDto obisCodeValues = determineProfileForDevice(device);
-        final ObisCode obisCode = this.makeObisCode(obisCodeValues);
-        final DateTime beginDateTime = new DateTime(getPowerQualityProfileRequestDataDto.getBeginDate());
-        final DateTime endDateTime = new DateTime(getPowerQualityProfileRequestDataDto.getEndDate());
-        final List<CaptureObjectDefinitionDto> selectedValues = getPowerQualityProfileRequestDataDto
-                .getSelectedValues();
+        LOGGER.info("executing GetPowerQualityProfileResponseDto for {}", profileType);
 
-        LOGGER.info("Retrieving profile generic data for {}, from: {}, to: {}, selected values: {}", obisCodeValues,
-                beginDateTime, endDateTime, selectedValues.isEmpty() ? "all capture objects" : selectedValues);
+        final List<ObisCodeValuesDto> obisCodeValuesDtos = determineProfileForDevice(profileType);
 
-        final List<GetResult> captureObjects = this.retrieveCaptureObjects(conn, device, obisCode);
-        final List<ScalerUnitInfo> scalerUnitInfos = this.retrieveScalerUnits(conn, device, captureObjects);
-        final List<GetResult> bufferList = this
-                .retrieveBuffer(conn, device, obisCode, beginDateTime, endDateTime, selectedValues);
-        return this.processData(obisCodeValues, captureObjects, scalerUnitInfos, selectedValues,
-                device.isSelectiveAccessSupported(), bufferList);
+        final GetPowerQualityProfileResponseDataDto response = new GetPowerQualityProfileResponseDataDto();
+
+        for (final ObisCodeValuesDto obisCodeValues : obisCodeValuesDtos) {
+
+            final ObisCode obisCode = this.makeObisCode(obisCodeValues);
+            final DateTime beginDateTime = new DateTime(getPowerQualityProfileRequestDataDto.getBeginDate());
+            final DateTime endDateTime = new DateTime(getPowerQualityProfileRequestDataDto.getEndDate());
+            final List<CaptureObjectDefinitionDto> selectedValues = getPowerQualityProfileRequestDataDto
+                    .getSelectedValues();
+
+            LOGGER.info("Retrieving power quality data for {}, from: {}, to: {}, selected values: {}", obisCodeValues,
+                    beginDateTime, endDateTime, selectedValues.isEmpty() ? "all capture objects" : selectedValues);
+
+            final List<GetResult> captureObjects = this.retrieveCaptureObjects(conn, device, obisCode);
+            final List<ScalerUnitInfo> scalerUnitInfos = this.retrieveScalerUnits(conn, device, captureObjects);
+            final List<GetResult> bufferList = this
+                    .retrieveBuffer(conn, device, obisCode, beginDateTime, endDateTime, selectedValues);
+
+            final PowerQualityProfileDataDto responseDataDto = this
+                    .processData(obisCodeValues, captureObjects, scalerUnitInfos, selectedValues,
+                            device.isSelectiveAccessSupported(), bufferList);
+
+            response.addResponseData(responseDataDto);
+        }
+
+        return response;
     }
 
-    private ObisCodeValuesDto determineProfileForDevice(final DlmsDevice device) {
+    private List<ObisCodeValuesDto> determineProfileForDevice(final String profileType) {
 
-        final Protocol protocol = Protocol.forDevice(device);
-
-        switch (protocol) {
-        case DSMR_4_2_2:
-            return OBIS_CODE_DEFINABLE_LOAD_PROFILE;
-        case SMR_5_0:
-        case SMR_5_1:
-            return OBIS_CODE_PROFILE_2;
+        switch (profileType) {
+        case "PUBLIC":
+            return Arrays.asList(OBIS_CODE_DEFINABLE_LOAD_PROFILE, OBIS_CODE_PROFILE_2);
+        case "PRIVATE":
+            return Arrays.asList(OBIS_CODE_PROFILE_1, OBIS_CODE_PROFILE_2);
         default:
-            throw new IllegalArgumentException("Device has unknown protocol " + protocol);
+            throw new IllegalArgumentException(
+                    "GetPowerQualityProfile: an unknown profileType was requested: " + profileType);
         }
     }
 
@@ -149,7 +160,7 @@ public class GetPowerQualityProfileCommandExecutor
      * Process data Add units to capture objects Calculate the proper values in
      * the buffer using the scaler
      */
-    private GetPowerQualityProfileResponseDto processData(final ObisCodeValuesDto obisCode,
+    private PowerQualityProfileDataDto processData(final ObisCodeValuesDto obisCode,
             final List<GetResult> captureObjects, final List<ScalerUnitInfo> scalerUnitInfos,
             final List<CaptureObjectDefinitionDto> selectedValues, final boolean isSelectingValuesSupported,
             final List<GetResult> bufferList) throws ProtocolAdapterException {
@@ -159,7 +170,7 @@ public class GetPowerQualityProfileCommandExecutor
         final List<CaptureObjectDto> captureObjectDtos = this
                 .makeCaptureObjects(captureObjects, scalerUnitInfos, selectedValues, isSelectingValuesSupported);
         final List<ProfileEntryDto> profileEntryDtos = this.makeProfileEntries(bufferList, scalerUnitInfos);
-        return new GetPowerQualityProfileResponseDto(obisCode, captureObjectDtos, profileEntryDtos);
+        return new PowerQualityProfileDataDto(obisCode, captureObjectDtos, profileEntryDtos);
     }
 
     private List<ProfileEntryDto> makeProfileEntries(final List<GetResult> bufferList,

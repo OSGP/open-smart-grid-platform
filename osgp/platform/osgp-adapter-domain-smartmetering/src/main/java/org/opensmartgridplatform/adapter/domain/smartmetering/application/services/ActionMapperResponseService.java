@@ -1,9 +1,10 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
@@ -32,7 +33,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetAllAt
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetConfigurationObjectResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusResponseData;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileResponseData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.MeterReads;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.MeterReadsGas;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainer;
@@ -53,7 +54,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetAllAttributeV
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetConfigurationObjectResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusResponseDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileResponseDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MeterReadsGasResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MeterReadsResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadGasResponseDto;
@@ -84,8 +85,8 @@ public class ActionMapperResponseService {
     @Autowired
     private CommonMapper commonMapper;
 
-    private static Map<Class<? extends ActionResponseDto>, ConfigurableMapper> classToMapperMap = new HashMap<>();
-    private static Map<Class<? extends ActionResponseDto>, Class<? extends ActionResponse>> classMap = new HashMap<>();
+    private static final Map<Class<? extends ActionResponseDto>, ConfigurableMapper> classToMapperMap = new HashMap<>();
+    private static final Map<Class<? extends ActionResponseDto>, Class<? extends ActionResponse>> classMap = new HashMap<>();
 
     /**
      * Specifies to which core value object the DTO object needs to be mapped.
@@ -105,7 +106,7 @@ public class ActionMapperResponseService {
         classMap.put(UpdateFirmwareResponseDto.class, UpdateFirmwareResponse.class);
         classMap.put(AssociationLnObjectsResponseDto.class, AssociationLnObjectsResponseData.class);
         classMap.put(GetConfigurationObjectResponseDto.class, GetConfigurationObjectResponse.class);
-        classMap.put(GetPowerQualityProfileResponseDto.class, GetPowerQualityProfileResponseData.class);
+        classMap.put(GetPowerQualityProfileResponseDataDto.class, GetPowerQualityProfileResponse.class);
         classMap.put(CoupleMbusDeviceByChannelResponseDto.class, CoupleMbusDeviceByChannelResponse.class);
         classMap.put(GetMbusEncryptionKeyStatusResponseDto.class, GetMbusEncryptionKeyStatusResponseData.class);
         classMap.put(GetMbusEncryptionKeyStatusByChannelResponseDto.class,
@@ -134,7 +135,7 @@ public class ActionMapperResponseService {
         classToMapperMap.put(UpdateFirmwareResponseDto.class, this.configurationMapper);
         classToMapperMap.put(AssociationLnObjectsResponseDto.class, this.commonMapper);
         classToMapperMap.put(GetConfigurationObjectResponseDto.class, this.configurationMapper);
-        classToMapperMap.put(GetPowerQualityProfileResponseDto.class, this.monitoringMapper);
+        classToMapperMap.put(GetPowerQualityProfileResponseDataDto.class, this.monitoringMapper);
         classToMapperMap.put(CoupleMbusDeviceByChannelResponseDto.class, this.commonMapper);
         classToMapperMap.put(GetMbusEncryptionKeyStatusResponseDto.class, this.configurationMapper);
         classToMapperMap.put(GetMbusEncryptionKeyStatusByChannelResponseDto.class, this.configurationMapper);
@@ -166,10 +167,9 @@ public class ActionMapperResponseService {
 
         if (actionValueResponseObject == null) {
             throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
-                    ComponentType.DOMAIN_SMART_METERING,
-                    new RuntimeException(
-                            "No Action Value Response Object for Action Value Response DTO Object of class: "
-                                    + action.getClass().getName()));
+                    ComponentType.DOMAIN_SMART_METERING, new RuntimeException(
+                    "No Action Value Response Object for Action Value Response DTO Object of class: " + action
+                            .getClass().getName()));
         }
         return actionValueResponseObject;
     }
@@ -179,10 +179,9 @@ public class ActionMapperResponseService {
 
         if (clazz == null) {
             throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
-                    ComponentType.DOMAIN_SMART_METERING,
-                    new RuntimeException(
-                            "No Action Value Response Object class for Action Value Response DTO Object class: "
-                                    + action.getClass().getName()));
+                    ComponentType.DOMAIN_SMART_METERING, new RuntimeException(
+                    "No Action Value Response Object class for Action Value Response DTO Object class: " + action
+                            .getClass().getName()));
         }
         return clazz;
     }
@@ -193,7 +192,7 @@ public class ActionMapperResponseService {
         if (mapper == null) {
             throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
                     ComponentType.DOMAIN_SMART_METERING, new RuntimeException(
-                            "No mapper for Action Value Response DTO Object class: " + action.getClass().getName()));
+                    "No mapper for Action Value Response DTO Object class: " + action.getClass().getName()));
         }
         return mapper;
     }

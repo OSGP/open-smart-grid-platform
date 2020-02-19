@@ -46,7 +46,7 @@ public class GetGetPowerQualityProfileRequestMappingTest {
 
     @Test
     @Disabled
-    public void shouldConvertGetProfileGenericDataRequest() {
+    public void shouldConvertGetPowerQualityProfileRequest() {
         final GetPowerQualityProfileRequest source = this.makeRequest();
         final GetPowerQualityProfileRequestData result = this.mapper
                 .map(source, GetPowerQualityProfileRequestData.class);

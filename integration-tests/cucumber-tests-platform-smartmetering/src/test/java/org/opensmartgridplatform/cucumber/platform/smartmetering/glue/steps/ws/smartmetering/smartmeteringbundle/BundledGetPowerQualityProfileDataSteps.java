@@ -1,9 +1,10 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringbundle;
 
@@ -20,6 +21,7 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetPower
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.CaptureObject;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ProfileEntry;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Response;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileResponseData;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PowerQualityProfileData;
 import org.opensmartgridplatform.cucumber.platform.helpers.SettingsHelper;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.builders.GetPowerQualityProfileRequestBuilder;
@@ -45,7 +47,8 @@ public class BundledGetPowerQualityProfileDataSteps extends BaseBundleSteps {
         assertThat(response instanceof GetPowerQualityProfileResponse).as("Not a valid response").isTrue();
 
         final GetPowerQualityProfileResponse getPowerQualityProfileResponse = (GetPowerQualityProfileResponse) response;
-        final PowerQualityProfileData powerQualityProfileData = getPowerQualityProfileResponse.getPowerQualityProfileData();
+        final PowerQualityProfileData powerQualityProfileData = getPowerQualityProfileResponse
+                .getPowerQualityProfileDatas().get(0);
 
         this.assertEqualCaptureObjects(powerQualityProfileData.getCaptureObjectList().getCaptureObjects(), values);
         this.assertEqualProfileEntries(powerQualityProfileData.getProfileEntryList().getProfileEntries(), values);
@@ -54,11 +57,11 @@ public class BundledGetPowerQualityProfileDataSteps extends BaseBundleSteps {
     private void assertEqualCaptureObjects(final List<CaptureObject> actualCaptureObjects,
             final Map<String, String> expectedValues) throws AssertionError {
 
-        final int expectedNumberOfCaptureObjects = SettingsHelper.getIntegerValue(expectedValues,
-                "NumberOfCaptureObjects");
+        final int expectedNumberOfCaptureObjects = SettingsHelper
+                .getIntegerValue(expectedValues, "NumberOfCaptureObjects");
 
         assertThat(actualCaptureObjects.size()).as("Number of capture objects")
-                .isEqualTo(expectedNumberOfCaptureObjects);
+                                               .isEqualTo(expectedNumberOfCaptureObjects);
 
         for (int i = 0; i < expectedNumberOfCaptureObjects; i++) {
             final CaptureObject actualCaptureObject = actualCaptureObjects.get(i);
@@ -70,21 +73,21 @@ public class BundledGetPowerQualityProfileDataSteps extends BaseBundleSteps {
             final Map<String, String> expectedValues, final int index) throws AssertionError {
         final Long expectedClassId = SettingsHelper.getLongValue(expectedValues, "CaptureObject_ClassId", index);
         assertThat(Long.valueOf(actualCaptureObject.getClassId())).as("ClassId of CaptureObject " + index)
-                .isEqualTo(expectedClassId);
+                                                                  .isEqualTo(expectedClassId);
 
-        final String expectedLogicalName = SettingsHelper.getStringValue(expectedValues, "CaptureObject_LogicalName",
-                index);
+        final String expectedLogicalName = SettingsHelper
+                .getStringValue(expectedValues, "CaptureObject_LogicalName", index);
         assertThat(actualCaptureObject.getLogicalName()).as("LogicalName of CaptureObject " + index)
-                .isEqualTo(expectedLogicalName);
+                                                        .isEqualTo(expectedLogicalName);
 
-        final BigInteger expectedAttributeIndex = SettingsHelper.getBigIntegerValue(expectedValues,
-                "CaptureObject_AttributeIndex", index);
+        final BigInteger expectedAttributeIndex = SettingsHelper
+                .getBigIntegerValue(expectedValues, "CaptureObject_AttributeIndex", index);
         assertThat(actualCaptureObject.getAttributeIndex()).as("AttributeIndex of CaptureObject " + index)
-                .isEqualTo(expectedAttributeIndex);
+                                                           .isEqualTo(expectedAttributeIndex);
 
         final Long expectedDataIndex = SettingsHelper.getLongValue(expectedValues, "CaptureObject_DataIndex", index);
         assertThat(Long.valueOf(actualCaptureObject.getDataIndex())).as("DataIndex of CaptureObject " + index)
-                .isEqualTo(expectedDataIndex);
+                                                                    .isEqualTo(expectedDataIndex);
 
         final String expectedUnit = SettingsHelper.getStringValue(expectedValues, "CaptureObject_Unit", index);
         assertThat(actualCaptureObject.getUnit().value()).as("Unit of CaptureObject " + index).isEqualTo(expectedUnit);
@@ -92,10 +95,10 @@ public class BundledGetPowerQualityProfileDataSteps extends BaseBundleSteps {
 
     private void assertEqualProfileEntries(final List<ProfileEntry> actualProfileEntries,
             final Map<String, String> expectedValues) {
-        final int expectedNumberOfProfileEntries = SettingsHelper.getIntegerValue(expectedValues,
-                "NumberOfProfileEntries");
+        final int expectedNumberOfProfileEntries = SettingsHelper
+                .getIntegerValue(expectedValues, "NumberOfProfileEntries");
 
         assertThat(actualProfileEntries.size()).as("Number of profile entries")
-                .isEqualTo(expectedNumberOfProfileEntries);
+                                               .isEqualTo(expectedNumberOfProfileEntries);
     }
 }

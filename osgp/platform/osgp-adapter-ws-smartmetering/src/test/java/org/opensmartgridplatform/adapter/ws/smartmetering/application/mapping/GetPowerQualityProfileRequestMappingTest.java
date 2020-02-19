@@ -32,12 +32,12 @@ public class GetPowerQualityProfileRequestMappingTest {
     private final MonitoringMapper mapper = new MonitoringMapper();
 
     @Test
-    public void convertProfileGenericDataRequest() {
+    public void convertGetPowerQualityProfileRequestData() {
         final GetPowerQualityProfileRequestData source = this.makeRequest();
         final Object result = this.mapper.map(source, GetPowerQualityProfileRequest.class);
 
-        assertThat(result).as("mapping ProfileGenericDataRequest should not return null").isNotNull();
-        assertThat(result).as("mapping ProfileGenericDataRequest should return correct type")
+        assertThat(result).as("mapping GetPowerQualityProfileRequestData should not return null").isNotNull();
+        assertThat(result).as("mapping GetPowerQualityProfileRequestData should return correct type")
                           .isInstanceOf(GetPowerQualityProfileRequest.class);
 
         final GetPowerQualityProfileRequest target = (GetPowerQualityProfileRequest) result;

@@ -1,9 +1,10 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.services;
 
@@ -14,10 +15,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
-
+import ma.glasnost.orika.impl.ConfigurableMapper;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ActualMeterReadsGasResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ActualMeterReadsResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.AdministrativeStatusResponse;
@@ -53,19 +51,20 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetAllAt
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetConfigurationObjectResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusResponseData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.MeterReads;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.MeterReadsGas;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ScanMbusChannelsResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.UpdateFirmwareResponse;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
-
-import ma.glasnost.orika.impl.ConfigurableMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 @Service(value = "wsSmartMeteringActionResponseMapperService")
 @Validated
@@ -89,8 +88,8 @@ public class ActionMapperResponseService {
     @Autowired
     private InstallationMapper installationMapper;
 
-    private static Map<Class<? extends ActionResponse>, ConfigurableMapper> CLASS_TO_MAPPER_MAP = new HashMap<>();
-    private static Map<Class<? extends ActionResponse>, Class<?>> CLASS_MAP = new HashMap<>();
+    private static final Map<Class<? extends ActionResponse>, ConfigurableMapper> CLASS_TO_MAPPER_MAP = new HashMap<>();
+    private static final Map<Class<? extends ActionResponse>, Class<?>> CLASS_MAP = new HashMap<>();
 
     /**
      * Specifies which mapper to use for the core object class received.
@@ -111,7 +110,7 @@ public class ActionMapperResponseService {
         CLASS_TO_MAPPER_MAP.put(UpdateFirmwareResponse.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(AssociationLnObjectsResponseData.class, this.adhocMapper);
         CLASS_TO_MAPPER_MAP.put(GetConfigurationObjectResponse.class, this.configurationMapper);
-        CLASS_TO_MAPPER_MAP.put(GetPowerQualityProfileResponseData.class, this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(GetPowerQualityProfileResponse.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(CoupleMbusDeviceByChannelResponse.class, this.installationMapper);
         CLASS_TO_MAPPER_MAP.put(GetMbusEncryptionKeyStatusResponseData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(GetMbusEncryptionKeyStatusByChannelResponseData.class, this.configurationMapper);
@@ -143,7 +142,7 @@ public class ActionMapperResponseService {
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.AssociationLnObjectsResponse.class);
         CLASS_MAP.put(GetConfigurationObjectResponse.class,
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetConfigurationObjectResponse.class);
-        CLASS_MAP.put(GetPowerQualityProfileResponseData.class,
+        CLASS_MAP.put(GetPowerQualityProfileResponse.class,
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetPowerQualityProfileResponse.class);
         CLASS_MAP.put(CoupleMbusDeviceByChannelResponse.class,
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.CoupleMbusDeviceByChannelResponse.class);
@@ -179,10 +178,10 @@ public class ActionMapperResponseService {
 
         if (response == null) {
             throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
-                    ComponentType.WS_SMART_METERING,
-                    new RuntimeException("No Response Object of class " + (clazz == null ? "null" : clazz.getName())
-                            + " for ActionResponse Value Object of class: "
-                            + actionValueResponseObject.getClass().getName()));
+                    ComponentType.WS_SMART_METERING, new RuntimeException(
+                    "No Response Object of class " + (clazz == null ? "null" : clazz.getName())
+                            + " for ActionResponse Value Object of class: " + actionValueResponseObject.getClass()
+                                                                                                       .getName()));
         }
 
         return response;
@@ -193,9 +192,9 @@ public class ActionMapperResponseService {
 
         if (clazz == null) {
             throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
-                    ComponentType.WS_SMART_METERING,
-                    new RuntimeException("No Response class for ActionResponse Value Object class: "
-                            + actionValueResponseObject.getClass().getName()));
+                    ComponentType.WS_SMART_METERING, new RuntimeException(
+                    "No Response class for ActionResponse Value Object class: " + actionValueResponseObject.getClass()
+                                                                                                           .getName()));
         }
 
         return clazz;
@@ -206,9 +205,9 @@ public class ActionMapperResponseService {
 
         if (mapper == null) {
             throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
-                    ComponentType.WS_SMART_METERING,
-                    new RuntimeException("No mapper for ActionResponse Value Object class: "
-                            + actionValueResponseObject.getClass().getName()));
+                    ComponentType.WS_SMART_METERING, new RuntimeException(
+                    "No mapper for ActionResponse Value Object class: " + actionValueResponseObject.getClass()
+                                                                                                   .getName()));
         }
 
         return mapper;
