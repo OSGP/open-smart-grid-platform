@@ -9,6 +9,7 @@ package org.opensmartgridplatform.adapter.ws.admin.application.services;
 
 import java.util.List;
 
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceException;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
@@ -118,10 +119,10 @@ public class DeviceManagementService {
     }
 
     public void addOrganisation(@Identification final String organisationIdentification,
-            @Valid final Organisation newOrganisation) throws FunctionalException {
+            @Valid @NotNull final Organisation newOrganisation) throws FunctionalException {
 
         LOGGER.debug("addOrganisation called with organisation {} and new organisation {}", organisationIdentification,
-                newOrganisation != null ? newOrganisation.getOrganisationIdentification() : "null");
+                newOrganisation.getOrganisationIdentification());
 
         final Organisation organisation = this.findOrganisation(organisationIdentification);
 
@@ -435,7 +436,9 @@ public class DeviceManagementService {
 
             final DeviceAuthorization authorization = ssld.addAuthorization(organisation, DeviceFunctionGroup.OWNER);
 
-            final ProtocolInfo protocolInfo = this.protocolRepository.findById(protocolInfoId).get();
+            final ProtocolInfo protocolInfo = this.protocolRepository.findById(protocolInfoId)
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            "No protocol info record found with ID: " + protocolInfoId));
             ssld.updateProtocol(protocolInfo);
 
             this.authorizationRepository.save(authorization);

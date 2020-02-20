@@ -116,7 +116,6 @@ public class PlatformDefaults {
     public static final String DEFAULT_PERIOD_TYPE = "INTERVAL";
     public static final String DEFAULT_PREFIX = "MAA";
     public static final String DEFAULT_PROTOCOL = "OSLP ELSTER";
-    public static final Long DEFAULT_PROTOCOL_INFO_ID = new java.util.Random().nextLong();
     public static final String DEFAULT_PROTOCOL_VERSION = "1.0";
     public static final String DEFAULT_PUBLIC_KEY = "123456abcdef";
     public static final Boolean DEFAULT_PUBLICKEYPRESENT = true;
@@ -219,4 +218,5 @@ public class PlatformDefaults {
 
     public static final Short DEFAULT_ASTRONOMICAL_SUNRISE_OFFSET = 0;
     public static final Short DEFAULT_ASTRONOMICAL_SUNSET_OFFSET = 0;
+    public static final Long NON_EXISTENT_PROTOCOL_INFO_ID = -1L;
 }
