@@ -35,8 +35,8 @@ public class GetPowerQualityProfileRequestMessageProcessor extends BaseRequestMe
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
             throws FunctionalException {
 
-        final GetPowerQualityProfileRequest periodicMeterReadsRequest = (GetPowerQualityProfileRequest) dataObject;
+        final GetPowerQualityProfileRequest getPowerQualityProfileRequest = (GetPowerQualityProfileRequest) dataObject;
 
-        this.monitoringService.requestPowerQualityProfile(deviceMessageMetadata, periodicMeterReadsRequest);
+        this.monitoringService.requestPowerQualityProfile(deviceMessageMetadata, getPowerQualityProfileRequest);
     }
 }

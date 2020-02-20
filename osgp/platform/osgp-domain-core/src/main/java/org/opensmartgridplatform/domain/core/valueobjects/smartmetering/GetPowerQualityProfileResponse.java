@@ -15,11 +15,10 @@ public class GetPowerQualityProfileResponse extends ActionResponse implements Se
 
     private static final long serialVersionUID = -156966569210717657L;
 
-    private final List<PowerQualityProfileData> powerQualityProfileDatas;
+    private List<PowerQualityProfileData> powerQualityProfileDatas;
 
-    public GetPowerQualityProfileResponse(final List<PowerQualityProfileData> powerQualityProfileData) {
-        super();
-        this.powerQualityProfileDatas = powerQualityProfileData;
+    public void setPowerQualityProfileDatas(List<PowerQualityProfileData> powerQualityProfileDatas) {
+        this.powerQualityProfileDatas = powerQualityProfileDatas;
     }
 
     public List<PowerQualityProfileData> getPowerQualityProfileDatas() {

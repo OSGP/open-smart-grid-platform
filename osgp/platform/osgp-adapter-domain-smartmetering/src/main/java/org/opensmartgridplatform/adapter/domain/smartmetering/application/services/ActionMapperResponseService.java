@@ -54,7 +54,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetAllAttributeV
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetConfigurationObjectResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusResponseDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileResponseDataDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MeterReadsGasResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MeterReadsResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadGasResponseDto;
@@ -65,6 +65,8 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRe
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -72,6 +74,8 @@ import org.springframework.validation.annotation.Validated;
 @Service(value = "domainSmartMeteringActionMapperResponseService")
 @Validated
 public class ActionMapperResponseService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ActionMapperResponseService.class);
 
     @Autowired
     private ManagementMapper managementMapper;
@@ -86,7 +90,8 @@ public class ActionMapperResponseService {
     private CommonMapper commonMapper;
 
     private static final Map<Class<? extends ActionResponseDto>, ConfigurableMapper> classToMapperMap = new HashMap<>();
-    private static final Map<Class<? extends ActionResponseDto>, Class<? extends ActionResponse>> classMap = new HashMap<>();
+    private static final Map<Class<? extends ActionResponseDto>, Class<? extends ActionResponse>> classMap =
+            new HashMap<>();
 
     /**
      * Specifies to which core value object the DTO object needs to be mapped.
@@ -106,7 +111,7 @@ public class ActionMapperResponseService {
         classMap.put(UpdateFirmwareResponseDto.class, UpdateFirmwareResponse.class);
         classMap.put(AssociationLnObjectsResponseDto.class, AssociationLnObjectsResponseData.class);
         classMap.put(GetConfigurationObjectResponseDto.class, GetConfigurationObjectResponse.class);
-        classMap.put(GetPowerQualityProfileResponseDataDto.class, GetPowerQualityProfileResponse.class);
+        classMap.put(GetPowerQualityProfileResponseDto.class, GetPowerQualityProfileResponse.class);
         classMap.put(CoupleMbusDeviceByChannelResponseDto.class, CoupleMbusDeviceByChannelResponse.class);
         classMap.put(GetMbusEncryptionKeyStatusResponseDto.class, GetMbusEncryptionKeyStatusResponseData.class);
         classMap.put(GetMbusEncryptionKeyStatusByChannelResponseDto.class,
@@ -135,7 +140,7 @@ public class ActionMapperResponseService {
         classToMapperMap.put(UpdateFirmwareResponseDto.class, this.configurationMapper);
         classToMapperMap.put(AssociationLnObjectsResponseDto.class, this.commonMapper);
         classToMapperMap.put(GetConfigurationObjectResponseDto.class, this.configurationMapper);
-        classToMapperMap.put(GetPowerQualityProfileResponseDataDto.class, this.monitoringMapper);
+        classToMapperMap.put(GetPowerQualityProfileResponseDto.class, this.monitoringMapper);
         classToMapperMap.put(CoupleMbusDeviceByChannelResponseDto.class, this.commonMapper);
         classToMapperMap.put(GetMbusEncryptionKeyStatusResponseDto.class, this.configurationMapper);
         classToMapperMap.put(GetMbusEncryptionKeyStatusByChannelResponseDto.class, this.configurationMapper);
@@ -146,13 +151,24 @@ public class ActionMapperResponseService {
     public BundleMessagesResponse mapAllActions(final BundleMessagesRequestDto bundleMessageResponseDto)
             throws FunctionalException {
 
+        LOGGER.info("----- MAP ALL ACTIONS");
+
         final List<ActionResponse> actionResponseList = new ArrayList<>();
 
         for (final ActionResponseDto action : bundleMessageResponseDto.getAllResponses()) {
 
+
+
             final ConfigurableMapper mapper = this.getMapper(action);
             final Class<? extends ActionResponse> clazz = this.getClazz(action);
+
+            LOGGER.info("----- FOUND A ACTION TO BE MAPPED {} - {} ", action.getClass().getName(), action.getClass().getCanonicalName());
+            LOGGER.info("----- FOUND A CLASS TO BE MAPPED {} - {} ", clazz.getName(), clazz.getCanonicalName());
+
+            // mapper is monitoring mapper
             final ActionResponse actionValueResponseObject = this.doMap(action, mapper, clazz);
+
+            LOGGER.info("----- MAPPED ALL ACTIONS {} ", actionValueResponseObject.getResultString());
 
             actionResponseList.add(actionValueResponseObject);
         }

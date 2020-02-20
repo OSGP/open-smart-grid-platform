@@ -39,7 +39,7 @@ public class PowerQualityProfileResponseDataMappingTest {
 
     @Test
     public void testConvertGetPowerQualityProfileResponseDto() {
-        final PowerQualityProfileDataDto dto = this.makeGetPowerQualityProfileResponseDataDto();
+        final PowerQualityProfileDataDto dto = this.makePowerQualityProfileResponseDataDto();
         final PowerQualityProfileData result = this.mapper
                 .map(dto, PowerQualityProfileData.class);
         assertThat(result).withFailMessage("mapping GetPowerQualityProfileResponseData should not return null")
@@ -72,7 +72,7 @@ public class PowerQualityProfileResponseDataMappingTest {
                           .isOfAnyClassIn(ProfileEntry.class);
     }
 
-    private PowerQualityProfileDataDto makeGetPowerQualityProfileResponseDataDto() {
+    private PowerQualityProfileDataDto makePowerQualityProfileResponseDataDto() {
         return new PowerQualityProfileDataDto(this.obisCodeDto(), this.makeCaptureObjectsDto(),
                 this.makeProfileEntryDtoList());
     }

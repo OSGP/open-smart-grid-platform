@@ -39,9 +39,9 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemObjectDefin
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DlmsMeterValueDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DlmsUnitTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileRequestDataDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.PowerQualityProfileDataDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileResponseDataDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ObisCodeValuesDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.PowerQualityProfileDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryValueDto;
 import org.slf4j.Logger;
@@ -50,7 +50,7 @@ import org.springframework.stereotype.Component;
 
 @Component()
 public class GetPowerQualityProfileCommandExecutor
-        extends AbstractCommandExecutor<GetPowerQualityProfileRequestDataDto, GetPowerQualityProfileResponseDataDto> {
+        extends AbstractCommandExecutor<GetPowerQualityProfileRequestDataDto, GetPowerQualityProfileResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPowerQualityProfileCommandExecutor.class);
 
@@ -85,7 +85,7 @@ public class GetPowerQualityProfileCommandExecutor
     }
 
     @Override
-    public GetPowerQualityProfileResponseDataDto execute(final DlmsConnectionManager conn, final DlmsDevice device,
+    public GetPowerQualityProfileResponseDto execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final GetPowerQualityProfileRequestDataDto getPowerQualityProfileRequestDataDto)
             throws ProtocolAdapterException {
 
@@ -95,7 +95,8 @@ public class GetPowerQualityProfileCommandExecutor
 
         final List<ObisCodeValuesDto> obisCodeValuesDtos = determineProfileForDevice(profileType);
 
-        final GetPowerQualityProfileResponseDataDto response = new GetPowerQualityProfileResponseDataDto();
+        final GetPowerQualityProfileResponseDto response = new GetPowerQualityProfileResponseDto();
+        final List<PowerQualityProfileDataDto> responseDatas = new ArrayList<>();
 
         for (final ObisCodeValuesDto obisCodeValues : obisCodeValuesDtos) {
 
@@ -117,8 +118,18 @@ public class GetPowerQualityProfileCommandExecutor
                     .processData(obisCodeValues, captureObjects, scalerUnitInfos, selectedValues,
                             device.isSelectiveAccessSupported(), bufferList);
 
-            response.addResponseData(responseDataDto);
+            LOGGER.info("----- added LogicalName {}", responseDataDto.getLogicalName());
+            for (final CaptureObjectDto cDto : responseDataDto.getCaptureObjects()) {
+                LOGGER.info("----- added CaptureObjectDto {} - {}", cDto.getLogicalName(), cDto.getUnit());
+            }
+
+            LOGGER.info("----- added ProfileEntryValueDto {}", responseDataDto.getProfileEntries().size());
+
+            responseDatas.add(responseDataDto);
+
         }
+
+        response.setPowerQualityProfileDatas(responseDatas);
 
         return response;
     }

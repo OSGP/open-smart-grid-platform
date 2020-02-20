@@ -28,7 +28,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmRegisterRes
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClearAlarmRegisterRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigureDefinableLoadProfileRequestDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileResponseDataDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MeterReadsGasResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MeterReadsResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodTypeDto;
@@ -349,7 +349,7 @@ public class MonitoringService {
 
     public void handleGetPowerQualityProfileResponse(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType deviceResult, final OsgpException exception,
-            final GetPowerQualityProfileResponseDataDto getPowerQualityProfileResponseDataDto) {
+            final GetPowerQualityProfileResponseDto getPowerQualityProfileResponseDto) {
 
         LOGGER.info("GetPowerQualityProfileResponse for MessageType: {}", deviceMessageMetadata.getMessageType());
 
@@ -360,7 +360,7 @@ public class MonitoringService {
         }
 
         final GetPowerQualityProfileResponse getPowerQualityProfileResponse = this.monitoringMapper
-                .map(getPowerQualityProfileResponseDataDto, GetPowerQualityProfileResponse.class);
+                .map(getPowerQualityProfileResponseDto, GetPowerQualityProfileResponse.class);
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
                 deviceMessageMetadata.getCorrelationUid()).withOrganisationIdentification(

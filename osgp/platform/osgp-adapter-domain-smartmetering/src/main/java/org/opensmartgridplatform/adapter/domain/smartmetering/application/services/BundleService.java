@@ -76,7 +76,7 @@ public class BundleService {
     public void handleBundle(final DeviceMessageMetadata deviceMessageMetadata,
             final BundleMessageRequest bundleMessageDataContainer) throws FunctionalException {
 
-        LOGGER.info("handleBundle for organisationIdentification: {} for deviceIdentification: {}",
+        LOGGER.info("handleBundle request for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
         final SmartMeter smartMeter = this.domainHelperService
@@ -97,6 +97,9 @@ public class BundleService {
     public void handleBundleResponse(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException,
             final BundleMessagesRequestDto bundleResponseMessageDataContainerDto) throws FunctionalException {
+
+        LOGGER.info("handleBundle response for organisationIdentification: {} for deviceIdentification: {}",
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
         this.checkIfAdditionalActionIsNeeded(deviceMessageMetadata, bundleResponseMessageDataContainerDto);
 

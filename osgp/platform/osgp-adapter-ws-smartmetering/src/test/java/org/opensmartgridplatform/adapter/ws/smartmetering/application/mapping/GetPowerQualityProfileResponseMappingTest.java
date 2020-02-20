@@ -149,8 +149,8 @@ public class GetPowerQualityProfileResponseMappingTest {
         final PowerQualityProfileData responseData = new PowerQualityProfileData(obisCode, captureObjects,
                 profileEntries);
 
-        final GetPowerQualityProfileResponse source = new GetPowerQualityProfileResponse(
-                Collections.singletonList(responseData));
+        final GetPowerQualityProfileResponse source = new GetPowerQualityProfileResponse();
+        source.setPowerQualityProfileDatas(Collections.singletonList(responseData));
 
         // Act
         final org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetPowerQualityProfileResponse target
