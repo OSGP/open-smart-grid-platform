@@ -21,12 +21,7 @@
 
   <artifactId>cucumber-tests-platform-smartmetering</artifactId>
   <packaging>jar</packaging>
-
   <name>cucumber-tests-platform-smartmetering</name>
-
-  <prerequisites>
-    <maven>3.0.0</maven>
-  </prerequisites>
 
   <dependencies>
     <dependency>

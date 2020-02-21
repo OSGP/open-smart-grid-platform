@@ -15,12 +15,7 @@
 
   <artifactId>cucumber-tests-platform-distributionautomation</artifactId>
   <packaging>jar</packaging>
-
   <name>cucumber-tests-platform-distributionautomation</name>
-
-  <prerequisites>
-    <maven>3.0.0</maven>
-  </prerequisites>
 
   <dependencies>
     <!-- Cucumber Framework -->
