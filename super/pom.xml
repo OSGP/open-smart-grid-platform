@@ -95,7 +95,7 @@
     <apache.activemq.version>5.15.11</apache.activemq.version>
     <logback.version>1.2.3</logback.version>
     <logback.ext.version>0.1.5</logback.ext.version>
-    <apache.commons.schema>2.2.4</apache.commons.schema>
+    <apache.commons.schema>2.2.5</apache.commons.schema>
     <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
     <netty.version>4.1.44.Final</netty.version>
     <openmuc.jdlms.version>1.6.0</openmuc.jdlms.version>
