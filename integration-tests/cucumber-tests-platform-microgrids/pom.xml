@@ -21,12 +21,7 @@
 
   <artifactId>cucumber-tests-platform-microgrids</artifactId>
   <packaging>jar</packaging>
-
   <name>cucumber-tests-platform-microgrids</name>
-
-  <prerequisites>
-    <maven>3.0.0</maven>
-  </prerequisites>
 
   <dependencies>
     <!-- Cucumber Framework -->

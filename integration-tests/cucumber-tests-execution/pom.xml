@@ -20,12 +20,7 @@
 
   <artifactId>cucumber-tests-execution</artifactId>
   <packaging>jar</packaging>
-
   <name>cucumber-tests-execution</name>
-
-  <prerequisites>
-    <maven>3.0.0</maven>
-  </prerequisites>
 
   <dependencies>
 
