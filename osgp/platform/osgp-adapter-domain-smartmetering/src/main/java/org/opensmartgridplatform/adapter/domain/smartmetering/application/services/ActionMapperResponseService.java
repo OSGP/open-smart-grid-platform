@@ -168,7 +168,8 @@ public class ActionMapperResponseService {
             // mapper is monitoring mapper
             final ActionResponse actionValueResponseObject = this.doMap(action, mapper, clazz);
 
-            LOGGER.info("----- MAPPED ALL ACTIONS {} ", actionValueResponseObject.getResultString());
+            LOGGER.info("----- ACTION RESPONSE RESULT TYPE =  {} ", actionValueResponseObject.getResultString());
+            LOGGER.info("----- MAPPED ALL ACTIONS {} ", actionValueResponseObject.getResult());
 
             actionResponseList.add(actionValueResponseObject);
         }
@@ -187,6 +188,7 @@ public class ActionMapperResponseService {
                     "No Action Value Response Object for Action Value Response DTO Object of class: " + action
                             .getClass().getName()));
         }
+
         return actionValueResponseObject;
     }
 
