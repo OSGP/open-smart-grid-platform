@@ -18,12 +18,15 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.zaxxer.hikari.HikariDataSource;
 
-@EnableJpaRepositories(transactionManagerRef = "coreTransactionManager", entityManagerFactoryRef = "coreEntityManagerFactory", basePackageClasses = {
-        org.opensmartgridplatform.domain.core.repositories.DeviceRepository.class,
-        org.opensmartgridplatform.domain.core.repositories.RtuDeviceRepository.class })
+@EnableTransactionManagement
+@EnableJpaRepositories(transactionManagerRef = "coreTransactionManager",
+        entityManagerFactoryRef = "coreEntityManagerFactory",
+        basePackageClasses = { org.opensmartgridplatform.domain.core.repositories.DeviceRepository.class,
+                org.opensmartgridplatform.domain.core.repositories.RtuDeviceRepository.class })
 @Configuration
 @PropertySource("classpath:osgp-adapter-ws-distributionautomation.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
@@ -60,7 +63,9 @@ public class PersistenceConfigCore extends AbstractPersistenceConfig {
         if (this.dataSourceCore == null) {
 
             final DefaultConnectionPoolFactory.Builder builder = super.builder().withUsername(this.username)
-                    .withPassword(this.password).withDatabaseHost(this.databaseHost).withDatabasePort(this.databasePort)
+                    .withPassword(this.password)
+                    .withDatabaseHost(this.databaseHost)
+                    .withDatabasePort(this.databasePort)
                     .withDatabaseName(this.databaseName);
             final DefaultConnectionPoolFactory factory = builder.build();
             this.dataSourceCore = factory.getDefaultConnectionPool();
