@@ -62,7 +62,7 @@
     <xmlunit.version>1.6</xmlunit.version>
     <mockito.core.version>3.2.4</mockito.core.version>
     <apache.wss4j.version>1.6.19</apache.wss4j.version>
-    <servlet.version>3.1.0</servlet.version>
+    <servlet.version>3.0.1</servlet.version>
     <servlet.jstl.version>1.2</servlet.jstl.version>
     <hibernate.version>5.4.10.Final</hibernate.version>
     <hibernate.validator.version>5.4.3.Final</hibernate.validator.version>
