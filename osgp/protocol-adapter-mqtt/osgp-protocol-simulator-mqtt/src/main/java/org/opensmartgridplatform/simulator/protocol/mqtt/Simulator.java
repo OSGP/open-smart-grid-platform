@@ -21,6 +21,8 @@ import org.springframework.core.io.ClassPathResource;
 public class Simulator {
 
     private static final Logger LOG = LoggerFactory.getLogger(Simulator.class);
+    private static final String DEFAULT_BROKER_HOST = "127.0.0.1";
+    private static final int DEFAULT_BROKER_PORT = 8883;
 
     public static void main(final String[] args) throws Exception {
         final Simulator app = new Simulator();
@@ -28,8 +30,7 @@ public class Simulator {
     }
 
     private void run(final String[] args) throws Exception {
-        final File json = this.getFile(args);
-        final SimulatorSpec simulatorSpec = new ObjectMapper().readValue(json, SimulatorSpec.class);
+        final SimulatorSpec simulatorSpec = this.getSimulatorSpec(args);
         final Broker broker = new Broker(this.getConfig(simulatorSpec));
         broker.start();
         Thread.sleep(simulatorSpec.getStartupPauseMillis());
@@ -44,15 +45,26 @@ public class Simulator {
         return memoryConfig;
     }
 
-    private File getFile(final String[] args) throws IOException {
-        final File spec;
+    private SimulatorSpec getSimulatorSpec(final String[] args) throws IOException {
+        final SimulatorSpec simulatorSpec;
         if (args.length > 0) {
-            spec = new File(args[0]);
+            final String jsonPath = args[0];
+            File jsonFile = new File(jsonPath);
+            if (!jsonFile.exists()) {
+                final ClassPathResource jsonResource = new ClassPathResource(jsonPath);
+                if (jsonResource.exists()) {
+                    jsonFile = jsonResource.getFile();
+                } else {
+                    throw new IllegalArgumentException(
+                            String.format("Could not find file or class path resource %s", jsonPath));
+                }
+            }
+            simulatorSpec = new ObjectMapper().readValue(jsonFile, SimulatorSpec.class);
         } else {
-            spec = new ClassPathResource("simulator_spec.json").getFile();
+            simulatorSpec = new SimulatorSpec(DEFAULT_BROKER_HOST, DEFAULT_BROKER_PORT);
         }
-        LOG.info("Simulator spec: {}", spec);
-        return spec;
+        LOG.info("Simulator spec: {}", simulatorSpec);
+        return simulatorSpec;
     }
 
 }

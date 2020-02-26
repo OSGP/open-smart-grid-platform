@@ -27,20 +27,25 @@ public class LnaClient extends Client {
 
     @Override
     void onConnect(final Mqtt3BlockingClient client) {
-        while (this.isRunning()) {
-            final Message message = this.getNextMessage();
-            this.publish(client, message);
-            this.pause(message.getPauseMillis());
+        if (this.hasMessages()) {
+            while (this.isRunning()) {
+                final Message message = this.getNextMessage();
+                this.publish(client, message);
+                this.pause(message.getPauseMillis());
+            }
         }
     }
 
     private Message getNextMessage() {
         final Message[] messages = this.simulatorSpec.getMessages();
-        final Message message = messages[this.i++];
         if (this.i >= messages.length) {
             this.i = 0;
         }
-        return message;
+        return messages[this.i++];
+    }
+
+    private boolean hasMessages() {
+        return this.simulatorSpec.getMessages() != null && this.simulatorSpec.getMessages().length > 0;
     }
 
     private void pause(final long millis) {

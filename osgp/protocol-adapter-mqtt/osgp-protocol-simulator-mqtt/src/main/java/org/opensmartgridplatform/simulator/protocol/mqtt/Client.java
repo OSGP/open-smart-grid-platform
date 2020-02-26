@@ -43,7 +43,7 @@ public abstract class Client extends Thread {
         this.client = Mqtt3Client.builder().identifier(this.uuid.toString()).serverHost(this.host).serverPort(this.port).buildBlocking();
         final Mqtt3ConnAck ack = this.client.connect();
         LOG.info(String.format("Client %s received Ack %s", this.getClass().getSimpleName(), ack.getType()));
-        this.handleShutdown();
+        this.addShutdownHook();
         LOG.info(String.format("Client %s started", this.getClass().getSimpleName()));
         this.onConnect(this.client);
     }
@@ -57,7 +57,7 @@ public abstract class Client extends Thread {
         return this.running;
     }
 
-    private void handleShutdown() {
+    private void addShutdownHook() {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             LOG.info(String.format("Stopping client %s", this.getClass().getSimpleName()));
             this.disconnect();

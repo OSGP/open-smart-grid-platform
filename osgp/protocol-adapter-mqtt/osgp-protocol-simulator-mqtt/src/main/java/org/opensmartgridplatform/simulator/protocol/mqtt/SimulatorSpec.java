@@ -13,8 +13,16 @@ public class SimulatorSpec {
     private String brokerHost;
     private int brokerPort;
     private int startupPauseMillis;
-
     private Message[] messages;
+
+    public SimulatorSpec() {
+        // when instantiated from JSON
+    }
+
+    public SimulatorSpec(final String brokerHost, final int brokerPort) {
+        this.brokerHost = brokerHost;
+        this.brokerPort = brokerPort;
+    }
 
     public String getBrokerHost() {
         return this.brokerHost;

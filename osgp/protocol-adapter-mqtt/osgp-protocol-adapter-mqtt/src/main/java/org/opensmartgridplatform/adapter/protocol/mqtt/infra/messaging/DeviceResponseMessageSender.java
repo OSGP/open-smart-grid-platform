@@ -1,0 +1,127 @@
+/*
+ * Copyright 2020 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
+package org.opensmartgridplatform.adapter.protocol.mqtt.infra.messaging;
+
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.ObjectMessage;
+import javax.jms.Session;
+
+import org.apache.commons.lang3.StringUtils;
+import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.MessageCreator;
+import org.springframework.stereotype.Component;
+
+@Component(value = "protocolMqttOutboundOsgpCoreResponsesMessageSender")
+public class DeviceResponseMessageSender implements ResponseMessageSender {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceResponseMessageSender.class);
+
+    @Autowired
+    @Qualifier("protocolMqttOutboundOsgpCoreResponsesJmsTemplate")
+    private JmsTemplate jmsTemplate;
+
+    @Override
+    public void send(final ResponseMessage responseMessage) {
+
+        if (!(responseMessage instanceof ProtocolResponseMessage)) {
+            LOGGER.error("Only ProtocolResponseMessage type is expected for DeviceResponseMessageSender");
+            return;
+        }
+
+        final ProtocolResponseMessage msg = (ProtocolResponseMessage) responseMessage;
+
+        if (!this.checkMessage(msg)) {
+            return;
+        }
+
+        this.sendMessage(msg);
+    }
+
+    private boolean checkMessage(final ProtocolResponseMessage msg) {
+        if (StringUtils.isBlank(msg.getOrganisationIdentification())) {
+            LOGGER.error("OrganisationIdentification is blank");
+            return false;
+        }
+        if (StringUtils.isBlank(msg.getDeviceIdentification())) {
+            LOGGER.error("DeviceIdentification is blank");
+            return false;
+        }
+        if (StringUtils.isBlank(msg.getCorrelationUid())) {
+            LOGGER.error("CorrelationUid is blank");
+            return false;
+        }
+        if (msg.getResult() == null) {
+            LOGGER.error("Result is null");
+            return false;
+        }
+        if (StringUtils.isBlank(msg.getDomain())) {
+            LOGGER.error("Domain is blank");
+            return false;
+        }
+        if (StringUtils.isBlank(msg.getMessageType())) {
+            LOGGER.error("MessageType is blank");
+            return false;
+        }
+
+        return true;
+    }
+
+    private void sendMessage(final ProtocolResponseMessage responseMessage) {
+        this.jmsTemplate.send(new ProtocolResponseMessageCreator(responseMessage));
+    }
+
+    private static final class ProtocolResponseMessageCreator implements MessageCreator {
+
+        private final ProtocolResponseMessage responseMessage;
+
+        public ProtocolResponseMessageCreator(final ProtocolResponseMessage responseMessage) {
+            this.responseMessage = responseMessage;
+        }
+
+        @Override
+        public Message createMessage(final Session session) throws JMSException {
+            final ObjectMessage objectMessage = session.createObjectMessage(this.responseMessage);
+            objectMessage.setJMSCorrelationID(this.responseMessage.getCorrelationUid());
+            objectMessage.setStringProperty(Constants.DOMAIN, this.responseMessage.getDomain());
+            objectMessage.setStringProperty(Constants.DOMAIN_VERSION, this.responseMessage.getDomainVersion());
+            objectMessage.setJMSType(this.responseMessage.getMessageType());
+            objectMessage.setJMSPriority(this.responseMessage.getMessagePriority());
+            objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
+                    this.responseMessage.getOrganisationIdentification());
+            objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
+                    this.responseMessage.getDeviceIdentification());
+            objectMessage.setStringProperty(Constants.RESULT, this.responseMessage.getResult().toString());
+            if (this.responseMessage.getOsgpException() != null) {
+                objectMessage.setStringProperty(Constants.DESCRIPTION,
+                        this.responseMessage.getOsgpException().getMessage());
+            }
+            objectMessage.setBooleanProperty(Constants.IS_SCHEDULED, this.responseMessage.isScheduled());
+            objectMessage.setIntProperty(Constants.RETRY_COUNT, this.responseMessage.getRetryCount());
+            objectMessage.setBooleanProperty(Constants.BYPASS_RETRY, this.responseMessage.bypassRetry());
+
+            if (this.responseMessage.getRetryHeader().shouldRetry()) {
+                objectMessage.setIntProperty(Constants.MAX_RETRIES,
+                        this.responseMessage.getRetryHeader().getMaxRetries());
+                objectMessage.setLongProperty(Constants.SCHEDULE_TIME,
+                        this.responseMessage.getRetryHeader().getScheduledRetryTime().getTime());
+            }
+
+            return objectMessage;
+        }
+    }
+}
