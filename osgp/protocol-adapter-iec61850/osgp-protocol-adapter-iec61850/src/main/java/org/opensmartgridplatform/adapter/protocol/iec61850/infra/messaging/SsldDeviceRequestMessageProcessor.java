@@ -20,6 +20,7 @@ import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
+import org.opensmartgridplatform.shared.infra.jms.RetryHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,9 +79,16 @@ public abstract class SsldDeviceRequestMessageProcessor extends BaseMessageProce
                 deviceResponse.getDeviceIdentification(), deviceResponse.getOrganisationIdentification(),
                 deviceResponse.getCorrelationUid(), messageType, response.getMessagePriority());
         final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage.Builder()
-                .domain(domainInformation.getDomain()).domainVersion(domainInformation.getDomainVersion())
-                .deviceMessageMetadata(deviceMessageMetadata).result(ResponseMessageResultType.OK).osgpException(null)
-                .retryCount(retryCount).dataObject(status).build();
+                .domain(domainInformation.getDomain())
+                .domainVersion(domainInformation.getDomainVersion())
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .result(ResponseMessageResultType.OK)
+                .osgpException(null)
+                .retryCount(retryCount)
+                .dataObject(status)
+                .scheduled(false)
+                .retryHeader(new RetryHeader())
+                .build();
         responseMessageSender.send(protocolResponseMessage);
     }
 }

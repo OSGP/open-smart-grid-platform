@@ -31,6 +31,7 @@ import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
+import org.opensmartgridplatform.shared.infra.jms.RetryHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,7 +94,8 @@ public abstract class DaRtuDeviceRequestMessageProcessor extends BaseMessageProc
             return;
         }
 
-        final RequestMessageData requestMessageData = RequestMessageData.newBuilder().messageMetadata(messageMetadata)
+        final RequestMessageData requestMessageData = RequestMessageData.newBuilder()
+                .messageMetadata(messageMetadata)
                 .build();
 
         this.printDomainInfo(requestMessageData);
@@ -133,9 +135,16 @@ public abstract class DaRtuDeviceRequestMessageProcessor extends BaseMessageProc
                 deviceResponse.getDeviceIdentification(), deviceResponse.getOrganisationIdentification(),
                 deviceResponse.getCorrelationUid(), messageType);
         final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage.Builder()
-                .domain(domainInformation.getDomain()).domainVersion(domainInformation.getDomainVersion())
-                .deviceMessageMetadata(deviceMessageMetadata).result(result).osgpException(ex).dataObject(dataObject)
-                .retryCount(retryCount).build();
+                .domain(domainInformation.getDomain())
+                .domainVersion(domainInformation.getDomainVersion())
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .result(result)
+                .osgpException(ex)
+                .dataObject(dataObject)
+                .retryCount(retryCount)
+                .retryHeader(new RetryHeader())
+                .scheduled(false)
+                .build();
         responseMessageSender.send(protocolResponseMessage);
     }
 }

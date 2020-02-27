@@ -36,7 +36,7 @@ public class ProtocolResponseMessage extends ResponseMessage {
 
     public static class Builder {
 
-        private ResponseMessage.Builder superBuilder = ResponseMessage.newResponseMessageBuilder();
+        private final ResponseMessage.Builder superBuilder = ResponseMessage.newResponseMessageBuilder();
 
         private String domain;
         private String domainVersion;

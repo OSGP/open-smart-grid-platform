@@ -29,6 +29,7 @@ import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
+import org.opensmartgridplatform.shared.infra.jms.RetryHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -61,7 +62,8 @@ public class MicrogridsGetDataRequestMessageProcessor extends RtuDeviceRequestMe
             return;
         }
 
-        final RequestMessageData requestMessageData = RequestMessageData.newBuilder().messageMetadata(messageMetadata)
+        final RequestMessageData requestMessageData = RequestMessageData.newBuilder()
+                .messageMetadata(messageMetadata)
                 .build();
 
         this.printDomainInfo(requestMessageData);
@@ -106,9 +108,16 @@ public class MicrogridsGetDataRequestMessageProcessor extends RtuDeviceRequestMe
                 deviceResponse.getDeviceIdentification(), deviceResponse.getOrganisationIdentification(),
                 deviceResponse.getCorrelationUid(), messageType, deviceResponse.getMessagePriority());
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder()
-                .domain(domainInformation.getDomain()).domainVersion(domainInformation.getDomainVersion())
-                .deviceMessageMetadata(deviceMessageMetaData).result(result).osgpException(osgpException)
-                .dataObject(dataResponse).retryCount(retryCount).build();
+                .domain(domainInformation.getDomain())
+                .domainVersion(domainInformation.getDomainVersion())
+                .deviceMessageMetadata(deviceMessageMetaData)
+                .result(result)
+                .osgpException(osgpException)
+                .dataObject(dataResponse)
+                .retryCount(retryCount)
+                .retryHeader(new RetryHeader())
+                .scheduled(false)
+                .build();
 
         responseMessageSender.send(responseMessage);
 
