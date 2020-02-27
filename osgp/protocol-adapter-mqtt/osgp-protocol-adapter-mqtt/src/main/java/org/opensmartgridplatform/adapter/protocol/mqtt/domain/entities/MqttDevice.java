@@ -8,8 +8,6 @@
  */
 package org.opensmartgridplatform.adapter.protocol.mqtt.domain.entities;
 
-import java.util.Objects;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -30,6 +28,12 @@ public class MqttDevice extends AbstractEntity {
 
     @Column
     private Integer port;
+
+    @Column
+    private String topics;
+
+    @Column
+    private String qos;
 
     public MqttDevice() {
         // Default constructor
@@ -59,26 +63,26 @@ public class MqttDevice extends AbstractEntity {
         this.port = port;
     }
 
+    public String getTopics() {
+        return this.topics;
+    }
+
+    public void setTopics(final String topic) {
+        this.topics = topic;
+    }
+
+    public String getQos() {
+        return this.qos;
+    }
+
+    public void setQos(final String qos) {
+        this.qos = qos;
+    }
+
     @Override
     public String toString() {
-        return String.format("MqttDevice[deviceId=%s, host=%s, port=%s]", this.deviceIdentification, this.host,
-                this.port);
+        return String.format("MqttDevice[deviceId=%s, host=%s, port=%s, , topic=%s]", this.deviceIdentification,
+                this.host, this.port, this.topics);
     }
 
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof MqttDevice)) {
-            return false;
-        }
-        final MqttDevice device = (MqttDevice) o;
-        return Objects.equals(this.deviceIdentification, device.deviceIdentification);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(this.deviceIdentification);
-    }
 }

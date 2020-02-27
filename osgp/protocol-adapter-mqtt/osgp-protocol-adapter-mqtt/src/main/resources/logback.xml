@@ -39,7 +39,7 @@
     <appender-ref ref="CONSOLE"/>
   </logger>
 
-  <root level="DEBUG" additivity="false">
+  <root level="INFO" additivity="false">
     <appender-ref ref="CONSOLE"/>
     <appender-ref ref="FILE"/>
     <!--

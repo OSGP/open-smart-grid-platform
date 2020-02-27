@@ -6,7 +6,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.protocol.mqtt.infra.messaging;
+package org.opensmartgridplatform.adapter.protocol.mqtt.application.messaging;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -20,20 +20,20 @@ import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Component;
 
 @Component(value = "protocolMqttOutboundOsgpCoreResponsesMessageSender")
-public class DeviceResponseMessageSender implements ResponseMessageSender {
+public class OutboundOsgpCoreResponseMessageSender implements ResponseMessageSender {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceResponseMessageSender.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OutboundOsgpCoreResponseMessageSender.class);
 
-    @Autowired
-    @Qualifier("protocolMqttOutboundOsgpCoreResponsesJmsTemplate")
-    private JmsTemplate jmsTemplate;
+    private final JmsTemplate protocolMqttOutboundOsgpCoreResponsesJmsTemplate;
+
+    public OutboundOsgpCoreResponseMessageSender(final JmsTemplate protocolMqttOutboundOsgpCoreResponsesJmsTemplate) {
+        this.protocolMqttOutboundOsgpCoreResponsesJmsTemplate = protocolMqttOutboundOsgpCoreResponsesJmsTemplate;
+    }
 
     @Override
     public void send(final ResponseMessage responseMessage) {
@@ -82,7 +82,7 @@ public class DeviceResponseMessageSender implements ResponseMessageSender {
     }
 
     private void sendMessage(final ProtocolResponseMessage responseMessage) {
-        this.jmsTemplate.send(new ProtocolResponseMessageCreator(responseMessage));
+        this.protocolMqttOutboundOsgpCoreResponsesJmsTemplate.send(new ProtocolResponseMessageCreator(responseMessage));
     }
 
     private static final class ProtocolResponseMessageCreator implements MessageCreator {

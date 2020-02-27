@@ -6,31 +6,42 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.protocol.mqtt.infra.messaging.processors;
+package org.opensmartgridplatform.adapter.protocol.mqtt.application.messaging;
 
-import javax.jms.JMSException;
+import javax.annotation.PostConstruct;
 import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.protocol.mqtt.application.services.SubcriptionService;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MqttGetDataRequestMessageProcessor implements MessageProcessor {
+public class InboundOsgpCoreGetDataRequestMessageProcessor implements MessageProcessor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MqttGetDataRequestMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(InboundOsgpCoreGetDataRequestMessageProcessor.class);
 
     private final SubcriptionService subcriptionService;
+    private final MessageProcessorMap protocolMqttInboundOsgpCoreRequestsMessageProcessorMap;
 
-    public MqttGetDataRequestMessageProcessor(final SubcriptionService subcriptionService) {
+    public InboundOsgpCoreGetDataRequestMessageProcessor(final SubcriptionService subcriptionService,
+            final MessageProcessorMap protocolMqttInboundOsgpCoreRequestsMessageProcessorMap) {
         this.subcriptionService = subcriptionService;
+        this.protocolMqttInboundOsgpCoreRequestsMessageProcessorMap =
+                protocolMqttInboundOsgpCoreRequestsMessageProcessorMap;
+    }
+
+    @PostConstruct
+    public void init() {
+        this.protocolMqttInboundOsgpCoreRequestsMessageProcessorMap.addMessageProcessor(MessageType.GET_DATA, this);
     }
 
     @Override
-    public void processMessage(final ObjectMessage message) throws JMSException {
+    public void processMessage(final ObjectMessage message) {
         try {
             final MessageMetadata messageMetadata = MessageMetadata.fromMessage(message);
             LOGGER.info("Calling DeviceService function: {} correlationUid: {} organisationIdentification: {} domain:"
