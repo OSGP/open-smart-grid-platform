@@ -1,5 +1,5 @@
 @DistributionAutomation @Platform @MeasurementReports
-Feature: Receive measurement reports
+Feature: DistributionAutomation Receive measurement reports
   As a grid operator
   I want to receive measurement reports from an IEC 60870 device
   So I get updates about the current state of the device
