@@ -17,7 +17,7 @@
   <artifactId>osgp-protocol-adapter-iec60870</artifactId>
   <name>osgp-protocol-adapter-iec60870</name>
   <packaging>war</packaging>
-  <!-- Description, Organization, Licenses, URL and Distribution Management elements 
+  <!-- Description, Organization, Licenses, URL and Distribution Management elements
     are needed for the maven-jxr-plugin to generate a maven site -->
   <description>Protocol adapter for IEC60870-5-104 Protocol.</description>
 
@@ -30,8 +30,6 @@
 
   <properties>
     <display.version>${project.version}-${BUILD_TAG}</display.version>
-    <cucumber.version>4.8.0</cucumber.version>
-    <spring.test.version>4.3.23.RELEASE</spring.test.version>
     <skip.integration.tests>false</skip.integration.tests>
     <skip.unit.tests>false</skip.unit.tests>
 
@@ -267,6 +265,12 @@
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
     </dependency>
+      <!-- Cucumber tests depend on JUnit 4, add the vintage engine -->
+      <dependency>
+        <groupId>org.junit.vintage</groupId>
+        <artifactId>junit-vintage-engine</artifactId>
+        <scope>test</scope>
+      </dependency>
     <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>

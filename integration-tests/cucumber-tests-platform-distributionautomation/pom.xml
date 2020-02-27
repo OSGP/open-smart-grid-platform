@@ -167,7 +167,7 @@
               </descriptors>
               <archive>
                 <manifest>
-                  <mainClass>org.opensmartgridplatform.cucumber.platform.microgrids.App</mainClass>
+                  <mainClass>org.opensmartgridplatform.cucumber.platform.distributionautomation.App</mainClass>
                 </manifest>
               </archive>
             </configuration>
