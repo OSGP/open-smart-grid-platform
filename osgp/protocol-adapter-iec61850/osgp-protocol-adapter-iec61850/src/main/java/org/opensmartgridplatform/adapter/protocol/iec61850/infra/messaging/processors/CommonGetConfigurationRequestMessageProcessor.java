@@ -75,15 +75,15 @@ public class CommonGetConfigurationRequestMessageProcessor extends SsldDeviceReq
     @Override
     public void handleDeviceResponse(final DeviceResponse deviceResponse,
             final ResponseMessageSender responseMessageSender, final DomainInformation domainInformation,
-            final String messageType, final int retryCount) {
+            final String messageType, final int retryCount, final boolean isScheduled) {
         LOGGER.info("Override for handleDeviceResponse() by CommonGetConfigurationRequestMessageProcessor");
         this.handleGetConfigurationDeviceResponse(deviceResponse, responseMessageSender, domainInformation, messageType,
-                retryCount);
+                retryCount, isScheduled);
     }
 
     private void handleGetConfigurationDeviceResponse(final DeviceResponse deviceResponse,
             final ResponseMessageSender responseMessageSender, final DomainInformation domainInformation,
-            final String messageType, final int retryCount) {
+            final String messageType, final int retryCount, final boolean isScheduled) {
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException osgpException = null;
@@ -110,7 +110,7 @@ public class CommonGetConfigurationRequestMessageProcessor extends SsldDeviceReq
                 .osgpException(osgpException)
                 .dataObject(configuration)
                 .retryCount(retryCount)
-                .scheduled(false)
+                .scheduled(isScheduled)
                 .retryHeader(new RetryHeader())
                 .build();
 

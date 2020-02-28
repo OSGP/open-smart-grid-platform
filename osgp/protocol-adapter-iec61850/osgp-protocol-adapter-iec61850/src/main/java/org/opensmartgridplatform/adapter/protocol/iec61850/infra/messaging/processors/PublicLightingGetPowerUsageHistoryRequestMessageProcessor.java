@@ -82,15 +82,15 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends S
     @Override
     public void handleDeviceResponse(final DeviceResponse deviceResponse,
             final ResponseMessageSender responseMessageSender, final DomainInformation domainInformation,
-            final String messageType, final int retryCount) {
+            final String messageType, final int retryCount, final boolean isScheduled) {
         LOGGER.info("Override for handleDeviceResponse() by PublicLightingGetPowerUsageHistoryRequestMessageProcessor");
         this.handleGetPowerUsageHistoryDeviceResponse(deviceResponse, responseMessageSender, domainInformation,
-                messageType, retryCount);
+                messageType, retryCount, isScheduled);
     }
 
     private void handleGetPowerUsageHistoryDeviceResponse(final DeviceResponse deviceResponse,
             final ResponseMessageSender responseMessageSender, final DomainInformation domainInformation,
-            final String messageType, final int retryCount) {
+            final String messageType, final int retryCount, final boolean isScheduled) {
 
         final GetPowerUsageHistoryDeviceResponse getPowerUsageHistoryDeviceResponse = (GetPowerUsageHistoryDeviceResponse) deviceResponse;
         ResponseMessageResultType result = ResponseMessageResultType.OK;
@@ -119,7 +119,7 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends S
                 .dataObject(powerUsageHistoryResponseMessageDataContainer)
                 .retryCount(retryCount)
                 .retryHeader(new RetryHeader())
-                .scheduled(false)
+                .scheduled(isScheduled)
                 .build();
 
         responseMessageSender.send(responseMessage);

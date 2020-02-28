@@ -80,15 +80,15 @@ public class MicrogridsGetDataRequestMessageProcessor extends RtuDeviceRequestMe
     @Override
     public void handleDeviceResponse(final DeviceResponse deviceResponse,
             final ResponseMessageSender responseMessageSender, final DomainInformation domainInformation,
-            final String messageType, final int retryCount) {
+            final String messageType, final int retryCount, final boolean isScheduled) {
         LOGGER.info("Override for handleDeviceResponse() by MicrogridsGetDataRequestMessageProcessor");
         this.handleGetDataDeviceResponse(deviceResponse, responseMessageSender, domainInformation, messageType,
-                retryCount);
+                retryCount, isScheduled);
     }
 
     private void handleGetDataDeviceResponse(final DeviceResponse deviceResponse,
             final ResponseMessageSender responseMessageSender, final DomainInformation domainInformation,
-            final String messageType, final int retryCount) {
+            final String messageType, final int retryCount, final boolean isScheduled) {
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException osgpException = null;
@@ -116,7 +116,7 @@ public class MicrogridsGetDataRequestMessageProcessor extends RtuDeviceRequestMe
                 .dataObject(dataResponse)
                 .retryCount(retryCount)
                 .retryHeader(new RetryHeader())
-                .scheduled(false)
+                .scheduled(isScheduled)
                 .build();
 
         responseMessageSender.send(responseMessage);

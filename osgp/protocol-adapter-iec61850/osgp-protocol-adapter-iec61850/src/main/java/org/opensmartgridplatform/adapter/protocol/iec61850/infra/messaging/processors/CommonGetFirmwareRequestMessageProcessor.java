@@ -78,15 +78,15 @@ public class CommonGetFirmwareRequestMessageProcessor extends SsldDeviceRequestM
     @Override
     public void handleDeviceResponse(final DeviceResponse deviceResponse,
             final ResponseMessageSender responseMessageSender, final DomainInformation domainInformation,
-            final String messageType, final int retryCount) {
+            final String messageType, final int retryCount, final boolean isScheduled) {
         LOGGER.info("Override for handleDeviceResponse() by CommonGetFirmwareRequestMessageProcessor");
         this.handleGetFirmwareVersionDeviceResponse(deviceResponse, responseMessageSender, domainInformation,
-                messageType, retryCount);
+                messageType, retryCount, isScheduled);
     }
 
     private void handleGetFirmwareVersionDeviceResponse(final DeviceResponse deviceResponse,
             final ResponseMessageSender responseMessageSender, final DomainInformation domainInformation,
-            final String messageType, final int retryCount) {
+            final String messageType, final int retryCount, final boolean isScheduled) {
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException osgpException = null;
@@ -112,7 +112,7 @@ public class CommonGetFirmwareRequestMessageProcessor extends SsldDeviceRequestM
                 .osgpException(osgpException)
                 .dataObject((Serializable) firmwareVersions)
                 .retryCount(retryCount)
-                .scheduled(false)
+                .scheduled(isScheduled)
                 .retryHeader(new RetryHeader())
                 .build();
 

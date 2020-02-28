@@ -101,7 +101,10 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
                     deviceMessageMetadata.getOrganisationIdentification(),
                     deviceMessageMetadata.getDeviceIdentification(), deviceMessageMetadata.getCorrelationUid(),
                     deviceMessageMetadata.getMessagePriority());
-            this.handleExpectedError(deviceResponse, e, domainInformation, deviceMessageMetadata.getMessageType());
+            final Long scheduleTime = deviceMessageMetadata.getScheduleTime();
+            final boolean isScheduled = scheduleTime != null && scheduleTime > 0;
+            this.handleExpectedError(deviceResponse, e, domainInformation, deviceMessageMetadata.getMessageType(),
+                    isScheduled);
         }
     }
 
@@ -112,7 +115,7 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
      */
     public void handleDeviceResponse(final DeviceResponse deviceResponse,
             final ResponseMessageSender responseMessageSender, final DomainInformation domainInformation,
-            final String messageType, final int retryCount) {
+            final String messageType, final int retryCount, final boolean isScheduled) {
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException ex = null;
@@ -137,13 +140,13 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
                 .osgpException(ex)
                 .retryCount(retryCount)
                 .retryHeader(new RetryHeader())
-                .scheduled(false)
+                .scheduled(isScheduled)
                 .build();
         responseMessageSender.send(protocolResponseMessage);
     }
 
     protected void handleExpectedError(final DeviceResponse deviceResponse, final OsgpException e,
-            final DomainInformation domainInformation, final String messageType) {
+            final DomainInformation domainInformation, final String messageType, final boolean isScheduled) {
         LOGGER.error("Expected error while processing message", e);
 
         final int retryCount = Integer.MAX_VALUE;
@@ -159,7 +162,7 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
                 .osgpException(e)
                 .retryCount(retryCount)
                 .retryHeader(new RetryHeader())
-                .scheduled(false)
+                .scheduled(isScheduled)
                 .build();
         this.responseMessageSender.send(protocolResponseMessage);
     }

@@ -69,7 +69,7 @@ public class Iec61850DeviceResponseHandler implements DeviceResponseHandler {
     @Override
     public void handleResponse(final DeviceResponse deviceResponse) {
         this.messageProcessor.handleDeviceResponse(deviceResponse, this.responseMessageSender, this.domainInformation,
-                this.deviceMessageMetadata.getMessageType(), this.retryCount);
+                this.deviceMessageMetadata.getMessageType(), this.retryCount, this.isScheduled);
     }
 
     /*

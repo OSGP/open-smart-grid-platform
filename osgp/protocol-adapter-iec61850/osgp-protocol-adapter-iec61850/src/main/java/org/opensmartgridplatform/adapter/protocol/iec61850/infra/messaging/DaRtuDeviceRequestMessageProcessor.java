@@ -115,7 +115,7 @@ public abstract class DaRtuDeviceRequestMessageProcessor extends BaseMessageProc
     @Override
     public void handleDeviceResponse(final DeviceResponse deviceResponse,
             final ResponseMessageSender responseMessageSender, final DomainInformation domainInformation,
-            final String messageType, final int retryCount) {
+            final String messageType, final int retryCount, final boolean isScheduled) {
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException ex = null;
@@ -143,7 +143,7 @@ public abstract class DaRtuDeviceRequestMessageProcessor extends BaseMessageProc
                 .dataObject(dataObject)
                 .retryCount(retryCount)
                 .retryHeader(new RetryHeader())
-                .scheduled(false)
+                .scheduled(isScheduled)
                 .build();
         responseMessageSender.send(protocolResponseMessage);
     }

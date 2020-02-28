@@ -32,8 +32,8 @@ public class PublicLightingGetLightSensorStatusRequestMessageProcessor extends L
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(
-            PublicLightingGetLightSensorStatusRequestMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(PublicLightingGetLightSensorStatusRequestMessageProcessor.class);
 
     protected PublicLightingGetLightSensorStatusRequestMessageProcessor() {
         super(MessageType.GET_LIGHT_SENSOR_STATUS);
@@ -42,9 +42,8 @@ public class PublicLightingGetLightSensorStatusRequestMessageProcessor extends L
     /*
      * (non-Javadoc)
      *
-     * @see
-     * org.opensmartgridplatform.shared.infra.jms.MessageProcessor#processMessage(javax
-     * .jms.ObjectMessage)
+     * @see org.opensmartgridplatform.shared.infra.jms.MessageProcessor#
+     * processMessage(javax .jms.ObjectMessage)
      */
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
@@ -72,16 +71,20 @@ public class PublicLightingGetLightSensorStatusRequestMessageProcessor extends L
             messageType = MessageType.GET_STATUS.name();
         }
 
-        final RequestMessageData requestMessageData = RequestMessageData.newBuilder().messageMetadata(
-                messageMetadata).messageType(messageType).build();
+        final RequestMessageData requestMessageData = RequestMessageData.newBuilder()
+                .messageMetadata(messageMetadata)
+                .messageType(messageType)
+                .build();
 
         this.printDomainInfo(requestMessageData);
 
-        final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this.createIec61850DeviceResponseHandler(
-                requestMessageData, message);
+        final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this
+                .createIec61850DeviceResponseHandler(requestMessageData, message);
 
-        final DeviceRequest deviceRequest = DeviceRequest.newBuilder().messageMetaData(messageMetadata).messageType(
-                messageType).build();
+        final DeviceRequest deviceRequest = DeviceRequest.newBuilder()
+                .messageMetaData(messageMetadata)
+                .messageType(messageType)
+                .build();
 
         this.deviceService.getStatus(deviceRequest, iec61850DeviceResponseHandler);
     }
@@ -89,9 +92,10 @@ public class PublicLightingGetLightSensorStatusRequestMessageProcessor extends L
     @Override
     public void handleDeviceResponse(final DeviceResponse deviceResponse,
             final org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender responseMessageSender,
-            final DomainInformation domainInformation, final String messageType, final int retryCount) {
+            final DomainInformation domainInformation, final String messageType, final int retryCount,
+            final boolean isScheduled) {
         LOGGER.info("Override for handleDeviceResponse() by PublicLightingGetLightSensorStatusRequestMessageProcessor");
         this.handleGetStatusDeviceResponse(deviceResponse, responseMessageSender, domainInformation, messageType,
-                retryCount);
+                retryCount, isScheduled);
     }
 }

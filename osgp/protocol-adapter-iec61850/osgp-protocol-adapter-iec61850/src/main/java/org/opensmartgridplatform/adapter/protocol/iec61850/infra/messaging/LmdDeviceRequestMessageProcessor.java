@@ -62,7 +62,7 @@ public abstract class LmdDeviceRequestMessageProcessor extends BaseMessageProces
 
     protected void handleGetStatusDeviceResponse(final DeviceResponse deviceResponse,
             final ResponseMessageSender responseMessageSender, final DomainInformation domainInformation,
-            final String messageType, final int retryCount) {
+            final String messageType, final int retryCount, final boolean isScheduled) {
         LOGGER.info("Handling getStatusDeviceResponse for device: {}", deviceResponse.getDeviceIdentification());
         if (StringUtils.isEmpty(deviceResponse.getCorrelationUid())) {
             LOGGER.warn(
@@ -85,7 +85,7 @@ public abstract class LmdDeviceRequestMessageProcessor extends BaseMessageProces
                 .osgpException(null)
                 .retryCount(retryCount)
                 .dataObject(status)
-                .scheduled(false)
+                .scheduled(isScheduled)
                 .retryHeader(new RetryHeader())
                 .build();
         responseMessageSender.send(protocolResponseMessage);

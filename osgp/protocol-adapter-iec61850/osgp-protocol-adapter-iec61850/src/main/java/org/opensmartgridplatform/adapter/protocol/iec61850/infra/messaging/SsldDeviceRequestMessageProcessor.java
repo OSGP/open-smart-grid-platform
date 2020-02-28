@@ -63,7 +63,7 @@ public abstract class SsldDeviceRequestMessageProcessor extends BaseMessageProce
     // This function is used in 3 domains.
     protected void handleGetStatusDeviceResponse(final DeviceResponse deviceResponse,
             final ResponseMessageSender responseMessageSender, final DomainInformation domainInformation,
-            final String messageType, final int retryCount) {
+            final String messageType, final int retryCount, final boolean isScheduled) {
         LOGGER.info("Handling getStatusDeviceResponse for device: {}", deviceResponse.getDeviceIdentification());
         if (StringUtils.isEmpty(deviceResponse.getCorrelationUid())) {
             LOGGER.warn(
@@ -86,7 +86,7 @@ public abstract class SsldDeviceRequestMessageProcessor extends BaseMessageProce
                 .osgpException(null)
                 .retryCount(retryCount)
                 .dataObject(status)
-                .scheduled(false)
+                .scheduled(isScheduled)
                 .retryHeader(new RetryHeader())
                 .build();
         responseMessageSender.send(protocolResponseMessage);
