@@ -20,6 +20,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.opensmartgridplatform.shared.infra.jms.RetryHeader;
 import org.opensmartgridplatform.signing.server.infra.messaging.SigningServerResponseMessageSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,6 +77,7 @@ public class SigningService {
         final Message payloadMessage = unsignedOslpEnvelopeDto.getPayloadMessage();
         final String organisationIdentification = unsignedOslpEnvelopeDto.getOrganisationIdentification();
         final int messagePriority = unsignedOslpEnvelopeDto.getMessagePriority();
+        final boolean scheduled = unsignedOslpEnvelopeDto.isScheduled();
 
         final OslpEnvelope oslpEnvelope = new OslpEnvelope.Builder().withDeviceId(deviceId)
                 .withSequenceNumber(sequenceNumber)
@@ -100,7 +102,8 @@ public class SigningService {
                             new OsgpException(ComponentType.UNKNOWN, "Failed to build signed OslpEnvelope", null))
                     .withDataObject(unsignedOslpEnvelopeDto)
                     .withMessagePriority(messagePriority)
-                    .withBypassRetry(true)
+                    .withScheduled(scheduled)
+                    .withRetryHeader(new RetryHeader())
                     .build();
 
         } else {
@@ -117,7 +120,8 @@ public class SigningService {
                     .withResult(ResponseMessageResultType.OK)
                     .withDataObject(signedOslpEnvelopeDto)
                     .withMessagePriority(messagePriority)
-                    .withBypassRetry(true)
+                    .withScheduled(scheduled)
+                    .withRetryHeader(new RetryHeader())
                     .build();
         }
 
