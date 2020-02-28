@@ -79,7 +79,7 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
      * sent to osgp-core.
      */
     public void checkForRedelivery(final DeviceMessageMetadata deviceMessageMetadata, final OsgpException e,
-            final DomainInformation domainInformation, final int jmsxDeliveryCount) throws JMSException {
+            final DomainInformation domainInformation, final int jmsxDeliveryCount) {
         final int jmsxRedeliveryCount = jmsxDeliveryCount - 1;
         LOGGER.info("jmsxDeliveryCount: {}, jmsxRedeliveryCount: {}, maxRedeliveriesForIec61850Requests: {}",
                 jmsxDeliveryCount, jmsxRedeliveryCount, this.maxRedeliveriesForIec61850Requests);
