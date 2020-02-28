@@ -9,7 +9,7 @@ package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.ser
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.openmuc.openiec61850.Fc;
+import com.beanit.openiec61850.Fc;
 
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.rtu.RtuWriteCommand;

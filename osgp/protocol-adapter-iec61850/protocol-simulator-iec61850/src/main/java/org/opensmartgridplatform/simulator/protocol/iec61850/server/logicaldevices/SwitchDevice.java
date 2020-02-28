@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.openmuc.openiec61850.BasicDataAttribute;
-import org.openmuc.openiec61850.ServerModel;
+import com.beanit.openiec61850.BasicDataAttribute;
+import com.beanit.openiec61850.ServerModel;
 
 public class SwitchDevice extends LogicalDevice {
 

@@ -17,7 +17,7 @@
   <artifactId>osgp-protocol-simulator-iec61850</artifactId>
   <name>osgp-protocol-simulator-iec61850</name>
   <packaging>war</packaging>
-  <!-- Description, Organization, Licenses, URL and Distribution Management 
+  <!-- Description, Organization, Licenses, URL and Distribution Management
     elements are needed for the maven-jxr-plugin to generate a maven site -->
   <description>Simulator for IEC61850 Protocol.</description>
   <organization>
@@ -55,7 +55,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>1.8</java.version>
     <spring.boot.version>2.1.3.RELEASE</spring.boot.version>
-    <openmuc.openiec61850.version>1.7.0</openmuc.openiec61850.version>
+    <beanit.openiec61850.version>1.8.0</beanit.openiec61850.version>
 
     <jxr.version>3.0.0</jxr.version>
     <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
@@ -87,9 +87,9 @@
 
     <!-- OpenIEC61850 -->
     <dependency>
-      <groupId>org.openmuc</groupId>
+      <groupId>com.beanit</groupId>
       <artifactId>openiec61850</artifactId>
-      <version>${openmuc.openiec61850.version}</version>
+      <version>${beanit.openiec61850.version}</version>
     </dependency>
   </dependencies>
 

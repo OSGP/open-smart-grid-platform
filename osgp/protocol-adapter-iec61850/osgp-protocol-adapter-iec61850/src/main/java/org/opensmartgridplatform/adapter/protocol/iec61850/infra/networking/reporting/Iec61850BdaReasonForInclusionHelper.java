@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.openmuc.openiec61850.BdaReasonForInclusion;
+import com.beanit.openiec61850.BdaReasonForInclusion;
 
 public class Iec61850BdaReasonForInclusionHelper {
 

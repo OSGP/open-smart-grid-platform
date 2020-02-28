@@ -10,7 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.iec61850.application.services
 import java.util.Date;
 import java.util.Objects;
 
-import org.openmuc.openiec61850.Report;
+import com.beanit.openiec61850.Report;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

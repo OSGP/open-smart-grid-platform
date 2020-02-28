@@ -15,9 +15,9 @@ import java.util.Map;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.openmuc.openiec61850.BdaBoolean;
-import org.openmuc.openiec61850.FcModelNode;
-import org.openmuc.openiec61850.Report;
+import com.beanit.openiec61850.BdaBoolean;
+import com.beanit.openiec61850.FcModelNode;
+import com.beanit.openiec61850.Report;
 import org.springframework.util.CollectionUtils;
 
 import org.opensmartgridplatform.adapter.protocol.iec61850.application.services.DeviceManagementService;

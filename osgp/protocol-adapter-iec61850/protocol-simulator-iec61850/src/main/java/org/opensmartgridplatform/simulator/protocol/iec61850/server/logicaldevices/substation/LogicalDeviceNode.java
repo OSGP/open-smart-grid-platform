@@ -9,8 +9,8 @@ package org.opensmartgridplatform.simulator.protocol.iec61850.server.logicaldevi
 
 import java.util.NoSuchElementException;
 
-import org.openmuc.openiec61850.ModelNode;
-import org.openmuc.openiec61850.ServerModel;
+import com.beanit.openiec61850.ModelNode;
+import com.beanit.openiec61850.ServerModel;
 
 public class LogicalDeviceNode {
     private final ServerModel serverModel;

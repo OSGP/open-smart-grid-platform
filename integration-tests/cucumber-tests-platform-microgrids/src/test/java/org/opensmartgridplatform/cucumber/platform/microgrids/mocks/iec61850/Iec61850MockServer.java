@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
 
-import org.openmuc.openiec61850.SclParseException;
+import com.beanit.openiec61850.SclParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

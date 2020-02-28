@@ -12,7 +12,7 @@ import java.util.Objects;
 
 import javax.jms.JMSException;
 
-import org.openmuc.openiec61850.ServiceError;
+import com.beanit.openiec61850.ServiceError;
 import org.springframework.util.StringUtils;
 
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceResponse;

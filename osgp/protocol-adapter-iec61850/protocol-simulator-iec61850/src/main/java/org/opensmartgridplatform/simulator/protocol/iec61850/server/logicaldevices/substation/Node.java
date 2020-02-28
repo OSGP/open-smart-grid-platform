@@ -7,12 +7,12 @@
  */
 package org.opensmartgridplatform.simulator.protocol.iec61850.server.logicaldevices.substation;
 
-import org.openmuc.openiec61850.BasicDataAttribute;
-import org.openmuc.openiec61850.BdaFloat32;
-import org.openmuc.openiec61850.BdaTimestamp;
-import org.openmuc.openiec61850.Fc;
-import org.openmuc.openiec61850.ModelNode;
-import org.openmuc.openiec61850.ServerModel;
+import com.beanit.openiec61850.BasicDataAttribute;
+import com.beanit.openiec61850.BdaFloat32;
+import com.beanit.openiec61850.BdaTimestamp;
+import com.beanit.openiec61850.Fc;
+import com.beanit.openiec61850.ModelNode;
+import com.beanit.openiec61850.ServerModel;
 
 import java.util.ArrayList;
 import java.util.List;
