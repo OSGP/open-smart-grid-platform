@@ -7,6 +7,17 @@ def playbook = stream + '-at.yml'
 // Choose the branch to use for SmartSocietyServices/release repository. Default value is 'master'.
 def branchReleaseRepo = 'master'
 
+void setBuildStatus(String message, String state) {
+    echo "Set status on GitHub to: " + state + " with message: " + message
+    step([
+        $class: "GitHubCommitStatusSetter",
+        reposSource: [$class: "ManuallyEnteredRepositorySource", url: "${repo}"],
+        contextSource: [$class: "ManuallyEnteredCommitContextSource", context: "ci/jenkins/build-status"],
+        errorHandlers: [[$class: "ChangingBuildStatusErrorHandler", result: "UNSTABLE"]],
+        statusResultSource: [ $class: "ConditionalStatusResultSource", results: [[$class: "AnyBuildResult", message: message, state: state]] ]
+    ]);
+}
+
 pipeline {
     agent {
         node {
@@ -190,7 +201,7 @@ echo Found cucumber tags: [$EXTRACTED_TAGS]'''
             build job: 'Destroy an AWS System', parameters: [string(name: 'SERVERNAME', value: servername), string(name: 'PLAYBOOK', value: playbook)]
         }
         success {
-            step([$class: 'GitHubSetCommitStatusBuilder', contextSource: [$class: 'ManuallyEnteredCommitContextSource']])
+            setBuildStatus("Build failed", "SUCCESS")
         }
         failure {
             // Mail everyone that the job failed
@@ -201,7 +212,7 @@ echo Found cucumber tags: [$EXTRACTED_TAGS]'''
                 to: '${DEFAULT_RECIPIENTS}',
                 from: '${DEFAULT_REPLYTO}')
 
-            step([$class: 'GitHubSetCommitStatusBuilder', contextSource: [$class: 'ManuallyEnteredCommitContextSource']])
+            setBuildStatus("Build failed", "FAILURE")
         }
         cleanup {
             // Delete workspace folder.
