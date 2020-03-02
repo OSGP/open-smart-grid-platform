@@ -1,7 +1,5 @@
 // Pipeline script for the OSGP Integration-Tests Pull Request job in Jenkins
 
-def repo = 'git@github.com:OSGP/open-smart-grid-platform.git'
-
 def stream = 'osgp'
 def servername = stream + '-at-pr-' + env.BUILD_NUMBER
 def playbook = stream + '-at.yml'
@@ -13,7 +11,7 @@ void setBuildStatus(String message, String state) {
     echo "Set status on GitHub to: " + state + " with message: " + message
     step([
         $class: "GitHubCommitStatusSetter",
-        reposSource: [$class: "ManuallyEnteredRepositorySource", url: repo],
+        reposSource: [$class: "ManuallyEnteredRepositorySource", url: "git@github.com:OSGP/open-smart-grid-platform.git"],
         contextSource: [$class: "ManuallyEnteredCommitContextSource", context: "ci/jenkins/build-status"],
         errorHandlers: [[$class: "ChangingBuildStatusErrorHandler", result: "UNSTABLE"]],
         statusResultSource: [ $class: "ConditionalStatusResultSource", results: [[$class: "AnyBuildResult", message: message, state: state]] ]
