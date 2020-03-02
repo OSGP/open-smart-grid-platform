@@ -13,7 +13,7 @@ void setBuildStatus(String message, String state) {
     echo "Set status on GitHub to: " + state + " with message: " + message
     step([
         $class: "GitHubCommitStatusSetter",
-        reposSource: [$class: "ManuallyEnteredRepositorySource", url: "${repo}"],
+        reposSource: [$class: "ManuallyEnteredRepositorySource", url: repo],
         contextSource: [$class: "ManuallyEnteredCommitContextSource", context: "ci/jenkins/build-status"],
         errorHandlers: [[$class: "ChangingBuildStatusErrorHandler", result: "UNSTABLE"]],
         statusResultSource: [ $class: "ConditionalStatusResultSource", results: [[$class: "AnyBuildResult", message: message, state: state]] ]
