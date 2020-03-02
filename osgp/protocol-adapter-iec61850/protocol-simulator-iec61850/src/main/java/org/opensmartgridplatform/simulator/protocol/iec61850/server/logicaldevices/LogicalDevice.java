@@ -211,9 +211,8 @@ public abstract class LogicalDevice {
      */
     public List<BasicDataAttribute> writeValueAndUpdateRelatedAttributes(final String node,
             final BasicDataAttribute value) {
-        LOGGER.info("No special update action needed for changing node \"{}\" in {} to {}", node,
-                this.logicalDeviceName, value);
-
+        LOGGER.info("Setting value of node \"{}\" in {} to {}", node, this.logicalDeviceName, value);
+        this.getAttributeAndSetValue(LogicalDeviceNode.fromDescription(node), value.getValueString());
         return new ArrayList<>();
     }
 

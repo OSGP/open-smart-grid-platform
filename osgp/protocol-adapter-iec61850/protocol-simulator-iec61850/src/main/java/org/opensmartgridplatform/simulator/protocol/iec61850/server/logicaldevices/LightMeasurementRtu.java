@@ -11,11 +11,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.beanit.openiec61850.BasicDataAttribute;
 import com.beanit.openiec61850.BdaVisibleString;
 import com.beanit.openiec61850.ServerModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Simulates a Light Measurement RTU having 4 light sensors (SPGGIO1, SPGGIO2,
@@ -45,11 +46,10 @@ public class LightMeasurementRtu extends LogicalDevice {
     @Override
     public List<BasicDataAttribute> writeValueAndUpdateRelatedAttributes(final String node,
             final BasicDataAttribute value) {
-        final List<BasicDataAttribute> values = new ArrayList<>();
+        final List<BasicDataAttribute> values = super.writeValueAndUpdateRelatedAttributes(node, value);
 
         if (LogicalDeviceNode.SPGGIO1_IND_D.getDescription().equals(node)) {
             LOGGER.info("Update the values for the light sensors");
-
             final byte[] newValue = ((BdaVisibleString) value).getValue();
             LOGGER.info("New value for {}: {}", node, new String(newValue));
 
@@ -65,7 +65,7 @@ public class LightMeasurementRtu extends LogicalDevice {
                 values.add(bda);
             }
         } else {
-            LOGGER.info("No special update action needed for setting node " + value);
+            LOGGER.info("No special update action needed for setting node {}", value);
         }
 
         return values;
