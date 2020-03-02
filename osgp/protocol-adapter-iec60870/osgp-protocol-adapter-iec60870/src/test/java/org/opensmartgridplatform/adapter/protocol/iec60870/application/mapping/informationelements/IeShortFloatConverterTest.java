@@ -10,7 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.application.mapping.
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
-import org.openmuc.j60870.IeShortFloat;
+import org.openmuc.j60870.ie.IeShortFloat;
 import org.opensmartgridplatform.dto.da.measurements.elements.FloatMeasurementElementDto;
 
 public class IeShortFloatConverterTest {

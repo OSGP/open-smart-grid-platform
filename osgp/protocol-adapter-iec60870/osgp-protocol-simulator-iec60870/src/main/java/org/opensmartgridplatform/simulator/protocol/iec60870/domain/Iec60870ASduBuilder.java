@@ -8,13 +8,13 @@
 package org.opensmartgridplatform.simulator.protocol.iec60870.domain;
 
 import org.openmuc.j60870.ASdu;
+import org.openmuc.j60870.ASduType;
 import org.openmuc.j60870.CauseOfTransmission;
-import org.openmuc.j60870.InformationObject;
-import org.openmuc.j60870.TypeId;
+import org.openmuc.j60870.ie.InformationObject;
 
 public class Iec60870ASduBuilder {
 
-    private TypeId typeId = TypeId.M_ME_NB_1;
+    private ASduType typeId = ASduType.M_ME_NB_1;
     private boolean sequenceOfElements = false;
     private CauseOfTransmission causeOfTransmission = CauseOfTransmission.SPONTANEOUS;
     private boolean test = false;
@@ -23,8 +23,8 @@ public class Iec60870ASduBuilder {
     private int commonAddress = 1;
     private InformationObject[] informationObjects;
 
-    public Iec60870ASduBuilder withTypeId(final TypeId typeId) {
-        this.typeId = typeId;
+    public Iec60870ASduBuilder withTypeId(final ASduType asduType) {
+        this.typeId = asduType;
         return this;
     }
 

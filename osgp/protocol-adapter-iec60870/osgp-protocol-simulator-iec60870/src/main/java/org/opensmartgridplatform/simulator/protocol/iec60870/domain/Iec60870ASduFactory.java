@@ -11,14 +11,14 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
 import org.openmuc.j60870.ASdu;
+import org.openmuc.j60870.ASduType;
 import org.openmuc.j60870.CauseOfTransmission;
-import org.openmuc.j60870.IeQualifierOfInterrogation;
-import org.openmuc.j60870.IeQuality;
-import org.openmuc.j60870.IeShortFloat;
-import org.openmuc.j60870.IeTime56;
-import org.openmuc.j60870.InformationElement;
-import org.openmuc.j60870.InformationObject;
-import org.openmuc.j60870.TypeId;
+import org.openmuc.j60870.ie.IeQualifierOfInterrogation;
+import org.openmuc.j60870.ie.IeQuality;
+import org.openmuc.j60870.ie.IeShortFloat;
+import org.openmuc.j60870.ie.IeTime56;
+import org.openmuc.j60870.ie.InformationElement;
+import org.openmuc.j60870.ie.InformationObject;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -34,7 +34,7 @@ public class Iec60870ASduFactory {
             new IeQualifierOfInterrogation(20);
 
     public ASdu createInterrogationCommandAsdu() {
-        return new Iec60870ASduBuilder().withTypeId(TypeId.C_IC_NA_1)
+        return new Iec60870ASduBuilder().withTypeId(ASduType.C_IC_NA_1)
                 .withCauseOfTransmission(CauseOfTransmission.ACTIVATION)
                 .withInformationObjects(new InformationObject[] { new InformationObject(0,
                         new InformationElement[][] { { DEFAULT_IE_QUALIFIER_OF_INTERROGATION } }) })
@@ -47,7 +47,7 @@ public class Iec60870ASduFactory {
     }
 
     public ASdu createInterrogationCommandResponseAsdu(final long timestamp) {
-        return new Iec60870ASduBuilder().withTypeId(TypeId.M_ME_TF_1).withSequenceOfElements(false)
+        return new Iec60870ASduBuilder().withTypeId(ASduType.M_ME_TF_1).withSequenceOfElements(false)
                 .withCauseOfTransmission(CauseOfTransmission.SPONTANEOUS)
                 .withInformationObjects(new InformationObject[] {
                         new InformationObject(
@@ -67,7 +67,7 @@ public class Iec60870ASduFactory {
     }
 
     public ASdu createActivationTerminationResponseAsdu() {
-        return new Iec60870ASduBuilder().withTypeId(TypeId.C_IC_NA_1).withSequenceOfElements(false)
+        return new Iec60870ASduBuilder().withTypeId(ASduType.C_IC_NA_1).withSequenceOfElements(false)
                 .withCauseOfTransmission(CauseOfTransmission.ACTIVATION_TERMINATION)
                 .withInformationObjects(new InformationObject[] { new InformationObject(0,
                         new InformationElement[][] { { DEFAULT_IE_QUALIFIER_OF_INTERROGATION } }) })
@@ -75,7 +75,7 @@ public class Iec60870ASduFactory {
     }
 
     public ASdu createSingleCommandAsdu() {
-        return new Iec60870ASduBuilder().withTypeId(TypeId.C_SC_NA_1)
+        return new Iec60870ASduBuilder().withTypeId(ASduType.C_SC_NA_1)
                 .withCauseOfTransmission(CauseOfTransmission.SPONTANEOUS)
                 .withInformationObjects(new InformationObject[] { new InformationObject(0,
                         new InformationElement[][] { { DEFAULT_IE_QUALIFIER_OF_INTERROGATION } }) })
@@ -88,7 +88,7 @@ public class Iec60870ASduFactory {
         final float hour = now.getHour();
         final float minute = now.getMinute();
 
-        return new Iec60870ASduBuilder().withTypeId(TypeId.M_ME_TF_1).withSequenceOfElements(false)
+        return new Iec60870ASduBuilder().withTypeId(ASduType.M_ME_TF_1).withSequenceOfElements(false)
                 .withCauseOfTransmission(CauseOfTransmission.SPONTANEOUS)
                 .withInformationObjects(new InformationObject[] {
                         new InformationObject(

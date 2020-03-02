@@ -8,7 +8,6 @@
 package org.opensmartgridplatform.iec60870;
 
 import java.io.IOException;
-import java.util.concurrent.TimeoutException;
 
 import org.openmuc.j60870.Connection;
 import org.openmuc.j60870.ServerEventListener;
@@ -25,7 +24,7 @@ public class Iec60870ServerEventListener implements ServerEventListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec60870ServerEventListener.class);
 
-    private Iec60870ConnectionRegistry iec60870ConnectionRegistry;
+    private final Iec60870ConnectionRegistry iec60870ConnectionRegistry;
     private final Iec60870ASduHandlerRegistry iec60870ASduHandlerRegistry;
     private final int connectionTimeout;
 
@@ -44,7 +43,7 @@ public class Iec60870ServerEventListener implements ServerEventListener {
             LOGGER.info("Waiting for StartDT on connection ({}) for {} ms.", connection, this.connectionTimeout);
             connection.waitForStartDT(new Iec60870ConnectionEventListener(connection, this.iec60870ConnectionRegistry,
                     this.iec60870ASduHandlerRegistry), this.connectionTimeout);
-        } catch (final IOException | TimeoutException e) {
+        } catch (final IOException e) {
             LOGGER.error("Exception occurred while connection ({}) was waiting for StartDT.", connection, e);
             return;
         }

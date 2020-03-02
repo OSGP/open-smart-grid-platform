@@ -10,7 +10,6 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.concurrent.TimeoutException;
 
 import javax.annotation.PostConstruct;
 
@@ -60,13 +59,13 @@ public class Iec60870Client implements Client {
 
         try {
             LOGGER.info("Connecting to device: {}...", deviceIdentification);
-            final Connection connection = clientConnectionBuilder.connect();
+            final Connection connection = clientConnectionBuilder.build();
             connection.startDataTransfer(asduListener, this.connectionTimeout);
             LOGGER.info("Connected to device: {}", deviceIdentification);
 
             return new DeviceConnection(connection, connectionParameters);
 
-        } catch (final IOException | TimeoutException e) {
+        } catch (final IOException e) {
             final String errorMessage = "Unable to connect to remote host: " + connectionParameters.getIpAddress();
             LOGGER.error(errorMessage, e);
 
