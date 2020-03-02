@@ -1,5 +1,7 @@
 // Pipeline script for the OSGP Integration-Tests Pull Request job in Jenkins
 
+def repo = 'git@github.com:OSGP/open-smart-grid-platform.git'
+
 def stream = 'osgp'
 def servername = stream + '-at-pr-' + env.BUILD_NUMBER
 def playbook = stream + '-at.yml'
