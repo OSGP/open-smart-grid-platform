@@ -13,6 +13,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+import org.opensmartgridplatform.simulator.protocol.iec61850.server.BasicDataAttributesHelper;
+import org.opensmartgridplatform.simulator.protocol.iec61850.server.QualityType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
+
 import com.beanit.openiec61850.BasicDataAttribute;
 import com.beanit.openiec61850.BdaBoolean;
 import com.beanit.openiec61850.BdaFloat32;
@@ -24,12 +30,6 @@ import com.beanit.openiec61850.BdaTimestamp;
 import com.beanit.openiec61850.BdaType;
 import com.beanit.openiec61850.BdaVisibleString;
 import com.beanit.openiec61850.ServerModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
-
-import org.opensmartgridplatform.simulator.protocol.iec61850.server.BasicDataAttributesHelper;
-import org.opensmartgridplatform.simulator.protocol.iec61850.server.QualityType;
 
 public abstract class LogicalDevice {
 
@@ -211,8 +211,8 @@ public abstract class LogicalDevice {
      */
     public List<BasicDataAttribute> writeValueAndUpdateRelatedAttributes(final String node,
             final BasicDataAttribute value) {
-        LOGGER.info("No special update action needed for changing node \"" + node + "\" in " + this.logicalDeviceName
-                + " to " + value);
+        LOGGER.info("No special update action needed for changing node \"{}\" in {} to {}", node,
+                this.logicalDeviceName, value);
 
         return new ArrayList<>();
     }

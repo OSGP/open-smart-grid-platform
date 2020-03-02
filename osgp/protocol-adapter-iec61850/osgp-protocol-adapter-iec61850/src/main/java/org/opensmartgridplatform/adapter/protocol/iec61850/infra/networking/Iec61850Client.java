@@ -163,6 +163,8 @@ public class Iec61850Client {
     /**
      * Use an ICD file (model file) to read the device model.
      *
+     * @param clientAssociation
+     *            Instance of {@link ClientAssociation}
      * @param filePath
      *            "../sampleServer/sampleModel.icd"
      *
@@ -171,13 +173,16 @@ public class Iec61850Client {
      * @throws ProtocolAdapterException
      *             In case the file path is empty.
      */
-    public ServerModel readServerModelFromSclFile(final String filePath) throws ProtocolAdapterException {
+    public ServerModel readServerModelFromSclFile(final ClientAssociation clientAssociation, final String filePath)
+            throws ProtocolAdapterException {
         if (StringUtils.isEmpty(filePath)) {
             throw new ProtocolAdapterException("File path is empty");
         }
 
         try {
-            return SclParser.parse(filePath).get(0);
+            final ServerModel serverModel = SclParser.parse(filePath).get(0);
+            clientAssociation.setServerModel(serverModel);
+            return serverModel;
         } catch (final SclParseException e) {
             throw new ProtocolAdapterException("Error parsing SCL file: " + filePath, e);
         }

@@ -267,7 +267,8 @@ public class Iec61850DeviceConnectionService {
 
         ServerModel serverModel;
         try {
-            serverModel = this.readServerModelConfiguredForDevice(deviceIdentification, iec61850Device);
+            serverModel = this.readServerModelConfiguredForDevice(clientAssociation, deviceIdentification,
+                    iec61850Device);
             if (serverModel != null) {
                 return serverModel;
             }
@@ -276,7 +277,7 @@ public class Iec61850DeviceConnectionService {
                     deviceIdentification, e);
         }
         try {
-            serverModel = this.readServerModelFromConfiguredIcdFile();
+            serverModel = this.readServerModelFromConfiguredIcdFile(clientAssociation);
             if (serverModel != null) {
                 return serverModel;
             }
@@ -287,8 +288,8 @@ public class Iec61850DeviceConnectionService {
         return this.iec61850Client.readServerModelFromDevice(clientAssociation);
     }
 
-    private ServerModel readServerModelConfiguredForDevice(final String deviceIdentification,
-            final Iec61850Device iec61850Device) throws ProtocolAdapterException {
+    private ServerModel readServerModelConfiguredForDevice(final ClientAssociation clientAssociation,
+            final String deviceIdentification, final Iec61850Device iec61850Device) throws ProtocolAdapterException {
 
         if (iec61850Device == null || StringUtils.isBlank(iec61850Device.getIcdFilename())) {
             /*
@@ -306,17 +307,18 @@ public class Iec61850DeviceConnectionService {
         final String filePath = Paths.get(this.icdFilesFolder, iec61850Device.getIcdFilename()).toString();
         LOGGER.info("Reading ServerModel from SCL / ICD file: {} configured for device: {}", filePath,
                 deviceIdentification);
-        return this.iec61850Client.readServerModelFromSclFile(filePath);
+        return this.iec61850Client.readServerModelFromSclFile(clientAssociation, filePath);
     }
 
-    private ServerModel readServerModelFromConfiguredIcdFile() throws ProtocolAdapterException {
+    private ServerModel readServerModelFromConfiguredIcdFile(final ClientAssociation clientAssociation)
+            throws ProtocolAdapterException {
 
         if (!this.isIcdFileUsed || StringUtils.isBlank(this.icdFilePath)) {
             return null;
         }
 
         LOGGER.info("Reading ServerModel from SCL / ICD file: {}", this.icdFilePath);
-        return this.iec61850Client.readServerModelFromSclFile(this.icdFilePath);
+        return this.iec61850Client.readServerModelFromSclFile(clientAssociation, this.icdFilePath);
     }
 
     /**
