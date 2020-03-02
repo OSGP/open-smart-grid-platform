@@ -97,7 +97,7 @@
     <logback.ext.version>0.1.5</logback.ext.version>
     <apache.commons.schema>2.2.5</apache.commons.schema>
     <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
-    <netty.version>4.1.45.Final</netty.version>
+    <netty.version>4.1.46.Final</netty.version>
     <openmuc.jdlms.version>1.6.0</openmuc.jdlms.version>
     <openmuc.openiec61850.version>1.6.0</openmuc.openiec61850.version>
     <openmuc.j60870.version>1.2.1</openmuc.j60870.version>
