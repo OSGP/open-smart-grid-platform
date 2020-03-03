@@ -83,7 +83,7 @@ public class RtuSimulator implements ServerEventListener {
             final Long updateValuesPeriod) throws SclParseException {
 
         final List<ServerModel> serverModels = SclParser.parse(IcdFileConverter.convertReportsForTesting(sclFile));
-        this.server = new ServerSap(port, 0, null, serverModels.get(0).copy(), null);
+        this.server = new ServerSap(port, 0, null, serverModels.get(0), null);
         this.serverName = serverName;
         this.serverSapEventProducer = serverSapEventProducer;
         this.updateValuesDelay = updateValuesDelay;
@@ -382,7 +382,6 @@ public class RtuSimulator implements ServerEventListener {
             final String node = matcher.group(2);
 
             final LogicalDevice logicalDevice = this.getLogicalDevice(logicalDeviceName);
-            logicalDevice.getAttributeAndSetValue(LogicalDeviceNode.fromDescription(node), bda.getValueString());
             final List<BasicDataAttribute> updatedAttributes = logicalDevice.writeValueAndUpdateRelatedAttributes(node,
                     bda);
             this.server.setValues(updatedAttributes);
@@ -397,6 +396,8 @@ public class RtuSimulator implements ServerEventListener {
 
     public void assertValue(final String logicalDeviceName, final String node, final String value) {
         final LogicalDevice logicalDevice = this.getLogicalDevice(logicalDeviceName);
+        // Get a new model copy to see values that have been set on the server.
+        logicalDevice.refreshServerModel(this.server.getModelCopy());
         final ModelNode actual = logicalDevice.getBasicDataAttribute(LogicalDeviceNode.fromDescription(node));
 
         final String onLogicalDevice = "\" on logical device \"";
