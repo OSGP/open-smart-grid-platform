@@ -46,7 +46,7 @@ public class LightMeasurementRtu extends LogicalDevice {
     @Override
     public List<BasicDataAttribute> writeValueAndUpdateRelatedAttributes(final String node,
             final BasicDataAttribute value) {
-        final List<BasicDataAttribute> values = super.writeValueAndUpdateRelatedAttributes(node, value);
+        final List<BasicDataAttribute> values = new ArrayList<>();
 
         if (LogicalDeviceNode.SPGGIO1_IND_D.getDescription().equals(node)) {
             LOGGER.info("Update the values for the light sensors");
