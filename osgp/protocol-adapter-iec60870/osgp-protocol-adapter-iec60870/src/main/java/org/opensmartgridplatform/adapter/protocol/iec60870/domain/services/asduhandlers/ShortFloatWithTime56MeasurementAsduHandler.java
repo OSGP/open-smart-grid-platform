@@ -7,7 +7,7 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.asduhandlers;
 
-import org.openmuc.j60870.TypeId;
+import org.openmuc.j60870.ASduType;
 import org.springframework.stereotype.Component;
 
 /**
@@ -21,6 +21,6 @@ import org.springframework.stereotype.Component;
 public class ShortFloatWithTime56MeasurementAsduHandler extends MeasurementAsduHandler {
 
     public ShortFloatWithTime56MeasurementAsduHandler() {
-        super(TypeId.M_ME_TF_1);
+        super(ASduType.M_ME_TF_1);
     }
 }

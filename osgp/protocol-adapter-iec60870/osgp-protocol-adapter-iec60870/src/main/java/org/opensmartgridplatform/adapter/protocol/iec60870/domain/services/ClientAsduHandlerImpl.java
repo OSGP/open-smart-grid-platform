@@ -9,7 +9,7 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services;
 
 import javax.annotation.PostConstruct;
 
-import org.openmuc.j60870.TypeId;
+import org.openmuc.j60870.ASduType;
 import org.opensmartgridplatform.iec60870.Iec60870ASduHandlerRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,19 +28,19 @@ public abstract class ClientAsduHandlerImpl implements ClientAsduHandler {
     @Autowired
     private ClientAsduHandlerRegistryImpl iec60870ClientASduHandlerRegistry;
 
-    private TypeId typeId;
+    private final ASduType asduType;
 
-    public ClientAsduHandlerImpl(final TypeId typeId) {
-        this.typeId = typeId;
+    public ClientAsduHandlerImpl(final ASduType asduType) {
+        this.asduType = asduType;
     }
 
-    public TypeId getTypeId() {
-        return this.typeId;
+    public ASduType getAsduType() {
+        return this.asduType;
     }
 
     @PostConstruct
     protected void register() {
         LOGGER.info("Registering ASdu Handler {}", this.getClass().getSimpleName());
-        this.iec60870ClientASduHandlerRegistry.registerHandler(this.typeId, this);
+        this.iec60870ClientASduHandlerRegistry.registerHandler(this.asduType, this);
     }
 }

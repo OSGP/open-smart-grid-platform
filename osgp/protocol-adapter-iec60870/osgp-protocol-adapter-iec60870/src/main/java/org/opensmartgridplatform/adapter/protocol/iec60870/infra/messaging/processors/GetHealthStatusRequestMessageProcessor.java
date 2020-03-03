@@ -10,7 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.proc
 import java.io.IOException;
 
 import org.openmuc.j60870.CauseOfTransmission;
-import org.openmuc.j60870.IeQualifierOfInterrogation;
+import org.openmuc.j60870.ie.IeQualifierOfInterrogation;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnection;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.LogItem;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.RequestMetadata;
@@ -47,8 +47,9 @@ public class GetHealthStatusRequestMessageProcessor extends AbstractMessageProce
         try {
             final int ieQualifierOfInterrogationValue = 20;
             final int commonAddress = deviceConnection.getConnectionParameters().getCommonAddress();
-            deviceConnection.getConnection().interrogation(commonAddress, CauseOfTransmission.ACTIVATION,
-                    new IeQualifierOfInterrogation(ieQualifierOfInterrogationValue));
+            deviceConnection.getConnection()
+                    .interrogation(commonAddress, CauseOfTransmission.ACTIVATION,
+                            new IeQualifierOfInterrogation(ieQualifierOfInterrogationValue));
 
             final String interrogationMessage = "Interrogation [CommonAddress: " + commonAddress
                     + ", CauseOfTransmission: " + CauseOfTransmission.ACTIVATION + ", IeQualifierOfInterrogation: "

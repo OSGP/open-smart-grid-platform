@@ -14,11 +14,11 @@ import java.time.ZonedDateTime;
 import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
-import org.openmuc.j60870.IeQuality;
-import org.openmuc.j60870.IeShortFloat;
-import org.openmuc.j60870.IeTime56;
-import org.openmuc.j60870.InformationElement;
-import org.openmuc.j60870.InformationObject;
+import org.openmuc.j60870.ie.IeQuality;
+import org.openmuc.j60870.ie.IeShortFloat;
+import org.openmuc.j60870.ie.IeTime56;
+import org.openmuc.j60870.ie.InformationElement;
+import org.openmuc.j60870.ie.InformationObject;
 import org.opensmartgridplatform.dto.da.measurements.MeasurementDto;
 import org.opensmartgridplatform.dto.da.measurements.MeasurementGroupDto;
 import org.opensmartgridplatform.dto.da.measurements.elements.BitmaskMeasurementElementDto;
