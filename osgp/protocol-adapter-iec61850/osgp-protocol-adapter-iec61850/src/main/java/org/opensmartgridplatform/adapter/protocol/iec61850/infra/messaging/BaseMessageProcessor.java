@@ -137,6 +137,7 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
                 .result(result)
                 .osgpException(ex)
                 .retryCount(retryCount)
+                .retryHeader(new RetryHeader())
                 .scheduled(isScheduled)
                 .build();
         responseMessageSender.send(protocolResponseMessage);
