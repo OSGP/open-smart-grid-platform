@@ -95,7 +95,7 @@ public class DeviceRequestMessageListener implements MessageListener {
                     .osgpException(osgpException)
                     .dataObject(objectMessage.getObject())
                     .retryHeader(new RetryHeader())
-                    .scheduled(messageMetadata.isScheduled())
+                    .scheduled(false)
                     .build();
 
             this.deviceResponseMessageSender.send(protocolResponseMessage);

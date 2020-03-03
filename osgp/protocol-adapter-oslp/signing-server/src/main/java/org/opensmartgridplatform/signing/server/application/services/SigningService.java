@@ -20,7 +20,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
-import org.opensmartgridplatform.shared.infra.jms.RetryHeader;
 import org.opensmartgridplatform.signing.server.infra.messaging.SigningServerResponseMessageSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,7 +102,6 @@ public class SigningService {
                     .withDataObject(unsignedOslpEnvelopeDto)
                     .withMessagePriority(messagePriority)
                     .withScheduled(scheduled)
-                    .withRetryHeader(new RetryHeader())
                     .build();
 
         } else {
@@ -121,7 +119,6 @@ public class SigningService {
                     .withDataObject(signedOslpEnvelopeDto)
                     .withMessagePriority(messagePriority)
                     .withScheduled(scheduled)
-                    .withRetryHeader(new RetryHeader())
                     .build();
         }
 

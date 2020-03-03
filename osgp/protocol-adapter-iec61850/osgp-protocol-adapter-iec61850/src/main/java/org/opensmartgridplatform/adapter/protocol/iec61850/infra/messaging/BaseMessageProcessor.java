@@ -101,10 +101,8 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
                     deviceMessageMetadata.getOrganisationIdentification(),
                     deviceMessageMetadata.getDeviceIdentification(), deviceMessageMetadata.getCorrelationUid(),
                     deviceMessageMetadata.getMessagePriority());
-            final Long scheduleTime = deviceMessageMetadata.getScheduleTime();
-            final boolean isScheduled = scheduleTime != null && scheduleTime > 0;
             this.handleExpectedError(deviceResponse, e, domainInformation, deviceMessageMetadata.getMessageType(),
-                    isScheduled);
+                    deviceMessageMetadata.isScheduled());
         }
     }
 
@@ -139,7 +137,6 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
                 .result(result)
                 .osgpException(ex)
                 .retryCount(retryCount)
-                .retryHeader(new RetryHeader())
                 .scheduled(isScheduled)
                 .build();
         responseMessageSender.send(protocolResponseMessage);
