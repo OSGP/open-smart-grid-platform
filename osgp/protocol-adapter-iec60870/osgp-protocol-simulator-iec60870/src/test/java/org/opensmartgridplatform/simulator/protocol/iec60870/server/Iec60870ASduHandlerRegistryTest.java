@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.openmuc.j60870.TypeId;
+import org.openmuc.j60870.ASduType;
 import org.opensmartgridplatform.iec60870.Iec60870ASduHandler;
 import org.opensmartgridplatform.iec60870.Iec60870ASduHandlerNotFoundException;
 import org.opensmartgridplatform.iec60870.Iec60870ASduHandlerRegistry;
@@ -46,11 +46,11 @@ public class Iec60870ASduHandlerRegistryTest {
         // arrange
         // Type Id PRIVATE_255 is used here, as it is likely to not have a
         // handler implemented...
-        final TypeId typeId = TypeId.PRIVATE_255;
+        final ASduType asduType = ASduType.PRIVATE_255;
         final Class<?> expected = Iec60870ASduHandlerNotFoundException.class;
 
         // act
-        final Throwable actual = catchThrowable(() -> this.iec60870aSduHandlerRegistry.getHandler(typeId));
+        final Throwable actual = catchThrowable(() -> this.iec60870aSduHandlerRegistry.getHandler(asduType));
 
         // assert
         assertThat(actual).isInstanceOf(expected);
@@ -59,11 +59,11 @@ public class Iec60870ASduHandlerRegistryTest {
     @Test
     public void registryShouldReturnInterrogationCommandHandlerForInterrogationCommandTypeId() throws Exception {
         // arrange
-        final TypeId typeId = TypeId.C_IC_NA_1;
+        final ASduType asduType = ASduType.C_IC_NA_1;
         final Iec60870InterrogationCommandASduHandler expected = this.iec60870InterrogationCommandASduHandler;
 
         // act
-        final Iec60870ASduHandler actual = this.iec60870aSduHandlerRegistry.getHandler(typeId);
+        final Iec60870ASduHandler actual = this.iec60870aSduHandlerRegistry.getHandler(asduType);
 
         // assert
         assertThat(actual).isEqualTo(expected);
@@ -72,11 +72,11 @@ public class Iec60870ASduHandlerRegistryTest {
     @Test
     public void registryShouldReturnSingleCommandHandlerForSingleCommandTypeId() throws Exception {
         // arrange
-        final TypeId typeId = TypeId.C_SC_NA_1;
+        final ASduType asduType = ASduType.C_SC_NA_1;
         final Iec60870SingleCommandASduHandler expected = this.iec60870SingleCommandASduHandler;
 
         // act
-        final Iec60870ASduHandler actual = this.iec60870aSduHandlerRegistry.getHandler(typeId);
+        final Iec60870ASduHandler actual = this.iec60870aSduHandlerRegistry.getHandler(asduType);
 
         // assert
         assertThat(actual).isEqualTo(expected);

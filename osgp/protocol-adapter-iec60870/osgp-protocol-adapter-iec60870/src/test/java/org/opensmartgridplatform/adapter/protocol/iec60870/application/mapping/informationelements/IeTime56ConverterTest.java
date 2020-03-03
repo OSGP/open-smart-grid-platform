@@ -13,7 +13,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
 import org.junit.jupiter.api.Test;
-import org.openmuc.j60870.IeTime56;
+import org.openmuc.j60870.ie.IeTime56;
 import org.opensmartgridplatform.dto.da.measurements.elements.TimestampMeasurementElementDto;
 
 public class IeTime56ConverterTest {

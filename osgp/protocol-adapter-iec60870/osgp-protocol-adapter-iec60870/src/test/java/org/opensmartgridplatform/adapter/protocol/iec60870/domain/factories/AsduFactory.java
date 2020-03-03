@@ -8,32 +8,32 @@
 package org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories;
 
 import org.openmuc.j60870.ASdu;
+import org.openmuc.j60870.ASduType;
 import org.openmuc.j60870.CauseOfTransmission;
-import org.openmuc.j60870.InformationObject;
-import org.openmuc.j60870.TypeId;
+import org.openmuc.j60870.ie.InformationObject;
 
 public class AsduFactory {
 
-    public static ASdu ofType(final TypeId typeId) {
-        return new Builder(typeId).build();
+    public static ASdu ofType(final ASduType asduType) {
+        return new Builder(asduType).build();
     }
 
     private static class Builder {
-        private TypeId typeId;
-        private boolean isSequenceOfElements = false;
-        private CauseOfTransmission causeOfTransmission = CauseOfTransmission.SPONTANEOUS;
-        private boolean test = false;
-        private boolean negativeConfirm = false;
-        private int originatorAddress = 0;
-        private int commonAddress = 1;
-        private InformationObject[] informationObjects = new InformationObject[] {};
+        private final ASduType asduType;
+        private final boolean isSequenceOfElements = false;
+        private final CauseOfTransmission causeOfTransmission = CauseOfTransmission.SPONTANEOUS;
+        private final boolean test = false;
+        private final boolean negativeConfirm = false;
+        private final int originatorAddress = 0;
+        private final int commonAddress = 1;
+        private final InformationObject[] informationObjects = new InformationObject[] {};
 
-        public Builder(final TypeId typeId) {
-            this.typeId = typeId;
+        public Builder(final ASduType asduType) {
+            this.asduType = asduType;
         }
 
         public ASdu build() {
-            return new ASdu(this.typeId, this.isSequenceOfElements, this.causeOfTransmission, this.test,
+            return new ASdu(this.asduType, this.isSequenceOfElements, this.causeOfTransmission, this.test,
                     this.negativeConfirm, this.originatorAddress, this.commonAddress, this.informationObjects);
         }
     }

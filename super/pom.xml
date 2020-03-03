@@ -74,7 +74,7 @@
     <joda.version>2.10.5</joda.version>
     <flyway.version>6.2.4</flyway.version>
     <slf4j.version>1.7.30</slf4j.version>
-    <apache.commons.lang.version>3.8.1</apache.commons.lang.version>
+    <apache.commons.lang.version>3.9</apache.commons.lang.version>
     <apache.commons.text.version>1.8</apache.commons.text.version>
     <apache.httpcomponents.version>4.5.11</apache.httpcomponents.version>
     <apache.httpcomponents.httpcore.version>4.4.13</apache.httpcomponents.httpcore.version>
@@ -97,10 +97,10 @@
     <logback.ext.version>0.1.5</logback.ext.version>
     <apache.commons.schema>2.2.5</apache.commons.schema>
     <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
-    <netty.version>4.1.45.Final</netty.version>
+    <netty.version>4.1.46.Final</netty.version>
     <openmuc.jdlms.version>1.6.0</openmuc.jdlms.version>
     <openmuc.openiec61850.version>1.6.0</openmuc.openiec61850.version>
-    <openmuc.j60870.version>1.2.1</openmuc.j60870.version>
+    <openmuc.j60870.version>1.3.1</openmuc.j60870.version>
     <javax.inject.version>1</javax.inject.version>
     <license.maven.plugin>3.0</license.maven.plugin>
     <jackson.version>2.10.2</jackson.version>
@@ -119,7 +119,7 @@
     <SunriseSunsetCalculator.version>1.2</SunriseSunsetCalculator.version>
     <ant.junit.version>1.10.7</ant.junit.version>
     <args4j.version>2.33</args4j.version>
-    <cucumber.version>5.4.0</cucumber.version>
+    <cucumber.version>5.4.1</cucumber.version>
     <sun.httpserver.version>20070405</sun.httpserver.version>
     <postgresql.version>42.2.10</postgresql.version>
   </properties>

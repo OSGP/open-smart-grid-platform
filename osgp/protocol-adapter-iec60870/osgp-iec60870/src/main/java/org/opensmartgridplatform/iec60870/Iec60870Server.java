@@ -27,7 +27,7 @@ public class Iec60870Server {
     }
 
     public void start() {
-        this.server = new Server.Builder().setPort(this.port).build();
+        this.server = Server.builder().setPort(this.port).build();
 
         try {
             LOGGER.info("Starting IEC60870 Server on port {}.", this.port);

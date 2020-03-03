@@ -11,9 +11,9 @@ import java.io.EOFException;
 import java.io.IOException;
 
 import org.openmuc.j60870.ASdu;
+import org.openmuc.j60870.ASduType;
 import org.openmuc.j60870.Connection;
 import org.openmuc.j60870.ConnectionEventListener;
-import org.openmuc.j60870.TypeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,8 +42,8 @@ public class Iec60870ConnectionEventListener implements ConnectionEventListener 
     @Override
     public void newASdu(final ASdu aSdu) {
         try {
-            final TypeId typeId = aSdu.getTypeIdentification();
-            final Iec60870ASduHandler aSduHandler = this.iec60870ASduHandlerRegistry.getHandler(typeId);
+            final ASduType asduType = aSdu.getTypeIdentification();
+            final Iec60870ASduHandler aSduHandler = this.iec60870ASduHandlerRegistry.getHandler(asduType);
             aSduHandler.handleASdu(this.connection, aSdu);
 
         } catch (final Iec60870ASduHandlerNotFoundException e) {

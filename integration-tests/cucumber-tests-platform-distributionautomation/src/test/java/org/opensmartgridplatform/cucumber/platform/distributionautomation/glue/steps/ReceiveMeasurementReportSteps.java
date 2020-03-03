@@ -7,7 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.steps;
 
-import org.openmuc.j60870.TypeId;
+import org.openmuc.j60870.ASduType;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.GetHealthStatusAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.GetHealthStatusRequest;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.notification.Notification;
@@ -42,7 +42,7 @@ public class ReceiveMeasurementReportSteps {
         // device by requesting its health status.
 
         // Ensure the mocked device returns an ASDU
-        this.mockServer.addIec60870ASduHandler(TypeId.C_IC_NA_1, this.getInterrogationCommandASduHandler());
+        this.mockServer.addIec60870ASduHandler(ASduType.C_IC_NA_1, this.getInterrogationCommandASduHandler());
 
         final GetHealthStatusRequest request = new GetHealthStatusRequest();
         request.setDeviceIdentification(deviceIdentification);

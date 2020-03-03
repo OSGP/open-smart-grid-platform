@@ -20,8 +20,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.openmuc.j60870.ASdu;
+import org.openmuc.j60870.ASduType;
 import org.openmuc.j60870.Connection;
-import org.openmuc.j60870.TypeId;
 import org.opensmartgridplatform.iec60870.Iec60870ASduHandlerRegistry;
 import org.opensmartgridplatform.iec60870.Iec60870ConnectionEventListener;
 import org.opensmartgridplatform.iec60870.Iec60870ConnectionRegistry;
@@ -62,7 +62,7 @@ public class Iec60870ConnectionEventListenerTest {
     public void interrogationCommandShouldBeHandledByInterrogationCommandHandler() throws Exception {
         // Arrange
         final ASdu aSdu = this.iec60870aSduFactory.createInterrogationCommandAsdu();
-        when(this.iec60870ASduHandlerRegistry.getHandler(TypeId.C_IC_NA_1))
+        when(this.iec60870ASduHandlerRegistry.getHandler(ASduType.C_IC_NA_1))
                 .thenReturn(this.interrogationCommandHandler);
 
         // Act
@@ -76,7 +76,7 @@ public class Iec60870ConnectionEventListenerTest {
     public void singleCommandShouldBeHandledBySingleCommandHandler() throws Exception {
         // Arrange
         final ASdu aSdu = this.iec60870aSduFactory.createSingleCommandAsdu();
-        when(this.iec60870ASduHandlerRegistry.getHandler(TypeId.C_SC_NA_1)).thenReturn(this.singleCommandHandler);
+        when(this.iec60870ASduHandlerRegistry.getHandler(ASduType.C_SC_NA_1)).thenReturn(this.singleCommandHandler);
 
         // Act
         this.iec60870ConnectionEventListener.newASdu(aSdu);

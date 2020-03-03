@@ -16,7 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmuc.j60870.ASdu;
-import org.openmuc.j60870.TypeId;
+import org.openmuc.j60870.ASduType;
 import org.opensmartgridplatform.adapter.protocol.iec60870.application.mapping.Iec60870Mapper;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.AsduFactory;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.LogItemFactory;
@@ -60,7 +60,7 @@ public class MeasurementAsduHandlerTest {
     @Test
     public void shouldSendMeasurementReportAndLogItemWhenHandlingAsdu() {
         // Arrange
-        final ASdu asdu = AsduFactory.ofType(TypeId.M_ME_TF_1);
+        final ASdu asdu = AsduFactory.ofType(ASduType.M_ME_TF_1);
         final MeasurementReportDto measurementReportDto = this.mapper.map(asdu, MeasurementReportDto.class);
         final ResponseMetadata responseMetadata = new ResponseMetadata.Builder().withCorrelationUid(CORRELATION_UID)
                 .withDeviceIdentification(DEVICE_IDENTIFICATION)
