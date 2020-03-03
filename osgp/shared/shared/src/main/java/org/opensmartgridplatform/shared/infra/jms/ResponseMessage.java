@@ -130,8 +130,7 @@ public class ResponseMessage implements Serializable {
             this.deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
             this.messagePriority = deviceMessageMetadata.getMessagePriority();
             this.bypassRetry = deviceMessageMetadata.bypassRetry();
-            this.scheduled = (deviceMessageMetadata.getScheduleTime() != null)
-                    && (deviceMessageMetadata.getScheduleTime() > 0);
+            this.scheduled = deviceMessageMetadata.isScheduled();
             this.retryHeader = new RetryHeader();
             return this;
         }
