@@ -12,8 +12,8 @@ import java.io.IOException;
 import javax.annotation.PostConstruct;
 
 import org.openmuc.j60870.ASdu;
+import org.openmuc.j60870.ASduType;
 import org.openmuc.j60870.Connection;
-import org.openmuc.j60870.TypeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,21 +31,21 @@ public abstract class Iec60870ASduHandler {
     @Autowired
     private Iec60870ASduHandlerRegistry iec60870ASduHandlerRegistry;
 
-    private TypeId typeId;
+    private final ASduType asduType;
 
-    public Iec60870ASduHandler(final TypeId typeId) {
-        this.typeId = typeId;
+    public Iec60870ASduHandler(final ASduType asduType) {
+        this.asduType = asduType;
     }
 
     public abstract void handleASdu(Connection t, ASdu u) throws IOException;
 
-    public TypeId getTypeId() {
-        return this.typeId;
+    public ASduType getAsduType() {
+        return this.asduType;
     }
 
     @PostConstruct
     protected void register() {
         LOGGER.info("Registering ASdu Handler {}", this.getClass().getSimpleName());
-        this.iec60870ASduHandlerRegistry.registerHandler(this.typeId, this);
+        this.iec60870ASduHandlerRegistry.registerHandler(this.asduType, this);
     }
 }

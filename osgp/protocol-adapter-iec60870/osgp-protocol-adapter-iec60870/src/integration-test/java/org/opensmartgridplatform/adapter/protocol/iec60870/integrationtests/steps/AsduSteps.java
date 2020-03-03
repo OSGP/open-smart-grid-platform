@@ -8,7 +8,7 @@
 package org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.steps;
 
 import org.openmuc.j60870.ASdu;
-import org.openmuc.j60870.TypeId;
+import org.openmuc.j60870.ASduType;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.AsduFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,10 +24,10 @@ public class AsduSteps {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConnectionSteps.class);
 
     @When("I receive an ASDU of type {string} from the IEC60870 device")
-    public void whenIReceiveAsduOfType(final String typeId) {
-        LOGGER.debug("When I receive an ASDU of type {}", typeId);
+    public void whenIReceiveAsduOfType(final String asduType) {
+        LOGGER.debug("When I receive an ASDU of type {}", asduType);
 
-        final ASdu asdu = AsduFactory.ofType(TypeId.valueOf(typeId));
+        final ASdu asdu = AsduFactory.ofType(ASduType.valueOf(asduType));
         this.connectionSteps.getConnectionEventListener().newASdu(asdu);
     }
 }

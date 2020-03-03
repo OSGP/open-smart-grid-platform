@@ -8,7 +8,7 @@
 package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.asduhandlers;
 
 import org.openmuc.j60870.ASdu;
-import org.openmuc.j60870.TypeId;
+import org.openmuc.j60870.ASduType;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.LogItemFactory;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.ResponseMetadataFactory;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.AsduConverterService;
@@ -45,8 +45,8 @@ public abstract class MeasurementAsduHandler extends ClientAsduHandlerImpl {
     @Autowired
     private LogItemFactory logItemFactory;
 
-    public MeasurementAsduHandler(final TypeId typeId) {
-        super(typeId);
+    public MeasurementAsduHandler(final ASduType asduType) {
+        super(asduType);
     }
 
     @Override
