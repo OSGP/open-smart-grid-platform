@@ -12,9 +12,6 @@ import java.util.Objects;
 
 import javax.jms.JMSException;
 
-import com.beanit.openiec61850.ServiceError;
-import org.springframework.util.StringUtils;
-
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceResponseHandler;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DomainInformation;
@@ -29,6 +26,10 @@ import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
+import org.opensmartgridplatform.shared.infra.jms.RetryHeader;
+import org.springframework.util.StringUtils;
+
+import com.beanit.openiec61850.ServiceError;
 
 public class Iec61850DeviceResponseHandler implements DeviceResponseHandler {
 
@@ -61,24 +62,24 @@ public class Iec61850DeviceResponseHandler implements DeviceResponseHandler {
     /*
      * (non-Javadoc)
      *
-     * @see
-     * org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceResponseHandler
-     * #handleResponse(org.opensmartgridplatform.adapter.protocol.iec61850.device.
-     * DeviceResponse)
+     * @see org.opensmartgridplatform.adapter.protocol.iec61850.device.
+     * DeviceResponseHandler
+     * #handleResponse(org.opensmartgridplatform.adapter.protocol.iec61850.
+     * device. DeviceResponse)
      */
     @Override
     public void handleResponse(final DeviceResponse deviceResponse) {
         this.messageProcessor.handleDeviceResponse(deviceResponse, this.responseMessageSender, this.domainInformation,
-                this.deviceMessageMetadata.getMessageType(), this.retryCount);
+                this.deviceMessageMetadata.getMessageType(), this.retryCount, this.isScheduled);
     }
 
     /*
      * (non-Javadoc)
      *
-     * @see
-     * org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceResponseHandler
-     * #handleConnectionFailure(java.lang.Throwable,
-     * org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceResponse)
+     * @see org.opensmartgridplatform.adapter.protocol.iec61850.device.
+     * DeviceResponseHandler #handleConnectionFailure(java.lang.Throwable,
+     * org.opensmartgridplatform.adapter.protocol.iec61850.device.
+     * DeviceResponse)
      */
     @Override
     public void handleConnectionFailure(final Throwable t, final DeviceResponse deviceResponse) throws JMSException {
@@ -92,10 +93,10 @@ public class Iec61850DeviceResponseHandler implements DeviceResponseHandler {
     /*
      * (non-Javadoc)
      *
-     * @see
-     * org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceResponseHandler
-     * #handleException(java.lang.Throwable,
-     * org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceResponse)
+     * @see org.opensmartgridplatform.adapter.protocol.iec61850.device.
+     * DeviceResponseHandler #handleException(java.lang.Throwable,
+     * org.opensmartgridplatform.adapter.protocol.iec61850.device.
+     * DeviceResponse)
      */
     @Override
     public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
@@ -104,9 +105,15 @@ public class Iec61850DeviceResponseHandler implements DeviceResponseHandler {
         final OsgpException ex = this.ensureOsgpException(t);
 
         final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage.Builder()
-                .domain(this.domainInformation.getDomain()).domainVersion(this.domainInformation.getDomainVersion())
-                .deviceMessageMetadata(this.deviceMessageMetadata).result(ResponseMessageResultType.NOT_OK)
-                .osgpException(ex).retryCount(this.retryCount).dataObject(this.messageData).scheduled(this.isScheduled)
+                .domain(this.domainInformation.getDomain())
+                .domainVersion(this.domainInformation.getDomainVersion())
+                .deviceMessageMetadata(this.deviceMessageMetadata)
+                .result(ResponseMessageResultType.NOT_OK)
+                .osgpException(ex)
+                .retryCount(this.retryCount)
+                .dataObject(this.messageData)
+                .scheduled(this.isScheduled)
+                .retryHeader(new RetryHeader())
                 .build();
         this.responseMessageSender.send(protocolResponseMessage);
     }

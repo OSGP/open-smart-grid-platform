@@ -29,6 +29,7 @@ import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
+import org.opensmartgridplatform.shared.infra.jms.RetryHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -62,7 +63,8 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends S
             return;
         }
 
-        final RequestMessageData requestMessageData = RequestMessageData.newBuilder().messageMetadata(messageMetadata)
+        final RequestMessageData requestMessageData = RequestMessageData.newBuilder()
+                .messageMetadata(messageMetadata)
                 .build();
 
         this.printDomainInfo(requestMessageData);
@@ -80,15 +82,15 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends S
     @Override
     public void handleDeviceResponse(final DeviceResponse deviceResponse,
             final ResponseMessageSender responseMessageSender, final DomainInformation domainInformation,
-            final String messageType, final int retryCount) {
+            final String messageType, final int retryCount, final boolean isScheduled) {
         LOGGER.info("Override for handleDeviceResponse() by PublicLightingGetPowerUsageHistoryRequestMessageProcessor");
         this.handleGetPowerUsageHistoryDeviceResponse(deviceResponse, responseMessageSender, domainInformation,
-                messageType, retryCount);
+                messageType, retryCount, isScheduled);
     }
 
     private void handleGetPowerUsageHistoryDeviceResponse(final DeviceResponse deviceResponse,
             final ResponseMessageSender responseMessageSender, final DomainInformation domainInformation,
-            final String messageType, final int retryCount) {
+            final String messageType, final int retryCount, final boolean isScheduled) {
 
         final GetPowerUsageHistoryDeviceResponse getPowerUsageHistoryDeviceResponse = (GetPowerUsageHistoryDeviceResponse) deviceResponse;
         ResponseMessageResultType result = ResponseMessageResultType.OK;
@@ -110,9 +112,15 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends S
                 deviceResponse.getCorrelationUid(), messageType, deviceResponse.getMessagePriority());
         final ProtocolResponseMessage.Builder builder = new ProtocolResponseMessage.Builder();
         final ProtocolResponseMessage responseMessage = builder.domain(domainInformation.getDomain())
-                .domainVersion(domainInformation.getDomainVersion()).deviceMessageMetadata(deviceMessageMetadata)
-                .result(result).osgpException(osgpException).dataObject(powerUsageHistoryResponseMessageDataContainer)
-                .retryCount(retryCount).build();
+                .domainVersion(domainInformation.getDomainVersion())
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .result(result)
+                .osgpException(osgpException)
+                .dataObject(powerUsageHistoryResponseMessageDataContainer)
+                .retryCount(retryCount)
+                .retryHeader(new RetryHeader())
+                .scheduled(isScheduled)
+                .build();
 
         responseMessageSender.send(responseMessage);
     }

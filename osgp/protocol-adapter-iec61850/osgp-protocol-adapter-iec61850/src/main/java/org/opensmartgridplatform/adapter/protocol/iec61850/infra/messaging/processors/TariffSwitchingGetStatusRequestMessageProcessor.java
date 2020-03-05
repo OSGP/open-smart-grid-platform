@@ -48,7 +48,8 @@ public class TariffSwitchingGetStatusRequestMessageProcessor extends SsldDeviceR
             return;
         }
 
-        final RequestMessageData requestMessageData = RequestMessageData.newBuilder().messageMetadata(messageMetadata)
+        final RequestMessageData requestMessageData = RequestMessageData.newBuilder()
+                .messageMetadata(messageMetadata)
                 .build();
 
         this.printDomainInfo(requestMessageData);
@@ -64,9 +65,10 @@ public class TariffSwitchingGetStatusRequestMessageProcessor extends SsldDeviceR
     @Override
     public void handleDeviceResponse(final DeviceResponse deviceResponse,
             final org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender responseMessageSender,
-            final DomainInformation domainInformation, final String messageType, final int retryCount) {
+            final DomainInformation domainInformation, final String messageType, final int retryCount,
+            final boolean isScheduled) {
         LOGGER.info("Override for handleDeviceResponse() by TariffSwitchingGetStatusRequestMessageProcessor");
         this.handleGetStatusDeviceResponse(deviceResponse, responseMessageSender, domainInformation, messageType,
-                retryCount);
+                retryCount, isScheduled);
     }
 }

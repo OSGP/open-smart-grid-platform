@@ -27,6 +27,7 @@ import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
+import org.opensmartgridplatform.shared.infra.jms.RetryHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -57,7 +58,8 @@ public class CommonGetConfigurationRequestMessageProcessor extends SsldDeviceReq
             return;
         }
 
-        final RequestMessageData requestMessageData = RequestMessageData.newBuilder().messageMetadata(messageMetadata)
+        final RequestMessageData requestMessageData = RequestMessageData.newBuilder()
+                .messageMetadata(messageMetadata)
                 .build();
 
         this.printDomainInfo(requestMessageData);
@@ -73,15 +75,15 @@ public class CommonGetConfigurationRequestMessageProcessor extends SsldDeviceReq
     @Override
     public void handleDeviceResponse(final DeviceResponse deviceResponse,
             final ResponseMessageSender responseMessageSender, final DomainInformation domainInformation,
-            final String messageType, final int retryCount) {
+            final String messageType, final int retryCount, final boolean isScheduled) {
         LOGGER.info("Override for handleDeviceResponse() by CommonGetConfigurationRequestMessageProcessor");
         this.handleGetConfigurationDeviceResponse(deviceResponse, responseMessageSender, domainInformation, messageType,
-                retryCount);
+                retryCount, isScheduled);
     }
 
     private void handleGetConfigurationDeviceResponse(final DeviceResponse deviceResponse,
             final ResponseMessageSender responseMessageSender, final DomainInformation domainInformation,
-            final String messageType, final int retryCount) {
+            final String messageType, final int retryCount, final boolean isScheduled) {
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException osgpException = null;
@@ -101,9 +103,16 @@ public class CommonGetConfigurationRequestMessageProcessor extends SsldDeviceReq
                 deviceResponse.getDeviceIdentification(), deviceResponse.getOrganisationIdentification(),
                 deviceResponse.getCorrelationUid(), messageType, deviceResponse.getMessagePriority());
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder()
-                .domain(domainInformation.getDomain()).domainVersion(domainInformation.getDomainVersion())
-                .deviceMessageMetadata(deviceMessageMetaData).result(result).osgpException(osgpException)
-                .dataObject(configuration).retryCount(retryCount).build();
+                .domain(domainInformation.getDomain())
+                .domainVersion(domainInformation.getDomainVersion())
+                .deviceMessageMetadata(deviceMessageMetaData)
+                .result(result)
+                .osgpException(osgpException)
+                .dataObject(configuration)
+                .retryCount(retryCount)
+                .scheduled(isScheduled)
+                .retryHeader(new RetryHeader())
+                .build();
 
         responseMessageSender.send(responseMessage);
     }
