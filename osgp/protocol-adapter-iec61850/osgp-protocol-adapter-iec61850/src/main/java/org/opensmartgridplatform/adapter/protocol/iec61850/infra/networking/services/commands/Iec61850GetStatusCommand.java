@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.openmuc.openiec61850.BdaBoolean;
-import org.openmuc.openiec61850.Fc;
+import com.beanit.openiec61850.BdaBoolean;
+import com.beanit.openiec61850.Fc;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.EventType;
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;

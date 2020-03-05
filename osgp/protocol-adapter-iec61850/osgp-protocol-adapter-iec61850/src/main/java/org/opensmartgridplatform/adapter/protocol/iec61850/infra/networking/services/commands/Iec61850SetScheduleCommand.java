@@ -14,8 +14,8 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.joda.time.DateTime;
-import org.openmuc.openiec61850.BdaBoolean;
-import org.openmuc.openiec61850.Fc;
+import com.beanit.openiec61850.BdaBoolean;
+import com.beanit.openiec61850.Fc;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.ScheduleEntry;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.ScheduleWeekday;

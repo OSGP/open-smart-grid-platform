@@ -222,7 +222,7 @@
 
     <!-- OpenIEC61850 -->
     <dependency>
-      <groupId>org.openmuc</groupId>
+      <groupId>com.beanit</groupId>
       <artifactId>openiec61850</artifactId>
     </dependency>
 

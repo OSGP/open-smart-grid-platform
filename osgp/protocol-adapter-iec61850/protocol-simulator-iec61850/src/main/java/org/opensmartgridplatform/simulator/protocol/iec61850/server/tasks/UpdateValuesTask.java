@@ -8,7 +8,7 @@
 package org.opensmartgridplatform.simulator.protocol.iec61850.server.tasks;
 
 import org.opensmartgridplatform.simulator.protocol.iec61850.server.eventproducers.ServerSapEventProducer;
-import org.openmuc.openiec61850.ServerSap;
+import com.beanit.openiec61850.ServerSap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

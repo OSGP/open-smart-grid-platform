@@ -12,7 +12,6 @@ import java.util.Objects;
 
 import javax.jms.JMSException;
 
-import org.openmuc.openiec61850.ServiceError;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceResponseHandler;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DomainInformation;
@@ -29,6 +28,8 @@ import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
 import org.opensmartgridplatform.shared.infra.jms.RetryHeader;
 import org.springframework.util.StringUtils;
+
+import com.beanit.openiec61850.ServiceError;
 
 public class Iec61850DeviceResponseHandler implements DeviceResponseHandler {
 

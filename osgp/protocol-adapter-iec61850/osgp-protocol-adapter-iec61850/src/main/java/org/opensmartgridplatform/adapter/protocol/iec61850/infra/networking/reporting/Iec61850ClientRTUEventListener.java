@@ -18,8 +18,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.joda.time.DateTime;
-import org.openmuc.openiec61850.FcModelNode;
-import org.openmuc.openiec61850.Report;
+import com.beanit.openiec61850.FcModelNode;
+import com.beanit.openiec61850.Report;
 import org.springframework.util.CollectionUtils;
 
 import org.opensmartgridplatform.adapter.protocol.iec61850.application.config.BeanUtil;

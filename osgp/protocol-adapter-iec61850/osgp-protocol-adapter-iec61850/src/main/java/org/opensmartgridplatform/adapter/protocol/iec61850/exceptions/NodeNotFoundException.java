@@ -7,7 +7,7 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec61850.exceptions;
 
-import org.openmuc.openiec61850.FcModelNode;
+import com.beanit.openiec61850.FcModelNode;
 
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.ConnectionState;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;

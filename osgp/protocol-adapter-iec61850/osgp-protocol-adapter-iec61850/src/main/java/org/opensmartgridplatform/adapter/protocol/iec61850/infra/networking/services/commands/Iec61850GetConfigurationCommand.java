@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.joda.time.DateTimeZone;
-import org.openmuc.openiec61850.Fc;
+import com.beanit.openiec61850.Fc;
 import org.opensmartgridplatform.adapter.protocol.iec61850.application.mapping.Iec61850Mapper;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DaylightSavingTimeTransition;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;

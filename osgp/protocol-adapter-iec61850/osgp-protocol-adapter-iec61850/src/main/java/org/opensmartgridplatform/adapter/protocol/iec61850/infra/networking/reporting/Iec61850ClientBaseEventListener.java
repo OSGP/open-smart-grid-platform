@@ -12,10 +12,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.joda.time.DateTime;
-import org.openmuc.openiec61850.BdaReasonForInclusion;
-import org.openmuc.openiec61850.ClientEventListener;
-import org.openmuc.openiec61850.HexConverter;
-import org.openmuc.openiec61850.Report;
+import com.beanit.openiec61850.BdaReasonForInclusion;
+import com.beanit.openiec61850.ClientEventListener;
+import com.beanit.openiec61850.HexConverter;
+import com.beanit.openiec61850.Report;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
