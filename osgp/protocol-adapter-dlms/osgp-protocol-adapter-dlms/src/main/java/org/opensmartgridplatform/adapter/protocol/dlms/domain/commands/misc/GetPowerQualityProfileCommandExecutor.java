@@ -8,8 +8,12 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +69,33 @@ public class GetPowerQualityProfileCommandExecutor
     private static final ObisCodeValuesDto OBIS_CODE_PROFILE_2 = new ObisCodeValuesDto((byte) 1, (byte) 0, (byte) 99,
             (byte) 1, (byte) 2, (byte) 255);
 
+    private static final int INTERVAL_DEFINABLE_LOAD_PROFILE = 15;
+    private static final int INTERVAL_PROFILE_1 = 15;
+    private static final int INTERVAL_PROFILE_2 = 10;
+
+    private enum Profile {
+
+        DEFINABLE_LOAD_PROFILE(OBIS_CODE_DEFINABLE_LOAD_PROFILE, INTERVAL_DEFINABLE_LOAD_PROFILE),
+        PROFILE_1(OBIS_CODE_PROFILE_1, INTERVAL_PROFILE_1),
+        PROFILE_2(OBIS_CODE_PROFILE_2, INTERVAL_PROFILE_2);
+
+        private final ObisCodeValuesDto obisCodeValuesDto;
+        private final int interval;
+
+        Profile(ObisCodeValuesDto obisCodeValuesDto, int interval) {
+            this.obisCodeValuesDto = obisCodeValuesDto;
+            this.interval = interval;
+        }
+
+        public ObisCodeValuesDto getObisCodeValuesDto() {
+            return obisCodeValuesDto;
+        }
+
+        public int getInterval() {
+            return interval;
+        }
+    }
+
     private static final byte[] OBIS_BYTES_CLOCK = new byte[] { 0, 0, 1, 0, 0, (byte) 255 };
 
     private static final Map<Integer, Integer> SCALER_UNITS_MAP = new HashMap<>();
@@ -93,21 +124,22 @@ public class GetPowerQualityProfileCommandExecutor
 
         LOGGER.info("executing GetPowerQualityProfileResponseDto for {}", profileType);
 
-        final List<ObisCodeValuesDto> obisCodeValuesDtos = determineProfileForDevice(profileType);
+        final List<Profile> profiles = determineProfileForDevice(profileType);
 
         final GetPowerQualityProfileResponseDto response = new GetPowerQualityProfileResponseDto();
         final List<PowerQualityProfileDataDto> responseDatas = new ArrayList<>();
 
-        for (final ObisCodeValuesDto obisCodeValues : obisCodeValuesDtos) {
+        for (final Profile profile : profiles) {
 
-            final ObisCode obisCode = this.makeObisCode(obisCodeValues);
+            final ObisCode obisCode = this.makeObisCode(profile.getObisCodeValuesDto());
             final DateTime beginDateTime = new DateTime(getPowerQualityProfileRequestDataDto.getBeginDate());
             final DateTime endDateTime = new DateTime(getPowerQualityProfileRequestDataDto.getEndDate());
             final List<CaptureObjectDefinitionDto> selectedValues = getPowerQualityProfileRequestDataDto
                     .getSelectedValues();
 
-            LOGGER.info("Retrieving power quality data for {}, from: {}, to: {}, selected values: {}", obisCodeValues,
-                    beginDateTime, endDateTime, selectedValues.isEmpty() ? "all capture objects" : selectedValues);
+            LOGGER.info("Retrieving power quality data for {}, from: {}, to: {}, selected values: {}",
+                    profile.getObisCodeValuesDto(), beginDateTime, endDateTime,
+                    selectedValues.isEmpty() ? "all capture objects" : selectedValues);
 
             final List<GetResult> captureObjects = this.retrieveCaptureObjects(conn, device, obisCode);
             final List<ScalerUnitInfo> scalerUnitInfos = this.retrieveScalerUnits(conn, device, captureObjects);
@@ -115,7 +147,7 @@ public class GetPowerQualityProfileCommandExecutor
                     .retrieveBuffer(conn, device, obisCode, beginDateTime, endDateTime, selectedValues);
 
             final PowerQualityProfileDataDto responseDataDto = this
-                    .processData(obisCodeValues, captureObjects, scalerUnitInfos, selectedValues,
+                    .processData(profile, captureObjects, scalerUnitInfos, selectedValues,
                             device.isSelectiveAccessSupported(), bufferList);
 
             LOGGER.info("----- added LogicalName {}", responseDataDto.getLogicalName());
@@ -134,13 +166,13 @@ public class GetPowerQualityProfileCommandExecutor
         return response;
     }
 
-    private List<ObisCodeValuesDto> determineProfileForDevice(final String profileType) {
+    private List<Profile> determineProfileForDevice(final String profileType) {
 
         switch (profileType) {
         case "PUBLIC":
-            return Arrays.asList(OBIS_CODE_DEFINABLE_LOAD_PROFILE, OBIS_CODE_PROFILE_2);
+            return Arrays.asList(Profile.DEFINABLE_LOAD_PROFILE, Profile.PROFILE_2);
         case "PRIVATE":
-            return Arrays.asList(OBIS_CODE_PROFILE_1, OBIS_CODE_PROFILE_2);
+            return Arrays.asList(Profile.PROFILE_1, Profile.PROFILE_2);
         default:
             throw new IllegalArgumentException(
                     "GetPowerQualityProfile: an unknown profileType was requested: " + profileType);
@@ -171,29 +203,39 @@ public class GetPowerQualityProfileCommandExecutor
      * Process data Add units to capture objects Calculate the proper values in
      * the buffer using the scaler
      */
-    private PowerQualityProfileDataDto processData(final ObisCodeValuesDto obisCode,
-            final List<GetResult> captureObjects, final List<ScalerUnitInfo> scalerUnitInfos,
-            final List<CaptureObjectDefinitionDto> selectedValues, final boolean isSelectingValuesSupported,
-            final List<GetResult> bufferList) throws ProtocolAdapterException {
+    private PowerQualityProfileDataDto processData(final Profile profile, final List<GetResult> captureObjects,
+            final List<ScalerUnitInfo> scalerUnitInfos, final List<CaptureObjectDefinitionDto> selectedValues,
+            final boolean isSelectingValuesSupported, final List<GetResult> bufferList)
+            throws ProtocolAdapterException {
 
         LOGGER.info("GetPowerQualityProfileCommandExecutor retrieved {} results ", bufferList.size());
 
         final List<CaptureObjectDto> captureObjectDtos = this
                 .makeCaptureObjects(captureObjects, scalerUnitInfos, selectedValues, isSelectingValuesSupported);
-        final List<ProfileEntryDto> profileEntryDtos = this.makeProfileEntries(bufferList, scalerUnitInfos);
-        return new PowerQualityProfileDataDto(obisCode, captureObjectDtos, profileEntryDtos);
+        final List<ProfileEntryDto> profileEntryDtos = this
+                .makeProfileEntries(bufferList, scalerUnitInfos, profile.getInterval());
+        return new PowerQualityProfileDataDto(profile.getObisCodeValuesDto(), captureObjectDtos, profileEntryDtos);
     }
 
     private List<ProfileEntryDto> makeProfileEntries(final List<GetResult> bufferList,
-            final List<ScalerUnitInfo> scalerUnitInfos) throws ProtocolAdapterException {
+            final List<ScalerUnitInfo> scalerUnitInfos, int timeInterval) {
 
         final List<ProfileEntryDto> profileEntryDtos = new ArrayList<>();
         for (final GetResult buffer : bufferList) {
             final DataObject dataObject = buffer.getResultData();
             final List<DataObject> dataObjectList1 = dataObject.getValue();
+
+            ProfileEntryDto previousProfileEntryDto = null;
+
             for (final DataObject profEntryDataObject : dataObjectList1) {
-                profileEntryDtos
-                        .add(new ProfileEntryDto(this.makeProfileEntryValueDto(profEntryDataObject, scalerUnitInfos)));
+
+                ProfileEntryDto profileEntryDto = new ProfileEntryDto(
+                        this.makeProfileEntryValueDto(profEntryDataObject, scalerUnitInfos, previousProfileEntryDto,
+                                timeInterval));
+
+                profileEntryDtos.add(profileEntryDto);
+
+                previousProfileEntryDto = profileEntryDto;
             }
         }
         return profileEntryDtos;
@@ -357,20 +399,26 @@ public class GetPowerQualityProfileCommandExecutor
     }
 
     private List<ProfileEntryValueDto> makeProfileEntryValueDto(final DataObject profEntryDataObjects,
-            final List<ScalerUnitInfo> scalerUnitInfos) throws ProtocolAdapterException {
+            final List<ScalerUnitInfo> scalerUnitInfos, ProfileEntryDto previousProfileEntryDto, int timeInterval) {
 
         final List<ProfileEntryValueDto> result = new ArrayList<>();
+
         final List<DataObject> dataObjects = profEntryDataObjects.getValue();
         for (int i = 0; i < dataObjects.size(); i++) {
-            result.add(this.makeProfileEntryValueDto(dataObjects.get(i), scalerUnitInfos.get(i)));
+
+            ProfileEntryValueDto currenProfileEntryValueDto = this
+                    .makeProfileEntryValueDto(dataObjects.get(i), scalerUnitInfos.get(i), previousProfileEntryDto,
+                            timeInterval);
+            result.add(currenProfileEntryValueDto);
+
         }
         return result;
     }
 
     private ProfileEntryValueDto makeProfileEntryValueDto(final DataObject dataObject,
-            final ScalerUnitInfo scalerUnitInfo) throws ProtocolAdapterException {
+            final ScalerUnitInfo scalerUnitInfo, ProfileEntryDto previousProfileEntryDto, int timeInterval) {
         if (InterfaceClass.CLOCK.id() == scalerUnitInfo.getClassId()) {
-            return this.makeDateProfileEntryValueDto(dataObject);
+            return this.makeDateProfileEntryValueDto(dataObject, previousProfileEntryDto, timeInterval);
         } else if (dataObject.isNumber()) {
             return this.makeNumericProfileEntryValueDto(dataObject, scalerUnitInfo);
         } else {
@@ -380,10 +428,21 @@ public class GetPowerQualityProfileCommandExecutor
         }
     }
 
-    private ProfileEntryValueDto makeDateProfileEntryValueDto(final DataObject dataObject)
-            throws ProtocolAdapterException {
-        final CosemDateTimeDto cosemDateTime = this.dlmsHelper.convertDataObjectToDateTime(dataObject);
-        return new ProfileEntryValueDto(cosemDateTime.asDateTime().toDate());
+    private ProfileEntryValueDto makeDateProfileEntryValueDto(final DataObject dataObject,
+            ProfileEntryDto previousProfileEntryDto, int timeInterval) {
+        final CosemDateTimeDto cosemDateTime;
+        try {
+            cosemDateTime = this.dlmsHelper.convertDataObjectToDateTime(dataObject);
+            return new ProfileEntryValueDto(cosemDateTime.asDateTime().toDate());
+        } catch (ProtocolAdapterException e) {
+
+            // in case of null date, we calculate the date based on the previous value plus interval
+            Date previousDate = (Date) previousProfileEntryDto.getProfileEntryValues().get(0).getValue();
+            LocalDateTime newLocalDateTime = Instant.ofEpochMilli(previousDate.getTime()).atZone(ZoneId.systemDefault())
+                                                    .toLocalDateTime().plusMinutes(timeInterval);
+
+            return new ProfileEntryValueDto(Date.from(newLocalDateTime.atZone(ZoneId.systemDefault()).toInstant()));
+        }
     }
 
     private ProfileEntryValueDto makeNumericProfileEntryValueDto(final DataObject dataObject,
