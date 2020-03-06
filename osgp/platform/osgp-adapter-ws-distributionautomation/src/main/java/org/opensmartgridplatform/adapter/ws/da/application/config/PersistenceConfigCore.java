@@ -9,6 +9,7 @@ package org.opensmartgridplatform.adapter.ws.da.application.config;
 
 import javax.sql.DataSource;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.opensmartgridplatform.shared.application.config.AbstractPersistenceConfig;
 import org.opensmartgridplatform.shared.infra.db.DefaultConnectionPoolFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,12 +19,12 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-
-import com.zaxxer.hikari.HikariDataSource;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @EnableJpaRepositories(transactionManagerRef = "coreTransactionManager", entityManagerFactoryRef = "coreEntityManagerFactory", basePackageClasses = {
         org.opensmartgridplatform.domain.core.repositories.DeviceRepository.class,
         org.opensmartgridplatform.domain.core.repositories.RtuDeviceRepository.class })
+@EnableTransactionManagement
 @Configuration
 @PropertySource("classpath:osgp-adapter-ws-distributionautomation.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)

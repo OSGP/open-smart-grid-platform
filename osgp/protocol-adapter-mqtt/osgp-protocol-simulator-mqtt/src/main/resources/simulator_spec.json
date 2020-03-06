@@ -1,19 +1,19 @@
 {
   "brokerHost": "0.0.0.0",
   "brokerPort": 8883,
-  "startupPauseMillis": 3000,
+  "startupPauseMillis": 5000,
   "messages": [
     {
 
-      "topic" : "test/topic",
+      "topic" : "TST-01/measurement",
       "payload": "TST-01; 220.1; 220.2; 220.3; 5.1; 5.2; 5.3; 7.1; 7.2; 7.3;",
-      "pauseMillis": 5000
+      "pauseMillis": 30000
     },
     {
 
-      "topic" : "test/topic",
+      "topic" : "TST-01/congestion",
       "payload": "TST-01; 5.1; 5.2; 5.3; 7.1; 7.2; 7.3;",
-      "pauseMillis": 5000
+      "pauseMillis": 30000
     }
   ]
 }

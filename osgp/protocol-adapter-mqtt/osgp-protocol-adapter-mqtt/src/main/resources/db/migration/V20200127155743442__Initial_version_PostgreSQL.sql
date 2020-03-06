@@ -6,6 +6,7 @@ CREATE TABLE mqtt_device (
     host character varying(255),
     port integer,
     topics character varying(255),
+    qos character varying(255),
     version bigint
 );
 

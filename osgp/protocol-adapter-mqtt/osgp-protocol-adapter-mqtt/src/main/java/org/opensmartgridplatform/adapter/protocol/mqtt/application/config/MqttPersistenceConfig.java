@@ -13,6 +13,7 @@ import javax.sql.DataSource;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.flywaydb.core.Flyway;
+import org.opensmartgridplatform.adapter.protocol.mqtt.domain.repositories.MqttDeviceRepository;
 import org.opensmartgridplatform.shared.application.config.AbstractPersistenceConfig;
 import org.opensmartgridplatform.shared.infra.db.DefaultConnectionPoolFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,7 +26,8 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-@EnableJpaRepositories(entityManagerFactoryRef = "mqttEntityManagerFactory")
+@EnableJpaRepositories(entityManagerFactoryRef = "mqttEntityManagerFactory",
+        basePackageClasses = { MqttDeviceRepository.class })
 @Configuration
 @EnableTransactionManagement()
 @PropertySource("classpath:osgp-adapter-protocol-mqtt.properties")

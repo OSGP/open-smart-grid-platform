@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.da.infra.jms.core;
 
@@ -14,8 +14,8 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
-import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
-import org.opensmartgridplatform.shared.infra.jms.UnknownMessageTypeException;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +31,8 @@ public class OsgpCoreRequestMessageListener implements MessageListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(OsgpCoreRequestMessageListener.class);
 
     @Autowired
-    @Qualifier(value = "domainDistributionAutomationInboundOsgpCoreRequestsMessageProcessor")
-    private OsgpCoreRequestMessageProcessor messageProcessor;
+    @Qualifier("domainDistributionAutomationInboundOsgpCoreRequestsaMessageProcessorMap")
+    private MessageProcessorMap messageProcessorMap;
 
     @Override
     public void onMessage(final Message message) {
@@ -40,17 +40,12 @@ public class OsgpCoreRequestMessageListener implements MessageListener {
             LOGGER.info("Received message");
 
             final ObjectMessage objectMessage = (ObjectMessage) message;
-            final String messageType = objectMessage.getJMSType();
-            final RequestMessage requestMessage = (RequestMessage) objectMessage.getObject();
-
-            this.messageProcessor.processMessage(requestMessage, messageType);
+            final MessageProcessor processor = this.messageProcessorMap.getMessageProcessor(objectMessage);
+            processor.processMessage(objectMessage);
 
         } catch (final JMSException e) {
             // Can't read message.
             LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
-        } catch (final UnknownMessageTypeException e) {
-            // Don't know this message.
-            LOGGER.error("UnknownMessageTypeException", e);
         }
     }
 }

@@ -13,6 +13,8 @@ import javax.net.ssl.SSLException;
 
 import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsConfiguration;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfigurationFactory;
+import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessorMap;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -29,7 +31,7 @@ public class InboundOsgpCoreRequestsMessagingConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InboundOsgpCoreRequestsMessagingConfig.class);
 
-    private JmsConfigurationFactory jmsConfigurationFactory;
+    private final JmsConfigurationFactory jmsConfigurationFactory;
 
     public InboundOsgpCoreRequestsMessagingConfig(final Environment environment,
             final DefaultJmsConfiguration defaultJmsConfiguration) throws SSLException {
@@ -48,6 +50,11 @@ public class InboundOsgpCoreRequestsMessagingConfig {
             @Qualifier("domainDistributionAutomationInboundOsgpCoreRequestsMessageListener") final MessageListener messageListener) {
         LOGGER.info("Initializing domainDistributionAutomationInboundOsgpCoreRequestsMessageListenerContainer bean.");
         return this.jmsConfigurationFactory.initMessageListenerContainer(messageListener);
+    }
+
+    @Bean(name = "domainDistributionAutomationInboundOsgpCoreRequestsaMessageProcessorMap")
+    public MessageProcessorMap messageProcessorMap() {
+        return new BaseMessageProcessorMap("domainDistributionAutomationInboundOsgpCoreRequestsaMessageProcessorMap");
     }
 
 }
