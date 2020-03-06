@@ -30,10 +30,9 @@ import org.opensmartgridplatform.oslp.Oslp.EventNotification;
 import org.opensmartgridplatform.oslp.Oslp.Message;
 import org.opensmartgridplatform.oslp.OslpEnvelope;
 import org.opensmartgridplatform.webdevicesimulator.application.services.DeviceManagementService;
+import org.opensmartgridplatform.webdevicesimulator.application.services.OslpLogService;
 import org.opensmartgridplatform.webdevicesimulator.domain.entities.Device;
 import org.opensmartgridplatform.webdevicesimulator.domain.entities.DeviceMessageStatus;
-import org.opensmartgridplatform.webdevicesimulator.domain.entities.OslpLogItem;
-import org.opensmartgridplatform.webdevicesimulator.domain.repositories.OslpLogItemRepository;
 import org.opensmartgridplatform.webdevicesimulator.domain.valueobjects.Event;
 import org.opensmartgridplatform.webdevicesimulator.domain.valueobjects.ProtocolType;
 import org.opensmartgridplatform.webdevicesimulator.exceptions.DeviceSimulatorException;
@@ -41,7 +40,6 @@ import org.opensmartgridplatform.webdevicesimulator.service.OslpChannelHandler.O
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import com.google.protobuf.ByteString;
@@ -58,7 +56,7 @@ public class RegisterDevice {
     private DeviceManagementService deviceManagementService;
 
     @Autowired
-    private OslpLogItemRepository oslpLogItemRepository;
+    private OslpLogService oslpLogService;
 
     @Resource
     private OslpChannelHandler oslpChannelHandler;
@@ -114,13 +112,16 @@ public class RegisterDevice {
 
             // Create registration message.
             final OslpEnvelope oslpRequest = this.createEnvelopeBuilder(device.getDeviceUid(), sequenceNumber)
-                    .withPayloadMessage(Message.newBuilder().setRegisterDeviceRequest(Oslp.RegisterDeviceRequest
-                            .newBuilder().setDeviceIdentification(device.getDeviceIdentification())
-                            .setIpAddress(
-                                    ByteString.copyFrom(InetAddress.getByName(device.getIpAddress()).getAddress()))
-                            .setDeviceType(device.getDeviceType().isEmpty() ? DeviceType.PSLD
-                                    : DeviceType.valueOf(device.getDeviceType()))
-                            .setHasSchedule(hasSchedule).setRandomDevice(randomDevice)).build())
+                    .withPayloadMessage(Message.newBuilder()
+                            .setRegisterDeviceRequest(Oslp.RegisterDeviceRequest.newBuilder()
+                                    .setDeviceIdentification(device.getDeviceIdentification())
+                                    .setIpAddress(ByteString
+                                            .copyFrom(InetAddress.getByName(device.getIpAddress()).getAddress()))
+                                    .setDeviceType(device.getDeviceType().isEmpty() ? DeviceType.PSLD
+                                            : DeviceType.valueOf(device.getDeviceType()))
+                                    .setHasSchedule(hasSchedule)
+                                    .setRandomDevice(randomDevice))
+                            .build())
                     .build();
 
             // Write outgoing request to log.
@@ -261,9 +262,11 @@ public class RegisterDevice {
 
         Oslp.EventNotification eventNotification = null;
         if (device.getProtocol().equals(ProtocolType.OSLP.toString())) {
-            eventNotification = EventNotification.newBuilder().setEvent(oslpEvent)
+            eventNotification = EventNotification.newBuilder()
+                    .setEvent(oslpEvent)
                     .setDescription(description == null ? "" : description)
-                    .setIndex(ByteString.copyFrom(new byte[] { index == null ? 0 : index.byteValue() })).build();
+                    .setIndex(ByteString.copyFrom(new byte[] { index == null ? 0 : index.byteValue() }))
+                    .build();
         } else if (device.getProtocol().equals(ProtocolType.OSLP_ELSTER.toString())) {
             final Oslp.EventNotification.Builder builder = EventNotification.newBuilder();
             builder.setEvent(oslpEvent);
@@ -283,7 +286,8 @@ public class RegisterDevice {
 
         // Create event notification request.
         final Oslp.EventNotificationRequest eventNotificationRequest = Oslp.EventNotificationRequest.newBuilder()
-                .addNotifications(eventNotification).build();
+                .addNotifications(eventNotification)
+                .build();
 
         return this.createEnvelopeBuilder(deviceUid, sequenceNumber)
                 .withPayloadMessage(Message.newBuilder().setEventNotificationRequest(eventNotificationRequest).build())
@@ -291,9 +295,7 @@ public class RegisterDevice {
     }
 
     private void writeOslpLogItem(final OslpEnvelope oslpEnvelope, final Device device, final boolean incoming) {
-        final OslpLogItem logItem = new OslpLogItem(oslpEnvelope.getDeviceId(), device.getDeviceIdentification(),
-                incoming, oslpEnvelope.getPayloadMessage());
-        this.oslpLogItemRepository.save(logItem);
+        this.oslpLogService.writeOslpLogItem(oslpEnvelope, device, incoming);
     }
 
     private OslpEnvelope sendRequest(final Device device, final OslpEnvelope request)
@@ -313,13 +315,11 @@ public class RegisterDevice {
         return response;
     }
 
-    @Transactional
     public DeviceMessageStatus sendEventNotificationCommand(final Long id, final Integer event,
             final String description, final Integer index) {
         return this.sendEventNotificationCommand(id, event, description, index, true);
     }
 
-    @Transactional
     public DeviceMessageStatus sendEventNotificationCommand(final Long id, final Integer event,
             final String description, final Integer index, final boolean hasTimestamp) {
         // Find device.
@@ -378,8 +378,10 @@ public class RegisterDevice {
         sequenceNumberBytes[0] = (byte) (sequenceNumber >>> 8);
         sequenceNumberBytes[1] = sequenceNumber.byteValue();
 
-        return new OslpEnvelope.Builder().withSignature(this.oslpSignature).withProvider(this.oslpSignatureProvider)
-                .withPrimaryKey(this.privateKey).withDeviceId(Base64.decodeBase64(deviceUid))
+        return new OslpEnvelope.Builder().withSignature(this.oslpSignature)
+                .withProvider(this.oslpSignatureProvider)
+                .withPrimaryKey(this.privateKey)
+                .withDeviceId(Base64.decodeBase64(deviceUid))
                 .withSequenceNumber(sequenceNumberBytes);
     }
 
