@@ -74,18 +74,21 @@ public class SubcriptionService implements MqttClientEventHandler {
     @Override
     public void onConnect(final MqttClientAdapter mqttClientAdapter, final Mqtt3ConnAck ack,
             final Throwable throwable) {
-        final MessageMetadata messageMetadata = mqttClientAdapter.getMessageMetadata();
-        if (throwable != null) {
-            LOG.info(String.format("Client connect failed for device:%s", messageMetadata.getDeviceIdentification()),
-                    throwable);
+        if (throwable == null) {
+            this.onConnectSuccess(mqttClientAdapter, ack);
         } else {
-            LOG.info(String.format("Client connected for device:%s ack:%s", messageMetadata.getDeviceIdentification(),
-                    ack.getType()));
-            final MqttDevice device = mqttClientAdapter.getDevice();
-            final MqttQos qos = this.getQosOrDefault(device);
-            final String[] topics = device.getTopics().split(",");
-            Arrays.stream(topics).forEach(topic -> mqttClientAdapter.subscribe(topic, qos));
+            LOG.info(String.format("Client connect failed for device:%s",
+                    mqttClientAdapter.getMessageMetadata().getDeviceIdentification()), throwable);
         }
+    }
+
+    private void onConnectSuccess(final MqttClientAdapter mqttClientAdapter, final Mqtt3ConnAck ack) {
+        LOG.info(String.format("Client connected for device:%s ack:%s",
+                mqttClientAdapter.getMessageMetadata().getDeviceIdentification(), ack.getType()));
+        final MqttDevice device = mqttClientAdapter.getDevice();
+        final MqttQos qos = this.getQosOrDefault(device);
+        final String[] topics = device.getTopics().split(",");
+        Arrays.stream(topics).forEach(topic -> mqttClientAdapter.subscribe(topic, qos));
     }
 
     private MqttQos getQosOrDefault(final MqttDevice device) {
@@ -103,12 +106,12 @@ public class SubcriptionService implements MqttClientEventHandler {
     public void onSubscribe(final MqttClientAdapter mqttClientAdapter, final Mqtt3SubAck subAck,
             final Throwable throwable) {
         final MessageMetadata messageMetadata = mqttClientAdapter.getMessageMetadata();
-        if (throwable != null) {
-            LOG.info(String.format("Client subscription for device:%s failed",
-                    messageMetadata.getDeviceIdentification()), throwable);
-        } else {
+        if (throwable == null) {
             LOG.info(String.format("Client subscribed for device:%s suback:%s",
                     messageMetadata.getDeviceIdentification(), subAck.getType()));
+        } else {
+            LOG.info(String.format("Client subscription for device:%s failed",
+                    messageMetadata.getDeviceIdentification()), throwable);
         }
     }
 

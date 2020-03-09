@@ -57,9 +57,8 @@ public class MqttClientAdapter {
     }
 
     private void publishPayload(final Mqtt3Publish publish) {
-        publish.getPayload().ifPresent(byteBuffer -> {
-            this.mqttClientEventHandler.onReceive(this, publish.getPayloadAsBytes());
-        });
+        publish.getPayload()
+                .ifPresent(byteBuffer -> this.mqttClientEventHandler.onReceive(this, publish.getPayloadAsBytes()));
     }
 
     public MqttDevice getDevice() {

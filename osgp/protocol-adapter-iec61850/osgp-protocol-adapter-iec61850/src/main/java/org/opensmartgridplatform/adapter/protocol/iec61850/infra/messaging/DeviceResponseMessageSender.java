@@ -1,9 +1,10 @@
 /**
  * Copyright 2014-2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging;
 
@@ -12,10 +13,10 @@ import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
-import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.services.Iec61850DeviceConnectionService;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
+import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessageValidator;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
 import org.slf4j.Logger;
@@ -33,7 +34,8 @@ public class DeviceResponseMessageSender implements ResponseMessageSender {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceResponseMessageSender.class);
 
-    private static final String LOG_MESSAGE_RESPONSE_MESSAGE_OF_WRONG_TYPE = "Only ProtocolResponseMessage type is expected for DeviceResponseMessageSender, received responseMessage of type {}.";
+    private static final String LOG_MESSAGE_RESPONSE_MESSAGE_OF_WRONG_TYPE = "Only ProtocolResponseMessage type is "
+            + "expected for DeviceResponseMessageSender, received responseMessage of type {}.";
     private static final String LOG_MESSAGE_JMS_EXCEPTION = "JMS Exception, closing all connections.";
     private static final String LOG_MESSAGE_BLANK_FIELD = "{} is blank.";
     private static final String LOG_MESSAGE_NULL_FIELD = "{} is null.";
@@ -57,7 +59,7 @@ public class DeviceResponseMessageSender implements ResponseMessageSender {
 
         final ProtocolResponseMessage msg = (ProtocolResponseMessage) responseMessage;
 
-        if (!checkMessage(msg)) {
+        if (!ProtocolResponseMessageValidator.isValid(msg, LOGGER)) {
             return;
         }
 
@@ -76,35 +78,6 @@ public class DeviceResponseMessageSender implements ResponseMessageSender {
             }
             throw e;
         }
-    }
-
-    private static boolean checkMessage(final ProtocolResponseMessage msg) {
-        if (StringUtils.isBlank(msg.getOrganisationIdentification())) {
-            LOGGER.error(LOG_MESSAGE_BLANK_FIELD, "OrganisationIdentification");
-            return false;
-        }
-        if (StringUtils.isBlank(msg.getDeviceIdentification())) {
-            LOGGER.error(LOG_MESSAGE_BLANK_FIELD, "DeviceIdentification");
-            return false;
-        }
-        if (StringUtils.isBlank(msg.getCorrelationUid())) {
-            LOGGER.error(LOG_MESSAGE_BLANK_FIELD, "CorrelationUid");
-            return false;
-        }
-        if (msg.getResult() == null) {
-            LOGGER.error(LOG_MESSAGE_NULL_FIELD, "Result");
-            return false;
-        }
-        if (StringUtils.isBlank(msg.getDomain())) {
-            LOGGER.error(LOG_MESSAGE_BLANK_FIELD, "Domain");
-            return false;
-        }
-        if (StringUtils.isBlank(msg.getMessageType())) {
-            LOGGER.error(LOG_MESSAGE_BLANK_FIELD, "MessageType");
-            return false;
-        }
-
-        return true;
     }
 
     private void sendMessage(final ProtocolResponseMessage responseMessage) {
