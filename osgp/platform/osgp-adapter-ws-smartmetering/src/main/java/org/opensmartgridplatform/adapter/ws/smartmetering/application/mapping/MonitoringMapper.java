@@ -67,10 +67,7 @@ public class MonitoringMapper extends ConfigurableMapper {
                      .fieldBToA(SELECTED_VALUES, SELECTED_VALUES_CAPTURE_OBJECT).byDefault().register();
 
         mapperFactory.getConverterFactory().registerConverter(new ObisCodeValuesConverter());
-
         mapperFactory.getConverterFactory().registerConverter(new ProfileEntryValueConverter());
-
-        //mapperFactory.getConverterFactory().registerConverter(new PowerQualityProfileResponseDataConverter());
         mapperFactory.getConverterFactory().registerConverter(new PowerQualityProfileResponseDataConverter());
     }
 

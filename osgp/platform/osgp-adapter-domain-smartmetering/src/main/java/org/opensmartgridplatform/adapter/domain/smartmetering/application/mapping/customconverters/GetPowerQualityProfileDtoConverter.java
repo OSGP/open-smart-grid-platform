@@ -22,7 +22,6 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.OsgpMete
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PowerQualityProfileData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileEntry;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileEntryValue;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.CaptureObjectDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DlmsMeterValueDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PowerQualityProfileDataDto;
@@ -41,7 +40,7 @@ public class GetPowerQualityProfileDtoConverter
     private OsgpMeterValue toOsgpMeterValue(final DlmsMeterValueDto source) {
         return this.mapperFactory.getMapperFacade().map(source, OsgpMeterValue.class);
     }
-
+    
     @Override
     public GetPowerQualityProfileResponse convert(GetPowerQualityProfileResponseDto source,
             Type<? extends GetPowerQualityProfileResponse> destinationType, MappingContext mappingContext) {
@@ -52,34 +51,13 @@ public class GetPowerQualityProfileDtoConverter
 
         for (PowerQualityProfileDataDto responseDataDto : source.getPowerQualityProfileResponseDatas()) {
 
-            ObisCodeValues obisCodeValues = new ObisCodeValues(responseDataDto.getLogicalName().getA(),
-                    responseDataDto.getLogicalName().getB(), responseDataDto.getLogicalName().getC(),
-                    responseDataDto.getLogicalName().getD(), responseDataDto.getLogicalName().getE(),
-                    responseDataDto.getLogicalName().getF());
+            ObisCodeValues obisCodeValues = this.mapperFactory.getMapperFacade().map(responseDataDto.getLogicalName(),
+                    ObisCodeValues.class);
 
-            List<CaptureObject> captureObjects = new ArrayList<>();
+            List<CaptureObject> captureObjects = new ArrayList<>(
+                    this.mapperFacade.mapAsList(responseDataDto.getCaptureObjects(), CaptureObject.class));
 
-            for (CaptureObjectDto captureObjectDto : responseDataDto.getCaptureObjects()) {
-                CaptureObject captureObject = new CaptureObject(captureObjectDto.getClassId(),
-                        captureObjectDto.getLogicalName(), (int) captureObjectDto.getAttributeIndex(),
-                        captureObjectDto.getDataIndex(), captureObjectDto.getUnit());
-
-                captureObjects.add(captureObject);
-            }
-
-            List<ProfileEntry> profileEntries = new ArrayList<>();
-
-            for (ProfileEntryDto profileEntryDto : responseDataDto.getProfileEntries()) {
-
-                List<ProfileEntryValue> profileEntryValues = new ArrayList<>();
-
-                for (ProfileEntryValueDto profileEntryValueDto : profileEntryDto.getProfileEntryValues()) {
-                    ProfileEntryValue profileEntryValue = new ProfileEntryValue(profileEntryValueDto.getValue());
-
-                    profileEntryValues.add(profileEntryValue);
-                }
-                profileEntries.add(new ProfileEntry(profileEntryValues));
-            }
+            List<ProfileEntry> profileEntries = makeProfileEntries(responseDataDto);
 
             powerQualityProfileDatas.add(new PowerQualityProfileData(obisCodeValues, captureObjects, profileEntries));
 
@@ -88,5 +66,23 @@ public class GetPowerQualityProfileDtoConverter
         response.setPowerQualityProfileDatas(powerQualityProfileDatas);
 
         return response;
+    }
+
+    private List<ProfileEntry> makeProfileEntries(PowerQualityProfileDataDto responseDataDto) {
+
+        List<ProfileEntry> profileEntries = new ArrayList<>();
+
+        for (ProfileEntryDto profileEntryDto : responseDataDto.getProfileEntries()) {
+
+            List<ProfileEntryValue> profileEntryValues = new ArrayList<>();
+
+            for (ProfileEntryValueDto profileEntryValueDto : profileEntryDto.getProfileEntryValues()) {
+                ProfileEntryValue profileEntryValue = new ProfileEntryValue(profileEntryValueDto.getValue());
+                profileEntryValues.add(profileEntryValue);
+            }
+            profileEntries.add(new ProfileEntry(profileEntryValues));
+        }
+
+        return profileEntries;
     }
 }
