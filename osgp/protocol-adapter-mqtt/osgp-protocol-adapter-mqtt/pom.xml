@@ -97,11 +97,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.opensmartgridplatform</groupId>
-      <artifactId>osgp-mqtt</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>com.hivemq</groupId>
       <artifactId>hivemq-mqtt-client</artifactId>
       <version>${hivemq-mqtt-client.version}</version>
