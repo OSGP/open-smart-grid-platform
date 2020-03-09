@@ -7,7 +7,10 @@
  */
 package org.opensmartgridplatform.simulator.protocol.iec61850.server.logicaldevices.substation;
 
-import org.openmuc.openiec61850.ServerModel;
+import java.util.NoSuchElementException;
+
+import com.beanit.openiec61850.ModelNode;
+import com.beanit.openiec61850.ServerModel;
 
 public class LogicalDeviceNode {
     private final ServerModel serverModel;
@@ -15,7 +18,12 @@ public class LogicalDeviceNode {
 
     public LogicalDeviceNode(final ServerModel serverModel) {
         this.serverModel = serverModel;
-        this.serverName = serverModel.getChildren().stream().findFirst().get().getName();
+        this.serverName = serverModel.getChildren()
+                .stream()
+                .findFirst()
+                .map(ModelNode::getName)
+                .orElseThrow(() -> new NoSuchElementException(
+                        "ServerModel does not contain any children, could not determine serverName."));
     }
 
     public ServerModel getServerModel() {

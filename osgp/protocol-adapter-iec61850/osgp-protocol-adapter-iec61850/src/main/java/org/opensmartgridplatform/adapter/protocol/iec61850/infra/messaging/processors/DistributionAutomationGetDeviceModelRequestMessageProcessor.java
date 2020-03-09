@@ -10,10 +10,10 @@ package org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.proc
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openmuc.openiec61850.LogicalDevice;
-import org.openmuc.openiec61850.LogicalNode;
-import org.openmuc.openiec61850.ModelNode;
-import org.openmuc.openiec61850.ServerModel;
+import com.beanit.openiec61850.LogicalDevice;
+import com.beanit.openiec61850.LogicalNode;
+import com.beanit.openiec61850.ModelNode;
+import com.beanit.openiec61850.ServerModel;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.da.rtu.DaDeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.DaRtuDeviceRequestMessageProcessor;

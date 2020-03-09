@@ -12,7 +12,6 @@ import org.opensmartgridplatform.adapter.domain.microgrids.infra.jms.core.OsgpCo
 import org.opensmartgridplatform.adapter.domain.microgrids.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
-import org.opensmartgridplatform.domain.core.entities.RtuDevice;
 import org.opensmartgridplatform.domain.core.exceptions.UnknownEntityException;
 import org.opensmartgridplatform.domain.core.repositories.RtuDeviceRepository;
 import org.opensmartgridplatform.domain.core.services.DeviceDomainService;
@@ -60,10 +59,6 @@ public class BaseService {
                     e);
         }
         return organisation;
-    }
-
-    protected RtuDevice findRtuDeviceForDevice(final Device device) {
-        return this.rtuDeviceRepository.findById(device.getId()).get();
     }
 
     protected OsgpException ensureOsgpException(final Throwable t, final String defaultMessage) {

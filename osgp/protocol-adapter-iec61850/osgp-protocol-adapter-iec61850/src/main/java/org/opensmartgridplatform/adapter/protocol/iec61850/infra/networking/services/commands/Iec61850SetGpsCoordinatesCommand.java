@@ -7,7 +7,7 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.services.commands;
 
-import org.openmuc.openiec61850.Fc;
+import com.beanit.openiec61850.Fc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

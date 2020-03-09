@@ -7,7 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.distributionautomation.mocks.iec60870;
 
-import org.openmuc.j60870.TypeId;
+import org.openmuc.j60870.ASduType;
 import org.opensmartgridplatform.iec60870.Iec60870ASduHandler;
 import org.opensmartgridplatform.iec60870.Iec60870ASduHandlerRegistry;
 import org.opensmartgridplatform.iec60870.Iec60870ConnectionRegistry;
@@ -61,8 +61,8 @@ public class Iec60870MockServer {
         LOGGER.info("Stopped IEC60870 Mock server");
     }
 
-    public void addIec60870ASduHandler(final TypeId typeId, final Iec60870ASduHandler handler) {
-        this.asduHandlerRegistry.registerHandler(typeId, handler);
+    public void addIec60870ASduHandler(final ASduType asduType, final Iec60870ASduHandler handler) {
+        this.asduHandlerRegistry.registerHandler(asduType, handler);
     }
 
     private boolean isInitialized() {

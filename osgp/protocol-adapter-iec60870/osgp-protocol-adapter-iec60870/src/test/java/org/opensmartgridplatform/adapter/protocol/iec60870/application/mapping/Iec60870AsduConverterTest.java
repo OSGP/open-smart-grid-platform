@@ -15,13 +15,13 @@ import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 import org.openmuc.j60870.ASdu;
+import org.openmuc.j60870.ASduType;
 import org.openmuc.j60870.CauseOfTransmission;
-import org.openmuc.j60870.IeQuality;
-import org.openmuc.j60870.IeShortFloat;
-import org.openmuc.j60870.IeTime56;
-import org.openmuc.j60870.InformationElement;
-import org.openmuc.j60870.InformationObject;
-import org.openmuc.j60870.TypeId;
+import org.openmuc.j60870.ie.IeQuality;
+import org.openmuc.j60870.ie.IeShortFloat;
+import org.openmuc.j60870.ie.IeTime56;
+import org.openmuc.j60870.ie.InformationElement;
+import org.openmuc.j60870.ie.InformationObject;
 import org.opensmartgridplatform.dto.da.measurements.MeasurementDto;
 import org.opensmartgridplatform.dto.da.measurements.MeasurementGroupDto;
 import org.opensmartgridplatform.dto.da.measurements.MeasurementReportDto;
@@ -50,7 +50,7 @@ public class Iec60870AsduConverterTest {
                             new TimestampMeasurementElementDto(TIMESTAMP_NOW)))))));
 
     private static final ASdu ASDU = new ASdu(
-            TypeId.M_ME_TF_1,
+            ASduType.M_ME_TF_1,
             false,
             CauseOfTransmission.SPONTANEOUS,
             false,

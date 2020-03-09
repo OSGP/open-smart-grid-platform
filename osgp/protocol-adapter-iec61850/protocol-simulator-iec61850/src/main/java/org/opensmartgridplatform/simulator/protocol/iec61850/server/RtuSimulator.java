@@ -19,14 +19,6 @@ import java.util.regex.Pattern;
 
 import javax.annotation.PreDestroy;
 
-import org.openmuc.openiec61850.BasicDataAttribute;
-import org.openmuc.openiec61850.ModelNode;
-import org.openmuc.openiec61850.Rcb;
-import org.openmuc.openiec61850.SclParseException;
-import org.openmuc.openiec61850.ServerEventListener;
-import org.openmuc.openiec61850.ServerModel;
-import org.openmuc.openiec61850.ServerSap;
-import org.openmuc.openiec61850.ServiceError;
 import org.opensmartgridplatform.simulator.protocol.iec61850.server.eventproducers.ServerSapEventProducer;
 import org.opensmartgridplatform.simulator.protocol.iec61850.server.logicaldevices.Battery;
 import org.opensmartgridplatform.simulator.protocol.iec61850.server.logicaldevices.Boiler;
@@ -47,6 +39,16 @@ import org.opensmartgridplatform.simulator.protocol.iec61850.server.logicaldevic
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
+
+import com.beanit.openiec61850.BasicDataAttribute;
+import com.beanit.openiec61850.ModelNode;
+import com.beanit.openiec61850.Rcb;
+import com.beanit.openiec61850.SclParseException;
+import com.beanit.openiec61850.SclParser;
+import com.beanit.openiec61850.ServerEventListener;
+import com.beanit.openiec61850.ServerModel;
+import com.beanit.openiec61850.ServerSap;
+import com.beanit.openiec61850.ServiceError;
 
 public class RtuSimulator implements ServerEventListener {
 
@@ -79,15 +81,15 @@ public class RtuSimulator implements ServerEventListener {
     public RtuSimulator(final int port, final InputStream sclFile, final String serverName,
             final ServerSapEventProducer serverSapEventProducer, final Long updateValuesDelay,
             final Long updateValuesPeriod) throws SclParseException {
-        this.server = ServerSap.getSapsFromSclFile(IcdFileConverter.convertReportsForTesting(sclFile)).get(0);
-        this.server.setPort(port);
+
+        final List<ServerModel> serverModels = SclParser.parse(IcdFileConverter.convertReportsForTesting(sclFile));
+        this.server = new ServerSap(port, 0, null, serverModels.get(0), null);
         this.serverName = serverName;
         this.serverSapEventProducer = serverSapEventProducer;
         this.updateValuesDelay = updateValuesDelay;
         this.updateValuesPeriod = updateValuesPeriod;
 
         this.serverModel = this.server.getModelCopy();
-
         this.addLogicalDevices(this.serverModel);
     }
 
@@ -301,7 +303,7 @@ public class RtuSimulator implements ServerEventListener {
 
         if (lightMeasurementRtuNode != null) {
             // Light Measurement RTU found in the server model.
-            LOGGER.info("Adding lmRtu " + logicalDeviceName);
+            LOGGER.info("Adding lmRtu {}", logicalDeviceName);
             this.logicalDevices.add(new LightMeasurementRtu(this.getDeviceName(), logicalDeviceName, serverModel));
         }
     }
@@ -311,7 +313,7 @@ public class RtuSimulator implements ServerEventListener {
         final ModelNode switchDevice = serverModel.getChild(this.getDeviceName() + logicalDeviceName);
 
         if (switchDevice != null) {
-            LOGGER.info("Adding switchDevice " + this.getDeviceName());
+            LOGGER.info("Adding switchDevice {}", this.getDeviceName());
             this.logicalDevices.add(new SwitchDevice(this.getDeviceName(), logicalDeviceName, serverModel));
         }
     }
@@ -356,7 +358,7 @@ public class RtuSimulator implements ServerEventListener {
     @Override
     public List<ServiceError> write(final List<BasicDataAttribute> bdas) {
         for (final BasicDataAttribute bda : bdas) {
-            LOGGER.info("got a write request: " + bda);
+            LOGGER.info("got a write request: {}", bda);
             this.writeValueAndUpdateRelatedAttributes(bda);
         }
 

@@ -7,7 +7,7 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.application.mapping.informationelements;
 
-import org.openmuc.j60870.IeQuality;
+import org.openmuc.j60870.ie.IeQuality;
 import org.opensmartgridplatform.dto.da.measurements.elements.BitmaskMeasurementElementDto;
 
 import ma.glasnost.orika.CustomConverter;

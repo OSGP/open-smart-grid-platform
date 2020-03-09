@@ -9,7 +9,7 @@ import static org.mockito.Mockito.mock;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openmuc.j60870.TypeId;
+import org.openmuc.j60870.ASduType;
 
 public class Iec60870ASduHandlerRegistryTest {
     private Iec60870ASduHandlerRegistry iec60870ASduHandlerRegistry;
@@ -22,7 +22,7 @@ public class Iec60870ASduHandlerRegistryTest {
     @Test
     public void getHandlerShouldReturnHandlerWhenPresent() throws Iec60870ASduHandlerNotFoundException {
         // Arrange
-        final TypeId typeId = TypeId.M_ME_TF_1;
+        final ASduType typeId = ASduType.M_ME_TF_1;
         final Iec60870ASduHandler expected = mock(Iec60870ASduHandler.class);
         this.iec60870ASduHandlerRegistry.registerHandler(typeId, expected);
 
@@ -36,7 +36,7 @@ public class Iec60870ASduHandlerRegistryTest {
     @Test
     public void getHandlerShouldThrowExceptionWhenNotPresent() {
         // Arrange
-        final TypeId typeId = TypeId.M_ME_TF_1;
+        final ASduType typeId = ASduType.M_ME_TF_1;
         final Class<?> expected = Iec60870ASduHandlerNotFoundException.class;
 
         // Act

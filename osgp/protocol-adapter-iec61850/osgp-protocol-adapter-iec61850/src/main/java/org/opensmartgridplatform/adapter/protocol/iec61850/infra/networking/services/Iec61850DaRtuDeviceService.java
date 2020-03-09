@@ -11,8 +11,8 @@ import java.io.Serializable;
 
 import javax.jms.JMSException;
 
-import org.openmuc.openiec61850.ClientAssociation;
-import org.openmuc.openiec61850.ServerModel;
+import com.beanit.openiec61850.ClientAssociation;
+import com.beanit.openiec61850.ServerModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

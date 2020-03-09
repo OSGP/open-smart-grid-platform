@@ -7,7 +7,7 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.application.mapping.informationelements;
 
-import org.openmuc.j60870.IeTime56;
+import org.openmuc.j60870.ie.IeTime56;
 import org.opensmartgridplatform.dto.da.measurements.elements.TimestampMeasurementElementDto;
 
 import ma.glasnost.orika.CustomConverter;

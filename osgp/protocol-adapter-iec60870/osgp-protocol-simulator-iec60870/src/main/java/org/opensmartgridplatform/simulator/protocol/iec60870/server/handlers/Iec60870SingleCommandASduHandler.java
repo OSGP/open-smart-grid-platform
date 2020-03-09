@@ -10,8 +10,8 @@ package org.opensmartgridplatform.simulator.protocol.iec60870.server.handlers;
 import java.io.IOException;
 
 import org.openmuc.j60870.ASdu;
+import org.openmuc.j60870.ASduType;
 import org.openmuc.j60870.Connection;
-import org.openmuc.j60870.TypeId;
 import org.opensmartgridplatform.iec60870.Iec60870ASduHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +23,7 @@ public class Iec60870SingleCommandASduHandler extends Iec60870ASduHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec60870SingleCommandASduHandler.class);
 
     public Iec60870SingleCommandASduHandler() {
-        super(TypeId.C_SC_NA_1);
+        super(ASduType.C_SC_NA_1);
     }
 
     @Override

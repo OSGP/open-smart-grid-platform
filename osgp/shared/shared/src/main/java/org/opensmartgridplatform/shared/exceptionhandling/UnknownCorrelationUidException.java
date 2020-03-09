@@ -13,7 +13,7 @@ package org.opensmartgridplatform.shared.exceptionhandling;
  */
 public class UnknownCorrelationUidException extends CorrelationUidException {
     private static final long serialVersionUID = -6660221999519254432L;
-    private static final String MESSAGE = "CorrelationUid is unknown.";
+    public static final String CORRELATION_UID_IS_UNKNOWN = "CorrelationUid is unknown.";
 
     public UnknownCorrelationUidException(final ComponentType componentType, final Throwable cause) {
         super(FunctionalExceptionType.UNKNOWN_CORRELATION_UID, componentType, cause);
@@ -25,6 +25,6 @@ public class UnknownCorrelationUidException extends CorrelationUidException {
 
     @Override
     public String getMessage() {
-        return MESSAGE;
+        return CORRELATION_UID_IS_UNKNOWN;
     }
 }

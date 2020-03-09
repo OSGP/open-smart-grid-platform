@@ -11,11 +11,11 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
-import org.openmuc.openiec61850.Brcb;
-import org.openmuc.openiec61850.ClientAssociation;
-import org.openmuc.openiec61850.Rcb;
-import org.openmuc.openiec61850.ServerModel;
-import org.openmuc.openiec61850.ServiceError;
+import com.beanit.openiec61850.Brcb;
+import com.beanit.openiec61850.ClientAssociation;
+import com.beanit.openiec61850.Rcb;
+import com.beanit.openiec61850.ServerModel;
+import com.beanit.openiec61850.ServiceError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

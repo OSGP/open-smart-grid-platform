@@ -7,8 +7,8 @@
  */
 package org.opensmartgridplatform.simulator.protocol.iec61850.server.logicaldevices.substation;
 
-import org.openmuc.openiec61850.BasicDataAttribute;
-import org.openmuc.openiec61850.ServerModel;
+import com.beanit.openiec61850.BasicDataAttribute;
+import com.beanit.openiec61850.ServerModel;
 
 import java.util.ArrayList;
 import java.util.List;

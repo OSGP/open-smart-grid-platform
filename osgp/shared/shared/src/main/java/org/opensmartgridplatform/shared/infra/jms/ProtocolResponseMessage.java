@@ -20,29 +20,23 @@ public class ProtocolResponseMessage extends ResponseMessage {
 
     private final String domain;
     private final String domainVersion;
-    private final boolean scheduled;
 
     private final int retryCount;
-    private final RetryHeader retryHeader;
 
     private ProtocolResponseMessage(final Builder builder) {
         super(builder.superBuilder);
         this.domain = builder.domain;
         this.domainVersion = builder.domainVersion;
-        this.scheduled = builder.scheduled;
         this.retryCount = builder.retryCount;
-        this.retryHeader = builder.retryHeader;
     }
 
     public static class Builder {
 
-        private ResponseMessage.Builder superBuilder = ResponseMessage.newResponseMessageBuilder();
+        private final ResponseMessage.Builder superBuilder = ResponseMessage.newResponseMessageBuilder();
 
         private String domain;
         private String domainVersion;
-        private boolean scheduled;
         private int retryCount;
-        private RetryHeader retryHeader;
 
         public Builder deviceMessageMetadata(final DeviceMessageMetadata deviceMessageMetadata) {
             this.superBuilder.withDeviceMessageMetadata(deviceMessageMetadata);
@@ -80,7 +74,7 @@ public class ProtocolResponseMessage extends ResponseMessage {
         }
 
         public Builder scheduled(final boolean scheduled) {
-            this.scheduled = scheduled;
+            this.superBuilder.withScheduled(scheduled);
             return this;
         }
 
@@ -90,7 +84,7 @@ public class ProtocolResponseMessage extends ResponseMessage {
         }
 
         public Builder retryHeader(final RetryHeader retryHeader) {
-            this.retryHeader = retryHeader;
+            this.superBuilder.withRetryHeader(retryHeader);
             return this;
         }
 
@@ -115,11 +109,4 @@ public class ProtocolResponseMessage extends ResponseMessage {
         return this.domainVersion;
     }
 
-    public boolean isScheduled() {
-        return this.scheduled;
-    }
-
-    public RetryHeader getRetryHeader() {
-        return this.retryHeader;
-    }
 }

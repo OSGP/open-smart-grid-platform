@@ -24,6 +24,7 @@ import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
+import org.opensmartgridplatform.shared.infra.jms.RetryHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,7 +79,7 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
      * sent to osgp-core.
      */
     public void checkForRedelivery(final DeviceMessageMetadata deviceMessageMetadata, final OsgpException e,
-            final DomainInformation domainInformation, final int jmsxDeliveryCount) throws JMSException {
+            final DomainInformation domainInformation, final int jmsxDeliveryCount) {
         final int jmsxRedeliveryCount = jmsxDeliveryCount - 1;
         LOGGER.info("jmsxDeliveryCount: {}, jmsxRedeliveryCount: {}, maxRedeliveriesForIec61850Requests: {}",
                 jmsxDeliveryCount, jmsxRedeliveryCount, this.maxRedeliveriesForIec61850Requests);
@@ -100,7 +101,8 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
                     deviceMessageMetadata.getOrganisationIdentification(),
                     deviceMessageMetadata.getDeviceIdentification(), deviceMessageMetadata.getCorrelationUid(),
                     deviceMessageMetadata.getMessagePriority());
-            this.handleExpectedError(deviceResponse, e, domainInformation, deviceMessageMetadata.getMessageType());
+            this.handleExpectedError(deviceResponse, e, domainInformation, deviceMessageMetadata.getMessageType(),
+                    deviceMessageMetadata.isScheduled());
         }
     }
 
@@ -111,7 +113,7 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
      */
     public void handleDeviceResponse(final DeviceResponse deviceResponse,
             final ResponseMessageSender responseMessageSender, final DomainInformation domainInformation,
-            final String messageType, final int retryCount) {
+            final String messageType, final int retryCount, final boolean isScheduled) {
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException ex = null;
@@ -129,14 +131,20 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
                 deviceResponse.getDeviceIdentification(), deviceResponse.getOrganisationIdentification(),
                 deviceResponse.getCorrelationUid(), messageType, deviceResponse.getMessagePriority());
         final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage.Builder()
-                .domain(domainInformation.getDomain()).domainVersion(domainInformation.getDomainVersion())
-                .deviceMessageMetadata(deviceMessageMetadata).result(result).osgpException(ex).retryCount(retryCount)
+                .domain(domainInformation.getDomain())
+                .domainVersion(domainInformation.getDomainVersion())
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .result(result)
+                .osgpException(ex)
+                .retryCount(retryCount)
+                .retryHeader(new RetryHeader())
+                .scheduled(isScheduled)
                 .build();
         responseMessageSender.send(protocolResponseMessage);
     }
 
     protected void handleExpectedError(final DeviceResponse deviceResponse, final OsgpException e,
-            final DomainInformation domainInformation, final String messageType) {
+            final DomainInformation domainInformation, final String messageType, final boolean isScheduled) {
         LOGGER.error("Expected error while processing message", e);
 
         final int retryCount = Integer.MAX_VALUE;
@@ -145,9 +153,15 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
                 deviceResponse.getDeviceIdentification(), deviceResponse.getOrganisationIdentification(),
                 deviceResponse.getCorrelationUid(), messageType, deviceResponse.getMessagePriority());
         final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage.Builder()
-                .domain(domainInformation.getDomain()).domainVersion(domainInformation.getDomainVersion())
-                .deviceMessageMetadata(deviceMessageMetadata).result(ResponseMessageResultType.NOT_OK).osgpException(e)
-                .retryCount(retryCount).build();
+                .domain(domainInformation.getDomain())
+                .domainVersion(domainInformation.getDomainVersion())
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .result(ResponseMessageResultType.NOT_OK)
+                .osgpException(e)
+                .retryCount(retryCount)
+                .retryHeader(new RetryHeader())
+                .scheduled(isScheduled)
+                .build();
         this.responseMessageSender.send(protocolResponseMessage);
     }
 

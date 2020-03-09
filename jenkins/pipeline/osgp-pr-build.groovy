@@ -7,6 +7,17 @@ def playbook = stream + '-at.yml'
 // Choose the branch to use for SmartSocietyServices/release repository. Default value is 'master'.
 def branchReleaseRepo = 'master'
 
+void setBuildStatus(String message, String state) {
+    echo "Set status on GitHub to: " + state + " with message: " + message
+    step([
+        $class: "GitHubCommitStatusSetter",
+        reposSource: [$class: "ManuallyEnteredRepositorySource", url: "git@github.com:OSGP/open-smart-grid-platform.git"],
+        contextSource: [$class: "ManuallyEnteredCommitContextSource", context: "ci/jenkins/build-status"],
+        errorHandlers: [[$class: "ChangingBuildStatusErrorHandler", result: "UNSTABLE"]],
+        statusResultSource: [ $class: "ConditionalStatusResultSource", results: [[$class: "AnyBuildResult", message: message, state: state]] ]
+    ]);
+}
+
 pipeline {
     agent {
         node {
@@ -75,14 +86,10 @@ pipeline {
                 sh "cd release && plays/download-artifacts.yml -e artifactstodownload='{{ configuration_artifacts }}' -e deployment_type=snapshot -e osgp_version=${POMVERSION} -e tmp_artifacts_directory=../../target/artifacts"
                 sh "cd release && plays/download-artifacts.yml -e artifactstodownload='{{ dlms_simulator_artifacts }}' -e deployment_type=snapshot -e osgp_version=${POMVERSION} -e tmp_artifacts_directory=../../target/artifacts"
                 // Make sure a standalone version of the dlms device simulator is present
-// Ruud, temporarily modify the version number by copying the DLMS simulator files
                 sh "cp -p target/artifacts/dlms-device-simulator-${POMVERSION}.jar target/artifacts/dlms-device-simulator-${POMVERSION}-standalone.jar"
-                
-                // I think this step is superfluous now. The build fails with error: cp: ‘target/artifacts/osgp-simulator-dlms-triggered-5.0.0-SNAPSHOT.war’ and ‘target/artifacts/osgp-simulator-dlms-triggered-5.0.0-SNAPSHOT.war’ are the same file
-                //sh "cp -p target/artifacts/osgp-simulator-dlms-triggered-${POMVERSION}.war target/artifacts/osgp-simulator-dlms-triggered-${POMVERSION}.war"
 
                 // Now create a new single instance (not stream specific) and put all the artifacts in /data/software/artifacts
-                sh "cd release && plays/deploy-files-to-system.yml -e osgp_version=${POMVERSION} -e deployment_name=${servername} -e directory_to_deploy=../../target/artifacts -e tomcat_restart=false -e ec2_instance_type=m4.large -e ami_name=CentOS6SingleInstance -e ami_owner=self"
+                sh "cd release && plays/deploy-files-to-system.yml -e osgp_version=${POMVERSION} -e deployment_name=${servername} -e directory_to_deploy=../../target/artifacts -e tomcat_restart=false -e ec2_instance_type=m4.xlarge -e ami_name=CentOS6SingleInstance -e ami_owner=self"
             }
         } // stage
 
@@ -157,6 +164,7 @@ echo Found cucumber tags: [$EXTRACTED_TAGS]'''
                 sh "./runPubliclightingTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-publiclighting centos \"OSGP Development.pem\" \"\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
                 sh "./runMicrogridsTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-microgrids centos \"OSGP Development.pem\" \"\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
                 sh "./runSmartMeteringTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-smartmetering centos \"OSGP Development.pem\" \"\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
+                sh "./runDistributionAutomationTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-distributionautomation centos \"OSGP Development.pem\" \"\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
             }
         } // stage
 
@@ -193,7 +201,7 @@ echo Found cucumber tags: [$EXTRACTED_TAGS]'''
             build job: 'Destroy an AWS System', parameters: [string(name: 'SERVERNAME', value: servername), string(name: 'PLAYBOOK', value: playbook)]
         }
         success {
-            step([$class: 'GitHubSetCommitStatusBuilder', contextSource: [$class: 'ManuallyEnteredCommitContextSource']])
+            setBuildStatus("Build failed", "SUCCESS")
         }
         failure {
             // Mail everyone that the job failed
@@ -204,7 +212,7 @@ echo Found cucumber tags: [$EXTRACTED_TAGS]'''
                 to: '${DEFAULT_RECIPIENTS}',
                 from: '${DEFAULT_REPLYTO}')
 
-            step([$class: 'GitHubSetCommitStatusBuilder', contextSource: [$class: 'ManuallyEnteredCommitContextSource']])
+            setBuildStatus("Build failed", "FAILURE")
         }
         cleanup {
             // Delete workspace folder.

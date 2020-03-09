@@ -19,12 +19,12 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.joda.time.DateTime;
-import org.openmuc.openiec61850.BdaBoolean;
-import org.openmuc.openiec61850.BdaInt8U;
-import org.openmuc.openiec61850.BdaTimestamp;
-import org.openmuc.openiec61850.BdaVisibleString;
-import org.openmuc.openiec61850.FcModelNode;
-import org.openmuc.openiec61850.Report;
+import com.beanit.openiec61850.BdaBoolean;
+import com.beanit.openiec61850.BdaInt8U;
+import com.beanit.openiec61850.BdaTimestamp;
+import com.beanit.openiec61850.BdaVisibleString;
+import com.beanit.openiec61850.FcModelNode;
+import com.beanit.openiec61850.Report;
 import org.opensmartgridplatform.adapter.protocol.iec61850.application.services.DeviceManagementService;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.EventType;

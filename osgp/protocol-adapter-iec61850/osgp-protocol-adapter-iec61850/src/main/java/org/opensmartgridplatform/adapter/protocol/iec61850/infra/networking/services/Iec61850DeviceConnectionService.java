@@ -14,10 +14,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
-import org.openmuc.openiec61850.ClientAssociation;
-import org.openmuc.openiec61850.Fc;
-import org.openmuc.openiec61850.FcModelNode;
-import org.openmuc.openiec61850.ServerModel;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.entities.Iec61850Device;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
@@ -41,6 +37,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
+
+import com.beanit.openiec61850.ClientAssociation;
+import com.beanit.openiec61850.Fc;
+import com.beanit.openiec61850.FcModelNode;
+import com.beanit.openiec61850.ServerModel;
 
 @Component
 @DependsOn({ "iec61850SsldPortServer", "iec61850RtuPortServer", "responseTimeout", "icdFilesFolder", "icdFilePath",
@@ -143,8 +144,8 @@ public class Iec61850DeviceConnectionService {
         try {
             serverModel = this.readServerModel(clientAssociation, deviceIdentification, iec61850Device);
         } catch (final ProtocolAdapterException e) {
-            LOGGER.error("ProtocolAdapterException: unable to read ServerModel for deviceIdentification "
-                    + deviceIdentification, e);
+            LOGGER.error("ProtocolAdapterException: unable to read ServerModel for deviceIdentification {}",
+                    deviceIdentification, e);
             throw new ConnectionFailureException(e.getMessage(), e);
         }
 

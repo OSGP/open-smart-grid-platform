@@ -9,18 +9,13 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-integration-tests</artifactId>
-    <version>5.0.0-SNAPSHOT</version>
+    <version>5.1.0-SNAPSHOT</version>
     <relativePath>../parent-integration-tests/pom.xml</relativePath>
   </parent>
 
   <artifactId>cucumber-tests-platform-distributionautomation</artifactId>
   <packaging>jar</packaging>
-
   <name>cucumber-tests-platform-distributionautomation</name>
-
-  <prerequisites>
-    <maven>3.0.0</maven>
-  </prerequisites>
 
   <dependencies>
     <!-- Cucumber Framework -->
@@ -172,7 +167,7 @@
               </descriptors>
               <archive>
                 <manifest>
-                  <mainClass>org.opensmartgridplatform.cucumber.platform.microgrids.App</mainClass>
+                  <mainClass>org.opensmartgridplatform.cucumber.platform.distributionautomation.App</mainClass>
                 </manifest>
               </archive>
             </configuration>

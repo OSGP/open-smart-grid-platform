@@ -61,6 +61,6 @@ public class AbstractService {
     }
 
     protected Ssld getSsldForDevice(final Device device) {
-        return this.ssldRepository.findById(device.getId()).get();
+        return this.ssldRepository.findById(device.getId()).orElse(null);
     }
 }

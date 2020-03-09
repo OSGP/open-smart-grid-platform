@@ -77,6 +77,22 @@ public class CommonRebootRequestMessageProcessor extends DeviceRequestMessagePro
         final int retryCount = unsignedOslpEnvelopeDto.getRetryCount();
         final boolean isScheduled = unsignedOslpEnvelopeDto.isScheduled();
 
+        final DeviceResponseHandler deviceResponseHandler = this.createSetRebootDeviceResponseHandler(domain,
+                domainVersion, messageType, retryCount, isScheduled);
+
+        final DeviceRequest deviceRequest = new DeviceRequest(organisationIdentification, deviceIdentification,
+                correlationUid, messagePriority);
+
+        try {
+            this.deviceService.doSetReboot(oslpEnvelope, deviceRequest, deviceResponseHandler, ipAddress);
+        } catch (final IOException e) {
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain, domainVersion,
+                    messageType, messagePriority, retryCount);
+        }
+    }
+
+    protected DeviceResponseHandler createSetRebootDeviceResponseHandler(final String domain,
+            final String domainVersion, final String messageType, final int retryCount, final boolean isScheduled) {
         final DeviceResponseHandler deviceResponseHandler = new DeviceResponseHandler() {
 
             @Override
@@ -92,15 +108,6 @@ public class CommonRebootRequestMessageProcessor extends DeviceRequestMessagePro
                         domainVersion, messageType, isScheduled, retryCount);
             }
         };
-
-        final DeviceRequest deviceRequest = new DeviceRequest(organisationIdentification, deviceIdentification,
-                correlationUid, messagePriority);
-
-        try {
-            this.deviceService.doSetReboot(oslpEnvelope, deviceRequest, deviceResponseHandler, ipAddress);
-        } catch (final IOException e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain, domainVersion,
-                    messageType, messagePriority, retryCount);
-        }
+        return deviceResponseHandler;
     }
 }

@@ -34,7 +34,7 @@ Feature: SmartMetering Configuration - Firmware
       | FirmwareIsForSmartMeters  | true                   |
 
 #  TODO (RvM): to fix test: support SMR 5.1 with invocation counter in the simulator
-  @wip
+  @wip @Skip
   Scenario: Get the firmware version from SMR 5.1 device
     Given a dlms device
       | DeviceIdentification      | TEST1027000000001 |

@@ -46,7 +46,7 @@ class DeviceFirmwareConverter extends
         final Device device = this.deviceRepository.findByDeviceIdentification(source.getDeviceIdentification());
         final FirmwareFile firmwareFile = this.firmwareFileRepository
                 .findById(Long.valueOf(source.getFirmware().getId()))
-                .get();
+                .orElse(null);
 
         return new DeviceFirmwareFile(device, firmwareFile,
                 source.getInstallationDate().toGregorianCalendar().getTime(), source.getInstalledBy());
