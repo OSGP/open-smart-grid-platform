@@ -10,6 +10,7 @@ package org.opensmartgridplatform.shared.application.config.messaging;
 import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.*;
 
 import java.util.Arrays;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -39,9 +40,9 @@ public class JmsConfigurationFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JmsConfigurationFactory.class);
 
-    private JmsPropertyReader propertyReader;
-    private PooledConnectionFactory pooledConnectionFactory;
-    private RedeliveryPolicy redeliveryPolicy;
+    private final JmsPropertyReader propertyReader;
+    private final PooledConnectionFactory pooledConnectionFactory;
+    private final RedeliveryPolicy redeliveryPolicy;
 
     public JmsConfigurationFactory(final Environment environment, final JmsConfiguration defaultJmsConfiguration,
             final String propertyPrefix) throws SSLException {
@@ -96,8 +97,8 @@ public class JmsConfigurationFactory {
         return messageListenerContainer;
     }
 
-    public DefaultMessageListenerContainer
-            initMessageListenerContainer(final SessionAwareMessageListener<Message> messageListener) {
+    public DefaultMessageListenerContainer initMessageListenerContainer(
+            final SessionAwareMessageListener<Message> messageListener) {
         LOGGER.debug("Initializing message listener container for message listener: {}.", messageListener);
         final ActiveMQDestination destination = new ActiveMQQueue(
                 this.propertyReader.get(PROPERTY_NAME_QUEUE, String.class));
@@ -174,6 +175,12 @@ public class JmsConfigurationFactory {
             activeMQConnectionFactory.setTrustedPackages(
                     Arrays.asList(this.propertyReader.get(PROPERTY_NAME_TRUSTED_PACKAGES, String.class).split(",")));
         }
+
+        // Thread management
+        activeMQConnectionFactory
+                .setMaxThreadPoolSize(this.propertyReader.get(PROPERTY_NAME_MAX_THREAD_POOL_SIZE, int.class));
+        activeMQConnectionFactory.setRejectedTaskHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+
         // Add optional user name/password configuration.
         final String username = this.propertyReader.get(PROPERTY_NAME_BROKER_USERNAME, String.class);
         final String password = this.propertyReader.get(PROPERTY_NAME_BROKER_SECRET, String.class);

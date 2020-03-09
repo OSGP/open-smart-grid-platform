@@ -77,6 +77,10 @@ public class DefaultDomainJmsConfiguration implements JmsConfiguration {
     @Value("${jms.domain.default.concurrent.consumers:2}")
     private int jmsDefaultConcurrentConsumers;
 
+    // Thread pool size
+    @Value("${jms.domain.default.max.thread.pool.size:10}")
+    private int jmsDefaultMaxThreadPoolSize;
+
     // === REDELIVERY POLICY SETTINGS ===
 
     @Value("${jms.domain.default.use.exponential.back.off:true}")
@@ -257,4 +261,10 @@ public class DefaultDomainJmsConfiguration implements JmsConfiguration {
     public String getQueue() {
         return this.jmsDefaultQueue;
     }
+
+    @Override
+    public int getMaxThreadPoolSize() {
+        return this.jmsDefaultMaxThreadPoolSize;
+    }
+
 }
