@@ -5,7 +5,7 @@ def servername = stream + '-at-' + env.BUILD_NUMBER
 def playbook = stream + '-at.yml'
 
 // Choose the branch to use for SmartSocietyServices/release repository. Default value is 'master'.
-def branchReleaseRepo = 'master'
+def branchReleaseRepo = 'bug/FLEX-5290'
 
 pipeline {
     agent any
