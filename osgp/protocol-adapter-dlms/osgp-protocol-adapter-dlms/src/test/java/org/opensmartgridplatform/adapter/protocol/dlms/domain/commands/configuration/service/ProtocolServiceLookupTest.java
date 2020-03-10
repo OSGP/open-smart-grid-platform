@@ -39,7 +39,6 @@ public class ProtocolServiceLookupTest {
 
     @Test
     public void lookupGetServiceNotFound() throws ProtocolAdapterException {
-        Assertions.assertThrows(ProtocolAdapterException.class, () -> {
 
             // SETUP
             final Protocol protocol = Protocol.OTHER_PROTOCOL;

@@ -130,7 +130,6 @@
 
     <!-- protocol-adapter-mqtt -->
     <module>osgp/protocol-adapter-mqtt/parent-pa-mqtt</module>
-    <module>osgp/protocol-adapter-mqtt/osgp-mqtt</module>
     <module>osgp/protocol-adapter-mqtt/osgp-protocol-adapter-mqtt</module>
     <module>osgp/protocol-adapter-mqtt/osgp-protocol-simulator-mqtt</module>
 

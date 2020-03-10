@@ -66,7 +66,6 @@ public class DlmsConnectionFactoryTest {
 
     @Test
     public void getConnection_throwsForHls4Device() throws Exception {
-        Assertions.assertThrows(FunctionalException.class, () -> {
 
             final DlmsDevice device = new DlmsDeviceBuilder().withHls4Active(true).build();
             final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
@@ -77,7 +76,6 @@ public class DlmsConnectionFactoryTest {
 
     @Test
     public void getConnection_throwsForHls3Device() throws Exception {
-        Assertions.assertThrows(FunctionalException.class, () -> {
             final DlmsDevice device = new DlmsDeviceBuilder().withHls3Active(true).build();
             final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 

@@ -61,7 +61,6 @@ public class GetConfigurationObjectServiceTest {
 
     @Test
     public void getConfigurationObjectIOException() throws Exception {
-        Assertions.assertThrows(ConnectionException.class, () -> {
 
             // SETUP
             when(this.dlmsConnection.get(any(AttributeAddress.class))).thenThrow(new IOException());
@@ -73,7 +72,6 @@ public class GetConfigurationObjectServiceTest {
 
     @Test
     public void getConfigurationObjectGetResultNull() throws Exception {
-        Assertions.assertThrows(ProtocolAdapterException.class, () -> {
 
             // SETUP
             when(this.dlmsConnection.get(any(AttributeAddress.class))).thenReturn(null);
@@ -85,7 +83,6 @@ public class GetConfigurationObjectServiceTest {
 
     @Test
     public void getConfigurationObjectGetResultUnsuccessful() throws Exception {
-        Assertions.assertThrows(ProtocolAdapterException.class, () -> {
 
             // SETUP
             when(this.getResult.getResultCode()).thenReturn(AccessResultCode.READ_WRITE_DENIED);
