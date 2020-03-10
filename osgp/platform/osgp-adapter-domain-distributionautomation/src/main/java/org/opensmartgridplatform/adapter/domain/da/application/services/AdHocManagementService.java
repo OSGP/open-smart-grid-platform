@@ -102,6 +102,7 @@ public class AdHocManagementService extends BaseService {
 
     public void handleGetDataRequest(final String payload, final String deviceIdentification) {
         LOGGER.info("Handle request for MessageType: GET_DATA payload: {}", payload);
+        // XXX: add logic to handle GET_DATA messages
     }
 
 }
