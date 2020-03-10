@@ -25,8 +25,8 @@ import org.opensmartgridplatform.cucumber.platform.glue.steps.ws.GenericResponse
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 /**
  * Class with all the remove organization requests steps
@@ -53,7 +53,7 @@ public class UpdateKeySteps {
         request.setPublicKey(getString(requestSettings, PlatformCommonKeys.KEY_PUBLIC_KEY,
                 PlatformCommonDefaults.DEFAULT_PUBLIC_KEY));
         request.setProtocolInfoId(getLong(requestSettings, PlatformCommonKeys.KEY_PROTOCOL_INFO_ID,
-                PlatformCommonDefaults.DEFAULT_PROTOCOL_INFO_ID));
+                PlatformCommonDefaults.NON_EXISTENT_PROTOCOL_INFO_ID));
 
         try {
             ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.client.getUpdateKeyResponse(request));

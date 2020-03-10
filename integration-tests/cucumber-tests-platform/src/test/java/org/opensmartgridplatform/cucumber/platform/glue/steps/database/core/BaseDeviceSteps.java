@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -80,7 +81,7 @@ public abstract class BaseDeviceSteps {
 
         // Now set the optional stuff
         if (settings.containsKey(PlatformKeys.KEY_TECHNICAL_INSTALLATION_DATE)
-                && !settings.get(PlatformKeys.KEY_TECHNICAL_INSTALLATION_DATE).isEmpty()) {
+                && StringUtils.isNotBlank(settings.get(PlatformKeys.KEY_TECHNICAL_INSTALLATION_DATE))) {
             device.setTechnicalInstallationDate(
                     getDate(settings, PlatformKeys.KEY_TECHNICAL_INSTALLATION_DATE).toDate());
         }
@@ -139,12 +140,12 @@ public abstract class BaseDeviceSteps {
                 getString(settings, PlatformKeys.KEY_MUNICIPALITY, PlatformDefaults.DEFAULT_CONTAINER_MUNICIPALITY)),
                 new GpsCoordinates(
                         (settings.containsKey(PlatformKeys.KEY_LATITUDE)
-                                && !settings.get(PlatformKeys.KEY_LATITUDE).isEmpty())
+                                && StringUtils.isNotBlank(settings.get(PlatformKeys.KEY_LATITUDE)))
                                         ? getFloat(settings, PlatformKeys.KEY_LATITUDE,
                                                 PlatformDefaults.DEFAULT_LATITUDE)
                                         : null,
                         (settings.containsKey(PlatformKeys.KEY_LONGITUDE)
-                                && !settings.get(PlatformKeys.KEY_LONGITUDE).isEmpty())
+                                && StringUtils.isNotBlank(settings.get(PlatformKeys.KEY_LONGITUDE)))
                                         ? getFloat(settings, PlatformKeys.KEY_LONGITUDE,
                                                 PlatformDefaults.DEFAULT_LONGITUDE)
                                         : null));

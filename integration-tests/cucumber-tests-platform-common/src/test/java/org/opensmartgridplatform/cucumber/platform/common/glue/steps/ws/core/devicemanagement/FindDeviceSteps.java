@@ -29,8 +29,8 @@ import org.opensmartgridplatform.cucumber.platform.common.support.ws.core.CoreDe
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 public class FindDeviceSteps {
 
@@ -178,7 +178,7 @@ public class FindDeviceSteps {
         }
     }
 
-    @Then("the find devices response contains \"([^\"]*)\" devices")
+    @Then("the find devices response contains \"{int}\" device(s)")
     public void theFindDevicesResponseContainsDevices(final Integer numberOfDevices) throws Throwable {
         final FindDevicesResponse response = (FindDevicesResponse) ScenarioContext.current()
                 .get(PlatformCommonKeys.RESPONSE);
@@ -186,7 +186,7 @@ public class FindDeviceSteps {
         assertThat(response.getDevices().size()).isEqualTo((int) numberOfDevices);
     }
 
-    @Then("the find devices response contains at index \"([^\"]*)\"")
+    @Then("the find devices response contains at index \"{int}\"")
     public void theFindDevicesResponseContainsAtIndex(final Integer index, final Map<String, String> expectedDevice)
             throws Throwable {
         final FindDevicesResponse response = (FindDevicesResponse) ScenarioContext.current()

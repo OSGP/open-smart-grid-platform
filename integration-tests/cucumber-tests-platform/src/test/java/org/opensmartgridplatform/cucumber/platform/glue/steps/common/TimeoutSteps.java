@@ -10,7 +10,7 @@ package org.opensmartgridplatform.cucumber.platform.glue.steps.common;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 
-import cucumber.api.java.en.Given;
+import io.cucumber.java.en.Given;
 
 public class TimeoutSteps {
 

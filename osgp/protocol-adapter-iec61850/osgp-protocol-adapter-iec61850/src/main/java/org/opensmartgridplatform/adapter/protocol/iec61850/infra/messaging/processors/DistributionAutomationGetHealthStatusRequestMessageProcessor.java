@@ -7,7 +7,7 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.processors;
 
-import org.openmuc.openiec61850.Fc;
+import com.beanit.openiec61850.Fc;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.da.rtu.DaDeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.DaRtuDeviceRequestMessageProcessor;

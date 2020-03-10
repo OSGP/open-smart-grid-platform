@@ -9,11 +9,11 @@
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
@@ -53,11 +53,11 @@ public class ActivityCalendarMappingTest {
     // when one is.
     @Test
     public void testNullCosemDateTime() {
-        Assertions.assertThrows(NullPointerException.class, () -> {
-            final String calendarName = "calendar";
-            final CosemDateTime activePassiveCalendarTime = null;
-            final List<SeasonProfile> seasonProfileList = new ArrayList<>();
+        final String calendarName = "calendar";
+        final CosemDateTime activePassiveCalendarTime = null;
+        final List<SeasonProfile> seasonProfileList = new ArrayList<>();
 
+        assertThatExceptionOfType(NullPointerException.class).isThrownBy(() -> {
             new ActivityCalendar(calendarName, activePassiveCalendarTime, seasonProfileList);
         });
     }
@@ -67,11 +67,11 @@ public class ActivityCalendarMappingTest {
     // when one is.
     @Test
     public void testNullList() {
-        Assertions.assertThrows(NullPointerException.class, () -> {
-            final String calendarName = "calendar";
-            final CosemDateTime activePassiveCalendarTime = new CosemDateTime();
-            final List<SeasonProfile> seasonProfileList = null;
+        final String calendarName = "calendar";
+        final CosemDateTime activePassiveCalendarTime = new CosemDateTime();
+        final List<SeasonProfile> seasonProfileList = null;
 
+        assertThatExceptionOfType(NullPointerException.class).isThrownBy(() -> {
             new ActivityCalendar(calendarName, activePassiveCalendarTime, seasonProfileList);
         });
     }

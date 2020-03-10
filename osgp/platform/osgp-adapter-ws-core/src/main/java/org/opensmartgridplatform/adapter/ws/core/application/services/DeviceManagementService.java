@@ -643,7 +643,9 @@ public class DeviceManagementService {
             existingDevice.setTechnicalInstallationDate(updateDevice.getTechnicalInstallationDate());
         }
 
-        final Ssld ssld = this.writableSsldRepository.findById(existingDevice.getId()).get();
+        final Ssld ssld = this.writableSsldRepository.findById(existingDevice.getId())
+                .orElseThrow(
+                        () -> new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.WS_CORE));
         ssld.updateOutputSettings(updateDevice.receiveOutputSettings());
         ssld.setEans(updateDevice.getEans());
 

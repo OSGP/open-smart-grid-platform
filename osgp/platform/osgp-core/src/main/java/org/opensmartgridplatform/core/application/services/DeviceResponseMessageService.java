@@ -102,9 +102,9 @@ public class DeviceResponseMessageService {
             return false;
         }
 
-        final String exceptionMsg = e.toString();
+        String exceptionMsg = e.toString();
         if (e.getCause() != null) {
-            exceptionMsg.concat(e.getCause().toString());
+            exceptionMsg = exceptionMsg.concat(e.getCause().toString());
         }
 
         for (final String retryException : RETRY_EXCEPTIONS) {
@@ -196,8 +196,13 @@ public class DeviceResponseMessageService {
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(message);
 
         return new ProtocolRequestMessage.Builder().deviceMessageMetadata(deviceMessageMetadata)
-                .domain(message.getDomain()).domainVersion(message.getDomainVersion()).ipAddress(device.getIpAddress())
-                .request(messageData).scheduled(message.isScheduled()).retryCount(message.getRetryCount() + 1).build();
+                .domain(message.getDomain())
+                .domainVersion(message.getDomainVersion())
+                .ipAddress(device.getIpAddress())
+                .request(messageData)
+                .scheduled(message.isScheduled())
+                .retryCount(message.getRetryCount() + 1)
+                .build();
     }
 
     private ScheduledTask createScheduledRetryTask(final ProtocolResponseMessage message) {

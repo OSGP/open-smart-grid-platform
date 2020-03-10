@@ -1,5 +1,6 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service;
 
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -7,7 +8,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -75,11 +75,11 @@ public class SetConfigurationObjectServiceTest {
 
     @Test
     public void setConfigurationObjectIOException() throws Exception {
-        Assertions.assertThrows(ConnectionException.class, () -> {
 
-            // SETUP
-            when(this.dlmsConnection.set(any(SetParameter.class))).thenThrow(new IOException());
+        // SETUP
+        when(this.dlmsConnection.set(any(SetParameter.class))).thenThrow(new IOException());
 
+        assertThatExceptionOfType(ConnectionException.class).isThrownBy(() -> {
             // CALL
             this.instance.setConfigurationObject(this.conn, null, null);
         });
@@ -87,15 +87,15 @@ public class SetConfigurationObjectServiceTest {
 
     @Test
     public void getFlagsCannotFindBitPosition() throws Exception {
-        Assertions.assertThrows(ProtocolAdapterException.class, () -> {
 
-            // SETUP
-            final ArrayList<ConfigurationFlagDto> flags = new ArrayList<>();
-            flags.add(new ConfigurationFlagDto(ConfigurationFlagTypeDto.PO_ENABLE, true));
-            final ConfigurationFlagsDto flagsToSet = new ConfigurationFlagsDto(flags);
-            when(this.configurationToSet.getConfigurationFlags()).thenReturn(flagsToSet);
-            when(this.configurationOnDevice.getConfigurationFlags()).thenReturn(this.emptyFlags());
+        // SETUP
+        final ArrayList<ConfigurationFlagDto> flags = new ArrayList<>();
+        flags.add(new ConfigurationFlagDto(ConfigurationFlagTypeDto.PO_ENABLE, true));
+        final ConfigurationFlagsDto flagsToSet = new ConfigurationFlagsDto(flags);
+        when(this.configurationToSet.getConfigurationFlags()).thenReturn(flagsToSet);
+        when(this.configurationOnDevice.getConfigurationFlags()).thenReturn(this.emptyFlags());
 
+        assertThatExceptionOfType(ProtocolAdapterException.class).isThrownBy(() -> {
             // CALL
             this.instance.getFlags(this.configurationToSet, this.configurationOnDevice);
         });

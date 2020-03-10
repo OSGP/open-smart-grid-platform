@@ -20,7 +20,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-pa-iec61850</artifactId>
-    <version>5.0.0-SNAPSHOT</version>
+    <version>5.1.0-SNAPSHOT</version>
     <relativePath>../parent-pa-iec61850/pom.xml</relativePath>
   </parent>
 
@@ -45,6 +45,17 @@
             <nonFilteredFileExtension>pdf</nonFilteredFileExtension>
           </nonFilteredFileExtensions>
         </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${maven.surefire.plugin.version}</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit.version}</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>
@@ -211,7 +222,7 @@
 
     <!-- OpenIEC61850 -->
     <dependency>
-      <groupId>org.openmuc</groupId>
+      <groupId>com.beanit</groupId>
       <artifactId>openiec61850</artifactId>
     </dependency>
 

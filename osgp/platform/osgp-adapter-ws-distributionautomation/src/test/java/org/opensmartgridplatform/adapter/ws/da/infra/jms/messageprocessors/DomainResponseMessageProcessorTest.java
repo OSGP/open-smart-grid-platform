@@ -42,7 +42,7 @@ public class DomainResponseMessageProcessorTest {
     private ResponseDataService responseDataService;
 
     @InjectMocks
-    private DomainResponseMessageProcessor responseMessageProcessor = new DomainResponseMessageProcessor();
+    private final DomainResponseMessageProcessor responseMessageProcessor = new DomainResponseMessageProcessor();
 
     @Test
     public void testProcessGetHealthStatusResponseNotOkMessage() throws JMSException {
@@ -119,5 +119,4 @@ public class DomainResponseMessageProcessorTest {
         verify(this.responseDataService, times(0)).enqueue(any());
 
     }
-
 }

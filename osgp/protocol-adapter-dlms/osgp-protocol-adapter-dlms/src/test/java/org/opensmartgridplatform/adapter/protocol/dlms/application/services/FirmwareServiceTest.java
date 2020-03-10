@@ -9,12 +9,12 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -85,12 +85,12 @@ public class FirmwareServiceTest {
 
     @Test
     public void updateFirmwareShouldThrowExceptionWhenFirmwareFileNotInCache() throws OsgpException {
-        Assertions.assertThrows(ProtocolAdapterException.class, () -> {
-            // Arrange
-            final String firmwareIdentification = "fw";
-            when(this.firmwareFileCachingRepository.retrieve(firmwareIdentification)).thenReturn(null);
+        // Arrange
+        final String firmwareIdentification = "fw";
+        when(this.firmwareFileCachingRepository.retrieve(firmwareIdentification)).thenReturn(null);
 
-            // Act
+        // Act
+        assertThatExceptionOfType(ProtocolAdapterException.class).isThrownBy(() -> {
             this.firmwareService.updateFirmware(this.dlmsConnectionManagerMock, this.dlmsDeviceMock,
                     firmwareIdentification);
 
@@ -110,7 +110,7 @@ public class FirmwareServiceTest {
             this.firmwareService.updateFirmware(this.dlmsConnectionManagerMock, this.dlmsDeviceMock,
                     firmwareIdentification);
         } catch (final ProtocolAdapterException e) {
-            e.printStackTrace();
+            // Ignore exception.
         }
 
         // Assert

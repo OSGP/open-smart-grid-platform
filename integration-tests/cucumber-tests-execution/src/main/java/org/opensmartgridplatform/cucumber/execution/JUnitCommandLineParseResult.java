@@ -8,6 +8,7 @@
 package org.opensmartgridplatform.cucumber.execution;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -77,13 +78,13 @@ public class JUnitCommandLineParseResult {
             LOGGER.info(" argument {}:{}", i, arg);
 
             if (DASH_DASH.equals(arg)) {
-                return this.copyArray(args, valueIndex, args.length);
-            } else if (DASH_DASH.startsWith(arg)) {
+                return Arrays.copyOfRange(args, valueIndex, args.length);
+            } else if (arg.startsWith(DASH_DASH)) {
                 if (!this.parseFilterSpecs(arg, valueIndex, args)) {
                     break;
                 }
             } else {
-                return this.copyArray(args, i, args.length);
+                return Arrays.copyOfRange(args, i, args.length);
             }
         }
 
@@ -91,7 +92,7 @@ public class JUnitCommandLineParseResult {
     }
 
     private boolean parseFilterSpecs(final String arg, final int valueIndex, final String... args) {
-        if (DASH_DASH_FILTER.startsWith(arg) || DASH_DASH_FILTER.equals(arg)) {
+        if (arg.startsWith(DASH_DASH_FILTER)) {
             String filterSpec = "";
             if (DASH_DASH_FILTER.equals(arg)) {
                 if (valueIndex < args.length) {
@@ -109,16 +110,6 @@ public class JUnitCommandLineParseResult {
         }
 
         return true;
-    }
-
-    private String[] copyArray(final String[] args, final int from, final int to) {
-        final ArrayList<String> result = new ArrayList<>();
-
-        for (int j = from; j != to; ++j) {
-            result.add(args[j]);
-        }
-
-        return result.toArray(new String[result.size()]);
     }
 
     void parseParameters(final String[] args) {

@@ -1,6 +1,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -10,7 +11,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -118,12 +118,12 @@ public class SetRandomisationSettingsCommandExecutorTest {
 
     @Test
     public void testExecuteFailConfiguration() throws ProtocolAdapterException {
-        Assertions.assertThrows(ProtocolAdapterException.class, () -> {
-            // SETUP
-            when(this.setConfigurationObjectService.setConfigurationObject(any(DlmsConnectionManager.class),
-                    any(ConfigurationObjectDto.class), any(ConfigurationObjectDto.class)))
-                            .thenReturn(AccessResultCode.OTHER_REASON);
+        // SETUP
+        when(this.setConfigurationObjectService.setConfigurationObject(any(DlmsConnectionManager.class),
+                any(ConfigurationObjectDto.class), any(ConfigurationObjectDto.class)))
+                        .thenReturn(AccessResultCode.OTHER_REASON);
 
+        assertThatExceptionOfType(ProtocolAdapterException.class).isThrownBy(() -> {
             // CALL
             this.executor.execute(this.dlmsConnectionManager, this.device, this.dataDto);
         });
@@ -131,11 +131,11 @@ public class SetRandomisationSettingsCommandExecutorTest {
 
     @Test
     public void testExecuteFailSetRandomisationSettings() throws ProtocolAdapterException, IOException {
-        Assertions.assertThrows(ProtocolAdapterException.class, () -> {
 
-            // SETUP
-            when(this.dlmsConnection.set(any(SetParameter.class))).thenReturn(AccessResultCode.OTHER_REASON);
+        // SETUP
+        when(this.dlmsConnection.set(any(SetParameter.class))).thenReturn(AccessResultCode.OTHER_REASON);
 
+        assertThatExceptionOfType(ProtocolAdapterException.class).isThrownBy(() -> {
             // CALL
             this.executor.execute(this.dlmsConnectionManager, this.device, this.dataDto);
         });
@@ -143,12 +143,12 @@ public class SetRandomisationSettingsCommandExecutorTest {
 
     @Test
     public void testUnknownAttribute() throws ProtocolAdapterException {
-        Assertions.assertThrows(ProtocolAdapterException.class, () -> {
 
-            // SETUP
-            when(this.dlmsObjectConfigService.findAttributeAddress(this.device, DlmsObjectType.RANDOMISATION_SETTINGS,
-                    null)).thenReturn(Optional.empty());
+        // SETUP
+        when(this.dlmsObjectConfigService.findAttributeAddress(this.device, DlmsObjectType.RANDOMISATION_SETTINGS,
+                null)).thenReturn(Optional.empty());
 
+        assertThatExceptionOfType(ProtocolAdapterException.class).isThrownBy(() -> {
             // CALL
             this.executor.execute(this.dlmsConnectionManager, this.device, this.dataDto);
         });

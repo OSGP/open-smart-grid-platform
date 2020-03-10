@@ -1,3 +1,5 @@
+[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=OSGP/open-smart-grid-platform)](https://dependabot.com) [![Build Status](https://ci.opensmartgridplatform.org/buildStatus/icon?job=OSGP_open-smart-grid-platform_development)](https://ci.opensmartgridplatform.org/job/OSGP_open-smart-grid-platform_development/)
+
 # Code for Open Smart Grid Platform
 
 ### Project Description

@@ -21,7 +21,7 @@ import org.opensmartgridplatform.cucumber.platform.microgrids.support.ws.microgr
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import cucumber.api.java.en.Then;
+import io.cucumber.java.en.Then;
 
 public class FaultSteps {
 

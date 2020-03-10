@@ -9,8 +9,8 @@
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SpecialDay;
@@ -22,7 +22,7 @@ public class SetSpecialDaysRequestMappingTest {
     private static final String DEVICE_ID = "nr1";
     private static final int DAY_ID = 1;
     private static final byte[] COSEMDATE_BYTE_ARRAY = { (byte) 0x07, (byte) 0xE0, 4, 6, 4 };
-    private ConfigurationMapper configurationMapper = new ConfigurationMapper();
+    private final ConfigurationMapper configurationMapper = new ConfigurationMapper();
 
     /**
      * Tests mapping of a SetSpecialDaysRequest object, when its
@@ -94,8 +94,8 @@ public class SetSpecialDaysRequestMappingTest {
     }
 
     /**
-     * Tests mapping of a SetSpecialDaysReqeust object, when its
-     * SpecialDaysReqeustData object is null.
+     * Tests mapping of a SetSpecialDaysRequest object, when its
+     * SetSpecialDaysRequest object is null.
      */
     @Test
     public void testSpecialDaysRequestMappingNull() {
@@ -111,8 +111,6 @@ public class SetSpecialDaysRequestMappingTest {
                 SpecialDaysRequest.class);
 
         // check mapping
-        assertThat(specialDaysRequest).isNotNull();
-        assertThat(specialDaysRequest.getDeviceIdentification()).isNotNull();
         assertThat(specialDaysRequest.getDeviceIdentification()).isEqualTo(DEVICE_ID);
         assertThat(specialDaysRequest.getSpecialDaysRequestData()).isNull();
     }
@@ -123,18 +121,18 @@ public class SetSpecialDaysRequestMappingTest {
      */
     @Test
     public void testWithoutByteArray() {
-        Assertions.assertThrows(NullPointerException.class, () -> {
-            // build test data
-            final SpecialDaysRequestData specialDaysRequestData = new SpecialDaysRequestData();
-            final SpecialDay specialDay = new SpecialDay();
-            specialDay.setDayId(DAY_ID);
-            // To add a SpecialDay to the List, you need to use the getter in
-            // combination with add()
-            specialDaysRequestData.getSpecialDays().add(specialDay);
-            final SetSpecialDaysRequest setSpecialDaysRequest = new SetSpecialDaysRequest();
-            setSpecialDaysRequest.setDeviceIdentification(DEVICE_ID);
-            setSpecialDaysRequest.setSpecialDaysRequestData(specialDaysRequestData);
+        // build test data
+        final SpecialDaysRequestData specialDaysRequestData = new SpecialDaysRequestData();
+        final SpecialDay specialDay = new SpecialDay();
+        specialDay.setDayId(DAY_ID);
+        // To add a SpecialDay to the List, you need to use the getter in
+        // combination with add()
+        specialDaysRequestData.getSpecialDays().add(specialDay);
+        final SetSpecialDaysRequest setSpecialDaysRequest = new SetSpecialDaysRequest();
+        setSpecialDaysRequest.setDeviceIdentification(DEVICE_ID);
+        setSpecialDaysRequest.setSpecialDaysRequestData(specialDaysRequestData);
 
+        assertThatExceptionOfType(NullPointerException.class).isThrownBy(() -> {
             // actual mapping
             this.configurationMapper.map(setSpecialDaysRequest, SpecialDaysRequest.class);
         });

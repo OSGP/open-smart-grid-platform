@@ -20,7 +20,7 @@ import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.hooks.SimulatePushedAlarmsHooks;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ServiceEndpoint;
 
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.When;
 
 public class PushNotificationAlarm {
 

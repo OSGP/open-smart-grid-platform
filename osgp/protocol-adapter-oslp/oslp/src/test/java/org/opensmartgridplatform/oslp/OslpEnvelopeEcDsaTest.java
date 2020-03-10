@@ -8,6 +8,7 @@
 package org.opensmartgridplatform.oslp;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -18,7 +19,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.oslp.Oslp.Message;
 import org.opensmartgridplatform.oslp.Oslp.RegisterDeviceResponse;
@@ -156,28 +156,28 @@ public class OslpEnvelopeEcDsaTest {
     @Test
     public void buildOslpMessageSignatureCorrupt()
             throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            final OslpEnvelope request = this.buildMessage();
+        final OslpEnvelope request = this.buildMessage();
 
-            // Validate security key is set in request
-            final byte[] securityKey = request.getSecurityKey();
-            assertThat(securityKey.length).isEqualTo(OslpEnvelope.SECURITY_KEY_LENGTH);
-            assertThat(ArrayUtils.isEmpty(securityKey)).isFalse();
+        // Validate security key is set in request
+        final byte[] securityKey = request.getSecurityKey();
+        assertThat(securityKey.length).isEqualTo(OslpEnvelope.SECURITY_KEY_LENGTH);
+        assertThat(ArrayUtils.isEmpty(securityKey)).isFalse();
 
-            // Verify the message using public certificate
-            final OslpEnvelope response = new OslpEnvelope.Builder().withSignature(SIGNATURE)
-                    .withProvider(this.provider())
-                    .withSecurityKey(request.getSecurityKey())
-                    .withDeviceId(request.getDeviceId())
-                    .withSequenceNumber(request.getSequenceNumber())
-                    .withPayloadMessage(request.getPayloadMessage())
-                    .build();
+        // Verify the message using public certificate
+        final OslpEnvelope response = new OslpEnvelope.Builder().withSignature(SIGNATURE)
+                .withProvider(this.provider())
+                .withSecurityKey(request.getSecurityKey())
+                .withDeviceId(request.getDeviceId())
+                .withSequenceNumber(request.getSequenceNumber())
+                .withPayloadMessage(request.getPayloadMessage())
+                .build();
 
-            // Corrupt the length of the ASN.1 DSA signature
-            final byte[] corruptedSecurityKey = response.getSecurityKey();
-            corruptedSecurityKey[1] = (byte) 129;
-            response.setSecurityKey(corruptedSecurityKey);
+        // Corrupt the length of the ASN.1 DSA signature
+        final byte[] corruptedSecurityKey = response.getSecurityKey();
+        corruptedSecurityKey[1] = (byte) 129;
+        response.setSecurityKey(corruptedSecurityKey);
 
+        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> {
             response.validate(
                     CertificateHelper.createPublicKeyFromBase64(PUBLIC_KEY_BASE_64, KEY_TYPE, this.provider()));
         });
@@ -194,12 +194,12 @@ public class OslpEnvelopeEcDsaTest {
     @Test()
     public void buildOslpMessageIncorrectSignature()
             throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            final byte[] deviceId = new byte[] { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 };
-            final byte[] sequenceNumber = new byte[] { 0, 1 };
+        final byte[] deviceId = new byte[] { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 };
+        final byte[] sequenceNumber = new byte[] { 0, 1 };
 
-            final Message message = this.buildRegisterResponse();
+        final Message message = this.buildRegisterResponse();
 
+        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> {
             new OslpEnvelope.Builder().withSignature("Incorrect")
                     .withProvider(this.provider())
                     .withPrimaryKey(CertificateHelper.createPrivateKeyFromBase64(PRIVATE_KEY_BASE_64, KEY_TYPE,
@@ -222,12 +222,12 @@ public class OslpEnvelopeEcDsaTest {
     @Test()
     public void buildOslpMessageIncorrectProvider()
             throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            final byte[] deviceId = new byte[] { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 };
-            final byte[] sequenceNumber = new byte[] { 0, 1 };
+        final byte[] deviceId = new byte[] { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 };
+        final byte[] sequenceNumber = new byte[] { 0, 1 };
 
-            final Message message = this.buildRegisterResponse();
+        final Message message = this.buildRegisterResponse();
 
+        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> {
             new OslpEnvelope.Builder().withSignature(SIGNATURE)
                     .withProvider("Incorrect")
                     .withPrimaryKey(CertificateHelper.createPrivateKeyFromBase64(PRIVATE_KEY_BASE_64, KEY_TYPE,

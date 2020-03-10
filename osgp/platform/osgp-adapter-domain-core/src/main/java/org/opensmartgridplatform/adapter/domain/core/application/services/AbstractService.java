@@ -7,6 +7,8 @@
  */
 package org.opensmartgridplatform.adapter.domain.core.application.services;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.opensmartgridplatform.adapter.domain.core.application.mapping.DomainCoreMapper;
 import org.opensmartgridplatform.adapter.domain.core.infra.jms.core.OsgpCoreRequestMessageSender;
 import org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.WebServiceResponseMessageSender;
@@ -60,6 +62,7 @@ public class AbstractService {
     }
 
     protected Ssld findSsldForDevice(final Device device) {
-        return this.ssldRepository.findById(device.getId()).get();
+        return this.ssldRepository.findById(device.getId())
+                .orElseThrow(() -> new EntityNotFoundException("SSLD with id: " + device.getId() + " not found."));
     }
 }

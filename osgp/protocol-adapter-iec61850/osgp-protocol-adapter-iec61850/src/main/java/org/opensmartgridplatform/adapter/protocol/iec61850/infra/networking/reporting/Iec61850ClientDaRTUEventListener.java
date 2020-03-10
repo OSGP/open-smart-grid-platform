@@ -15,12 +15,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.joda.time.DateTime;
-import org.openmuc.openiec61850.BdaFloat32;
-import org.openmuc.openiec61850.BdaTimestamp;
-import org.openmuc.openiec61850.Fc;
-import org.openmuc.openiec61850.FcModelNode;
-import org.openmuc.openiec61850.ModelNode;
-import org.openmuc.openiec61850.Report;
+import com.beanit.openiec61850.BdaFloat32;
+import com.beanit.openiec61850.BdaTimestamp;
+import com.beanit.openiec61850.Fc;
+import com.beanit.openiec61850.FcModelNode;
+import com.beanit.openiec61850.ModelNode;
+import com.beanit.openiec61850.Report;
 import org.opensmartgridplatform.dto.da.GetPQValuesResponseDto;
 import org.opensmartgridplatform.dto.da.iec61850.DataSampleDto;
 import org.opensmartgridplatform.dto.da.iec61850.LogicalDeviceDto;

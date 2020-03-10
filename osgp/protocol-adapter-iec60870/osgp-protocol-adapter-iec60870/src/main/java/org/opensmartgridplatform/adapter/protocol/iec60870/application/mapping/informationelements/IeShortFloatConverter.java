@@ -7,7 +7,7 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.application.mapping.informationelements;
 
-import org.openmuc.j60870.IeShortFloat;
+import org.openmuc.j60870.ie.IeShortFloat;
 import org.opensmartgridplatform.dto.da.measurements.elements.FloatMeasurementElementDto;
 
 import ma.glasnost.orika.CustomConverter;

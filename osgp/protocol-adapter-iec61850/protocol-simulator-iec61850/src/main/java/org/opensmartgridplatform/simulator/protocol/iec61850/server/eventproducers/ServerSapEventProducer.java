@@ -9,7 +9,7 @@ package org.opensmartgridplatform.simulator.protocol.iec61850.server.eventproduc
 
 import org.opensmartgridplatform.simulator.protocol.iec61850.server.events.ServerSapEvent;
 import org.opensmartgridplatform.simulator.protocol.iec61850.server.tasks.UpdateValuesTask;
-import org.openmuc.openiec61850.ServerSap;
+import com.beanit.openiec61850.ServerSap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;

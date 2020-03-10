@@ -1,6 +1,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -14,7 +15,6 @@ import java.util.stream.IntStream;
 
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -128,10 +128,10 @@ public class FindEventsCommandExecutorTest {
 
     @Test
     public void testOtherReasonResult() throws ProtocolAdapterException {
-        Assertions.assertThrows(ProtocolAdapterException.class, () -> {
 
-            when(this.getResult.getResultCode()).thenReturn(AccessResultCode.OTHER_REASON);
+        when(this.getResult.getResultCode()).thenReturn(AccessResultCode.OTHER_REASON);
 
+        assertThatExceptionOfType(ProtocolAdapterException.class).isThrownBy(() -> {
             new FindEventsCommandExecutor(this.dlmsHelper, this.dataObjectToEventListConverter).execute(this.conn,
                     this.dlmsDevice, this.findEventsRequestDto);
         });
@@ -139,10 +139,10 @@ public class FindEventsCommandExecutorTest {
 
     @Test
     public void testEmptyGetResult() throws ProtocolAdapterException, IOException {
-        Assertions.assertThrows(ProtocolAdapterException.class, () -> {
 
-            when(this.dlmsConnection.get(any(AttributeAddress.class))).thenReturn(null);
+        when(this.dlmsConnection.get(any(AttributeAddress.class))).thenReturn(null);
 
+        assertThatExceptionOfType(ProtocolAdapterException.class).isThrownBy(() -> {
             new FindEventsCommandExecutor(this.dlmsHelper, this.dataObjectToEventListConverter).execute(this.conn,
                     this.dlmsDevice, this.findEventsRequestDto);
         });

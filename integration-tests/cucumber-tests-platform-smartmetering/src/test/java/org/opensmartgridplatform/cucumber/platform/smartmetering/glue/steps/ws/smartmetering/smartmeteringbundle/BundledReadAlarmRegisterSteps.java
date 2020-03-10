@@ -13,8 +13,8 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ReadAlar
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ReadAlarmRegisterResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Response;
 
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
 
 public class BundledReadAlarmRegisterSteps extends BaseBundleSteps {
 

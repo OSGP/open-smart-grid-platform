@@ -27,7 +27,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import cucumber.api.java.en.Then;
+import io.cucumber.java.en.Then;
 
 public class AuditTrail {
     private static final String PATTERN_RETRY_OPERATION = "retry count= .*, correlationuid= .*";

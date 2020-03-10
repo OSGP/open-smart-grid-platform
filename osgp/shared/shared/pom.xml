@@ -16,20 +16,17 @@
 
   <artifactId>shared</artifactId>
   <name>shared</name>
-  <!-- Description element is needed for the maven-jxr-plugin to generate 
+  <packaging>jar</packaging>
+  <!-- Description element is needed for the maven-jxr-plugin to generate
     a maven site -->
   <description>Shared module.</description>
 
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-shared</artifactId>
-    <version>5.0.0-SNAPSHOT</version>
+    <version>5.1.0-SNAPSHOT</version>
     <relativePath>../parent-shared/pom.xml</relativePath>
   </parent>
-
-  <properties>
-    <maven.jar.plugin.version>3.1.1</maven.jar.plugin.version>
-  </properties>
 
   <dependencies>
     <dependency>
@@ -66,6 +63,10 @@
       <artifactId>commons-lang3</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-text</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
@@ -86,6 +87,7 @@
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
     </dependency>
+
     <!-- Apache CXF RESTfull WS WebClient -->
     <dependency>
       <groupId>org.apache.cxf</groupId>

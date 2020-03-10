@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.core.infra.jms.protocol.inbound.messageprocessors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
@@ -20,7 +21,6 @@ import java.util.Date;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -97,14 +97,17 @@ public class PushNotificationAlarmMessageProcessorTest {
 
         this.message = new ObjectMessageBuilder().withCorrelationUid(correlationUid)
                 .withMessageType(MessageType.PUSH_NOTIFICATION_ALARM.name())
-                .withDeviceIdentification(DEVICE_IDENTIFICATION).withObject(requestMessage).build();
+                .withDeviceIdentification(DEVICE_IDENTIFICATION)
+                .withObject(requestMessage)
+                .build();
 
         this.device = new Device(DEVICE_IDENTIFICATION);
 
         when(this.deviceRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION)).thenReturn(this.device);
         when(this.deviceRepository.save(this.device)).thenAnswer((Answer<Void>) invocationOnMock -> null);
-        doNothing().when(this.eventNotificationMessageService).handleEvent(any(String.class), any(Date.class),
-                any(EventType.class), any(String.class), any(Integer.class));
+        doNothing().when(this.eventNotificationMessageService)
+                .handleEvent(any(String.class), any(Date.class), any(EventType.class), any(String.class),
+                        any(Integer.class));
         when(this.deviceAuthorizationRepository.findByDeviceAndFunctionGroup(this.device, DeviceFunctionGroup.OWNER))
                 .thenReturn(Collections.singletonList(this.deviceAuthorization));
         when(this.deviceAuthorization.getOrganisation()).thenReturn(this.organisation);
@@ -113,8 +116,8 @@ public class PushNotificationAlarmMessageProcessorTest {
         when(this.domainInfoRepository.findAll()).thenReturn(Collections.singletonList(this.domainInfo));
         when(this.domainInfo.getDomain()).thenReturn("SMART_METERING");
         when(this.domainInfo.getDomainVersion()).thenReturn("1.0");
-        doNothing().when(this.domainRequestService).send(any(RequestMessage.class), any(String.class),
-                any(DomainInfo.class));
+        doNothing().when(this.domainRequestService)
+                .send(any(RequestMessage.class), any(String.class), any(DomainInfo.class));
     }
 
     @Test
@@ -131,17 +134,17 @@ public class PushNotificationAlarmMessageProcessorTest {
 
     @Test
     public void testUnknownDevice() {
-        Assertions.assertThrows(JMSException.class, () -> {
-            when(this.deviceRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION)).thenReturn(null);
+        when(this.deviceRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION)).thenReturn(null);
+        assertThatExceptionOfType(JMSException.class).isThrownBy(() -> {
             this.pushNotificationAlarmMessageProcessor.processMessage(this.message);
         });
     }
 
     @Test
     public void testUnknownDeviceAuthorization() {
-        Assertions.assertThrows(JMSException.class, () -> {
-            when(this.deviceAuthorizationRepository.findByDeviceAndFunctionGroup(this.device,
-                    DeviceFunctionGroup.OWNER)).thenReturn(null);
+        when(this.deviceAuthorizationRepository.findByDeviceAndFunctionGroup(this.device, DeviceFunctionGroup.OWNER))
+                .thenReturn(null);
+        assertThatExceptionOfType(JMSException.class).isThrownBy(() -> {
             this.pushNotificationAlarmMessageProcessor.processMessage(this.message);
         });
     }

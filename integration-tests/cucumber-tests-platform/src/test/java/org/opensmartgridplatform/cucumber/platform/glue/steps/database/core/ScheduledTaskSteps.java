@@ -32,7 +32,7 @@ import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import cucumber.api.java.en.Given;
+import io.cucumber.java.en.Given;
 
 public class ScheduledTaskSteps extends BaseDeviceSteps {
 
@@ -44,7 +44,7 @@ public class ScheduledTaskSteps extends BaseDeviceSteps {
     @Autowired
     private ScheduledTaskRepository scheduledTaskRepository;
 
-    @Given("a scheduled \"([^\"]*)\" task")
+    @Given("a scheduled {string} task")
     public void givenAScheduledTask(final String messageType, final Map<String, String> settings) {
         final ScheduledTask scheduledTask = SCHEDULED_TASK_CREATOR_MAP.get(messageType).apply(settings);
         this.scheduledTaskRepository.save(scheduledTask);

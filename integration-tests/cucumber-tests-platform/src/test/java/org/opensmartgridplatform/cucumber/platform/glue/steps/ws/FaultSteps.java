@@ -9,7 +9,7 @@ package org.opensmartgridplatform.cucumber.platform.glue.steps.ws;
 
 import java.util.Map;
 
-import cucumber.api.java.en.Then;
+import io.cucumber.java.en.Then;
 
 public class FaultSteps {
 

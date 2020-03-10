@@ -118,7 +118,7 @@ public class PublicLightingSetLightRequestMessageProcessor extends DeviceRequest
             }
         };
 
-        final DeviceRequest setLightdeviceRequest = DeviceRequest.newBuilder()
+        final DeviceRequest setLightDeviceRequest = DeviceRequest.newBuilder()
                 .organisationIdentification(organisationIdentification).deviceIdentification(deviceIdentification)
                 .correlationUid(correlationUid).domain(domain).domainVersion(domainVersion).messageType(messageType)
                 .messagePriority(messagePriority).ipAddress(ipAddress).retryCount(retryCount).isScheduled(isScheduled)
@@ -141,7 +141,7 @@ public class PublicLightingSetLightRequestMessageProcessor extends DeviceRequest
                 resumeScheduleMessageDataContainer);
 
         try {
-            this.deviceService.doSetLight(oslpEnvelope, setLightdeviceRequest, resumeScheduleDeviceRequest,
+            this.deviceService.doSetLight(oslpEnvelope, setLightDeviceRequest, resumeScheduleDeviceRequest,
                     setLightDeviceResponseHandler, resumeScheduleDeviceResponseHandler, ipAddress);
         } catch (final IOException e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain, domainVersion,

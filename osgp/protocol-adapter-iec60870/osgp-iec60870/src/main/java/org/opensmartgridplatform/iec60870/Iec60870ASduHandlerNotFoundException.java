@@ -7,19 +7,19 @@
  */
 package org.opensmartgridplatform.iec60870;
 
-import org.openmuc.j60870.TypeId;
+import org.openmuc.j60870.ASduType;
 
 public class Iec60870ASduHandlerNotFoundException extends Exception {
 
     private static final long serialVersionUID = 1L;
-    private final TypeId typeId;
+    private final ASduType asduType;
 
-    public Iec60870ASduHandlerNotFoundException(final TypeId typeId) {
+    public Iec60870ASduHandlerNotFoundException(final ASduType asduType) {
         super();
-        this.typeId = typeId;
+        this.asduType = asduType;
     }
 
-    public TypeId getTypeId() {
-        return this.typeId;
+    public ASduType getAsduType() {
+        return this.asduType;
     }
 }

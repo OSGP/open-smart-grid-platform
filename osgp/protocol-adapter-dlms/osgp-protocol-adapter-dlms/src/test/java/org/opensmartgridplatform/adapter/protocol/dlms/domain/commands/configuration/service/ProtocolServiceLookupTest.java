@@ -1,11 +1,11 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
@@ -44,7 +44,7 @@ public class ProtocolServiceLookupTest {
             // SETUP
             final Protocol protocol = Protocol.OTHER_PROTOCOL;
 
-            // CALL
+            assertThatExceptionOfType(ProtocolAdapterException.class).isThrownBy(() -> {// CALL
             this.instance.lookupSetService(protocol);
         });
     }

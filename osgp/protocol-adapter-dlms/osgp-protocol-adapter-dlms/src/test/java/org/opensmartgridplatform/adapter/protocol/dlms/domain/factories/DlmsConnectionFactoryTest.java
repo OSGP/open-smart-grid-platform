@@ -9,9 +9,9 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.when;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -71,7 +71,7 @@ public class DlmsConnectionFactoryTest {
             final DlmsDevice device = new DlmsDeviceBuilder().withHls4Active(true).build();
             final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 
-            this.factory.getConnection(device, listener);
+            assertThatExceptionOfType(FunctionalException.class).isThrownBy(() -> {this.factory.getConnection(device, listener);
         });
     }
 
@@ -81,7 +81,7 @@ public class DlmsConnectionFactoryTest {
             final DlmsDevice device = new DlmsDeviceBuilder().withHls3Active(true).build();
             final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 
-            this.factory.getConnection(device, listener);
+            assertThatExceptionOfType(FunctionalException.class).isThrownBy(() -> {this.factory.getConnection(device, listener);
         });
     }
 

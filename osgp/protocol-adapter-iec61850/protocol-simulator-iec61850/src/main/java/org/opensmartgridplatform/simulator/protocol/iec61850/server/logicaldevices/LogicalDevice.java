@@ -13,23 +13,23 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-import org.openmuc.openiec61850.BasicDataAttribute;
-import org.openmuc.openiec61850.BdaBoolean;
-import org.openmuc.openiec61850.BdaFloat32;
-import org.openmuc.openiec61850.BdaInt32;
-import org.openmuc.openiec61850.BdaInt64;
-import org.openmuc.openiec61850.BdaInt8;
-import org.openmuc.openiec61850.BdaQuality;
-import org.openmuc.openiec61850.BdaTimestamp;
-import org.openmuc.openiec61850.BdaType;
-import org.openmuc.openiec61850.BdaVisibleString;
-import org.openmuc.openiec61850.ServerModel;
+import org.opensmartgridplatform.simulator.protocol.iec61850.server.BasicDataAttributesHelper;
+import org.opensmartgridplatform.simulator.protocol.iec61850.server.QualityType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
-import org.opensmartgridplatform.simulator.protocol.iec61850.server.BasicDataAttributesHelper;
-import org.opensmartgridplatform.simulator.protocol.iec61850.server.QualityType;
+import com.beanit.openiec61850.BasicDataAttribute;
+import com.beanit.openiec61850.BdaBoolean;
+import com.beanit.openiec61850.BdaFloat32;
+import com.beanit.openiec61850.BdaInt32;
+import com.beanit.openiec61850.BdaInt64;
+import com.beanit.openiec61850.BdaInt8;
+import com.beanit.openiec61850.BdaQuality;
+import com.beanit.openiec61850.BdaTimestamp;
+import com.beanit.openiec61850.BdaType;
+import com.beanit.openiec61850.BdaVisibleString;
+import com.beanit.openiec61850.ServerModel;
 
 public abstract class LogicalDevice {
 

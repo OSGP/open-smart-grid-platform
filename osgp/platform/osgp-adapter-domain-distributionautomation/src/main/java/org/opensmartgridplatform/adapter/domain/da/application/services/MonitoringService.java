@@ -131,7 +131,7 @@ public class MonitoringService extends BaseService {
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         MeasurementReport measurementReport = null;
-        OsgpException exception = null;
+        OsgpException exception = osgpException;
 
         try {
             if (responseMessageResultType == ResponseMessageResultType.NOT_OK || osgpException != null) {

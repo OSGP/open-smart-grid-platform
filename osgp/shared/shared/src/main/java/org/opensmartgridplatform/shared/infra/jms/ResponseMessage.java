@@ -29,7 +29,9 @@ public class ResponseMessage implements Serializable {
     private final OsgpException osgpException;
     private final Serializable dataObject;
     private final int messagePriority;
+    private final boolean scheduled;
     private final boolean bypassRetry;
+    private final RetryHeader retryHeader;
 
     protected ResponseMessage(final Builder builder) {
         this.messageType = builder.messageType;
@@ -40,7 +42,9 @@ public class ResponseMessage implements Serializable {
         this.osgpException = builder.osgpException;
         this.dataObject = builder.dataObject;
         this.messagePriority = builder.messagePriority;
+        this.scheduled = builder.scheduled;
         this.bypassRetry = builder.bypassRetry;
+        this.retryHeader = builder.retryHeader;
     }
 
     public static class Builder {
@@ -53,7 +57,9 @@ public class ResponseMessage implements Serializable {
         private OsgpException osgpException = null;
         private Serializable dataObject = null;
         private int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
+        private boolean scheduled = false;
         private boolean bypassRetry = DEFAULT_BYPASS_RETRY;
+        private RetryHeader retryHeader;
 
         public Builder withMessageType(final String messageType) {
             this.messageType = messageType;
@@ -107,6 +113,16 @@ public class ResponseMessage implements Serializable {
             return this;
         }
 
+        public Builder withScheduled(final boolean scheduled) {
+            this.scheduled = scheduled;
+            return this;
+        }
+
+        public Builder withRetryHeader(final RetryHeader retryHeader) {
+            this.retryHeader = retryHeader;
+            return this;
+        }
+
         public Builder withDeviceMessageMetadata(final DeviceMessageMetadata deviceMessageMetadata) {
             this.messageType = deviceMessageMetadata.getMessageType();
             this.correlationUid = deviceMessageMetadata.getCorrelationUid();
@@ -114,6 +130,8 @@ public class ResponseMessage implements Serializable {
             this.deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
             this.messagePriority = deviceMessageMetadata.getMessagePriority();
             this.bypassRetry = deviceMessageMetadata.bypassRetry();
+            this.scheduled = deviceMessageMetadata.isScheduled();
+            this.retryHeader = new RetryHeader();
             return this;
         }
 
@@ -160,6 +178,14 @@ public class ResponseMessage implements Serializable {
 
     public boolean bypassRetry() {
         return this.bypassRetry;
+    }
+
+    public boolean isScheduled() {
+        return this.scheduled;
+    }
+
+    public RetryHeader getRetryHeader() {
+        return this.retryHeader;
     }
 
 }

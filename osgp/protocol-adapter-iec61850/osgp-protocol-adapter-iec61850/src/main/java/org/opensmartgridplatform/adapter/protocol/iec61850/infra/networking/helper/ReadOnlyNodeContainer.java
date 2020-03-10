@@ -10,7 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.hel
 import java.util.Date;
 
 import org.apache.commons.lang3.NotImplementedException;
-import org.openmuc.openiec61850.FcModelNode;
+import com.beanit.openiec61850.FcModelNode;
 
 public final class ReadOnlyNodeContainer extends NodeContainer {
 

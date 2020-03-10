@@ -16,6 +16,7 @@ import static org.opensmartgridplatform.cucumber.platform.core.CorrelationUidHel
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.adapter.ws.schema.core.common.AsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.core.configurationmanagement.Configuration;
@@ -43,8 +44,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 /**
  * Class with all the get configuration requests steps
@@ -139,7 +140,7 @@ public class GetConfigurationSteps {
         assertThat(configuration).isNotNull();
 
         if (expectedResponseData.containsKey(PlatformKeys.KEY_LIGHTTYPE)
-                && !expectedResponseData.get(PlatformKeys.KEY_LIGHTTYPE).isEmpty()
+                && StringUtils.isNotBlank(expectedResponseData.get(PlatformKeys.KEY_LIGHTTYPE))
                 && configuration.getLightType() != null) {
             assertThat(configuration.getLightType())
                     .isEqualTo(getEnum(expectedResponseData, PlatformKeys.KEY_LIGHTTYPE, LightType.class));
@@ -149,14 +150,14 @@ public class GetConfigurationSteps {
         if (daliConfiguration != null) {
 
             if (expectedResponseData.containsKey(PlatformKeys.DC_LIGHTS)
-                    && !expectedResponseData.get(PlatformKeys.DC_LIGHTS).isEmpty()
+                    && StringUtils.isNotBlank(expectedResponseData.get(PlatformKeys.DC_LIGHTS))
                     && daliConfiguration.getNumberOfLights() != 0) {
                 assertThat(daliConfiguration.getNumberOfLights())
                         .isEqualTo((int) getInteger(expectedResponseData, PlatformKeys.DC_LIGHTS));
             }
 
             if (expectedResponseData.containsKey(PlatformKeys.DC_MAP)
-                    && !expectedResponseData.get(PlatformKeys.DC_MAP).isEmpty()
+                    && StringUtils.isNotBlank(expectedResponseData.get(PlatformKeys.DC_MAP))
                     && daliConfiguration.getIndexAddressMap() != null) {
                 final List<IndexAddressMap> indexAddressMapList = daliConfiguration.getIndexAddressMap();
                 final String[] dcMapArray = getString(expectedResponseData, PlatformKeys.DC_MAP).split(";");
@@ -175,7 +176,7 @@ public class GetConfigurationSteps {
         if (relayConfiguration != null) {
 
             if (expectedResponseData.containsKey(PlatformKeys.RELAY_CONF)
-                    && !expectedResponseData.get(PlatformKeys.RELAY_CONF).isEmpty()
+                    && StringUtils.isNotBlank(expectedResponseData.get(PlatformKeys.RELAY_CONF))
                     && relayConfiguration.getRelayMap() != null) {
                 final List<RelayMap> relayMapList = relayConfiguration.getRelayMap();
                 final String[] rcMapArray = getString(expectedResponseData, PlatformKeys.RELAY_CONF).split(";");
@@ -187,7 +188,7 @@ public class GetConfigurationSteps {
                         assertThat(relayMapList.get(i).getAddress()).isEqualTo(Integer.parseInt(rcMapArrayElements[1]));
 
                         if (expectedResponseData.containsKey(PlatformKeys.KEY_RELAY_TYPE)
-                                && !expectedResponseData.get(PlatformKeys.KEY_RELAY_TYPE).isEmpty()
+                                && StringUtils.isNotBlank(expectedResponseData.get(PlatformKeys.KEY_RELAY_TYPE))
                                 && relayMapList.get(i).getRelayType() != null) {
                             assertThat(relayMapList.get(i).getRelayType()).isEqualTo(
                                     getEnum(expectedResponseData, PlatformKeys.KEY_RELAY_TYPE, RelayType.class));
@@ -201,7 +202,7 @@ public class GetConfigurationSteps {
         // configuration.getRelayLinking();
 
         if (expectedResponseData.containsKey(PlatformKeys.KEY_PREFERRED_LINKTYPE)
-                && !expectedResponseData.get(PlatformKeys.KEY_PREFERRED_LINKTYPE).isEmpty()
+                && StringUtils.isNotBlank(expectedResponseData.get(PlatformKeys.KEY_PREFERRED_LINKTYPE))
                 && configuration.getPreferredLinkType() != null) {
             assertThat(configuration.getPreferredLinkType())
                     .isEqualTo(getEnum(expectedResponseData, PlatformKeys.KEY_PREFERRED_LINKTYPE, LinkType.class));
@@ -212,7 +213,7 @@ public class GetConfigurationSteps {
         // values the same. Some with underscore and some without.
 
         if (expectedResponseData.containsKey(PlatformKeys.METER_TYPE)
-                && !expectedResponseData.get(PlatformKeys.METER_TYPE).isEmpty()
+                && StringUtils.isNotBlank(expectedResponseData.get(PlatformKeys.METER_TYPE))
                 && configuration.getMeterType() != null) {
             MeterType meterType;
             final String sMeterType = getString(expectedResponseData, PlatformKeys.METER_TYPE);
@@ -226,34 +227,34 @@ public class GetConfigurationSteps {
         }
 
         if (expectedResponseData.containsKey(PlatformKeys.SHORT_INTERVAL)
-                && !expectedResponseData.get(PlatformKeys.SHORT_INTERVAL).isEmpty()
+                && StringUtils.isNotBlank(expectedResponseData.get(PlatformKeys.SHORT_INTERVAL))
                 && configuration.getShortTermHistoryIntervalMinutes() != null) {
             assertThat(configuration.getShortTermHistoryIntervalMinutes()).isEqualTo(getInteger(expectedResponseData,
                     PlatformKeys.SHORT_INTERVAL, PlatformDefaults.DEFAULT_SHORT_INTERVAL));
         }
 
         if (expectedResponseData.containsKey(PlatformKeys.LONG_INTERVAL)
-                && !expectedResponseData.get(PlatformKeys.LONG_INTERVAL).isEmpty()
+                && StringUtils.isNotBlank(expectedResponseData.get(PlatformKeys.LONG_INTERVAL))
                 && configuration.getLongTermHistoryInterval() != null) {
             assertThat(configuration.getLongTermHistoryInterval()).isEqualTo(getInteger(expectedResponseData,
                     PlatformKeys.LONG_INTERVAL, PlatformDefaults.DEFAULT_LONG_INTERVAL));
         }
 
         if (expectedResponseData.containsKey(PlatformKeys.INTERVAL_TYPE)
-                && !expectedResponseData.get(PlatformKeys.INTERVAL_TYPE).isEmpty()
+                && StringUtils.isNotBlank(expectedResponseData.get(PlatformKeys.INTERVAL_TYPE))
                 && configuration.getLongTermHistoryIntervalType() != null) {
             assertThat(configuration.getLongTermHistoryIntervalType())
                     .isEqualTo(getEnum(expectedResponseData, PlatformKeys.INTERVAL_TYPE, LongTermIntervalType.class));
         }
 
         if (expectedResponseData.containsKey(PlatformKeys.OSGP_IP_ADDRESS)
-                && !expectedResponseData.get(PlatformKeys.OSGP_IP_ADDRESS).isEmpty()) {
+                && StringUtils.isNotBlank(expectedResponseData.get(PlatformKeys.OSGP_IP_ADDRESS))) {
             assertThat(configuration.getOsgpIpAddress())
                     .isEqualTo(getString(expectedResponseData, PlatformKeys.OSGP_IP_ADDRESS));
         }
 
         if (expectedResponseData.containsKey(PlatformKeys.OSGP_PORT)
-                && !expectedResponseData.get(PlatformKeys.OSGP_PORT).isEmpty()) {
+                && StringUtils.isNotBlank(expectedResponseData.get(PlatformKeys.OSGP_PORT))) {
             assertThat(configuration.getOsgpPortNumber())
                     .isEqualTo(getInteger(expectedResponseData, PlatformKeys.OSGP_PORT));
         }

@@ -52,8 +52,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 /**
  * Class with all the AuthorizeDeviceFunctions steps
@@ -152,7 +152,7 @@ public class AuthorizeDeviceFunctionsSteps {
         }
     }
 
-    @Then("the device function response is \"([^\"]*)\"")
+    @Then("the device function response is \"{}\"")
     public void theDeviceFunctionResponseIsSuccessful(final Boolean allowed) {
         if (allowed) {
             final Object response = ScenarioContext.current().get(PlatformCommonKeys.RESPONSE);
@@ -205,8 +205,9 @@ public class AuthorizeDeviceFunctionsSteps {
 
         updateDeviceAuthorisationsRequest.getDeviceAuthorisations().add(deviceAuthorisation);
 
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
-                this.adminDeviceManagementClient.updateDeviceAuthorisations(updateDeviceAuthorisationsRequest));
+        ScenarioContext.current()
+                .put(PlatformCommonKeys.RESPONSE,
+                        this.adminDeviceManagementClient.updateDeviceAuthorisations(updateDeviceAuthorisationsRequest));
     }
 
     private void startSelfTest(final Map<String, String> requestParameters)
@@ -215,8 +216,8 @@ public class AuthorizeDeviceFunctionsSteps {
         request.setDeviceIdentification(getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION,
                 PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
-                this.coreDeviceInstallationClient.startDeviceTest(request));
+        ScenarioContext.current()
+                .put(PlatformCommonKeys.RESPONSE, this.coreDeviceInstallationClient.startDeviceTest(request));
     }
 
     private void stopSelfTest(final Map<String, String> requestParameters)
@@ -225,8 +226,8 @@ public class AuthorizeDeviceFunctionsSteps {
         request.setDeviceIdentification(getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION,
                 PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
-                this.coreDeviceInstallationClient.stopDeviceTest(request));
+        ScenarioContext.current()
+                .put(PlatformCommonKeys.RESPONSE, this.coreDeviceInstallationClient.stopDeviceTest(request));
     }
 
     private void getStatus(final Map<String, String> requestParameters)
@@ -235,8 +236,8 @@ public class AuthorizeDeviceFunctionsSteps {
         request.setDeviceIdentification(getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION,
                 PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
-                this.coreDeviceInstallationClient.getStatus(request));
+        ScenarioContext.current()
+                .put(PlatformCommonKeys.RESPONSE, this.coreDeviceInstallationClient.getStatus(request));
     }
 
     private void getDeviceAuthorization(final Map<String, String> requestParameters)
@@ -245,8 +246,8 @@ public class AuthorizeDeviceFunctionsSteps {
         request.setDeviceIdentification(getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION,
                 PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
-                this.adminDeviceManagementClient.findDeviceAuthorisations(request));
+        ScenarioContext.current()
+                .put(PlatformCommonKeys.RESPONSE, this.adminDeviceManagementClient.findDeviceAuthorisations(request));
     }
 
     private void setEventNotifications(final Map<String, String> requestParameters)
@@ -255,8 +256,8 @@ public class AuthorizeDeviceFunctionsSteps {
         request.setDeviceIdentification(getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION,
                 PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
-                this.coreDeviceManagementClient.setEventNotifications(request));
+        ScenarioContext.current()
+                .put(PlatformCommonKeys.RESPONSE, this.coreDeviceManagementClient.setEventNotifications(request));
     }
 
     private void getEventNotifications(final Map<String, String> requestParameters)
@@ -265,8 +266,8 @@ public class AuthorizeDeviceFunctionsSteps {
         request.setDeviceIdentification(getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION,
                 PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
-                this.coreDeviceManagementClient.findEventsResponse(request));
+        ScenarioContext.current()
+                .put(PlatformCommonKeys.RESPONSE, this.coreDeviceManagementClient.findEventsResponse(request));
     }
 
     private void updateFirmware(final Map<String, String> requestParameters)
@@ -277,8 +278,8 @@ public class AuthorizeDeviceFunctionsSteps {
         request.setFirmwareIdentification(getString(requestParameters, PlatformCommonKeys.KEY_FIRMWARE_IDENTIFICATION,
                 PlatformCommonDefaults.FIRMWARE_IDENTIFICATION));
 
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
-                this.coreFirmwareManagementClient.updateFirmware(request));
+        ScenarioContext.current()
+                .put(PlatformCommonKeys.RESPONSE, this.coreFirmwareManagementClient.updateFirmware(request));
     }
 
     private void getFirmwareVersion(final Map<String, String> requestParameters)
@@ -287,8 +288,8 @@ public class AuthorizeDeviceFunctionsSteps {
         request.setDeviceIdentification(getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION,
                 PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
-                this.coreFirmwareManagementClient.getFirmwareVersion(request));
+        ScenarioContext.current()
+                .put(PlatformCommonKeys.RESPONSE, this.coreFirmwareManagementClient.getFirmwareVersion(request));
     }
 
     private void setConfiguration(final Map<String, String> requestParameters)
@@ -306,8 +307,8 @@ public class AuthorizeDeviceFunctionsSteps {
 
         request.setConfiguration(config);
 
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
-                this.coreConfigurationManagementClient.setConfiguration(request));
+        ScenarioContext.current()
+                .put(PlatformCommonKeys.RESPONSE, this.coreConfigurationManagementClient.setConfiguration(request));
     }
 
     private void getConfiguration(final Map<String, String> requestParameters)
@@ -316,8 +317,8 @@ public class AuthorizeDeviceFunctionsSteps {
         request.setDeviceIdentification(getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION,
                 PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
-                this.coreConfigurationManagementClient.getConfiguration(request));
+        ScenarioContext.current()
+                .put(PlatformCommonKeys.RESPONSE, this.coreConfigurationManagementClient.getConfiguration(request));
     }
 
     private void removeDevice(final Map<String, String> requestParameters)
@@ -326,8 +327,8 @@ public class AuthorizeDeviceFunctionsSteps {
         request.setDeviceIdentification(getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION,
                 PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
-                this.adminDeviceManagementClient.removeDevice(request));
+        ScenarioContext.current()
+                .put(PlatformCommonKeys.RESPONSE, this.adminDeviceManagementClient.removeDevice(request));
     }
 
     private void setReboot(final Map<String, String> requestParameters)
@@ -356,11 +357,12 @@ public class AuthorizeDeviceFunctionsSteps {
         deviceAuthorisation.setRevoked(
                 getBoolean(requestParameters, PlatformCommonKeys.KEY_REVOKED, PlatformCommonDefaults.REVOKED));
         request.getDeviceAuthorisations().add(deviceAuthorisation);
-        ScenarioContext.current().put(PlatformCommonKeys.KEY_ORGANIZATION_IDENTIFICATION,
-                getString(requestParameters, PlatformCommonKeys.KEY_ORGANIZATION_IDENTIFICATION,
-                        PlatformCommonDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
-                this.adminDeviceManagementClient.updateDeviceAuthorisations(request));
+        ScenarioContext.current()
+                .put(PlatformCommonKeys.KEY_ORGANIZATION_IDENTIFICATION,
+                        getString(requestParameters, PlatformCommonKeys.KEY_ORGANIZATION_IDENTIFICATION,
+                                PlatformCommonDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+        ScenarioContext.current()
+                .put(PlatformCommonKeys.RESPONSE, this.adminDeviceManagementClient.updateDeviceAuthorisations(request));
 
     }
 }

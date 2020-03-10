@@ -23,7 +23,7 @@ import org.opensmartgridplatform.domain.core.repositories.SsldRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.RelayType;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import cucumber.api.java.en.Given;
+import io.cucumber.java.en.Given;
 
 public class DeviceConfigurationSteps {
 

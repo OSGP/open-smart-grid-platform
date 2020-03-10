@@ -9,11 +9,11 @@
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.MeterReadsGas;
@@ -67,8 +67,8 @@ public class MeterReadsGasMappingTest {
     // MeterReadsGasDto is defined.
     @Test
     public void testWithNullDates() {
-        Assertions.assertThrows(NullPointerException.class, () -> {
-            final DlmsMeterValueDto consumption = new DlmsMeterValueDto(new BigDecimal(1.0), DlmsUnitTypeDto.M3);
+        final DlmsMeterValueDto consumption = new DlmsMeterValueDto(new BigDecimal(1.0), DlmsUnitTypeDto.M3);
+        assertThatExceptionOfType(NullPointerException.class).isThrownBy(() -> {
             new MeterReadsGasResponseDto(null, consumption, null);
         });
     }

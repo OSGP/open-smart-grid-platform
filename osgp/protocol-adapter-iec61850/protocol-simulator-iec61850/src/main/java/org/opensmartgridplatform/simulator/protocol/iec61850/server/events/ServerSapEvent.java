@@ -7,7 +7,7 @@
  */
 package org.opensmartgridplatform.simulator.protocol.iec61850.server.events;
 
-import org.openmuc.openiec61850.ServerSap;
+import com.beanit.openiec61850.ServerSap;
 
 public class ServerSapEvent {
     private final ServerSap serverSap;
