@@ -23,7 +23,7 @@ pipeline {
         stage('Maven Build') {
             steps {
                 withMaven(
-                        maven: 'Apache Maven 3.6.2',
+                        maven: 'Apache Maven',
                         mavenLocalRepo: '.repository',
                         options: [
                                 artifactsPublisher(disabled: true),
@@ -63,7 +63,7 @@ pipeline {
         stage ('Collect Coverage') {
             steps {
                 withMaven(
-                        maven: 'Apache Maven 3.6.2',
+                        maven: 'Apache Maven',
                         mavenLocalRepo: '.repository',
                         options: [
                                 artifactsPublisher(disabled: true),

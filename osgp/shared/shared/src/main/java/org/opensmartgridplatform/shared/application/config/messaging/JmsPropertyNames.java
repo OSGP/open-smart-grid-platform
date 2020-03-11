@@ -26,6 +26,7 @@ public final class JmsPropertyNames {
     public static final String PROPERTY_NAME_CONNECTION_QUEUE_PREFETCH = "connection.queue.prefetch";
     public static final String PROPERTY_NAME_CONNECTION_SEND_TIMEOUT = "connection.send.timeout";
 
+    public static final String PROPERTY_NAME_MAX_THREAD_POOL_SIZE = "max.thread.pool.size";
     public static final String PROPERTY_NAME_TRUST_ALL_PACKAGES = "trust.all.packages";
     public static final String PROPERTY_NAME_TRUSTED_PACKAGES = "trusted.packages";
     public static final String PROPERTY_NAME_BROKER_CLIENT_KEY_STORE = "broker.client.key.store";
