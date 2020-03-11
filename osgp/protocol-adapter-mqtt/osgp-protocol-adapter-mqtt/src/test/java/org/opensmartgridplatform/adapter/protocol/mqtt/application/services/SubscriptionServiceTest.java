@@ -27,13 +27,13 @@ import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 
 @ExtendWith(MockitoExtension.class)
-class SubcriptionServiceTest {
+class SubscriptionServiceTest {
 
     private static final int DEFAULT_PORT = 11111;
     private static final String DEFAULT_TOPICS = "test-default-topics";
     private static final MqttQos DEFAULT_QOS = MqttQos.AT_MOST_ONCE;
 
-    private SubcriptionService instance;
+    private SubscriptionService instance;
 
     @Mock
     private OutboundOsgpCoreRequestMessageSender outboundOsgpCoreRequestMessageSender;
@@ -53,7 +53,7 @@ class SubcriptionServiceTest {
 
     @BeforeEach
     public void setUp() {
-        this.instance = new SubcriptionService(this.mqttDeviceRepository, this.mqttClientAdapterFactory,
+        this.instance = new SubscriptionService(this.mqttDeviceRepository, this.mqttClientAdapterFactory,
                 this.outboundOsgpCoreRequestMessageSender, DEFAULT_PORT, DEFAULT_TOPICS, DEFAULT_QOS.name());
         lenient().when(this.mqttClientAdapter.getMessageMetadata()).thenReturn(this.messageMetadata);
     }

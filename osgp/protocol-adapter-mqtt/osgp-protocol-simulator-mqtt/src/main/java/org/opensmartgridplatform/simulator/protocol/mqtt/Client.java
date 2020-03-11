@@ -29,7 +29,7 @@ public abstract class Client extends Thread {
     private final String host;
     private final int port;
     private volatile boolean running;
-    private Mqtt3BlockingClient client;
+    private Mqtt3BlockingClient mqtt3BlockingClient;
 
     public Client(final String host, final int port) {
         this.host = host;
@@ -40,12 +40,16 @@ public abstract class Client extends Thread {
     @Override
     public void run() {
         this.running = true;
-        this.client = Mqtt3Client.builder().identifier(this.uuid.toString()).serverHost(this.host).serverPort(this.port).buildBlocking();
-        final Mqtt3ConnAck ack = this.client.connect();
+        this.mqtt3BlockingClient = Mqtt3Client.builder()
+                .identifier(this.uuid.toString())
+                .serverHost(this.host)
+                .serverPort(this.port)
+                .buildBlocking();
+        final Mqtt3ConnAck ack = this.mqtt3BlockingClient.connect();
         LOG.info(String.format("Client %s received Ack %s", this.getClass().getSimpleName(), ack.getType()));
         this.addShutdownHook();
         LOG.info(String.format("Client %s started", this.getClass().getSimpleName()));
-        this.onConnect(this.client);
+        this.onConnect(this.mqtt3BlockingClient);
     }
 
     /**
@@ -70,8 +74,8 @@ public abstract class Client extends Thread {
         try {
             Thread.sleep(2000);
         } catch (final InterruptedException e) {
-            e.printStackTrace();
+            LOG.error("Interrupted during sleep", e);
         }
-        this.client.disconnect();
+        this.mqtt3BlockingClient.disconnect();
     }
 }

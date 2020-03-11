@@ -21,11 +21,6 @@ import io.netty.buffer.ByteBuf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Moquette broker.
- *
- * Config is expected on the classpath at `config/moquette.conf`
- */
 public final class Broker {
 
     private static final Logger LOG = LoggerFactory.getLogger(Broker.class);
@@ -42,7 +37,7 @@ public final class Broker {
         return running;
     }
 
-    public void start() {
+    public void start() throws IOException {
         if (isRunning()) {
             LOG.warn("Broker already runnning, exiting");
             return;
@@ -52,25 +47,21 @@ public final class Broker {
         handleShutdown(server);
     }
 
-    private void startServer(final Server server) {
-        try {
-            server.startServer(this.config, Collections.singletonList(new AbstractInterceptHandler() {
-                @Override
-                public String getID() {
-                    return LISTENER_ID;
-                }
+    private void startServer(final Server server) throws IOException {
+        server.startServer(this.config, Collections.singletonList(new AbstractInterceptHandler() {
+            @Override
+            public String getID() {
+                return LISTENER_ID;
+            }
 
-                @Override
-                public void onPublish(final InterceptPublishMessage msg) {
-                    LOG.info(String.format("Broker received on topic: %s content: %s%n", msg.getTopicName(),
-                            new String(getBytes(msg), UTF_8)));
-                }
-            }));
-            running = true;
-            LOG.info("Broker started press [CTRL+C] to stop");
-        } catch (final IOException e) {
-            throw new RuntimeException("Could not start Moquette broker", e);
-        }
+            @Override
+            public void onPublish(final InterceptPublishMessage msg) {
+                LOG.info(String.format("Broker received on topic: %s content: %s%n", msg.getTopicName(),
+                        new String(getBytes(msg), UTF_8)));
+            }
+        }));
+        running = true;
+        LOG.info("Broker started press [CTRL+C] to stop");
     }
 
     private static byte[] getBytes(final InterceptPublishMessage msg) {

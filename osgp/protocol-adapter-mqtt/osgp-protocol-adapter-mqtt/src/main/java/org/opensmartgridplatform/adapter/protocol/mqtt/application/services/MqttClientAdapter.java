@@ -16,12 +16,8 @@ import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
 import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3Publish;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.entities.MqttDevice;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class MqttClientAdapter {
-
-    private static final Logger LOG = LoggerFactory.getLogger(MqttClientAdapter.class);
 
     private final MqttDevice device;
     private final MessageMetadata messageMetadata;

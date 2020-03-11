@@ -21,19 +21,21 @@ import org.springframework.core.io.ClassPathResource;
 public class Simulator {
 
     private static final Logger LOG = LoggerFactory.getLogger(Simulator.class);
-    private static final String DEFAULT_BROKER_HOST = "127.0.0.1";
-    private static final int DEFAULT_BROKER_PORT = 8883;
 
-    public static void main(final String[] args) throws Exception {
+    public static void main(final String[] args) throws IOException {
         final Simulator app = new Simulator();
         app.run(args);
     }
 
-    private void run(final String[] args) throws Exception {
+    private void run(final String[] args) throws IOException {
         final SimulatorSpec simulatorSpec = this.getSimulatorSpec(args);
         final Broker broker = new Broker(this.getConfig(simulatorSpec));
         broker.start();
-        Thread.sleep(simulatorSpec.getStartupPauseMillis());
+        try {
+            Thread.sleep(simulatorSpec.getStartupPauseMillis());
+        } catch (final InterruptedException e) {
+            LOG.warn("Interrupted sleep", e);
+        }
         final LnaClient lnaClient = new LnaClient(simulatorSpec);
         lnaClient.start();
     }
@@ -61,7 +63,7 @@ public class Simulator {
             }
             simulatorSpec = new ObjectMapper().readValue(jsonFile, SimulatorSpec.class);
         } else {
-            simulatorSpec = new SimulatorSpec(DEFAULT_BROKER_HOST, DEFAULT_BROKER_PORT);
+            simulatorSpec = new SimulatorSpec(Default.BROKER_HOST, Default.BROKER_PORT);
         }
         LOG.info("Simulator spec: {}", simulatorSpec);
         return simulatorSpec;

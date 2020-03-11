@@ -25,9 +25,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service(value = "mqttSubcriptionService")
-public class SubcriptionService implements MqttClientEventHandler {
+public class SubscriptionService implements MqttClientEventHandler {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SubcriptionService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SubscriptionService.class);
 
     private final MqttDeviceRepository mqttDeviceRepository;
     private final OutboundOsgpCoreRequestMessageSender outboundOsgpCoreRequestMessageSender;
@@ -37,7 +37,7 @@ public class SubcriptionService implements MqttClientEventHandler {
     private final String defaultTopics;
     private final String defaultQos;
 
-    public SubcriptionService(final MqttDeviceRepository mqttDeviceRepository,
+    public SubscriptionService(final MqttDeviceRepository mqttDeviceRepository,
             final MqttClientAdapterFactory mqttClientAdapterFactory,
             final OutboundOsgpCoreRequestMessageSender outboundOsgpCoreRequestMessageSender,
             @Value("#{new Integer('${mqtt.broker.defaultPort}')}") final int defaultPort,
@@ -96,6 +96,7 @@ public class SubcriptionService implements MqttClientEventHandler {
         try {
             mqttQos = MqttQos.valueOf(device.getQos());
         } catch (final IllegalArgumentException | NullPointerException e) {
+            LOG.warn(String.format("Illegal or missing QoS value %s, using default", device.getQos()), e);
             device.setQos(this.defaultQos);
             mqttQos = MqttQos.valueOf(device.getQos());
         }

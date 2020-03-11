@@ -11,7 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.mqtt.application.messaging;
 import javax.annotation.PostConstruct;
 import javax.jms.ObjectMessage;
 
-import org.opensmartgridplatform.adapter.protocol.mqtt.application.services.SubcriptionService;
+import org.opensmartgridplatform.adapter.protocol.mqtt.application.services.SubscriptionService;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
@@ -25,12 +25,12 @@ public class InboundOsgpCoreGetDataRequestMessageProcessor implements MessagePro
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InboundOsgpCoreGetDataRequestMessageProcessor.class);
 
-    private final SubcriptionService subcriptionService;
+    private final SubscriptionService subscriptionService;
     private final MessageProcessorMap protocolMqttInboundOsgpCoreRequestsMessageProcessorMap;
 
-    public InboundOsgpCoreGetDataRequestMessageProcessor(final SubcriptionService subcriptionService,
+    public InboundOsgpCoreGetDataRequestMessageProcessor(final SubscriptionService subscriptionService,
             final MessageProcessorMap protocolMqttInboundOsgpCoreRequestsMessageProcessorMap) {
-        this.subcriptionService = subcriptionService;
+        this.subscriptionService = subscriptionService;
         this.protocolMqttInboundOsgpCoreRequestsMessageProcessorMap =
                 protocolMqttInboundOsgpCoreRequestsMessageProcessorMap;
     }
@@ -50,7 +50,7 @@ public class InboundOsgpCoreGetDataRequestMessageProcessor implements MessagePro
                     messageMetadata.getOrganisationIdentification(), messageMetadata.getDomain(),
                     messageMetadata.getDomainVersion(), messageMetadata.getDeviceIdentification(),
                     messageMetadata.getIpAddress());
-            this.subcriptionService.subscribe(messageMetadata);
+            this.subscriptionService.subscribe(messageMetadata);
         } catch (final Exception e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
         }

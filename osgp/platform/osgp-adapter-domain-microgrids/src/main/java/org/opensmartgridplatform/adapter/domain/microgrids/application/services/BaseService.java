@@ -7,6 +7,8 @@
  */
 package org.opensmartgridplatform.adapter.domain.microgrids.application.services;
 
+import java.util.Optional;
+
 import org.opensmartgridplatform.adapter.domain.microgrids.application.mapping.DomainMicrogridsMapper;
 import org.opensmartgridplatform.adapter.domain.microgrids.infra.jms.core.OsgpCoreRequestMessageSender;
 import org.opensmartgridplatform.adapter.domain.microgrids.infra.jms.ws.WebServiceResponseMessageSender;
@@ -52,7 +54,7 @@ public class BaseService {
     }
 
     protected Organisation findOrganisation(final String organisationIdentification) throws FunctionalException {
-        Organisation organisation;
+        final Organisation organisation;
         try {
             organisation = this.organisationDomainService.searchOrganisation(organisationIdentification);
         } catch (final UnknownEntityException e) {
@@ -62,8 +64,8 @@ public class BaseService {
         return organisation;
     }
 
-    protected RtuDevice findRtuDeviceForDevice(final Device device) {
-        return this.rtuDeviceRepository.findById(device.getId()).get();
+    protected Optional<RtuDevice> findRtuDeviceForDevice(final Device device) {
+        return this.rtuDeviceRepository.findById(device.getId());
     }
 
     protected OsgpException ensureOsgpException(final Throwable t, final String defaultMessage) {
