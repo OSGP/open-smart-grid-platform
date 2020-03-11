@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.application.mappi
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MapperFactory;
@@ -18,11 +19,9 @@ import ma.glasnost.orika.metadata.Type;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CaptureObject;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ObisCodeValues;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.OsgpMeterValue;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PowerQualityProfileData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileEntry;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileEntryValue;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.DlmsMeterValueDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PowerQualityProfileDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryDto;
@@ -37,10 +36,6 @@ public class GetPowerQualityProfileDtoConverter
         this.mapperFactory = mapperFactory;
     }
 
-    private OsgpMeterValue toOsgpMeterValue(final DlmsMeterValueDto source) {
-        return this.mapperFactory.getMapperFacade().map(source, OsgpMeterValue.class);
-    }
-    
     @Override
     public GetPowerQualityProfileResponse convert(GetPowerQualityProfileResponseDto source,
             Type<? extends GetPowerQualityProfileResponse> destinationType, MappingContext mappingContext) {
@@ -66,6 +61,26 @@ public class GetPowerQualityProfileDtoConverter
         response.setPowerQualityProfileDatas(powerQualityProfileDatas);
 
         return response;
+    }
+
+    @Override
+    public boolean equals(final Object other) {
+        if (!(other instanceof GetPowerQualityProfileDtoConverter)) {
+            return false;
+        }
+        if (!super.equals(other)) {
+            return false;
+        }
+        final GetPowerQualityProfileDtoConverter o = (GetPowerQualityProfileDtoConverter) other;
+        if (this.mapperFactory.getMapperFacade() == null) {
+            return o.mapperFactory.getMapperFacade() == null;
+        }
+        return this.mapperFactory.getMapperFacade().getClass().equals(o.mapperFactory.getMapperFacade().getClass());
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode() + Objects.hashCode(this.mapperFactory.getMapperFacade());
     }
 
     private List<ProfileEntry> makeProfileEntries(PowerQualityProfileDataDto responseDataDto) {

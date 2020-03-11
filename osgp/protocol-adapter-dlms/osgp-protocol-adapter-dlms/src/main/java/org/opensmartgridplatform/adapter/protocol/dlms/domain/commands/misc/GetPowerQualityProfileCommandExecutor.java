@@ -150,15 +150,7 @@ public class GetPowerQualityProfileCommandExecutor
                     .processData(profile, captureObjects, scalerUnitInfos, selectedValues,
                             device.isSelectiveAccessSupported(), bufferList);
 
-            LOGGER.info("----- added LogicalName {}", responseDataDto.getLogicalName());
-            for (final CaptureObjectDto cDto : responseDataDto.getCaptureObjects()) {
-                LOGGER.info("----- added CaptureObjectDto {} - {}", cDto.getLogicalName(), cDto.getUnit());
-            }
-
-            LOGGER.info("----- added ProfileEntryValueDto {}", responseDataDto.getProfileEntries().size());
-
             responseDatas.add(responseDataDto);
-
         }
 
         response.setPowerQualityProfileDatas(responseDatas);

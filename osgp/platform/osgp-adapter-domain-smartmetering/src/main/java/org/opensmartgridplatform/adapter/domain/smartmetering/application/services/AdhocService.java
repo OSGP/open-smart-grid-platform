@@ -42,7 +42,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(value = "transactionManager")
 public class AdhocService {
 
-    private static final String DEVICE_RESPONSE_NOT_OK_UNEXPECTED_EXCEPTION = "Device Response not ok. Unexpected Exception";
+    private static final String DEVICE_RESPONSE_NOT_OK_UNEXPECTED_EXCEPTION = "Device Response not ok. Unexpected "
+            + "Exception";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdhocService.class);
 
@@ -78,11 +79,14 @@ public class AdhocService {
                 .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
 
         final SynchronizeTimeRequestDto synchronizeTimeRequestDto = this.mapperFactory.getMapperFacade()
-                .map(synchronizeTimeRequestDataValueObject, SynchronizeTimeRequestDto.class);
+                                                                                      .map(synchronizeTimeRequestDataValueObject,
+                                                                                              SynchronizeTimeRequestDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                smartMeteringDevice.getIpAddress(), synchronizeTimeRequestDto), deviceMessageMetadata.getMessageType(),
+                        deviceMessageMetadata.getOrganisationIdentification(),
+                        deviceMessageMetadata.getDeviceIdentification(),
+                        smartMeteringDevice.getIpAddress(), synchronizeTimeRequestDto),
+                deviceMessageMetadata.getMessageType(),
                 deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
     }
 
@@ -97,14 +101,13 @@ public class AdhocService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
-                .withResult(result)
-                .withOsgpException(exception)
-                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
-                .build();
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
+                deviceMessageMetadata.getCorrelationUid()).withOrganisationIdentification(
+                deviceMessageMetadata.getOrganisationIdentification()).withDeviceIdentification(
+                deviceMessageMetadata.getDeviceIdentification()).withResult(result).withOsgpException(exception)
+                                                               .withMessagePriority(
+                                                                       deviceMessageMetadata.getMessagePriority())
+                                                               .build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
@@ -119,8 +122,9 @@ public class AdhocService {
         final GetAllAttributeValuesRequestDto requestDto = new GetAllAttributeValuesRequestDto();
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                smartMeteringDevice.getIpAddress(), requestDto), deviceMessageMetadata.getMessageType(),
+                        deviceMessageMetadata.getOrganisationIdentification(),
+                        deviceMessageMetadata.getDeviceIdentification(),
+                        smartMeteringDevice.getIpAddress(), requestDto), deviceMessageMetadata.getMessageType(),
                 deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
 
     }
@@ -136,21 +140,16 @@ public class AdhocService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
-                .withResult(result)
-                .withOsgpException(exception)
-                .withDataObject(resultData)
-                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
-                .build();
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
+                deviceMessageMetadata.getCorrelationUid()).withOrganisationIdentification(
+                deviceMessageMetadata.getOrganisationIdentification()).withDeviceIdentification(
+                deviceMessageMetadata.getDeviceIdentification()).withResult(result).withOsgpException(exception)
+                                                               .withDataObject(resultData).withMessagePriority(
+                        deviceMessageMetadata.getMessagePriority()).build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
-    public void getAssociationLnObjects(final DeviceMessageMetadata deviceMessageMetadata,
-            final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetAssociationLnObjectsRequest request)
-            throws FunctionalException {
+    public void getAssociationLnObjects(final DeviceMessageMetadata deviceMessageMetadata) throws FunctionalException {
         LOGGER.debug("getAssociationLnObjects for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
@@ -160,8 +159,9 @@ public class AdhocService {
         final GetAssociationLnObjectsRequestDto requestDto = new GetAssociationLnObjectsRequestDto();
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                smartMeteringDevice.getIpAddress(), requestDto), deviceMessageMetadata.getMessageType(),
+                        deviceMessageMetadata.getOrganisationIdentification(),
+                        deviceMessageMetadata.getDeviceIdentification(),
+                        smartMeteringDevice.getIpAddress(), requestDto), deviceMessageMetadata.getMessageType(),
                 deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
     }
 
@@ -175,18 +175,17 @@ public class AdhocService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        final AssociationLnListType associationLnListValueDomain = this.configurationMapper.map(resultData,
-                AssociationLnListType.class);
+        final AssociationLnListType associationLnListValueDomain = this.configurationMapper
+                .map(resultData, AssociationLnListType.class);
 
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
-                .withResult(result)
-                .withOsgpException(exception)
-                .withDataObject(associationLnListValueDomain)
-                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
-                .build();
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
+                deviceMessageMetadata.getCorrelationUid()).withOrganisationIdentification(
+                deviceMessageMetadata.getOrganisationIdentification()).withDeviceIdentification(
+                deviceMessageMetadata.getDeviceIdentification()).withResult(result).withOsgpException(exception)
+                                                               .withDataObject(associationLnListValueDomain)
+                                                               .withMessagePriority(
+                                                                       deviceMessageMetadata.getMessagePriority())
+                                                               .build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
@@ -204,8 +203,9 @@ public class AdhocService {
                 this.mapperFactory.getMapperFacade().map(request.getObisCode(), ObisCodeValuesDto.class));
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                smartMeteringDevice.getIpAddress(), requestDto), deviceMessageMetadata.getMessageType(),
+                        deviceMessageMetadata.getOrganisationIdentification(),
+                        deviceMessageMetadata.getDeviceIdentification(),
+                        smartMeteringDevice.getIpAddress(), requestDto), deviceMessageMetadata.getMessageType(),
                 deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
 
     }
@@ -221,15 +221,12 @@ public class AdhocService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
-                .withResult(result)
-                .withOsgpException(exception)
-                .withDataObject(resultData)
-                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
-                .build();
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
+                deviceMessageMetadata.getCorrelationUid()).withOrganisationIdentification(
+                deviceMessageMetadata.getOrganisationIdentification()).withDeviceIdentification(
+                deviceMessageMetadata.getDeviceIdentification()).withResult(result).withOsgpException(exception)
+                                                               .withDataObject(resultData).withMessagePriority(
+                        deviceMessageMetadata.getMessagePriority()).build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
@@ -244,8 +241,9 @@ public class AdhocService {
         final ScanMbusChannelsRequestDataDto requestDto = new ScanMbusChannelsRequestDataDto();
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                smartMeteringDevice.getIpAddress(), requestDto), deviceMessageMetadata.getMessageType(),
+                        deviceMessageMetadata.getOrganisationIdentification(),
+                        deviceMessageMetadata.getDeviceIdentification(),
+                        smartMeteringDevice.getIpAddress(), requestDto), deviceMessageMetadata.getMessageType(),
                 deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
 
     }
@@ -262,17 +260,17 @@ public class AdhocService {
         }
 
         final ScanMbusChannelsResponseData scanMbusChannelsResponseData = this.mapperFactory.getMapperFacade()
-                .map(resultData, ScanMbusChannelsResponseData.class);
+                                                                                            .map(resultData,
+                                                                                                    ScanMbusChannelsResponseData.class);
 
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
-                .withResult(result)
-                .withOsgpException(exception)
-                .withDataObject(scanMbusChannelsResponseData)
-                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
-                .build();
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
+                deviceMessageMetadata.getCorrelationUid()).withOrganisationIdentification(
+                deviceMessageMetadata.getOrganisationIdentification()).withDeviceIdentification(
+                deviceMessageMetadata.getDeviceIdentification()).withResult(result).withOsgpException(exception)
+                                                               .withDataObject(scanMbusChannelsResponseData)
+                                                               .withMessagePriority(
+                                                                       deviceMessageMetadata.getMessagePriority())
+                                                               .build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 }
