@@ -18,10 +18,7 @@ pipeline {
                 withMaven(
                         maven: 'Apache Maven 3.6.2',
                         mavenLocalRepo: '.repository',
-                        publisherStrategy: 'EXPLICIT',
-                        options: [
-                                sitePublisher(disabled: false)
-                        ]) {
+                        publisherStrategy: 'EXPLICIT') {
                     sh "mvn -V -B clean site -Dmaven.site.distributionManagement.site.url="
                 }
                 publishHTML(target: [
