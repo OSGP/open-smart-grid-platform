@@ -90,7 +90,7 @@ public class ActionMapperResponseService {
             new HashMap<>();
 
     /**
-     * Specifies to which core value object the DTO object needs to be mapped.
+     * Specifies to whi ch core value object the DTO object needs to be mapped.
      */
     static {
         classMap.put(EventMessageDataResponseDto.class, EventMessagesResponse.class);
