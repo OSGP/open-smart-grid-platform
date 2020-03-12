@@ -1036,9 +1036,6 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>versions-maven-plugin</artifactId>
         <version>${versions.maven.plugin.version}</version>
-        <configuration>
-          <rulesUri>file://${maven.multiModuleProjectDirectory}/super/versions-plugin-rules.xml</rulesUri>
-        </configuration>
         <reportSets>
           <reportSet>
             <reports>

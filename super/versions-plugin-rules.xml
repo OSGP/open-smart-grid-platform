@@ -10,7 +10,7 @@
   <rules>
     <rule groupId="org.postgresql" artifactId="postgresql">
       <ignoreVersions>
-        <ignoreVersion type="regex">(?i).*\.jre6</ignoreVersion>
+        <ignoreVersion type="regex">(?i).*\.jre[67]</ignoreVersion>
       </ignoreVersions>
     </rule>
   </rules>

@@ -19,7 +19,7 @@ pipeline {
                         maven: 'Apache Maven 3.6.2',
                         mavenLocalRepo: '.repository',
                         publisherStrategy: 'EXPLICIT') {
-                    sh "mvn -V -B -T 1C clean install site -DskipTests=true -DskipITs=true -Dmaven.site.distributionManagement.site.url="
+                    sh "mvn -V -B -T 1C clean install site -DskipTests=true -DskipITs=true -Dmaven.version.rules=file://$(pwd)/super/versions-plugin-rules.xml -Dmaven.site.distributionManagement.site.url="
                 }
                 publishHTML(target: [
                         allowMissing: false,
