@@ -36,7 +36,6 @@ public class GetPowerQualityProfileRequestMapperTest {
 
         assertThat(result.getBeginDate()).withFailMessage(MAPPED_VALUE_MESSAGE).isEqualTo(DATE);
         assertThat(result.getEndDate()).withFailMessage(MAPPED_VALUE_MESSAGE).isEqualTo(DATE);
-        //assertThat(result.getDeviceIdentification()).withFailMessage(MAPPED_VALUE_MESSAGE).isEqualTo(DEVICE_NAME);
 
     }
 

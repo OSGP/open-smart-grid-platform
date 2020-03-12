@@ -24,7 +24,6 @@ import java.util.TreeMap;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.openmuc.jdlms.AccessResultCode;
@@ -340,7 +339,7 @@ public class DlmsHelper {
         }
     }
 
-    public CosemDateTimeDto convertDataObjectToDateTime(final DataObject object) throws ProtocolAdapterException {
+    public CosemDateTimeDto convertDataObjectToDateTime(final DataObject object) {
         CosemDateTimeDto dateTime = null;
         if (object.isByteArray()) {
             dateTime = this.fromDateTimeValue(object.getValue());
@@ -348,15 +347,9 @@ public class DlmsHelper {
             final CosemDateTime cosemDateTime = object.getValue();
             dateTime = this.fromDateTimeValue(cosemDateTime.encode());
         } else {
-            this.logAndThrowExceptionForUnexpectedResultData(object, "ByteArray or CosemDateFormat");
+            return null;
         }
         return dateTime;
-    }
-
-    public CosemDateTimeDto fromReferenceDateTime(CosemDateTimeDto referenceDateTime, int interval) {
-        LocalDateTime localDateTime = referenceDateTime.asLocalDateTime().plusMinutes(interval);
-
-        return new CosemDateTimeDto(localDateTime.toDateTime());
     }
 
     public CosemDateTimeDto fromDateTimeValue(final byte[] dateTimeValue) {

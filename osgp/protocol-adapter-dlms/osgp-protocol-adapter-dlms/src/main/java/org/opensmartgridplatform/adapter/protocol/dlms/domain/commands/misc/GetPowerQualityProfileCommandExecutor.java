@@ -72,6 +72,8 @@ public class GetPowerQualityProfileCommandExecutor
     private static final int INTERVAL_DEFINABLE_LOAD_PROFILE = 15;
     private static final int INTERVAL_PROFILE_1 = 15;
     private static final int INTERVAL_PROFILE_2 = 10;
+    private static final String PUBLIC = "PUBLIC";
+    private static final String PRIVATE = "PRIVATE";
 
     private enum Profile {
 
@@ -161,9 +163,9 @@ public class GetPowerQualityProfileCommandExecutor
     private List<Profile> determineProfileForDevice(final String profileType) {
 
         switch (profileType) {
-        case "PUBLIC":
+        case PUBLIC:
             return Arrays.asList(Profile.DEFINABLE_LOAD_PROFILE, Profile.PROFILE_2);
-        case "PRIVATE":
+        case PRIVATE:
             return Arrays.asList(Profile.PROFILE_1, Profile.PROFILE_2);
         default:
             throw new IllegalArgumentException(
@@ -423,17 +425,18 @@ public class GetPowerQualityProfileCommandExecutor
     private ProfileEntryValueDto makeDateProfileEntryValueDto(final DataObject dataObject,
             ProfileEntryDto previousProfileEntryDto, int timeInterval) {
         final CosemDateTimeDto cosemDateTime;
-        try {
-            cosemDateTime = this.dlmsHelper.convertDataObjectToDateTime(dataObject);
-            return new ProfileEntryValueDto(cosemDateTime.asDateTime().toDate());
-        } catch (ProtocolAdapterException e) {
 
-            // in case of null date, we calculate the date based on the previous value plus interval
+        cosemDateTime = this.dlmsHelper.convertDataObjectToDateTime(dataObject);
+
+        if (cosemDateTime == null) {
+            // in case of null date, we calculate the date based on the always existing previous value plus interval
             Date previousDate = (Date) previousProfileEntryDto.getProfileEntryValues().get(0).getValue();
             LocalDateTime newLocalDateTime = Instant.ofEpochMilli(previousDate.getTime()).atZone(ZoneId.systemDefault())
                                                     .toLocalDateTime().plusMinutes(timeInterval);
 
             return new ProfileEntryValueDto(Date.from(newLocalDateTime.atZone(ZoneId.systemDefault()).toInstant()));
+        } else {
+            return new ProfileEntryValueDto(cosemDateTime.asDateTime().toDate());
         }
     }
 

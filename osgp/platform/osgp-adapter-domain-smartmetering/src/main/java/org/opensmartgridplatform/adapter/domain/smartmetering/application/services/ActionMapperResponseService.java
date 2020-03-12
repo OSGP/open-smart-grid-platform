@@ -65,8 +65,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRe
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -74,8 +72,6 @@ import org.springframework.validation.annotation.Validated;
 @Service(value = "domainSmartMeteringActionMapperResponseService")
 @Validated
 public class ActionMapperResponseService {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ActionMapperResponseService.class);
 
     @Autowired
     private ManagementMapper managementMapper;
@@ -151,25 +147,15 @@ public class ActionMapperResponseService {
     public BundleMessagesResponse mapAllActions(final BundleMessagesRequestDto bundleMessageResponseDto)
             throws FunctionalException {
 
-        LOGGER.info("----- MAP ALL ACTIONS");
-
         final List<ActionResponse> actionResponseList = new ArrayList<>();
 
         for (final ActionResponseDto action : bundleMessageResponseDto.getAllResponses()) {
 
-
-
             final ConfigurableMapper mapper = this.getMapper(action);
             final Class<? extends ActionResponse> clazz = this.getClazz(action);
 
-            LOGGER.info("----- FOUND A ACTION TO BE MAPPED {} - {} ", action.getClass().getName(), action.getClass().getCanonicalName());
-            LOGGER.info("----- FOUND A CLASS TO BE MAPPED {} - {} ", clazz.getName(), clazz.getCanonicalName());
-
             // mapper is monitoring mapper
             final ActionResponse actionValueResponseObject = this.doMap(action, mapper, clazz);
-
-            LOGGER.info("----- ACTION RESPONSE RESULT TYPE =  {} ", actionValueResponseObject.getResultString());
-            LOGGER.info("----- MAPPED ALL ACTIONS {} ", actionValueResponseObject.getResult());
 
             actionResponseList.add(actionValueResponseObject);
         }

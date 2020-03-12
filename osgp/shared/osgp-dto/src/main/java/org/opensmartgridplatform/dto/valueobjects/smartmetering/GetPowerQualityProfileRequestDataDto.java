@@ -13,9 +13,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * request for ProfileGenericData
- */
 public class GetPowerQualityProfileRequestDataDto implements ActionRequestDto {
 
     protected final String profileType;

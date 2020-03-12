@@ -14,9 +14,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * request for ProfileGenericData
- */
 public class ConfigureDefinableLoadProfileRequestDto implements ActionRequestDto {
 
     private final String deviceIdentification;
@@ -66,6 +63,7 @@ public class ConfigureDefinableLoadProfileRequestDto implements ActionRequestDto
             return false;
         }
         final ConfigureDefinableLoadProfileRequestDto other = (ConfigureDefinableLoadProfileRequestDto) obj;
+
         return Objects.equals(this.deviceIdentification, other.deviceIdentification) && Objects
                 .equals(this.obisCode, other.obisCode) && Objects.equals(this.beginDate, other.beginDate) && Objects
                 .equals(this.endDate, other.endDate) && Objects.equals(this.selectedValues, other.selectedValues);
