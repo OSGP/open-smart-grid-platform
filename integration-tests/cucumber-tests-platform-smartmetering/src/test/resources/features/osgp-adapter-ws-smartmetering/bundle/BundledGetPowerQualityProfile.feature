@@ -12,12 +12,7 @@ Feature: SmartMetering Bundle - GetPowerQualityProfile
     Given a bundle request
       | DeviceIdentification | TEST1024000000001   |
     And the bundle request contains a get power quality profile request with parameters
-      | ObisCodeA            |                   1 |
-      | ObisCodeB            |                   0 |
-      | ObisCodeC            |                  99 |
-      | ObisCodeD            |                   1 |
-      | ObisCodeE            |                   0 |
-      | ObisCodeF            |                 255 |
+      | ProfileType          |              PUBLIC |
       | BeginDate            | 2015-01-01 00:00:00 |
       | EndDate              | 2017-01-10 00:00:00 |
     When the bundle request is received
