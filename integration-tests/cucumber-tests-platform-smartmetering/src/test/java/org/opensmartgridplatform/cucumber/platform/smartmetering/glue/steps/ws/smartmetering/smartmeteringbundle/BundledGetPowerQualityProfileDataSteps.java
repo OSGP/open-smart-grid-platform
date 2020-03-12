@@ -17,10 +17,10 @@ import java.util.Map;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetPowerQualityProfileRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetPowerQualityProfileResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.CaptureObject;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ProfileEntry;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Response;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PowerQualityProfileData;
 import org.opensmartgridplatform.cucumber.platform.helpers.SettingsHelper;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.builders.GetPowerQualityProfileRequestBuilder;
@@ -43,7 +43,10 @@ public class BundledGetPowerQualityProfileDataSteps extends BaseBundleSteps {
 
         final Response response = this.getNextBundleResponse();
 
-        assertThat(response instanceof GetPowerQualityProfileResponse).as("Not a valid response").isTrue();
+        assertThat(response instanceof GetPowerQualityProfileResponse)
+                .as("Not a valid response, expected GetPowerQualityProfileResponse but is :" +
+                        response.getClass().getSimpleName())
+                .isTrue();
 
         final GetPowerQualityProfileResponse getPowerQualityProfileResponse = (GetPowerQualityProfileResponse) response;
         final PowerQualityProfileData powerQualityProfileData = getPowerQualityProfileResponse
