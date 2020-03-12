@@ -36,7 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-@Component("oslpGetDataMessageProcessor")
+@Component("GetDataMessageProcessor")
 public class GetDataMessageProcessor extends AbstractProtocolRequestMessageProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetDataMessageProcessor.class);
