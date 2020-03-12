@@ -8,6 +8,8 @@ public interface JmsConfiguration {
 
     int getConnectionPoolMaxActiveSessions();
 
+    int getMaxThreadPoolSize();
+
     boolean isConnectionPoolBlockIfSessionPoolIsFull();
 
     long getConnectionPoolBlockIfSessionPoolIsFullTimeout();
