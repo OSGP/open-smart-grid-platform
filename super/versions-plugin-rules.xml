@@ -7,4 +7,11 @@
   <ignoreVersions>
     <ignoreVersion type="regex">(?i).*[-\._](alpha|beta|m|rc)[-\._]?[0-9]*</ignoreVersion>
   </ignoreVersions>
+  <rules>
+    <rule groupId="org.postgresql" artifactId="postgresql">
+      <ignoreVersions>
+        <ignoreVersion type="regex">(?i).*\.jre6</ignoreVersion>
+      </ignoreVersions>
+    </rule>
+  </rules>
 </ruleset>
