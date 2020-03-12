@@ -52,9 +52,9 @@ public class InboundOsgpCoreRequestsMessagingConfig {
         return this.jmsConfigurationFactory.initMessageListenerContainer(messageListener);
     }
 
-    @Bean(name = "domainDistributionAutomationInboundOsgpCoreRequestsaMessageProcessorMap")
+    @Bean(name = "domainDistributionAutomationInboundOsgpCoreRequestsMessageProcessorMap")
     public MessageProcessorMap messageProcessorMap() {
-        return new BaseMessageProcessorMap("domainDistributionAutomationInboundOsgpCoreRequestsaMessageProcessorMap");
+        return new BaseMessageProcessorMap("domainDistributionAutomationInboundOsgpCoreRequestsMessageProcessorMap");
     }
 
 }

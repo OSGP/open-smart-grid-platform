@@ -37,7 +37,7 @@ public class GetDataRequestMessageProcessor extends BaseNotificationMessageProce
 
     @Autowired
     protected GetDataRequestMessageProcessor(final NotificationResponseMessageSender responseMessageSender,
-            @Qualifier("domainDistributionAutomationInboundOsgpCoreRequestsaMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainDistributionAutomationInboundOsgpCoreRequestsMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.GET_DATA);
     }
 

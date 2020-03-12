@@ -31,7 +31,7 @@ public class OsgpCoreRequestMessageListener implements MessageListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(OsgpCoreRequestMessageListener.class);
 
     @Autowired
-    @Qualifier("domainDistributionAutomationInboundOsgpCoreRequestsaMessageProcessorMap")
+    @Qualifier("domainDistributionAutomationInboundOsgpCoreRequestsMessageProcessorMap")
     private MessageProcessorMap messageProcessorMap;
 
     @Override
