@@ -19,13 +19,7 @@ pipeline {
                         maven: 'Apache Maven 3.6.2',
                         mavenLocalRepo: '.repository',
                         publisherStrategy: 'EXPLICIT') {
-                    sh "mvn -V -B -T 1C clean install -Dmaven.test.skip=true -DskipTests=true -DskipITs=true -Dmaven.site.distributionManagement.site.url="
-                }
-                withMaven(
-                        maven: 'Apache Maven 3.6.2',
-                        mavenLocalRepo: '.repository',
-                        publisherStrategy: 'EXPLICIT') {
-                    sh "mvn -V -B site -Dmaven.site.distributionManagement.site.url="
+                    sh "mvn -V -B -T 1C clean install site -DskipTests=true -DskipITs=true -Dmaven.site.distributionManagement.site.url="
                 }
                 publishHTML(target: [
                         allowMissing: false,
