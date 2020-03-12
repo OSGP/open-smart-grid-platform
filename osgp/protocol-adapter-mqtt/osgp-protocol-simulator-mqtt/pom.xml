@@ -14,7 +14,7 @@ http://www.apache.org/licenses/LICENSE-2.0
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>osgp-protocol-simulator-mqtt</artifactId>
-  <packaging>war</packaging>
+<!--  <packaging>war</packaging>-->
   <name>osgp-protocol-simulator-mqtt</name>
   <description>Simulator for MQTT Protocol.</description>
 
