@@ -14,6 +14,7 @@ import java.util.Properties;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.moquette.broker.config.MemoryConfig;
+import org.opensmartgridplatform.simulator.protocol.mqtt.spec.SimulatorSpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -23,12 +24,21 @@ public class Simulator {
     private static final Logger LOG = LoggerFactory.getLogger(Simulator.class);
 
     public static void main(final String[] args) throws IOException {
+        final String spec = getFirstArgOrNull(args);
         final Simulator app = new Simulator();
-        app.run(args);
+        app.run(spec);
     }
 
-    private void run(final String[] args) throws IOException {
-        final SimulatorSpec simulatorSpec = this.getSimulatorSpec(args);
+    private static String getFirstArgOrNull(final String[] args) {
+        String result = null;
+        if (args.length > 0) {
+            result = args[0];
+        }
+        return result;
+    }
+
+    public void run(final String specJsonPath) throws IOException {
+        final SimulatorSpec simulatorSpec = this.getSimulatorSpec(specJsonPath);
         final Broker broker = new Broker(this.getConfig(simulatorSpec));
         broker.start();
         try {
@@ -47,10 +57,9 @@ public class Simulator {
         return memoryConfig;
     }
 
-    private SimulatorSpec getSimulatorSpec(final String[] args) throws IOException {
+    private SimulatorSpec getSimulatorSpec(final String jsonPath) throws IOException {
         final SimulatorSpec simulatorSpec;
-        if (args.length > 0) {
-            final String jsonPath = args[0];
+        if (jsonPath != null) {
             File jsonFile = new File(jsonPath);
             if (!jsonFile.exists()) {
                 final ClassPathResource jsonResource = new ClassPathResource(jsonPath);

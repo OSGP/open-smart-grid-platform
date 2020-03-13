@@ -10,6 +10,8 @@ package org.opensmartgridplatform.simulator.protocol.mqtt;
 
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3BlockingClient;
+import org.opensmartgridplatform.simulator.protocol.mqtt.spec.Message;
+import org.opensmartgridplatform.simulator.protocol.mqtt.spec.SimulatorSpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

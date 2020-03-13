@@ -6,7 +6,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.simulator.protocol.mqtt;
+package org.opensmartgridplatform.simulator.protocol.mqtt.spec;
 
 public class Message {
 
