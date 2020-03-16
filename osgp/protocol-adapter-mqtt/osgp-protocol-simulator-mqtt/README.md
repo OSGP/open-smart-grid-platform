@@ -4,6 +4,10 @@ Maven build:
 ```
 mvn clean install
 ```
+The build generates both .war file which can be deployed in Tomcat.
+See `context.xml` for the property file paths.
+
+It is also possible to run this module as a Docker instance, see below.
 
 Create Docker image
 ```

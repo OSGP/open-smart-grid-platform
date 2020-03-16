@@ -1,9 +1,10 @@
 /**
  * Copyright 2020 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.simulator.protocol.mqtt;
 
@@ -25,15 +26,11 @@ import org.springframework.web.context.support.StandardServletEnvironment;
 @EnableScheduling
 @SpringBootApplication
 @PropertySource(value = "file:${osgp/SimulatorProtocolMqtt/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "classpath:osgp-simulator-protocol-mqtt.properties", ignoreResourceNotFound = true)
 public class SimulatorApplication extends SpringBootServletInitializer {
 
     protected static final ConfigurableEnvironment ENVIRONMENT = new StandardServletEnvironment();
 
-    /**
-     * Create local property configurer, using local environment.
-     *
-     * @return instance of {@link PropertySourcesPlaceholderConfigurer}
-     */
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertyConfigurer() {
         final PropertySourcesPlaceholderConfigurer ppc = new PropertySourcesPlaceholderConfigurer();

@@ -20,8 +20,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
-@ComponentScan(basePackages = { "org.opensmartgridplatform.adapter.protocol.mqtt",
-        "org.opensmartgridplatform.shared.security" })
+@ComponentScan(basePackages = { "org.opensmartgridplatform.adapter.protocol.mqtt"})
 @EnableTransactionManagement()
 @Import({ MessagingConfig.class, MqttPersistenceConfig.class })
 @PropertySource("classpath:osgp-adapter-protocol-mqtt.properties")

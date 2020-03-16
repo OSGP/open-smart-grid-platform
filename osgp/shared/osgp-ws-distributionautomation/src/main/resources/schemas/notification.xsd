@@ -39,6 +39,7 @@
       <xsd:enumeration value="GET_POWER_QUALITY_VALUES_PERIODIC"/>
       <xsd:enumeration value="GET_HEALTH_STATUS"/>
       <xsd:enumeration value="GET_MEASUREMENT_REPORT"/>
+      <xsd:enumeration value="GET_DATA"/>
     </xsd:restriction>
   </xsd:simpleType>
 </xsd:schema>
