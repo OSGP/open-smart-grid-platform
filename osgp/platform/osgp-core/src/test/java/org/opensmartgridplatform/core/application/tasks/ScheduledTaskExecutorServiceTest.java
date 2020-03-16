@@ -25,7 +25,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.opensmartgridplatform.core.application.config.SchedulingConfig;
+import org.opensmartgridplatform.core.application.config.ScheduledTaskExecutorJobConfig;
 import org.opensmartgridplatform.core.application.services.DeviceRequestMessageService;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.ScheduledTask;
@@ -37,13 +37,14 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolRequestMessage;
+import org.quartz.JobExecutionException;
 import org.springframework.data.domain.Pageable;
 
 /**
- * test class for ScheduledTaskScheduler
+ * test class for ScheduledTaskExecutorService
  */
 @ExtendWith(MockitoExtension.class)
-public class ScheduledTaskSchedulerTest {
+public class ScheduledTaskExecutorServiceTest {
 
     private static final DeviceMessageMetadata DEVICE_MESSAGE_DATA = new DeviceMessageMetadata("deviceId",
             "organisationId", "correlationId", "messageType", 4);
@@ -62,9 +63,9 @@ public class ScheduledTaskSchedulerTest {
     @Mock
     private DeviceRepository deviceRepository;
     @InjectMocks
-    private ScheduledTaskScheduler scheduler;
+    private ScheduledTaskExecutorService scheduledTaskExecutorService;
     @Mock
-    private SchedulingConfig schedulingConfig;
+    private ScheduledTaskExecutorJobConfig scheduledTaskExecutorJobConfig;
 
     /**
      * Test the scheduled task runner for the case when the
@@ -72,9 +73,10 @@ public class ScheduledTaskSchedulerTest {
      *
      * @throws FunctionalException
      * @throws UnknownHostException
+     * @throws JobExecutionException
      */
     @Test
-    public void testRunFunctionalException() throws FunctionalException, UnknownHostException {
+    public void testRunFunctionalException() throws FunctionalException, UnknownHostException, JobExecutionException {
         final List<ScheduledTask> scheduledTasks = new ArrayList<>();
         final ScheduledTask scheduledTask = new ScheduledTask(DEVICE_MESSAGE_DATA, DOMAIN, DOMAIN, DATA_OBJECT,
                 SCHEDULED_TIME);
@@ -88,11 +90,12 @@ public class ScheduledTaskSchedulerTest {
         device.updateRegistrationData(InetAddress.getByName("127.0.0.1"), "deviceType");
         when(this.deviceRepository.findByDeviceIdentification(anyString())).thenReturn(device);
         when(this.scheduledTaskRepository.save(any(ScheduledTask.class))).thenReturn(scheduledTask);
-        when(this.schedulingConfig.scheduledTaskPageSize()).thenReturn(30);
+        when(this.scheduledTaskExecutorJobConfig.scheduledTaskPageSize()).thenReturn(30);
         doThrow(new FunctionalException(FunctionalExceptionType.ARGUMENT_NULL, ComponentType.OSGP_CORE))
-                .when(this.deviceRequestMessageService).processMessage(any(ProtocolRequestMessage.class));
+                .when(this.deviceRequestMessageService)
+                .processMessage(any(ProtocolRequestMessage.class));
 
-        this.scheduler.run();
+        this.scheduledTaskExecutorService.processScheduledTasks();
 
         // check if task is deleted
         verify(this.scheduledTaskRepository).delete(scheduledTask);
