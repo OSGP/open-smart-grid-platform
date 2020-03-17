@@ -75,12 +75,7 @@
           <artifactId>maven-site-plugin</artifactId>
           <version>${maven.site.plugin}</version>
         </plugin>
-        
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-pmd-plugin</artifactId>
-          <version>${pmd.version}</version>
-        </plugin>
+
         <plugin>
           <groupId>com.mycila</groupId>
           <artifactId>license-maven-plugin</artifactId>
