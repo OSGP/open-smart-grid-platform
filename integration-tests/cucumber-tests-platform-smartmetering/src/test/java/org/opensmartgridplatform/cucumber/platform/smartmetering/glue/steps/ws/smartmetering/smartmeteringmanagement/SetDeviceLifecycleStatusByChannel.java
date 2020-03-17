@@ -7,16 +7,12 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringmanagement;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ws.soap.client.SoapFaultClientException;
-
+import org.junit.jupiter.api.Assertions;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.SetDeviceLifecycleStatusByChannelAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.SetDeviceLifecycleStatusByChannelAsyncResponse;
@@ -31,9 +27,11 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smar
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.repositories.SmartMeterRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 public class SetDeviceLifecycleStatusByChannel {
 
@@ -58,7 +56,7 @@ public class SetDeviceLifecycleStatusByChannel {
         final SetDeviceLifecycleStatusByChannelAsyncResponse asyncResponse = this.smManagementRequestClient
                 .doRequest(request);
 
-        assertNotNull("setDeviceCommunicationSettingsAsyncResponse should not be null", asyncResponse);
+        assertThat(asyncResponse).as("setDeviceCommunicationSettingsAsyncResponse should not be null").isNotNull();
         ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
     }
 
@@ -71,13 +69,13 @@ public class SetDeviceLifecycleStatusByChannel {
         final SetDeviceLifecycleStatusByChannelResponse response = this.smManagementResponseClient
                 .getResponse(asyncRequest);
 
-        assertEquals(OPERATION + ", Checking result:", OsgpResultType.OK, response.getResult());
-        assertEquals(OPERATION + ", Checking gatewayDeviceId:",
-                settings.get(PlatformSmartmeteringKeys.KEY_DEVICE_IDENTIFICATION),
-                response.getSetDeviceLifecycleStatusByChannelResponseData().getGatewayDeviceIdentification());
-        assertEquals(OPERATION + ", Checking channel:",
-                Short.parseShort(settings.get(PlatformSmartmeteringKeys.CHANNEL)),
-                response.getSetDeviceLifecycleStatusByChannelResponseData().getChannel());
+        assertThat(response.getResult()).as(OPERATION + ", Checking result:").isEqualTo(OsgpResultType.OK);
+        assertThat(response.getSetDeviceLifecycleStatusByChannelResponseData().getGatewayDeviceIdentification())
+                .as(OPERATION + ", Checking gatewayDeviceId:")
+                .isEqualTo(settings.get(PlatformSmartmeteringKeys.KEY_DEVICE_IDENTIFICATION));
+        assertThat(response.getSetDeviceLifecycleStatusByChannelResponseData().getChannel())
+                .as(OPERATION + ", Checking channel:")
+                .isEqualTo(Short.parseShort(settings.get(PlatformSmartmeteringKeys.CHANNEL)));
 
         final SmartMeter gatewayDevice = this.smartMeterRepository
                 .findByDeviceIdentification(settings.get(PlatformSmartmeteringKeys.KEY_DEVICE_IDENTIFICATION));
@@ -90,12 +88,11 @@ public class SetDeviceLifecycleStatusByChannel {
             }
         }
 
-        assertEquals(OPERATION + ", Checking mbusDeviceIdentification:",
-                response.getSetDeviceLifecycleStatusByChannelResponseData().getMbusDeviceIdentification(),
-                mbusDevice.getDeviceIdentification());
-        assertEquals(OPERATION + ", Checking deviceLifecycleStatus of device:",
-                DeviceLifecycleStatus.valueOf(settings.get(PlatformSmartmeteringKeys.KEY_DEVICE_LIFECYCLE_STATUS)),
-                mbusDevice.getDeviceLifecycleStatus());
+        assertThat(mbusDevice.getDeviceIdentification()).as(OPERATION + ", Checking mbusDeviceIdentification:")
+                .isEqualTo(response.getSetDeviceLifecycleStatusByChannelResponseData().getMbusDeviceIdentification());
+        assertThat(mbusDevice.getDeviceLifecycleStatus()).as(OPERATION + ", Checking deviceLifecycleStatus of device:")
+                .isEqualTo(DeviceLifecycleStatus
+                        .valueOf(settings.get(PlatformSmartmeteringKeys.KEY_DEVICE_LIFECYCLE_STATUS)));
     }
 
     @Then("^set device lifecycle status by channel request should return an exception$")
@@ -105,11 +102,10 @@ public class SetDeviceLifecycleStatusByChannel {
                 .fromScenarioContext();
         try {
             this.smManagementResponseClient.getResponse(asyncRequest);
-            fail("A SoapFaultClientException should be thrown.");
+            Assertions.fail("A SoapFaultClientException should be thrown.");
         } catch (final SoapFaultClientException e) {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, e);
         }
-
     }
 
 }

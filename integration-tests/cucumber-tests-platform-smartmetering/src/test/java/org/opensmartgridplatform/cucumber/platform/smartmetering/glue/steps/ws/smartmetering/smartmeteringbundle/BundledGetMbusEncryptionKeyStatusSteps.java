@@ -7,8 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringbundle;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
 
@@ -17,8 +16,8 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetMbusE
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Response;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.bundle.GetMbusEncryptionKeyStatusRequestBuilder;
 
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
 
 public class BundledGetMbusEncryptionKeyStatusSteps extends BaseBundleSteps {
 
@@ -45,10 +44,10 @@ public class BundledGetMbusEncryptionKeyStatusSteps extends BaseBundleSteps {
     public void theBundleResponseShouldContainAGetMbusEncryptionKeyStatusResponse() throws Throwable {
         final Response response = this.getNextBundleResponse();
 
-        assertTrue("Not a valid response", response instanceof GetMbusEncryptionKeyStatusResponse);
-        assertNotNull("Encryption Key Status should not be null.",
-                ((GetMbusEncryptionKeyStatusResponse) response).getEncryptionKeyStatus());
-        assertNotNull("M-Bus Device Identification should not be null.",
-                ((GetMbusEncryptionKeyStatusResponse) response).getMbusDeviceIdentification());
+        assertThat(response instanceof GetMbusEncryptionKeyStatusResponse).as("Not a valid response").isTrue();
+        assertThat(((GetMbusEncryptionKeyStatusResponse) response).getEncryptionKeyStatus())
+                .as("Encryption Key Status should not be null.").isNotNull();
+        assertThat(((GetMbusEncryptionKeyStatusResponse) response).getMbusDeviceIdentification())
+                .as("M-Bus Device Identification should not be null.").isNotNull();
     }
 }

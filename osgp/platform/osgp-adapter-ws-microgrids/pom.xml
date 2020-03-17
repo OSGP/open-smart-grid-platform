@@ -14,7 +14,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-platform</artifactId>
-    <version>4.38.0</version>
+    <version>5.0.0</version>
     <relativePath>../parent-platform/pom.xml</relativePath>
   </parent>
 
@@ -51,10 +51,6 @@
     <dependency>
       <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-adapter-ws-shared</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opensmartgridplatform</groupId>
-      <artifactId>osgp-adapter-ws-shared-db</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opensmartgridplatform</groupId>
@@ -200,11 +196,6 @@
       <artifactId>activemq-spring</artifactId>
     </dependency>
 
-    <!-- Testing dependencies -->
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-    </dependency>
   </dependencies>
 
   <build>
@@ -212,7 +203,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
-        <version>2.4</version>
+        <version>${maven.war.plugin.version}</version>
         <configuration>
           <attachClasses>true</attachClasses>
           <failOnMissingWebXml>false</failOnMissingWebXml>
@@ -230,6 +221,17 @@
             </resource>
           </webResources>
         </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${maven.surefire.plugin.version}</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit.version}</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>

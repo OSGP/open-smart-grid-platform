@@ -12,7 +12,6 @@ import java.util.Objects;
 import javax.annotation.PostConstruct;
 
 import org.opensmartgridplatform.adapter.ws.core.application.mapping.ws.EventTypeConverter;
-import org.opensmartgridplatform.adapter.ws.core.application.mapping.ws.ScheduledTaskConverter;
 import org.opensmartgridplatform.domain.core.repositories.SsldRepository;
 import org.opensmartgridplatform.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,12 +45,22 @@ public class DeviceManagementMapper extends ConfigurableMapper {
         mapperFactory.registerClassMap(mapperFactory
                 .classMap(org.opensmartgridplatform.domain.core.entities.Device.class,
                         org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device.class)
-                .field("ipAddress", "networkAddress").byDefault().toClassMap());
+                .field("ipAddress", "networkAddress")
+                .byDefault()
+                .toClassMap());
 
         mapperFactory.registerClassMap(mapperFactory
                 .classMap(org.opensmartgridplatform.domain.core.entities.Event.class,
                         org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Event.class)
-                .field("device.deviceIdentification", "deviceIdentification").field("dateTime", "timestamp").byDefault()
+                .field("device.deviceIdentification", "deviceIdentification")
+                .field("dateTime", "timestamp")
+                .byDefault()
+                .toClassMap());
+
+        mapperFactory.registerClassMap(mapperFactory
+                .classMap(org.opensmartgridplatform.domain.core.entities.ScheduledTaskWithoutData.class,
+                        org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.ScheduledTask.class)
+                .byDefault()
                 .toClassMap());
 
         mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
@@ -60,7 +69,6 @@ public class DeviceManagementMapper extends ConfigurableMapper {
         mapperFactory.getConverterFactory().registerConverter(new DeviceConverter());
         mapperFactory.getConverterFactory().registerConverter(new LightMeasurementDeviceConverter());
         mapperFactory.getConverterFactory().registerConverter(new SsldConverter(this.ssldRepository));
-        mapperFactory.getConverterFactory().registerConverter(new ScheduledTaskConverter());
     }
 
     @Override

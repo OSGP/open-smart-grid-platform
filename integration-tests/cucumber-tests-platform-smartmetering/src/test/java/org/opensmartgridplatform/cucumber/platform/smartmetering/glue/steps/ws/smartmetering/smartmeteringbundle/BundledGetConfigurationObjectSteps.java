@@ -7,11 +7,10 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringbundle;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
 
 import java.util.Map;
-
-import org.junit.Assert;
 
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetConfigurationObjectRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetConfigurationObjectResponse;
@@ -19,8 +18,8 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Response
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.ConfigurationFlag;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.ConfigurationObject;
 
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
 
 public class BundledGetConfigurationObjectSteps extends BaseBundleSteps {
 
@@ -37,8 +36,8 @@ public class BundledGetConfigurationObjectSteps extends BaseBundleSteps {
 
         final Response response = this.getNextBundleResponse();
 
-        Assert.assertTrue("response should be a GetConfigurationResponse object",
-                response instanceof GetConfigurationObjectResponse);
+        assertThat(response instanceof GetConfigurationObjectResponse)
+                .as("response should be a GetConfigurationResponse object").isTrue();
     }
 
     @Then("^the bundle response should contain a get configuration object response with values$")
@@ -47,13 +46,15 @@ public class BundledGetConfigurationObjectSteps extends BaseBundleSteps {
 
         final Response response = this.getNextBundleResponse();
 
-        Assert.assertTrue("response should be a GetConfigurationResponse object",
-                response instanceof GetConfigurationObjectResponse);
+        assertThat(response instanceof GetConfigurationObjectResponse)
+                .as("response should be a GetConfigurationResponse object").isTrue();
+
         final ConfigurationObject configurationObject = ((GetConfigurationObjectResponse) response)
                 .getConfigurationObject();
 
-        Assert.assertEquals("The gprs operation mode is not equal", values.get("GprsOperationMode"),
-                configurationObject.getGprsOperationMode().toString());
+        assertThat(configurationObject.getGprsOperationMode().toString()).as("The gprs operation mode is not equal")
+                .isEqualTo(values.get("GprsOperationMode"));
+
         configurationObject.getConfigurationFlags().getConfigurationFlag()
                 .forEach(f -> this.testConfigurationFlag(f, values));
     }
@@ -61,6 +62,6 @@ public class BundledGetConfigurationObjectSteps extends BaseBundleSteps {
     private void testConfigurationFlag(final ConfigurationFlag configFlag, final Map<String, String> settings) {
         final String key = configFlag.getConfigurationFlagType().name();
         final boolean value = getBoolean(settings, key);
-        Assert.assertEquals("The enabled value for configuration flag " + key, value, configFlag.isEnabled());
+        assertThat(configFlag.isEnabled()).as("The enabled value for configuration flag " + key).isEqualTo(value);
     }
 }

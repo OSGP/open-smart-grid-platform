@@ -7,11 +7,9 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringmonitoring;
 
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
 
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasAsyncResponse;
@@ -22,9 +20,10 @@ import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.ActualMeterReadsGasRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.SmartMeteringMonitoringRequestClient;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.SmartMeteringMonitoringResponseClient;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 public class ActualMeterReadsGasSteps {
 
@@ -40,7 +39,7 @@ public class ActualMeterReadsGasSteps {
         final ActualMeterReadsGasRequest request = ActualMeterReadsGasRequestFactory.fromParameterMap(settings);
         final ActualMeterReadsGasAsyncResponse asyncResponse = this.requestClient.doRequest(request);
 
-        assertNotNull("AsyncResponse should not be null", asyncResponse);
+        assertThat(asyncResponse).as("AsyncResponse should not be null").isNotNull();
         ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
     }
 
@@ -50,9 +49,9 @@ public class ActualMeterReadsGasSteps {
         final ActualMeterReadsGasAsyncRequest asyncRequest = ActualMeterReadsGasRequestFactory.fromScenarioContext();
         final ActualMeterReadsGasResponse response = this.responseClient.getResponse(asyncRequest);
 
-        assertNotNull("ActualMeterReadsGasResponse should not be null", response);
-        assertNotNull("Consumption should not be null", response.getConsumption());
-        assertNotNull("CaptureTime should not be null", response.getCaptureTime());
-        assertNotNull("LogTime should not be null", response.getLogTime());
+        assertThat(response).as("ActualMeterReadsGasResponse should not be null").isNotNull();
+        assertThat(response.getConsumption()).as("Consumption should not be null").isNotNull();
+        assertThat(response.getCaptureTime()).as("CaptureTime should not be null").isNotNull();
+        assertThat(response.getLogTime()).as("LogTime should not be null").isNotNull();
     }
 }

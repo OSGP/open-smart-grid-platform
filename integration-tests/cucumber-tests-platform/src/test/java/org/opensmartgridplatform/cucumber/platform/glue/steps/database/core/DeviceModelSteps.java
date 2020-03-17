@@ -7,16 +7,14 @@
  */
 package org.opensmartgridplatform.cucumber.platform.glue.steps.database.core;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import org.opensmartgridplatform.cucumber.core.GlueBase;
+import org.junit.jupiter.api.Assertions;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.core.builders.DeviceModelBuilder;
@@ -24,11 +22,12 @@ import org.opensmartgridplatform.domain.core.entities.DeviceModel;
 import org.opensmartgridplatform.domain.core.entities.Manufacturer;
 import org.opensmartgridplatform.domain.core.repositories.DeviceModelRepository;
 import org.opensmartgridplatform.domain.core.repositories.ManufacturerRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
 
-public class DeviceModelSteps extends GlueBase {
+public class DeviceModelSteps {
 
     @Autowired
     private DeviceModelRepository deviceModelRepository;
@@ -71,12 +70,12 @@ public class DeviceModelSteps extends GlueBase {
 
         for (final DeviceModel deviceModel : entityList) {
             if (deviceModel.getModelCode().equals(modelCode)) {
-                Assert.assertEquals(modelDescription, deviceModel.getDescription());
-                Assert.assertEquals(modelMetered, deviceModel.isMetered());
+                assertThat(deviceModel.getDescription()).isEqualTo(modelDescription);
+                assertThat(deviceModel.isMetered()).isEqualTo(modelMetered);
                 return;
             }
         }
-        Assert.assertFalse(true);
+        Assertions.fail();
     }
 
     /**
@@ -98,7 +97,7 @@ public class DeviceModelSteps extends GlueBase {
         final List<DeviceModel> entityList = this.deviceModelRepository.findByManufacturer(manufacturer);
 
         for (final DeviceModel deviceModel : entityList) {
-            Assert.assertNotEquals(deviceModel.getModelCode(), modelCode);
+            assertThat(deviceModel.getModelCode()).isNotEqualTo(modelCode);
         }
     }
 

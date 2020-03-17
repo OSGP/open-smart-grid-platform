@@ -7,14 +7,13 @@
  */
 package org.opensmartgridplatform.adapter.domain.microgrids.infra.jms.core;
 
+import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
+import org.opensmartgridplatform.shared.infra.jms.UnknownMessageTypeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
-import org.opensmartgridplatform.shared.infra.jms.UnknownMessageTypeException;
-
-@Component(value = "domainMicrogridsIncomingOsgpCoreRequestMessageProcessor")
+@Component(value = "domainMicrogridsInboundOsgpCoreRequestsMessageProcessor")
 public class OsgpCoreRequestMessageProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OsgpCoreRequestMessageProcessor.class);

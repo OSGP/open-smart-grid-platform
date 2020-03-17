@@ -12,10 +12,12 @@ import java.io.IOException;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceMessageStatus;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceResponseHandler;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.requests.SetConfigurationDeviceRequest;
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.responses.EmptyDeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageProcessor;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.OslpEnvelopeProcessor;
 import org.opensmartgridplatform.dto.valueobjects.ConfigurationDto;
@@ -26,6 +28,7 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -38,6 +41,9 @@ public class CommonSetConfigurationRequestMessageProcessor extends DeviceRequest
      * Logger for this class
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(CommonSetConfigurationRequestMessageProcessor.class);
+
+    @Autowired
+    private CommonRebootRequestMessageProcessor commonRebootRequestMessageProcessor;
 
     public CommonSetConfigurationRequestMessageProcessor() {
         super(MessageType.SET_CONFIGURATION);
@@ -86,13 +92,22 @@ public class CommonSetConfigurationRequestMessageProcessor extends DeviceRequest
         final int retryCount = unsignedOslpEnvelopeDto.getRetryCount();
         final boolean isScheduled = unsignedOslpEnvelopeDto.isScheduled();
 
-        final DeviceResponseHandler deviceResponseHandler = new DeviceResponseHandler() {
+        final DeviceResponseHandler setConfigurationDeviceResponseHandler = new DeviceResponseHandler() {
 
             @Override
             public void handleResponse(final DeviceResponse deviceResponse) {
-                CommonSetConfigurationRequestMessageProcessor.this.handleScheduledEmptyDeviceResponse(deviceResponse,
-                        CommonSetConfigurationRequestMessageProcessor.this.responseMessageSender, domain, domainVersion,
-                        messageType, isScheduled, retryCount);
+                if (((EmptyDeviceResponse) deviceResponse).getStatus().equals(DeviceMessageStatus.OK)) {
+                    // If the response is OK, just log it. The setReboot()
+                    // function will be called next.
+                    LOGGER.info("setConfiguration() successful for device : {}",
+                            deviceResponse.getDeviceIdentification());
+                } else {
+                    // If the response is not OK, send a response message to the
+                    // responses queue.
+                    CommonSetConfigurationRequestMessageProcessor.this.handleScheduledEmptyDeviceResponse(
+                            deviceResponse, CommonSetConfigurationRequestMessageProcessor.this.responseMessageSender,
+                            domain, domainVersion, messageType, isScheduled, retryCount);
+                }
             }
 
             @Override
@@ -102,11 +117,21 @@ public class CommonSetConfigurationRequestMessageProcessor extends DeviceRequest
             }
         };
 
-        final DeviceRequest deviceRequest = new DeviceRequest(organisationIdentification, deviceIdentification,
-                correlationUid, messagePriority);
+        final DeviceRequest setConfigurationDeviceRequest = new DeviceRequest(organisationIdentification,
+                deviceIdentification, correlationUid, messagePriority);
+
+        final DeviceResponseHandler setRebootDeviceResponseHandler = this.commonRebootRequestMessageProcessor
+                .createSetRebootDeviceResponseHandler(domain, domainVersion, messageType, retryCount, isScheduled);
+
+        final DeviceRequest setRebootDeviceRequest = DeviceRequest.newBuilder()
+                .organisationIdentification(organisationIdentification).deviceIdentification(deviceIdentification)
+                .correlationUid(correlationUid).messagePriority(messagePriority)
+                .messageType(MessageType.SET_REBOOT.name()).domain(domain).domainVersion(domainVersion)
+                .isScheduled(isScheduled).retryCount(retryCount).build();
 
         try {
-            this.deviceService.doSetConfiguration(oslpEnvelope, deviceRequest, deviceResponseHandler, ipAddress);
+            this.deviceService.doSetConfiguration(oslpEnvelope, setConfigurationDeviceRequest, setRebootDeviceRequest,
+                    setConfigurationDeviceResponseHandler, setRebootDeviceResponseHandler, ipAddress);
         } catch (final IOException e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain, domainVersion,
                     messageType, messagePriority, retryCount);

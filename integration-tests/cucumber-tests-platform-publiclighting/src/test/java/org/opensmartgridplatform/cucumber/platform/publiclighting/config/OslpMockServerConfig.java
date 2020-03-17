@@ -7,21 +7,19 @@
  */
 package org.opensmartgridplatform.cucumber.platform.publiclighting.config;
 
+import org.opensmartgridplatform.cucumber.platform.config.AbstractPlatformApplicationConfiguration;
+import org.opensmartgridplatform.cucumber.platform.config.CoreDeviceConfiguration;
+import org.opensmartgridplatform.cucumber.platform.publiclighting.mocks.oslpdevice.MockOslpServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
-
-import org.opensmartgridplatform.cucumber.platform.config.AbstractPlatformApplicationConfiguration;
-import org.opensmartgridplatform.cucumber.platform.config.CoreDeviceConfiguration;
-import org.opensmartgridplatform.cucumber.platform.publiclighting.mocks.oslpdevice.MockOslpServer;
 
 @Configuration
-@PropertySources({ @PropertySource("classpath:cucumber-tests-platform-publiclighting.properties"),
-        @PropertySource(value = "file:/etc/osp/test/global-cucumber.properties", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:/etc/osp/test/cucumber-tests-platform-publiclighting.properties", ignoreResourceNotFound = true), })
+@PropertySource("classpath:cucumber-tests-platform-publiclighting.properties")
+@PropertySource(value = "file:/etc/osp/test/global-cucumber.properties", ignoreResourceNotFound = true)
+@PropertySource(value = "file:/etc/osp/test/cucumber-tests-platform-publiclighting.properties", ignoreResourceNotFound = true)
 public class OslpMockServerConfig extends AbstractPlatformApplicationConfiguration {
 
     @Autowired
@@ -61,13 +59,13 @@ public class OslpMockServerConfig extends AbstractPlatformApplicationConfigurati
     private Long responseDelayTime;
 
     @Value("${response.delay.random.range}")
-    private Long reponseDelayRandomRange;
+    private Long responseDelayRandomRange;
 
     @Bean(destroyMethod = "stop", initMethod = "start")
     public MockOslpServer mockOslpServer() {
         return new MockOslpServer(this.configuration, this.oslpPortServer, this.oslpElsterPortServer,
                 this.oslpSignature, this.oslpSignatureProvider, this.connectionTimeout, this.signKeyPath,
                 this.verifyKeyPath, this.keytype, this.sequenceNumberWindow, this.sequenceNumberMaximum,
-                this.responseDelayTime, this.reponseDelayRandomRange);
+                this.responseDelayTime, this.responseDelayRandomRange);
     }
 }

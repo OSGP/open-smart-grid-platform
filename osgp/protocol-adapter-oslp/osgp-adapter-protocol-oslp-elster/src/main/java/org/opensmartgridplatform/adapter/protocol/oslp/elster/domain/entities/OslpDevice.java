@@ -7,7 +7,6 @@
  */
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities;
 
-import java.net.InetAddress;
 import java.security.SecureRandom;
 
 import javax.persistence.Column;
@@ -16,7 +15,6 @@ import javax.persistence.Transient;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
-
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
 
 @Entity
@@ -32,6 +30,8 @@ public class OslpDevice extends AbstractEntity {
      */
     public static final String SSLD_TYPE = "SSLD";
 
+    private static final Integer SEQUENCE_NUMBER_MAXIMUM = 65535;
+
     /**
      * Serial Version UID.
      */
@@ -40,8 +40,6 @@ public class OslpDevice extends AbstractEntity {
     @Column(unique = true, nullable = true)
     private String deviceUid;
 
-    // @Identification This annotiation is present in osgp-domain-core
-    // validation package. Therefore it has been disabled for now.
     @Column(unique = true, nullable = false, length = 40)
     private String deviceIdentification;
 
@@ -59,9 +57,6 @@ public class OslpDevice extends AbstractEntity {
     @Transient
     private final SecureRandom random = new SecureRandom();
 
-    @Transient
-    private Integer sequenceNumberMaximum = 65535;
-
     @Column(nullable = true, length = 255)
     private String publicKey;
 
@@ -70,13 +65,6 @@ public class OslpDevice extends AbstractEntity {
     }
 
     public OslpDevice(final String deviceUid, final String deviceIdentification, final String deviceType) {
-        this.deviceUid = deviceUid;
-        this.deviceIdentification = deviceIdentification;
-        this.deviceType = deviceType;
-    }
-
-    public OslpDevice(final String deviceUid, final String deviceIdentification, final String deviceType,
-            final InetAddress networkAddress, final boolean activated, final boolean hasSchedule) {
         this.deviceUid = deviceUid;
         this.deviceIdentification = deviceIdentification;
         this.deviceType = deviceType;
@@ -136,7 +124,7 @@ public class OslpDevice extends AbstractEntity {
         // Save secure device random.
         this.randomDevice = randomDevice;
         // Generate secure platform random.
-        this.randomPlatform = this.random.nextInt(this.sequenceNumberMaximum + 1);
+        this.randomPlatform = this.random.nextInt(SEQUENCE_NUMBER_MAXIMUM + 1);
     }
 
     public void updatePublicKey(final String publicKey) {
@@ -163,10 +151,7 @@ public class OslpDevice extends AbstractEntity {
         if (this.deviceType != null ? !this.deviceType.equals(device.deviceType) : device.deviceType != null) {
             return false;
         }
-        if (this.deviceUid != null ? !this.deviceUid.equals(device.deviceUid) : device.deviceUid != null) {
-            return false;
-        }
-        return true;
+        return !(this.deviceUid != null ? !this.deviceUid.equals(device.deviceUid) : device.deviceUid != null);
     }
 
     @Override

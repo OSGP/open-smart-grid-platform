@@ -9,8 +9,8 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.testutil;
 
-import static junit.framework.TestCase.fail;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 import java.util.List;
 

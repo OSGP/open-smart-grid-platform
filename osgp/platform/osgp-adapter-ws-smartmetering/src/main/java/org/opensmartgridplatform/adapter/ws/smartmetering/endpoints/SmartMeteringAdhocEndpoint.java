@@ -11,12 +11,6 @@ package org.opensmartgridplatform.adapter.ws.smartmetering.endpoints;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ws.server.endpoint.annotation.Endpoint;
-import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
-import org.springframework.ws.server.endpoint.annotation.RequestPayload;
-import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
-
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
@@ -53,6 +47,11 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.server.endpoint.annotation.Endpoint;
+import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
+import org.springframework.ws.server.endpoint.annotation.RequestPayload;
+import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 @Endpoint
 public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
@@ -276,7 +275,8 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
         final ScanMbusChannelsAsyncResponse response = new ScanMbusChannelsAsyncResponse();
 
         final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ScanMbusChannelsRequest scanMbusChannelsRequest = this.adhocMapper
-                .map(request, org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ScanMbusChannelsRequest.class);
+                .map(request,
+                        org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ScanMbusChannelsRequest.class);
 
         final String correlationUid = this.adhocService.enqueueScanMbusChannelsRequest(organisationIdentification,
                 request.getDeviceIdentification(), scanMbusChannelsRequest,

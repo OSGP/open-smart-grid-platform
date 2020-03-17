@@ -7,15 +7,11 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringadhoc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.GetAllAttributeValuesAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.GetAllAttributeValuesAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.GetAllAttributeValuesRequest;
@@ -26,9 +22,10 @@ import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.adhoc.AllAttributeValuesRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.adhoc.SmartMeteringAdHocRequestClient;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.adhoc.SmartMeteringAdHocResponseClient;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 public class AllAttributeValues {
 
@@ -44,7 +41,7 @@ public class AllAttributeValues {
         final GetAllAttributeValuesRequest request = AllAttributeValuesRequestFactory.fromParameterMap(settings);
         final GetAllAttributeValuesAsyncResponse asyncResponse = this.requestClient.doRequest(request);
 
-        assertNotNull("AsyncResponse should not be null", asyncResponse);
+        assertThat(asyncResponse).as("AsyncResponse should not be null").isNotNull();
         ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
     }
 
@@ -55,8 +52,9 @@ public class AllAttributeValues {
         final GetAllAttributeValuesAsyncRequest asyncRequest = AllAttributeValuesRequestFactory.fromScenarioContext();
         final GetAllAttributeValuesResponse response = this.responseClient.getResponse(asyncRequest);
 
-        assertEquals("Result is not as expected", OsgpResultType.fromValue(settings.get(PlatformKeys.KEY_RESULT)),
-                response.getResult());
-        assertTrue("Response should contain Output", StringUtils.isNotBlank(response.getOutput()));
+        assertThat(response.getResult()).as("Result is not as expected")
+                .isEqualTo(OsgpResultType.fromValue(settings.get(PlatformKeys.KEY_RESULT)));
+
+        assertThat(StringUtils.isNotBlank(response.getOutput())).as("Response should contain Output").isTrue();
     }
 }

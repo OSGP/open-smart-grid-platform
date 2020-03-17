@@ -23,7 +23,7 @@ pipeline {
         stage('Maven Build') {
             steps {
                 withMaven(
-                        maven: 'Apache Maven 3.5.0',
+                        maven: 'Apache Maven 3.6.2',
                         mavenLocalRepo: '.repository',
                         options: [
                                 artifactsPublisher(disabled: true),
@@ -62,7 +62,7 @@ pipeline {
         stage ('Collect Coverage') {
             steps {
                 withMaven(
-                        maven: 'Apache Maven 3.5.0',
+                        maven: 'Apache Maven 3.6.2',
                         mavenLocalRepo: '.repository',
                         options: [
                                 artifactsPublisher(disabled: true),
@@ -80,7 +80,7 @@ pipeline {
                 archiveArtifacts '**/target/*.tgz'
 
                 // Check the console log for failed tests
-                step([$class: 'LogParserPublisher', projectRulePath: 'console-test-result-rules', unstableOnWarning: true, useProjectRule: true])
+                step([$class: 'LogParserPublisher', projectRulePath: 'console-test-result-rules', unstableOnWarning: true, failBuildOnError: true, useProjectRule: true])
             }
         }
     }
@@ -88,7 +88,7 @@ pipeline {
     post {
         always {
             echo "End of pipeline"
-            build job: 'Destroy an AWS System', parameters: [string(name: 'SERVERNAME', value: servername), string(name: 'PLAYBOOK', value: playbook)]            
+            build job: 'Destroy an AWS System', parameters: [string(name: 'SERVERNAME', value: servername), string(name: 'PLAYBOOK', value: playbook)]
         }
         failure {
             emailext (

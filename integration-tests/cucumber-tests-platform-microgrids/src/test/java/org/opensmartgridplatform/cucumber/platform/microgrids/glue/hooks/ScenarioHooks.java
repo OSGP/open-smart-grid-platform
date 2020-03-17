@@ -7,20 +7,18 @@
  */
 package org.opensmartgridplatform.cucumber.platform.microgrids.glue.hooks;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.microgrids.database.Database;
 import org.opensmartgridplatform.cucumber.platform.microgrids.support.ws.microgrids.NotificationService;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import cucumber.api.java.After;
-import cucumber.api.java.Before;
+import io.cucumber.java.After;
+import io.cucumber.java.Before;
 
 /**
  * Class with all the scenario hooks when each scenario runs.
  */
-public class ScenarioHooks extends GlueBase {
+public class ScenarioHooks {
 
     @Autowired
     private Database databaseSteps;
@@ -43,8 +41,9 @@ public class ScenarioHooks extends GlueBase {
     /**
      * Executed before each scenario.
      *
-     * Remove all stuff from the database before each test. Each test should stand
-     * on its own. Therefore you should guarantee that the scenario is complete.
+     * Remove all stuff from the database before each test. Each test should
+     * stand on its own. Therefore you should guarantee that the scenario is
+     * complete.
      *
      * Order 1000 ensures this will be run as one of the first hooks before the
      * scenario.

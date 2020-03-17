@@ -9,7 +9,8 @@ package org.opensmartgridplatform.adapter.ws.publiclighting.endpoints;
 
 import java.util.List;
 
-import org.hibernate.validator.method.MethodConstraintViolationException;
+import javax.validation.ConstraintViolationException;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
@@ -42,9 +43,6 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
-//MethodConstraintViolationException is deprecated.
-//Will by replaced by equivalent functionality defined
-//by the Bean Validation 1.1 API as of Hibernate Validator 5.
 @Endpoint
 public class PublicLightingScheduleManagementEndpoint {
 
@@ -109,7 +107,7 @@ public class PublicLightingScheduleManagementEndpoint {
             asyncResponse.setCorrelationUid(correlationUid);
             asyncResponse.setDeviceId(request.getDeviceIdentification());
             response.setAsyncResponse(asyncResponse);
-        } catch (final MethodConstraintViolationException e) {
+        } catch (final ConstraintViolationException e) {
             LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_PUBLIC_LIGHTING,
                     new ValidationException(e.getConstraintViolations()));

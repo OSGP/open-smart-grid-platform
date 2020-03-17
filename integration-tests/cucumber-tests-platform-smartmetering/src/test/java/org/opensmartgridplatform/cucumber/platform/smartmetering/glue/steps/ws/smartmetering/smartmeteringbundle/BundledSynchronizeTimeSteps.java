@@ -7,8 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringbundle;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -22,8 +21,8 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Response
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SynchronizeTimeRequestDataFactory;
 
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
 
 public class BundledSynchronizeTimeSteps extends BaseBundleSteps {
 
@@ -66,7 +65,7 @@ public class BundledSynchronizeTimeSteps extends BaseBundleSteps {
     public void theBundleResponseShouldContainASynchronizeTimeResponse() throws Throwable {
         final Response response = this.getNextBundleResponse();
 
-        assertTrue("Not a valid response", response instanceof ActionResponse);
+        assertThat(response instanceof ActionResponse).as("Not a valid response").isTrue();
     }
 
     @Then("^the bundle response should contain a synchronize time response with values$")
@@ -74,7 +73,8 @@ public class BundledSynchronizeTimeSteps extends BaseBundleSteps {
             throws Throwable {
         final Response response = this.getNextBundleResponse();
 
-        assertEquals(OsgpResultType.fromValue(values.get(PlatformSmartmeteringKeys.RESULT)), response.getResult());
+        assertThat(response.getResult())
+                .isEqualTo(OsgpResultType.fromValue(values.get(PlatformSmartmeteringKeys.RESULT)));
     }
 
 }

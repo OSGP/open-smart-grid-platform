@@ -9,20 +9,19 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.core.deviceinstallation;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getFloat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.Map;
 
-import org.junit.Assert;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.AddDeviceRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.AddDeviceResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.Device;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.DeviceModel;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.UpdateDeviceRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.UpdateDeviceResponse;
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonDefaults;
@@ -33,13 +32,13 @@ import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityExce
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 /**
  * Class with all the create organization requests steps
  */
-public class CreateDeviceSteps extends GlueBase {
+public class CreateDeviceSteps {
 
     @Autowired
     private CoreDeviceInstallationClient client;
@@ -70,7 +69,7 @@ public class CreateDeviceSteps extends GlueBase {
      */
     @Then("^the add device response is successful$")
     public void theAddDeviceResponseIsSuccessful() {
-        Assert.assertTrue(ScenarioContext.current().get(PlatformKeys.RESPONSE) instanceof AddDeviceResponse);
+        assertThat(ScenarioContext.current().get(PlatformKeys.RESPONSE) instanceof AddDeviceResponse).isTrue();
     }
 
     @When("^receiving an update device request")
@@ -134,7 +133,7 @@ public class CreateDeviceSteps extends GlueBase {
      */
     @Then("^the update device response is successful$")
     public void theUpdateDeviceResponseIsSuccessful() {
-        Assert.assertTrue(ScenarioContext.current().get(PlatformKeys.RESPONSE) instanceof UpdateDeviceResponse);
+        assertThat(ScenarioContext.current().get(PlatformKeys.RESPONSE) instanceof UpdateDeviceResponse).isTrue();
     }
 
     /**
@@ -145,7 +144,7 @@ public class CreateDeviceSteps extends GlueBase {
      */
     @Then("^the add device response contains$")
     public void theAddDeviceResponseContains(final Map<String, String> expectedResult) {
-        Assert.assertTrue(ScenarioContext.current().get(PlatformKeys.RESPONSE) instanceof AddDeviceResponse);
+        assertThat(ScenarioContext.current().get(PlatformKeys.RESPONSE) instanceof AddDeviceResponse).isTrue();
     }
 
     @Then("^the add device response contains soap fault$")
@@ -155,7 +154,7 @@ public class CreateDeviceSteps extends GlueBase {
 
     @Then("^the update device response contains$")
     public void theUpdateDeviceResponseContains(final Map<String, String> expectedResult) {
-        Assert.assertTrue(ScenarioContext.current().get(PlatformKeys.RESPONSE) instanceof UpdateDeviceResponse);
+        assertThat(ScenarioContext.current().get(PlatformKeys.RESPONSE) instanceof UpdateDeviceResponse).isTrue();
     }
 
     /**

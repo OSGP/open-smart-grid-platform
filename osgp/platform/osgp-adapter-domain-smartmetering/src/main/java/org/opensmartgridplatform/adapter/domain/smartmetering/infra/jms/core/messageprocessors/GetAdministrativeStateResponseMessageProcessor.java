@@ -30,7 +30,7 @@ public class GetAdministrativeStateResponseMessageProcessor extends OsgpCoreResp
     @Autowired
     public GetAdministrativeStateResponseMessageProcessor(
             WebServiceResponseMessageSender responseMessageSender,
-            @Qualifier("domainSmartMeteringOsgpCoreResponseMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.GET_ADMINISTRATIVE_STATUS,
                 ComponentType.DOMAIN_SMART_METERING);
     }

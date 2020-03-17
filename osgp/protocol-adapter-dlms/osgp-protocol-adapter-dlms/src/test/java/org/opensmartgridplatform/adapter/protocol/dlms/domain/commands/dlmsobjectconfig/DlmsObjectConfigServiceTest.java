@@ -18,11 +18,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.joda.time.DateTime;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SelectiveAccessDescription;
@@ -39,12 +41,14 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Dlm
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class DlmsObjectConfigServiceTest {
 
     private DlmsObjectConfigService service;
 
-    private final DateTime from = DateTime.now().minusDays(1);
+    private final DateTime from = DateTime.now()
+            .minusDays(1);
     private final DateTime to = DateTime.now();
 
     private final DlmsDevice device422 = new DlmsDevice();
@@ -64,7 +68,8 @@ public class DlmsObjectConfigServiceTest {
             this.captureObjectsE, ProfileCaptureTime.HOUR, Medium.ELECTRICITY);
 
     private final List<DlmsCaptureObject> captureObjectsCombined = Arrays.asList(new DlmsCaptureObject(this.clock1, 2),
-            new DlmsCaptureObject(this.register, 2), DlmsCaptureObject.createWithChannel(this.registerWithChannel, 1, 2));
+            new DlmsCaptureObject(this.register, 2),
+            DlmsCaptureObject.createWithChannel(this.registerWithChannel, 1, 2));
     private final DlmsProfile profileCombined = new DlmsProfile(DlmsObjectType.DAILY_LOAD_PROFILE, "1.0.98.1.1.255",
             this.captureObjectsCombined, ProfileCaptureTime.HOUR, Medium.COMBINED);
 
@@ -76,27 +81,28 @@ public class DlmsObjectConfigServiceTest {
     @Mock
     private DlmsObjectConfig config50;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         when(this.config422.contains(Protocol.DSMR_4_2_2)).thenReturn(true);
         when(this.config422.findObject(DlmsObjectType.CLOCK, null)).thenReturn(Optional.of(this.clock1));
-        when(this.config422.findObject(DlmsObjectType.ACTIVE_ENERGY_IMPORT, null)).thenReturn(Optional.of(this.register));
-        when(this.config422.findObject(DlmsObjectType.MBUS_MASTER_VALUE, null)).thenReturn(Optional.of(
-                this.registerWithChannel));
-        when(this.config422.findObject(DlmsObjectType.INTERVAL_VALUES, Medium.ELECTRICITY)).thenReturn(Optional.of(
-                this.profileE));
-        when(this.config422.findObject(DlmsObjectType.DAILY_LOAD_PROFILE, null)).thenReturn(Optional.of(
-                this.profileCombined));
-        when(this.config422.findObject(DlmsObjectType.DAILY_LOAD_PROFILE, Medium.GAS)).thenReturn(Optional.of(
-                this.profileCombined));
-        when(this.config422.findObject(DlmsObjectType.DAILY_LOAD_PROFILE, Medium.ELECTRICITY)).thenReturn(Optional.of(
-                this.profileCombined));
+        when(this.config422.findObject(DlmsObjectType.ACTIVE_ENERGY_IMPORT, null))
+                .thenReturn(Optional.of(this.register));
+        when(this.config422.findObject(DlmsObjectType.MBUS_MASTER_VALUE, null))
+                .thenReturn(Optional.of(this.registerWithChannel));
+        when(this.config422.findObject(DlmsObjectType.INTERVAL_VALUES, Medium.ELECTRICITY))
+                .thenReturn(Optional.of(this.profileE));
+        when(this.config422.findObject(DlmsObjectType.DAILY_LOAD_PROFILE, null))
+                .thenReturn(Optional.of(this.profileCombined));
+        when(this.config422.findObject(DlmsObjectType.DAILY_LOAD_PROFILE, Medium.GAS))
+                .thenReturn(Optional.of(this.profileCombined));
+        when(this.config422.findObject(DlmsObjectType.DAILY_LOAD_PROFILE, Medium.ELECTRICITY))
+                .thenReturn(Optional.of(this.profileCombined));
 
         when(this.config50.contains(Protocol.SMR_5_1)).thenReturn(true);
         when(this.config50.findObject(DlmsObjectType.AMR_STATUS, null)).thenReturn(Optional.empty());
         when(this.config50.findObject(DlmsObjectType.INTERVAL_VALUES, null)).thenReturn(Optional.empty());
-        when(this.config50.findObject(DlmsObjectType.DAILY_LOAD_PROFILE, Medium.GAS)).thenReturn(Optional.of(
-                this.profileCombined));
+        when(this.config50.findObject(DlmsObjectType.DAILY_LOAD_PROFILE, Medium.GAS))
+                .thenReturn(Optional.of(this.profileCombined));
 
         final List<DlmsObjectConfig> configs = Arrays.asList(this.config422, this.config50);
 
@@ -176,13 +182,15 @@ public class DlmsObjectConfigServiceTest {
                 this.profileE.getObisCodeAsString(), this.profileE.getDefaultAttributeId(), access);
 
         // CALL
-        final Optional<AttributeAddressForProfile> attributeAddressForProfile =
-                this.service.findAttributeAddressForProfile(
-                this.device422, DlmsObjectType.INTERVAL_VALUES, channel, this.from, this.to, filterMedium);
+        final Optional<AttributeAddressForProfile> attributeAddressForProfile = this.service
+                .findAttributeAddressForProfile(this.device422, DlmsObjectType.INTERVAL_VALUES, channel, this.from,
+                        this.to, filterMedium);
 
         // VERIFY
-        AttributeAddressAssert.is(attributeAddressForProfile.get().getAttributeAddress(), expectedAddress);
-        assertThat(attributeAddressForProfile.get().getSelectedObjects()).isEqualTo(this.captureObjectsE);
+        AttributeAddressAssert.is(attributeAddressForProfile.get()
+                .getAttributeAddress(), expectedAddress);
+        assertThat(attributeAddressForProfile.get()
+                .getSelectedObjects()).isEqualTo(this.captureObjectsE);
     }
 
     @Test
@@ -208,13 +216,15 @@ public class DlmsObjectConfigServiceTest {
                 this.profileCombined.getObisCodeAsString(), this.profileCombined.getDefaultAttributeId(), access);
 
         // CALL
-        final Optional<AttributeAddressForProfile> attributeAddressForProfile =
-                this.service.findAttributeAddressForProfile(
-                this.device422, DlmsObjectType.DAILY_LOAD_PROFILE, channel, this.from, this.to, filterMedium);
+        final Optional<AttributeAddressForProfile> attributeAddressForProfile = this.service
+                .findAttributeAddressForProfile(this.device422, DlmsObjectType.DAILY_LOAD_PROFILE, channel, this.from,
+                        this.to, filterMedium);
 
         // VERIFY
-        AttributeAddressAssert.is(attributeAddressForProfile.get().getAttributeAddress(), expectedAddress);
-        assertThat(attributeAddressForProfile.get().getSelectedObjects()).isEqualTo(expectedSelectedObjects);
+        AttributeAddressAssert.is(attributeAddressForProfile.get()
+                .getAttributeAddress(), expectedAddress);
+        assertThat(attributeAddressForProfile.get()
+                .getSelectedObjects()).isEqualTo(expectedSelectedObjects);
     }
 
     @Test
@@ -233,70 +243,15 @@ public class DlmsObjectConfigServiceTest {
                 this.profileCombined.getObisCodeAsString(), this.profileCombined.getDefaultAttributeId(), access);
 
         // CALL
-        final Optional<AttributeAddressForProfile> attributeAddressForProfile =
-                this.service.findAttributeAddressForProfile(
-                this.device422, DlmsObjectType.DAILY_LOAD_PROFILE, channel, this.from, this.to, filterMedium);
+        final Optional<AttributeAddressForProfile> attributeAddressForProfile = this.service
+                .findAttributeAddressForProfile(this.device422, DlmsObjectType.DAILY_LOAD_PROFILE, channel, this.from,
+                        this.to, filterMedium);
 
         // VERIFY
-        AttributeAddressAssert.is(attributeAddressForProfile.get().getAttributeAddress(), expectedAddress);
-        assertThat(attributeAddressForProfile.get().getSelectedObjects()).isEqualTo(this.captureObjectsCombined);
-    }
-
-    @Test
-    public void testProfileWithSelectiveAccessNotSupported() throws Exception {
-        // Filtering is not possible when selective access not supported, so all values will be returned.
-
-        // SETUP
-        final Integer channel = 1;
-        final Medium filterMedium = Medium.GAS;
-
-        // Selective access not supported
-        final SelectiveAccessDescription access = null;
-
-        final AttributeAddress expectedAddress = new AttributeAddress(this.profileCombined.getClassId(),
-                this.profileCombined.getObisCodeAsString(), this.profileCombined.getDefaultAttributeId(), access);
-
-        // CALL
-        final Optional<AttributeAddressForProfile> attributeAddressForProfile =
-                this.service.findAttributeAddressForProfile(
-                this.device422_noSelectiveAccess, DlmsObjectType.DAILY_LOAD_PROFILE, channel, this.from, this.to,
-                filterMedium);
-
-        // VERIFY
-        AttributeAddressAssert.is(attributeAddressForProfile.get().getAttributeAddress(), expectedAddress);
-
-        // All values should be returned.
-        assertThat(attributeAddressForProfile.get().getSelectedObjects()).isEqualTo(this.captureObjectsCombined);
-    }
-
-    @Test
-    public void testProfileWithSelectingValuesNotSupported() throws Exception {
-        // Filtering is not possible when selecting values is not supported, so all values will be returned.
-
-        // SETUP
-        final Integer channel = 1;
-        final Medium filterMedium = Medium.GAS;
-
-        // Selecting values is not supported
-        final DataObject selectedValues = DataObject.newArrayData(Collections.emptyList());
-
-        final DataObject accessParams = this.getAccessParams(selectedValues);
-
-        final SelectiveAccessDescription access = new SelectiveAccessDescription(1, accessParams);
-
-        final AttributeAddress expectedAddress = new AttributeAddress(this.profileCombined.getClassId(),
-                this.profileCombined.getObisCodeAsString(), this.profileCombined.getDefaultAttributeId(), access);
-
-        // CALL
-        final Optional<AttributeAddressForProfile> attributeAddressForProfile =
-                this.service.findAttributeAddressForProfile(
-                this.device51, DlmsObjectType.DAILY_LOAD_PROFILE, channel, this.from, this.to, filterMedium);
-
-        // VERIFY
-        AttributeAddressAssert.is(attributeAddressForProfile.get().getAttributeAddress(), expectedAddress);
-
-        // All values should be returned.
-        assertThat(attributeAddressForProfile.get().getSelectedObjects()).isEqualTo(this.captureObjectsCombined);
+        AttributeAddressAssert.is(attributeAddressForProfile.get()
+                .getAttributeAddress(), expectedAddress);
+        assertThat(attributeAddressForProfile.get()
+                .getSelectedObjects()).isEqualTo(this.captureObjectsCombined);
     }
 
     private ObisCode getObisCodeWithChannel(final String obisAsString, final Integer channel) {
@@ -315,7 +270,8 @@ public class DlmsObjectConfigServiceTest {
 
     private DataObject getDataObject(final DlmsObject dlmsObject, final Integer channel) {
         return DataObject.newStructureData(Arrays.asList(DataObject.newUInteger16Data(dlmsObject.getClassId()),
-                DataObject.newOctetStringData(this.getObisCodeWithChannel(dlmsObject.getObisCodeAsString(), channel).bytes()),
+                DataObject.newOctetStringData(this.getObisCodeWithChannel(dlmsObject.getObisCodeAsString(), channel)
+                        .bytes()),
                 DataObject.newInteger8Data((byte) dlmsObject.getDefaultAttributeId()),
                 DataObject.newUInteger16Data(0)));
     }
@@ -329,4 +285,3 @@ public class DlmsObjectConfigServiceTest {
                 this.getDataObject(this.to), selectedValues));
     }
 }
-

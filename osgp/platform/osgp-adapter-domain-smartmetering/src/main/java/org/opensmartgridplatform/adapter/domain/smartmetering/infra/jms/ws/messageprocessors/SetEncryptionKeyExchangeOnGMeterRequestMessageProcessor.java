@@ -26,7 +26,7 @@ public class SetEncryptionKeyExchangeOnGMeterRequestMessageProcessor extends Bas
 
     @Autowired
     protected SetEncryptionKeyExchangeOnGMeterRequestMessageProcessor(
-            @Qualifier("domainSmartMeteringWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(messageProcessorMap, MessageType.SET_ENCRYPTION_KEY_EXCHANGE_ON_G_METER);
     }
 

@@ -1,4 +1,4 @@
-@SmartMetering @Platform @SmartMeteringConfiguration
+@SmartMetering @Platform @SmartMeteringConfiguration @NightlyBuildOnly
 Feature: SmartMetering Configuration - Exchange User Key on M-Bus Device
   As a grid operator
   I want to be able to exchange the user key on an M-Bus device coupled on a device

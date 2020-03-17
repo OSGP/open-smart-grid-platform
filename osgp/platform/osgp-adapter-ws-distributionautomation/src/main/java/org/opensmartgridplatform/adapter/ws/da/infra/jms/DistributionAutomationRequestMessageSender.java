@@ -21,28 +21,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
+import org.springframework.stereotype.Component;
 
 /**
  * Class for sending distribution automation request messages to a queue
  */
+@Component("wsDistributionAutomationOutboundDomainRequestsMessageSender")
 public class DistributionAutomationRequestMessageSender {
-    /**
-     * Logger for this class
-     */
+
     private static final Logger LOGGER = LoggerFactory.getLogger(DistributionAutomationRequestMessageSender.class);
 
-    /**
-     * Autowired field for distribution automation requests jms template
-     */
     @Autowired
-    @Qualifier("wsDistributionAutomationOutgoingRequestsJmsTemplate")
-    private JmsTemplate distributionautomationRequestsJmsTemplate;
+    @Qualifier("wsDistributionAutomationOutboundDomainRequestsJmsTemplate")
+    private JmsTemplate jmsTemplate;
 
     /**
      * Method for sending a request message to the queue
      *
      * @param requestMessage
-     *            The DistributionAutomationRequestMessage request message to send.
+     *            The DistributionAutomationRequestMessage request message to
+     *            send.
      * @throws ArgumentNullOrEmptyException
      */
     public void send(final DistributionAutomationRequestMessage requestMessage) throws ArgumentNullOrEmptyException {
@@ -72,12 +70,13 @@ public class DistributionAutomationRequestMessageSender {
      * Method for sending a request message to the da requests queue
      *
      * @param requestMessage
-     *            The DistributionAutomationRequestMessage request message to send.
+     *            The DistributionAutomationRequestMessage request message to
+     *            send.
      */
     private void sendMessage(final DistributionAutomationRequestMessage requestMessage) {
         LOGGER.info("Sending message to the da requests queue");
 
-        this.distributionautomationRequestsJmsTemplate.send(new MessageCreator() {
+        this.jmsTemplate.send(new MessageCreator() {
 
             @Override
             public Message createMessage(final Session session) throws JMSException {

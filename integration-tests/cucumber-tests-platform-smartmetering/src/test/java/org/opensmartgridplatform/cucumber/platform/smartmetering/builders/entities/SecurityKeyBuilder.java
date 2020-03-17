@@ -7,6 +7,8 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.builders.entities;
 
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
+
 import java.util.Date;
 import java.util.Map;
 
@@ -76,32 +78,32 @@ public class SecurityKeyBuilder implements CucumberBuilder<SecurityKey> {
 
         if (SecurityKeyType.E_METER_AUTHENTICATION == this.securityKeyType
                 && inputSettings.containsKey(PlatformSmartmeteringKeys.SECURITY_KEY_A)) {
-            this.setKey(inputSettings.get(PlatformSmartmeteringKeys.SECURITY_KEY_A));
+            this.setKey(getString(inputSettings, PlatformSmartmeteringKeys.SECURITY_KEY_A));
         }
 
         if (SecurityKeyType.E_METER_MASTER == this.securityKeyType
                 && inputSettings.containsKey(PlatformSmartmeteringKeys.SECURITY_KEY_M)) {
-            this.setKey(inputSettings.get(PlatformSmartmeteringKeys.SECURITY_KEY_M));
+            this.setKey(getString(inputSettings, PlatformSmartmeteringKeys.SECURITY_KEY_M));
         }
 
         if (SecurityKeyType.E_METER_ENCRYPTION == this.securityKeyType
                 && inputSettings.containsKey(PlatformSmartmeteringKeys.SECURITY_KEY_E)) {
-            this.setKey(inputSettings.get(PlatformSmartmeteringKeys.SECURITY_KEY_E));
+            this.setKey(getString(inputSettings, PlatformSmartmeteringKeys.SECURITY_KEY_E));
         }
 
         if (SecurityKeyType.G_METER_MASTER == this.securityKeyType
                 && inputSettings.containsKey(PlatformSmartmeteringKeys.MBUS_DEFAULT_KEY)) {
-            this.setKey(inputSettings.get(PlatformSmartmeteringKeys.MBUS_DEFAULT_KEY));
+            this.setKey(getString(inputSettings, PlatformSmartmeteringKeys.MBUS_DEFAULT_KEY));
         }
 
         if (SecurityKeyType.G_METER_ENCRYPTION == this.securityKeyType
                 && inputSettings.containsKey(PlatformSmartmeteringKeys.MBUS_USER_KEY)) {
-            this.setKey(inputSettings.get(PlatformSmartmeteringKeys.MBUS_USER_KEY));
+            this.setKey(getString(inputSettings, PlatformSmartmeteringKeys.MBUS_USER_KEY));
         }
 
         if (SecurityKeyType.PASSWORD == this.securityKeyType
                 && inputSettings.containsKey(PlatformSmartmeteringKeys.PASSWORD)) {
-            this.setKey(inputSettings.get(PlatformSmartmeteringKeys.PASSWORD));
+            this.setKey(getString(inputSettings, PlatformSmartmeteringKeys.PASSWORD));
         }
 
         return this;

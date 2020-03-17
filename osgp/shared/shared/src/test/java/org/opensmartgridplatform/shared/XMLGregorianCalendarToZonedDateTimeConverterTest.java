@@ -7,6 +7,8 @@
  */
 package org.opensmartgridplatform.shared;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -16,9 +18,8 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.shared.mappers.XMLGregorianCalendarToZonedDateTimeConverter;
 
 import ma.glasnost.orika.MapperFacade;
@@ -34,10 +35,10 @@ public class XMLGregorianCalendarToZonedDateTimeConverterTest {
 
     /**
      * Register {@link XMLGregorianCalendarToZonedDateTimeConverter} and
-     * {@link ZonedDateTimeToStringConverter}. The former is the class under test.
-     * The latter is just part of the unit tests.
+     * {@link ZonedDateTimeToStringConverter}. The former is the class under
+     * test. The latter is just part of the unit tests.
      */
-    @Before
+    @BeforeEach
     public void before() {
         this.mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToZonedDateTimeConverter());
         this.mapper = this.mapperFactory.getMapperFacade();
@@ -51,7 +52,7 @@ public class XMLGregorianCalendarToZonedDateTimeConverterTest {
                 .newXMLGregorianCalendar(withTimeZone);
 
         final ZonedDateTime mappedZonedDateTime = this.mapper.map(xmlGregorianCalendar, ZonedDateTime.class);
-        Assert.assertEquals(dateTime, mappedZonedDateTime);
+        assertThat(mappedZonedDateTime).isEqualTo(dateTime);
     }
 
     @Test
@@ -63,7 +64,7 @@ public class XMLGregorianCalendarToZonedDateTimeConverterTest {
                 .newXMLGregorianCalendar(withoutTimeZone);
 
         final ZonedDateTime mappedZonedDateTime = this.mapper.map(xmlGregorianCalendar, ZonedDateTime.class);
-        Assert.assertEquals(dateTime, mappedZonedDateTime);
+        assertThat(mappedZonedDateTime).isEqualTo(dateTime);
     }
 
     @Test
@@ -74,6 +75,7 @@ public class XMLGregorianCalendarToZonedDateTimeConverterTest {
 
         // Try to map to XML version.
         final XMLGregorianCalendar mappedXMLGregorianCalendar = this.mapper.map(dateTime, XMLGregorianCalendar.class);
-        Assert.assertEquals(xmlGregorianCalendar, mappedXMLGregorianCalendar);
+        assertThat(mappedXMLGregorianCalendar).isEqualTo(xmlGregorianCalendar);
+
     }
 }

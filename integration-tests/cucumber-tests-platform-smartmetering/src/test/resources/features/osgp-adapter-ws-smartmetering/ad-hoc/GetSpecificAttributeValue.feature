@@ -1,4 +1,4 @@
-@SmartMetering @Platform @SmartMeteringAdHoc
+@SmartMetering @Platform @SmartMeteringAdHoc @NightlyBuildOnly
 Feature: SmartMetering AdHoc
   As a grid operator
   I want to be able to get a specific attribute value from a device

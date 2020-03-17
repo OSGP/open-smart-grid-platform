@@ -81,9 +81,9 @@ public class DeviceManagementService {
      */
     private EventNotificationDto createEventNotificationDto(final String deviceIdentification, final String deviceUid,
             final String eventType, final String description, final Integer index, final String timestamp) {
-        Assert.notNull(eventType);
-        Assert.notNull(description);
-        Assert.notNull(index);
+        Assert.notNull(eventType, "event type must not be null");
+        Assert.notNull(description, "description must not be null");
+        Assert.notNull(index, "index must not be null");
 
         LOGGER.info("addEventNotification called for device: {} with eventType: {}, description: {} and timestamp: {}",
                 deviceIdentification, eventType, description, timestamp);

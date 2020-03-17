@@ -13,25 +13,15 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>parent-os-webapps</artifactId>
-  <groupId>org.opensmartgridplatform</groupId>
-  <version>4.38.0</version>
   <packaging>pom</packaging>
   <name>os-webapps</name>
-  <!-- Description, Organization, Licenses, URL and Distribution Management elements are needed for the maven-jxr-plugin 
-    to generate a maven site -->
   <description>Parent module</description>
-  <organization>
-    <name>OSGP</name>
-    <url>http://www.opensmartgridplatform.com</url>
-  </organization>
-  <licenses>
-    <license>
-      <name>APACHE 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
-    </license>
-  </licenses>
-  <!-- URL is passed in as a maven argument: -Dmaven.site.url=http://my/url/for/the/site -->
-  <url>${maven.site.url}</url>
+  <parent>
+    <groupId>org.opensmartgridplatform</groupId>
+    <artifactId>super-osgp</artifactId>
+    <version>5.0.0</version>
+    <relativePath>../../super/pom.xml</relativePath>
+  </parent>
   <distributionManagement>
     <site>
       <id>os-webapps</id>
@@ -43,145 +33,6 @@
       <url>${maven.site.distributionManagement.site.url}</url>
     </site>
   </distributionManagement>
-
-  <properties>
-    <module.baseUri>${project.baseUri}/../</module.baseUri>
-    <osgp.version>${project.version}</osgp.version>
-    <osgp.shared.version>4.38.0</osgp.shared.version>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <spring.version>4.3.5.RELEASE</spring.version>
-    <spring.ws.version>2.4.0.RELEASE</spring.ws.version>
-    <spring.data.version>1.11.22.RELEASE</spring.data.version>
-    <spring.security.version>4.2.13.RELEASE</spring.security.version>
-    <servlet.version>3.0.1</servlet.version>
-    <servlet.jstl.version>1.2</servlet.jstl.version>
-    <apache.commons.lang.version>3.3.2</apache.commons.lang.version>
-    <apache.httpcomponents.version>4.3.5</apache.httpcomponents.version>
-    <orika.version>1.5.1</orika.version>
-    <netty.version>3.9.4.Final</netty.version>
-    <jxr.version>2.5</jxr.version>
-    <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
-    <maven.site.plugin>3.7.1</maven.site.plugin>
-    <maven.compiler.plugin.version>3.2</maven.compiler.plugin.version>
-    <license.maven.plugin>2.11</license.maven.plugin>
-    <maven.javadoc.version>2.10.4</maven.javadoc.version>
-  </properties>
-
-  <repositories>
-    <repository>
-      <id>fuse-repo</id>
-      <name>Fuse Source</name>
-      <url>http://repo.fusesource.com/nexus/content/groups/public/</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
-
-  <dependencyManagement>
-    <dependencies>
-      <!-- OSGP -->
-      <dependency>
-        <groupId>org.opensmartgridplatform</groupId>
-        <artifactId>osgp-ws-core</artifactId>
-        <version>${osgp.shared.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opensmartgridplatform</groupId>
-        <artifactId>osgp-ws-admin</artifactId>
-        <version>${osgp.shared.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opensmartgridplatform</groupId>
-        <artifactId>osgp-ws-publiclighting</artifactId>
-        <version>${osgp.shared.version}</version>
-      </dependency>
-
-      <!-- Spring Framework -->
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-beans</artifactId>
-        <version>${spring.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-core</artifactId>
-        <version>${spring.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-context</artifactId>
-        <version>${spring.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-context-support</artifactId>
-        <version>${spring.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-oxm</artifactId>
-        <version>${spring.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-web</artifactId>
-        <version>${spring.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-webmvc</artifactId>
-        <version>${spring.version}</version>
-      </dependency>
-      <!-- Spring WS -->
-      <dependency>
-        <groupId>org.springframework.ws</groupId>
-        <artifactId>spring-ws-core</artifactId>
-        <version>${spring.ws.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework.ws</groupId>
-        <artifactId>spring-ws-security</artifactId>
-        <version>${spring.ws.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework.ws</groupId>
-        <artifactId>spring-ws-support</artifactId>
-        <version>${spring.ws.version}</version>
-      </dependency>
-
-      <!-- Servlet API 3.0 -->
-      <dependency>
-        <groupId>javax.servlet</groupId>
-        <artifactId>javax.servlet-api</artifactId>
-        <version>${servlet.version}</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>javax.servlet</groupId>
-        <artifactId>jstl</artifactId>
-        <version>${servlet.jstl.version}</version>
-      </dependency>
-
-      <!-- Apache HTTP client -->
-      <dependency>
-        <groupId>org.apache.httpcomponents</groupId>
-        <artifactId>httpclient</artifactId>
-        <version>${apache.httpcomponents.version}</version>
-      </dependency>
-
-      <!-- Orika (mapping framework) -->
-      <dependency>
-        <groupId>ma.glasnost.orika</groupId>
-        <artifactId>orika-core</artifactId>
-        <version>${orika.version}</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
 
   <build>
     <pluginManagement>
@@ -244,8 +95,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
           <fork>true</fork>
-          <source>1.8</source>
-          <target>1.8</target>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
         </configuration>
       </plugin>
       <plugin>

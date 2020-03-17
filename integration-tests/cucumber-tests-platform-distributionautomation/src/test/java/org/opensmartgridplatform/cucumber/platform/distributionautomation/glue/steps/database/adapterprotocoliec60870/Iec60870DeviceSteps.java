@@ -16,7 +16,6 @@ import java.util.Map;
 
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.entities.Iec60870Device;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.repositories.Iec60870DeviceRepository;
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -28,12 +27,12 @@ import org.opensmartgridplatform.cucumber.platform.helpers.SettingsHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import cucumber.api.java.en.Given;
+import io.cucumber.java.en.Given;
 
 /**
  * IEC 60870 device specific steps.
  */
-public class Iec60870DeviceSteps extends GlueBase {
+public class Iec60870DeviceSteps {
 
     private static final String DEFAULT_DEVICE_TYPE = "RTU";
     private static final String DEFAULT_PROTOCOL = "60870-5-104";
@@ -65,8 +64,8 @@ public class Iec60870DeviceSteps extends GlueBase {
     @Given("^an IEC 60870 RTU$")
     public void anIec60870Rtu(final Map<String, String> settings) {
 
-        ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION);
+        ScenarioContext.current()
+                .put(PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION);
         final Map<String, String> rtuSettings = SettingsHelper.addAsDefaults(settings, RTU_60870_DEFAULT_SETTINGS);
         rtuSettings.put(PlatformKeys.KEY_NETWORKADDRESS, this.mockServerConfig.iec60870MockNetworkAddress());
 

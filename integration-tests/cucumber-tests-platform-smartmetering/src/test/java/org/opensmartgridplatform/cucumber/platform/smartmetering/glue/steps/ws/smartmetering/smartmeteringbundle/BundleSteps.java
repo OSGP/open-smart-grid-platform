@@ -8,16 +8,12 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringbundle;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ActionResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.Actions;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ActualMeterReadsResponse;
@@ -59,6 +55,10 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartme
 import org.opensmartgridplatform.cucumber.platform.smartmetering.ScenarioContextHelper;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.bundle.SmartMeteringBundleClient;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 public class BundleSteps extends BaseBundleSteps {
 
@@ -103,12 +103,12 @@ public class BundleSteps extends BaseBundleSteps {
 
     @When("^the bundle request is received$")
     public void theBundleRequestIsReceived() throws Throwable {
-        final BundleRequest request = (BundleRequest) ScenarioContext.current().get(
-                PlatformSmartmeteringKeys.BUNDLE_REQUEST);
+        final BundleRequest request = (BundleRequest) ScenarioContext.current()
+                .get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
 
         final BundleAsyncResponse asyncResponse = this.client.sendBundleRequest(request);
 
-        assertNotNull(asyncResponse);
+        assertThat(asyncResponse).isNotNull();
         ScenarioContextHelper.saveAsyncResponse(asyncResponse);
     }
 
@@ -118,10 +118,10 @@ public class BundleSteps extends BaseBundleSteps {
 
         this.ensureBundleResponse();
 
-        final BundleRequest request = (BundleRequest) ScenarioContext.current().get(
-                PlatformSmartmeteringKeys.BUNDLE_REQUEST);
-        final BundleResponse response = (BundleResponse) ScenarioContext.current().get(
-                PlatformSmartmeteringKeys.BUNDLE_RESPONSE);
+        final BundleRequest request = (BundleRequest) ScenarioContext.current()
+                .get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
+        final BundleResponse response = (BundleResponse) ScenarioContext.current()
+                .get(PlatformSmartmeteringKeys.BUNDLE_RESPONSE);
 
         this.assertSameSize(request, response);
     }
@@ -132,10 +132,10 @@ public class BundleSteps extends BaseBundleSteps {
 
         this.ensureBundleResponse();
 
-        final BundleRequest request = (BundleRequest) ScenarioContext.current().get(
-                PlatformSmartmeteringKeys.BUNDLE_REQUEST);
-        final BundleResponse response = (BundleResponse) ScenarioContext.current().get(
-                PlatformSmartmeteringKeys.BUNDLE_RESPONSE);
+        final BundleRequest request = (BundleRequest) ScenarioContext.current()
+                .get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
+        final BundleResponse response = (BundleResponse) ScenarioContext.current()
+                .get(PlatformSmartmeteringKeys.BUNDLE_RESPONSE);
 
         this.assertSameSize(request, response);
         this.assertSameOrder(request, response);
@@ -146,11 +146,10 @@ public class BundleSteps extends BaseBundleSteps {
         final int actionsSize = bundleRequest.getActions().getActionList().size();
         final int responsesSize = bundleResponse.getAllResponses().getResponseList().size();
 
-        assertEquals(
-                "The number of responses in the bundle responses should match the number of actions in the bundle "
-                        + "request",
-                actionsSize, responsesSize);
-
+        assertThat(responsesSize)
+                .as("The number of responses in the bundle responses should match the number of actions in the bundle "
+                        + "request")
+                .isEqualTo(actionsSize);
     }
 
     private void assertSameOrder(final BundleRequest bundleRequest, final BundleResponse bundleResponse) {
@@ -161,8 +160,7 @@ public class BundleSteps extends BaseBundleSteps {
             final Action action = bundleRequest.getActions().getActionList().get(i);
             final Response response = bundleResponse.getAllResponses().getResponseList().get(i);
 
-            assertEquals(REQUEST_RESPONSE_MAP.get(action.getClass()), response.getClass());
+            assertThat(response.getClass()).isEqualTo(REQUEST_RESPONSE_MAP.get(action.getClass()));
         }
-
     }
 }

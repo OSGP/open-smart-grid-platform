@@ -20,11 +20,10 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotEmpty;
-
-import org.opensmartgridplatform.shared.validation.Identification;
 import org.opensmartgridplatform.domain.core.valueobjects.PlatformDomain;
 import org.opensmartgridplatform.domain.core.valueobjects.PlatformFunctionGroup;
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
+import org.opensmartgridplatform.shared.validation.Identification;
 
 /**
  * Organisation entity class

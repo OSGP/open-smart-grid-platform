@@ -7,12 +7,7 @@
  */
 package org.opensmartgridplatform.webdevicesimulator.application.config;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.util.Properties;
-import java.util.concurrent.Executors;
 
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
@@ -20,16 +15,10 @@ import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationVersion;
-import org.hibernate.ejb.HibernatePersistence;
-import org.jboss.netty.bootstrap.ClientBootstrap;
-import org.jboss.netty.bootstrap.ServerBootstrap;
-import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.Channels;
-import org.jboss.netty.channel.SimpleChannelHandler;
-import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
-import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
+import org.hibernate.jpa.HibernatePersistenceProvider;
+import org.opensmartgridplatform.webdevicesimulator.domain.repositories.DeviceRepository;
+import org.opensmartgridplatform.webdevicesimulator.service.RegisterDevice;
+import org.opensmartgridplatform.webdevicesimulator.service.SwitchingServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
@@ -39,23 +28,17 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
-import org.opensmartgridplatform.oslp.OslpDecoder;
-import org.opensmartgridplatform.oslp.OslpEncoder;
-import org.opensmartgridplatform.shared.security.CertificateHelper;
-import org.opensmartgridplatform.webdevicesimulator.service.OslpChannelHandler;
-import org.opensmartgridplatform.webdevicesimulator.service.OslpSecurityHandler;
-import org.opensmartgridplatform.webdevicesimulator.service.RegisterDevice;
-import org.opensmartgridplatform.webdevicesimulator.service.SwitchingServices;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -68,11 +51,14 @@ import com.zaxxer.hikari.HikariDataSource;
  * </ul>
  */
 @Configuration
-@ComponentScan(basePackages = {"org.opensmartgridplatform.webdevicesimulator"})
+@ComponentScan(basePackages = { "org.opensmartgridplatform.webdevicesimulator" })
+@EnableJpaRepositories(entityManagerFactoryRef = "entityManagerFactory",
+        basePackageClasses = { DeviceRepository.class })
+@EnableTransactionManagement
 @EnableWebMvc
 @ImportResource("classpath:applicationContext.xml")
-@PropertySources({ @PropertySource("classpath:web-device-simulator.properties"),
-        @PropertySource(value = "file:${osgp/WebDeviceSimulator/config}", ignoreResourceNotFound = true), })
+@PropertySource("classpath:web-device-simulator.properties")
+@PropertySource(value = "file:${osgp/WebDeviceSimulator/config}", ignoreResourceNotFound = true)
 public class ApplicationContext {
 
     private static final String VIEW_RESOLVER_PREFIX = "/WEB-INF/views/";
@@ -88,7 +74,7 @@ public class ApplicationContext {
 
     private static final String PROPERTY_NAME_HIBERNATE_DIALECT = "hibernate.dialect";
     private static final String PROPERTY_NAME_HIBERNATE_FORMAT_SQL = "hibernate.format_sql";
-    private static final String PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY = "hibernate.ejb.naming_strategy";
+    private static final String PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY = "hibernate.physical_naming_strategy";
     private static final String PROPERTY_NAME_HIBERNATE_SHOW_SQL = "hibernate.show_sql";
 
     private static final String PROPERTY_NAME_FLYWAY_INITIAL_VERSION = "flyway.initial.version";
@@ -99,22 +85,6 @@ public class ApplicationContext {
 
     private static final String PROPERTY_NAME_MESSAGESOURCE_BASENAME = "message.source.basename";
     private static final String PROPERTY_NAME_MESSAGESOURCE_USE_CODE_AS_DEFAULT_MESSAGE = "message.source.use.code.as.default.message";
-
-    private static final String PROPERTY_NAME_OSLP_TIMEOUT_CONNECT = "oslp.timeout.connect";
-
-    private static final String PROPERTY_NAME_OSLP_PORT_CLIENT = "oslp.port.client";
-    private static final String PROPERTY_NAME_OSLP_ELSTER_PORT_CLIENT = "oslp.elster.port.client";
-    private static final String PROPERTY_NAME_OSLP_PORT_SERVER = "oslp.port.server";
-    private static final String PROPERTY_NAME_OSLP_ELSTER_PORT_SERVER = "oslp.elster.port.server";
-    private static final String PROPERTY_NAME_OSLP_ADDRESS_CLIENT = "oslp.address.client";
-
-    private static final String PROPERTY_NAME_OSLP_SECURITY_SIGNKEY_PATH = "oslp.security.signkey.path";
-    private static final String PROPERTY_NAME_OSLP_SECURITY_VERIFYKEY_PATH = "oslp.security.verifykey.path";
-    private static final String PROPERTY_NAME_OSLP_SECURITY_KEYTYPE = "oslp.security.keytype";
-    private static final String PROPERTY_NAME_OSLP_SECURITY_SIGNATURE = "oslp.security.signature";
-    private static final String PROPERTY_NAME_OSLP_SECURITY_PROVIDER = "oslp.security.provider";
-    private static final String PROPERTY_NAME_OSLP_SEQUENCE_NUMBER_WINDOW = "oslp.sequence.number.window";
-    private static final String PROPERTY_NAME_OSLP_SEQUENCE_NUMBER_MAXIMUM = "oslp.sequence.number.maximum";
 
     private static final String PROPERTY_NAME_RESPONSE_DELAY_TIME = "response.delay.time";
     private static final String PROPERTY_NAME_RESPONSE_DELAY_RANDOM_RANGE = "response.delay.random.range";
@@ -182,18 +152,17 @@ public class ApplicationContext {
 
     @Bean(initMethod = "migrate")
     public Flyway flyway() {
-        final Flyway flyway = new Flyway();
-
-        // Initialization for non-empty schema with no metadata table
-        flyway.setBaselineVersion(MigrationVersion
-                .fromVersion(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INITIAL_VERSION)));
-        flyway.setBaselineDescription(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INITIAL_DESCRIPTION));
-        flyway.setBaselineOnMigrate(
-                Boolean.parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INIT_ON_MIGRATE)));
-
-        flyway.setDataSource(this.getDataSource());
-
-        return flyway;
+        // @formatter:off
+        return Flyway.configure()
+                .baselineVersion(MigrationVersion
+                        .fromVersion(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INITIAL_VERSION)))
+                .baselineDescription(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INITIAL_DESCRIPTION))
+                .baselineOnMigrate(Boolean
+                        .parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INIT_ON_MIGRATE)))
+                .outOfOrder(true).table("schema_version")
+                .dataSource(this.getDataSource())
+                .load();
+        // @formatter:on
     }
 
     /**
@@ -210,7 +179,7 @@ public class ApplicationContext {
         entityManagerFactoryBean.setDataSource(this.getDataSource());
         entityManagerFactoryBean
                 .setPackagesToScan(this.environment.getRequiredProperty(PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN));
-        entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistence.class);
+        entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistenceProvider.class);
 
         final Properties jpaProperties = new Properties();
         jpaProperties.put(PROPERTY_NAME_HIBERNATE_DIALECT,
@@ -257,167 +226,6 @@ public class ApplicationContext {
         viewResolver.setSuffix(VIEW_RESOLVER_SUFFIX);
 
         return viewResolver;
-    }
-
-    @Bean(destroyMethod = "releaseExternalResources")
-    public ClientBootstrap clientBootstrap() {
-        final ChannelFactory factory = new NioClientSocketChannelFactory(Executors.newCachedThreadPool(),
-                Executors.newCachedThreadPool());
-
-        final ChannelPipelineFactory pipelineFactory = () -> {
-            final ChannelPipeline pipeline = ApplicationContext.this.createPipeLine();
-            LOGGER.info("Created new client pipeline");
-            return pipeline;
-        };
-
-        final ClientBootstrap bootstrap = new ClientBootstrap(factory);
-
-        bootstrap.setOption("tcpNoDelay", true);
-        bootstrap.setOption("keepAlive", false);
-        bootstrap.setOption("connectTimeoutMillis", this.connectionTimeout());
-
-        bootstrap.setPipelineFactory(pipelineFactory);
-
-        return bootstrap;
-    }
-
-    @Bean(destroyMethod = "releaseExternalResources")
-    public ServerBootstrap serverBootstrap() {
-        final ChannelFactory factory = new NioServerSocketChannelFactory(Executors.newCachedThreadPool(),
-                Executors.newCachedThreadPool());
-
-        final ServerBootstrap bootstrap = new ServerBootstrap(factory);
-
-        bootstrap.setPipelineFactory(() -> {
-            final ChannelPipeline pipeline = ApplicationContext.this.createPipeLine();
-            LOGGER.info("Created new server pipeline");
-            return pipeline;
-        });
-
-        bootstrap.setOption("child.tcpNoDelay", true);
-        bootstrap.setOption("child.keepAlive", false);
-
-        bootstrap.bind(new InetSocketAddress(this.oslpPortServer()));
-
-        return bootstrap;
-    }
-
-    @Bean(destroyMethod = "releaseExternalResources")
-    public ServerBootstrap serverBootstrapElster() {
-        final ChannelFactory factory = new NioServerSocketChannelFactory(Executors.newCachedThreadPool(),
-                Executors.newCachedThreadPool());
-
-        final ServerBootstrap bootstrap = new ServerBootstrap(factory);
-
-        bootstrap.setPipelineFactory(() -> {
-            final ChannelPipeline pipeline = ApplicationContext.this.createPipeLine();
-            LOGGER.info("Created new server pipeline");
-            return pipeline;
-        });
-
-        bootstrap.setOption("child.tcpNoDelay", true);
-        bootstrap.setOption("child.keepAlive", false);
-
-        bootstrap.bind(new InetSocketAddress(this.oslpElsterPortServer()));
-
-        return bootstrap;
-    }
-
-    private ChannelPipeline createPipeLine() {
-        final ChannelPipeline pipeline = Channels.pipeline();
-
-        pipeline.addLast("oslpEncoder", new OslpEncoder());
-        pipeline.addLast("oslpDecoder", new OslpDecoder(this.oslpSignature(), this.oslpSignatureProvider()));
-        pipeline.addLast("oslpSecurity", this.oslpSecurityHandler());
-
-        pipeline.addLast("oslpChannelHandler", this.oslpChannelHandler());
-        return pipeline;
-    }
-
-    @Bean
-    public SimpleChannelHandler oslpSecurityHandler() {
-        return new OslpSecurityHandler();
-    }
-
-    @Bean
-    public OslpDecoder oslpDecoder() {
-        return new OslpDecoder(this.oslpSignature(), this.oslpSignatureProvider());
-    }
-
-    @Bean
-    public PublicKey publicKey() throws IOException {
-        return CertificateHelper.createPublicKey(
-                this.environment.getProperty(PROPERTY_NAME_OSLP_SECURITY_VERIFYKEY_PATH),
-                this.environment.getProperty(PROPERTY_NAME_OSLP_SECURITY_KEYTYPE),
-                this.environment.getProperty(PROPERTY_NAME_OSLP_SECURITY_PROVIDER));
-    }
-
-    @Bean
-    public PrivateKey privateKey() throws IOException {
-        return CertificateHelper.createPrivateKey(
-                this.environment.getProperty(PROPERTY_NAME_OSLP_SECURITY_SIGNKEY_PATH),
-                this.environment.getProperty(PROPERTY_NAME_OSLP_SECURITY_KEYTYPE),
-                this.environment.getProperty(PROPERTY_NAME_OSLP_SECURITY_PROVIDER));
-    }
-
-    @Bean
-    public String oslpSignatureProvider() {
-        return this.environment.getProperty(PROPERTY_NAME_OSLP_SECURITY_PROVIDER);
-    }
-
-    @Bean
-    public String oslpSignature() {
-        return this.environment.getProperty(PROPERTY_NAME_OSLP_SECURITY_SIGNATURE);
-    }
-
-    @Bean
-    public String oslpKeyType() {
-        return this.environment.getProperty(PROPERTY_NAME_OSLP_SECURITY_KEYTYPE);
-    }
-
-    @Bean
-    public int connectionTimeout() {
-        return Integer.parseInt(this.environment.getProperty(PROPERTY_NAME_OSLP_TIMEOUT_CONNECT));
-    }
-
-    @Bean
-    public int oslpPortClient() {
-        return Integer.parseInt(this.environment.getProperty(PROPERTY_NAME_OSLP_PORT_CLIENT));
-    }
-
-    @Bean
-    public int oslpElsterPortClient() {
-        return Integer.parseInt(this.environment.getProperty(PROPERTY_NAME_OSLP_ELSTER_PORT_CLIENT));
-    }
-
-    @Bean
-    public int oslpPortServer() {
-        return Integer.parseInt(this.environment.getProperty(PROPERTY_NAME_OSLP_PORT_SERVER));
-    }
-
-    @Bean
-    public int oslpElsterPortServer() {
-        return Integer.parseInt(this.environment.getProperty(PROPERTY_NAME_OSLP_ELSTER_PORT_SERVER));
-    }
-
-    @Bean
-    public String oslpAddressServer() {
-        return this.environment.getProperty(PROPERTY_NAME_OSLP_ADDRESS_CLIENT);
-    }
-
-    @Bean
-    public OslpChannelHandler oslpChannelHandler() {
-        return new OslpChannelHandler();
-    }
-
-    @Bean
-    public Integer sequenceNumberWindow() {
-        return Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_OSLP_SEQUENCE_NUMBER_WINDOW));
-    }
-
-    @Bean
-    public Integer sequenceNumberMaximum() {
-        return Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_OSLP_SEQUENCE_NUMBER_MAXIMUM));
     }
 
     @Bean

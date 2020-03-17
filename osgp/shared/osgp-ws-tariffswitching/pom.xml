@@ -7,76 +7,58 @@
         http://www.apache.org/licenses/LICENSE-2.0
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-shared</artifactId>
-    <version>4.38.0</version>
+    <version>5.0.0</version>
     <relativePath>../parent-shared/pom.xml</relativePath>
   </parent>
 
   <artifactId>osgp-ws-tariffswitching</artifactId>
+  <packaging>jar</packaging>
+
   <build>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>${maven.jar.plugin.version}</version>
+      </plugin>
+      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>jaxb2-maven-plugin</artifactId>
-        <version>1.5</version>
+        <version>${jaxb2.maven.plugin.version}</version>
         <executions>
           <execution>
-            <id>tarrif-switching-ad-hoc-management</id>
             <goals>
               <goal>xjc</goal>
             </goals>
             <configuration>
-              <bindingDirectory>src/main/resources/schemas</bindingDirectory>
-              <bindingFiles>ts-adhocmanagement.xjb</bindingFiles>
-              <schemaDirectory>src/main/resources</schemaDirectory>
-              <schemaFiles>TariffSwitchingAdHocManagement.wsdl</schemaFiles>
-              <wsdl>true</wsdl>
-              <xmlschema>false</xmlschema>
-              <staleFile>${project.build.directory}/jaxb2/.schema-tarrif-switching-ad-hoc-management-stale-flag</staleFile>
-              <!-- USE THIS ONLY FOR THE FIRST EXECUTION -->
-              <clearOutputDir>false</clearOutputDir>
-            </configuration>
-          </execution>
-          <execution>
-            <id>tarrif-switching-schedule-management</id>
-            <goals>
-              <goal>xjc</goal>
-            </goals>
-            <configuration>
-              <bindingDirectory>src/main/resources/schemas</bindingDirectory>
-              <bindingFiles>ts-schedulemanagement.xjb</bindingFiles>
-              <schemaDirectory>src/main/resources</schemaDirectory>
-              <schemaFiles>TariffSwitchingScheduleManagement.wsdl</schemaFiles>
-              <wsdl>true</wsdl>
-              <xmlschema>false</xmlschema>
-              <staleFile>${project.build.directory}/jaxb2/.schema-tarrif-switching-schedule-management-stale-flag</staleFile>
-              <!-- USE THIS FOR ALL EXECUTIONS EXCEPT THE FIRST -->
-              <clearOutputDir>false</clearOutputDir>
-            </configuration>
-          </execution>
-          <execution>
-            <id>tariff-switching-notification</id>
-            <goals>
-              <goal>xjc</goal>
-            </goals>
-            <configuration>
-              <bindingDirectory>src/main/resources/schemas</bindingDirectory>
-              <bindingFiles>ts-notification.xjb</bindingFiles>
-              <schemaDirectory>src/main/resources</schemaDirectory>
-              <schemaFiles>TariffSwitchingNotification.wsdl</schemaFiles>
-              <wsdl>true</wsdl>
-              <xmlschema>false</xmlschema>
-              <staleFile>${project.build.directory}/jaxb2/.schema-tarrif-switching-notification-stale-flag</staleFile>
-              <!-- USE THIS ONLY FOR THE FIRST EXECUTION -->
-              <clearOutputDir>false</clearOutputDir>
+              <sources>
+                <source>src/main/resources/schemas</source>
+              </sources>
+              <xjbSources>
+                <xjbSource>src/main/resources/bindings</xjbSource>
+              </xjbSources>
             </configuration>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${maven.surefire.plugin.version}</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit.version}</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>

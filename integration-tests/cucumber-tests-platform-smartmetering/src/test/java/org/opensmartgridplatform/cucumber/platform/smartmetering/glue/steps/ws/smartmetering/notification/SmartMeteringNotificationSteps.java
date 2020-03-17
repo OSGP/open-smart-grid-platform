@@ -8,10 +8,9 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.notification;
 
-import static org.junit.Assert.fail;
-
 import java.util.concurrent.TimeUnit;
 
+import org.junit.jupiter.api.Assertions;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification.Notification;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -20,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import cucumber.api.java.en.Then;
+import io.cucumber.java.en.Then;
 
 public class SmartMeteringNotificationSteps {
 
@@ -39,7 +38,7 @@ public class SmartMeteringNotificationSteps {
     public void aNotificationIsSent() throws Throwable {
         final String correlationUid = (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
         if (correlationUid == null) {
-            fail("No " + PlatformKeys.KEY_CORRELATION_UID
+            Assertions.fail("No " + PlatformKeys.KEY_CORRELATION_UID
                     + " stored in the scenario context. Unable to make assumptions as to whether a notification has been sent.");
         }
         this.waitForNotification(MAX_WAIT_FOR_NOTIFICATION, correlationUid, true);
@@ -49,7 +48,7 @@ public class SmartMeteringNotificationSteps {
     public void noNotificationIsSent() throws Throwable {
         final String correlationUid = (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
         if (correlationUid == null) {
-            fail("No " + PlatformKeys.KEY_CORRELATION_UID
+            Assertions.fail("No " + PlatformKeys.KEY_CORRELATION_UID
                     + " stored in the scenario context. Unable to make assumptions as to whether a notification has been sent.");
         }
         this.waitForNotification(MAX_WAIT_FOR_NOTIFICATION, correlationUid, false);
@@ -72,10 +71,10 @@ public class SmartMeteringNotificationSteps {
         }
 
         if (expectCorrelationUid) {
-            fail("Did not receive a notification for correlation UID: " + correlationUid + " within " + maxTimeOut
-                    + " milliseconds");
+            Assertions.fail("Did not receive a notification for correlation UID: " + correlationUid + " within "
+                    + maxTimeOut + " milliseconds");
         } else {
-            fail("Received notification for correlation UID: " + correlationUid);
+            Assertions.fail("Received notification for correlation UID: " + correlationUid);
         }
     }
 }

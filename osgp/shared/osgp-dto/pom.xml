@@ -14,13 +14,14 @@
 
   <artifactId>osgp-dto</artifactId>
   <name>osgp-dto</name>
+  <packaging>jar</packaging>
     <!-- Description element is needed for the maven-jxr-plugin to generate a maven site -->
   <description>DTO module.</description>
 
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-shared</artifactId>
-    <version>4.38.0</version>
+    <version>5.0.0</version>
     <relativePath>../parent-shared/pom.xml</relativePath>
   </parent>
 
@@ -48,6 +49,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
+        <version>${maven.jar.plugin.version}</version>
         <executions>
           <execution>
             <goals>
@@ -56,6 +58,17 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${maven.surefire.plugin.version}</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit.version}</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>

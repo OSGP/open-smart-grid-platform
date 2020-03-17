@@ -1,17 +1,20 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service;
 
-import static org.mockito.Matchers.any;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
@@ -26,7 +29,8 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFla
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagsDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObjectDto;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class SetConfigurationObjectServiceTest {
 
     private SetConfigurationObjectService instance;
@@ -44,7 +48,7 @@ public class SetConfigurationObjectServiceTest {
     @Mock
     private ConfigurationObjectDto configurationOnDevice;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
         when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
@@ -69,17 +73,19 @@ public class SetConfigurationObjectServiceTest {
         };
     }
 
-    @Test(expected = ConnectionException.class)
+    @Test
     public void setConfigurationObjectIOException() throws Exception {
 
         // SETUP
         when(this.dlmsConnection.set(any(SetParameter.class))).thenThrow(new IOException());
 
-        // CALL
-        this.instance.setConfigurationObject(this.conn, null, null);
+        assertThatExceptionOfType(ConnectionException.class).isThrownBy(() -> {
+            // CALL
+            this.instance.setConfigurationObject(this.conn, null, null);
+        });
     }
 
-    @Test(expected = ProtocolAdapterException.class)
+    @Test
     public void getFlagsCannotFindBitPosition() throws Exception {
 
         // SETUP
@@ -89,8 +95,10 @@ public class SetConfigurationObjectServiceTest {
         when(this.configurationToSet.getConfigurationFlags()).thenReturn(flagsToSet);
         when(this.configurationOnDevice.getConfigurationFlags()).thenReturn(this.emptyFlags());
 
-        // CALL
-        this.instance.getFlags(this.configurationToSet, this.configurationOnDevice);
+        assertThatExceptionOfType(ProtocolAdapterException.class).isThrownBy(() -> {
+            // CALL
+            this.instance.getFlags(this.configurationToSet, this.configurationOnDevice);
+        });
     }
 
     @Test

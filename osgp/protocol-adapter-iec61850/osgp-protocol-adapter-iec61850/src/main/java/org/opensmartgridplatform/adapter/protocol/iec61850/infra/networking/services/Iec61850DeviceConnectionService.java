@@ -39,9 +39,12 @@ import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.repo
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 @Component
+@DependsOn({ "iec61850SsldPortServer", "iec61850RtuPortServer", "responseTimeout", "icdFilesFolder", "icdFilePath",
+        "isIcdFileUsed" })
 public class Iec61850DeviceConnectionService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850DeviceConnectionService.class);

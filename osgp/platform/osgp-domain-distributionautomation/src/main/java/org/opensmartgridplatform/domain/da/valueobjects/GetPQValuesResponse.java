@@ -7,13 +7,19 @@
  */
 package org.opensmartgridplatform.domain.da.valueobjects;
 
-import org.opensmartgridplatform.domain.da.valueobjects.iec61850.LogicalDevice;
-
 import java.io.Serializable;
 import java.util.List;
 
-public class GetPQValuesResponse implements Serializable{
-    private List<LogicalDevice> logicalDevices;
+import org.opensmartgridplatform.domain.da.valueobjects.iec61850.LogicalDevice;
+
+public class GetPQValuesResponse implements Serializable {
+
+    /**
+     * Serial Version UID.
+     */
+    private static final long serialVersionUID = 5918246836566709515L;
+
+    private final List<LogicalDevice> logicalDevices;
 
     public GetPQValuesResponse(final List<LogicalDevice> logicalDevices) {
         this.logicalDevices = logicalDevices;

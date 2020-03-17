@@ -10,22 +10,22 @@
 package org.opensmartgridplatform.adapter.domain.da.application.services;
 
 import org.opensmartgridplatform.adapter.domain.da.application.mapping.DomainDistributionAutomationMapper;
+import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.da.valueobjects.GetDeviceModelRequest;
 import org.opensmartgridplatform.domain.da.valueobjects.GetDeviceModelResponse;
 import org.opensmartgridplatform.dto.da.GetDeviceModelRequestDto;
 import org.opensmartgridplatform.dto.da.GetDeviceModelResponseDto;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
+import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import org.opensmartgridplatform.domain.core.entities.Device;
-import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
-import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 
 @Service(value = "domainDistributionAutomationAdHocManagementService")
 @Transactional(value = "transactionManager")
@@ -60,15 +60,18 @@ public class AdHocManagementService extends BaseService {
     }
 
     public void handleGetDeviceModelResponse(final GetDeviceModelResponseDto getDeviceModelResponseDto,
-            final String deviceIdentification, final String organisationIdentification, final String correlationUid,
-            final String messageType, final ResponseMessageResultType responseMessageResultType,
-            final OsgpException osgpException) {
+            final CorrelationIds correlationIds, final String messageType,
+            final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException) {
 
         LOGGER.info("handleResponse for MessageType: {}", messageType);
 
+        final String deviceIdentification = correlationIds.getDeviceIdentification();
+        final String organisationIdentification = correlationIds.getOrganisationIdentification();
+        final String correlationUid = correlationIds.getCorrelationUid();
+
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         GetDeviceModelResponse getDeviceModelResponse = null;
-        OsgpException exception = null;
+        OsgpException exception = osgpException;
 
         try {
             if (responseMessageResultType == ResponseMessageResultType.NOT_OK || osgpException != null) {
@@ -86,10 +89,14 @@ public class AdHocManagementService extends BaseService {
             exception = this.ensureOsgpException(e, "Exception occurred while getting Device Model Response Data");
         }
 
-        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
-                .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(osgpException)
-                .withDataObject(getDeviceModelResponse).build();
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(correlationUid)
+                .withOrganisationIdentification(organisationIdentification)
+                .withDeviceIdentification(deviceIdentification)
+                .withResult(result)
+                .withOsgpException(exception)
+                .withDataObject(getDeviceModelResponse)
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage, messageType);
     }
 }

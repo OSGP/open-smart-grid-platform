@@ -1,8 +1,3 @@
-package org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.bundle.activitycalendar;
-
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Copyright 2017 Smart Society Services B.V.
  *
@@ -11,12 +6,17 @@ import java.util.Map;
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+package org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.bundle.activitycalendar;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public class ActivityCalendar {
-    private String name;
-    private String activatePassiveCalendarTime;
-    private Map<String, SeasonProfile> SeasonProfiles;
-    private Map<String, WeekProfile> WeekProfiles;
-    private Map<Integer, DayProfile> DayProfiles;
+    private final String name;
+    private final String activatePassiveCalendarTime;
+    private final Map<String, SeasonProfile> SeasonProfiles;
+    private final Map<String, WeekProfile> WeekProfiles;
+    private final Map<Integer, DayProfile> DayProfiles;
 
     public ActivityCalendar(final String name, final String activatePassiveCalendarTime) {
         this.name = name;

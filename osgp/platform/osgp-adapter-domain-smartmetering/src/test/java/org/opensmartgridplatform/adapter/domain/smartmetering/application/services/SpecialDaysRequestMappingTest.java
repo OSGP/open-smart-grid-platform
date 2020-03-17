@@ -8,12 +8,9 @@
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CosemDate;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecialDay;
@@ -27,7 +24,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDaysReque
 // Tests the mapping of SpecialDaysRequest objects in ConfigurationService.
 public class SpecialDaysRequestMappingTest {
 
-    private ConfigurationMapper configurationMapper = new ConfigurationMapper();
+    private final ConfigurationMapper configurationMapper = new ConfigurationMapper();
 
     // To check mapping of SpecialDaysRequest, when its SpecialDaysRequestData
     // is null
@@ -35,16 +32,15 @@ public class SpecialDaysRequestMappingTest {
     public void testSpecialDaysRequestMappingNull() {
         final String deviceIdentification = "nr1";
         final SpecialDaysRequestData specialDaysRequestData = null;
-        final SpecialDaysRequest specialDaysRequestValueObject = 
-                new SpecialDaysRequest(deviceIdentification,
+        final SpecialDaysRequest specialDaysRequestValueObject = new SpecialDaysRequest(deviceIdentification,
                 specialDaysRequestData);
 
         final SpecialDaysRequestDto specialDaysRequestDto = this.configurationMapper.map(specialDaysRequestValueObject,
                 SpecialDaysRequestDto.class);
 
-        assertNotNull(specialDaysRequestDto);
-        assertEquals(deviceIdentification, specialDaysRequestDto.getDeviceIdentification());
-        assertNull(specialDaysRequestDto.getSpecialDaysRequestData());
+        assertThat(specialDaysRequestDto).isNotNull();
+        assertThat(specialDaysRequestDto.getDeviceIdentification()).isEqualTo(deviceIdentification);
+        assertThat(specialDaysRequestDto.getSpecialDaysRequestData()).isNull();
 
     }
 
@@ -54,15 +50,14 @@ public class SpecialDaysRequestMappingTest {
     public void testSpecialDaysRequestMappingEmptyList() {
         final String deviceIdentification = "nr1";
         final SpecialDaysRequestData specialDaysRequestData = new SpecialDaysRequestDataBuilder().build();
-        final SpecialDaysRequest specialDaysRequestValueObject = 
-                new SpecialDaysRequest(deviceIdentification,
+        final SpecialDaysRequest specialDaysRequestValueObject = new SpecialDaysRequest(deviceIdentification,
                 specialDaysRequestData);
 
         final SpecialDaysRequestDto specialDaysRequestDto = this.configurationMapper.map(specialDaysRequestValueObject,
                 SpecialDaysRequestDto.class);
 
-        assertEquals(deviceIdentification, specialDaysRequestDto.getDeviceIdentification());
-        assertNotNull(specialDaysRequestDto.getSpecialDaysRequestData());
+        assertThat(specialDaysRequestDto.getDeviceIdentification()).isEqualTo(deviceIdentification);
+        assertThat(specialDaysRequestDto.getSpecialDaysRequestData()).isNotNull();
     }
 
     // To check mapping of SpecialDaysRequest, when its SpecialDaysRequestData
@@ -75,28 +70,28 @@ public class SpecialDaysRequestMappingTest {
         final int dayOfMonth = 11;
         final int dayId = 1;
         final SpecialDay specialDay = new SpecialDay(new CosemDate(year, month, dayOfMonth), dayId);
-        final SpecialDaysRequestData specialDaysRequestData = new SpecialDaysRequestDataBuilder().addSpecialDay(
-                specialDay).build();
-        final SpecialDaysRequest specialDaysRequestValueObject = 
-                new SpecialDaysRequest(deviceIdentification,
+        final SpecialDaysRequestData specialDaysRequestData = new SpecialDaysRequestDataBuilder()
+                .addSpecialDay(specialDay)
+                .build();
+        final SpecialDaysRequest specialDaysRequestValueObject = new SpecialDaysRequest(deviceIdentification,
                 specialDaysRequestData);
 
         final SpecialDaysRequestDto specialDaysRequestDto = this.configurationMapper.map(specialDaysRequestValueObject,
                 SpecialDaysRequestDto.class);
-        assertEquals(deviceIdentification, specialDaysRequestDto.getDeviceIdentification());
+        assertThat(specialDaysRequestDto.getDeviceIdentification()).isEqualTo(deviceIdentification);
 
         final SpecialDaysRequestDataDto requestDataDto = specialDaysRequestDto.getSpecialDaysRequestData();
-        assertNotNull(requestDataDto);
-        assertNotNull(requestDataDto.getSpecialDays());
-        assertEquals(dayId, requestDataDto.getSpecialDays().size());
+        assertThat(requestDataDto).isNotNull();
+        assertThat(requestDataDto.getSpecialDays()).isNotNull();
+        assertThat(requestDataDto.getSpecialDays().size()).isEqualTo(dayId);
 
         final SpecialDayDto specialDayDto = requestDataDto.getSpecialDays().get(0);
-        assertEquals(dayId, specialDayDto.getDayId());
+        assertThat(specialDayDto.getDayId()).isEqualTo(dayId);
 
         final CosemDateDto specialDayDateDto = specialDayDto.getSpecialDayDate();
-        assertEquals(year, specialDayDateDto.getYear());
-        assertEquals(month, specialDayDateDto.getMonth());
-        assertEquals(dayOfMonth, specialDayDateDto.getDayOfMonth());
+        assertThat(specialDayDateDto.getYear()).isEqualTo(year);
+        assertThat(specialDayDateDto.getMonth()).isEqualTo(month);
+        assertThat(specialDayDateDto.getDayOfMonth()).isEqualTo(dayOfMonth);
     }
 
     // To check mapping of SpecialDaysRequest, when its SpecialDaysRequestData
@@ -106,29 +101,29 @@ public class SpecialDaysRequestMappingTest {
         final String deviceIdentification = "nr1";
         final int dayId = 1;
         final SpecialDay specialDay = new SpecialDay(new CosemDate(), dayId);
-        final SpecialDaysRequestData specialDaysRequestData = new SpecialDaysRequestDataBuilder().addSpecialDay(
-                specialDay).build();
-        final SpecialDaysRequest specialDaysRequestValueObject = 
-                new SpecialDaysRequest(deviceIdentification,
+        final SpecialDaysRequestData specialDaysRequestData = new SpecialDaysRequestDataBuilder()
+                .addSpecialDay(specialDay)
+                .build();
+        final SpecialDaysRequest specialDaysRequestValueObject = new SpecialDaysRequest(deviceIdentification,
                 specialDaysRequestData);
 
         final SpecialDaysRequestDto specialDaysRequestDto = this.configurationMapper.map(specialDaysRequestValueObject,
                 SpecialDaysRequestDto.class);
-        assertEquals(deviceIdentification, specialDaysRequestDto.getDeviceIdentification());
+        assertThat(specialDaysRequestDto.getDeviceIdentification()).isEqualTo(deviceIdentification);
 
         final SpecialDaysRequestDataDto requestDataDto = specialDaysRequestDto.getSpecialDaysRequestData();
-        assertNotNull(requestDataDto);
-        assertNotNull(requestDataDto.getSpecialDays());
-        assertEquals(dayId, requestDataDto.getSpecialDays().size());
+        assertThat(requestDataDto).isNotNull();
+        assertThat(requestDataDto.getSpecialDays()).isNotNull();
+        assertThat(requestDataDto.getSpecialDays().size()).isEqualTo(dayId);
 
         final SpecialDayDto specialDayDto = requestDataDto.getSpecialDays().get(0);
-        assertEquals(dayId, specialDayDto.getDayId());
+        assertThat(specialDayDto.getDayId()).isEqualTo(dayId);
 
         final CosemDate specialDayDate = specialDay.getSpecialDayDate();
         final CosemDateDto specialDayDateDto = specialDayDto.getSpecialDayDate();
-        assertEquals(specialDayDate.getYear(), specialDayDateDto.getYear());
-        assertEquals(specialDayDate.getMonth(), specialDayDateDto.getMonth());
-        assertEquals(specialDayDate.getDayOfMonth(), specialDayDateDto.getDayOfMonth());
+        assertThat(specialDayDateDto.getYear()).isEqualTo(specialDayDate.getYear());
+        assertThat(specialDayDateDto.getMonth()).isEqualTo(specialDayDate.getMonth());
+        assertThat(specialDayDateDto.getDayOfMonth()).isEqualTo(specialDayDate.getDayOfMonth());
     }
 
 }

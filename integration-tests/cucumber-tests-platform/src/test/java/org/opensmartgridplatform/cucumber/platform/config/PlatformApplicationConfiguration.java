@@ -9,15 +9,14 @@ package org.opensmartgridplatform.cucumber.platform.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 
 /**
  * Base class for the application configuration.
  */
 @Configuration
-@PropertySources({ @PropertySource("classpath:cucumber-tests-platform.properties"),
-        @PropertySource(value = "file:/etc/osp/test/global-cucumber.properties", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:/etc/osp/test/cucumber-tests-platform.properties", ignoreResourceNotFound = true), })
+@PropertySource("classpath:cucumber-tests-platform.properties")
+@PropertySource(value = "file:/etc/osp/test/global-cucumber.properties", ignoreResourceNotFound = true)
+@PropertySource(value = "file:/etc/osp/test/cucumber-tests-platform.properties", ignoreResourceNotFound = true)
 public class PlatformApplicationConfiguration extends AbstractPlatformApplicationConfiguration {
 
 }

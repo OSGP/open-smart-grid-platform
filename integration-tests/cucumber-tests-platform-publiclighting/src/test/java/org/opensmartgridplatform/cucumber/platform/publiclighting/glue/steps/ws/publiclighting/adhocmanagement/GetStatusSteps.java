@@ -9,6 +9,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.publiclighting.glue.steps.ws.publiclighting.adhocmanagement;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 import static org.opensmartgridplatform.cucumber.platform.core.CorrelationUidHelper.saveCorrelationUidInScenarioContext;
@@ -16,7 +17,6 @@ import static org.opensmartgridplatform.cucumber.platform.core.CorrelationUidHel
 import java.util.Map;
 import java.util.Objects;
 
-import org.junit.Assert;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.DeviceStatus;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.EventNotificationType;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusAsyncRequest;
@@ -41,8 +41,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 /**
  * Class with all the set light requests steps
@@ -133,9 +133,9 @@ public class GetStatusSteps {
         final GetStatusAsyncResponse asyncResponse = (GetStatusAsyncResponse) ScenarioContext.current()
                 .get(PlatformPubliclightingKeys.RESPONSE);
 
-        Assert.assertNotNull(asyncResponse.getAsyncResponse().getCorrelationUid());
-        Assert.assertEquals(getString(expectedResponseData, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION),
-                asyncResponse.getAsyncResponse().getDeviceId());
+        assertThat(asyncResponse.getAsyncResponse().getCorrelationUid()).isNotNull();
+        assertThat(asyncResponse.getAsyncResponse().getDeviceId())
+                .isEqualTo(getString(expectedResponseData, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION));
 
         // Save the returned CorrelationUid in the Scenario related context for
         // further use.
@@ -153,9 +153,9 @@ public class GetStatusSteps {
         final org.opensmartgridplatform.adapter.ws.schema.tariffswitching.adhocmanagement.GetStatusAsyncResponse asyncResponse = (org.opensmartgridplatform.adapter.ws.schema.tariffswitching.adhocmanagement.GetStatusAsyncResponse) ScenarioContext
                 .current().get(PlatformPubliclightingKeys.RESPONSE);
 
-        Assert.assertNotNull(asyncResponse.getAsyncResponse().getCorrelationUid());
-        Assert.assertEquals(getString(expectedResponseData, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION),
-                asyncResponse.getAsyncResponse().getDeviceId());
+        assertThat(asyncResponse.getAsyncResponse().getCorrelationUid()).isNotNull();
+        assertThat(asyncResponse.getAsyncResponse().getDeviceId())
+                .isEqualTo(getString(expectedResponseData, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION));
 
         // Save the returned CorrelationUid in the Scenario related context for
         // further use.
@@ -178,45 +178,43 @@ public class GetStatusSteps {
         final GetStatusAsyncRequest request = this.getGetStatusAsyncRequest(deviceIdentification);
         final GetStatusResponse response = Wait.untilAndReturn(() -> {
             final GetStatusResponse retval = this.publicLightingClient.getGetStatusResponse(request);
-            Assert.assertNotNull(retval);
-            Assert.assertEquals(
-                    Enum.valueOf(OsgpResultType.class, expectedResult.get(PlatformPubliclightingKeys.KEY_RESULT)),
-                    retval.getResult());
+            assertThat(retval).isNotNull();
+            assertThat(retval.getResult()).isEqualTo(
+                    Enum.valueOf(OsgpResultType.class, expectedResult.get(PlatformPubliclightingKeys.KEY_RESULT)));
             return retval;
         });
 
         final DeviceStatus deviceStatus = response.getDeviceStatus();
 
-        Assert.assertEquals(getEnum(expectedResult, PlatformPubliclightingKeys.KEY_PREFERRED_LINKTYPE, LinkType.class),
-                deviceStatus.getPreferredLinkType());
-        Assert.assertEquals(getEnum(expectedResult, PlatformPubliclightingKeys.KEY_ACTUAL_LINKTYPE, LinkType.class),
-                deviceStatus.getActualLinkType());
-        Assert.assertEquals(getEnum(expectedResult, PlatformPubliclightingKeys.KEY_LIGHTTYPE, LightType.class),
-                deviceStatus.getLightType());
+        assertThat(deviceStatus.getPreferredLinkType())
+                .isEqualTo(getEnum(expectedResult, PlatformPubliclightingKeys.KEY_PREFERRED_LINKTYPE, LinkType.class));
+        assertThat(deviceStatus.getActualLinkType())
+                .isEqualTo(getEnum(expectedResult, PlatformPubliclightingKeys.KEY_ACTUAL_LINKTYPE, LinkType.class));
+        assertThat(deviceStatus.getLightType())
+                .isEqualTo(getEnum(expectedResult, PlatformPubliclightingKeys.KEY_LIGHTTYPE, LightType.class));
 
         if (expectedResult.containsKey(PlatformPubliclightingKeys.KEY_EVENTNOTIFICATIONTYPES)
                 && !expectedResult.get(PlatformPubliclightingKeys.KEY_EVENTNOTIFICATIONTYPES).isEmpty()) {
-            Assert.assertEquals(
-                    getString(expectedResult, PlatformPubliclightingKeys.KEY_EVENTNOTIFICATIONS,
+            assertThat(deviceStatus.getEventNotifications().size())
+                    .isEqualTo(getString(expectedResult, PlatformPubliclightingKeys.KEY_EVENTNOTIFICATIONS,
                             PlatformPubliclightingDefaults.DEFAULT_EVENTNOTIFICATIONS)
-                                    .split(PlatformPubliclightingKeys.SEPARATOR_COMMA).length,
-                    deviceStatus.getEventNotifications().size());
+                                    .split(PlatformPubliclightingKeys.SEPARATOR_COMMA).length);
+
             for (final String eventNotification : getString(expectedResult,
                     PlatformPubliclightingKeys.KEY_EVENTNOTIFICATIONS,
                     PlatformPubliclightingDefaults.DEFAULT_EVENTNOTIFICATIONS)
                             .split(PlatformPubliclightingKeys.SEPARATOR_COMMA)) {
-                Assert.assertTrue(deviceStatus.getEventNotifications()
-                        .contains(Enum.valueOf(EventNotificationType.class, eventNotification)));
+                assertThat(deviceStatus.getEventNotifications()
+                        .contains(Enum.valueOf(EventNotificationType.class, eventNotification))).isTrue();
             }
         }
 
         if (expectedResult.containsKey(PlatformPubliclightingKeys.KEY_LIGHTVALUES)
                 && !expectedResult.get(PlatformPubliclightingKeys.KEY_LIGHTVALUES).isEmpty()) {
-            Assert.assertEquals(
-                    getString(expectedResult, PlatformPubliclightingKeys.KEY_LIGHTVALUES,
-                            PlatformPubliclightingDefaults.DEFAULT_LIGHTVALUES)
-                                    .split(PlatformPubliclightingKeys.SEPARATOR_COMMA).length,
-                    deviceStatus.getLightValues().size());
+            assertThat(deviceStatus.getLightValues().size()).isEqualTo(getString(expectedResult,
+                    PlatformPubliclightingKeys.KEY_LIGHTVALUES, PlatformPubliclightingDefaults.DEFAULT_LIGHTVALUES)
+                            .split(PlatformPubliclightingKeys.SEPARATOR_COMMA).length);
+
             for (final String lightValues : getString(expectedResult, PlatformPubliclightingKeys.KEY_LIGHTVALUES,
                     PlatformPubliclightingDefaults.DEFAULT_LIGHTVALUES)
                             .split(PlatformPubliclightingKeys.SEPARATOR_COMMA)) {
@@ -236,7 +234,7 @@ public class GetStatusSteps {
                     }
                 }
 
-                Assert.assertTrue(found);
+                assertThat(found).isTrue();
             }
         }
     }
@@ -250,17 +248,18 @@ public class GetStatusSteps {
                 .untilAndReturn(() -> {
                     final org.opensmartgridplatform.adapter.ws.schema.tariffswitching.adhocmanagement.GetStatusResponse retval = this.tariffSwitchingClient
                             .getGetStatusResponse(request);
-                    Assert.assertNotNull(retval);
-                    Assert.assertEquals(Enum.valueOf(
+                    assertThat(retval);
+                    assertThat(retval.getResult()).isEqualTo(Enum.valueOf(
                             org.opensmartgridplatform.adapter.ws.schema.tariffswitching.common.OsgpResultType.class,
-                            expectedResult.get(PlatformPubliclightingKeys.KEY_RESULT)), retval.getResult());
+                            expectedResult.get(PlatformPubliclightingKeys.KEY_RESULT)));
+
                     return retval;
                 });
 
         final org.opensmartgridplatform.adapter.ws.schema.tariffswitching.adhocmanagement.DeviceStatus deviceStatus = response
                 .getDeviceStatus();
-        Assert.assertNotNull(deviceStatus);
-        Assert.assertNotNull(deviceStatus.getTariffValues());
+        assertThat(deviceStatus).isNotNull();
+        assertThat(deviceStatus.getTariffValues()).isNotNull();
     }
 
     @Then("^the platform buffers a get status response message for device \"([^\"]*)\" which contains soap fault$")

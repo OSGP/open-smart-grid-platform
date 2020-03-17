@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -29,9 +28,9 @@ import org.springframework.scheduling.support.CronTrigger;
  */
 @Configuration
 @EnableScheduling
-@PropertySources({ @PropertySource("classpath:osgp-adapter-domain-microgrids.properties"),
-        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:${osgp/AdapterDomainMicrogrids/config}", ignoreResourceNotFound = true), })
+@PropertySource("classpath:osgp-adapter-domain-microgrids.properties")
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/AdapterDomainMicrogrids/config}", ignoreResourceNotFound = true)
 public class CommunicationMonitoringConfig extends AbstractConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommunicationMonitoringConfig.class);

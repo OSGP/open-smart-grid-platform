@@ -35,9 +35,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import cucumber.api.java.Before;
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
+import io.cucumber.java.Before;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
 
 public class ConnectionSteps {
 
@@ -65,7 +65,10 @@ public class ConnectionSteps {
         this.clientConnectionService.closeAllConnections();
 
         this.connectionParameters = new ConnectionParameters.Builder().commonAddress(0)
-                .deviceIdentification(DEFAULT_DEVICE_IDENTIFICATION).ipAddress("localhost").port(2404).build();
+                .deviceIdentification(DEFAULT_DEVICE_IDENTIFICATION)
+                .ipAddress("localhost")
+                .port(2404)
+                .build();
     }
 
     @Given("the IEC60870 device is not connected")
@@ -88,7 +91,8 @@ public class ConnectionSteps {
                 .withDeviceIdentification(DEFAULT_DEVICE_IDENTIFICATION)
                 .withOrganisationIdentification(DEFAULT_ORGANISATION_IDENTIFICATION)
                 .withDomainInfo(new DomainInfo(DEFAULT_DOMAIN, DEFAULT_DOMAIN_VERSION))
-                .withMessageType(DEFAULT_MESSAGE_TYPE).build();
+                .withMessageType(DEFAULT_MESSAGE_TYPE)
+                .build();
         this.connectionEventListener = new ClientConnectionEventListener(
                 this.connectionParameters.getDeviceIdentification(), this.connectionCacheSpy,
                 this.clientAsduHandlerRegistry, responseMetadata);

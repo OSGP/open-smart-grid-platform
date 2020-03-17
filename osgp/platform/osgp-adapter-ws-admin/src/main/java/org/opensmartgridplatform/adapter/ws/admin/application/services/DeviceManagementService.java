@@ -9,6 +9,7 @@ package org.opensmartgridplatform.adapter.ws.admin.application.services;
 
 import java.util.List;
 
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceException;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
@@ -118,10 +119,10 @@ public class DeviceManagementService {
     }
 
     public void addOrganisation(@Identification final String organisationIdentification,
-            @Valid final Organisation newOrganisation) throws FunctionalException {
+            @Valid @NotNull final Organisation newOrganisation) throws FunctionalException {
 
         LOGGER.debug("addOrganisation called with organisation {} and new organisation {}", organisationIdentification,
-                newOrganisation != null ? newOrganisation.getOrganisationIdentification() : "null");
+                newOrganisation.getOrganisationIdentification());
 
         final Organisation organisation = this.findOrganisation(organisationIdentification);
 
@@ -327,7 +328,7 @@ public class DeviceManagementService {
         final Organisation organisation = this.findOrganisation(organisationIdentification);
         this.isAllowed(organisation, PlatformFunction.GET_MESSAGES);
 
-        final PageRequest request = new PageRequest(pageNumber, this.pagingSettings.getMaximumPageSize(),
+        final PageRequest request = PageRequest.of(pageNumber, this.pagingSettings.getMaximumPageSize(),
                 Sort.Direction.DESC, "modificationTime");
 
         if (!StringUtils.isEmpty(deviceIdentification)) {
@@ -435,7 +436,9 @@ public class DeviceManagementService {
 
             final DeviceAuthorization authorization = ssld.addAuthorization(organisation, DeviceFunctionGroup.OWNER);
 
-            final ProtocolInfo protocolInfo = this.protocolRepository.findOne(protocolInfoId);
+            final ProtocolInfo protocolInfo = this.protocolRepository.findById(protocolInfoId)
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            "No protocol info record found with ID: " + protocolInfoId));
             ssld.updateProtocol(protocolInfo);
 
             this.authorizationRepository.save(authorization);
@@ -510,7 +513,7 @@ public class DeviceManagementService {
         final Organisation organisation = this.findOrganisation(organisationIdentification);
         this.isAllowed(organisation, PlatformFunction.GET_PROTOCOL_INFOS);
 
-        return this.protocolRepository.findAll(new Sort(Direction.ASC, "protocol", "protocolVersion"));
+        return this.protocolRepository.findAll(Sort.by(Direction.ASC, "protocol", "protocolVersion"));
     }
 
     public void updateDeviceProtocol(final String organisationIdentification,

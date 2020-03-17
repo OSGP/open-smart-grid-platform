@@ -12,6 +12,14 @@ import org.apache.activemq.command.ActiveMQDestination;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
+/**
+ * @deprecated Will be replaced by broker per queue configuration using the
+ *             {@link org.opensmartgridplatform.shared.application.config.messaging.JmsConfiguration}
+ *             interface and
+ *             {@link org.opensmartgridplatform.shared.application.config.messaging.JmsConfigurationFactory}
+ *             class
+ */
+@Deprecated
 public class JmsConfiguration {
 
     private ActiveMQDestination queue;

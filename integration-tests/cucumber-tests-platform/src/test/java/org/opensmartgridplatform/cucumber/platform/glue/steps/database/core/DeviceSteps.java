@@ -7,12 +7,15 @@
  */
 package org.opensmartgridplatform.cucumber.platform.glue.steps.database.core;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getFloat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Assert;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -26,7 +29,7 @@ import org.opensmartgridplatform.domain.core.repositories.SsldRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import cucumber.api.java.en.Then;
+import io.cucumber.java.en.Then;
 
 public class DeviceSteps extends BaseDeviceSteps {
 
@@ -46,9 +49,9 @@ public class DeviceSteps extends BaseDeviceSteps {
     public void theChannelOfDeviceIsCleared(final String gMeter) {
         final SmartMeter mbusDevice = this.smartMeterRepository.findByDeviceIdentification(gMeter);
 
-        Assert.assertNotNull("No MbusDevice found", mbusDevice);
+        assertThat(mbusDevice).as("No MbusDevice found").isNotNull();
 
-        Assert.assertNull("GatewayDevice must be empty", mbusDevice.getChannel());
+        assertThat(mbusDevice.getChannel()).as("GatewayDevice must be empty").isNull();
     }
 
     /**
@@ -68,61 +71,63 @@ public class DeviceSteps extends BaseDeviceSteps {
         });
 
         if (settings.containsKey(PlatformKeys.ALIAS)) {
-            Assert.assertEquals(settings.get(PlatformKeys.ALIAS), device.getAlias());
+            assertThat(device.getAlias()).isEqualTo(getString(settings, PlatformKeys.ALIAS));
         }
         if (settings.containsKey(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION)) {
-            Assert.assertEquals(settings.get(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION),
-                    device.getOwner().getOrganisationIdentification());
+            assertThat(device.getOwner().getOrganisationIdentification())
+                    .isEqualTo(getString(settings, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION));
         }
         if (settings.containsKey(PlatformKeys.CONTAINER_POSTALCODE)) {
-            Assert.assertEquals(settings.get(PlatformKeys.CONTAINER_POSTALCODE),
-                    device.getContainerAddress().getPostalCode());
+            assertThat(device.getContainerAddress().getPostalCode())
+                    .isEqualTo(getString(settings, PlatformKeys.CONTAINER_POSTALCODE));
         }
         if (settings.containsKey(PlatformKeys.CONTAINER_CITY)) {
-            Assert.assertEquals(settings.get(PlatformKeys.CONTAINER_CITY), device.getContainerAddress().getCity());
+            assertThat(device.getContainerAddress().getCity())
+                    .isEqualTo(getString(settings, PlatformKeys.CONTAINER_CITY));
         }
         if (settings.containsKey(PlatformKeys.CONTAINER_STREET)) {
-            Assert.assertEquals(settings.get(PlatformKeys.CONTAINER_STREET), device.getContainerAddress().getStreet());
+            assertThat(device.getContainerAddress().getStreet())
+                    .isEqualTo(getString(settings, PlatformKeys.CONTAINER_STREET));
         }
         if (settings.containsKey(PlatformKeys.CONTAINER_NUMBER)) {
-            Assert.assertEquals(settings.get(PlatformKeys.CONTAINER_NUMBER), device.getContainerAddress().getNumber());
+            assertThat(device.getContainerAddress().getNumber())
+                    .isEqualTo(getString(settings, PlatformKeys.CONTAINER_NUMBER));
         }
         if (settings.containsKey(PlatformKeys.CONTAINER_MUNICIPALITY)) {
-            Assert.assertEquals(settings.get(PlatformKeys.CONTAINER_MUNICIPALITY),
-                    device.getContainerAddress().getMunicipality());
+            assertThat(device.getContainerAddress().getMunicipality())
+                    .isEqualTo(getString(settings, PlatformKeys.CONTAINER_MUNICIPALITY));
         }
         if (settings.containsKey(PlatformKeys.KEY_LATITUDE)) {
-            Assert.assertTrue(Float.parseFloat(settings.get(PlatformKeys.KEY_LATITUDE)) == device.getGpsCoordinates()
-                    .getLatitude());
+            assertThat(device.getGpsCoordinates().getLatitude())
+                    .isEqualTo(getFloat(settings, PlatformKeys.KEY_LATITUDE));
         }
         if (settings.containsKey(PlatformKeys.KEY_LONGITUDE)) {
-            Assert.assertTrue(Float.parseFloat(settings.get(PlatformKeys.KEY_LONGITUDE)) == device.getGpsCoordinates()
-                    .getLongitude());
+            assertThat(device.getGpsCoordinates().getLongitude())
+                    .isEqualTo(getFloat(settings, PlatformKeys.KEY_LONGITUDE));
         }
         if (settings.containsKey(PlatformKeys.KEY_ACTIVATED)) {
-            Assert.assertTrue(Boolean.parseBoolean(settings.get(PlatformKeys.KEY_ACTIVATED)) == device.isActivated());
+            assertThat(device.isActivated()).isEqualTo(getBoolean(settings, PlatformKeys.KEY_ACTIVATED));
         }
         if (settings.containsKey(PlatformKeys.KEY_DEVICE_LIFECYCLE_STATUS)) {
-            Assert.assertTrue(DeviceLifecycleStatus.valueOf(
-                    settings.get(PlatformKeys.KEY_DEVICE_LIFECYCLE_STATUS)) == device.getDeviceLifecycleStatus());
+            assertThat(device.getDeviceLifecycleStatus()).isEqualTo(
+                    getEnum(settings, PlatformKeys.KEY_DEVICE_LIFECYCLE_STATUS, DeviceLifecycleStatus.class));
         }
         if (settings.containsKey(PlatformKeys.KEY_HAS_SCHEDULE)
                 || settings.containsKey(PlatformKeys.KEY_PUBLICKEYPRESENT)) {
             final Ssld ssld = this.ssldRepository
-                    .findByDeviceIdentification(settings.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));
+                    .findByDeviceIdentification(getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
 
             if (settings.containsKey(PlatformKeys.KEY_HAS_SCHEDULE)) {
-                Assert.assertTrue(
-                        Boolean.parseBoolean(settings.get(PlatformKeys.KEY_HAS_SCHEDULE)) == ssld.getHasSchedule());
+                assertThat(ssld.getHasSchedule()).isEqualTo(getBoolean(settings, PlatformKeys.KEY_HAS_SCHEDULE));
             }
             if (settings.containsKey(PlatformKeys.KEY_PUBLICKEYPRESENT)) {
-                Assert.assertTrue(Boolean.parseBoolean(settings.get(PlatformKeys.KEY_PUBLICKEYPRESENT)) == ssld
-                        .isPublicKeyPresent());
+                assertThat(ssld.isPublicKeyPresent())
+                        .isEqualTo(getBoolean(settings, PlatformKeys.KEY_PUBLICKEYPRESENT));
             }
         }
         if (settings.containsKey(PlatformKeys.KEY_DEVICE_MODEL_MODELCODE)) {
-            Assert.assertEquals(settings.get(PlatformKeys.KEY_DEVICE_MODEL_MODELCODE),
-                    device.getDeviceModel().getModelCode());
+            assertThat(device.getDeviceModel().getModelCode())
+                    .isEqualTo(getString(settings, PlatformKeys.KEY_DEVICE_MODEL_MODELCODE));
         }
     }
 
@@ -133,11 +138,12 @@ public class DeviceSteps extends BaseDeviceSteps {
     public void theDeviceShouldBeRemoved(final String deviceIdentification) throws Throwable {
         Wait.until(() -> {
             final Device entity = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-            Assert.assertNull("Device with identification [" + deviceIdentification + "] should be removed", entity);
+            assertThat(entity).as("Device with identification [" + deviceIdentification + "] should be removed")
+                    .isNull();
 
             final List<DeviceAuthorization> devAuths = this.deviceAuthorizationRepository.findByDevice(entity);
-            Assert.assertTrue("DeviceAuthorizations for device with identification [" + deviceIdentification
-                    + "] should be removed", devAuths.isEmpty());
+            assertThat(devAuths.isEmpty()).as("DeviceAuthorizations for device with identification ["
+                    + deviceIdentification + "] should be removed").isTrue();
         });
     }
 
@@ -148,7 +154,7 @@ public class DeviceSteps extends BaseDeviceSteps {
     public void theDeviceWithIdDoesNotExist(final String deviceIdentification) throws Throwable {
         Wait.until(() -> {
             final Device entity = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-            Assert.assertNull("Device with identification [" + deviceIdentification + "]", entity);
+            assertThat(entity).as("Device with identification [" + deviceIdentification + "]").isNull();
         });
     }
 
@@ -157,10 +163,10 @@ public class DeviceSteps extends BaseDeviceSteps {
 
         Wait.until(() -> {
             final Device entity = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-            Assert.assertNotNull("Device with identification [" + deviceIdentification + "]", entity);
+            assertThat(entity).as("Device with identification [" + deviceIdentification + "]").isNotNull();
 
-            Assert.assertTrue("Entity is inactive",
-                    entity.getDeviceLifecycleStatus().equals(DeviceLifecycleStatus.IN_USE));
+            assertThat(entity.getDeviceLifecycleStatus().equals(DeviceLifecycleStatus.IN_USE)).as("Entity is inactive")
+                    .isTrue();
         });
     }
 
@@ -168,10 +174,10 @@ public class DeviceSteps extends BaseDeviceSteps {
     public void theDeviceWithDeviceIdentificationShouldBeInActive(final String deviceIdentification) throws Throwable {
         Wait.until(() -> {
             final Device entity = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-            Assert.assertNotNull("Device with identification [" + deviceIdentification + "]", entity);
+            assertThat(entity).as("Device with identification [" + deviceIdentification + "]").isNotNull();
 
-            Assert.assertFalse("Entity is active",
-                    entity.getDeviceLifecycleStatus().equals(DeviceLifecycleStatus.IN_USE));
+            assertThat(entity.getDeviceLifecycleStatus().equals(DeviceLifecycleStatus.IN_USE)).as("Entity is active")
+                    .isFalse();
         });
     }
 
@@ -182,12 +188,12 @@ public class DeviceSteps extends BaseDeviceSteps {
     public void theDeviceWithIdExists(final String deviceIdentification) throws Throwable {
         Wait.until(() -> {
             final Device entity = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-            Assert.assertNotNull("Device with identification [" + deviceIdentification + "]", entity);
+            assertThat(entity).as("Device with identification [" + deviceIdentification + "]").isNotNull();
 
             final List<DeviceAuthorization> devAuths = this.deviceAuthorizationRepository.findByDevice(entity);
 
-            Assert.assertNotNull("No entity found", entity);
-            Assert.assertTrue("DeviceAuthorizations amount is not > 0", devAuths.size() > 0);
+            assertThat(entity).as("No entity found").isNotNull();
+            assertThat(devAuths.size() > 0).as("DeviceAuthorizations amount is not > 0").isTrue();
         });
     }
 
@@ -197,10 +203,9 @@ public class DeviceSteps extends BaseDeviceSteps {
             final SmartMeter mbusDevice = this.smartMeterRepository.findByDeviceIdentification(gMeter);
             final Device gatewayDevice = this.deviceRepository.findByDeviceIdentification(eMeter);
 
-            Assert.assertNotNull("No GatewayDevice found", gatewayDevice);
-            Assert.assertNotNull("No MbusDevice found", mbusDevice);
-
-            Assert.assertNull("GatewayDevice must be empty", mbusDevice.getGatewayDevice());
+            assertThat(gatewayDevice).as("No GatewayDevice found").isNotNull();
+            assertThat(mbusDevice).as("No MbusDevice found").isNotNull();
+            assertThat(mbusDevice.getGatewayDevice()).as("GatewayDevice must be empty").isNull();
         });
     }
 
@@ -211,12 +216,13 @@ public class DeviceSteps extends BaseDeviceSteps {
             final SmartMeter mbusDevice = this.smartMeterRepository.findByDeviceIdentification(gMeter);
             final Device gatewayDevice = this.deviceRepository.findByDeviceIdentification(eMeter);
 
-            Assert.assertNotNull("No GatewayDevice found", gatewayDevice);
-            Assert.assertNotNull("No MbusDevice found", mbusDevice);
+            assertThat(gatewayDevice).as("No GatewayDevice found").isNotNull();
+            assertThat(mbusDevice).as("No MbusDevice found").isNotNull();
 
-            Assert.assertEquals("GatewayDevice does not match", gatewayDevice, mbusDevice.getGatewayDevice());
-            Assert.assertEquals("Channel does not match", channel, mbusDevice.getChannel());
-            Assert.assertEquals("PrimaryAddress does not match", primaryAddress, mbusDevice.getMbusPrimaryAddress());
+            assertThat(mbusDevice.getGatewayDevice()).as("GatewayDevice does not match").isEqualTo(gatewayDevice);
+            assertThat(mbusDevice.getChannel()).as("Channel does not match").isEqualTo(channel);
+            assertThat(mbusDevice.getMbusPrimaryAddress()).as("PrimaryAddress does not match")
+                    .isEqualTo(primaryAddress);
         });
     }
 
@@ -227,11 +233,11 @@ public class DeviceSteps extends BaseDeviceSteps {
             final SmartMeter mbusDevice = this.smartMeterRepository.findByDeviceIdentification(gMeter);
             final Device gatewayDevice = this.deviceRepository.findByDeviceIdentification(eMeter);
 
-            Assert.assertNotNull("No GatewayDevice found", gatewayDevice);
-            Assert.assertNotNull("No MbusDevice found", mbusDevice);
+            assertThat(gatewayDevice).as("No GatewayDevice found").isNotNull();
+            assertThat(mbusDevice).as("No MbusDevice found").isNotNull();
 
-            Assert.assertEquals("GatewayDevice does not match", gatewayDevice, mbusDevice.getGatewayDevice());
-            Assert.assertEquals("Channel does not match", channel, mbusDevice.getChannel());
+            assertThat(mbusDevice.getGatewayDevice()).as("GatewayDevice does not match").isEqualTo(gatewayDevice);
+            assertThat(mbusDevice.getChannel()).as("Channel does not match").isEqualTo(channel);
         });
     }
 
@@ -241,11 +247,11 @@ public class DeviceSteps extends BaseDeviceSteps {
             final SmartMeter mbusDevice = this.smartMeterRepository.findByDeviceIdentification(gMeter);
             final Device gatewayDevice = this.deviceRepository.findByDeviceIdentification(eMeter);
 
-            Assert.assertNotNull("No GatewayDevice found", gatewayDevice);
-            Assert.assertNotNull("No MbusDevice found", mbusDevice);
+            assertThat(gatewayDevice).as("No GatewayDevice found").isNotNull();
+            assertThat(mbusDevice).as("No MbusDevice found").isNotNull();
 
-            Assert.assertNotEquals("MbusDevice should not be coupled to this GatewayDevice", gatewayDevice,
-                    mbusDevice.getGatewayDevice());
+            assertThat(mbusDevice.getGatewayDevice()).as("MbusDevice should not be coupled to this GatewayDevice")
+                    .isNotEqualTo(gatewayDevice);
         });
     }
 
@@ -254,8 +260,8 @@ public class DeviceSteps extends BaseDeviceSteps {
         Wait.until(() -> {
             final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
 
-            Assert.assertNotNull("Device is null", device);
-            Assert.assertNull("GpsCoordinates is not null", device.getGpsCoordinates());
+            assertThat(device).as("Device is null").isNotNull();
+            assertThat(device.getGpsCoordinates()).as("GpsCoordinates is not null").isNull();
         });
     }
 
@@ -265,8 +271,8 @@ public class DeviceSteps extends BaseDeviceSteps {
             final Device device = this.deviceRepository
                     .findByDeviceIdentification(getString(expectedEntity, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
 
-            Assert.assertEquals("IP address does not match", device.getIpAddress(),
-                    getString(expectedEntity, PlatformKeys.IP_ADDRESS));
+            assertThat(device.getIpAddress()).as("IP address does not match")
+                    .isEqualTo(getString(expectedEntity, PlatformKeys.IP_ADDRESS));
         });
     }
 

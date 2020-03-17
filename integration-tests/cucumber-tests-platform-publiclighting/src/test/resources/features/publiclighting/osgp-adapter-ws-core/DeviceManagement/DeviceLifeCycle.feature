@@ -4,7 +4,7 @@ Feature: Core Operations, DeviceLifeCycle
   I want to distinguish the various statuses of a device
   So I know what I can or cannot do with the device
 
-  Scenario Outline: Set dlms device status
+  Scenario Outline: Set ssld device status
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
     When the SetDeviceLifecycleStatus request is received

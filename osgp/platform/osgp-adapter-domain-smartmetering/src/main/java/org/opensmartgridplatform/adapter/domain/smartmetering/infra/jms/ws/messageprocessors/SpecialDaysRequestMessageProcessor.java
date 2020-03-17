@@ -29,7 +29,7 @@ public class SpecialDaysRequestMessageProcessor extends BaseRequestMessageProces
 
     @Autowired
     protected SpecialDaysRequestMessageProcessor(
-            @Qualifier("domainSmartMeteringWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(messageProcessorMap, MessageType.SET_SPECIAL_DAYS);
     }
 

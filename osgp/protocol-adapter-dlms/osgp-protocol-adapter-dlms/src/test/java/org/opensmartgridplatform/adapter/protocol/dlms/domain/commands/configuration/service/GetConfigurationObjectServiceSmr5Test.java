@@ -1,20 +1,24 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.when;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagTypeDto;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class GetConfigurationObjectServiceSmr5Test {
 
     private GetConfigurationObjectServiceSmr5 instance;
@@ -24,7 +28,7 @@ public class GetConfigurationObjectServiceSmr5Test {
     @Mock
     private DataObject nonBitString;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.instance = new GetConfigurationObjectServiceSmr5(null);
         when(this.nonBitString.isBitString()).thenReturn(false);
@@ -42,28 +46,34 @@ public class GetConfigurationObjectServiceSmr5Test {
     @Test
     public void getFlagType() {
         for (final ConfigurationFlagTypeDto flagTypeDto : ConfigurationFlagTypeDto.values()) {
-            flagTypeDto.getBitPositionSmr5().ifPresent(bitPosition -> assertThat(
-                    this.instance.getFlagType(bitPosition).orElseThrow(IllegalArgumentException::new)).isEqualTo(
-                    flagTypeDto));
+            flagTypeDto.getBitPositionSmr5()
+                    .ifPresent(bitPosition -> assertThat(
+                            this.instance.getFlagType(bitPosition).orElseThrow(IllegalArgumentException::new))
+                                    .isEqualTo(flagTypeDto));
         }
     }
 
-    @Test(expected = ProtocolAdapterException.class)
+    @Test
     public void getConfigurationObjectResultDataNull() throws ProtocolAdapterException {
         // SETUP
         when(this.getResult.getResultData()).thenReturn(null);
 
-        // CALL
-        this.instance.getConfigurationObject(this.getResult);
+        assertThatExceptionOfType(ProtocolAdapterException.class).isThrownBy(() -> {
+            // CALL
+            this.instance.getConfigurationObject(this.getResult);
+        });
     }
 
-    @Test(expected = ProtocolAdapterException.class)
+    @Test
     public void getConfigurationObjectResultDataNotBitString() throws ProtocolAdapterException {
+
         // SETUP
         when(this.getResult.getResultData()).thenReturn(this.nonBitString);
 
-        // CALL
-        this.instance.getConfigurationObject(this.getResult);
+        assertThatExceptionOfType(ProtocolAdapterException.class).isThrownBy(() -> {
+            // CALL
+            this.instance.getConfigurationObject(this.getResult);
+        });
     }
 
     // happy flows covered in IT's

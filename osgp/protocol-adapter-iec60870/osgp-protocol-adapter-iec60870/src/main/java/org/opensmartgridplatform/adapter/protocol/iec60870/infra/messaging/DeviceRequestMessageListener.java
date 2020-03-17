@@ -9,8 +9,8 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
+import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
-import javax.jms.Session;
 
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
@@ -26,17 +26,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jms.listener.SessionAwareMessageListener;
+import org.springframework.stereotype.Component;
 
-public class DeviceRequestMessageListener implements SessionAwareMessageListener<Message> {
+@Component(value = "protocolIec60870InboundOsgpCoreRequestsMessageListener")
+public class DeviceRequestMessageListener implements MessageListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceRequestMessageListener.class);
 
     @Autowired
-    @Qualifier("iec60870RequestMessageProcessorMap")
-    private MessageProcessorMap iec60870RequestMessageProcessorMap;
+    @Qualifier("protocolIec60870InboundOsgpCoreRequestsMessageProcessorMap")
+    private MessageProcessorMap messageProcessorMap;
 
     @Autowired
+    @Qualifier("protocolIec60870OutboundOsgpCoreResponsesMessageSender")
     private DeviceResponseMessageSender deviceResponseMessageSender;
 
     /*
@@ -47,7 +49,7 @@ public class DeviceRequestMessageListener implements SessionAwareMessageListener
      * (javax.jms.Message, javax.jms.Session)
      */
     @Override
-    public void onMessage(final Message message, final Session session) throws JMSException {
+    public void onMessage(final Message message) {
 
         ObjectMessage objectMessage = null;
         MessageMetadata messageMetadata = null;
@@ -64,8 +66,7 @@ public class DeviceRequestMessageListener implements SessionAwareMessageListener
                     messageMetadata.getCorrelationUid(), messageMetadata.getMessageType(),
                     messageMetadata.getMessagePriority());
 
-            final MessageProcessor processor = this.iec60870RequestMessageProcessorMap
-                    .getMessageProcessor(objectMessage);
+            final MessageProcessor processor = this.messageProcessorMap.getMessageProcessor(objectMessage);
 
             processor.processMessage(objectMessage);
 
@@ -86,9 +87,14 @@ public class DeviceRequestMessageListener implements SessionAwareMessageListener
 
             final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(objectMessage);
             final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage.Builder()
-                    .deviceMessageMetadata(deviceMessageMetadata).domain(messageMetadata.getDomain())
-                    .domainVersion(messageMetadata.getDomainVersion()).result(ResponseMessageResultType.NOT_OK)
-                    .osgpException(osgpException).dataObject(objectMessage.getObject()).scheduled(false).build();
+                    .deviceMessageMetadata(deviceMessageMetadata)
+                    .domain(messageMetadata.getDomain())
+                    .domainVersion(messageMetadata.getDomainVersion())
+                    .result(ResponseMessageResultType.NOT_OK)
+                    .osgpException(osgpException)
+                    .dataObject(objectMessage.getObject())
+                    .scheduled(false)
+                    .build();
 
             this.deviceResponseMessageSender.send(protocolResponseMessage);
         } catch (final Exception e) {

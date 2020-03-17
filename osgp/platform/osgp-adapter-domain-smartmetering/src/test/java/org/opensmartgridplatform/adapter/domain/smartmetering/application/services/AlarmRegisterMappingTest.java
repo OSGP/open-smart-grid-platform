@@ -8,15 +8,13 @@
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AlarmRegister;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AlarmType;
@@ -25,15 +23,15 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto;
 
 public class AlarmRegisterMappingTest {
 
-    private MonitoringMapper monitoringMapper = new MonitoringMapper();
+    private final MonitoringMapper monitoringMapper = new MonitoringMapper();
 
     // Constructor for AlarmRegister(Dto) doesn´t allow a null Set.
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testWithNullSet() {
-
         final Set<AlarmTypeDto> alarmTypes = null;
-        new AlarmRegisterResponseDto(alarmTypes);
-
+        assertThatExceptionOfType(NullPointerException.class).isThrownBy(() -> {
+            new AlarmRegisterResponseDto(alarmTypes);
+        });
     }
 
     // Test if mapping with an empty set succeeds
@@ -45,8 +43,8 @@ public class AlarmRegisterMappingTest {
         // actual mapping
         final AlarmRegister alarmRegister = this.monitoringMapper.map(alarmRegisterDto, AlarmRegister.class);
         // test mapping
-        assertNotNull(alarmRegister);
-        assertTrue(alarmRegister.getAlarmTypes().isEmpty());
+        assertThat(alarmRegister).isNotNull();
+        assertThat(alarmRegister.getAlarmTypes()).isEmpty();
 
     }
 
@@ -60,9 +58,9 @@ public class AlarmRegisterMappingTest {
         // actual mapping
         final AlarmRegister alarmRegister = this.monitoringMapper.map(alarmRegisterDto, AlarmRegister.class);
         // test mapping
-        assertNotNull(alarmRegister);
-        assertEquals(alarmRegisterDto.getAlarmTypes().size(), alarmRegister.getAlarmTypes().size());
-        assertTrue(alarmRegister.getAlarmTypes().contains(AlarmType.CLOCK_INVALID));
+        assertThat(alarmRegister).isNotNull();
+        assertThat(alarmRegister.getAlarmTypes().size()).isEqualTo(alarmRegisterDto.getAlarmTypes().size());
+        assertThat(alarmRegister.getAlarmTypes().contains(AlarmType.CLOCK_INVALID)).isTrue();
     }
 
 }

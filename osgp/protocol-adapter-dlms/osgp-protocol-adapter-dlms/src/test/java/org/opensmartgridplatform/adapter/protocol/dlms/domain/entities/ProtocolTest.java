@@ -10,7 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.entities;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ProtocolTest {
 
@@ -52,8 +52,8 @@ public class ProtocolTest {
     @Test
     public void testIsSelectingValuesSupported() {
         assertThat(Protocol.DSMR_4_2_2.isSelectValuesInSelectiveAccessSupported()).isEqualTo(true);
-        assertThat(Protocol.SMR_5_0.isSelectValuesInSelectiveAccessSupported()).isEqualTo(false);
-        assertThat(Protocol.SMR_5_1.isSelectValuesInSelectiveAccessSupported()).isEqualTo(false);
+        assertThat(Protocol.SMR_5_0.isSelectValuesInSelectiveAccessSupported()).isEqualTo(true);
+        assertThat(Protocol.SMR_5_1.isSelectValuesInSelectiveAccessSupported()).isEqualTo(true);
         assertThat(Protocol.OTHER_PROTOCOL.isSelectValuesInSelectiveAccessSupported()).isEqualTo(true);
     }
 

@@ -7,9 +7,6 @@
  */
 package org.opensmartgridplatform.adapter.domain.core.application.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-
 import org.opensmartgridplatform.adapter.domain.core.application.mapping.DomainCoreMapper;
 import org.opensmartgridplatform.adapter.domain.core.infra.jms.core.OsgpCoreRequestMessageSender;
 import org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.WebServiceResponseMessageSender;
@@ -23,6 +20,8 @@ import org.opensmartgridplatform.domain.core.services.OrganisationDomainService;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 public class AbstractService {
 
@@ -36,14 +35,14 @@ public class AbstractService {
     protected SsldRepository ssldRepository;
 
     @Autowired
-    @Qualifier("domainCoreOutgoingOsgpCoreRequestsMessageSender")
+    @Qualifier("domainCoreOutboundOsgpCoreRequestsMessageSender")
     protected OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
 
     @Autowired
     protected DomainCoreMapper domainCoreMapper;
 
     @Autowired
-    @Qualifier("domainCoreOutgoingWebServiceResponsesMessageSender")
+    @Qualifier("domainCoreOutboundWebServiceResponsesMessageSender")
     protected WebServiceResponseMessageSender webServiceResponseMessageSender;
 
     protected Device findActiveDevice(final String deviceIdentification) throws FunctionalException {
@@ -61,6 +60,6 @@ public class AbstractService {
     }
 
     protected Ssld findSsldForDevice(final Device device) {
-        return this.ssldRepository.findOne(device.getId());
+        return this.ssldRepository.findById(device.getId()).get();
     }
 }

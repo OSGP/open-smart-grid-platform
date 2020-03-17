@@ -7,7 +7,9 @@
  */
 package org.opensmartgridplatform.cucumber.platform.glue.steps.database.core;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.io.File;
@@ -18,7 +20,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -27,10 +28,13 @@ import org.opensmartgridplatform.domain.core.entities.DeviceModel;
 import org.opensmartgridplatform.domain.core.entities.FirmwareFile;
 import org.opensmartgridplatform.domain.core.entities.FirmwareModule;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
+import org.opensmartgridplatform.domain.core.entities.SsldPendingFirmwareUpdate;
 import org.opensmartgridplatform.domain.core.repositories.DeviceFirmwareFileRepository;
 import org.opensmartgridplatform.domain.core.repositories.DeviceModelRepository;
 import org.opensmartgridplatform.domain.core.repositories.FirmwareFileRepository;
+import org.opensmartgridplatform.domain.core.repositories.SsldPendingFirmwareUpdateRepository;
 import org.opensmartgridplatform.domain.core.repositories.SsldRepository;
+import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,8 +43,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.io.Files;
 
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
 
 /**
  * The firmware file related steps.
@@ -51,6 +55,9 @@ public class FirmwareFileSteps {
 
     @Autowired
     private SsldRepository ssldRepository;
+
+    @Autowired
+    private SsldPendingFirmwareUpdateRepository ssldPendingFirmwareUpdateRepository;
 
     @Autowired
     private DeviceModelRepository deviceModelRepository;
@@ -211,22 +218,21 @@ public class FirmwareFileSteps {
             final FirmwareFile firmwareFile = firmwareFiles.get(0);
             final DeviceModel deviceModel = firmwareFile.getDeviceModels().iterator().next();
 
-            Assert.assertEquals(
-                    getString(expectedEntity, PlatformKeys.FIRMWARE_DESCRIPTION, PlatformDefaults.FIRMWARE_DESCRIPTION),
-                    firmwareFile.getDescription());
-            Assert.assertEquals(getString(expectedEntity, PlatformKeys.FIRMWARE_MODULE_VERSION_COMM,
-                    PlatformDefaults.FIRMWARE_MODULE_VERSION_COMM), firmwareFile.getModuleVersionComm());
-            Assert.assertEquals(getString(expectedEntity, PlatformKeys.FIRMWARE_MODULE_VERSION_FUNC,
-                    PlatformDefaults.FIRMWARE_MODULE_VERSION_FUNC), firmwareFile.getModuleVersionFunc());
-            Assert.assertEquals(getString(expectedEntity, PlatformKeys.FIRMWARE_MODULE_VERSION_MA,
-                    PlatformDefaults.FIRMWARE_MODULE_VERSION_MA), firmwareFile.getModuleVersionMa());
-            Assert.assertEquals(getString(expectedEntity, PlatformKeys.FIRMWARE_MODULE_VERSION_MBUS,
-                    PlatformDefaults.FIRMWARE_MODULE_VERSION_MBUS), firmwareFile.getModuleVersionMbus());
-            Assert.assertEquals(getString(expectedEntity, PlatformKeys.FIRMWARE_MODULE_VERSION_SEC,
-                    PlatformDefaults.FIRMWARE_MODULE_VERSION_SEC), firmwareFile.getModuleVersionSec());
+            assertThat(firmwareFile.getDescription()).isEqualTo(getString(expectedEntity,
+                    PlatformKeys.FIRMWARE_DESCRIPTION, PlatformDefaults.FIRMWARE_DESCRIPTION));
+            assertThat(firmwareFile.getModuleVersionComm()).isEqualTo(getString(expectedEntity,
+                    PlatformKeys.FIRMWARE_MODULE_VERSION_COMM, PlatformDefaults.FIRMWARE_MODULE_VERSION_COMM));
+            assertThat(firmwareFile.getModuleVersionFunc()).isEqualTo(getString(expectedEntity,
+                    PlatformKeys.FIRMWARE_MODULE_VERSION_FUNC, PlatformDefaults.FIRMWARE_MODULE_VERSION_FUNC));
+            assertThat(firmwareFile.getModuleVersionMa()).isEqualTo(getString(expectedEntity,
+                    PlatformKeys.FIRMWARE_MODULE_VERSION_MA, PlatformDefaults.FIRMWARE_MODULE_VERSION_MA));
+            assertThat(firmwareFile.getModuleVersionMbus()).isEqualTo(getString(expectedEntity,
+                    PlatformKeys.FIRMWARE_MODULE_VERSION_MBUS, PlatformDefaults.FIRMWARE_MODULE_VERSION_MBUS));
+            assertThat(firmwareFile.getModuleVersionSec()).isEqualTo(getString(expectedEntity,
+                    PlatformKeys.FIRMWARE_MODULE_VERSION_SEC, PlatformDefaults.FIRMWARE_MODULE_VERSION_SEC));
 
-            Assert.assertEquals(getString(expectedEntity, PlatformKeys.DEVICEMODEL_MODELCODE,
-                    PlatformDefaults.DEVICE_MODEL_MODEL_CODE), deviceModel.getModelCode());
+            assertThat(deviceModel.getModelCode()).isEqualTo(getString(expectedEntity,
+                    PlatformKeys.DEVICEMODEL_MODELCODE, PlatformDefaults.DEVICE_MODEL_MODEL_CODE));
         });
     }
 
@@ -250,8 +256,8 @@ public class FirmwareFileSteps {
             if (!firmwareFiles.isEmpty()) {
                 final FirmwareFile firmwareFile = firmwareFiles.get(0);
                 final DeviceModel deviceModel = firmwareFile.getDeviceModels().iterator().next();
-                Assert.assertNotEquals(getString(expectedEntity, PlatformKeys.DEVICEMODEL_MODELCODE,
-                        PlatformDefaults.DEVICE_MODEL_MODEL_CODE), deviceModel.getModelCode());
+                assertThat(deviceModel.getModelCode()).isNotEqualTo(getString(expectedEntity,
+                        PlatformKeys.DEVICEMODEL_MODELCODE, PlatformDefaults.DEVICE_MODEL_MODEL_CODE));
             }
         });
     }
@@ -282,4 +288,20 @@ public class FirmwareFileSteps {
         return path;
     }
 
+    @Given("^a pending firmware update record for an ssld$")
+    @Transactional("txMgrCore")
+    public void aPendingFirmwareUpdateRecordForAnSsld(final Map<String, String> settings) {
+        final String deviceIdentification = getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION);
+
+        final FirmwareModuleType firmwareModuleType = getEnum(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_FUNC,
+                FirmwareModuleType.class);
+        final String firmwareVersion = getString(settings, PlatformKeys.FIRMWARE_VERSION);
+        final String organisationIdentification = getString(settings, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION);
+
+        SsldPendingFirmwareUpdate ssldPendingFirmwareUpdate = new SsldPendingFirmwareUpdate(deviceIdentification,
+                firmwareModuleType, firmwareVersion, organisationIdentification, "correlationUid");
+
+        ssldPendingFirmwareUpdate = this.ssldPendingFirmwareUpdateRepository.save(ssldPendingFirmwareUpdate);
+
+    }
 }

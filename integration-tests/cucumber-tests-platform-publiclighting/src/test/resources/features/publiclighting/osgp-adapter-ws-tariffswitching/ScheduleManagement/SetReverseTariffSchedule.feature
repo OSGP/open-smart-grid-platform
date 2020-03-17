@@ -190,7 +190,6 @@ Feature: TariffSwitchingScheduleManagement Set Reverse Tariff Schedule
       | DeviceIdentification | TEST1024000000001 |
     And a set reverse tariff schedule "<Protocol>" message is sent to device "TEST1024000000001"
       | WeekDay      | ABSOLUTEDAY  |
-      | WeekDay      | ABSOLUTEDAY  |
       | StartDay     | 2016-01-01   |
       | EndDay       | 2016-12-31   |
       | Time         | 18:00:00.000 |

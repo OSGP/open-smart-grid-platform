@@ -16,17 +16,17 @@ import org.opensmartgridplatform.adapter.ws.da.infra.jms.messageprocessors.Domai
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
+@Component(value = "wsDistributionAutomationInboundDomainResponsesMessageListener")
 public class DistributionAutomationResponseMessageListener implements MessageListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DistributionAutomationResponseMessageListener.class);
 
     @Autowired
+    @Qualifier("wsDistributionAutomationInboundDomainResponsesMessageProcessor")
     private DomainResponseMessageProcessor domainResponseMessageProcessor;
-
-    public DistributionAutomationResponseMessageListener() {
-        // empty constructor
-    }
 
     @Override
     public void onMessage(final Message message) {

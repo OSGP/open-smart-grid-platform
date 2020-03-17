@@ -7,16 +7,11 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringmanagement;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.EventType;
@@ -31,6 +26,9 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartme
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.management.FindEventsRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.management.SmartMeteringManagementRequestClient;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.management.SmartMeteringManagementResponseClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class AbstractFindEventsReads {
 
@@ -58,7 +56,7 @@ public abstract class AbstractFindEventsReads {
         final FindEventsAsyncResponse findEventsAsyncResponse = this.smartMeteringManagementRequestClient
                 .doRequest(findEventsRequest);
 
-        assertNotNull("AsyncResponse should not be null", findEventsAsyncResponse);
+        assertThat(findEventsAsyncResponse).as("AsyncResponse should not be null").isNotNull();
         ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID,
                 findEventsAsyncResponse.getCorrelationUid());
     }
@@ -68,10 +66,10 @@ public abstract class AbstractFindEventsReads {
         final FindEventsResponse findEventsResponse = this.smartMeteringManagementResponseClient
                 .getResponse(findEventsAsyncRequest);
 
-        assertNotNull("FindEventsRequestResponse should not be null", findEventsResponse);
-        assertNotNull("Expected events", findEventsResponse.getEvents());
-        assertEquals("Number of events should match", Integer.parseInt(settings.get(EXPECTED_NUMBER_OF_EVENTS)),
-                findEventsResponse.getEvents().size());
+        assertThat(findEventsResponse).as("FindEventsRequestResponse should not be null").isNotNull();
+        assertThat(findEventsResponse.getEvents()).as("Expected events").isNotNull();
+        assertThat(findEventsResponse.getEvents().size()).as("Number of events should match")
+                .isEqualTo(Integer.parseInt(settings.get(EXPECTED_NUMBER_OF_EVENTS)));
 
         /*
          * For every event in the response, check if it matches with the
@@ -86,7 +84,7 @@ public abstract class AbstractFindEventsReads {
                     break;
                 }
             }
-            assertNotNull("No match found for EventType", eventMatch);
+            assertThat(eventMatch).as("No match found for EventType").isNotNull();
         }
     }
 

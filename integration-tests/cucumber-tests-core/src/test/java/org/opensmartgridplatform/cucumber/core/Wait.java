@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.opensmartgridplatform.cucumber.core.config.CoreApplicationConfiguration;
 import org.slf4j.Logger;
@@ -61,7 +61,7 @@ public class Wait {
         final Instant timeoutInstant = startInstant.plusSeconds(configuration.getTimeout());
         while (!success) {
             if (Instant.now().isAfter(timeoutInstant)) {
-                Assert.fail("Timeout after [" + configuration.getTimeout() + "] seconds.");
+                Assertions.fail("Timeout after [" + configuration.getTimeout() + "] seconds.");
             }
 
             try {
@@ -101,7 +101,7 @@ public class Wait {
         final Instant timeoutInstant = startInstant.plusSeconds(configuration.getTimeout());
         while (!success) {
             if (Instant.now().isAfter(timeoutInstant)) {
-                Assert.fail("Timeout after [" + configuration.getTimeout() + "] seconds.");
+                Assertions.fail("Timeout after [" + configuration.getTimeout() + "] seconds.");
             }
 
             try {

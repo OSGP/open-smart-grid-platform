@@ -9,6 +9,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.publiclighting.glue.steps.ws.publiclighting.schedulemanagement;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getDate;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getShort;
@@ -23,7 +24,6 @@ import javax.xml.datatype.DatatypeFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.junit.Assert;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.common.AsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.schedulemanagement.ActionTimeType;
@@ -48,8 +48,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 /**
  * Class with all the set light requests steps
@@ -229,9 +229,9 @@ public class SetLightScheduleSteps {
         final SetScheduleAsyncResponse asyncResponse = (SetScheduleAsyncResponse) ScenarioContext.current()
                 .get(PlatformPubliclightingKeys.RESPONSE);
 
-        Assert.assertNotNull(asyncResponse.getAsyncResponse().getCorrelationUid());
-        Assert.assertEquals(getString(expectedResponseData, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION),
-                asyncResponse.getAsyncResponse().getDeviceId());
+        assertThat(asyncResponse.getAsyncResponse().getCorrelationUid()).isNotNull();
+        assertThat(asyncResponse.getAsyncResponse().getDeviceId())
+                .isEqualTo(getString(expectedResponseData, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION));
 
         // Save the returned CorrelationUid in the Scenario related context for
         // further use.
@@ -260,17 +260,17 @@ public class SetLightScheduleSteps {
 
         final SetScheduleResponse response = Wait.untilAndReturn(() -> {
             final SetScheduleResponse retval = this.client.getSetSchedule(request);
-            Assert.assertNotNull(retval);
-            Assert.assertEquals(getEnum(expectedResult, PlatformKeys.KEY_RESULT, OsgpResultType.class),
-                    retval.getResult());
+            assertThat(retval).isNotNull();
+            assertThat(retval.getResult())
+                    .isEqualTo(getEnum(expectedResult, PlatformKeys.KEY_RESULT, OsgpResultType.class));
+
             return retval;
         });
 
         if (expectedResult.containsKey(PlatformPubliclightingKeys.KEY_DESCRIPTION)) {
-            Assert.assertEquals(
-                    getString(expectedResult, PlatformPubliclightingKeys.KEY_DESCRIPTION,
-                            PlatformPubliclightingDefaults.DEFAULT_PUBLICLIGHTING_DESCRIPTION),
-                    response.getDescription());
+            assertThat(response.getDescription())
+                    .isEqualTo(getString(expectedResult, PlatformPubliclightingKeys.KEY_DESCRIPTION,
+                            PlatformPubliclightingDefaults.DEFAULT_PUBLICLIGHTING_DESCRIPTION));
         }
     }
 

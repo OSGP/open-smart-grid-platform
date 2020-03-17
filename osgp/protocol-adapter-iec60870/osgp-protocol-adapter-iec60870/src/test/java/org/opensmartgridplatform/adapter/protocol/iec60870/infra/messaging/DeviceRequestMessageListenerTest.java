@@ -16,13 +16,12 @@ import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.Test
 
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
-import javax.jms.Session;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.processors.GetHealthStatusRequestMessageProcessor;
 import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.matchers.ErrorResponseMessageMatcher;
 import org.opensmartgridplatform.dto.da.GetHealthStatusRequestDto;
@@ -30,7 +29,7 @@ import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.ObjectMessageBuilder;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DeviceRequestMessageListenerTest {
 
     @InjectMocks
@@ -46,14 +45,15 @@ public class DeviceRequestMessageListenerTest {
     public void shouldProcessMessageWhenMessageTypeIsSupported() throws JMSException {
         // Arrange
         final ObjectMessage message = new ObjectMessageBuilder().withDeviceIdentification(DEFAULT_DEVICE_IDENTIFICATION)
-                .withMessageType(DEFAULT_MESSAGE_TYPE).withObject(new GetHealthStatusRequestDto()).build();
-        final Session session = mock(Session.class);
+                .withMessageType(DEFAULT_MESSAGE_TYPE)
+                .withObject(new GetHealthStatusRequestDto())
+                .build();
 
         final MessageProcessor messageProcessor = mock(GetHealthStatusRequestMessageProcessor.class);
         when(this.iec60870RequestMessageProcessorMap.getMessageProcessor(message)).thenReturn(messageProcessor);
 
         // Act
-        this.deviceRequestMessageListener.onMessage(message, session);
+        this.deviceRequestMessageListener.onMessage(message);
 
         // Assert
         verify(messageProcessor).processMessage(message);
@@ -63,13 +63,14 @@ public class DeviceRequestMessageListenerTest {
     public void shouldSendErrorMessageWhenMessageTypeIsNotSupported() throws JMSException {
         // Arrange
         final ObjectMessage message = new ObjectMessageBuilder().withDeviceIdentification(DEFAULT_DEVICE_IDENTIFICATION)
-                .withMessageType(DEFAULT_MESSAGE_TYPE).withObject(new GetHealthStatusRequestDto()).build();
-        final Session session = mock(Session.class);
+                .withMessageType(DEFAULT_MESSAGE_TYPE)
+                .withObject(new GetHealthStatusRequestDto())
+                .build();
 
         when(this.iec60870RequestMessageProcessorMap.getMessageProcessor(message)).thenThrow(JMSException.class);
 
         // Act
-        this.deviceRequestMessageListener.onMessage(message, session);
+        this.deviceRequestMessageListener.onMessage(message);
 
         // Assert
         verify(this.deviceResponseMessageSender).send(argThat(new ErrorResponseMessageMatcher()));

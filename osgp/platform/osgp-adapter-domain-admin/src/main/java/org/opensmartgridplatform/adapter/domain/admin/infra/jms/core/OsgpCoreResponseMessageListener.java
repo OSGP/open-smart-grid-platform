@@ -12,28 +12,23 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
-import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
-
-//Fetch incoming messages from the responses queue of OSGP Core.
-@Component(value = "domainAdminIncomingOsgpCoreResponseMessageListener")
+//Fetch inbound messages from the responses queue of OSGP Core.
+@Component(value = "domainAdminInboundOsgpCoreResponsesMessageListener")
 public class OsgpCoreResponseMessageListener implements MessageListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OsgpCoreResponseMessageListener.class);
 
     @Autowired
-    @Qualifier("domainAdminOsgpCoreResponseMessageProcessorMap")
-    private MessageProcessorMap osgpCoreResponseMessageProcessorMap;
-
-    public OsgpCoreResponseMessageListener() {
-        // empty constructor
-    }
+    @Qualifier("domainAdminInboundOsgpCoreResponsesMessageProcessorMap")
+    private MessageProcessorMap messageProcessorMap;
 
     @Override
     public void onMessage(final Message message) {
@@ -42,8 +37,7 @@ public class OsgpCoreResponseMessageListener implements MessageListener {
 
             final ObjectMessage objectMessage = (ObjectMessage) message;
 
-            final MessageProcessor processor = this.osgpCoreResponseMessageProcessorMap
-                    .getMessageProcessor(objectMessage);
+            final MessageProcessor processor = this.messageProcessorMap.getMessageProcessor(objectMessage);
 
             processor.processMessage(objectMessage);
 

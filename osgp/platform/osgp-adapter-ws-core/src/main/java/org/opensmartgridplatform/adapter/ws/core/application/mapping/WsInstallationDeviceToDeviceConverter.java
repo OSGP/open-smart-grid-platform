@@ -9,10 +9,12 @@ package org.opensmartgridplatform.adapter.ws.core.application.mapping;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.Device;
 import org.opensmartgridplatform.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceModelRepository;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
+import org.opensmartgridplatform.domain.core.entities.Ssld;
 import org.opensmartgridplatform.domain.core.repositories.SsldRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.Address;
 import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
@@ -24,9 +26,9 @@ import ma.glasnost.orika.metadata.Type;
 public class WsInstallationDeviceToDeviceConverter
         extends BidirectionalConverter<Device, org.opensmartgridplatform.domain.core.entities.Device> {
 
-    private SsldRepository ssldRepository;
+    private final SsldRepository ssldRepository;
 
-    private WritableDeviceModelRepository writableDeviceModelRepository;
+    private final WritableDeviceModelRepository writableDeviceModelRepository;
 
     public WsInstallationDeviceToDeviceConverter(final SsldRepository ssldRepository,
             final WritableDeviceModelRepository writableDeviceModelRepository) {
@@ -54,7 +56,11 @@ public class WsInstallationDeviceToDeviceConverter
             }
 
             destination.setActivated(source.isActivated());
-            destination.setHasSchedule(this.ssldRepository.findOne(source.getId()).getHasSchedule());
+
+            final Optional<Ssld> ssld = this.ssldRepository.findById(source.getId());
+            if (ssld.isPresent()) {
+                destination.setHasSchedule(ssld.get().getHasSchedule());
+            }
 
             return destination;
         }

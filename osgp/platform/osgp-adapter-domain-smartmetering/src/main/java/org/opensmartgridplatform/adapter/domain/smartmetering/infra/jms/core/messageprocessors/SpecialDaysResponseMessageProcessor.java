@@ -31,7 +31,7 @@ public class SpecialDaysResponseMessageProcessor extends OsgpCoreResponseMessage
 
     @Autowired
     protected SpecialDaysResponseMessageProcessor(WebServiceResponseMessageSender responseMessageSender,
-            @Qualifier("domainSmartMeteringOsgpCoreResponseMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.SET_SPECIAL_DAYS,
                 ComponentType.DOMAIN_SMART_METERING);
     }

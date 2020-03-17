@@ -7,17 +7,12 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringinstallation;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ws.soap.client.SoapFaultClientException;
-
+import org.junit.jupiter.api.Assertions;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelAsyncRequest;
@@ -33,9 +28,11 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smar
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.installation.CoupleMbusDeviceRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.installation.SmartMeteringInstallationClient;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 public class CoupleDeviceSteps extends AbstractSmartMeteringSteps {
 
@@ -61,7 +58,7 @@ public class CoupleDeviceSteps extends AbstractSmartMeteringSteps {
 
         try {
             this.smartMeteringInstallationClient.coupleMbusDevice(request);
-            fail("A SoapFaultClientException should be thrown");
+            Assertions.fail("A SoapFaultClientException should be thrown");
         } catch (final SoapFaultClientException e) {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, e);
         }
@@ -75,7 +72,7 @@ public class CoupleDeviceSteps extends AbstractSmartMeteringSteps {
 
         try {
             this.smartMeteringInstallationClient.coupleMbusDevice(request);
-            fail("A SoapFaultClientException should be thrown");
+            Assertions.fail("A SoapFaultClientException should be thrown");
         } catch (final SoapFaultClientException e) {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, e);
         }
@@ -88,8 +85,8 @@ public class CoupleDeviceSteps extends AbstractSmartMeteringSteps {
         final CoupleMbusDeviceResponse response = this.smartMeteringInstallationClient
                 .getCoupleMbusDeviceResponse(asyncRequest);
 
-        assertNotNull("Result", response.getResult());
-        assertEquals("Result", status, response.getResult().name());
+        assertThat(response.getResult()).as("Result").isNotNull();
+        assertThat(response.getResult().name()).as("Result").isEqualTo(status);
     }
 
     @Then("^the Couple response is \"([^\"]*)\" and contains$")
@@ -101,10 +98,10 @@ public class CoupleDeviceSteps extends AbstractSmartMeteringSteps {
         final CoupleMbusDeviceResponse response = this.smartMeteringInstallationClient
                 .getCoupleMbusDeviceResponse(coupleMbusDeviceAsyncRequest);
 
-        assertNotNull("Result", response.getResult());
-        assertEquals("Result", status, response.getResult().name());
-        assertTrue("Description should contain all of " + resultList,
-                this.checkDescription(response.getDescription(), resultList));
+        assertThat(response.getResult()).as("Result").isNotNull();
+        assertThat(response.getResult().name()).as("Result").isEqualTo(status);
+        assertThat(this.checkDescription(response.getDescription(), resultList))
+                .as("Description should contain all of " + resultList).isTrue();
     }
 
     @Then("^retrieving the Couple response results in an exception$")
@@ -114,7 +111,7 @@ public class CoupleDeviceSteps extends AbstractSmartMeteringSteps {
 
         try {
             this.smartMeteringInstallationClient.getCoupleMbusDeviceResponse(asyncRequest);
-            fail("A SoapFaultClientException should be thrown");
+            Assertions.fail("A SoapFaultClientException should be thrown");
         } catch (final SoapFaultClientException e) {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, e);
         }
@@ -138,7 +135,7 @@ public class CoupleDeviceSteps extends AbstractSmartMeteringSteps {
         final CoupleMbusDeviceByChannelResponse response = this.smartMeteringInstallationClient
                 .getCoupleMbusDeviceByChannelResponse(asyncRequest);
 
-        assertNotNull("Result", response.getResult());
-        assertEquals("Result", status, response.getResult().name());
+        assertThat(response.getResult()).as("Result").isNotNull();
+        assertThat(response.getResult().name()).as("Result").isEqualTo(status);
     }
 }

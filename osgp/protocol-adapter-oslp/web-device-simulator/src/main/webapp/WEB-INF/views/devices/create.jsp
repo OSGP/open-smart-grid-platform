@@ -79,7 +79,7 @@ body {
 							<legend>
 								<spring:message code="device.create.page.device.label" />
 							</legend>
-							<form:form action="create" commandName="device" method="POST" class="form-horizontal">
+							<form:form action="create" modelAttribute="device" method="POST" class="form-horizontal">
 								<div class="control-group">
 									<form:label path="deviceIdentification" class="control-label">
 										<spring:message code="entity.device.deviceIdentification" />

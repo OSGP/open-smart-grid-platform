@@ -7,17 +7,14 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.junit.jupiter.api.Assertions;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.FirmwareVersion;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareAsyncRequest;
@@ -39,8 +36,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 @Transactional(value = "txMgrCore")
 public class UpdateFirmware {
@@ -60,7 +57,7 @@ public class UpdateFirmware {
         final UpdateFirmwareRequest request = UpdateFirmwareRequestFactory.fromParameterMap(settings);
         final UpdateFirmwareAsyncResponse asyncResponse = this.client.updateFirmware(request);
 
-        assertNotNull("asyncResponse should not be null", asyncResponse);
+        assertThat(asyncResponse).as("asyncResponse should not be null").isNotNull();
         ScenarioContextHelper.saveAsyncResponse(asyncResponse);
     }
 
@@ -71,7 +68,7 @@ public class UpdateFirmware {
 
         try {
             this.client.getUpdateFirmwareResponse(asyncRequest);
-            fail("A SoapFaultClientException should be thrown");
+            Assertions.fail("A SoapFaultClientException should be thrown");
         } catch (final SoapFaultClientException e) {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, e);
         }
@@ -83,20 +80,21 @@ public class UpdateFirmware {
         final UpdateFirmwareAsyncRequest asyncRequest = UpdateFirmwareRequestFactory.fromParameterMapAsync(settings);
         final UpdateFirmwareResponse response = this.client.getUpdateFirmwareResponse(asyncRequest);
 
-        assertEquals("result", OsgpResultType.OK, response.getResult());
+        assertThat(response.getResult()).as("result").isEqualTo(OsgpResultType.OK);
 
         final List<FirmwareVersion> expectedFirmareVersions = UpdateFirmwareRequestFactory
                 .firmwareVersionsFromParameters(settings);
 
         final List<FirmwareVersion> actualFirmwareVersions = response.getFirmwareVersion();
 
-        assertEquals("number of firmware versions", expectedFirmareVersions.size(), actualFirmwareVersions.size());
+        assertThat(actualFirmwareVersions.size()).as("number of firmware versions")
+                .isEqualTo(expectedFirmareVersions.size());
 
         for (final FirmwareVersion expected : expectedFirmareVersions) {
-            assertTrue(
-                    "Firmware version not returned: " + expected.getFirmwareModuleType() + " => "
-                            + expected.getVersion(),
-                    this.firmwareVersionListContains(actualFirmwareVersions, expected));
+            assertThat(this.firmwareVersionListContains(actualFirmwareVersions, expected))
+                    .as("Firmware version not returned: " + expected.getFirmwareModuleType() + " => "
+                            + expected.getVersion())
+                    .isTrue();
         }
     }
 
@@ -127,10 +125,10 @@ public class UpdateFirmware {
         final String deviceIdentification = getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
                 PlatformDefaults.DEFAULT_SMART_METER_DEVICE_IDENTIFICATION);
         final Device device = this.deviceRepository.findByDeviceIdentificationWithFirmware(deviceIdentification);
-        assertNotNull("Device " + deviceIdentification + " not found.", device);
+        assertThat(device).as("Device " + deviceIdentification + " not found.").isNotNull();
 
         final FirmwareFile activeFirmware = device.getActiveFirmwareFile();
-        assertNotNull("No active firmware found for device " + deviceIdentification + ".", activeFirmware);
+        assertThat(activeFirmware).as("No active firmware found for device " + deviceIdentification + ".").isNotNull();
 
         /*
          * Check if the firmware module versions from the latest installed
@@ -140,17 +138,19 @@ public class UpdateFirmware {
          */
         if (activeFirmware.getModuleVersionComm() != null) {
             final String moduleVersionComm = settings.get(PlatformKeys.FIRMWARE_MODULE_VERSION_COMM);
-            assertEquals(PlatformKeys.FIRMWARE_MODULE_VERSION_COMM, moduleVersionComm,
-                    activeFirmware.getModuleVersionComm());
+            assertThat(activeFirmware.getModuleVersionComm()).as(PlatformKeys.FIRMWARE_MODULE_VERSION_COMM)
+                    .isEqualTo(moduleVersionComm);
         }
         if (activeFirmware.getModuleVersionMa() != null) {
             final String moduleVersionMa = settings.get(PlatformKeys.FIRMWARE_MODULE_VERSION_MA);
-            assertEquals(PlatformKeys.FIRMWARE_MODULE_VERSION_MA, moduleVersionMa, activeFirmware.getModuleVersionMa());
+            assertThat(activeFirmware.getModuleVersionMa()).as(PlatformKeys.FIRMWARE_MODULE_VERSION_MA)
+                    .isEqualTo(moduleVersionMa);
         }
         if (activeFirmware.getModuleVersionFunc() != null) {
             final String moduleVersionFunc = settings.get(PlatformKeys.FIRMWARE_MODULE_VERSION_FUNC);
-            assertEquals(PlatformKeys.FIRMWARE_MODULE_VERSION_FUNC, moduleVersionFunc,
-                    activeFirmware.getModuleVersionFunc());
+
+            assertThat(activeFirmware.getModuleVersionFunc()).as(PlatformKeys.FIRMWARE_MODULE_VERSION_FUNC)
+                    .isEqualTo(moduleVersionFunc);
         }
 
         this.deviceFirmwareModuleSteps.theDatabaseShouldBeUpdatedWithTheDeviceFirmwareVersion(
@@ -164,7 +164,7 @@ public class UpdateFirmware {
         final String deviceIdentification = getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
                 PlatformDefaults.DEFAULT_SMART_METER_DEVICE_IDENTIFICATION);
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-        assertNotNull("Device " + deviceIdentification + " not found.", device);
+        assertThat(device).as("Device " + deviceIdentification + " not found.").isNotNull();
 
         final FirmwareFile activeFirmwareFile = device.getActiveFirmwareFile();
         if (activeFirmwareFile == null) {
@@ -179,11 +179,11 @@ public class UpdateFirmware {
         final String moduleVersionMa = settings.get(PlatformKeys.FIRMWARE_MODULE_VERSION_MA);
         final String moduleVersionFunc = settings.get(PlatformKeys.FIRMWARE_MODULE_VERSION_FUNC);
 
-        assertFalse(
-                "Device " + deviceIdentification
-                        + " should not have firmware versions from the scenario after an unsuccessful update.",
-                Objects.equals(moduleVersionComm, activeFirmwareFile.getModuleVersionComm())
-                        && Objects.equals(moduleVersionMa, activeFirmwareFile.getModuleVersionMa())
-                        && Objects.equals(moduleVersionFunc, activeFirmwareFile.getModuleVersionFunc()));
+        assertThat(Objects.equals(moduleVersionComm, activeFirmwareFile.getModuleVersionComm())
+                && Objects.equals(moduleVersionMa, activeFirmwareFile.getModuleVersionMa())
+                && Objects.equals(moduleVersionFunc, activeFirmwareFile.getModuleVersionFunc()))
+                        .as("Device " + deviceIdentification
+                                + " should not have firmware versions from the scenario after an unsuccessful update.")
+                        .isFalse();
     }
 }

@@ -1,11 +1,11 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementValuesDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelElementsDto;
 
@@ -49,8 +49,9 @@ public class FindMatchingChannelHelperTest {
                 this.identificationNumber, this.manufacturerIdentification, this.version,
                 this.deviceTypeIdentification);
 
-        Assert.assertTrue(requestData + " should match " + channelValues,
-                FindMatchingChannelHelper.matches(requestData, channelValues));
+        assertThat(FindMatchingChannelHelper.matches(requestData, channelValues))
+                .withFailMessage(requestData + " should match " + channelValues)
+                .isTrue();
     }
 
     @Test
@@ -64,11 +65,13 @@ public class FindMatchingChannelHelperTest {
                 this.noIdentificationNumber, this.noManufacturerIdentification, this.noVersion,
                 this.noDeviceTypeIdentification);
 
-        Assert.assertFalse(requestData + " should not match " + channelValues,
-                FindMatchingChannelHelper.matches(requestData, channelValues));
+        assertThat(FindMatchingChannelHelper.matches(requestData, channelValues))
+                .withFailMessage(requestData + " should not match " + channelValues)
+                .isFalse();
 
-        Assert.assertFalse(requestData + " should not match partially " + channelValues,
-                FindMatchingChannelHelper.matchesPartially(requestData, channelValues));
+        assertThat(FindMatchingChannelHelper.matchesPartially(requestData, channelValues))
+                .withFailMessage(requestData + " should not match partially " + channelValues)
+                .isFalse();
     }
 
     @Test
@@ -82,16 +85,19 @@ public class FindMatchingChannelHelperTest {
                 this.noIdentificationNumber, this.noManufacturerIdentification, this.noVersion,
                 this.noDeviceTypeIdentification);
 
-        Assert.assertFalse(requestData + " should not match " + channelValues,
-                FindMatchingChannelHelper.matches(requestData, channelValues));
+        assertThat(FindMatchingChannelHelper.matches(requestData, channelValues))
+                .withFailMessage(requestData + " should not match " + channelValues)
+                .isFalse();
 
-        Assert.assertTrue(requestData + " should match partially " + channelValues,
-                FindMatchingChannelHelper.matchesPartially(requestData, channelValues));
+        assertThat(FindMatchingChannelHelper.matchesPartially(requestData, channelValues))
+                .withFailMessage(requestData + " should match partially " + channelValues)
+                .isTrue();
 
         final List<ChannelElementValuesDto> channelValuesList = Arrays.asList(channelValues);
 
-        Assert.assertNotNull(requestData + " should have a best match from " + channelValuesList,
-                FindMatchingChannelHelper.bestMatch(requestData, channelValuesList));
+        assertThat(FindMatchingChannelHelper.bestMatch(requestData, channelValuesList))
+                .withFailMessage(requestData + " should have a best match from " + channelValuesList)
+                .isNotNull();
     }
 
     @Test
@@ -105,16 +111,19 @@ public class FindMatchingChannelHelperTest {
                 this.identificationNumber, this.noManufacturerIdentification, this.noVersion,
                 this.noDeviceTypeIdentification);
 
-        Assert.assertFalse(requestData + " should not match " + channelValues,
-                FindMatchingChannelHelper.matches(requestData, channelValues));
+        assertThat(FindMatchingChannelHelper.matches(requestData, channelValues))
+                .withFailMessage(requestData + " should not match " + channelValues)
+                .isFalse();
 
-        Assert.assertTrue(requestData + " should match partially " + channelValues,
-                FindMatchingChannelHelper.matchesPartially(requestData, channelValues));
+        assertThat(FindMatchingChannelHelper.matchesPartially(requestData, channelValues))
+                .withFailMessage(requestData + " should match partially " + channelValues)
+                .isTrue();
 
         final List<ChannelElementValuesDto> channelValuesList = Arrays.asList(channelValues);
 
-        Assert.assertNotNull(requestData + " should have a best match from " + channelValuesList,
-                FindMatchingChannelHelper.bestMatch(requestData, channelValuesList));
+        assertThat(FindMatchingChannelHelper.bestMatch(requestData, channelValuesList))
+                .withFailMessage(requestData + " should have a best match from " + channelValuesList)
+                .isNotNull();
     }
 
     @Test
@@ -127,16 +136,19 @@ public class FindMatchingChannelHelperTest {
                 this.identificationNumber, this.manufacturerIdentification, this.version,
                 this.deviceTypeIdentification);
 
-        Assert.assertTrue(requestData + " should match " + channelValues,
-                FindMatchingChannelHelper.matches(requestData, channelValues));
+        assertThat(FindMatchingChannelHelper.matches(requestData, channelValues))
+                .withFailMessage(requestData + " should match " + channelValues)
+                .isTrue();
 
-        Assert.assertTrue(requestData + " should match partially " + channelValues,
-                FindMatchingChannelHelper.matchesPartially(requestData, channelValues));
+        assertThat(FindMatchingChannelHelper.matchesPartially(requestData, channelValues))
+                .withFailMessage(requestData + " should match partially " + channelValues)
+                .isTrue();
 
         final List<ChannelElementValuesDto> channelValuesList = Arrays.asList(channelValues);
 
-        Assert.assertNotNull(requestData + " should have a best match from " + channelValuesList,
-                FindMatchingChannelHelper.bestMatch(requestData, channelValuesList));
+        assertThat(FindMatchingChannelHelper.bestMatch(requestData, channelValuesList))
+                .withFailMessage(requestData + " should have a best match from " + channelValuesList)
+                .isNotNull();
     }
 
     @Test
@@ -158,31 +170,39 @@ public class FindMatchingChannelHelperTest {
                 this.noIdentificationNumber, this.manufacturerIdentification, this.version,
                 this.deviceTypeIdentification);
 
-        Assert.assertTrue(requestData + " should match " + channelValues,
-                FindMatchingChannelHelper.matches(requestData, channelValues));
+        assertThat(FindMatchingChannelHelper.matches(requestData, channelValues))
+                .withFailMessage(requestData + " should match " + channelValues)
+                .isTrue();
 
-        Assert.assertFalse(requestData + " should not match " + otherChannelValues,
-                FindMatchingChannelHelper.matches(requestData, otherChannelValues));
+        assertThat(FindMatchingChannelHelper.matches(requestData, otherChannelValues))
+                .withFailMessage(requestData + " should not match " + otherChannelValues)
+                .isFalse();
 
-        Assert.assertFalse(requestData + " should not match " + partiallyMatchingChannelValues,
-                FindMatchingChannelHelper.matches(requestData, partiallyMatchingChannelValues));
+        assertThat(FindMatchingChannelHelper.matches(requestData, partiallyMatchingChannelValues))
+                .withFailMessage(requestData + " should not match " + partiallyMatchingChannelValues)
+                .isFalse();
 
-        Assert.assertTrue(requestData + " should match partially " + channelValues,
-                FindMatchingChannelHelper.matchesPartially(requestData, channelValues));
+        assertThat(FindMatchingChannelHelper.matchesPartially(requestData, channelValues))
+                .withFailMessage(requestData + " should match partially " + channelValues)
+                .isTrue();
 
-        Assert.assertFalse(requestData + " should not match partially " + otherChannelValues,
-                FindMatchingChannelHelper.matchesPartially(requestData, otherChannelValues));
+        assertThat(FindMatchingChannelHelper.matchesPartially(requestData, otherChannelValues))
+                .withFailMessage(requestData + " should not match partially " + otherChannelValues)
+                .isFalse();
 
-        Assert.assertTrue(requestData + " should match partially " + partiallyMatchingChannelValues,
-                FindMatchingChannelHelper.matchesPartially(requestData, partiallyMatchingChannelValues));
+        assertThat(FindMatchingChannelHelper.matchesPartially(requestData, partiallyMatchingChannelValues))
+                .withFailMessage(requestData + " should match partially " + partiallyMatchingChannelValues)
+                .isTrue();
 
         final List<ChannelElementValuesDto> channelValuesList = Arrays.asList(partiallyMatchingChannelValues,
                 otherChannelValues, channelValues);
 
         final ChannelElementValuesDto bestMatch = FindMatchingChannelHelper.bestMatch(requestData, channelValuesList);
 
-        Assert.assertNotNull(requestData + " should have a best match from " + channelValuesList, bestMatch);
+        assertThat(bestMatch).withFailMessage(requestData + " should have a best match from " + channelValuesList)
+                .isNotNull();
 
-        Assert.assertEquals("Channel for best match", channelValues.getChannel(), bestMatch.getChannel());
+        assertThat(bestMatch.getChannel()).withFailMessage("Channel for best match")
+                .isEqualTo(channelValues.getChannel());
     }
 }

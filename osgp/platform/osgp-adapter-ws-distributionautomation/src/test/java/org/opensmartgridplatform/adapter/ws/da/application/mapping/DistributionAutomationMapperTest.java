@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.BitmaskMeasurementElement;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.FloatMeasurementElement;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.GetHealthStatusResponse;
@@ -26,20 +26,6 @@ import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generi
 public class DistributionAutomationMapperTest {
 
     private DistributionAutomationMapper mapper = new DistributionAutomationMapper();
-
-    @Test
-    public void testHealthStatusTypeMapping() {
-        // Arrange
-        final HealthStatusType expected = HealthStatusType.ALARM;
-        final org.opensmartgridplatform.domain.da.valueobjects.GetHealthStatusResponse response = new org.opensmartgridplatform.domain.da.valueobjects.GetHealthStatusResponse(
-                "ALARM");
-
-        // Act
-        final GetHealthStatusResponse actual = this.mapper.map(response, GetHealthStatusResponse.class);
-
-        // Assert
-        Assertions.assertThat(actual.getHealthStatus()).isEqualTo(expected);
-    }
 
     @Test
     public void testBitmaskMeasurementElementMapping() {
@@ -71,33 +57,17 @@ public class DistributionAutomationMapperTest {
     }
 
     @Test
-    public void testTimestampMeasurementElementMapping() {
+    public void testHealthStatusTypeMapping() {
         // Arrange
-        final TimestampMeasurementElement expected = WSMeasurementsFactory.timestampFrom(1556808340428l);
-        final org.opensmartgridplatform.domain.da.measurements.elements.TimestampMeasurementElement domainMeasurementElement = new org.opensmartgridplatform.domain.da.measurements.elements.TimestampMeasurementElement(
-                1556808340428l);
+        final HealthStatusType expected = HealthStatusType.ALARM;
+        final org.opensmartgridplatform.domain.da.valueobjects.GetHealthStatusResponse response = new org.opensmartgridplatform.domain.da.valueobjects.GetHealthStatusResponse(
+                "ALARM");
 
         // Act
-        final TimestampMeasurementElement actual = this.mapper.map(domainMeasurementElement,
-                TimestampMeasurementElement.class);
+        final GetHealthStatusResponse actual = this.mapper.map(response, GetHealthStatusResponse.class);
 
         // Assert
-        Assertions.assertThat(actual.getValue()).isEqualTo(expected.getValue());
-    }
-
-    @Test
-    public void testMeasurementMapping() {
-        // Arrange
-        final float gasFlowMeasurement = 3077f;
-        final Measurement expected = WSMeasurementsFactory.gasFlowMeasurement(gasFlowMeasurement);
-        final org.opensmartgridplatform.domain.da.measurements.Measurement domainMeasurement = DomainMeasurementsFactory
-                .gasFlowMeasurement(gasFlowMeasurement);
-
-        // Act
-        final Measurement actual = this.mapper.map(domainMeasurement, Measurement.class);
-
-        // Assert
-        Assertions.assertThat(actual).isEqualToComparingFieldByFieldRecursively(expected);
+        Assertions.assertThat(actual.getHealthStatus()).isEqualTo(expected);
     }
 
     @Test
@@ -113,6 +83,21 @@ public class DistributionAutomationMapperTest {
 
         // Act
         final MeasurementGroup actual = this.mapper.map(domainMeasurementGroup, MeasurementGroup.class);
+
+        // Assert
+        Assertions.assertThat(actual).isEqualToComparingFieldByFieldRecursively(expected);
+    }
+
+    @Test
+    public void testMeasurementMapping() {
+        // Arrange
+        final float gasFlowMeasurement = 3077f;
+        final Measurement expected = WSMeasurementsFactory.gasFlowMeasurement(gasFlowMeasurement);
+        final org.opensmartgridplatform.domain.da.measurements.Measurement domainMeasurement = DomainMeasurementsFactory
+                .gasFlowMeasurement(gasFlowMeasurement);
+
+        // Act
+        final Measurement actual = this.mapper.map(domainMeasurement, Measurement.class);
 
         // Assert
         Assertions.assertThat(actual).isEqualToComparingFieldByFieldRecursively(expected);
@@ -164,6 +149,21 @@ public class DistributionAutomationMapperTest {
 
         // Assert
         Assertions.assertThat(actual).isEqualToComparingFieldByFieldRecursively(expected);
+    }
+
+    @Test
+    public void testTimestampMeasurementElementMapping() {
+        // Arrange
+        final TimestampMeasurementElement expected = WSMeasurementsFactory.timestampFrom(1556808340428l);
+        final org.opensmartgridplatform.domain.da.measurements.elements.TimestampMeasurementElement domainMeasurementElement = new org.opensmartgridplatform.domain.da.measurements.elements.TimestampMeasurementElement(
+                1556808340428l);
+
+        // Act
+        final TimestampMeasurementElement actual = this.mapper.map(domainMeasurementElement,
+                TimestampMeasurementElement.class);
+
+        // Assert
+        Assertions.assertThat(actual.getValue()).isEqualTo(expected.getValue());
     }
 
 }

@@ -9,9 +9,9 @@
  */
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.test.sequence.number;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.fail;
 
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.DeviceRegistrationService;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.exceptions.ProtocolAdapterException;
 
@@ -24,7 +24,7 @@ public class SequenceNumberTest {
         }
     }
 
-    private TestableDeviceRegistrationService testableDeviceRegistrationService = new TestableDeviceRegistrationService();
+    private final TestableDeviceRegistrationService testableDeviceRegistrationService = new TestableDeviceRegistrationService();
 
     @Test
     public void test1() {
@@ -91,11 +91,11 @@ public class SequenceNumberTest {
         try {
             this.testableDeviceRegistrationService.checkSequenceNumber(currentSeqNum, newSeqNum);
             if (exceptionExpected) {
-                Assert.fail("ProtocolAdapterException expected");
+                fail("ProtocolAdapterException expected");
             }
         } catch (final ProtocolAdapterException e) {
             if (!exceptionExpected) {
-                Assert.fail(e.getMessage());
+                fail(e.getMessage());
             }
         }
     }

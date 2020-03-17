@@ -36,7 +36,7 @@ public class TransactionalEventService {
     private EventRepository eventRepository;
 
     public List<Event> getEventsBeforeDate(final Date date, final int pageSize) {
-        final PageRequest pageRequest = new PageRequest(0, pageSize, Sort.Direction.DESC, "id");
+        final PageRequest pageRequest = PageRequest.of(0, pageSize, Sort.Direction.DESC, "id");
         final Slice<Event> slice = this.eventRepository.findByDateTimeBefore(date, pageRequest);
         final List<Event> events = slice.getContent();
         LOGGER.info("Found {} events with date time before {}.", events.size(), date);
@@ -46,7 +46,7 @@ public class TransactionalEventService {
 
     public void deleteEvents(final List<Event> events) {
         final int size = events.size();
-        this.eventRepository.delete(events);
+        this.eventRepository.deleteAll(events);
         LOGGER.info("{} events deleted.", size);
     }
 }

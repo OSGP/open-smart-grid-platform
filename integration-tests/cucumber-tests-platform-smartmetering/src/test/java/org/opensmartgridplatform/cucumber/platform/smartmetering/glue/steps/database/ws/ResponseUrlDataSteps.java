@@ -7,9 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.ws;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -23,8 +21,8 @@ import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
 
 public class ResponseUrlDataSteps {
 
@@ -65,8 +63,7 @@ public class ResponseUrlDataSteps {
         final ResponseUrlData responseUrlData = this.responseUrlDataRepository
                 .findSingleResultByCorrelationUid(correlationUid);
 
-        assertEquals(PlatformKeys.KEY_RESPONSE_URL, expectedResponseUrl, responseUrlData.getResponseUrl());
-
+        assertThat(responseUrlData.getResponseUrl()).as(PlatformKeys.KEY_RESPONSE_URL).isEqualTo(expectedResponseUrl);
     }
 
     @Then("^the response url data record with correlation uid \\\"(.*)\\\" should be deleted$")
@@ -74,7 +71,7 @@ public class ResponseUrlDataSteps {
         final ResponseUrlData responseUrlData = this.responseUrlDataRepository
                 .findSingleResultByCorrelationUid(correlationUid);
 
-        assertNull("Response url data should be deleted", responseUrlData);
+        assertThat(responseUrlData).as("Response url data should be deleted").isNull();
     }
 
     @Then("^the response url data record with correlation uid \\\"(.*)\\\" should not be deleted$")
@@ -82,7 +79,7 @@ public class ResponseUrlDataSteps {
         final ResponseUrlData responseUrlData = this.responseUrlDataRepository
                 .findSingleResultByCorrelationUid(correlationUid);
 
-        assertNotNull("Response url data should not be deleted", responseUrlData);
+        assertThat(responseUrlData).as("Response url data should not be deleted").isNotNull();
     }
 
 }

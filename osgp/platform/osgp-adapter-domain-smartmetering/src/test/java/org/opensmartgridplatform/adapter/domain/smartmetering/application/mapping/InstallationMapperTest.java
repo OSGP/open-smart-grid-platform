@@ -10,18 +10,16 @@
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import java.util.Date;
 
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.DefaultMapperFactory;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
+
+import ma.glasnost.orika.MapperFactory;
+import ma.glasnost.orika.impl.DefaultMapperFactory;
 
 public class InstallationMapperTest {
 
@@ -93,35 +91,17 @@ public class InstallationMapperTest {
         smartMeteringDevice.setMbusDeviceTypeIdentification((short) 3);
         smartMeteringDevice.setMbusDefaultKey("mbusDefaultKey".getBytes());
 
-        final SmartMeteringDeviceDto smartMeteringDeviceDto = this.mapperFactory.getMapperFacade().map(
-                smartMeteringDevice, SmartMeteringDeviceDto.class);
+        final SmartMeteringDeviceDto smartMeteringDeviceDto = this.mapperFactory.getMapperFacade()
+                .map(smartMeteringDevice, SmartMeteringDeviceDto.class);
 
-        assertNotNull(smartMeteringDevice);
-        assertNotNull(smartMeteringDeviceDto);
-        assertEquals(smartMeteringDevice.getDeviceIdentification(), smartMeteringDeviceDto.getDeviceIdentification());
-        assertEquals(smartMeteringDevice.getDeviceType(), smartMeteringDeviceDto.getDeviceType());
-        assertEquals(smartMeteringDevice.getCommunicationMethod(), smartMeteringDeviceDto.getCommunicationMethod());
-        assertEquals(smartMeteringDevice.getCommunicationProvider(), smartMeteringDeviceDto.getCommunicationProvider());
-        assertEquals(smartMeteringDevice.getICCId(), smartMeteringDeviceDto.getICCId());
-        assertEquals(smartMeteringDevice.getProtocolName(), smartMeteringDeviceDto.getProtocolName());
-        assertEquals(smartMeteringDevice.getProtocolVersion(), smartMeteringDeviceDto.getProtocolVersion());
-        assertArrayEquals(smartMeteringDevice.getMasterKey(), smartMeteringDeviceDto.getMasterKey());
-        assertArrayEquals(smartMeteringDevice.getGlobalEncryptionUnicastKey(),
-                smartMeteringDeviceDto.getGlobalEncryptionUnicastKey());
-        assertArrayEquals(smartMeteringDevice.getAuthenticationKey(), smartMeteringDeviceDto.getAuthenticationKey());
-        assertEquals(smartMeteringDevice.getSupplier(), smartMeteringDeviceDto.getSupplier());
-        assertEquals(smartMeteringDevice.isHLS3Active(), smartMeteringDeviceDto.isHLS3Active());
-        assertEquals(smartMeteringDevice.isHLS4Active(), smartMeteringDeviceDto.isHLS4Active());
-        assertEquals(smartMeteringDevice.isHLS5Active(), smartMeteringDeviceDto.isHLS5Active());
-        assertEquals(smartMeteringDevice.getDeliveryDate(), smartMeteringDeviceDto.getDeliveryDate());
-        assertEquals(smartMeteringDevice.getMbusIdentificationNumber(),
-                smartMeteringDeviceDto.getMbusIdentificationNumber());
-        assertEquals(smartMeteringDevice.getMbusManufacturerIdentification(),
-                smartMeteringDeviceDto.getMbusManufacturerIdentification());
-        assertEquals(smartMeteringDevice.getMbusVersion(), smartMeteringDeviceDto.getMbusVersion());
-        assertEquals(smartMeteringDevice.getMbusDeviceTypeIdentification(),
-                smartMeteringDeviceDto.getMbusDeviceTypeIdentification());
-        assertArrayEquals(smartMeteringDevice.getMbusDefaultKey(), smartMeteringDeviceDto.getMbusDefaultKey());
+        assertThat(smartMeteringDevice).isNotNull();
+        assertThat(smartMeteringDeviceDto).isNotNull();
+        assertThat(smartMeteringDeviceDto).isEqualToIgnoringGivenFields(smartMeteringDevice, "hls3Active", "hls4Active",
+                "hls5Active");
+        assertThat(smartMeteringDeviceDto.isHLS3Active()).isEqualTo(smartMeteringDevice.isHLS3Active());
+        assertThat(smartMeteringDeviceDto.isHLS4Active()).isEqualTo(smartMeteringDevice.isHLS4Active());
+        assertThat(smartMeteringDeviceDto.isHLS5Active()).isEqualTo(smartMeteringDevice.isHLS5Active());
+
     }
 
 }

@@ -23,7 +23,7 @@ import org.opensmartgridplatform.domain.core.repositories.RtuDeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import cucumber.api.java.en.Given;
+import io.cucumber.java.en.Given;
 
 /**
  * RTU device specific steps.

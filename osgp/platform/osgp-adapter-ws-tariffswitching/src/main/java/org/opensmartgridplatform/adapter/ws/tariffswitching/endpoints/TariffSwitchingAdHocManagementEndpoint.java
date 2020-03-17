@@ -7,7 +7,6 @@
  */
 package org.opensmartgridplatform.adapter.ws.tariffswitching.endpoints;
 
-import org.hibernate.validator.method.MethodConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +16,8 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
+
+import javax.validation.ConstraintViolationException;
 
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
@@ -42,11 +43,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
-//MethodConstraintViolationException is deprecated.
-//Will by replaced by equivalent functionality defined
-//by the Bean Validation 1.1 API as of Hibernate Validator 5.
-
-@SuppressWarnings("deprecation")
 @Endpoint
 public class TariffSwitchingAdHocManagementEndpoint {
 
@@ -83,7 +79,7 @@ public class TariffSwitchingAdHocManagementEndpoint {
             devicePage.getDevices().addAll(this.adHocManagementMapper.mapAsList(page.getContent(),
                     org.opensmartgridplatform.adapter.ws.schema.tariffswitching.adhocmanagement.Device.class));
             response.setDevicePage(devicePage);
-        } catch (final MethodConstraintViolationException e) {
+        } catch (final ConstraintViolationException e) {
             LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_WS_TARIFF_SWITCHING,
                     new ValidationException(e.getConstraintViolations()));

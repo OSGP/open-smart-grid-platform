@@ -51,9 +51,10 @@ public class Ssld extends Device {
      */
     public static final String SSLD_TYPE = "SSLD";
 
-    @Column()
+    @Column
     private boolean hasPublicKey;
 
+    @Column
     private boolean hasSchedule;
 
     @OneToMany(mappedBy = "device", targetEntity = Ean.class, cascade = CascadeType.ALL, orphanRemoval = true)

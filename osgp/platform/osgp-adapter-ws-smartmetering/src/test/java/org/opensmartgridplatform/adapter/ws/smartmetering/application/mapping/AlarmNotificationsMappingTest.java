@@ -8,23 +8,19 @@
 
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.AlarmType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.AlarmNotification;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.AlarmNotifications;
 
 public class AlarmNotificationsMappingTest {
 
-    private ConfigurationMapper configurationMapper = new ConfigurationMapper();
     private static final AlarmType ALARMTYPE = AlarmType.CLOCK_INVALID;
     private static final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AlarmType ALARMTYPEMAPPED = org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AlarmType.CLOCK_INVALID;
     private static final boolean ENABLED = true;
+    private ConfigurationMapper configurationMapper = new ConfigurationMapper();
 
     /**
      * Test to see if AlarmNotifications can be mapped.
@@ -45,14 +41,13 @@ public class AlarmNotificationsMappingTest {
                         org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AlarmNotifications.class);
 
         // check mapping
-        assertNotNull(alarmNotificationsMapped);
-        assertNotNull(alarmNotificationsMapped.getAlarmNotificationsSet());
-        assertFalse(alarmNotificationsMapped.getAlarmNotificationsSet().isEmpty());
-        assertEquals(alarmNotificationsOriginal.getAlarmNotification().size(), alarmNotificationsMapped
-                .getAlarmNotificationsSet().size());
+        assertThat(alarmNotificationsMapped).isNotNull();
+        assertThat(alarmNotificationsMapped.getAlarmNotificationsSet()).isNotNull();
+        assertThat(alarmNotificationsMapped.getAlarmNotificationsSet().isEmpty()).isFalse();
+        assertThat(alarmNotificationsMapped.getAlarmNotificationsSet().size())
+                .isEqualTo(alarmNotificationsOriginal.getAlarmNotification().size());
         final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AlarmNotification alarmNotificationMapped = new org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AlarmNotification(
                 ALARMTYPEMAPPED, ENABLED);
-        assertTrue(alarmNotificationsMapped.getAlarmNotificationsSet().contains(alarmNotificationMapped));
-
+        assertThat(alarmNotificationsMapped.getAlarmNotificationsSet().contains(alarmNotificationMapped)).isTrue();
     }
 }

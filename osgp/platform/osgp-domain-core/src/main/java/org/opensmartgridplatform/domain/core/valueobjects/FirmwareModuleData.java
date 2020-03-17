@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.commons.lang3.StringUtils;
-
 import org.opensmartgridplatform.domain.core.entities.FirmwareModule;
 import org.opensmartgridplatform.domain.core.repositories.FirmwareModuleRepository;
 
@@ -97,7 +96,7 @@ public class FirmwareModuleData implements Serializable {
     }
 
     public String getModuleVersionMBusDriverActive() {
-        return moduleVersionMBusDriverActive;
+        return this.moduleVersionMBusDriverActive;
     }
 
     /**
@@ -139,8 +138,8 @@ public class FirmwareModuleData implements Serializable {
                 MODULE_DESCRIPTION_MBUS);
         this.addVersionForModuleIfNonBlank(versionsByModule, firmwareModuleRepository, this.moduleVersionSec,
                 MODULE_DESCRIPTION_SEC);
-        this.addVersionForModuleIfNonBlank(versionsByModule, firmwareModuleRepository, this.moduleVersionMBusDriverActive,
-                MODULE_DESCRIPTION_MBUS_DRIVER_ACTIVE);
+        this.addVersionForModuleIfNonBlank(versionsByModule, firmwareModuleRepository,
+                this.moduleVersionMBusDriverActive, MODULE_DESCRIPTION_MBUS_DRIVER_ACTIVE);
         return versionsByModule;
     }
 
@@ -148,7 +147,17 @@ public class FirmwareModuleData implements Serializable {
             final FirmwareModuleRepository firmwareModuleRepository, final String moduleVersion,
             final String moduleDescription) {
         if (!StringUtils.isEmpty(moduleVersion)) {
-            versionsByModule.put(firmwareModuleRepository.findByDescriptionIgnoreCase(moduleDescription), moduleVersion);
+            versionsByModule.put(firmwareModuleRepository.findByDescriptionIgnoreCase(moduleDescription),
+                    moduleVersion);
         }
     }
+
+    @Override
+    public String toString() {
+        return "FirmwareModuleData [moduleVersionComm=" + this.moduleVersionComm + ", moduleVersionFunc="
+                + this.moduleVersionFunc + ", moduleVersionMa=" + this.moduleVersionMa + ", moduleVersionMbus="
+                + this.moduleVersionMbus + ", moduleVersionSec=" + this.moduleVersionSec
+                + ", moduleVersionMBusDriverActive=" + this.moduleVersionMBusDriverActive + "]";
+    }
+
 }

@@ -8,15 +8,12 @@
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ConfigurationFlag;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ConfigurationFlagType;
@@ -48,16 +45,15 @@ public class SetConfigurationObjectRequestMappingTest {
         final SetConfigurationObjectRequestDataDto setConfigurationObjectRequestData = null;
 
         // actual mapping
-        final SetConfigurationObjectRequestDto setConfigurationObjectRequest = 
-                new SetConfigurationObjectRequestDto(
+        final SetConfigurationObjectRequestDto setConfigurationObjectRequest = new SetConfigurationObjectRequestDto(
                 deviceIdentification, setConfigurationObjectRequestData);
-        final SetConfigurationObjectRequestDto setConfigurationObjectRequestDto = this.configurationMapper.map(
-                setConfigurationObjectRequest, SetConfigurationObjectRequestDto.class);
+        final SetConfigurationObjectRequestDto setConfigurationObjectRequestDto = this.configurationMapper
+                .map(setConfigurationObjectRequest, SetConfigurationObjectRequestDto.class);
 
         // check values
-        assertNotNull(setConfigurationObjectRequestDto);
-        assertEquals(deviceIdentification, setConfigurationObjectRequestDto.getDeviceIdentification());
-        assertNull(setConfigurationObjectRequestDto.getSetConfigurationObjectRequestData());
+        assertThat(setConfigurationObjectRequestDto).isNotNull();
+        assertThat(setConfigurationObjectRequestDto.getDeviceIdentification()).isEqualTo(deviceIdentification);
+        assertThat(setConfigurationObjectRequestDto.getSetConfigurationObjectRequestData()).isNull();
     }
 
     // Test if mapping with a null ConfigurationObject succeeds
@@ -72,16 +68,15 @@ public class SetConfigurationObjectRequestMappingTest {
                 configurationObject);
 
         // actual mapping
-        final SetConfigurationObjectRequestDto setConfigurationObjectRequest = 
-                new SetConfigurationObjectRequestDto(
+        final SetConfigurationObjectRequestDto setConfigurationObjectRequest = new SetConfigurationObjectRequestDto(
                 deviceIdentification, setConfigurationObjectRequestData);
-        final SetConfigurationObjectRequestDto setConfigurationObjectRequestDto = this.configurationMapper.map(
-                setConfigurationObjectRequest, SetConfigurationObjectRequestDto.class);
+        final SetConfigurationObjectRequestDto setConfigurationObjectRequestDto = this.configurationMapper
+                .map(setConfigurationObjectRequest, SetConfigurationObjectRequestDto.class);
 
         // check values
-        assertNotNull(setConfigurationObjectRequestDto);
-        assertEquals(deviceIdentification, setConfigurationObjectRequestDto.getDeviceIdentification());
-        assertNull(setConfigurationObjectRequestDto.getSetConfigurationObjectRequestData().getConfigurationObject());
+        assertThat(setConfigurationObjectRequestDto).isNotNull();
+        assertThat(setConfigurationObjectRequestDto.getDeviceIdentification()).isEqualTo(deviceIdentification);
+        assertThat(setConfigurationObjectRequestDto.getSetConfigurationObjectRequestData().getConfigurationObject()).isNull();
 
     }
 
@@ -99,22 +94,22 @@ public class SetConfigurationObjectRequestMappingTest {
                 configurationObject);
 
         // actual mapping
-        final SetConfigurationObjectRequest setConfigurationObjectRequest = 
-                new SetConfigurationObjectRequest(
+        final SetConfigurationObjectRequest setConfigurationObjectRequest = new SetConfigurationObjectRequest(
                 deviceIdentification, setConfigurationObjectRequestData);
-        final SetConfigurationObjectRequestDto setConfigurationObjectRequestDto = this.configurationMapper.map(
-                setConfigurationObjectRequest, SetConfigurationObjectRequestDto.class);
+        final SetConfigurationObjectRequestDto setConfigurationObjectRequestDto = this.configurationMapper
+                .map(setConfigurationObjectRequest, SetConfigurationObjectRequestDto.class);
 
         // check values
-        assertNotNull(setConfigurationObjectRequestDto);
-        assertEquals(deviceIdentification, setConfigurationObjectRequestDto.getDeviceIdentification());
+        assertThat(setConfigurationObjectRequestDto).isNotNull();
+        assertThat(setConfigurationObjectRequestDto.getDeviceIdentification()).isEqualTo(deviceIdentification);
 
         final ConfigurationObjectDto configurationObjectDto = setConfigurationObjectRequestDto
-                .getSetConfigurationObjectRequestData().getConfigurationObject();
-        assertNotNull(configurationObjectDto);
+                .getSetConfigurationObjectRequestData()
+                .getConfigurationObject();
+        assertThat(configurationObjectDto).isNotNull();
 
         // Check if both configurationFlags instances have an empty list
-        assertTrue(configurationObjectDto.getConfigurationFlags().getFlags().isEmpty());
+        assertThat(configurationObjectDto.getConfigurationFlags().getFlags()).isEmpty();
     }
 
     // Tests if mapping with a complete SetConfigurationObjectRequestData object
@@ -136,15 +131,14 @@ public class SetConfigurationObjectRequestMappingTest {
                 configurationObject);
 
         // actual mapping
-        final SetConfigurationObjectRequest setConfigurationObjectRequest = 
-                new SetConfigurationObjectRequest(
+        final SetConfigurationObjectRequest setConfigurationObjectRequest = new SetConfigurationObjectRequest(
                 deviceIdentification, setConfigurationObjectRequestData);
-        final SetConfigurationObjectRequestDto setConfigurationObjectRequestDto = this.configurationMapper.map(
-                setConfigurationObjectRequest, SetConfigurationObjectRequestDto.class);
+        final SetConfigurationObjectRequestDto setConfigurationObjectRequestDto = this.configurationMapper
+                .map(setConfigurationObjectRequest, SetConfigurationObjectRequestDto.class);
 
         // check values
-        assertNotNull(setConfigurationObjectRequestDto);
-        assertEquals(deviceIdentification, setConfigurationObjectRequestDto.getDeviceIdentification());
+        assertThat(setConfigurationObjectRequestDto).isNotNull();
+        assertThat(setConfigurationObjectRequestDto.getDeviceIdentification()).isEqualTo(deviceIdentification);
         this.checkSetConfigurationObjectRequestData(gprsOperationModeType, configurationFlagType, configurationFlags,
                 setConfigurationObjectRequestDto);
 
@@ -159,28 +153,27 @@ public class SetConfigurationObjectRequestMappingTest {
         // check if SetConfigurationObjectRequesDataDto object is present
         final SetConfigurationObjectRequestDataDto setConfigurationObjectRequestDataDto = setConfigurationObjectRequestDto
                 .getSetConfigurationObjectRequestData();
-        assertNotNull(setConfigurationObjectRequestDataDto);
+        assertThat(setConfigurationObjectRequestDto).isNotNull();
 
         // check if ConfigurationObjectDto object is present
         final ConfigurationObjectDto configurationObjectDto = setConfigurationObjectRequestDataDto
                 .getConfigurationObject();
-        assertNotNull(configurationObjectDto);
+        assertThat(configurationObjectDto).isNotNull();
 
         // check the GprsOperationModeTypeDto value
         final GprsOperationModeTypeDto gprsOperationModeTypeDto = configurationObjectDto.getGprsOperationMode();
-        assertEquals(gprsOperationModeType.name(), gprsOperationModeTypeDto.name());
+        assertThat(gprsOperationModeTypeDto.name()).isEqualTo(gprsOperationModeType.name());
 
         // check if ConfigurationFlagsDto object is present, and if its List is
         // of an equal size.
         final ConfigurationFlagsDto configurationFlagsDto = configurationObjectDto.getConfigurationFlags();
-        assertNotNull(configurationFlagsDto);
-        assertEquals(configurationFlags.getFlags().size(), configurationFlagsDto.getFlags()
-                .size());
+        assertThat(configurationFlagsDto).isNotNull();
+        assertThat(configurationFlagsDto.getFlags().size()).isEqualTo(configurationFlags.getFlags().size());
 
         // check ConfigurationObjectFlagTypeDto value.
         final ConfigurationFlagDto configurationFlagDto = configurationFlagsDto.getFlags().get(0);
         final ConfigurationFlagTypeDto configurationFlagTypeDto = configurationFlagDto.getConfigurationFlagType();
-        assertEquals(configurationFlagType.name(), configurationFlagTypeDto.name());
+        assertThat(configurationFlagTypeDto.name()).isEqualTo(configurationFlagType.name());
     }
 
 }

@@ -15,6 +15,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.opensmartgridplatform.domain.core.valueobjects.EventType;
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
 
@@ -27,7 +28,7 @@ public class Event extends AbstractEntity {
     private static final long serialVersionUID = 5987663923796632312L;
 
     @ManyToOne()
-    @JoinColumn()
+    @JoinColumn(name = "device")
     private Device device;
 
     @Column(nullable = false)
@@ -84,13 +85,15 @@ public class Event extends AbstractEntity {
             return false;
         }
         final Event other = (Event) o;
-        final boolean isDeviceEqual = Objects.equals(this.device, other.device);
-        final boolean isDateTimeEqual = Objects.equals(this.dateTime, other.dateTime);
-        final boolean isEventTypeEqual = Objects.equals(this.eventType, other.eventType);
-        final boolean isDescriptionEqual = Objects.equals(this.description, other.description);
-        final boolean isIndexEqual = Objects.equals(this.index, other.index);
 
-        return isDeviceEqual && isDateTimeEqual && isEventTypeEqual && isDescriptionEqual && isIndexEqual;
+        final boolean[] booleans = new boolean[5];
+        booleans[0] = Objects.equals(this.device, other.device);
+        booleans[1] = Objects.equals(this.dateTime, other.dateTime);
+        booleans[2] = Objects.equals(this.eventType, other.eventType);
+        booleans[3] = Objects.equals(this.description, other.description);
+        booleans[4] = Objects.equals(this.index, other.index);
+
+        return BooleanUtils.and(booleans);
     }
 
     @Override

@@ -11,19 +11,19 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 
-import org.jboss.netty.logging.InternalLoggerFactory;
-import org.jboss.netty.logging.Slf4JLoggerFactory;
+import org.opensmartgridplatform.shared.application.config.AbstractApplicationInitializer;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.servlet.DispatcherServlet;
 
-import org.opensmartgridplatform.shared.application.config.AbstractApplicationInitializer;
+import io.netty.util.internal.logging.InternalLoggerFactory;
+import io.netty.util.internal.logging.Slf4JLoggerFactory;
 
 /**
  * Web application Java configuration class.
  */
 public class WebDeviceSimulatorInitializer extends AbstractApplicationInitializer implements WebApplicationInitializer {
 
-	private static final String DISPATCHER_SERVLET_NAME = "dispatcher";
+    private static final String DISPATCHER_SERVLET_NAME = "dispatcher";
     private static final String DISPATCHER_SERVLET_MAPPING = "/";
 
     /**
@@ -32,20 +32,16 @@ public class WebDeviceSimulatorInitializer extends AbstractApplicationInitialize
     public WebDeviceSimulatorInitializer() {
         super(ApplicationContext.class, "java:comp/env/osgp/WebDeviceSimulator/log-config");
     }
-    
-    /**
-     * 
-     */
+
     @Override
     public void onStartup(final ServletContext servletContext) throws ServletException {
-        startUp(servletContext);
-        
-        InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
+        this.startUp(servletContext);
+
+        InternalLoggerFactory.setDefaultFactory(Slf4JLoggerFactory.INSTANCE);
 
         final ServletRegistration.Dynamic dispatcher = servletContext.addServlet(DISPATCHER_SERVLET_NAME,
-                new DispatcherServlet(rootContext));
+                new DispatcherServlet(this.rootContext));
         dispatcher.setLoadOnStartup(1);
         dispatcher.addMapping(DISPATCHER_SERVLET_MAPPING);
     }
 }
-

@@ -10,19 +10,20 @@ package org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.networking;
 import java.security.PublicKey;
 
 import org.apache.commons.codec.binary.Base64;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.SimpleChannelHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.oslp.OslpDeviceSettingsService;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities.OslpDevice;
 import org.opensmartgridplatform.oslp.OslpEnvelope;
 import org.opensmartgridplatform.shared.security.CertificateHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
-public class OslpSecurityHandler extends SimpleChannelHandler {
+import io.netty.channel.ChannelHandler.Sharable;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
+
+@Sharable
+public class OslpSecurityHandler extends SimpleChannelInboundHandler<OslpEnvelope> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OslpSecurityHandler.class);
 
@@ -36,15 +37,17 @@ public class OslpSecurityHandler extends SimpleChannelHandler {
     private OslpDeviceSettingsService oslpDeviceSettingsService;
 
     @Override
-    public void messageReceived(final ChannelHandlerContext ctx, final MessageEvent evt) throws Exception {
-        final OslpEnvelope message = (OslpEnvelope) evt.getMessage();
+    public void channelRead0(final ChannelHandlerContext ctx, final OslpEnvelope message) throws Exception {
+
+        LOGGER.info("Entering method: channelRead0 for channel {}", ctx.channel().id().asLongText());
 
         // Upon first registration, a deviceUid is unknown within the platform.
         // Search based on deviceIdentification in this case.
         OslpDevice oslpDevice;
 
         if (message.getPayloadMessage().hasRegisterDeviceRequest()) {
-            final String deviceIdentification = message.getPayloadMessage().getRegisterDeviceRequest()
+            final String deviceIdentification = message.getPayloadMessage()
+                    .getRegisterDeviceRequest()
                     .getDeviceIdentification();
 
             oslpDevice = this.oslpDeviceSettingsService.getDeviceByDeviceIdentification(deviceIdentification);
@@ -67,7 +70,6 @@ public class OslpSecurityHandler extends SimpleChannelHandler {
 
             message.validate(publicKey);
         }
-
-        ctx.sendUpstream(evt);
+        ctx.fireChannelRead(message);
     }
 }

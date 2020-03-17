@@ -7,9 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.core.devicemanagement;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
 
@@ -27,8 +25,8 @@ import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 public class DeviceLifecycleStatusSteps {
 
@@ -49,7 +47,7 @@ public class DeviceLifecycleStatusSteps {
         final SetDeviceLifecycleStatusAsyncResponse asyncResponse = this.deviceManagementClient
                 .setDeviceLifecycleStatus(request);
 
-        assertNotNull("AsyncResponse should not be null", asyncResponse);
+        assertThat(asyncResponse).as("AsyncResponse should not be null").isNotNull();
         ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
     }
 
@@ -66,17 +64,18 @@ public class DeviceLifecycleStatusSteps {
             } catch (final Exception e) {
                 // do nothing
             }
-            assertNotNull("No response found for Set Device Lifecycle Status", response);
-            assertNotEquals(OsgpResultType.NOT_FOUND, response.getResult());
-            assertEquals("Set Device Lifecycle Status result should be OK", OsgpResultType.OK, response.getResult());
+            assertThat(response).as("No response found for Set Device Lifecycle Status").isNotNull();
+            assertThat(response.getResult()).isNotEqualTo(OsgpResultType.NOT_FOUND);
+            assertThat(response.getResult()).as("Set Device Lifecycle Status result should be OK")
+                    .isEqualTo(OsgpResultType.OK);
         });
 
         final String deviceLifecycleStatus = settings.get(PlatformKeys.KEY_DEVICE_LIFECYCLE_STATUS);
         final Device device = this.DeviceRepository
                 .findByDeviceIdentification(settings.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));
 
-        assertEquals("Device Lifecycle Status should be " + deviceLifecycleStatus,
-                org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus.valueOf(deviceLifecycleStatus),
-                device.getDeviceLifecycleStatus());
+        assertThat(device.getDeviceLifecycleStatus()).as("Device Lifecycle Status should be " + deviceLifecycleStatus)
+                .isEqualTo(org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus
+                        .valueOf(deviceLifecycleStatus));
     }
 }

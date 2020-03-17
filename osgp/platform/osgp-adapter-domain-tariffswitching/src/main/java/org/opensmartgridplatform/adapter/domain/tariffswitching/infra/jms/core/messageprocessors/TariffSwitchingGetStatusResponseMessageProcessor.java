@@ -14,11 +14,11 @@ import org.opensmartgridplatform.adapter.domain.tariffswitching.application.serv
 import org.opensmartgridplatform.adapter.domain.tariffswitching.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.domain.core.valueobjects.DomainType;
 import org.opensmartgridplatform.dto.valueobjects.DeviceStatusDto;
-import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
@@ -47,9 +47,9 @@ public class TariffSwitchingGetStatusResponseMessageProcessor extends BaseMessag
 
     @Autowired
     protected TariffSwitchingGetStatusResponseMessageProcessor(
-            WebServiceResponseMessageSender webServiceResponseMessageSender,
-            @Qualifier("domainTariffSwitchingOsgpCoreResponseMessageProcessorMap")MessageProcessorMap responseMessageProcessorMap) {
-        super(webServiceResponseMessageSender, responseMessageProcessorMap, MessageType.GET_TARIFF_STATUS,
+            final WebServiceResponseMessageSender webServiceResponseMessageSender,
+            @Qualifier("domainTariffSwitchingInboundOsgpCoreResponsesMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
+        super(webServiceResponseMessageSender, messageProcessorMap, MessageType.GET_TARIFF_STATUS,
                 ComponentType.DOMAIN_TARIFF_SWITCHING);
     }
 
@@ -99,8 +99,8 @@ public class TariffSwitchingGetStatusResponseMessageProcessor extends BaseMessag
 
             final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification,
                     correlationUid);
-            this.adHocManagementService.handleGetStatusResponse(deviceLightStatus, DomainType.TARIFF_SWITCHING,
-                    ids, messagePriority, responseMessageResultType, osgpException);
+            this.adHocManagementService.handleGetStatusResponse(deviceLightStatus, DomainType.TARIFF_SWITCHING, ids,
+                    messagePriority, responseMessageResultType, osgpException);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType,

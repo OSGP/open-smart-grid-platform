@@ -26,6 +26,7 @@ public class SmartMeteringAdHocResponseClient<T, V extends AsyncRequest> extends
                 this.getUserName());
     }
 
+    @SuppressWarnings("unchecked")
     public T getResponse(final V request) throws WebServiceSecurityException {
 
         this.waitForNotification(request.getCorrelationUid());

@@ -7,9 +7,7 @@
   */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -17,10 +15,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueAsyncResponse;
@@ -39,9 +33,12 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smar
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SetPushSetupSmsRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 public class SetPushSetupSms {
 
@@ -63,7 +60,7 @@ public class SetPushSetupSms {
                 .setPushSetupSms(setPushSetupSmsRequest);
 
         LOGGER.info("Set push setup sms response is received {}", setPushSetupSmsAsyncResponse);
-        assertNotNull("Set push setup sms response should not be null", setPushSetupSmsAsyncResponse);
+        assertThat(setPushSetupSmsAsyncResponse).as("Set push setup sms response should not be null").isNotNull();
 
         ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID,
                 setPushSetupSmsAsyncResponse.getCorrelationUid());
@@ -80,22 +77,24 @@ public class SetPushSetupSms {
         final SetPushSetupSmsResponse setPushSetupSmsResponse = this.smartMeteringConfigurationClient
                 .getSetPushSetupSmsResponse(setPushSetupSmsAsyncRequest);
 
-        assertNotNull("SetPushSetupSmsResponse was null", setPushSetupSmsResponse);
-        assertNotNull("SetPushSetupSmsResponse result was null", setPushSetupSmsResponse.getResult());
-        assertEquals("SetPushSetupSmsResponse should be OK", OsgpResultType.OK, setPushSetupSmsResponse.getResult());
+        assertThat(setPushSetupSmsResponse).as("SetPushSetupSmsResponse was null").isNotNull();
+        assertThat(setPushSetupSmsResponse.getResult()).as("SetPushSetupSmsResponse result was null").isNotNull();
+        assertThat(setPushSetupSmsResponse.getResult()).as("SetPushSetupSmsResponse should be OK")
+                .isEqualTo(OsgpResultType.OK);
 
         final GetSpecificAttributeValueResponse specificAttributeValues = this.getSpecificAttributeValues(settings);
-        assertNotNull("GetSpecificAttributeValuesResponse was null", specificAttributeValues);
-        assertNotNull("GetSpecificAttributeValuesResponse result was null", specificAttributeValues.getResult());
-        assertEquals("GetSpecificAttributeValuesResponse should be OK", OsgpResultType.OK,
-                specificAttributeValues.getResult());
+        assertThat(specificAttributeValues).as("GetSpecificAttributeValuesResponse was null").isNotNull();
+        assertThat(specificAttributeValues.getResult()).as("GetSpecificAttributeValuesResponse result was null")
+                .isNotNull();
+        assertThat(specificAttributeValues.getResult()).as("GetSpecificAttributeValuesResponse should be OK")
+                .isEqualTo(OsgpResultType.OK);
 
         final String hostAndPort = ScenarioContext.current().get(PlatformSmartmeteringKeys.HOSTNAME) + ":"
                 + ScenarioContext.current().get(PlatformSmartmeteringKeys.PORT);
         final byte[] expectedBytes = (hostAndPort.getBytes(StandardCharsets.US_ASCII));
         final String expected = Arrays.toString(expectedBytes);
         final String actual = specificAttributeValues.getAttributeValueData();
-        assertTrue("PushSetupSms was not set on device", actual.contains(expected));
+        assertThat(actual.contains(expected)).as("PushSetupSms was not set on device").isTrue();
     }
 
     private GetSpecificAttributeValueResponse getSpecificAttributeValues(final Map<String, String> settings)

@@ -47,6 +47,8 @@ public class PlatformDefaults {
     public static final String DEFAULT_CONTAINER_NUMBER_ADDITION = "A";
     public static final String DEFAULT_CONTAINER_POSTALCODE = "6546KM";
     public static final String DEFAULT_CONTAINER_STREET = "StandardStreet";
+    public static final String DEFAULT_CORRELATION_UID = "correlation-uid-1";
+
     public static final String DEFAULT_DC_LIGHTS = "0";
     public static final Long DEFAULT_DEVICE_ID = new java.util.Random().nextLong();
 
@@ -114,12 +116,13 @@ public class PlatformDefaults {
     public static final String DEFAULT_PERIOD_TYPE = "INTERVAL";
     public static final String DEFAULT_PREFIX = "MAA";
     public static final String DEFAULT_PROTOCOL = "OSLP ELSTER";
-    public static final Long DEFAULT_PROTOCOL_INFO_ID = new java.util.Random().nextLong();
     public static final String DEFAULT_PROTOCOL_VERSION = "1.0";
     public static final String DEFAULT_PUBLIC_KEY = "123456abcdef";
     public static final Boolean DEFAULT_PUBLICKEYPRESENT = true;
     public static final String DEFAULT_PUBLICLIGHTING_DESCRIPTION = "";
     public static final String DEFAULT_RECORD_TIME = "";
+
+    public static final String DEFAULT_SCHEDULED_TIME = "tomorrow at noon";
     public static final Integer DEFAULT_SHORT_INTERVAL = 15;
     public static final String DEFAULT_SMART_METER_DEVICE_IDENTIFICATION = "TEST1024000000001";
     public static final String DEFAULT_SMART_METER_GAS_DEVICE_IDENTIFICATION = "TESTG102400000001";
@@ -215,4 +218,5 @@ public class PlatformDefaults {
 
     public static final Short DEFAULT_ASTRONOMICAL_SUNRISE_OFFSET = 0;
     public static final Short DEFAULT_ASTRONOMICAL_SUNSET_OFFSET = 0;
+    public static final Long NON_EXISTENT_PROTOCOL_INFO_ID = -1L;
 }

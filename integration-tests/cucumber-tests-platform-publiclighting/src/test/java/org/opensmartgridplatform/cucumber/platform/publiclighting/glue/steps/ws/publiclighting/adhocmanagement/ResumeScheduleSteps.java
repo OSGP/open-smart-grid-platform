@@ -9,18 +9,13 @@
  */
 package org.opensmartgridplatform.cucumber.platform.publiclighting.glue.steps.ws.publiclighting.adhocmanagement;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getInteger;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 import static org.opensmartgridplatform.cucumber.platform.core.CorrelationUidHelper.saveCorrelationUidInScenarioContext;
 
 import java.util.Map;
-
-import org.junit.Assert;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.ResumeScheduleAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.ResumeScheduleAsyncResponse;
@@ -34,9 +29,13 @@ import org.opensmartgridplatform.cucumber.platform.glue.steps.ws.GenericResponse
 import org.opensmartgridplatform.cucumber.platform.publiclighting.PlatformPubliclightingDefaults;
 import org.opensmartgridplatform.cucumber.platform.publiclighting.PlatformPubliclightingKeys;
 import org.opensmartgridplatform.cucumber.platform.publiclighting.support.ws.publiclighting.PublicLightingAdHocManagementClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 /**
  * Class with all the set light requests steps
@@ -89,8 +88,8 @@ public class ResumeScheduleSteps {
      *
      * @param expectedResponseData
      *            The table with the expected fields in the response.
-     * @apiNote The response will contain the correlation uid, so store that in the
-     *       current scenario context for later use.
+     * @apiNote The response will contain the correlation uid, so store that in
+     *          the current scenario context for later use.
      * @throws Throwable
      */
     @Then("^the resume schedule async response contains$")
@@ -99,9 +98,9 @@ public class ResumeScheduleSteps {
         final ResumeScheduleAsyncResponse asyncResponse = (ResumeScheduleAsyncResponse) ScenarioContext.current()
                 .get(PlatformPubliclightingKeys.RESPONSE);
 
-        Assert.assertNotNull(asyncResponse.getAsyncResponse().getCorrelationUid());
-        Assert.assertEquals(getString(expectedResponseData, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION),
-                asyncResponse.getAsyncResponse().getDeviceId());
+        assertThat(asyncResponse.getAsyncResponse().getCorrelationUid()).isNotNull();
+        assertThat(asyncResponse.getAsyncResponse().getDeviceId())
+                .isEqualTo(getString(expectedResponseData, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION));
 
         // Save the returned CorrelationUid in the Scenario related context for
         // further use.
@@ -124,12 +123,10 @@ public class ResumeScheduleSteps {
             } catch (final Exception e) {
                 // do nothing
             }
-            Assert.assertNotNull(response);
-            Assert.assertEquals(
-                    Enum.valueOf(OsgpResultType.class, expectedResult.get(PlatformPubliclightingKeys.KEY_RESULT)),
-                    response.getResult());
+            assertThat(response).isNotNull();
+            assertThat(response.getResult()).isEqualTo(
+                    Enum.valueOf(OsgpResultType.class, expectedResult.get(PlatformPubliclightingKeys.KEY_RESULT)));
         });
-
     }
 
     @Then("^the resume schedule async response contains soap fault$")
@@ -147,8 +144,8 @@ public class ResumeScheduleSteps {
             this.getResponseWithCorrelationUID(deviceIdentification,
                     asyncResponse.getAsyncResponse().getCorrelationUid());
         } catch (final SoapFaultClientException ex) {
-            Assert.assertEquals(getString(expectedResult, PlatformPubliclightingKeys.KEY_FAULTSTRING),
-                    ex.getFaultStringOrReason());
+            assertThat(ex.getFaultStringOrReason())
+                    .isEqualTo(getString(expectedResult, PlatformPubliclightingKeys.KEY_FAULTSTRING));
         }
     }
 
@@ -162,7 +159,7 @@ public class ResumeScheduleSteps {
 
         return Wait.untilAndReturn(() -> {
             final ResumeScheduleResponse retval = this.client.getResumeScheduleResponse(request);
-            Assert.assertNotNull(retval);
+            assertThat(retval).isNotNull();
             return retval;
         });
     }

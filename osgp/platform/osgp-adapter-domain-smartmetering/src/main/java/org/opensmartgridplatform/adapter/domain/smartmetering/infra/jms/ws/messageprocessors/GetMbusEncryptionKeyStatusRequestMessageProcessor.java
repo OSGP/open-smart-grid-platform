@@ -26,7 +26,7 @@ public class GetMbusEncryptionKeyStatusRequestMessageProcessor extends BaseReque
 
     @Autowired
     protected GetMbusEncryptionKeyStatusRequestMessageProcessor(
-            @Qualifier("domainSmartMeteringWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(messageProcessorMap, MessageType.GET_MBUS_ENCRYPTION_KEY_STATUS);
     }
 

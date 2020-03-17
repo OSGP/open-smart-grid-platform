@@ -12,21 +12,22 @@ import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
+import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.NotificationResponseMessageSender;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
-
-import org.opensmartgridplatform.shared.infra.jms.Constants;
-import org.opensmartgridplatform.shared.infra.jms.NotificationResponseMessageSender;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.springframework.stereotype.Component;
 
 // Send response message to the web service adapter.
+@Component(value = "domainMicrogridsOutboundWebServiceResponsesMessageSender")
 public class WebServiceResponseMessageSender implements NotificationResponseMessageSender {
 
     @Autowired
-    @Qualifier("domainMicrogridsOutgoingWebServiceResponsesJmsTemplate")
-    private JmsTemplate webServiceResponsesJmsTemplate;
+    @Qualifier("domainMicrogridsOutboundWebServiceResponsesJmsTemplate")
+    private JmsTemplate jmsTemplate;
 
     /**
      * Send a response message to the web service adapter using a custom time to
@@ -40,13 +41,13 @@ public class WebServiceResponseMessageSender implements NotificationResponseMess
     public void send(final ResponseMessage responseMessage, final Long timeToLive, final String messageType) {
 
         // Keep the original time to live from configuration.
-        final Long originalTimeToLive = this.webServiceResponsesJmsTemplate.getTimeToLive();
+        final Long originalTimeToLive = this.jmsTemplate.getTimeToLive();
         if (timeToLive != null) {
             // Set the custom time to live.
-            this.webServiceResponsesJmsTemplate.setTimeToLive(timeToLive);
+            this.jmsTemplate.setTimeToLive(timeToLive);
         }
 
-        this.webServiceResponsesJmsTemplate.send(new MessageCreator() {
+        this.jmsTemplate.send(new MessageCreator() {
 
             @Override
             public Message createMessage(final Session session) throws JMSException {
@@ -68,7 +69,7 @@ public class WebServiceResponseMessageSender implements NotificationResponseMess
 
         if (timeToLive != null) {
             // Restore the time to live from the configuration.
-            this.webServiceResponsesJmsTemplate.setTimeToLive(originalTimeToLive);
+            this.jmsTemplate.setTimeToLive(originalTimeToLive);
         }
     }
 

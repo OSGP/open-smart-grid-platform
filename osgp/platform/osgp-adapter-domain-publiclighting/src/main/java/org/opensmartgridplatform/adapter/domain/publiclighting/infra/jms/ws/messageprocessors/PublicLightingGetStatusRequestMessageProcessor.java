@@ -41,8 +41,8 @@ public class PublicLightingGetStatusRequestMessageProcessor extends BaseMessageP
 
     @Autowired
     public PublicLightingGetStatusRequestMessageProcessor(
-            WebServiceResponseMessageSender webServiceResponseMessageSender,
-            @Qualifier("domainPublicLightingWebServiceRequestMessageProcessorMap") MessageProcessorMap webServiceRequestMessageProcessorMap) {
+            final WebServiceResponseMessageSender webServiceResponseMessageSender,
+            @Qualifier("domainPublicLightingInboundWebServiceRequestsMessageProcessorMap") final MessageProcessorMap webServiceRequestMessageProcessorMap) {
         super(webServiceResponseMessageSender, webServiceRequestMessageProcessorMap, MessageType.GET_LIGHT_STATUS,
                 ComponentType.DOMAIN_PUBLIC_LIGHTING);
     }

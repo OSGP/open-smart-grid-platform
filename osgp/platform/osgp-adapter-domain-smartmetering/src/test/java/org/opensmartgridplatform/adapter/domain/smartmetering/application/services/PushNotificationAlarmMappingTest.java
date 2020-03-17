@@ -8,16 +8,11 @@
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Arrays;
 import java.util.EnumSet;
 
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AlarmType;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushNotificationAlarm;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto;
@@ -45,13 +40,13 @@ public class PushNotificationAlarmMappingTest {
         final PushNotificationAlarm pushNotificationAlarm = this.mapperFactory.getMapperFacade()
                 .map(pushNotificationAlarmDto, PushNotificationAlarm.class);
         // test mapping
-        assertNotNull(pushNotificationAlarm);
-        assertNull(pushNotificationAlarm.getDeviceIdentification());
+        assertThat(pushNotificationAlarm).isNotNull();
+        assertThat(pushNotificationAlarm.getDeviceIdentification()).isNull();
         // the constructor creates an empty EnumSet when passed a null value.
-        assertTrue(pushNotificationAlarmDto.getAlarms().isEmpty());
-        assertTrue(pushNotificationAlarm.getAlarms().isEmpty());
-        assertTrue("The alarm byes should be the same after the mapping",
-                Arrays.equals(pushNotificationAlarm.getAlarmBytes(), this.alarmBytes));
+        assertThat(pushNotificationAlarmDto.getAlarms()).isEmpty();
+        assertThat(pushNotificationAlarm.getAlarms()).isEmpty();
+        assertThat(this.alarmBytes).withFailMessage("The alarm bytes should be the same after the mapping")
+                .isEqualTo(pushNotificationAlarm.getAlarmBytes());
     }
 
     // Test if mapping a PushNotificationAlarm object succeeds when the EnumSet
@@ -67,10 +62,11 @@ public class PushNotificationAlarmMappingTest {
         final PushNotificationAlarm pushNotificationAlarm = this.mapperFactory.getMapperFacade()
                 .map(pushNotificationAlarmDto, PushNotificationAlarm.class);
         // test mapping
-        assertNotNull(pushNotificationAlarm);
-        assertEquals(deviceId, pushNotificationAlarm.getDeviceIdentification());
-        assertTrue(pushNotificationAlarm.getAlarms().isEmpty());
-        assertTrue(Arrays.equals(pushNotificationAlarm.getAlarmBytes(), this.alarmBytes));
+        assertThat(pushNotificationAlarm).isNotNull();
+        assertThat(pushNotificationAlarm.getDeviceIdentification()).isEqualTo(deviceId);
+        assertThat(pushNotificationAlarm.getAlarms()).isEmpty();
+        assertThat(this.alarmBytes).isEqualTo(pushNotificationAlarm.getAlarmBytes());
+
     }
 
     // Test if mapping a PushNotificationAlarm object succeeds when the EnumSet
@@ -86,10 +82,10 @@ public class PushNotificationAlarmMappingTest {
         final PushNotificationAlarm pushNotificationAlarm = this.mapperFactory.getMapperFacade()
                 .map(pushNotificationAlarmDto, PushNotificationAlarm.class);
         // test mapping
-        assertNotNull(pushNotificationAlarm);
-        assertEquals(deviceId, pushNotificationAlarm.getDeviceIdentification());
-        assertEquals(alarms.size(), pushNotificationAlarm.getAlarms().size());
-        assertTrue(pushNotificationAlarm.getAlarms().contains(AlarmType.CLOCK_INVALID));
-        assertTrue(Arrays.equals(pushNotificationAlarm.getAlarmBytes(), this.alarmBytes));
+        assertThat(pushNotificationAlarm).isNotNull();
+        assertThat(pushNotificationAlarm.getDeviceIdentification()).isEqualTo(deviceId);
+        assertThat(pushNotificationAlarm.getAlarms().size()).isEqualTo(alarms.size());
+        assertThat(pushNotificationAlarm.getAlarms().contains(AlarmType.CLOCK_INVALID)).isTrue();
+        assertThat(this.alarmBytes).isEqualTo(pushNotificationAlarm.getAlarmBytes());
     }
 }

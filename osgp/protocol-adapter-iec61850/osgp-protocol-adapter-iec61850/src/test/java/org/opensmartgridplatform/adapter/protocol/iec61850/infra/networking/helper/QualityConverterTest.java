@@ -1,8 +1,8 @@
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class QualityConverterTest {
 
@@ -18,6 +18,6 @@ public class QualityConverterTest {
         final short s = QualityConverter.toShort(ba);
 
         // assert
-        assertEquals(131, s);
+        assertThat(s).isEqualTo((short) 131);
     }
 }

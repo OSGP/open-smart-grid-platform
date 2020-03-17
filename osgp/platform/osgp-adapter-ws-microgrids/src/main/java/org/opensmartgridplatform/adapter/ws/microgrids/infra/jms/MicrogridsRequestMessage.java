@@ -9,7 +9,6 @@ package org.opensmartgridplatform.adapter.ws.microgrids.infra.jms;
 
 import java.io.Serializable;
 
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 
@@ -20,8 +19,7 @@ public class MicrogridsRequestMessage extends RequestMessage {
     private final MessageType messageType;
 
     public MicrogridsRequestMessage(final MessageType messageType, final String correlationUid,
-            final String organisationIdentification, final String deviceIdentification, final Serializable request,
-            final DateTime scheduleTime) {
+            final String organisationIdentification, final String deviceIdentification, final Serializable request) {
         super(correlationUid, organisationIdentification, deviceIdentification, request);
         this.messageType = messageType;
     }

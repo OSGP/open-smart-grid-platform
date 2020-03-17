@@ -7,16 +7,14 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileEntryValue;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CaptureObjectDto;
@@ -27,46 +25,51 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileGenericDa
 
 public class ProfileGenericDataResponseMapperTest {
 
-    private MonitoringMapper mapper = new MonitoringMapper();
+    private final MonitoringMapper mapper = new MonitoringMapper();
 
     private final static Class<?>[] EXPECTED_CLASS = new Class<?>[] { String.class, Date.class, BigDecimal.class,
             Long.class };
 
     @Test
     public void testConvertProfileGenericDataResponseVo() {
-        ProfileGenericDataResponseDto responseDto = this.makeResponseDto();
-        ProfileGenericDataResponse responseVo = this.mapper.map(responseDto, ProfileGenericDataResponse.class);
-        assertNotNull("response object should not be null", responseVo);
-        assertEquals("response object should return same number of profilentries", responseVo.getProfileEntries()
-                .get(0).getProfileEntryValues().size(), EXPECTED_CLASS.length);
+        final ProfileGenericDataResponseDto responseDto = this.makeResponseDto();
+        final ProfileGenericDataResponse responseVo = this.mapper.map(responseDto, ProfileGenericDataResponse.class);
+        assertThat(responseVo).withFailMessage("response object should not be null").isNotNull();
+
+        assertThat(responseVo.getProfileEntries().get(0).getProfileEntryValues().size())
+                .withFailMessage("response object should return same number of profilentries")
+                .isEqualTo(EXPECTED_CLASS.length);
         int i = 0;
-        for (ProfileEntryValue profileEntryValueVo : responseVo.getProfileEntries().get(0).getProfileEntryValues()) {
-            Class<?> clazz = profileEntryValueVo.getValue().getClass();
-            assertEquals("the return class should be of the same type", EXPECTED_CLASS[i++], clazz);
+        for (final ProfileEntryValue profileEntryValueVo : responseVo.getProfileEntries()
+                .get(0)
+                .getProfileEntryValues()) {
+            final Class<?> clazz = profileEntryValueVo.getValue().getClass();
+            assertThat(clazz).withFailMessage("the return class should be of the same type")
+                    .isEqualTo(EXPECTED_CLASS[i++]);
         }
     }
 
     private ProfileGenericDataResponseDto makeResponseDto() {
         final ObisCodeValuesDto obisCodeValuesDto = new ObisCodeValuesDto((byte) 1, (byte) 1, (byte) 1, (byte) 1,
                 (byte) 1, (byte) 1);
-        ProfileGenericDataResponseDto result = new ProfileGenericDataResponseDto(obisCodeValuesDto,
+        final ProfileGenericDataResponseDto result = new ProfileGenericDataResponseDto(obisCodeValuesDto,
                 this.makeCaptureObjectDtos(), this.makeProfileEntryDtos());
         return result;
     }
 
     private List<CaptureObjectDto> makeCaptureObjectDtos() {
-        List<CaptureObjectDto> result = new ArrayList<CaptureObjectDto>();
+        final List<CaptureObjectDto> result = new ArrayList<>();
         return result;
     }
 
     private List<ProfileEntryDto> makeProfileEntryDtos() {
-        List<ProfileEntryDto> result = new ArrayList<ProfileEntryDto>();
+        final List<ProfileEntryDto> result = new ArrayList<>();
         result.add(new ProfileEntryDto(this.makeProfileEntryValueDtos()));
         return result;
     }
 
     private List<ProfileEntryValueDto> makeProfileEntryValueDtos() {
-        List<ProfileEntryValueDto> result = new ArrayList<ProfileEntryValueDto>();
+        final List<ProfileEntryValueDto> result = new ArrayList<>();
         result.add(new ProfileEntryValueDto("Test"));
         result.add(new ProfileEntryValueDto(new Date()));
         result.add(new ProfileEntryValueDto(new BigDecimal(123.45d)));

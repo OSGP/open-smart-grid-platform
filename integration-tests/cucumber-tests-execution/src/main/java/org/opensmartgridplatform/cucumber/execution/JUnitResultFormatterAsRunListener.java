@@ -1,3 +1,10 @@
+/**
+ * Copyright 2018 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.cucumber.execution;
 
 import java.io.ByteArrayOutputStream;
@@ -16,6 +23,9 @@ import org.junit.runner.notification.RunListener;
  *
  * Because Ant JUnit formatter uses one stderr/stdout per one test suite, we
  * capture each test case into a separate report file.
+ *
+ * SonarQube reports issue S106 about using stderr/stdout. These issues are
+ * suppressed.
  */
 public class JUnitResultFormatterAsRunListener extends RunListener {
     protected final JUnitResultFormatter formatter;
@@ -38,6 +48,7 @@ public class JUnitResultFormatterAsRunListener extends RunListener {
         // Empty body.
     }
 
+    @SuppressWarnings("squid:S106")
     @Override
     public void testStarted(final Description description) throws Exception {
         this.formatter.startTestSuite(new JUnitTest(description.getDisplayName()));
@@ -55,6 +66,7 @@ public class JUnitResultFormatterAsRunListener extends RunListener {
         System.setErr(new PrintStream(this.stderr));
     }
 
+    @SuppressWarnings("squid:S106")
     @Override
     public void testFinished(final Description description) throws Exception {
         System.out.flush();
@@ -83,8 +95,4 @@ public class JUnitResultFormatterAsRunListener extends RunListener {
         this.formatter.addError(new DescriptionAsTest(failure.getDescription()), failure.getException());
     }
 
-    @Override
-    public void testIgnored(final Description description) throws Exception {
-        super.testIgnored(description);
-    }
 }

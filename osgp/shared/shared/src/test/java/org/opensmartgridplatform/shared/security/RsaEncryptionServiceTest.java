@@ -7,8 +7,7 @@
  */
 package org.opensmartgridplatform.shared.security;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,7 +16,7 @@ import java.security.KeyPair;
 import java.util.Random;
 
 import org.apache.commons.codec.binary.Hex;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class RsaEncryptionServiceTest {
 
@@ -68,20 +67,20 @@ public class RsaEncryptionServiceTest {
         this.assertDecryptionOfKey(rsaEncryptionService, AUTHENTICATION_KEY_ENCRYPTED_HEX_STRING,
                 AUTHENTICATION_KEY_PATH, "authentication key");
 
-        this.assertDecryptionOfKey(rsaEncryptionService, ENCRYPTION_KEY_ENCRYPTED_HEX_STRING,
-                ENCRYPTION_KEY_PATH, "encryption key");
+        this.assertDecryptionOfKey(rsaEncryptionService, ENCRYPTION_KEY_ENCRYPTED_HEX_STRING, ENCRYPTION_KEY_PATH,
+                "encryption key");
 
         this.assertDecryptionOfKey(rsaEncryptionService, MASTER_KEY_ENCRYPTED_HEX_STRING, MASTER_KEY_PATH,
                 "master key");
     }
 
-    private void assertDecryptionOfKey(final RsaEncryptionService rsaEncryptionService,
-            final String encryptedHexString, final String keyPath, final String keyType) throws Exception {
+    private void assertDecryptionOfKey(final RsaEncryptionService rsaEncryptionService, final String encryptedHexString,
+            final String keyPath, final String keyType) throws Exception {
 
         final byte[] expected = Files.readAllBytes(Paths.get(keyPath));
         final byte[] actual = rsaEncryptionService.decrypt(Hex.decodeHex(encryptedHexString.toCharArray()));
-
-        assertEquals("decrypted " + keyType, Hex.encodeHexString(expected), Hex.encodeHexString(actual));
+        assertThat(Hex.encodeHexString(actual)).withFailMessage("decrypted " + keyType)
+                .isEqualTo(Hex.encodeHexString(expected));
     }
 
     @Test
@@ -91,7 +90,7 @@ public class RsaEncryptionServiceTest {
         final byte[] input = this.createRandomInput();
         final byte[] encrypted = rsaEncryptionService.encrypt(input);
         final byte[] decrypted = rsaEncryptionService.decrypt(encrypted);
-        assertArrayEquals("decrypted bytes after encryption", input, decrypted);
+        assertThat(decrypted).withFailMessage("decrypted bytes after encryption").isEqualTo(input);
     }
 
     private RsaEncryptionService createRsaEncryptionServiceFromStoredKeys() {

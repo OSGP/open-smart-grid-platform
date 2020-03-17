@@ -23,6 +23,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Transient;
 
 import org.apache.commons.codec.binary.Base64;
+import org.hibernate.annotations.Proxy;
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
 import org.opensmartgridplatform.webdevicesimulator.domain.valueobjects.EventNotificationType;
 import org.opensmartgridplatform.webdevicesimulator.domain.valueobjects.LightType;
@@ -35,6 +36,7 @@ import com.google.common.base.Joiner;
  * An entity class which contains the information of a single device.
  */
 @Entity
+@Proxy(lazy = false)
 public class Device extends AbstractEntity {
 
     /**

@@ -8,6 +8,7 @@
 package org.opensmartgridplatform.domain.core.repositories;
 
 import java.net.InetAddress;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -29,6 +30,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public interface DeviceRepository extends JpaRepository<Device, Long>, JpaSpecificationExecutor<Device> {
 
+    List<Device> findByIdIn(Collection<Long> ids);
+
     Device findByDeviceIdentification(String deviceIdentification);
 
     @Query("SELECT d FROM Device d JOIN FETCH d.deviceFirmwareFiles dff JOIN FETCH dff.firmwareFile ff "
@@ -42,25 +45,48 @@ public interface DeviceRepository extends JpaRepository<Device, Long>, JpaSpecif
 
     List<Device> findByNetworkAddress(InetAddress address);
 
-    @Query("SELECT d " + "FROM Device d " + "WHERE EXISTS " + "(" + "	SELECT auth.id "
-            + "	FROM d.authorizations auth " + "	WHERE auth.organisation = ?1" + ")")
+    // @formatter:off
+    @Query("SELECT d "
+         + "FROM Device d "
+         + "WHERE EXISTS "
+         + "("
+         + "    SELECT auth.id "
+         + "    FROM d.authorizations auth "
+         + "    WHERE auth.organisation = ?1"
+         + ")")
+    // @formatter:on
     Page<Device> findAllAuthorized(Organisation organisation, Pageable request);
 
-    @Query("SELECT d " + "FROM Device d " + "WHERE NOT EXISTS " + "(" + "	SELECT auth.id "
-            + "	FROM d.authorizations auth "
-            + "	WHERE auth.functionGroup = org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup.OWNER"
-            + ")")
+    // @formatter:off
+    @Query("SELECT d "
+         + "FROM Device d "
+         + "WHERE NOT EXISTS "
+         + "("
+         + "    SELECT auth.id "
+         + "    FROM d.authorizations auth "
+         + "    WHERE auth.functionGroup = org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup.OWNER"
+         + ")")
+    // @formatter:on
     List<Device> findDevicesWithNoOwner();
 
-    @Query("SELECT d " + "FROM Device d " + "WHERE EXISTS " + "(" + "	SELECT auth.id "
-            + "	FROM d.authorizations auth " + "	WHERE auth.organisation = ?1 AND "
-            + "		(auth.functionGroup = org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup.OWNER OR "
-            + "		 auth.functionGroup = org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup.INSTALLATION)"
-            + ") AND " + "d.modificationTime >= ?2")
+    // @formatter:off
+    @Query("SELECT d "
+         + "FROM Device d "
+         + "WHERE EXISTS "
+         + "("
+         + "    SELECT auth.id "
+         + "    FROM d.authorizations auth "
+         + "    WHERE auth.organisation = ?1 AND "
+         + "        (auth.functionGroup = org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup.OWNER OR "
+         + "         auth.functionGroup = org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup.INSTALLATION)"
+         + ") AND "
+         + "d.modificationTime >= ?2")
+    // @formatter:on
     List<Device> findRecentDevices(Organisation organisation, Date fromDate);
 
     /*
-     * We need these native queries below because these entities dont have an Id
+     * We need these native queries below because these entities don't have an
+     * Id.
      */
     @Modifying
     @Query(value = "delete from device_output_setting", nativeQuery = true)

@@ -21,13 +21,11 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityK
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsSecurityKeyRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
+import org.springframework.beans.factory.annotation.Autowired;
 
-public class DlmsDeviceSteps extends GlueBase {
+public class DlmsDeviceSteps {
 
     private static final SecurityKeyType E_METER_SECURITY_KEYTYPES[] = new SecurityKeyType[] {
             SecurityKeyType.E_METER_ENCRYPTION, SecurityKeyType.E_METER_MASTER,

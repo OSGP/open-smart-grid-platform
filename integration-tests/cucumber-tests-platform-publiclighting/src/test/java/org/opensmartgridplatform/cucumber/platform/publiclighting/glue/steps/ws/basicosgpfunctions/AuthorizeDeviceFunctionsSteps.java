@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.publiclighting.glue.steps.ws.basicosgpfunctions;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
@@ -19,12 +20,6 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
 import org.joda.time.DateTime;
-import org.junit.Assert;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ws.soap.client.SoapFaultClientException;
-
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusRequest;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.LightValue;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.ResumeScheduleRequest;
@@ -53,9 +48,13 @@ import org.opensmartgridplatform.cucumber.platform.publiclighting.support.ws.tar
 import org.opensmartgridplatform.cucumber.platform.publiclighting.support.ws.tariffswitching.TariffSwitchingScheduleManagementClient;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 /**
  * Class with all the AuthorizeDeviceFunctions steps
@@ -123,7 +122,7 @@ public class AuthorizeDeviceFunctionsSteps {
         }
     }
 
-    @Then("the publiclighting device function response is \"([^\"]*)\"")
+    @Then("the publiclighting device function response is \"{}\"")
     public void thePublicLightingDeviceFunctionResponseIsSuccessful(final Boolean allowed) {
         if (allowed) {
             Wait.until(() -> {
@@ -133,14 +132,14 @@ public class AuthorizeDeviceFunctionsSteps {
                 } catch (final Exception ex) {
                     // do nothing
                 }
-                Assert.assertNotNull(response);
-                Assert.assertTrue(!(response instanceof SoapFaultClientException));
+                assertThat(response).isNotNull();
+                assertThat(response instanceof SoapFaultClientException).isFalse();
             });
         } else {
-            Assert.assertNotNull(this.throwable);
+            assertThat(this.throwable).isNotNull();
 
             if (!this.throwable.getMessage().equals("METHOD_NOT_ALLOWED_FOR_OWNER")) {
-                Assert.assertEquals("UNAUTHORIZED", this.throwable.getMessage());
+                assertThat(this.throwable.getMessage()).isEqualTo("UNAUTHORIZED");
             }
         }
     }
@@ -156,8 +155,8 @@ public class AuthorizeDeviceFunctionsSteps {
         lightValue.setDimValue(100);
         lightValue.setOn(true);
         request.getLightValue().add(lightValue);
-        ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE,
-                this.publicLightingAdHocManagementClient.setLight(request));
+        ScenarioContext.current()
+                .put(PlatformPubliclightingKeys.RESPONSE, this.publicLightingAdHocManagementClient.setLight(request));
     }
 
     private void setLightSchedule(final Map<String, String> requestParameters)
@@ -184,8 +183,9 @@ public class AuthorizeDeviceFunctionsSteps {
         windowType.setMinutesBefore(0);
         schedule.setTriggerWindow(windowType);
         request.getSchedules().add(schedule);
-        ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE,
-                this.publicLightingScheduleManagementClient.setSchedule(request));
+        ScenarioContext.current()
+                .put(PlatformPubliclightingKeys.RESPONSE,
+                        this.publicLightingScheduleManagementClient.setSchedule(request));
     }
 
     private void setTariffSchedule(final Map<String, String> requestParameters)
@@ -201,13 +201,15 @@ public class AuthorizeDeviceFunctionsSteps {
         tariffValue.setIndex(1);
         schedule.getTariffValue().add(tariffValue);
         schedule.setIndex(0);
-        schedule.setWeekDay(org.opensmartgridplatform.adapter.ws.schema.tariffswitching.schedulemanagement.WeekDayType.ALL);
+        schedule.setWeekDay(
+                org.opensmartgridplatform.adapter.ws.schema.tariffswitching.schedulemanagement.WeekDayType.ALL);
         schedule.setTime(DateTime.now().toString());
         schedule.setIsEnabled(true);
         schedule.setMinimumLightsOn(10);
         request.getSchedules().add(schedule);
-        ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE,
-                this.tariffSwitchingScheduleManagementClient.setSchedule(request));
+        ScenarioContext.current()
+                .put(PlatformPubliclightingKeys.RESPONSE,
+                        this.tariffSwitchingScheduleManagementClient.setSchedule(request));
     }
 
     private void getPowerUsageHistory(final Map<String, String> requestParameters)
@@ -224,8 +226,9 @@ public class AuthorizeDeviceFunctionsSteps {
         request.setTimePeriod(timePeriod);
         request.setHistoryTermType(HistoryTermType.LONG);
 
-        ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE,
-                this.publicLightingDeviceMonitoringClient.getPowerUsageHistory(request));
+        ScenarioContext.current()
+                .put(PlatformPubliclightingKeys.RESPONSE,
+                        this.publicLightingDeviceMonitoringClient.getPowerUsageHistory(request));
     }
 
     private void resumeSchedule(final Map<String, String> requestParameters)
@@ -235,8 +238,9 @@ public class AuthorizeDeviceFunctionsSteps {
                 getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION,
                         PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE,
-                this.publicLightingAdHocManagementClient.resumeSchedule(request));
+        ScenarioContext.current()
+                .put(PlatformPubliclightingKeys.RESPONSE,
+                        this.publicLightingAdHocManagementClient.resumeSchedule(request));
     }
 
     private void setTransition(final Map<String, String> requestParameters)
@@ -247,8 +251,9 @@ public class AuthorizeDeviceFunctionsSteps {
                         PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
         request.setTransitionType(TransitionType.DAY_NIGHT);
 
-        ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE,
-                this.publicLightingAdHocManagementClient.setTransition(request));
+        ScenarioContext.current()
+                .put(PlatformPubliclightingKeys.RESPONSE,
+                        this.publicLightingAdHocManagementClient.setTransition(request));
     }
 
     private void getTariffStatus(final Map<String, String> requestParameters) throws WebServiceSecurityException {
@@ -256,8 +261,8 @@ public class AuthorizeDeviceFunctionsSteps {
         request.setDeviceIdentification(
                 getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION,
                         PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
-        ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE,
-                this.tariffSwitchingAdHocManagementClient.getStatus(request));
+        ScenarioContext.current()
+                .put(PlatformPubliclightingKeys.RESPONSE, this.tariffSwitchingAdHocManagementClient.getStatus(request));
     }
 
     private void getLightStatus(final Map<String, String> requestParameters)
@@ -266,7 +271,7 @@ public class AuthorizeDeviceFunctionsSteps {
         request.setDeviceIdentification(
                 getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION,
                         PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
-        ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE,
-                this.publicLightingAdHocManagementClient.getStatus(request));
+        ScenarioContext.current()
+                .put(PlatformPubliclightingKeys.RESPONSE, this.publicLightingAdHocManagementClient.getStatus(request));
     }
 }

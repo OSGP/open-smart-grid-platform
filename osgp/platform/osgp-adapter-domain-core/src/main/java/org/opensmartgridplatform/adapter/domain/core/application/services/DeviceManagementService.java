@@ -21,22 +21,19 @@ import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service(value = "domainCoreDeviceManagementService")
-@Transactional(value = "transactionManager")
 public class DeviceManagementService extends AbstractService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementService.class);
 
-    /**
-     * Constructor
-     */
-    public DeviceManagementService() {
-        // Parameterless constructor required for transactions...
-    }
+    @Autowired
+    private TransactionalDeviceService transactionalDeviceService;
 
+    @Transactional(value = "transactionManager")
     public void setEventNotifications(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final List<EventNotificationType> eventNotifications, final String messageType,
             final int messagePriority) throws FunctionalException {
@@ -58,6 +55,7 @@ public class DeviceManagementService extends AbstractService {
                 device.getIpAddress());
     }
 
+    @Transactional(value = "transactionManager")
     public void updateDeviceSslCertification(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final Certification certification, final String messageType,
             final int messagePriority) throws FunctionalException {
@@ -80,6 +78,7 @@ public class DeviceManagementService extends AbstractService {
                 messageType, messagePriority, device.getIpAddress());
     }
 
+    @Transactional(value = "transactionManager")
     public void setDeviceVerificationKey(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final String verificationKey, final String messageType,
             final int messagePriority) throws FunctionalException {
@@ -104,19 +103,20 @@ public class DeviceManagementService extends AbstractService {
 
         LOGGER.debug(
                 "SetDeviceLifecycleStatus called with organisation {}, deviceLifecycleStatus {} and deviceIdentification {}",
-                organisationIdentification, deviceLifecycleStatus.name(), deviceIdentification);
+                organisationIdentification, deviceLifecycleStatus, deviceIdentification);
 
         this.findOrganisation(organisationIdentification);
-        final Device device = this.deviceDomainService.searchDevice(deviceIdentification);
 
-        device.setDeviceLifecycleStatus(deviceLifecycleStatus);
-        this.deviceDomainService.saveDevice(device);
+        this.transactionalDeviceService.updateDeviceLifecycleStatus(deviceIdentification, deviceLifecycleStatus);
 
         final ResponseMessageResultType result = ResponseMessageResultType.OK;
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
-                .withDeviceIdentification(deviceIdentification).withResult(result).build();
+                .withCorrelationUid(correlationUid)
+                .withOrganisationIdentification(organisationIdentification)
+                .withDeviceIdentification(deviceIdentification)
+                .withResult(result)
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage);
     }
 
@@ -126,16 +126,17 @@ public class DeviceManagementService extends AbstractService {
                 organisationIdentification, deviceIdentification, cdmaSettings);
 
         this.findOrganisation(organisationIdentification);
-        final Device device = this.deviceDomainService.searchDevice(deviceIdentification);
 
-        device.updateCdmaSettings(cdmaSettings);
-        this.deviceDomainService.saveDevice(device);
+        this.transactionalDeviceService.updateDeviceCdmaSettings(deviceIdentification, cdmaSettings);
 
         final ResponseMessageResultType result = ResponseMessageResultType.OK;
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
-                .withDeviceIdentification(deviceIdentification).withResult(result).build();
+                .withCorrelationUid(correlationUid)
+                .withOrganisationIdentification(organisationIdentification)
+                .withDeviceIdentification(deviceIdentification)
+                .withResult(result)
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage);
     }
 

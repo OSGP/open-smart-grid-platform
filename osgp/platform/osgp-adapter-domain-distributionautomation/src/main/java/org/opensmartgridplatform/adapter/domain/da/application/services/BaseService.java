@@ -17,15 +17,11 @@ import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.domain.da.application.mapping.DomainDistributionAutomationMapper;
 import org.opensmartgridplatform.adapter.domain.da.infra.jms.core.OsgpCoreRequestMessageSender;
 import org.opensmartgridplatform.adapter.domain.da.infra.jms.ws.WebServiceResponseMessageSender;
-import org.opensmartgridplatform.domain.core.entities.RtuDevice;
-import org.opensmartgridplatform.domain.core.repositories.RtuDeviceRepository;
-import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
+import org.opensmartgridplatform.domain.core.entities.RtuDevice;
 import org.opensmartgridplatform.domain.core.exceptions.UnknownEntityException;
+import org.opensmartgridplatform.domain.core.repositories.RtuDeviceRepository;
 import org.opensmartgridplatform.domain.core.services.DeviceDomainService;
 import org.opensmartgridplatform.domain.core.services.OrganisationDomainService;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
@@ -33,6 +29,9 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
+import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 public class BaseService {
 
@@ -46,14 +45,14 @@ public class BaseService {
     protected RtuDeviceRepository rtuDeviceRepository;
 
     @Autowired
-    @Qualifier(value = "domainDistributionAutomationOutgoingOsgpCoreRequestMessageSender")
+    @Qualifier(value = "domainDistributionAutomationOutboundOsgpCoreRequestsMessageSender")
     protected OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
 
     @Autowired
     protected DomainDistributionAutomationMapper domainCoreMapper;
 
     @Autowired
-    @Qualifier(value = "domainDistributionAutomationOutgoingWebServiceResponseMessageSender")
+    @Qualifier(value = "domainDistributionAutomationOutboundWebServiceResponsesMessageSender")
     protected WebServiceResponseMessageSender webServiceResponseMessageSender;
 
     @Autowired
@@ -69,13 +68,10 @@ public class BaseService {
         try {
             organisation = this.organisationDomainService.searchOrganisation(organisationIdentification);
         } catch (final UnknownEntityException e) {
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_ORGANISATION, ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION, e);
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_ORGANISATION,
+                    ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION, e);
         }
         return organisation;
-    }
-
-    protected RtuDevice findRtuDeviceForDevice(final Device device) {
-        return this.rtuDeviceRepository.findById(device.getId());
     }
 
     protected OsgpException ensureOsgpException(final Throwable t, final String defaultMessage) {
@@ -107,7 +103,8 @@ public class BaseService {
         return timeOfLastCommunication.isBefore(timeToCheck);
     }
 
-    protected static String getCorrelationId(final String organisationIdentification, final String deviceIdentification) {
+    protected static String getCorrelationId(final String organisationIdentification,
+            final String deviceIdentification) {
 
         return organisationIdentification + "|||" + deviceIdentification + "|||" + UUID.randomUUID().toString();
     }

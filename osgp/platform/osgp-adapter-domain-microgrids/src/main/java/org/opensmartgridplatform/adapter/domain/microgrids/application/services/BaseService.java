@@ -7,24 +7,22 @@
  */
 package org.opensmartgridplatform.adapter.domain.microgrids.application.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-
 import org.opensmartgridplatform.adapter.domain.microgrids.application.mapping.DomainMicrogridsMapper;
 import org.opensmartgridplatform.adapter.domain.microgrids.infra.jms.core.OsgpCoreRequestMessageSender;
 import org.opensmartgridplatform.adapter.domain.microgrids.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
 import org.opensmartgridplatform.domain.core.exceptions.UnknownEntityException;
+import org.opensmartgridplatform.domain.core.repositories.RtuDeviceRepository;
 import org.opensmartgridplatform.domain.core.services.DeviceDomainService;
 import org.opensmartgridplatform.domain.core.services.OrganisationDomainService;
-import org.opensmartgridplatform.domain.core.entities.RtuDevice;
-import org.opensmartgridplatform.domain.core.repositories.RtuDeviceRepository;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 public class BaseService {
 
@@ -38,14 +36,14 @@ public class BaseService {
     protected RtuDeviceRepository rtuDeviceRepository;
 
     @Autowired
-    @Qualifier(value = "domainMicrogridsOutgoingOsgpCoreRequestMessageSender")
+    @Qualifier(value = "domainMicrogridsOutboundOsgpCoreRequestsMessageSender")
     protected OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
 
     @Autowired
     protected DomainMicrogridsMapper domainCoreMapper;
 
     @Autowired
-    @Qualifier(value = "domainMicrogridsOutgoingWebServiceResponseMessageSender")
+    @Qualifier(value = "domainMicrogridsOutboundWebServiceResponsesMessageSender")
     protected WebServiceResponseMessageSender webServiceResponseMessageSender;
 
     protected Device findActiveDevice(final String deviceIdentification) throws FunctionalException {
@@ -61,10 +59,6 @@ public class BaseService {
                     e);
         }
         return organisation;
-    }
-
-    protected RtuDevice findRtuDeviceForDevice(final Device device) {
-        return this.rtuDeviceRepository.findById(device.getId());
     }
 
     protected OsgpException ensureOsgpException(final Throwable t, final String defaultMessage) {

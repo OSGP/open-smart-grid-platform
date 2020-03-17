@@ -40,9 +40,8 @@ public class TariffSwitchingGetStatusRequestMessageProcessor extends BaseMessage
     private AdHocManagementService adHocManagementService;
 
     @Autowired
-    public TariffSwitchingGetStatusRequestMessageProcessor(
-            ResponseMessageSender responseMessageSender,
-            @Qualifier("domainTariffSwitchingWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+    public TariffSwitchingGetStatusRequestMessageProcessor(final ResponseMessageSender responseMessageSender,
+            @Qualifier("domainTariffSwitchingInboundWebServiceRequestsMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.GET_TARIFF_STATUS,
                 ComponentType.DOMAIN_TARIFF_SWITCHING);
     }

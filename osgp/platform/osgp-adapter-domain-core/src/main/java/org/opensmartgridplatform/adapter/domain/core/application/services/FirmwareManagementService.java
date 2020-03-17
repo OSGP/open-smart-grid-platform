@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -22,11 +23,15 @@ import org.opensmartgridplatform.domain.core.entities.DeviceModel;
 import org.opensmartgridplatform.domain.core.entities.FirmwareFile;
 import org.opensmartgridplatform.domain.core.entities.FirmwareModule;
 import org.opensmartgridplatform.domain.core.entities.Manufacturer;
+import org.opensmartgridplatform.domain.core.entities.Ssld;
+import org.opensmartgridplatform.domain.core.entities.SsldPendingFirmwareUpdate;
 import org.opensmartgridplatform.domain.core.repositories.DeviceFirmwareFileRepository;
 import org.opensmartgridplatform.domain.core.repositories.DeviceModelRepository;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.FirmwareFileRepository;
 import org.opensmartgridplatform.domain.core.repositories.ManufacturerRepository;
+import org.opensmartgridplatform.domain.core.repositories.SsldPendingFirmwareUpdateRepository;
+import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleType;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareUpdateMessageDataContainer;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion;
@@ -40,17 +45,20 @@ import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.opensmartgridplatform.shared.validation.Identification;
+import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 @Service(value = "domainCoreFirmwareManagementService")
 @Transactional(value = "transactionManager")
 public class FirmwareManagementService extends AbstractService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FirmwareManagementService.class);
 
     private static final String INSTALLER = "Inserted to match the version reported by the device.";
 
@@ -68,6 +76,12 @@ public class FirmwareManagementService extends AbstractService {
 
     @Autowired
     private ManufacturerRepository manufacturerRepository;
+
+    @Autowired
+    private SsldPendingFirmwareUpdateRepository ssldPendingFirmwareUpdateRepository;
+
+    @Value("${ssld.pending.firmware.update.get.firmware.version.delay}")
+    private Long getFirmwareVersionDelay;
 
     /**
      * Constructor
@@ -89,11 +103,75 @@ public class FirmwareManagementService extends AbstractService {
         this.findOrganisation(ids.getOrganisationIdentification());
         final Device device = this.findActiveDevice(ids.getDeviceIdentification());
 
-        this.osgpCoreRequestMessageSender.send(
+        if (device instanceof Ssld) {
+            this.createSsldPendingFirmwareUpdateRecord(ids, firmwareUpdateMessageDataContainer.getFirmwareUrl());
+        }
+
+        this.osgpCoreRequestMessageSender.sendWithScheduledTime(
                 new RequestMessage(ids,
                         this.domainCoreMapper.map(firmwareUpdateMessageDataContainer,
                                 org.opensmartgridplatform.dto.valueobjects.FirmwareUpdateMessageDataContainer.class)),
                 messageType, messagePriority, device.getIpAddress(), scheduleTime);
+    }
+
+    private void createSsldPendingFirmwareUpdateRecord(final CorrelationIds ids, final String firmwareUrl) {
+        try {
+            final String firmwareFilename = getFirmwareFilename(firmwareUrl);
+
+            final List<FirmwareFile> firmwareFiles = this.firmwareFileRepository.findByFilename(firmwareFilename);
+            Assert.isTrue(firmwareFiles.size() == 1, "Expected 1 firmware file for filename: " + firmwareFilename);
+            final FirmwareFile firmwareFile = firmwareFiles.get(0);
+
+            final Map<FirmwareModule, String> firmwareModuleVersions = firmwareFile.getModuleVersions();
+            Assert.isTrue(firmwareModuleVersions.size() == 1,
+                    "Expected 1 firmware module for: " + firmwareModuleVersions);
+            final Entry<FirmwareModule, String> firmwareModuleVersion = firmwareModuleVersions.entrySet()
+                    .iterator()
+                    .next();
+            final FirmwareModuleType firmwareModuleType = FirmwareModuleType
+                    .valueOf(firmwareModuleVersion.getKey().getDescription().toUpperCase());
+            final String firmwareVersion = firmwareModuleVersion.getValue();
+
+            SsldPendingFirmwareUpdate ssldPendingFirmwareUpdate = new SsldPendingFirmwareUpdate(
+                    ids.getDeviceIdentification(), firmwareModuleType, firmwareVersion,
+                    ids.getOrganisationIdentification(), ids.getCorrelationUid());
+            ssldPendingFirmwareUpdate = this.ssldPendingFirmwareUpdateRepository.save(ssldPendingFirmwareUpdate);
+
+            LOGGER.info("Saved pending fimware update record for SSLD: {}, {}", ids.getDeviceIdentification(),
+                    ssldPendingFirmwareUpdate);
+        } catch (final Exception e) {
+            LOGGER.error("Caugth exception when creating pending firmware update record for SSLD: {}",
+                    ids.getDeviceIdentification(), e);
+        }
+    }
+
+    private static String getFirmwareFilename(final String firmwareUrl) {
+        final String[] split = firmwareUrl.split("/");
+        Assert.isTrue(split.length >= 1, "Splitting URL on / failed!");
+        return split[split.length - 1];
+    }
+
+    public void handleSsldPendingFirmwareUpdate(final String deviceIdentification) {
+
+        final SsldPendingFirmwareUpdate ssldPendingFirmwareUpdate = this.ssldPendingFirmwareUpdateRepository
+                .findByDeviceIdentification(deviceIdentification);
+
+        if (ssldPendingFirmwareUpdate != null) {
+            final String organisationIdentification = ssldPendingFirmwareUpdate.getOrganisationIdentification();
+            final String correlationUid = ssldPendingFirmwareUpdate.getCorrelationUid();
+
+            LOGGER.info(
+                    "Handling SSLD pending firmware update for device identification: {}, organisation identification: {} and correlation UID: {}.",
+                    deviceIdentification, organisationIdentification, correlationUid);
+
+            try {
+                final int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
+                this.getFirmwareVersion(organisationIdentification, deviceIdentification, correlationUid,
+                        DeviceFunction.GET_FIRMWARE_VERSION.name(), messagePriority, this.getFirmwareVersionDelay);
+            } catch (final FunctionalException e) {
+                LOGGER.error("Caught exception when calling get firmware version", e);
+            }
+        }
     }
 
     // === GET FIRMWARE VERSION ===
@@ -102,15 +180,23 @@ public class FirmwareManagementService extends AbstractService {
             @Identification final String deviceIdentification, final String correlationUid, final String messageType,
             final int messagePriority) throws FunctionalException {
 
+        this.getFirmwareVersion(organisationIdentification, deviceIdentification, correlationUid, messageType,
+                messagePriority, null);
+    }
+
+    public void getFirmwareVersion(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, final String correlationUid, final String messageType,
+            final int messagePriority, final Long delay) throws FunctionalException {
+
         LOGGER.debug("Get firmware version called with organisation [{}], device [{}].", organisationIdentification,
                 deviceIdentification);
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
 
-        this.osgpCoreRequestMessageSender.send(
+        this.osgpCoreRequestMessageSender.sendWithDelay(
                 new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, null), messageType,
-                messagePriority, device.getIpAddress());
+                messagePriority, device.getIpAddress(), delay);
     }
 
     public void handleGetFirmwareVersionResponse(final List<FirmwareVersionDto> firmwareVersionsDto,
@@ -138,14 +224,55 @@ public class FirmwareManagementService extends AbstractService {
 
         this.checkFirmwareHistory(ids.getDeviceIdentification(), firmwareVersions);
 
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withIds(ids)
-                .withResult(result)
-                .withOsgpException(osgpException)
-                .withDataObject((Serializable) firmwareVersions)
-                .withMessagePriority(messagePriority)
-                .build();
-        this.webServiceResponseMessageSender.send(responseMessage);
+        final boolean hasPendingFirmwareUpdate = this.checkSsldPendingFirmwareUpdate(ids, firmwareVersions);
+
+        if (!hasPendingFirmwareUpdate) {
+            final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                    .withIds(ids)
+                    .withResult(result)
+                    .withOsgpException(osgpException)
+                    .withDataObject((Serializable) firmwareVersions)
+                    .withMessagePriority(messagePriority)
+                    .build();
+            this.webServiceResponseMessageSender.send(responseMessage);
+        }
+    }
+
+    private boolean checkSsldPendingFirmwareUpdate(final CorrelationIds ids,
+            final List<FirmwareVersion> firmwareVersions) {
+
+        final String deviceIdentification = ids.getDeviceIdentification();
+
+        final SsldPendingFirmwareUpdate ssldPendingFirmwareUpdate = this.ssldPendingFirmwareUpdateRepository
+                .findByDeviceIdentification(deviceIdentification);
+        if (ssldPendingFirmwareUpdate == null) {
+            return false;
+        }
+        if (!ssldPendingFirmwareUpdate.getCorrelationUid().equals(ids.getCorrelationUid())) {
+            return false;
+        }
+
+        LOGGER.info("Found SSLD pending firmware update record for device identification: {}, {}.",
+                deviceIdentification, ssldPendingFirmwareUpdate);
+
+        final FirmwareModuleType expectedFirmwareModuleType = ssldPendingFirmwareUpdate.getFirmwareModuleType();
+        final String expectedFirmwareVersion = ssldPendingFirmwareUpdate.getFirmwareVersion();
+        final boolean foundExpectedFirmwareVersion = firmwareVersions.stream()
+                .anyMatch(fv -> expectedFirmwareModuleType.equals(fv.getFirmwareModuleType())
+                        && expectedFirmwareVersion.equals(fv.getVersion()));
+
+        if (foundExpectedFirmwareVersion) {
+            LOGGER.info(
+                    "Expected firmware version from SSLD pending firmware update record matches firmware version as retrieved from device identification: {}, firmware version: {}, firmware module type: {}.",
+                    deviceIdentification, expectedFirmwareVersion, expectedFirmwareModuleType);
+        } else {
+            LOGGER.error(
+                    "Expected firmware version from SSLD pending firmware update record does not match firmware version as retrieved from device identification: {}, expected firmware version: {}, expected firmware module type: {}, actual firmware version and module type list: {}",
+                    deviceIdentification, expectedFirmwareVersion, expectedFirmwareModuleType, firmwareVersions);
+        }
+
+        this.ssldPendingFirmwareUpdateRepository.delete(ssldPendingFirmwareUpdate);
+        return true;
     }
 
     private void checkFirmwareHistory(final String deviceId,
@@ -233,8 +360,9 @@ public class FirmwareManagementService extends AbstractService {
     }
 
     private static FirmwareModule createFirmwareModule(final FirmwareVersion firmwareVersion) {
-        final String description = firmwareVersion.getFirmwareModuleType().getDescription().toLowerCase(
-                Locale.getDefault());
+        final String description = firmwareVersion.getFirmwareModuleType()
+                .getDescription()
+                .toLowerCase(Locale.getDefault());
         return new FirmwareModule(description);
     }
 

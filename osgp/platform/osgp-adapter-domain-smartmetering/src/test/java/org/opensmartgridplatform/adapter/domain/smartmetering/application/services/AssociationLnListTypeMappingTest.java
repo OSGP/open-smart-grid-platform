@@ -7,15 +7,13 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AccessRight;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AccessSelectorList;
@@ -40,7 +38,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.MethodAccessItem
 
 public class AssociationLnListTypeMappingTest {
 
-    private ConfigurationMapper configurationMapper = new ConfigurationMapper();
+    private final ConfigurationMapper configurationMapper = new ConfigurationMapper();
 
     @Test
     public void testAssociationLnListTypeMappingWithEmptyLists() {
@@ -53,7 +51,7 @@ public class AssociationLnListTypeMappingTest {
                 AssociationLnListTypeDto.class);
 
         // check values
-        assertNotNull(associationLnListTypeDto);
+        assertThat(associationLnListTypeDto).isNotNull();
         this.checkAssociationLnListElementMapping(associationLnListType.getAssociationLnListElement(),
                 associationLnListTypeDto.getAssociationLnListElement());
     }
@@ -70,7 +68,8 @@ public class AssociationLnListTypeMappingTest {
                 AssociationLnListType.class);
 
         // check values
-        assertNotNull(associationLnListType);
+        assertThat(associationLnListType).isNotNull();
+
         this.checkAssociationLnListElementMapping(associationLnListType.getAssociationLnListElement(),
                 associationLnListTypeDto.getAssociationLnListElement());
     }
@@ -95,14 +94,16 @@ public class AssociationLnListTypeMappingTest {
                 new AccessRight(attributeAccessDescriptor, methodAccessDescriptor));
 
         final AssociationLnListType associationLnListType = new AssociationLnListTypeBuilder()
-                .withNonEmptyLists(associationLnElement).build();
+                .withNonEmptyLists(associationLnElement)
+                .build();
 
         // actual mapping
         final AssociationLnListTypeDto associationLnListTypeDto = this.configurationMapper.map(associationLnListType,
                 AssociationLnListTypeDto.class);
 
         // check values
-        assertNotNull(associationLnListTypeDto);
+        assertThat(associationLnListTypeDto).isNotNull();
+
         this.checkAssociationLnListElementMapping(associationLnListType.getAssociationLnListElement(),
                 associationLnListTypeDto.getAssociationLnListElement());
     }
@@ -128,14 +129,16 @@ public class AssociationLnListTypeMappingTest {
                 new AccessRightDto(attributeAccessDescriptorDto, methodAccessDescriptorDto));
 
         final AssociationLnListTypeDto associationLnListTypeDto = new AssociationLnListTypeDtoBuilder()
-                .withNonEmptyLists(associationLnElementDto).build();
+                .withNonEmptyLists(associationLnElementDto)
+                .build();
 
         // actual mapping
         final AssociationLnListType associationLnListType = this.configurationMapper.map(associationLnListTypeDto,
                 AssociationLnListType.class);
 
         // check values
-        assertNotNull(associationLnListType);
+        assertThat(associationLnListType).isNotNull();
+
         this.checkAssociationLnListElementMapping(associationLnListType.getAssociationLnListElement(),
                 associationLnListTypeDto.getAssociationLnListElement());
     }
@@ -143,10 +146,10 @@ public class AssociationLnListTypeMappingTest {
     private void checkAssociationLnListElementMapping(final List<AssociationLnListElement> associationLnListElements,
             final List<AssociationLnListElementDto> associationLnListElementDtos) {
 
-        assertNotNull(associationLnListElements);
-        assertNotNull(associationLnListElementDtos);
+        assertThat(associationLnListElements).isNotNull();
+        assertThat(associationLnListElementDtos).isNotNull();
 
-        assertEquals(associationLnListElements.size(), associationLnListElementDtos.size());
+        assertThat(associationLnListElementDtos.size()).isEqualTo(associationLnListElements.size());
         for (int i = 0; i < associationLnListElements.size(); i++) {
             this.checkElement(associationLnListElements.get(i), associationLnListElementDtos.get(i));
         }
@@ -155,8 +158,8 @@ public class AssociationLnListTypeMappingTest {
     private void checkElement(final AssociationLnListElement associationLnListElement,
             final AssociationLnListElementDto associationLnListElementDto) {
 
-        assertEquals(associationLnListElement.getClassId(), associationLnListElementDto.getClassId());
-        assertEquals(associationLnListElement.getVersion(), associationLnListElementDto.getVersion());
+        assertThat(associationLnListElementDto.getClassId()).isEqualTo(associationLnListElement.getClassId());
+        assertThat(associationLnListElementDto.getVersion()).isEqualTo(associationLnListElement.getVersion());
         this.checkAccessRights(associationLnListElement.getAccessRights(),
                 associationLnListElementDto.getAccessRights());
         this.checkCosemObisCode(associationLnListElement.getLogicalName(),
@@ -176,17 +179,18 @@ public class AssociationLnListTypeMappingTest {
 
     private void checkAttributeAccessItem(final List<AttributeAccessItem> attributeAccessItemList,
             final List<AttributeAccessItemDto> attributeAccessItemDtoList) {
-        assertEquals(attributeAccessItemList.size(), attributeAccessItemDtoList.size());
+        assertThat(attributeAccessItemDtoList.size()).isEqualTo(attributeAccessItemList.size());
 
         final Iterator<AttributeAccessItem> attributeAccessItemIterator = attributeAccessItemList.iterator();
         final Iterator<AttributeAccessItemDto> attributeAccessItemDtoIterator = attributeAccessItemDtoList.iterator();
         while (attributeAccessItemIterator.hasNext() && attributeAccessItemDtoIterator.hasNext()) {
             final AttributeAccessItem attributeAccessItem = attributeAccessItemIterator.next();
             final AttributeAccessItemDto attributeAccessItemDto = attributeAccessItemDtoIterator.next();
-            assertEquals(attributeAccessItem.getAccessMode().name(), attributeAccessItemDto.getAccessMode().name());
-            assertEquals(attributeAccessItem.getAccessSelectors().getAccessSelector(),
-                    attributeAccessItemDto.getAccessSelectors().getAccessSelector());
-            assertEquals(attributeAccessItem.getAttributeId(), attributeAccessItemDto.getAttributeId());
+            assertThat(attributeAccessItemDto.getAccessMode().name())
+                    .isEqualTo(attributeAccessItem.getAccessMode().name());
+            assertThat(attributeAccessItemDto.getAccessSelectors().getAccessSelector())
+                    .isEqualTo(attributeAccessItem.getAccessSelectors().getAccessSelector());
+            assertThat(attributeAccessItemDto.getAttributeId()).isEqualTo(attributeAccessItem.getAttributeId());
         }
     }
 
@@ -197,24 +201,24 @@ public class AssociationLnListTypeMappingTest {
 
     private void checkMethodAccessItem(final List<MethodAccessItem> methodAccessItemList,
             final List<MethodAccessItemDto> methodAccessItemDtoList) {
-        assertEquals(methodAccessItemList.size(), methodAccessItemDtoList.size());
+        assertThat(methodAccessItemDtoList.size()).isEqualTo(methodAccessItemList.size());
 
         final Iterator<MethodAccessItem> methodAccessItemIterator = methodAccessItemList.iterator();
         final Iterator<MethodAccessItemDto> methodAccessItemDtoIterator = methodAccessItemDtoList.iterator();
         while (methodAccessItemIterator.hasNext() && methodAccessItemDtoIterator.hasNext()) {
             final MethodAccessItem methodAccessItem = methodAccessItemIterator.next();
             final MethodAccessItemDto methodAccessItemDto = methodAccessItemDtoIterator.next();
-            assertEquals(methodAccessItem.getAccessMode().name(), methodAccessItemDto.getAccessMode().name());
-            assertEquals(methodAccessItem.getMethodId(), methodAccessItemDto.getMethodId());
+            assertThat(methodAccessItemDto.getAccessMode().name()).isEqualTo(methodAccessItem.getAccessMode().name());
+            assertThat(methodAccessItemDto.getMethodId()).isEqualTo(methodAccessItem.getMethodId());
         }
     }
 
     private void checkCosemObisCode(final CosemObisCode logicalName, final CosemObisCodeDto logicalNameDto) {
-        assertEquals(logicalName.getA(), logicalNameDto.getA());
-        assertEquals(logicalName.getB(), logicalNameDto.getB());
-        assertEquals(logicalName.getC(), logicalNameDto.getC());
-        assertEquals(logicalName.getD(), logicalNameDto.getD());
-        assertEquals(logicalName.getE(), logicalNameDto.getE());
-        assertEquals(logicalName.getF(), logicalNameDto.getF());
+        assertThat(logicalNameDto.getA()).isEqualTo(logicalName.getA());
+        assertThat(logicalNameDto.getB()).isEqualTo(logicalName.getB());
+        assertThat(logicalNameDto.getC()).isEqualTo(logicalName.getC());
+        assertThat(logicalNameDto.getD()).isEqualTo(logicalName.getD());
+        assertThat(logicalNameDto.getE()).isEqualTo(logicalName.getE());
+        assertThat(logicalNameDto.getF()).isEqualTo(logicalName.getF());
     }
 }

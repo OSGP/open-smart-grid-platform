@@ -7,14 +7,14 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringbundle;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.AdministrativeStatusResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetAdministrativeStatusRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Response;
 
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
 
 public class BundledGetAdministrativeStatusSteps extends BaseBundleSteps {
 
@@ -31,6 +31,6 @@ public class BundledGetAdministrativeStatusSteps extends BaseBundleSteps {
 
         final Response response = this.getNextBundleResponse();
 
-        assertTrue("Not a valid response", response instanceof AdministrativeStatusResponse);
+        assertThat(response instanceof AdministrativeStatusResponse).as("Not a valid response").isTrue();
     }
 }

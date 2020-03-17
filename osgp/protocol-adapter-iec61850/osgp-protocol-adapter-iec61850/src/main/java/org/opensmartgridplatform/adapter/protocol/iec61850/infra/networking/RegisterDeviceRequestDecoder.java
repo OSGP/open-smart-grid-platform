@@ -8,17 +8,17 @@
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking;
 
 import java.util.Arrays;
+import java.util.List;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.handler.codec.frame.FrameDecoder;
+import org.opensmartgridplatform.iec61850.RegisterDeviceRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.opensmartgridplatform.iec61850.RegisterDeviceRequest;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.ByteToMessageDecoder;
 
-public class RegisterDeviceRequestDecoder extends FrameDecoder {
+public class RegisterDeviceRequestDecoder extends ByteToMessageDecoder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RegisterDeviceRequestDecoder.class);
 
@@ -27,33 +27,31 @@ public class RegisterDeviceRequestDecoder extends FrameDecoder {
     }
 
     @Override
-    protected Object decode(final ChannelHandlerContext ctx, final Channel channel, final ChannelBuffer buffer) {
+    protected void decode(final ChannelHandlerContext ctx, final ByteBuf in, final List<Object> out) {
         /*
-         * Do not return anything. Wait for decodeLast to handle all bytes
-         * received when the channel is disconnected.
+         * Do nothing. Wait for decodeLast to handle all bytes received when the channel is disconnected.
          */
-        return null;
     }
 
     @Override
-    protected Object decodeLast(final ChannelHandlerContext ctx, final Channel channel, final ChannelBuffer buffer) {
+    protected void decodeLast(final ChannelHandlerContext ctx, final ByteBuf in, final List<Object> out)
+            throws Exception {
 
         LOGGER.info("Decoding bytes received at channel disconnect.");
 
-        if (!buffer.readable()) {
+        if (!in.isReadable()) {
             LOGGER.warn("Channel disconnect with no readable bytes.");
-            return null;
+            return;
         }
 
-        final byte[] availableBytes = new byte[buffer.readableBytes()];
-        buffer.readBytes(availableBytes);
+        final byte[] availableBytes = new byte[in.readableBytes()];
+        in.readBytes(availableBytes);
 
         try {
-            return new RegisterDeviceRequest(availableBytes);
+            out.add(new RegisterDeviceRequest(availableBytes));
         } catch (final Exception e) {
             LOGGER.error("Unable to construct a {} based on the bytes received: {}",
                     RegisterDeviceRequest.class.getSimpleName(), Arrays.toString(availableBytes), e);
-            return null;
         }
     }
 }

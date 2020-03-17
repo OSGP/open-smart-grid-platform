@@ -12,10 +12,10 @@ import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.microgrids.application.services.AdHocManagementService;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.EmptyResponseDto;
-import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.BaseNotificationMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.NotificationResponseMessageSender;
@@ -42,9 +42,8 @@ public class SetDataResponseMessageProcessor extends BaseNotificationMessageProc
     private AdHocManagementService adHocManagementService;
 
     @Autowired
-    protected SetDataResponseMessageProcessor(
-            final NotificationResponseMessageSender responseMessageSender,
-            @Qualifier("domainMicrogridsOsgpCoreResponseMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
+    protected SetDataResponseMessageProcessor(final NotificationResponseMessageSender responseMessageSender,
+            @Qualifier("domainMicrogridsInboundOsgpCoreResponsesMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.SET_DATA);
     }
 

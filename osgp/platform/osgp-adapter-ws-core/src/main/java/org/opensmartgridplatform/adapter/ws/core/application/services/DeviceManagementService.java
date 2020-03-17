@@ -7,7 +7,7 @@
  */
 package org.opensmartgridplatform.adapter.ws.core.application.services;
 
-import static org.springframework.data.jpa.domain.Specifications.where;
+import static org.springframework.data.jpa.domain.Specification.where;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +31,7 @@ import org.opensmartgridplatform.domain.core.entities.Ean;
 import org.opensmartgridplatform.domain.core.entities.Event;
 import org.opensmartgridplatform.domain.core.entities.Manufacturer;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
-import org.opensmartgridplatform.domain.core.entities.ScheduledTask;
+import org.opensmartgridplatform.domain.core.entities.ScheduledTaskWithoutData;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
 import org.opensmartgridplatform.domain.core.exceptions.ArgumentNullOrEmptyException;
 import org.opensmartgridplatform.domain.core.exceptions.NotAuthorizedException;
@@ -39,7 +39,7 @@ import org.opensmartgridplatform.domain.core.exceptions.UnknownEntityException;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.EventRepository;
 import org.opensmartgridplatform.domain.core.repositories.OrganisationRepository;
-import org.opensmartgridplatform.domain.core.repositories.ScheduledTaskRepository;
+import org.opensmartgridplatform.domain.core.repositories.ScheduledTaskWithoutDataRepository;
 import org.opensmartgridplatform.domain.core.services.DeviceDomainService;
 import org.opensmartgridplatform.domain.core.specifications.DeviceSpecifications;
 import org.opensmartgridplatform.domain.core.specifications.EventSpecifications;
@@ -73,7 +73,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specifications;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -83,7 +83,7 @@ import org.springframework.validation.annotation.Validated;
 public class DeviceManagementService {
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementService.class);
 
-    // The wildcard, used for filtering
+    // The wildcard, used for filtering.
     private static final String WILDCARD = "\\*";
 
     @Autowired
@@ -120,7 +120,7 @@ public class DeviceManagementService {
     private CommonResponseMessageFinder commonResponseMessageFinder;
 
     @Autowired
-    private ScheduledTaskRepository scheduledTaskRepository;
+    private ScheduledTaskWithoutDataRepository scheduledTaskRepository;
 
     @Autowired
     private WritableDeviceAuthorizationRepository writableAuthorizationRepository;
@@ -195,31 +195,31 @@ public class DeviceManagementService {
 
         this.pagingSettings.updatePagingSettings(pageSpecifier);
 
-        final PageRequest request = new PageRequest(this.pagingSettings.getPageNumber(),
+        final PageRequest request = PageRequest.of(this.pagingSettings.getPageNumber(),
                 this.pagingSettings.getPageSize(), Sort.Direction.DESC, "dateTime");
 
-        Specifications<Event> specifications;
+        Specification<Event> specification;
 
         try {
             if (deviceIdentification != null && !deviceIdentification.isEmpty()) {
                 final Device device = this.domainHelperService.findDevice(deviceIdentification);
                 this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_EVENT_NOTIFICATIONS);
 
-                specifications = where(this.eventSpecifications.isFromDevice(device));
+                specification = where(this.eventSpecifications.isFromDevice(device));
             } else {
-                specifications = where(this.eventSpecifications.isAuthorized(organisation));
+                specification = where(this.eventSpecifications.isAuthorized(organisation));
             }
 
             if (from != null) {
-                specifications = specifications.and(this.eventSpecifications.isCreatedAfter(from.toDate()));
+                specification = specification.and(this.eventSpecifications.isCreatedAfter(from.toDate()));
             }
 
             if (until != null) {
-                specifications = specifications.and(this.eventSpecifications.isCreatedBefore(until.toDate()));
+                specification = specification.and(this.eventSpecifications.isCreatedBefore(until.toDate()));
             }
 
             if (eventTypes != null && !eventTypes.isEmpty()) {
-                specifications = specifications.and(this.eventSpecifications.hasEventTypes(eventTypes));
+                specification = specification.and(this.eventSpecifications.hasEventTypes(eventTypes));
             }
         } catch (final ArgumentNullOrEmptyException e) {
             throw new FunctionalException(FunctionalExceptionType.ARGUMENT_NULL, ComponentType.WS_CORE, e);
@@ -230,7 +230,7 @@ public class DeviceManagementService {
         LOGGER.debug("        pageSize   : {}", request.getPageSize());
         LOGGER.debug("        sort       : {}", request.getSort());
 
-        return this.eventRepository.findAll(specifications, request);
+        return this.eventRepository.findAll(specification, request);
     }
 
     /**
@@ -265,7 +265,7 @@ public class DeviceManagementService {
             }
         }
 
-        final PageRequest request = new PageRequest(this.pagingSettings.getPageNumber(),
+        final PageRequest request = PageRequest.of(this.pagingSettings.getPageNumber(),
                 this.pagingSettings.getPageSize(), sortDir, sortedBy);
 
         final Page<Device> devices = this.findDevices(organisationIdentification, deviceFilter, organisation, request);
@@ -327,13 +327,13 @@ public class DeviceManagementService {
 
         try {
             if (deviceFilter != null) {
-                final Specifications<Device> specifications = this.doApplyFilter(deviceFilter, organisation);
-                devices = this.deviceRepository.findAll(specifications, request);
+                final Specification<Device> specification = this.doApplyFilter(deviceFilter, organisation);
+                devices = this.deviceRepository.findAll(specification, request);
             } else {
                 if (organisation != null) {
-                    final Specifications<Device> specifications = where(
-                            this.deviceSpecifications.forOrganisation(organisation));
-                    devices = this.deviceRepository.findAll(specifications, request);
+                    final Specification<Device> specification = Specification
+                            .where(this.deviceSpecifications.forOrganisation(organisation));
+                    devices = this.deviceRepository.findAll(specification, request);
                 } else {
                     devices = this.deviceRepository.findAll(request);
                 }
@@ -347,171 +347,171 @@ public class DeviceManagementService {
         return devices;
     }
 
-    private Specifications<Device> doApplyFilter(final DeviceFilter deviceFilter, final Organisation organisation)
+    private Specification<Device> doApplyFilter(final DeviceFilter deviceFilter, final Organisation organisation)
             throws FunctionalException, ArgumentNullOrEmptyException {
 
-        Specifications<Device> specifications = this.doFilterOnOrganisationIdentification(deviceFilter, organisation);
-        specifications = this.doFilterOnDeviceIdentification(deviceFilter, specifications);
-        specifications = this.doFilterOnDeviceAlias(deviceFilter, specifications);
-        specifications = this.doFilterOnAddress(deviceFilter, specifications);
-        specifications = this.doFilterOnExternalManaged(deviceFilter, specifications);
-        specifications = this.doFilterOnActivated(deviceFilter, specifications);
-        specifications = this.doFilterOnInMaintenance(deviceFilter, specifications);
-        specifications = this.doFilterOnHasTechnicalInstallationDate(deviceFilter, specifications);
-        specifications = this.doFilterOnOwner(deviceFilter, specifications);
-        specifications = this.doFilterOnDeviceType(deviceFilter, specifications);
-        specifications = this.doFilterOnDeviceModel(deviceFilter, specifications);
-        specifications = this.doFilterOnManufacturer(deviceFilter, specifications);
-        specifications = this.doFilterOnFirmwareModuleVersion(deviceFilter, specifications);
-        specifications = this.doFilterOnDeviceIdentificationsToUse(deviceFilter, specifications);
-        specifications = this.doFilterOnDeviceIdentificationsToExclude(deviceFilter, specifications);
+        Specification<Device> specification = this.doFilterOnOrganisationIdentification(deviceFilter, organisation);
+        specification = this.doFilterOnDeviceIdentification(deviceFilter, specification);
+        specification = this.doFilterOnDeviceAlias(deviceFilter, specification);
+        specification = this.doFilterOnAddress(deviceFilter, specification);
+        specification = this.doFilterOnExternalManaged(deviceFilter, specification);
+        specification = this.doFilterOnActivated(deviceFilter, specification);
+        specification = this.doFilterOnInMaintenance(deviceFilter, specification);
+        specification = this.doFilterOnHasTechnicalInstallationDate(deviceFilter, specification);
+        specification = this.doFilterOnOwner(deviceFilter, specification);
+        specification = this.doFilterOnDeviceType(deviceFilter, specification);
+        specification = this.doFilterOnDeviceModel(deviceFilter, specification);
+        specification = this.doFilterOnManufacturer(deviceFilter, specification);
+        specification = this.doFilterOnFirmwareModuleVersion(deviceFilter, specification);
+        specification = this.doFilterOnDeviceIdentificationsToUse(deviceFilter, specification);
+        specification = this.doFilterOnDeviceIdentificationsToExclude(deviceFilter, specification);
 
-        return specifications;
+        return specification;
     }
 
-    private Specifications<Device> doFilterOnDeviceIdentificationsToExclude(final DeviceFilter deviceFilter,
-            Specifications<Device> specifications) throws ArgumentNullOrEmptyException {
+    private Specification<Device> doFilterOnDeviceIdentificationsToExclude(final DeviceFilter deviceFilter,
+            Specification<Device> specification) throws ArgumentNullOrEmptyException {
         if (deviceFilter.getDeviceIdentificationsToExclude() != null
                 && !deviceFilter.getDeviceIdentificationsToExclude().isEmpty()) {
-            specifications = specifications.and(this.deviceSpecifications
+            specification = specification.and(this.deviceSpecifications
                     .excludeDeviceIdentificationList(deviceFilter.getDeviceIdentificationsToExclude()));
 
         }
-        return specifications;
+        return specification;
     }
 
-    private Specifications<Device> doFilterOnDeviceIdentificationsToUse(final DeviceFilter deviceFilter,
-            Specifications<Device> specifications) throws ArgumentNullOrEmptyException {
+    private Specification<Device> doFilterOnDeviceIdentificationsToUse(final DeviceFilter deviceFilter,
+            Specification<Device> specification) throws ArgumentNullOrEmptyException {
         if (deviceFilter.getDeviceIdentificationsToUse() != null
                 && !deviceFilter.getDeviceIdentificationsToUse().isEmpty()) {
-            specifications = specifications.and(this.deviceSpecifications
+            specification = specification.and(this.deviceSpecifications
                     .existsInDeviceIdentificationList(deviceFilter.getDeviceIdentificationsToUse()));
 
         }
-        return specifications;
+        return specification;
     }
 
-    private Specifications<Device> doFilterOnFirmwareModuleVersion(final DeviceFilter deviceFilter,
-            Specifications<Device> specifications) throws ArgumentNullOrEmptyException {
+    private Specification<Device> doFilterOnFirmwareModuleVersion(final DeviceFilter deviceFilter,
+            Specification<Device> specification) throws ArgumentNullOrEmptyException {
         if (!StringUtils.isEmpty(deviceFilter.getFirmwareModuleVersion())) {
-            specifications = specifications
+            specification = specification
                     .and(this.deviceSpecifications.forFirmwareModuleVersion(deviceFilter.getFirmwareModuleType(),
                             deviceFilter.getFirmwareModuleVersion().replaceAll(WILDCARD, "%") + "%"));
         }
-        return specifications;
+        return specification;
     }
 
-    private Specifications<Device> doFilterOnManufacturer(final DeviceFilter deviceFilter,
-            Specifications<Device> specifications) throws ArgumentNullOrEmptyException {
+    private Specification<Device> doFilterOnManufacturer(final DeviceFilter deviceFilter,
+            Specification<Device> specification) throws ArgumentNullOrEmptyException {
         if (!StringUtils.isEmpty(deviceFilter.getManufacturer())) {
             final Manufacturer manufacturer = this.firmwareManagementService
                     .findManufacturer(deviceFilter.getManufacturer());
-            specifications = specifications.and(this.deviceSpecifications.forManufacturer(manufacturer));
+            specification = specification.and(this.deviceSpecifications.forManufacturer(manufacturer));
         }
-        return specifications;
+        return specification;
     }
 
-    private Specifications<Device> doFilterOnDeviceModel(final DeviceFilter deviceFilter,
-            Specifications<Device> specifications) throws ArgumentNullOrEmptyException {
+    private Specification<Device> doFilterOnDeviceModel(final DeviceFilter deviceFilter,
+            Specification<Device> specification) throws ArgumentNullOrEmptyException {
         if (!StringUtils.isEmpty(deviceFilter.getModel())) {
-            specifications = specifications.and(
+            specification = specification.and(
                     this.deviceSpecifications.forDeviceModel(deviceFilter.getModel().replaceAll(WILDCARD, "%") + "%"));
         }
-        return specifications;
+        return specification;
     }
 
-    private Specifications<Device> doFilterOnDeviceType(final DeviceFilter deviceFilter,
-            Specifications<Device> specifications) throws ArgumentNullOrEmptyException {
+    private Specification<Device> doFilterOnDeviceType(final DeviceFilter deviceFilter,
+            Specification<Device> specification) throws ArgumentNullOrEmptyException {
         if (!StringUtils.isEmpty(deviceFilter.getDeviceType())) {
-            specifications = specifications.and(this.deviceSpecifications
+            specification = specification.and(this.deviceSpecifications
                     .forDeviceType(deviceFilter.getDeviceType().replaceAll(WILDCARD, "%") + "%"));
         }
-        return specifications;
+        return specification;
     }
 
-    private Specifications<Device> doFilterOnOwner(final DeviceFilter deviceFilter,
-            Specifications<Device> specifications) throws ArgumentNullOrEmptyException {
+    private Specification<Device> doFilterOnOwner(final DeviceFilter deviceFilter, Specification<Device> specification)
+            throws ArgumentNullOrEmptyException {
         if (!StringUtils.isEmpty(deviceFilter.getOwner())) {
-            specifications = specifications
+            specification = specification
                     .and(this.deviceSpecifications.forOwner(deviceFilter.getOwner().replaceAll(WILDCARD, "%") + "%"));
         }
-        return specifications;
+        return specification;
     }
 
-    private Specifications<Device> doFilterOnHasTechnicalInstallationDate(final DeviceFilter deviceFilter,
-            Specifications<Device> specifications) throws ArgumentNullOrEmptyException {
+    private Specification<Device> doFilterOnHasTechnicalInstallationDate(final DeviceFilter deviceFilter,
+            Specification<Device> specification) throws ArgumentNullOrEmptyException {
         if (deviceFilter.isHasTechnicalInstallation()) {
-            specifications = specifications.and(this.deviceSpecifications.hasTechnicalInstallationDate());
+            specification = specification.and(this.deviceSpecifications.hasTechnicalInstallationDate());
         }
-        return specifications;
+        return specification;
     }
 
-    private Specifications<Device> doFilterOnInMaintenance(final DeviceFilter deviceFilter,
-            Specifications<Device> specifications) throws ArgumentNullOrEmptyException {
+    private Specification<Device> doFilterOnInMaintenance(final DeviceFilter deviceFilter,
+            Specification<Device> specification) throws ArgumentNullOrEmptyException {
         if (deviceFilter.getDeviceInMaintenance() != null
                 && !DeviceInMaintenanceFilterType.BOTH.equals(deviceFilter.getDeviceInMaintenance())) {
-            specifications = specifications
+            specification = specification
                     .and(this.deviceSpecifications.isInMaintenance(deviceFilter.getDeviceInMaintenance().getValue()));
         }
-        return specifications;
+        return specification;
     }
 
-    private Specifications<Device> doFilterOnActivated(final DeviceFilter deviceFilter,
-            Specifications<Device> specifications) throws ArgumentNullOrEmptyException {
+    private Specification<Device> doFilterOnActivated(final DeviceFilter deviceFilter,
+            Specification<Device> specification) throws ArgumentNullOrEmptyException {
         if (deviceFilter.getDeviceActivated() != null
                 && !DeviceActivatedFilterType.BOTH.equals(deviceFilter.getDeviceActivated())) {
-            specifications = specifications
+            specification = specification
                     .and(this.deviceSpecifications.isActived(deviceFilter.getDeviceActivated().getValue()));
         }
-        return specifications;
+        return specification;
     }
 
-    private Specifications<Device> doFilterOnExternalManaged(final DeviceFilter deviceFilter,
-            Specifications<Device> specifications) throws ArgumentNullOrEmptyException {
+    private Specification<Device> doFilterOnExternalManaged(final DeviceFilter deviceFilter,
+            Specification<Device> specification) throws ArgumentNullOrEmptyException {
         if (deviceFilter.getDeviceExternalManaged() != null
                 && !DeviceExternalManagedFilterType.BOTH.equals(deviceFilter.getDeviceExternalManaged())) {
-            specifications = specifications.and(
+            specification = specification.and(
                     this.deviceSpecifications.isManagedExternally(deviceFilter.getDeviceExternalManaged().getValue()));
         }
-        return specifications;
+        return specification;
     }
 
-    private Specifications<Device> doFilterOnAddress(final DeviceFilter deviceFilter,
-            Specifications<Device> specifications) throws ArgumentNullOrEmptyException {
+    private Specification<Device> doFilterOnAddress(final DeviceFilter deviceFilter,
+            Specification<Device> specification) throws ArgumentNullOrEmptyException {
         if (!StringUtils.isEmpty(deviceFilter.getCity())) {
-            specifications = specifications
+            specification = specification
                     .and(this.deviceSpecifications.hasCity(deviceFilter.getCity().replaceAll(WILDCARD, "%") + "%"));
         }
         if (!StringUtils.isEmpty(deviceFilter.getPostalCode())) {
-            specifications = specifications.and(this.deviceSpecifications
+            specification = specification.and(this.deviceSpecifications
                     .hasPostalCode(deviceFilter.getPostalCode().replaceAll(WILDCARD, "%") + "%"));
         }
         if (!StringUtils.isEmpty(deviceFilter.getStreet())) {
-            specifications = specifications
+            specification = specification
                     .and(this.deviceSpecifications.hasStreet(deviceFilter.getStreet().replaceAll(WILDCARD, "%") + "%"));
         }
         if (!StringUtils.isEmpty(deviceFilter.getNumber())) {
-            specifications = specifications
+            specification = specification
                     .and(this.deviceSpecifications.hasNumber(deviceFilter.getNumber().replaceAll(WILDCARD, "%") + "%"));
         }
         if (!StringUtils.isEmpty(deviceFilter.getMunicipality())) {
-            specifications = specifications.and(this.deviceSpecifications
+            specification = specification.and(this.deviceSpecifications
                     .hasMunicipality(deviceFilter.getMunicipality().replaceAll(WILDCARD, "%") + "%"));
         }
-        return specifications;
+        return specification;
     }
 
-    private Specifications<Device> doFilterOnDeviceAlias(final DeviceFilter deviceFilter,
-            Specifications<Device> specifications) throws ArgumentNullOrEmptyException {
+    private Specification<Device> doFilterOnDeviceAlias(final DeviceFilter deviceFilter,
+            Specification<Device> specification) throws ArgumentNullOrEmptyException {
         if (!StringUtils.isEmpty(deviceFilter.getAlias())) {
-            specifications = specifications
+            specification = specification
                     .and(this.deviceSpecifications.hasAlias(deviceFilter.getAlias().replaceAll(WILDCARD, "%") + "%"));
         }
-        return specifications;
+        return specification;
     }
 
-    private Specifications<Device> doFilterOnDeviceIdentification(final DeviceFilter deviceFilter,
-            Specifications<Device> specifications) throws ArgumentNullOrEmptyException {
+    private Specification<Device> doFilterOnDeviceIdentification(final DeviceFilter deviceFilter,
+            Specification<Device> specification) throws ArgumentNullOrEmptyException {
         if (!StringUtils.isEmpty(deviceFilter.getDeviceIdentification())) {
             String searchString = deviceFilter.getDeviceIdentification();
 
@@ -519,24 +519,24 @@ public class DeviceManagementService {
                 searchString = searchString.replaceAll(WILDCARD, "%") + "%";
             }
 
-            specifications = specifications
+            specification = specification
                     .and(this.deviceSpecifications.hasDeviceIdentification(searchString, deviceFilter.isExactMatch()));
         }
-        return specifications;
+        return specification;
     }
 
-    private Specifications<Device> doFilterOnOrganisationIdentification(final DeviceFilter deviceFilter,
+    private Specification<Device> doFilterOnOrganisationIdentification(final DeviceFilter deviceFilter,
             final Organisation organisation) throws FunctionalException, ArgumentNullOrEmptyException {
-        Specifications<Device> specifications;
+        Specification<Device> specification;
         if (!StringUtils.isEmpty(deviceFilter.getOrganisationIdentification())) {
             final Organisation org = this.domainHelperService
                     .findOrganisation(deviceFilter.getOrganisationIdentification());
-            specifications = where(this.deviceSpecifications.forOrganisation(org));
+            specification = where(this.deviceSpecifications.forOrganisation(org));
         } else {
             // dummy for 'not initialized'
-            specifications = where(this.deviceSpecifications.forOrganisation(organisation));
+            specification = where(this.deviceSpecifications.forOrganisation(organisation));
         }
-        return specifications;
+        return specification;
     }
 
     // === SET EVENT NOTIFICATIONS ===
@@ -565,7 +565,9 @@ public class DeviceManagementService {
                 messagePriority);
 
         final CommonRequestMessage message = new CommonRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(eventNotificationMessageDataContainer).build();
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .request(eventNotificationMessageDataContainer)
+                .build();
 
         this.commonRequestMessageSender.send(message);
 
@@ -580,7 +582,7 @@ public class DeviceManagementService {
 
     @Transactional(value = "transactionManager")
     // === RETRIEVE SCHEDULED TASKS LIST FOR SPECIFIC DEVICE ===
-    public List<ScheduledTask> findScheduledTasks(@Identification final String organisationIdentification,
+    public List<ScheduledTaskWithoutData> findScheduledTasks(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
@@ -593,7 +595,7 @@ public class DeviceManagementService {
 
     @Transactional(value = "transactionManager")
     // === RETRIEVE SCHEDULED TASKS LIST FOR ALL DEVICES ===
-    public List<ScheduledTask> findScheduledTasks(@Identification final String organisationIdentification)
+    public List<ScheduledTaskWithoutData> findScheduledTasks(@Identification final String organisationIdentification)
             throws FunctionalException {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.FIND_SCHEDULED_TASKS);
@@ -641,7 +643,9 @@ public class DeviceManagementService {
             existingDevice.setTechnicalInstallationDate(updateDevice.getTechnicalInstallationDate());
         }
 
-        final Ssld ssld = this.writableSsldRepository.findOne(existingDevice.getId());
+        final Ssld ssld = this.writableSsldRepository.findById(existingDevice.getId())
+                .orElseThrow(
+                        () -> new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.WS_CORE));
         ssld.updateOutputSettings(updateDevice.receiveOutputSettings());
         ssld.setEans(updateDevice.getEans());
 
@@ -768,7 +772,9 @@ public class DeviceManagementService {
                 messagePriority);
 
         final CommonRequestMessage message = new CommonRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(certification).build();
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .request(certification)
+                .build();
 
         this.commonRequestMessageSender.send(message);
 
@@ -800,7 +806,9 @@ public class DeviceManagementService {
                 messagePriority);
 
         final CommonRequestMessage message = new CommonRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(verificationKey).build();
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .request(verificationKey)
+                .build();
 
         this.commonRequestMessageSender.send(message);
 
@@ -834,7 +842,9 @@ public class DeviceManagementService {
                 organisationIdentification, correlationUid, MessageType.SET_DEVICE_LIFECYCLE_STATUS.name());
 
         final CommonRequestMessage message = new CommonRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(newDeviceLifecycleStatus).build();
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .request(newDeviceLifecycleStatus)
+                .build();
 
         this.commonRequestMessageSender.send(message);
 
@@ -863,7 +873,9 @@ public class DeviceManagementService {
                 organisationIdentification, correlationUid, MessageType.UPDATE_DEVICE_CDMA_SETTINGS.name());
 
         final CommonRequestMessage message = new CommonRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(cdmaSettings).build();
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .request(cdmaSettings)
+                .build();
 
         this.commonRequestMessageSender.send(message);
 

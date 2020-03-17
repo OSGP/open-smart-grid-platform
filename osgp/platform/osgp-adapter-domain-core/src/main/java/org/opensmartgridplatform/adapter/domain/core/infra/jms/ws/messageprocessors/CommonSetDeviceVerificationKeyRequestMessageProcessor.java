@@ -42,8 +42,8 @@ public class CommonSetDeviceVerificationKeyRequestMessageProcessor extends BaseM
 
     @Autowired
     public CommonSetDeviceVerificationKeyRequestMessageProcessor(
-            @Qualifier("domainCoreOutgoingWebServiceResponsesMessageSender") ResponseMessageSender responseMessageSender,
-            @Qualifier("domainCoreWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainCoreOutboundWebServiceResponsesMessageSender") final ResponseMessageSender responseMessageSender,
+            @Qualifier("domainCoreInboundWebServiceRequestsMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.SET_DEVICE_VERIFICATION_KEY,
                 ComponentType.DOMAIN_CORE);
     }

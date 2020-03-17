@@ -17,8 +17,8 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
 import org.joda.time.DateTime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.ws.schema.core.configurationmanagement.Configuration;
 import org.opensmartgridplatform.adapter.ws.schema.core.configurationmanagement.DaliConfiguration;
 import org.opensmartgridplatform.adapter.ws.schema.core.configurationmanagement.DeviceFixedIp;
@@ -36,10 +36,75 @@ import ma.glasnost.orika.impl.DefaultMapperFactory;
 public class ConfigurationManagementMapperTest {
     private ConfigurationManagementMapper mapper;
 
-    @Before
-    public void setUp() throws Exception {
-        this.mapper = new ConfigurationManagementMapper();
-        this.mapper.configure(new DefaultMapperFactory.Builder().build());
+    private DaliConfiguration aSourceDaliConfiguration(final int numberOfLights, final int index1, final int address1,
+            final int index2, final int address2) {
+        final DaliConfiguration daliConfiguration = new DaliConfiguration();
+        daliConfiguration.setNumberOfLights(numberOfLights);
+        daliConfiguration.getIndexAddressMap().add(this.aSourceIndexAddressMap(index1, address1));
+        daliConfiguration.getIndexAddressMap().add(this.aSourceIndexAddressMap(index2, address2));
+        return daliConfiguration;
+    }
+
+    private DeviceFixedIp aSourceDeviceFixedIp(final String ipAddress, final String netMask, final String gateWay) {
+        final DeviceFixedIp deviceFixedIp = new DeviceFixedIp();
+        deviceFixedIp.setGateWay(gateWay);
+        deviceFixedIp.setIpAddress(ipAddress);
+        deviceFixedIp.setNetMask(netMask);
+        return deviceFixedIp;
+    }
+
+    private IndexAddressMap aSourceIndexAddressMap(final int index, final int address) {
+        final IndexAddressMap indexAddressMap = new IndexAddressMap();
+        indexAddressMap.setIndex(index);
+        indexAddressMap.setAddress(address);
+        return indexAddressMap;
+    }
+
+    private RelayConfiguration aSourceRelayConfiguration(final int index1, final int address1, final int index2,
+            final int address2) {
+        final RelayConfiguration relayConfiguration = new RelayConfiguration();
+        relayConfiguration.getRelayMap().add(this.aSourceRelayMap(index1, address1));
+        relayConfiguration.getRelayMap().add(this.aSourceRelayMap(index2, address2));
+        return relayConfiguration;
+    }
+
+    private RelayMap aSourceRelayMap(final int index, final int address) {
+        final RelayMap relayMap = new RelayMap();
+        relayMap.setIndex(index);
+        relayMap.setAddress(address);
+        return relayMap;
+    }
+
+    private RelayMatrix aSourceRelayMatrix(final int masterRelayIndex, final boolean masterRelayOn) {
+        final RelayMatrix relayMatrix = new RelayMatrix();
+        relayMatrix.setMasterRelayIndex(masterRelayIndex);
+        relayMatrix.setMasterRelayOn(masterRelayOn);
+        return relayMatrix;
+    }
+
+    private org.opensmartgridplatform.domain.core.valueobjects.DaliConfiguration aTargetDaliConfiguration(
+            final int numberOfLights, final int index1, final int address1, final int index2, final int address2) {
+        final HashMap<Integer, Integer> indexAddressMap = new HashMap<>();
+        indexAddressMap.put(index1, address1);
+        indexAddressMap.put(index2, address2);
+        return new org.opensmartgridplatform.domain.core.valueobjects.DaliConfiguration(numberOfLights,
+                indexAddressMap);
+    }
+
+    private org.opensmartgridplatform.domain.core.valueobjects.RelayConfiguration aTargetRelayConfiguration(
+            final int index1, final int address1, final int index2, final int address2) {
+        return new org.opensmartgridplatform.domain.core.valueobjects.RelayConfiguration(
+                asList(new org.opensmartgridplatform.domain.core.valueobjects.RelayMap(index1, address1, null, null),
+                        new org.opensmartgridplatform.domain.core.valueobjects.RelayMap(index2, address2, null, null)));
+    }
+
+    private org.opensmartgridplatform.domain.core.valueobjects.RelayMatrix aTargetRelayMatrix(
+            final int masterRelayIndex, final boolean masterRelayOn) {
+        final org.opensmartgridplatform.domain.core.valueobjects.RelayMatrix relayMatrix = new org.opensmartgridplatform.domain.core.valueobjects.RelayMatrix(
+                masterRelayIndex, masterRelayOn);
+        relayMatrix.setIndicesOfControlledRelaysOff(emptyList());
+        relayMatrix.setIndicesOfControlledRelaysOn(emptyList());
+        return relayMatrix;
     }
 
     @Test
@@ -103,74 +168,9 @@ public class ConfigurationManagementMapperTest {
         assertThat(result).isEqualToComparingFieldByFieldRecursively(expected);
     }
 
-    private org.opensmartgridplatform.domain.core.valueobjects.RelayMatrix aTargetRelayMatrix(
-            final int masterRelayIndex, final boolean masterRelayOn) {
-        final org.opensmartgridplatform.domain.core.valueobjects.RelayMatrix relayMatrix = new org.opensmartgridplatform.domain.core.valueobjects.RelayMatrix(
-                masterRelayIndex, masterRelayOn);
-        relayMatrix.setIndicesOfControlledRelaysOff(emptyList());
-        relayMatrix.setIndicesOfControlledRelaysOn(emptyList());
-        return relayMatrix;
-    }
-
-    private RelayMatrix aSourceRelayMatrix(final int masterRelayIndex, final boolean masterRelayOn) {
-        final RelayMatrix relayMatrix = new RelayMatrix();
-        relayMatrix.setMasterRelayIndex(masterRelayIndex);
-        relayMatrix.setMasterRelayOn(masterRelayOn);
-        return relayMatrix;
-    }
-
-    private DeviceFixedIp aSourceDeviceFixedIp(final String ipAddress, final String netMask, final String gateWay) {
-        final DeviceFixedIp deviceFixedIp = new DeviceFixedIp();
-        deviceFixedIp.setGateWay(gateWay);
-        deviceFixedIp.setIpAddress(ipAddress);
-        deviceFixedIp.setNetMask(netMask);
-        return deviceFixedIp;
-    }
-
-    private org.opensmartgridplatform.domain.core.valueobjects.RelayConfiguration aTargetRelayConfiguration(
-            final int index1, final int address1, final int index2, final int address2) {
-        return new org.opensmartgridplatform.domain.core.valueobjects.RelayConfiguration(
-                asList(new org.opensmartgridplatform.domain.core.valueobjects.RelayMap(index1, address1, null, null),
-                        new org.opensmartgridplatform.domain.core.valueobjects.RelayMap(index2, address2, null, null)));
-    }
-
-    private RelayConfiguration aSourceRelayConfiguration(final int index1, final int address1, final int index2,
-            final int address2) {
-        final RelayConfiguration relayConfiguration = new RelayConfiguration();
-        relayConfiguration.getRelayMap().add(this.aSourceRelayMap(index1, address1));
-        relayConfiguration.getRelayMap().add(this.aSourceRelayMap(index2, address2));
-        return relayConfiguration;
-    }
-
-    private RelayMap aSourceRelayMap(final int index, final int address) {
-        final RelayMap relayMap = new RelayMap();
-        relayMap.setIndex(index);
-        relayMap.setAddress(address);
-        return relayMap;
-    }
-
-    private org.opensmartgridplatform.domain.core.valueobjects.DaliConfiguration aTargetDaliConfiguration(
-            final int numberOfLights, final int index1, final int address1, final int index2, final int address2) {
-        final HashMap<Integer, Integer> indexAddressMap = new HashMap<>();
-        indexAddressMap.put(index1, address1);
-        indexAddressMap.put(index2, address2);
-        return new org.opensmartgridplatform.domain.core.valueobjects.DaliConfiguration(numberOfLights,
-                indexAddressMap);
-    }
-
-    private DaliConfiguration aSourceDaliConfiguration(final int numberOfLights, final int index1, final int address1,
-            final int index2, final int address2) {
-        final DaliConfiguration daliConfiguration = new DaliConfiguration();
-        daliConfiguration.setNumberOfLights(numberOfLights);
-        daliConfiguration.getIndexAddressMap().add(this.aSourceIndexAddressMap(index1, address1));
-        daliConfiguration.getIndexAddressMap().add(this.aSourceIndexAddressMap(index2, address2));
-        return daliConfiguration;
-    }
-
-    private IndexAddressMap aSourceIndexAddressMap(final int index, final int address) {
-        final IndexAddressMap indexAddressMap = new IndexAddressMap();
-        indexAddressMap.setIndex(index);
-        indexAddressMap.setAddress(address);
-        return indexAddressMap;
+    @BeforeEach
+    public void setUp() throws Exception {
+        this.mapper = new ConfigurationManagementMapper();
+        this.mapper.configure(new DefaultMapperFactory.Builder().build());
     }
 }

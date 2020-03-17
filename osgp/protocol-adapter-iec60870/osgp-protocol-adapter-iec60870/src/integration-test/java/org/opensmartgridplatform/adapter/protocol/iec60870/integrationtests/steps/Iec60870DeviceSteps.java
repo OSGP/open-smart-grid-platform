@@ -15,7 +15,7 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.Iec6
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.repositories.Iec60870DeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import cucumber.api.java.en.Given;
+import io.cucumber.java.en.Given;
 
 public class Iec60870DeviceSteps {
 

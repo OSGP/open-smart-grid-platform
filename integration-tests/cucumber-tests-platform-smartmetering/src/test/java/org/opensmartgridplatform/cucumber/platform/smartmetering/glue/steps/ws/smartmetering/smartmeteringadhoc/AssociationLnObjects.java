@@ -7,12 +7,9 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringadhoc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
 
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.AssociationLnListElement;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.GetAssociationLnObjectsAsyncRequest;
@@ -25,9 +22,10 @@ import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.adhoc.AssociationLnObjectsRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.adhoc.SmartMeteringAdHocRequestClient;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.adhoc.SmartMeteringAdHocResponseClient;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 public class AssociationLnObjects {
 
@@ -43,7 +41,7 @@ public class AssociationLnObjects {
         final GetAssociationLnObjectsRequest request = AssociationLnObjectsRequestFactory.fromParameterMap(settings);
         final GetAssociationLnObjectsAsyncResponse asyncResponse = this.requestClient.doRequest(request);
 
-        assertNotNull("AsyncRespone should not be null", asyncResponse);
+        assertThat(asyncResponse).as("AsyncRespone should not be null").isNotNull();
         ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
     }
 
@@ -54,18 +52,24 @@ public class AssociationLnObjects {
                 .fromScenarioContext();
         final GetAssociationLnObjectsResponse response = this.responseClient.getResponse(asyncRequest);
 
-        assertEquals("Response should be OK", OsgpResultType.OK, response.getResult());
-        assertNotNull("Response should contain an AssociationLnList", response.getAssociationLnList());
-        assertNotNull("AssociationLnList shoudl have at least one entry",
-                response.getAssociationLnList().getAssociationLnListElement().get(0));
+        assertThat(response.getResult()).as("Response should be OK").isEqualTo(OsgpResultType.OK);
+
+        assertThat(response.getAssociationLnList()).as("Response should contain an AssociationLnList").isNotNull();
+
+        assertThat(response.getAssociationLnList().getAssociationLnListElement().get(0))
+                .as("AssociationLnList shoudl have at least one entry").isNotNull();
 
         final AssociationLnListElement element = response.getAssociationLnList().getAssociationLnListElement().get(0);
-        assertNotNull("AccessRights should be present", element.getAccessRights());
-        assertNotNull("ClassId should be present", element.getClassId());
-        assertNotNull("LogicalName should be present", element.getLogicalName());
-        assertNotNull("Version should be present", element.getVersion());
-        assertNotNull("AttributeId should be present",
-                element.getAccessRights().getAttributeAccess().getAttributeAccessItem().get(0).getAttributeId());
+        assertThat(element.getAccessRights()).as("AccessRights should be present").isNotNull();
+
+        assertThat(element.getClassId()).as("ClassId should be present").isNotNull();
+
+        assertThat(element.getLogicalName()).as("LogicalName should be present").isNotNull();
+
+        assertThat(element.getVersion()).as("Version should be present").isNotNull();
+
+        assertThat(element.getAccessRights().getAttributeAccess().getAttributeAccessItem().get(0).getAttributeId())
+                .as("AttributeId should be present").isNotNull();
 
     }
 }

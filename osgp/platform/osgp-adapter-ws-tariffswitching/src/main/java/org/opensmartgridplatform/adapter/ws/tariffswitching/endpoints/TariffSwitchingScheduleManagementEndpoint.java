@@ -7,7 +7,8 @@
  */
 package org.opensmartgridplatform.adapter.ws.tariffswitching.endpoints;
 
-import org.hibernate.validator.method.MethodConstraintViolationException;
+import javax.validation.ConstraintViolationException;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
@@ -96,7 +97,7 @@ public class TariffSwitchingScheduleManagementEndpoint {
             asyncResponse.setCorrelationUid(correlationUid);
             asyncResponse.setDeviceId(request.getDeviceIdentification());
             response.setAsyncResponse(asyncResponse);
-        } catch (final MethodConstraintViolationException e) {
+        } catch (final ConstraintViolationException e) {
             LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_TARIFF_SWITCHING,
                     new ValidationException(e.getConstraintViolations()));

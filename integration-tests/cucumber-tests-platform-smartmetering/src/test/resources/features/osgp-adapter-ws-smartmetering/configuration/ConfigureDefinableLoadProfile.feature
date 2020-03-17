@@ -1,4 +1,4 @@
-@SmartMetering @Platform
+@SmartMetering @Platform @NightlyBuildOnly
 Feature: SmartMetering Configuration - Configure Definable Load Profile
   As a grid operator
   I want to be able to change the definable load profile
