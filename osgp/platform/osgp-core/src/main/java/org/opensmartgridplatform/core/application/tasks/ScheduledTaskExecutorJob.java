@@ -25,7 +25,7 @@ public class ScheduledTaskExecutorJob implements Job {
 
     @Override
     public void execute(final JobExecutionContext context) throws JobExecutionException {
-        LOGGER.info("Quartz triggered processing of scheduled task execution");
+        LOGGER.info("Quartz triggered processing of scheduled task execution.");
         this.scheduledTaskExecutorService.processScheduledTasks();
     }
 }
