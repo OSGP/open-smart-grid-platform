@@ -1,12 +1,18 @@
-@ignore("simulator not ready for this feature") @SmartMetering @Platform
+@Skip @SmartMetering @Platform
 Feature: SmartMetering Bundle - GetPowerQualityProfile
   As a grid operator
   I want to be able to retrieve power quality profile data from a meter via a bundle request
 
   Background: 
     Given a dlms device
-      | DeviceIdentification | TEST1024000000001 |
-      | DeviceType           | SMART_METER_E     |
+      | DeviceIdentification      | TEST1024000000001 |
+      | DeviceType                | SMART_METER_E     |
+      | Protocol                  | DSMR              |
+      | ProtocolVersion           | 4.2.2             |
+      | Port                      | 1024              |
+      | FirmwareModuleVersionComm | V 1.1             |
+      | FirmwareModuleVersionMa   | V 1.2             |
+      | FirmwareModuleVersionFunc | V 1.3             |
 
   Scenario: Retrieve power quality profile data as part of a bundled request
     Given a bundle request

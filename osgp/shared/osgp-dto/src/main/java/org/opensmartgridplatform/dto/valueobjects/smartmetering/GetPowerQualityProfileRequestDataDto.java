@@ -25,8 +25,8 @@ public class GetPowerQualityProfileRequestDataDto implements ActionRequestDto {
     public GetPowerQualityProfileRequestDataDto(final String profileType, final Date beginDate, final Date endDate,
             final List<CaptureObjectDefinitionDto> selectedValues) {
         this.profileType = profileType;
-        this.beginDate = new Date(beginDate.getTime());
-        this.endDate = new Date(endDate.getTime());
+        this.beginDate = beginDate;
+        this.endDate = endDate;
         if (selectedValues != null) {
             this.selectedValues.addAll(selectedValues);
         }
@@ -63,14 +63,14 @@ public class GetPowerQualityProfileRequestDataDto implements ActionRequestDto {
     }
 
     public Date getBeginDate() {
-        return new Date(this.beginDate.getTime());
+        return this.beginDate;
     }
 
     public Date getEndDate() {
-        return new Date(this.endDate.getTime());
+        return this.endDate;
     }
 
     public List<CaptureObjectDefinitionDto> getSelectedValues() {
-        return new ArrayList<>(this.selectedValues);
+        return this.selectedValues;
     }
 }

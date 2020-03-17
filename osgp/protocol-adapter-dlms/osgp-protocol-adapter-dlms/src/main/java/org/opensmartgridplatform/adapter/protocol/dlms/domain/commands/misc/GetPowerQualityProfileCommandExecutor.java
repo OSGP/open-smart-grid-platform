@@ -62,12 +62,12 @@ public class GetPowerQualityProfileCommandExecutor
 
     private static final int ACCESS_SELECTOR_RANGE_DESCRIPTOR = 1;
 
-    private static final ObisCodeValuesDto OBIS_CODE_DEFINABLE_LOAD_PROFILE = new ObisCodeValuesDto((byte) 0, (byte) 1,
+    static final ObisCodeValuesDto OBIS_CODE_DEFINABLE_LOAD_PROFILE = new ObisCodeValuesDto((byte) 0, (byte) 1,
             (byte) 94, (byte) 31, (byte) 6, (byte) 255);
-    private static final ObisCodeValuesDto OBIS_CODE_PROFILE_1 = new ObisCodeValuesDto((byte) 1, (byte) 0, (byte) 99,
-            (byte) 1, (byte) 1, (byte) 255);
-    private static final ObisCodeValuesDto OBIS_CODE_PROFILE_2 = new ObisCodeValuesDto((byte) 1, (byte) 0, (byte) 99,
-            (byte) 1, (byte) 2, (byte) 255);
+    static final ObisCodeValuesDto OBIS_CODE_PROFILE_1 = new ObisCodeValuesDto((byte) 1, (byte) 0, (byte) 99, (byte) 1,
+            (byte) 1, (byte) 255);
+    static final ObisCodeValuesDto OBIS_CODE_PROFILE_2 = new ObisCodeValuesDto((byte) 1, (byte) 0, (byte) 99, (byte) 1,
+            (byte) 2, (byte) 255);
 
     private static final int INTERVAL_DEFINABLE_LOAD_PROFILE = 15;
     private static final int INTERVAL_PROFILE_1 = 15;
@@ -75,7 +75,7 @@ public class GetPowerQualityProfileCommandExecutor
     private static final String PUBLIC = "PUBLIC";
     private static final String PRIVATE = "PRIVATE";
 
-    private enum Profile {
+    enum Profile {
 
         DEFINABLE_LOAD_PROFILE(OBIS_CODE_DEFINABLE_LOAD_PROFILE, INTERVAL_DEFINABLE_LOAD_PROFILE),
         PROFILE_1(OBIS_CODE_PROFILE_1, INTERVAL_PROFILE_1),
@@ -398,6 +398,12 @@ public class GetPowerQualityProfileCommandExecutor
         final List<ProfileEntryValueDto> result = new ArrayList<>();
 
         final List<DataObject> dataObjects = profEntryDataObjects.getValue();
+
+        if (dataObjects.size() != scalerUnitInfos.size()) {
+            LOGGER.info("Size of dataobjects {} does not equal size of scalar units {}", dataObjects.size(),
+                    scalerUnitInfos.size());
+        }
+
         for (int i = 0; i < dataObjects.size(); i++) {
 
             ProfileEntryValueDto currenProfileEntryValueDto = this
