@@ -74,7 +74,7 @@
   <wsdl:service name="DistributionAutomationNotificationPortService">
     <wsdl:port binding="tns:DistributionAutomationNotificationPortSoap11"
       name="DistributionAutomationNotificationPortSoap11">
-      <soap:address location="https://localhost:443/notification/"/>
+      <soap:address location="http://localhost/notification/"/>
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

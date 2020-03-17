@@ -26,7 +26,4 @@
     value="/etc/osp/osgp-adapter-protocol-mqtt-logback.xml" type="java.lang.String"
     override="true" />
 
-  <Environment name="osgp/JasperInterface/config" value="/etc/osp/jasper-interface.properties"
-    type="java.lang.String" override="true" />
-
 </Context>
