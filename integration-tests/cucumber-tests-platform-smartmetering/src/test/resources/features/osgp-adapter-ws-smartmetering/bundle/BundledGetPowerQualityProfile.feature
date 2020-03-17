@@ -1,4 +1,4 @@
-@SmartMetering @Platform
+@ignore("simulator not ready for this feature") @SmartMetering @Platform
 Feature: SmartMetering Bundle - GetPowerQualityProfile
   As a grid operator
   I want to be able to retrieve power quality profile data from a meter via a bundle request
