@@ -14,7 +14,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm.Cle
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm.ReadAlarmRegisterCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.GetActualMeterReadsCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.GetActualMeterReadsGasCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.GetProfileGenericDataCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.GetPowerQualityProfileCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.GetPeriodicMeterReadsCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.GetPeriodicMeterReadsGasCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -23,8 +23,8 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualMeterReadsQueryDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmRegisterResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClearAlarmRegisterRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileGenericDataRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ReadAlarmRegisterRequestDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -48,7 +48,7 @@ public class MonitoringService {
     private ReadAlarmRegisterCommandExecutor readAlarmRegisterCommandExecutor;
 
     @Autowired
-    private GetProfileGenericDataCommandExecutor getProfileGenericDataCommandExecutor;
+    private GetPowerQualityProfileCommandExecutor getPowerQualityProfileCommandExecutor;
 
     @Autowired
     private ClearAlarmRegisterCommandExecutor clearAlarmRegisterCommandExecutor;
@@ -88,10 +88,11 @@ public class MonitoringService {
         return this.readAlarmRegisterCommandExecutor.execute(conn, device, readAlarmRegisterRequest);
     }
 
-    public Serializable requestProfileGenericData(final DlmsConnectionManager conn, final DlmsDevice device,
-            final ProfileGenericDataRequestDto profileGenericDataRequest) throws ProtocolAdapterException {
+    public Serializable requestPowerQualityProfile(final DlmsConnectionManager conn, final DlmsDevice device,
+            final GetPowerQualityProfileRequestDataDto powerQualityProfileRequestDataDto)
+            throws ProtocolAdapterException {
 
-        return this.getProfileGenericDataCommandExecutor.execute(conn, device, profileGenericDataRequest);
+        return this.getPowerQualityProfileCommandExecutor.execute(conn, device, powerQualityProfileRequestDataDto);
     }
 
     public void setClearAlarmRegister(final DlmsConnectionManager conn, final DlmsDevice device,

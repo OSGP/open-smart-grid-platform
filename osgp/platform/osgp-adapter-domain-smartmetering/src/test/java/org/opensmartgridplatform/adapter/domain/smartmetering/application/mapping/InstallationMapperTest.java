@@ -13,13 +13,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Date;
 
+import ma.glasnost.orika.MapperFactory;
+import ma.glasnost.orika.impl.DefaultMapperFactory;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
-
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.DefaultMapperFactory;
 
 public class InstallationMapperTest {
 

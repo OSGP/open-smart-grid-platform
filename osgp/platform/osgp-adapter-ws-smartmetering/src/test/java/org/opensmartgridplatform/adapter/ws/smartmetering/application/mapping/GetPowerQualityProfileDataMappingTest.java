@@ -1,9 +1,10 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
@@ -17,7 +18,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CaptureO
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DefinableLoadProfileConfigurationData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ObisCodeValues;
 
-public class DefinableLoadProfileConfigurationDataMappingTest {
+public class GetPowerQualityProfileDataMappingTest {
 
     private static final Long CAPTURE_PERIOD = 86400L;
 
@@ -43,7 +44,7 @@ public class DefinableLoadProfileConfigurationDataMappingTest {
     private static final byte CAPTURE_OBJECT_ATTRIBUTE_INDEX_2 = 2;
     private static final Integer CAPTURE_OBJECT_DATA_INDEX_2 = 0;
 
-    private ConfigurationMapper configurationMapper = new ConfigurationMapper();
+    private final ConfigurationMapper configurationMapper = new ConfigurationMapper();
 
     private void assertCaptureObjectDefinition(final int captureObjectNumber,
             final CaptureObjectDefinition captureObject, final int classId, final short a, final short b, final short c,
@@ -54,7 +55,7 @@ public class DefinableLoadProfileConfigurationDataMappingTest {
         this.assertLogicalName(captureObjectDescription + "OBIS code value ", captureObject.getLogicalName(), a, b, c,
                 d, e, f);
         assertThat(captureObject.getAttributeIndex()).as(captureObjectDescription + "attribute index")
-                .isEqualTo(attributeIndex);
+                                                     .isEqualTo(attributeIndex);
         assertThat(captureObject.getDataIndex()).as(captureObjectDescription + "data index").isEqualTo(dataIndex);
     }
 
@@ -130,7 +131,8 @@ public class DefinableLoadProfileConfigurationDataMappingTest {
 
     private org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ObisCodeValues newLogicalName(
             final short a, final short b, final short c, final short d, final short e, final short f) {
-        final org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ObisCodeValues obisCodeValues = new org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ObisCodeValues();
+        final org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ObisCodeValues obisCodeValues =
+                new org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ObisCodeValues();
         obisCodeValues.setA(a);
         obisCodeValues.setB(b);
         obisCodeValues.setC(c);
@@ -153,14 +155,12 @@ public class DefinableLoadProfileConfigurationDataMappingTest {
                 .as("Result of mapping DefinableLoadProfileConfigurationData must not be null").isNotNull();
         assertThat(definableLoadProfileConfigurationData.hasCaptureObjects())
                 .as("DefinableLoadProfileConfigurationData should have capture objects: "
-                        + definableLoadProfileConfigurationData)
-                .isTrue();
+                        + definableLoadProfileConfigurationData).isTrue();
 
         this.assertCaptureObjects(definableLoadProfileConfigurationData.getCaptureObjects());
         assertThat(definableLoadProfileConfigurationData.hasCapturePeriod())
                 .as("DefinableLoadProfileConfigurationData should have a capture period: "
-                        + definableLoadProfileConfigurationData)
-                .isTrue();
+                        + definableLoadProfileConfigurationData).isTrue();
         assertThat(definableLoadProfileConfigurationData.getCapturePeriod())
                 .as("DefinableLoadProfileConfigurationData capture period").isEqualTo(CAPTURE_PERIOD);
     }
@@ -178,14 +178,12 @@ public class DefinableLoadProfileConfigurationDataMappingTest {
                 .as("Result of mapping DefinableLoadProfileConfigurationData must not be null").isNotNull();
         assertThat(definableLoadProfileConfigurationData.hasCaptureObjects())
                 .as("DefinableLoadProfileConfigurationData with capture objects only must contain capture objects: "
-                        + definableLoadProfileConfigurationData)
-                .isTrue();
+                        + definableLoadProfileConfigurationData).isTrue();
 
         this.assertCaptureObjects(definableLoadProfileConfigurationData.getCaptureObjects());
         assertThat(definableLoadProfileConfigurationData.hasCapturePeriod())
                 .as("DefinableLoadProfileConfigurationData with capture objects only must not contain capture period: "
-                        + definableLoadProfileConfigurationData)
-                .isFalse();
+                        + definableLoadProfileConfigurationData).isFalse();
     }
 
     @Test
@@ -201,12 +199,10 @@ public class DefinableLoadProfileConfigurationDataMappingTest {
                 .as("Result of mapping DefinableLoadProfileConfigurationData must not be null").isNotNull();
         assertThat(definableLoadProfileConfigurationData.hasCaptureObjects())
                 .as("DefinableLoadProfileConfigurationData with capture period only must not contain capture objects: "
-                        + definableLoadProfileConfigurationData)
-                .isFalse();
+                        + definableLoadProfileConfigurationData).isFalse();
         assertThat(definableLoadProfileConfigurationData.hasCapturePeriod())
                 .as("DefinableLoadProfileConfigurationData with capture period only must contain capture period: "
-                        + definableLoadProfileConfigurationData)
-                .isTrue();
+                        + definableLoadProfileConfigurationData).isTrue();
         assertThat(definableLoadProfileConfigurationData.getCapturePeriod())
                 .as("DefinableLoadProfileConfigurationData capture period").isEqualTo(CAPTURE_PERIOD);
     }

@@ -1,9 +1,10 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
@@ -22,27 +23,29 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CaptureObject;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PowerQualityProfileData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.OsgpUnit;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileEntry;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileEntryValue;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CaptureObjectDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.PowerQualityProfileDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ObisCodeValuesDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryValueDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileGenericDataResponseDto;
 
-public class ProfileGenericDataResponseMappingTest {
+public class PowerQualityProfileResponseDataMappingTest {
 
     private final MonitoringMapper mapper = new MonitoringMapper();
 
     @Test
-    public void testConvertProfileGenericDataResponseDto() {
-        final ProfileGenericDataResponseDto dto = this.makeProfileGenericDataResponseDto();
-        final ProfileGenericDataResponse result = this.mapper.map(dto, ProfileGenericDataResponse.class);
-        assertThat(result).withFailMessage("mapping ProfileGenericDataResponse should not return null").isNotNull();
-        assertThat(result).withFailMessage("mapping ProfileGenericDataResponse should return correct type")
-                .isOfAnyClassIn(ProfileGenericDataResponse.class);
+    public void testConvertGetPowerQualityProfileResponseDto() {
+        final PowerQualityProfileDataDto dto = this.makePowerQualityProfileResponseDataDto();
+        final PowerQualityProfileData result = this.mapper
+                .map(dto, PowerQualityProfileData.class);
+        assertThat(result).withFailMessage("mapping GetPowerQualityProfileResponseData should not return null")
+                          .isNotNull();
+        assertThat(result).withFailMessage("mapping GetPowerQualityProfileResponseData should return correct type")
+                          .isOfAnyClassIn(PowerQualityProfileData.class);
     }
 
     @Test
@@ -50,7 +53,7 @@ public class ProfileGenericDataResponseMappingTest {
         final CaptureObject result = this.mapper.map(this.captureObjectDto(), CaptureObject.class);
         assertThat(result).withFailMessage("mapping CaptureObjectDto should not return null").isNotNull();
         assertThat(result).withFailMessage("mapping CaptureObjectDto should return correct type")
-                .isOfAnyClassIn(CaptureObject.class);
+                          .isOfAnyClassIn(CaptureObject.class);
     }
 
     @Test
@@ -58,7 +61,7 @@ public class ProfileGenericDataResponseMappingTest {
         final ProfileEntryValue result = this.mapper.map(this.profileEntryDtoDate(), ProfileEntryValue.class);
         assertThat(result).withFailMessage("mapping ProfileEntryValueDto should not return null").isNotNull();
         assertThat(result).withFailMessage("mapping ProfileEntryValueDto should return correct type")
-                .isOfAnyClassIn(ProfileEntryValue.class);
+                          .isOfAnyClassIn(ProfileEntryValue.class);
     }
 
     @Test
@@ -66,13 +69,12 @@ public class ProfileGenericDataResponseMappingTest {
         final ProfileEntry result = this.mapper.map(this.profileEntryDto(), ProfileEntry.class);
         assertThat(result).withFailMessage("mapping ProfileEntryDto should not return null").isNotNull();
         assertThat(result).withFailMessage("mapping ProfileEntryDto should return correct type")
-                .isOfAnyClassIn(ProfileEntry.class);
+                          .isOfAnyClassIn(ProfileEntry.class);
     }
 
-    private ProfileGenericDataResponseDto makeProfileGenericDataResponseDto() {
-        final ProfileGenericDataResponseDto dto = new ProfileGenericDataResponseDto(this.obisCodeDto(),
-                this.makeCaptureObjectsDto(), this.makeProfileEntryDtoList());
-        return dto;
+    private PowerQualityProfileDataDto makePowerQualityProfileResponseDataDto() {
+        return new PowerQualityProfileDataDto(this.obisCodeDto(), this.makeCaptureObjectsDto(),
+                this.makeProfileEntryDtoList());
     }
 
     private List<CaptureObjectDto> makeCaptureObjectsDto() {

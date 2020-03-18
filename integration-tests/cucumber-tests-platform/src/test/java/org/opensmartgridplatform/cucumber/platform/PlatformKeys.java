@@ -74,6 +74,8 @@ public class PlatformKeys extends Keys {
     public static final String KEY_ORGANIZATION_NAME = "OrganizationName";
     public static final String KEY_BEGIN_DATE = "BeginDate";
 
+    public static final String KEY_POWER_QUALITY_PROFILE_TYPE = "ProfileType";
+
     public static final String KEY_CDMA_BATCH_NUMBER = "BatchNumber";
     public static final String KEY_CDMA_MAST_SEGMENT = "MastSegment";
 

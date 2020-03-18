@@ -19,18 +19,20 @@ import java.util.Objects;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 
-public class ProfileGenericDataRequestData implements Serializable, ActionRequest {
+public class GetPowerQualityProfileRequest implements Serializable, ActionRequest {
 
     private static final long serialVersionUID = -6134172239685084920L;
 
-    private final ObisCodeValues obisCode;
+    private final String deviceIdentification;
+    private final String profileType;
     private final Date beginDate;
     private final Date endDate;
     private final List<CaptureObjectDefinition> selectedValues = new ArrayList<>();
 
-    public ProfileGenericDataRequestData(final ObisCodeValues obisCode, final Date beginDate, final Date endDate,
-            final List<CaptureObjectDefinition> selectedValues) {
-        this.obisCode = obisCode;
+    public GetPowerQualityProfileRequest(final String profileType, final Date beginDate, final Date endDate,
+            final List<CaptureObjectDefinition> selectedValues, final String deviceIdentification) {
+        this.deviceIdentification = deviceIdentification;
+        this.profileType = profileType;
         this.beginDate = new Date(beginDate.getTime());
         this.endDate = new Date(endDate.getTime());
         if (selectedValues != null) {
@@ -38,12 +40,17 @@ public class ProfileGenericDataRequestData implements Serializable, ActionReques
         }
     }
 
-    public ProfileGenericDataRequestData(final ObisCodeValues obisCode, final Date beginDate, final Date endDate) {
-        this(obisCode, beginDate, endDate, Collections.emptyList());
+    public GetPowerQualityProfileRequest(final String profileType, final Date beginDate, final Date endDate,
+            final String deviceIdentification) {
+        this(profileType, beginDate, endDate, Collections.emptyList(), deviceIdentification);
     }
 
-    public ObisCodeValues getObisCode() {
-        return this.obisCode;
+    public String getDeviceIdentification() {
+        return this.deviceIdentification;
+    }
+
+    public String getProfileType() {
+        return this.profileType;
     }
 
     public Date getBeginDate() {
@@ -70,14 +77,17 @@ public class ProfileGenericDataRequestData implements Serializable, ActionReques
 
     @Override
     public String toString() {
-        return String.format("%s[obisCode=%s, begin=%tF %<tT.%<tL %<tZ, end=%tF %<tT.%<tL %<tZ, selected=%s]",
-                ProfileGenericDataRequestData.class.getSimpleName(), this.obisCode, this.beginDate, this.endDate,
+        return String.format(
+                "%s[device=%s, profileType=%s, begin=%tF %<tT.%<tL %<tZ, end=%tF %<tT.%<tL %<tZ, selected=%s]",
+                GetPowerQualityProfileRequest.class.getSimpleName(), this.deviceIdentification, this.profileType,
+                this.beginDate, this.endDate,
                 this.selectedValues.isEmpty() ? "all capture objects" : this.selectedValues);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.obisCode, this.beginDate, this.endDate, this.selectedValues);
+        return Objects.hash(this.deviceIdentification, this.profileType, this.beginDate, this.endDate,
+                this.selectedValues);
     }
 
     @Override
@@ -85,11 +95,12 @@ public class ProfileGenericDataRequestData implements Serializable, ActionReques
         if (this == obj) {
             return true;
         }
-        if (!(obj instanceof ProfileGenericDataRequestData)) {
+        if (!(obj instanceof GetPowerQualityProfileRequest)) {
             return false;
         }
-        final ProfileGenericDataRequestData other = (ProfileGenericDataRequestData) obj;
-        return Objects.equals(this.obisCode, other.obisCode) && Objects.equals(this.beginDate, other.beginDate)
+        final GetPowerQualityProfileRequest other = (GetPowerQualityProfileRequest) obj;
+        return Objects.equals(this.deviceIdentification, other.deviceIdentification)
+                && Objects.equals(this.profileType, other.profileType) && Objects.equals(this.beginDate, other.beginDate)
                 && Objects.equals(this.endDate, other.endDate)
                 && Objects.equals(this.selectedValues, other.selectedValues);
     }

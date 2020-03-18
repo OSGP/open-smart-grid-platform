@@ -12,6 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import ma.glasnost.orika.impl.DefaultMapperFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
@@ -23,8 +24,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActiveEnergyValu
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DlmsMeterValueDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DlmsUnitTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MeterReadsResponseDto;
-
-import ma.glasnost.orika.impl.DefaultMapperFactory;
 
 public class MonitoringMapperTest {
     private MonitoringMapper mapper;

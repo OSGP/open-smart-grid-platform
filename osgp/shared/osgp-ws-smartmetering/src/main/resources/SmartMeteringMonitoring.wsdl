@@ -153,26 +153,26 @@
 
  <!-- REQUEST_LOAD_PROFILE -->
 
-  <wsdl:message name="ProfileGenericDataRequest">
-    <wsdl:part element="smmon:ProfileGenericDataRequest" name="ProfileGenericDataRequest">
+  <wsdl:message name="GetPowerQualityProfileRequest">
+    <wsdl:part element="smmon:GetPowerQualityProfileRequest" name="GetPowerQualityProfileRequest">
     </wsdl:part>
   </wsdl:message>
 
-  <wsdl:message name="ProfileGenericDataResponse">
-    <wsdl:part element="smmon:ProfileGenericDataResponse"
-      name="ProfileGenericDataResponse">
+  <wsdl:message name="GetPowerQualityProfileResponse">
+    <wsdl:part element="smmon:GetPowerQualityProfileResponse"
+      name="GetPowerQualityProfileResponse">
     </wsdl:part>
   </wsdl:message>
 
-  <wsdl:message name="ProfileGenericDataAsyncRequest">
-    <wsdl:part element="smmon:ProfileGenericDataAsyncRequest"
-      name="ProfileGenericDataAsyncRequest">
+  <wsdl:message name="GetPowerQualityProfileAsyncRequest">
+    <wsdl:part element="smmon:GetPowerQualityProfileAsyncRequest"
+      name="GetPowerQualityProfileAsyncRequest">
     </wsdl:part>
   </wsdl:message>
 
-  <wsdl:message name="ProfileGenericDataAsyncResponse">
-    <wsdl:part element="smmon:ProfileGenericDataAsyncResponse"
-      name="ProfileGenericDataAsyncResponse">
+  <wsdl:message name="GetPowerQualityProfileAsyncResponse">
+    <wsdl:part element="smmon:GetPowerQualityProfileAsyncResponse"
+      name="GetPowerQualityProfileAsyncResponse">
     </wsdl:part>
   </wsdl:message>
 
@@ -289,20 +289,20 @@
         name="RetrievePushNotificationAlarmResponse" />
     </wsdl:operation>
  
-    <wsdl:operation name="GetProfileGenericData">
-      <wsdl:input message="tns:ProfileGenericDataRequest"
-        name="ProfileGenericDataRequest">
+    <wsdl:operation name="GetPowerQualityProfile">
+      <wsdl:input message="tns:GetPowerQualityProfileRequest"
+        name="GetPowerQualityProfileRequest">
       </wsdl:input>
-      <wsdl:output message="tns:ProfileGenericDataAsyncResponse"
-        name="ProfileGenericDataAsyncResponse">
+      <wsdl:output message="tns:GetPowerQualityProfileAsyncResponse"
+        name="GetPowerQualityProfileAsyncResponse">
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="GetProfileGenericDataResponse">
-      <wsdl:input message="tns:ProfileGenericDataAsyncRequest"
-        name="ProfileGenericDataAsyncRequest">
+    <wsdl:operation name="GetPowerQualityProfileResponse">
+      <wsdl:input message="tns:GetPowerQualityProfileAsyncRequest"
+        name="GetPowerQualityProfileAsyncRequest">
       </wsdl:input>
-      <wsdl:output message="tns:ProfileGenericDataResponse"
-        name="ProfileGenericDataResponse">
+      <wsdl:output message="tns:GetPowerQualityProfileResponse"
+        name="GetPowerQualityProfileResponse">
       </wsdl:output>
     </wsdl:operation>
     
@@ -517,9 +517,9 @@
       </wsdl:output>
     </wsdl:operation>
     
-    <wsdl:operation name="GetProfileGenericData">
+    <wsdl:operation name="GetPowerQualityProfile">
       <soap:operation soapAction="" />
-      <wsdl:input name="ProfileGenericDataRequest">
+      <wsdl:input name="GetPowerQualityProfileRequest">
         <soap:header message="tns:SoapHeaders" part="org"
           use="literal" />
         <soap:header message="tns:SoapHeaders" part="user"
@@ -528,14 +528,14 @@
           use="literal" />
         <soap:body use="literal" />
       </wsdl:input>
-      <wsdl:output name="ProfileGenericDataAsyncResponse">
+      <wsdl:output name="GetPowerQualityProfileAsyncResponse">
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
     
-    <wsdl:operation name="GetProfileGenericDataResponse">
+    <wsdl:operation name="GetPowerQualityProfileResponse">
       <soap:operation soapAction="" />
-      <wsdl:input name="ProfileGenericDataAsyncRequest">
+      <wsdl:input name="GetPowerQualityProfileAsyncRequest">
         <soap:header message="tns:SoapHeaders" part="org"
           use="literal" />
         <soap:header message="tns:SoapHeaders" part="user"
@@ -544,7 +544,7 @@
           use="literal" />
         <soap:body use="literal" />
       </wsdl:input>
-      <wsdl:output name="ProfileGenericDataResponse">
+      <wsdl:output name="GetPowerQualityProfileResponse">
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>

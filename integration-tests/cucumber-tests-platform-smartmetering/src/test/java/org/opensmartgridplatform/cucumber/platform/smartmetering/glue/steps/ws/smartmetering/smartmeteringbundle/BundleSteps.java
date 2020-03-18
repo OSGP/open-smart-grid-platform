@@ -14,6 +14,9 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStri
 import java.util.HashMap;
 import java.util.Map;
 
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ActionResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.Actions;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ActualMeterReadsResponse;
@@ -32,9 +35,8 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetConfi
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetConfigurationObjectResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetMbusEncryptionKeyStatusRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetMbusEncryptionKeyStatusResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetProfileGenericDataRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetPowerQualityProfileRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetSpecificAttributeValueRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ProfileGenericDataResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ReadAlarmRegisterRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ReadAlarmRegisterResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ScanMbusChannelsRequest;
@@ -56,10 +58,6 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.ScenarioContext
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.bundle.SmartMeteringBundleClient;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import io.cucumber.java.en.Given;
-import io.cucumber.java.en.Then;
-import io.cucumber.java.en.When;
-
 public class BundleSteps extends BaseBundleSteps {
 
     private static final Map<Class<?>, Class<?>> REQUEST_RESPONSE_MAP = new HashMap<>();
@@ -71,7 +69,7 @@ public class BundleSteps extends BaseBundleSteps {
         REQUEST_RESPONSE_MAP.put(GetAllAttributeValuesRequest.class, ActionResponse.class);
         REQUEST_RESPONSE_MAP.put(GetAssociationLnObjectsRequest.class, AssociationLnObjectsResponse.class);
         REQUEST_RESPONSE_MAP.put(GetConfigurationObjectRequest.class, GetConfigurationObjectResponse.class);
-        REQUEST_RESPONSE_MAP.put(GetProfileGenericDataRequest.class, ProfileGenericDataResponse.class);
+        REQUEST_RESPONSE_MAP.put(GetPowerQualityProfileRequest.class, GetPowerQualityProfileRequest.class);
         REQUEST_RESPONSE_MAP.put(GetSpecificAttributeValueRequest.class, ActionResponse.class);
         REQUEST_RESPONSE_MAP.put(ReadAlarmRegisterRequest.class, ReadAlarmRegisterResponse.class);
         REQUEST_RESPONSE_MAP.put(SetActivityCalendarRequest.class, ActionResponse.class);

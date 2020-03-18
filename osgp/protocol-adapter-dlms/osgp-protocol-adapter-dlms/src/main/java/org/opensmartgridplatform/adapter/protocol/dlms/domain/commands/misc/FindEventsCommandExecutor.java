@@ -66,9 +66,9 @@ public class FindEventsCommandExecutor extends AbstractCommandExecutor<FindEvent
         EVENT_LOG_CATEGORY_OBISCODE_MAP.put(EventLogCategoryDto.M_BUS_EVENT_LOG,           new ObisCode("0.0.99.98.3.255"));
         EVENT_LOG_CATEGORY_OBISCODE_MAP.put(EventLogCategoryDto.POWER_QUALITY_EVENT_LOG,   new ObisCode("0.0.99.98.5.255"));
     }
-    // @formatter:on
+
     @Autowired
-    FindEventsCommandExecutor(final DlmsHelper dlmsHelper,
+    public FindEventsCommandExecutor(final DlmsHelper dlmsHelper,
             final DataObjectToEventListConverter dataObjectToEventListConverter) {
         super(FindEventsRequestDto.class);
         this.dlmsHelper = dlmsHelper;
@@ -84,8 +84,8 @@ public class FindEventsCommandExecutor extends AbstractCommandExecutor<FindEvent
     public List<EventDto> execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final FindEventsRequestDto findEventsQuery) throws ProtocolAdapterException {
 
-        final SelectiveAccessDescription selectiveAccessDescription = this.getSelectiveAccessDescription(
-                findEventsQuery.getFrom(), findEventsQuery.getUntil());
+        final SelectiveAccessDescription selectiveAccessDescription = this
+                .getSelectiveAccessDescription(findEventsQuery.getFrom(), findEventsQuery.getUntil());
 
         final AttributeAddress eventLogBuffer = new AttributeAddress(CLASS_ID,
                 EVENT_LOG_CATEGORY_OBISCODE_MAP.get(findEventsQuery.getEventLogCategory()), ATTRIBUTE_ID,
@@ -93,8 +93,8 @@ public class FindEventsCommandExecutor extends AbstractCommandExecutor<FindEvent
 
         conn.getDlmsMessageListener().setDescription(
                 "RetrieveEvents for " + findEventsQuery.getEventLogCategory() + " from " + findEventsQuery.getFrom()
-                        + " until " + findEventsQuery.getUntil() + ", retrieve attribute: "
-                        + JdlmsObjectToStringUtil.describeAttributes(eventLogBuffer));
+                        + " until " + findEventsQuery.getUntil() + ", retrieve attribute: " + JdlmsObjectToStringUtil
+                        .describeAttributes(eventLogBuffer));
 
         final GetResult getResult;
         try {
@@ -143,8 +143,8 @@ public class FindEventsCommandExecutor extends AbstractCommandExecutor<FindEvent
          */
         final DataObject selectedValues = DataObject.newArrayData(Collections.emptyList());
 
-        final DataObject accessParameter = DataObject.newStructureData(
-                Arrays.asList(clockDefinition, fromValue, toValue, selectedValues));
+        final DataObject accessParameter = DataObject
+                .newStructureData(Arrays.asList(clockDefinition, fromValue, toValue, selectedValues));
 
         return new SelectiveAccessDescription(ACCESS_SELECTOR_RANGE_DESCRIPTOR, accessParameter);
     }

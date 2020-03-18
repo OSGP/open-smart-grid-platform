@@ -10,7 +10,6 @@ package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 import java.io.Serializable;
 
 import org.joda.time.DateTime;
-
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;

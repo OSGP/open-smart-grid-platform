@@ -39,6 +39,8 @@ public class SmartMeteringResponseMessageListener implements MessageListener {
         try {
             LOGGER.info("Received message of type: {}", message.getJMSType());
 
+            LOGGER.info("Received message of type: {}", message.getJMSType());
+
             final String messageType = message.getJMSType();
             final ObjectMessage objectMessage = (ObjectMessage) message;
             final String correlationUid = objectMessage.getJMSCorrelationID();

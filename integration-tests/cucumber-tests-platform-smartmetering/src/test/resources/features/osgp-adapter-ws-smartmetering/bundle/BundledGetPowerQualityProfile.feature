@@ -1,27 +1,28 @@
-@SmartMetering @Platform
-Feature: SmartMetering Bundle - GetProfileGenericData
+@Skip @SmartMetering @Platform
+Feature: SmartMetering Bundle - GetPowerQualityProfile
   As a grid operator
-  I want to be able to retrieve profile generic data from a meter via a bundle request
+  I want to be able to retrieve power quality profile data from a meter via a bundle request
 
   Background: 
     Given a dlms device
-      | DeviceIdentification | TEST1024000000001 |
-      | DeviceType           | SMART_METER_E     |
+      | DeviceIdentification      | TEST1024000000001 |
+      | DeviceType                | SMART_METER_E     |
+      | Protocol                  | DSMR              |
+      | ProtocolVersion           | 4.2.2             |
+      | Port                      | 1024              |
+      | FirmwareModuleVersionComm | V 1.1             |
+      | FirmwareModuleVersionMa   | V 1.2             |
+      | FirmwareModuleVersionFunc | V 1.3             |
 
-  Scenario: Retrieve profile generic data as part of a bundled request
+  Scenario: Retrieve power quality profile data as part of a bundled request
     Given a bundle request
       | DeviceIdentification | TEST1024000000001   |
-    And the bundle request contains a get profile generic data action with parameters
-      | ObisCodeA            |                   1 |
-      | ObisCodeB            |                   0 |
-      | ObisCodeC            |                  99 |
-      | ObisCodeD            |                   1 |
-      | ObisCodeE            |                   0 |
-      | ObisCodeF            |                 255 |
+    And the bundle request contains a get power quality profile request with parameters
+      | ProfileType          |              PUBLIC |
       | BeginDate            | 2015-01-01 00:00:00 |
       | EndDate              | 2017-01-10 00:00:00 |
     When the bundle request is received
-    Then the bundle response should contain a profile generic data response with values
+    Then the bundle response should contain a power quality profile response with values
       | DeviceIdentification           | TEST1024000000001 |
       | NumberOfCaptureObjects         |                 4 |
       | CaptureObject_ClassId_1        |                 8 |

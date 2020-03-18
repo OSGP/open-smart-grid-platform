@@ -100,10 +100,11 @@ public class DlmsHelper {
                 return getResult.getResultData();
             }
 
-            final String errorMessage = String.format(
-                    "Retrieving attribute value for { %d, %s, %d }. Result: resultCode(%d), with data: %s",
-                    attributeAddress.getClassId(), attributeAddress.getInstanceId().asShortObisCodeString(),
-                    attributeAddress.getId(), resultCode.getCode(), this.getDebugInfo(getResult.getResultData()));
+            final String errorMessage = String
+                    .format("Retrieving attribute value for { %d, %s, %d }. Result: resultCode(%d), with data: %s",
+                            attributeAddress.getClassId(), attributeAddress.getInstanceId().asShortObisCodeString(),
+                            attributeAddress.getId(), resultCode.getCode(),
+                            this.getDebugInfo(getResult.getResultData()));
 
             LOGGER.error(errorMessage);
             throw new FunctionalException(FunctionalExceptionType.ERROR_RETRIEVING_ATTRIBUTE_VALUE,
@@ -216,8 +217,8 @@ public class DlmsHelper {
 
         if (!scalerUnitObject.isComplex()) {
             throw new ProtocolAdapterException(
-                    "complex data (structure) expected while retrieving scaler and unit." + this.getDebugInfo(
-                            scalerUnitObject));
+                    "complex data (structure) expected while retrieving scaler and unit." + this
+                            .getDebugInfo(scalerUnitObject));
         }
         final List<DataObject> dataObjects = scalerUnitObject.getValue();
         if (dataObjects.size() != 2) {
@@ -225,8 +226,8 @@ public class DlmsHelper {
                     "expected 2 values while retrieving scaler and unit." + this.getDebugInfo(scalerUnitObject));
         }
         final int scaler = this.readLongNotNull(dataObjects.get(0), description).intValue();
-        final DlmsUnitTypeDto unit = DlmsUnitTypeDto.getUnitType(
-                this.readLongNotNull(dataObjects.get(1), description).intValue());
+        final DlmsUnitTypeDto unit = DlmsUnitTypeDto
+                .getUnitType(this.readLongNotNull(dataObjects.get(1), description).intValue());
 
         // determine value
         BigDecimal scaledValue = BigDecimal.valueOf(rawValue);
@@ -338,7 +339,7 @@ public class DlmsHelper {
         }
     }
 
-    public CosemDateTimeDto convertDataObjectToDateTime(final DataObject object) throws ProtocolAdapterException {
+    public CosemDateTimeDto convertDataObjectToDateTime(final DataObject object) {
         CosemDateTimeDto dateTime = null;
         if (object.isByteArray()) {
             dateTime = this.fromDateTimeValue(object.getValue());
@@ -346,7 +347,7 @@ public class DlmsHelper {
             final CosemDateTime cosemDateTime = object.getValue();
             dateTime = this.fromDateTimeValue(cosemDateTime.encode());
         } else {
-            this.logAndThrowExceptionForUnexpectedResultData(object, "ByteArray or CosemDateFormat");
+            return null;
         }
         return dateTime;
     }
@@ -480,8 +481,8 @@ public class DlmsHelper {
         }
         final List<CosemObjectDefinitionDto> objectDefinitionList = new ArrayList<>();
         for (final DataObject objectDefinitionObject : listOfObjectDefinition) {
-            objectDefinitionList.add(
-                    this.readObjectDefinition(objectDefinitionObject, "Object Definition from " + description));
+            objectDefinitionList
+                    .add(this.readObjectDefinition(objectDefinitionObject, "Object Definition from " + description));
         }
         return objectDefinitionList;
     }
@@ -494,14 +495,15 @@ public class DlmsHelper {
         }
         if (objectDefinitionElements.size() != 4) {
             LOGGER.error("Unexpected ResultData for Object Definition value: {}", this.getDebugInfo(resultData));
-            throw new ProtocolAdapterException("Expected list for Object Definition to contain 4 elements, got: "
-                    + objectDefinitionElements.size());
+            throw new ProtocolAdapterException(
+                    "Expected list for Object Definition to contain 4 elements, got: " + objectDefinitionElements
+                            .size());
         }
         final Long classId = this.readLongNotNull(objectDefinitionElements.get(0), "Class ID from " + description);
-        final CosemObisCodeDto logicalName = this.readLogicalName(objectDefinitionElements.get(1),
-                "Logical Name from " + description);
-        final Long attributeIndex = this.readLongNotNull(objectDefinitionElements.get(2),
-                "Attribute Index from " + description);
+        final CosemObisCodeDto logicalName = this
+                .readLogicalName(objectDefinitionElements.get(1), "Logical Name from " + description);
+        final Long attributeIndex = this
+                .readLongNotNull(objectDefinitionElements.get(2), "Attribute Index from " + description);
         final Long dataIndex = this.readLongNotNull(objectDefinitionElements.get(3), "Data Index from " + description);
 
         return new CosemObjectDefinitionDto(classId.intValue(), logicalName, attributeIndex.intValue(),
@@ -526,12 +528,13 @@ public class DlmsHelper {
         if (sendDestinationAndMethodElements == null) {
             return null;
         }
-        final TransportServiceTypeDto transportService = this.readTransportServiceType(
-                sendDestinationAndMethodElements.get(0), "Transport Service from " + description);
-        final String destination = this.readString(sendDestinationAndMethodElements.get(1),
-                "Destination from " + description);
-        final MessageTypeDto message = this.readMessageType(sendDestinationAndMethodElements.get(2),
-                "Message from " + description);
+        final TransportServiceTypeDto transportService = this
+                .readTransportServiceType(sendDestinationAndMethodElements.get(0),
+                        "Transport Service from " + description);
+        final String destination = this
+                .readString(sendDestinationAndMethodElements.get(1), "Destination from " + description);
+        final MessageTypeDto message = this
+                .readMessageType(sendDestinationAndMethodElements.get(2), "Message from " + description);
 
         return new SendDestinationAndMethodDto(transportService, destination, message);
     }
@@ -777,11 +780,11 @@ public class DlmsHelper {
         final int deviation = bb.getShort();
         final int clockStatus = bb.get();
 
-        sb.append("year=").append(year).append(", month=").append(monthOfYear).append(", day=").append(
-                dayOfMonth).append(", weekday=").append(dayOfWeek).append(", hour=").append(hourOfDay).append(
-                ", minute=").append(minuteOfHour).append(", second=").append(secondOfMinute).append(
-                ", hundredths=").append(hundredthsOfSecond).append(", deviation=").append(deviation).append(
-                ", clockstatus=").append(clockStatus);
+        sb.append("year=").append(year).append(", month=").append(monthOfYear).append(", day=").append(dayOfMonth)
+          .append(", weekday=").append(dayOfWeek).append(", hour=").append(hourOfDay).append(", minute=")
+          .append(minuteOfHour).append(", second=").append(secondOfMinute).append(", hundredths=")
+          .append(hundredthsOfSecond).append(", deviation=").append(deviation).append(", clockstatus=")
+          .append(clockStatus);
 
         return sb.toString();
     }

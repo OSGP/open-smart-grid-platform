@@ -1,9 +1,10 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping;
 
@@ -15,15 +16,15 @@ import java.util.Date;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PowerQualityProfileData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileEntryValue;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CaptureObjectDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.PowerQualityProfileDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ObisCodeValuesDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryValueDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileGenericDataResponseDto;
 
-public class ProfileGenericDataResponseMapperTest {
+public class PowerQualityProfileResponseDataMapperTest {
 
     private final MonitoringMapper mapper = new MonitoringMapper();
 
@@ -31,35 +32,33 @@ public class ProfileGenericDataResponseMapperTest {
             Long.class };
 
     @Test
-    public void testConvertProfileGenericDataResponseVo() {
-        final ProfileGenericDataResponseDto responseDto = this.makeResponseDto();
-        final ProfileGenericDataResponse responseVo = this.mapper.map(responseDto, ProfileGenericDataResponse.class);
+    public void testConvertGetPowerQualityProfileResponseVo() {
+        final PowerQualityProfileDataDto responseDto = this.makeResponseDataDto();
+        final PowerQualityProfileData responseVo = this.mapper
+                .map(responseDto, PowerQualityProfileData.class);
         assertThat(responseVo).withFailMessage("response object should not be null").isNotNull();
 
         assertThat(responseVo.getProfileEntries().get(0).getProfileEntryValues().size())
                 .withFailMessage("response object should return same number of profilentries")
                 .isEqualTo(EXPECTED_CLASS.length);
         int i = 0;
-        for (final ProfileEntryValue profileEntryValueVo : responseVo.getProfileEntries()
-                .get(0)
-                .getProfileEntryValues()) {
+        for (final ProfileEntryValue profileEntryValueVo : responseVo.getProfileEntries().get(0)
+                                                                     .getProfileEntryValues()) {
             final Class<?> clazz = profileEntryValueVo.getValue().getClass();
             assertThat(clazz).withFailMessage("the return class should be of the same type")
-                    .isEqualTo(EXPECTED_CLASS[i++]);
+                             .isEqualTo(EXPECTED_CLASS[i++]);
         }
     }
 
-    private ProfileGenericDataResponseDto makeResponseDto() {
+    private PowerQualityProfileDataDto makeResponseDataDto() {
         final ObisCodeValuesDto obisCodeValuesDto = new ObisCodeValuesDto((byte) 1, (byte) 1, (byte) 1, (byte) 1,
                 (byte) 1, (byte) 1);
-        final ProfileGenericDataResponseDto result = new ProfileGenericDataResponseDto(obisCodeValuesDto,
-                this.makeCaptureObjectDtos(), this.makeProfileEntryDtos());
-        return result;
+        return new PowerQualityProfileDataDto(obisCodeValuesDto, this.makeCaptureObjectDtos(),
+                this.makeProfileEntryDtos());
     }
 
     private List<CaptureObjectDto> makeCaptureObjectDtos() {
-        final List<CaptureObjectDto> result = new ArrayList<>();
-        return result;
+        return new ArrayList<>();
     }
 
     private List<ProfileEntryDto> makeProfileEntryDtos() {

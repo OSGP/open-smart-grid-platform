@@ -1,9 +1,10 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
@@ -20,9 +21,10 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ObisCodeValues;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileRequest;
 
-public class ProfileGenericDataRequestMappingTest {
+public class GetPowerQualityProfileRequestMappingTest {
 
     private static final String DEVICE_NAME = "TEST10240000001";
 
@@ -30,21 +32,19 @@ public class ProfileGenericDataRequestMappingTest {
     private final MonitoringMapper mapper = new MonitoringMapper();
 
     @Test
-    public void convertProfileGenericDataRequest() {
-        final ProfileGenericDataRequest source = this.makeRequest();
-        final Object result = this.mapper.map(source,
-                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileGenericDataRequest.class);
+    public void convertGetPowerQualityProfileRequestData() {
+        final GetPowerQualityProfileRequestData source = this.makeRequest();
+        final Object result = this.mapper.map(source, GetPowerQualityProfileRequest.class);
 
-        assertThat(result).as("mapping ProfileGenericDataRequest should not return null").isNotNull();
-        assertThat(result).as("mapping ProfileGenericDataRequest should return correct type").isInstanceOf(
-                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileGenericDataRequest.class);
+        assertThat(result).as("mapping GetPowerQualityProfileRequestData should not return null").isNotNull();
+        assertThat(result).as("mapping GetPowerQualityProfileRequestData should return correct type")
+                          .isInstanceOf(GetPowerQualityProfileRequest.class);
 
-        final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileGenericDataRequest target = (org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileGenericDataRequest) result;
+        final GetPowerQualityProfileRequest target = (GetPowerQualityProfileRequest) result;
 
         assertThat(target.getDeviceIdentification()).isEqualTo(source.getDeviceIdentification());
-        assertThat(target.getObisCode().getA()).isEqualTo((byte) source.getObisCode().getA());
-        assertThat(target.getObisCode().getF()).isEqualTo((byte) source.getObisCode().getF());
-        final DateTime targetEndDate = new DateTime(target.getEndDate().getTime());
+        assertThat(target.getProfileType()).isEqualTo( source.getProfileType());
+        final DateTime targetEndDate = new DateTime(target.getEndDate());
         assertThat(targetEndDate.getYear()).isEqualTo(source.getBeginDate().getYear());
     }
 
@@ -69,9 +69,9 @@ public class ProfileGenericDataRequestMappingTest {
         return result;
     }
 
-    private ProfileGenericDataRequest makeRequest() {
-        final ProfileGenericDataRequest result = new ProfileGenericDataRequest();
-        result.setObisCode(this.makeObisCodeValues());
+    private GetPowerQualityProfileRequestData makeRequest() {
+        final GetPowerQualityProfileRequestData result = new GetPowerQualityProfileRequestData();
+        result.setProfileType("PRIVATE");
         result.setDeviceIdentification(DEVICE_NAME);
         result.setBeginDate(this.makeGregorianCalendar());
         result.setEndDate(this.makeGregorianCalendar());

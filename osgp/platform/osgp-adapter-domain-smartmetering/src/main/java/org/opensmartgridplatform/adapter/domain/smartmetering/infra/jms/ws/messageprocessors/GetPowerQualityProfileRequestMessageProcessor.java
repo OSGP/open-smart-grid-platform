@@ -9,7 +9,7 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.mess
 
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.MonitoringService;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.BaseRequestMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileGenericDataRequest;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileRequest;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
@@ -19,14 +19,14 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ProfileGenericDataRequestMessageProcessor extends BaseRequestMessageProcessor {
+public class GetPowerQualityProfileRequestMessageProcessor extends BaseRequestMessageProcessor {
 
     @Autowired
     @Qualifier("domainSmartMeteringMonitoringService")
     private MonitoringService monitoringService;
 
     @Autowired
-    protected ProfileGenericDataRequestMessageProcessor(
+    protected GetPowerQualityProfileRequestMessageProcessor(
             @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
         super(messageProcessorMap, MessageType.GET_PROFILE_GENERIC_DATA);
     }
@@ -35,8 +35,8 @@ public class ProfileGenericDataRequestMessageProcessor extends BaseRequestMessag
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
             throws FunctionalException {
 
-        final ProfileGenericDataRequest periodicMeterReadsRequest = (ProfileGenericDataRequest) dataObject;
+        final GetPowerQualityProfileRequest getPowerQualityProfileRequest = (GetPowerQualityProfileRequest) dataObject;
 
-        this.monitoringService.requestProfileGenericData(deviceMessageMetadata, periodicMeterReadsRequest);
+        this.monitoringService.requestPowerQualityProfile(deviceMessageMetadata, getPowerQualityProfileRequest);
     }
 }

@@ -246,7 +246,7 @@ public class ConfigurationService {
 
         final GetMBusDeviceOnChannelRequestDataDto mbusDeviceOnChannelRequest =
                 new GetMBusDeviceOnChannelRequestDataDto(
-                device.getDeviceIdentification(), setMbusUserKeyByChannelRequestData.getChannel());
+                        device.getDeviceIdentification(), setMbusUserKeyByChannelRequestData.getChannel());
         final ChannelElementValuesDto channelElementValues = this.getMBusDeviceOnChannelCommandExecutor.execute(conn,
                 device, mbusDeviceOnChannelRequest);
 
@@ -387,7 +387,7 @@ public class ConfigurationService {
     public void requestSetRandomizationSettings(DlmsConnectionManager conn, DlmsDevice device,
             SetRandomisationSettingsRequestDataDto setRandomisationSettingsRequestDataDto)
             throws ProtocolAdapterException {
-        
+
         AccessResultCode accessResultCode = this.setRandomisationSettingsCommandExecutor.execute(conn, device,
                 setRandomisationSettingsRequestDataDto);
 
