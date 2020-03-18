@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.adapter.protocol.mqtt.application.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
@@ -27,12 +28,12 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.opensmartgridplatform.adapter.protocol.mqtt.application.messaging.OutboundOsgpCoreRequestMessageSender;
+import org.opensmartgridplatform.adapter.protocol.mqtt.application.messaging.OutboundOsgpCoreResponseMessageSender;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.entities.MqttDevice;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.repositories.MqttDeviceRepository;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
+import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 
 @ExtendWith(MockitoExtension.class)
 class SubscriptionServiceTest {
@@ -44,7 +45,7 @@ class SubscriptionServiceTest {
     private SubscriptionService instance;
 
     @Mock
-    private OutboundOsgpCoreRequestMessageSender outboundOsgpCoreRequestMessageSender;
+    private OutboundOsgpCoreResponseMessageSender outboundOsgpCoreResponseMessageSender;
     @Mock
     private MqttDeviceRepository mqttDeviceRepository;
     @Mock
@@ -57,12 +58,12 @@ class SubscriptionServiceTest {
     @Mock
     private MqttClientAdapter mqttClientAdapter;
     @Captor
-    private ArgumentCaptor<RequestMessage> requestMessageCaptor;
+    private ArgumentCaptor<ProtocolResponseMessage> protocolResponseMessageCaptor;
 
     @BeforeEach
     public void setUp() {
         this.instance = new SubscriptionService(this.mqttDeviceRepository, this.mqttClientAdapterFactory,
-                this.outboundOsgpCoreRequestMessageSender, DEFAULT_PORT, DEFAULT_TOPICS, DEFAULT_QOS.name());
+                this.outboundOsgpCoreResponseMessageSender, DEFAULT_PORT, DEFAULT_TOPICS, DEFAULT_QOS.name());
         lenient().when(this.mqttClientAdapter.getMessageMetadata()).thenReturn(this.messageMetadata);
     }
 
@@ -188,26 +189,39 @@ class SubscriptionServiceTest {
     @Test
     void onReceive() {
         // SETUP
-        final String correlationUid = "test-correlation-uuid";
-        when(this.messageMetadata.getCorrelationUid()).thenReturn(correlationUid);
-        final String organisationIdentification = "test-organisation-id";
-        when(this.messageMetadata.getOrganisationIdentification()).thenReturn(organisationIdentification);
-        final String deviceIdentification = "test-device-id";
-        when(this.messageMetadata.getDeviceIdentification()).thenReturn(deviceIdentification);
+        when(this.messageMetadata.getMessageType()).thenReturn("test-message-type");
+        when(this.messageMetadata.getCorrelationUid()).thenReturn("test-correlation-uuid");
+        when(this.messageMetadata.getOrganisationIdentification()).thenReturn("test-organisation-id");
+        when(this.messageMetadata.getDeviceIdentification()).thenReturn("test-device-id");
+        when(this.messageMetadata.getMessagePriority()).thenReturn(2345);
+        when(this.messageMetadata.isBypassRetry()).thenReturn(true);
+        // Note: messageMetadata.isScheduled is not used
+        // by DeviceMessageMetadata. It is derived from scheduleTime
+        when(this.messageMetadata.getScheduleTime()).thenReturn(null);
+        when(this.messageMetadata.getDomain()).thenReturn("test-device-id");
+        when(this.messageMetadata.getDomainVersion()).thenReturn("test-device-id");
 
-        final byte[] bytes = "12345".getBytes();
+        final String payload = "12345";
+        final byte[] bytes = payload.getBytes();
 
         // CALL
         this.instance.onReceive(this.mqttClientAdapter, bytes);
 
         // VERIFY
-        verify(this.mqttClientAdapter).getMessageMetadata();
-        verify(this.outboundOsgpCoreRequestMessageSender).send(this.requestMessageCaptor.capture(),
-                eq(MessageType.GET_DATA.name()), eq(this.messageMetadata));
-        final RequestMessage requestMessage = this.requestMessageCaptor.getValue();
-        assertEquals(correlationUid, requestMessage.getCorrelationUid());
-        assertEquals(organisationIdentification, requestMessage.getOrganisationIdentification());
-        assertEquals(deviceIdentification, requestMessage.getDeviceIdentification());
-
+        verify(this.outboundOsgpCoreResponseMessageSender).send(this.protocolResponseMessageCaptor.capture());
+        final ProtocolResponseMessage protocolResponseMessage = this.protocolResponseMessageCaptor.getValue();
+        assertEquals(this.messageMetadata.getMessageType(), protocolResponseMessage.getMessageType());
+        assertEquals(this.messageMetadata.getCorrelationUid(), protocolResponseMessage.getCorrelationUid());
+        assertEquals(this.messageMetadata.getOrganisationIdentification(),
+                protocolResponseMessage.getOrganisationIdentification());
+        assertEquals(this.messageMetadata.getDeviceIdentification(), protocolResponseMessage.getDeviceIdentification());
+        assertEquals(this.messageMetadata.getMessagePriority(), protocolResponseMessage.getMessagePriority());
+        assertEquals(this.messageMetadata.isBypassRetry(), protocolResponseMessage.bypassRetry());
+        assertFalse(protocolResponseMessage.isScheduled());
+        assertEquals(this.messageMetadata.getDomain(), protocolResponseMessage.getDomain());
+        assertEquals(this.messageMetadata.getDomainVersion(), protocolResponseMessage.getDomainVersion());
+        assertEquals(payload, protocolResponseMessage.getDataObject());
+        assertEquals(ResponseMessageResultType.OK, protocolResponseMessage.getResult());
     }
+
 }

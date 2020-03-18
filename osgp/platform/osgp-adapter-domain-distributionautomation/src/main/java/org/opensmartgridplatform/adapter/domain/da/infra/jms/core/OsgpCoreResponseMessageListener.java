@@ -32,7 +32,7 @@ public class OsgpCoreResponseMessageListener implements MessageListener {
 
     @Autowired
     @Qualifier("domainDistributionAutomationInboundOsgpCoreResponsesMessageProcessorMap")
-    private MessageProcessorMap messageProcessorMap;
+    private MessageProcessorMap messageProcessorMap; // XXX
 
     @Override
     public void onMessage(final Message message) {

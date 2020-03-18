@@ -13,12 +13,14 @@ import java.util.Arrays;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAck;
 import com.hivemq.client.mqtt.mqtt3.message.subscribe.suback.Mqtt3SubAck;
-import org.opensmartgridplatform.adapter.protocol.mqtt.application.messaging.OutboundOsgpCoreRequestMessageSender;
+import org.opensmartgridplatform.adapter.protocol.mqtt.application.messaging.OutboundOsgpCoreResponseMessageSender;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.entities.MqttDevice;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.repositories.MqttDeviceRepository;
+import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
+import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,7 +32,7 @@ public class SubscriptionService implements MqttClientEventHandler {
     private static final Logger LOG = LoggerFactory.getLogger(SubscriptionService.class);
 
     private final MqttDeviceRepository mqttDeviceRepository;
-    private final OutboundOsgpCoreRequestMessageSender outboundOsgpCoreRequestMessageSender;
+    private final OutboundOsgpCoreResponseMessageSender outboundOsgpCoreResponseMessageSender;
     private final MqttClientAdapterFactory mqttClientAdapterFactory;
 
     private final int defaultPort;
@@ -39,13 +41,13 @@ public class SubscriptionService implements MqttClientEventHandler {
 
     public SubscriptionService(final MqttDeviceRepository mqttDeviceRepository,
             final MqttClientAdapterFactory mqttClientAdapterFactory,
-            final OutboundOsgpCoreRequestMessageSender outboundOsgpCoreRequestMessageSender,
+            final OutboundOsgpCoreResponseMessageSender outboundOsgpCoreResponseMessageSender,
             @Value("#{new Integer('${mqtt.broker.defaultPort}')}") final int defaultPort,
             @Value("${mqtt.broker.defaultTopics}") final String defaultTopics,
             @Value("${mqtt.broker.defaultQos}") final String defaultQos) {
         this.mqttDeviceRepository = mqttDeviceRepository;
         this.mqttClientAdapterFactory = mqttClientAdapterFactory;
-        this.outboundOsgpCoreRequestMessageSender = outboundOsgpCoreRequestMessageSender;
+        this.outboundOsgpCoreResponseMessageSender = outboundOsgpCoreResponseMessageSender;
         this.defaultPort = defaultPort;
         this.defaultTopics = defaultTopics;
         this.defaultQos = defaultQos;
@@ -122,9 +124,14 @@ public class SubscriptionService implements MqttClientEventHandler {
         final MessageMetadata messageMetadata = mqttClientAdapter.getMessageMetadata();
         LOG.info(String.format("Client for device:%s received payload:%s", messageMetadata.getDeviceIdentification(),
                 payload));
-        final RequestMessage requestMessage = new RequestMessage(messageMetadata.getCorrelationUid(),
-                messageMetadata.getOrganisationIdentification(), messageMetadata.getDeviceIdentification(), payload);
-        this.outboundOsgpCoreRequestMessageSender.send(requestMessage, MessageType.GET_DATA.name(), messageMetadata);
+        final ResponseMessage responseMessage = new ProtocolResponseMessage.Builder()
+                .deviceMessageMetadata(new DeviceMessageMetadata(messageMetadata))
+                .domain(messageMetadata.getDomain())
+                .domainVersion(messageMetadata.getDomainVersion())
+                .dataObject(payload)
+                .result(ResponseMessageResultType.OK)
+                .build();
+        this.outboundOsgpCoreResponseMessageSender.send(responseMessage);
     }
 
 }

@@ -102,7 +102,7 @@ public class AdHocManagementService extends BaseService {
 
     public void handleGetDataRequest(final String payload, final String deviceIdentification) {
         LOGGER.info("Handle GET_DATA request for device: {} payload: {}", deviceIdentification, payload);
-        // XXX: add logic to handle GET_DATA messages
+        // TODO: further implement handling of GET_DATA messages
     }
 
 }
