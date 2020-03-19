@@ -72,7 +72,7 @@ public class GetDataResponseMessageProcessor extends BaseNotificationMessageProc
     private void processResponseValues(final ResponseValues responseValues) {
         try {
             LOGGER.info("Calling application service function to handle response: {}", responseValues.messageType);
-            this.adHocManagementService.handleGetDataRequest(responseValues.payload,
+            this.adHocManagementService.handleGetDataResponse(responseValues.payload,
                     responseValues.deviceIdentification);
         } catch (final Exception e) {
             this.handleError(e, responseValues.correlationUid, responseValues.organisationIdentification,
