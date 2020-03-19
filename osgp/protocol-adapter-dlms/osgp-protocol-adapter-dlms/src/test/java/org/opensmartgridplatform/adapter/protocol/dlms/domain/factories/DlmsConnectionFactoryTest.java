@@ -67,19 +67,21 @@ public class DlmsConnectionFactoryTest {
     @Test
     public void getConnection_throwsForHls4Device() throws Exception {
 
-            final DlmsDevice device = new DlmsDeviceBuilder().withHls4Active(true).build();
-            final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
+        final DlmsDevice device = new DlmsDeviceBuilder().withHls4Active(true).build();
+        final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 
-            assertThatExceptionOfType(FunctionalException.class).isThrownBy(() -> {this.factory.getConnection(device, listener);
+        assertThatExceptionOfType(FunctionalException.class).isThrownBy(() -> {
+            this.factory.getConnection(device, listener);
         });
     }
 
     @Test
     public void getConnection_throwsForHls3Device() throws Exception {
-            final DlmsDevice device = new DlmsDeviceBuilder().withHls3Active(true).build();
-            final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
+        final DlmsDevice device = new DlmsDeviceBuilder().withHls3Active(true).build();
+        final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 
-            assertThatExceptionOfType(FunctionalException.class).isThrownBy(() -> {this.factory.getConnection(device, listener);
+        assertThatExceptionOfType(FunctionalException.class).isThrownBy(() -> {
+            this.factory.getConnection(device, listener);
         });
     }
 

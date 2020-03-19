@@ -62,10 +62,11 @@ public class GetConfigurationObjectServiceTest {
     @Test
     public void getConfigurationObjectIOException() throws Exception {
 
-            // SETUP
-            when(this.dlmsConnection.get(any(AttributeAddress.class))).thenThrow(new IOException());
+        // SETUP
+        when(this.dlmsConnection.get(any(AttributeAddress.class))).thenThrow(new IOException());
 
-            assertThatExceptionOfType(ConnectionException.class).isThrownBy(() -> {// CALL
+        // CALL
+        assertThatExceptionOfType(ConnectionException.class).isThrownBy(() -> {
             this.instance.getConfigurationObject(this.conn);
         });
     }
@@ -73,10 +74,11 @@ public class GetConfigurationObjectServiceTest {
     @Test
     public void getConfigurationObjectGetResultNull() throws Exception {
 
-            // SETUP
-            when(this.dlmsConnection.get(any(AttributeAddress.class))).thenReturn(null);
+        // SETUP
+        when(this.dlmsConnection.get(any(AttributeAddress.class))).thenReturn(null);
 
-            assertThatExceptionOfType(ProtocolAdapterException.class).isThrownBy(() -> {// CALL
+        // CALL
+        assertThatExceptionOfType(ProtocolAdapterException.class).isThrownBy(() -> {
             this.instance.getConfigurationObject(this.conn);
         });
     }
@@ -84,11 +86,12 @@ public class GetConfigurationObjectServiceTest {
     @Test
     public void getConfigurationObjectGetResultUnsuccessful() throws Exception {
 
-            // SETUP
-            when(this.getResult.getResultCode()).thenReturn(AccessResultCode.READ_WRITE_DENIED);
-            when(this.dlmsConnection.get(any(AttributeAddress.class))).thenReturn(this.getResult);
+        // SETUP
+        when(this.getResult.getResultCode()).thenReturn(AccessResultCode.READ_WRITE_DENIED);
+        when(this.dlmsConnection.get(any(AttributeAddress.class))).thenReturn(this.getResult);
 
-            assertThatExceptionOfType(ProtocolAdapterException.class).isThrownBy(() -> {// CALL
+        // CALL
+        assertThatExceptionOfType(ProtocolAdapterException.class).isThrownBy(() -> {
             this.instance.getConfigurationObject(this.conn);
         });
     }

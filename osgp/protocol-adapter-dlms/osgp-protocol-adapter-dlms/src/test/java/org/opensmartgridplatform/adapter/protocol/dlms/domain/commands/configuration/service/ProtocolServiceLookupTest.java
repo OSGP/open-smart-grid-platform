@@ -38,13 +38,13 @@ public class ProtocolServiceLookupTest {
     }
 
     @Test
-    public void lookupGetServiceNotFound() throws ProtocolAdapterException {
+    public void lookupGetServiceNotFound() {
 
-            // SETUP
-            final Protocol protocol = Protocol.OTHER_PROTOCOL;
+        // SETUP
+        final Protocol protocol = Protocol.OTHER_PROTOCOL;
 
-            assertThatExceptionOfType(ProtocolAdapterException.class).isThrownBy(() -> {// CALL
-            this.instance.lookupSetService(protocol);
-        });
+        // CALL
+        assertThatExceptionOfType(ProtocolAdapterException.class).isThrownBy(
+                () -> this.instance.lookupSetService(protocol));
     }
 }
