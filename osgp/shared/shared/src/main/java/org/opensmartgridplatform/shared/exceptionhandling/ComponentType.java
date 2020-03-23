@@ -30,11 +30,12 @@ public enum ComponentType {
     PROTOCOL_DLMS("Osgp Protocol Adapter DLMS"),
     PROTOCOL_IEC61850("Osgp Protocol Adapter IEC61850"),
     PROTOCOL_IEC60870("Osgp Protocol Adapter IEC60870"),
+    PROTOCOL_MQTT("Osgp Protocol Adapter MQTT"),
     SHARED("Shared"),
 
     UNKNOWN("Unknown");
 
-    private String componentName;
+    private final String componentName;
 
     private ComponentType(final String componentName) {
         this.componentName = componentName;

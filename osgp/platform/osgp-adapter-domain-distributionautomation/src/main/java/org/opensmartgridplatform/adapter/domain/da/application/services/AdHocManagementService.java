@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.da.application.services;
 
@@ -99,4 +99,10 @@ public class AdHocManagementService extends BaseService {
                 .build();
         this.webServiceResponseMessageSender.send(responseMessage, messageType);
     }
+
+    public void handleGetDataResponse(final String payload, final String deviceIdentification) {
+        LOGGER.info("Handle GET_DATA response for device: {} payload: {}", deviceIdentification, payload);
+        // TODO: further implement handling of GET_DATA messages
+    }
+
 }

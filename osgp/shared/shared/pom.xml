@@ -17,7 +17,7 @@
   <artifactId>shared</artifactId>
   <name>shared</name>
   <packaging>jar</packaging>
-  <!-- Description element is needed for the maven-jxr-plugin to generate 
+  <!-- Description element is needed for the maven-jxr-plugin to generate
     a maven site -->
   <description>Shared module.</description>
 

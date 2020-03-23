@@ -128,6 +128,11 @@
     <module>osgp/protocol-adapter-iec60870/osgp-protocol-adapter-iec60870</module>
     <module>osgp/protocol-adapter-iec60870/osgp-protocol-simulator-iec60870</module>
 
+    <!-- protocol-adapter-mqtt -->
+    <module>osgp/protocol-adapter-mqtt/parent-pa-mqtt</module>
+    <module>osgp/protocol-adapter-mqtt/osgp-protocol-adapter-mqtt</module>
+    <module>osgp/protocol-adapter-mqtt/osgp-protocol-simulator-mqtt</module>
+
     <!-- platform -->
     <module>osgp/platform/parent-platform</module>
     <module>osgp/platform/osgp-domain-core</module>
