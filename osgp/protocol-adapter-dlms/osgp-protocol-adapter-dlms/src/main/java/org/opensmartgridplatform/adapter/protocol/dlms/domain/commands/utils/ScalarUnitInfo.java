@@ -10,23 +10,23 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils;
 
 import org.openmuc.jdlms.datatypes.DataObject;
 
-public class ScalerUnitInfo {
+public class ScalarUnitInfo {
 
     private final String logicalName;
     private final int classId;
-    private final DataObject scalerUnit;
+    private final DataObject scalarUnit;
 
-    public ScalerUnitInfo(final String logicalName, final int classId, final DataObject scalarUnit) {
+    public ScalarUnitInfo(final String logicalName, final int classId, final DataObject scalarUnit) {
         super();
         this.logicalName = logicalName;
         this.classId = classId;
-        this.scalerUnit = scalarUnit;
+        this.scalarUnit = scalarUnit;
     }
 
     @Override
     public String toString() {
         return "ScalarUnitInfo [logicalName=" + this.logicalName + ", classId=" + this.classId + ", scalarUnit="
-                + this.scalerUnit + "]";
+                + this.scalarUnit + "]";
     }
 
     public String getLogicalName() {
@@ -37,8 +37,8 @@ public class ScalerUnitInfo {
         return this.classId;
     }
 
-    public DataObject getScalerUnit() {
-        return this.scalerUnit;
+    public DataObject getScalarUnit() {
+        return this.scalarUnit;
     }
 
 }

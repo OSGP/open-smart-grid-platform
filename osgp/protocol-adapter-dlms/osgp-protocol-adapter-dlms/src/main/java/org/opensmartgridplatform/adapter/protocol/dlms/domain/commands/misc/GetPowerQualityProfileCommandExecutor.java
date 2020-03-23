@@ -32,7 +32,7 @@ import org.openmuc.jdlms.interfaceclass.attribute.ProfileGenericAttribute;
 import org.openmuc.jdlms.interfaceclass.attribute.RegisterAttribute;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ScalerUnitInfo;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ScalarUnitInfo;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -77,16 +77,20 @@ public class GetPowerQualityProfileCommandExecutor
 
     enum Profile {
 
-        DEFINABLE_LOAD_PROFILE(OBIS_CODE_DEFINABLE_LOAD_PROFILE, INTERVAL_DEFINABLE_LOAD_PROFILE),
-        PROFILE_1(OBIS_CODE_PROFILE_1, INTERVAL_PROFILE_1),
-        PROFILE_2(OBIS_CODE_PROFILE_2, INTERVAL_PROFILE_2);
+        DEFINABLE_LOAD_PROFILE_PUBLIC(OBIS_CODE_DEFINABLE_LOAD_PROFILE, INTERVAL_DEFINABLE_LOAD_PROFILE,
+                getLogicalNamesPublicDefinableLoadProfile()),
+        PROFILE_1_PRIVATE(OBIS_CODE_PROFILE_1, INTERVAL_PROFILE_1, getLogicalNamesPrivateProfile1()),
+        PROFILE_2_PUBLIC(OBIS_CODE_PROFILE_2, INTERVAL_PROFILE_2, getLogicalNamesPublicProfile2()),
+        PROFILE_2_PRIVATE(OBIS_CODE_PROFILE_2, INTERVAL_PROFILE_2, getLogicalNamesPrivateProfile2());
 
         private final ObisCodeValuesDto obisCodeValuesDto;
         private final int interval;
+        private final List<String> logicalNames;
 
-        Profile(ObisCodeValuesDto obisCodeValuesDto, int interval) {
+        Profile(ObisCodeValuesDto obisCodeValuesDto, int interval, List<String> logicalNames) {
             this.obisCodeValuesDto = obisCodeValuesDto;
             this.interval = interval;
+            this.logicalNames = logicalNames;
         }
 
         public ObisCodeValuesDto getObisCodeValuesDto() {
@@ -96,17 +100,21 @@ public class GetPowerQualityProfileCommandExecutor
         public int getInterval() {
             return interval;
         }
+
+        public List<String> getLogicalNames() {
+            return logicalNames;
+        }
     }
 
     private static final byte[] OBIS_BYTES_CLOCK = new byte[] { 0, 0, 1, 0, 0, (byte) 255 };
 
-    private static final Map<Integer, Integer> SCALER_UNITS_MAP = new HashMap<>();
+    private static final Map<Integer, Integer> SCALAR_UNITS_MAP = new HashMap<>();
 
     static {
-        SCALER_UNITS_MAP.put(InterfaceClass.REGISTER.id(), RegisterAttribute.SCALER_UNIT.attributeId());
-        SCALER_UNITS_MAP
+        SCALAR_UNITS_MAP.put(InterfaceClass.REGISTER.id(), RegisterAttribute.SCALER_UNIT.attributeId());
+        SCALAR_UNITS_MAP
                 .put(InterfaceClass.EXTENDED_REGISTER.id(), ExtendedRegisterAttribute.SCALER_UNIT.attributeId());
-        SCALER_UNITS_MAP.put(InterfaceClass.DEMAND_REGISTER.id(), DemandRegisterAttribute.SCALER_UNIT.attributeId());
+        SCALAR_UNITS_MAP.put(InterfaceClass.DEMAND_REGISTER.id(), DemandRegisterAttribute.SCALER_UNIT.attributeId());
     }
 
     private final DlmsHelper dlmsHelper;
@@ -123,11 +131,7 @@ public class GetPowerQualityProfileCommandExecutor
             throws ProtocolAdapterException {
 
         final String profileType = getPowerQualityProfileRequestDataDto.getProfileType();
-
-        LOGGER.info("executing GetPowerQualityProfileResponseDto for {}", profileType);
-
         final List<Profile> profiles = determineProfileForDevice(profileType);
-
         final GetPowerQualityProfileResponseDto response = new GetPowerQualityProfileResponseDto();
         final List<PowerQualityProfileDataDto> responseDatas = new ArrayList<>();
 
@@ -136,21 +140,23 @@ public class GetPowerQualityProfileCommandExecutor
             final ObisCode obisCode = this.makeObisCode(profile.getObisCodeValuesDto());
             final DateTime beginDateTime = new DateTime(getPowerQualityProfileRequestDataDto.getBeginDate());
             final DateTime endDateTime = new DateTime(getPowerQualityProfileRequestDataDto.getEndDate());
-            final List<CaptureObjectDefinitionDto> selectedValues = getPowerQualityProfileRequestDataDto
-                    .getSelectedValues();
 
-            LOGGER.info("Retrieving power quality data for {}, from: {}, to: {}, selected values: {}",
-                    profile.getObisCodeValuesDto(), beginDateTime, endDateTime,
-                    selectedValues.isEmpty() ? "all capture objects" : selectedValues);
-
+            // all value types that can be selected within this profile.
             final List<GetResult> captureObjects = this.retrieveCaptureObjects(conn, device, obisCode);
-            final List<ScalerUnitInfo> scalerUnitInfos = this.retrieveScalerUnits(conn, device, captureObjects);
-            final List<GetResult> bufferList = this
-                    .retrieveBuffer(conn, device, obisCode, beginDateTime, endDateTime, selectedValues);
+
+            // the units of measure for all capture objects
+            final List<ScalarUnitInfo> scalarUnitInfos = this.createScalarUnitInfos(conn, device, captureObjects);
+
+            // the values that are allowed to be retrieved from the meter, used as filter either before (SMR 5.1+) or
+            // after data retrieval
+            Map<Integer, CaptureObjectDefinitionDto> selectableCaptureObjects = this
+                    .createSelectableCaptureObjects(captureObjects, profile.getLogicalNames());
+
+            final List<GetResult> bufferList = this.retrieveBuffer(conn, device, obisCode, beginDateTime, endDateTime,
+                    new ArrayList<>(selectableCaptureObjects.values()));
 
             final PowerQualityProfileDataDto responseDataDto = this
-                    .processData(profile, captureObjects, scalerUnitInfos, selectedValues,
-                            device.isSelectiveAccessSupported(), bufferList);
+                    .processData(profile, captureObjects, scalarUnitInfos, selectableCaptureObjects, bufferList);
 
             responseDatas.add(responseDataDto);
         }
@@ -164,9 +170,9 @@ public class GetPowerQualityProfileCommandExecutor
 
         switch (profileType) {
         case PUBLIC:
-            return Arrays.asList(Profile.DEFINABLE_LOAD_PROFILE, Profile.PROFILE_2);
+            return Arrays.asList(Profile.DEFINABLE_LOAD_PROFILE_PUBLIC, Profile.PROFILE_2_PUBLIC);
         case PRIVATE:
-            return Arrays.asList(Profile.PROFILE_1, Profile.PROFILE_2);
+            return Arrays.asList(Profile.PROFILE_1_PRIVATE, Profile.PROFILE_2_PRIVATE);
         default:
             throw new IllegalArgumentException(
                     "GetPowerQualityProfile: an unknown profileType was requested: " + profileType);
@@ -184,48 +190,47 @@ public class GetPowerQualityProfileCommandExecutor
 
     private List<GetResult> retrieveBuffer(final DlmsConnectionManager conn, final DlmsDevice device,
             final ObisCode obisCode, final DateTime beginDateTime, final DateTime endDateTime,
-            final List<CaptureObjectDefinitionDto> selectedValues) throws ProtocolAdapterException {
-        final SelectiveAccessDescription access = this
-                .getSelectiveAccessDescription(beginDateTime, endDateTime, selectedValues,
+            final List<CaptureObjectDefinitionDto> selectableCaptureObjects) throws ProtocolAdapterException {
+
+        final SelectiveAccessDescription selectiveAccessDescription = this
+                .getSelectiveAccessDescription(beginDateTime, endDateTime, selectableCaptureObjects,
                         device.isSelectiveAccessSupported());
         final AttributeAddress bufferAttributeAddress = new AttributeAddress(InterfaceClass.PROFILE_GENERIC.id(),
-                obisCode, ProfileGenericAttribute.BUFFER.attributeId(), access);
+                obisCode, ProfileGenericAttribute.BUFFER.attributeId(), selectiveAccessDescription);
+
         return this.dlmsHelper.getAndCheck(conn, device, "retrieve profile generic buffer", bufferAttributeAddress);
     }
 
-    /*
-     * Process data Add units to capture objects Calculate the proper values in
-     * the buffer using the scaler
-     */
     private PowerQualityProfileDataDto processData(final Profile profile, final List<GetResult> captureObjects,
-            final List<ScalerUnitInfo> scalerUnitInfos, final List<CaptureObjectDefinitionDto> selectedValues,
-            final boolean isSelectingValuesSupported, final List<GetResult> bufferList)
+            final List<ScalarUnitInfo> scalarUnitInfos,
+            final Map<Integer, CaptureObjectDefinitionDto> selectableCaptureObjects, final List<GetResult> bufferList)
             throws ProtocolAdapterException {
 
-        LOGGER.info("GetPowerQualityProfileCommandExecutor retrieved {} results ", bufferList.size());
-
-        final List<CaptureObjectDto> captureObjectDtos = this
-                .makeCaptureObjects(captureObjects, scalerUnitInfos, selectedValues, isSelectingValuesSupported);
+        final List<CaptureObjectDto> captureObjectDtos = this.createCaptureObjects(captureObjects, scalarUnitInfos,
+                new ArrayList<>(selectableCaptureObjects.values()));
         final List<ProfileEntryDto> profileEntryDtos = this
-                .makeProfileEntries(bufferList, scalerUnitInfos, profile.getInterval());
+                .createProfileEntries(bufferList, scalarUnitInfos, selectableCaptureObjects, profile.getInterval());
         return new PowerQualityProfileDataDto(profile.getObisCodeValuesDto(), captureObjectDtos, profileEntryDtos);
     }
 
-    private List<ProfileEntryDto> makeProfileEntries(final List<GetResult> bufferList,
-            final List<ScalerUnitInfo> scalerUnitInfos, int timeInterval) {
+    private List<ProfileEntryDto> createProfileEntries(final List<GetResult> bufferList,
+            final List<ScalarUnitInfo> scalarUnitInfos,
+            final Map<Integer, CaptureObjectDefinitionDto> selectableCaptureObjects, int timeInterval) {
 
         final List<ProfileEntryDto> profileEntryDtos = new ArrayList<>();
+
+        // there is always only one GetResult, which is an array of array data
         for (final GetResult buffer : bufferList) {
             final DataObject dataObject = buffer.getResultData();
-            final List<DataObject> dataObjectList1 = dataObject.getValue();
 
+            final List<DataObject> dataObjectValue = dataObject.getValue();
             ProfileEntryDto previousProfileEntryDto = null;
 
-            for (final DataObject profEntryDataObject : dataObjectList1) {
+            for (final DataObject profileEntryDataObject : dataObjectValue) {
 
                 ProfileEntryDto profileEntryDto = new ProfileEntryDto(
-                        this.makeProfileEntryValueDto(profEntryDataObject, scalerUnitInfos, previousProfileEntryDto,
-                                timeInterval));
+                        this.makeProfileEntryValueDto(profileEntryDataObject, scalarUnitInfos, previousProfileEntryDto,
+                                selectableCaptureObjects, timeInterval));
 
                 profileEntryDtos.add(profileEntryDto);
 
@@ -235,21 +240,18 @@ public class GetPowerQualityProfileCommandExecutor
         return profileEntryDtos;
     }
 
-    private List<CaptureObjectDto> makeCaptureObjects(final List<GetResult> captureObjects,
-            final List<ScalerUnitInfo> scalerUnitInfos, final List<CaptureObjectDefinitionDto> selectedValues,
-            final boolean isSelectingValuesSupported) throws ProtocolAdapterException {
-
-        final boolean filterCaptureObjects = isSelectingValuesSupported && !selectedValues.isEmpty();
+    private List<CaptureObjectDto> createCaptureObjects(final List<GetResult> captureObjects,
+            final List<ScalarUnitInfo> scalarUnitInfos, final List<CaptureObjectDefinitionDto> selectedValues)
+            throws ProtocolAdapterException {
 
         final List<CaptureObjectDto> captureObjectDtos = new ArrayList<>();
         for (final GetResult captureObjectResult : captureObjects) {
             final DataObject dataObject = captureObjectResult.getResultData();
             final List<DataObject> captureObjectList = dataObject.getValue();
             for (int i = 0; i < captureObjectList.size(); i++) {
-                final boolean addCaptureObject =
-                        !filterCaptureObjects || this.isSelectedValue(selectedValues, captureObjectList.get(i));
+                final boolean addCaptureObject = this.isSelectedValue(selectedValues, captureObjectList.get(i));
                 if (addCaptureObject) {
-                    captureObjectDtos.add(this.makeCaptureObjectDto(captureObjectList.get(i), scalerUnitInfos.get(i)));
+                    captureObjectDtos.add(this.makeCaptureObjectDto(captureObjectList.get(i), scalarUnitInfos.get(i)));
                 }
             }
         }
@@ -366,19 +368,19 @@ public class GetPowerQualityProfileCommandExecutor
     }
 
     private CaptureObjectDto makeCaptureObjectDto(final DataObject captureObjectDataObject,
-            final ScalerUnitInfo scalerUnitInfo) throws ProtocolAdapterException {
+            final ScalarUnitInfo scalarUnitInfo) throws ProtocolAdapterException {
 
         final CosemObjectDefinitionDto cosemObjectDefinitionDto = this.dlmsHelper
                 .readObjectDefinition(captureObjectDataObject, CAPTURE_OBJECT);
 
         return new CaptureObjectDto(cosemObjectDefinitionDto.getClassId(),
                 cosemObjectDefinitionDto.getLogicalName().toString(), cosemObjectDefinitionDto.getAttributeIndex(),
-                cosemObjectDefinitionDto.getDataIndex(), this.getUnit(scalerUnitInfo));
+                cosemObjectDefinitionDto.getDataIndex(), this.getUnit(scalarUnitInfo));
     }
 
-    private DlmsUnitTypeDto getUnitType(final ScalerUnitInfo scalerUnitInfo) {
-        if (scalerUnitInfo.getScalerUnit() != null) {
-            final List<DataObject> dataObjects = scalerUnitInfo.getScalerUnit().getValue();
+    private DlmsUnitTypeDto getUnitType(final ScalarUnitInfo scalarUnitInfo) {
+        if (scalarUnitInfo.getScalarUnit() != null) {
+            final List<DataObject> dataObjects = scalarUnitInfo.getScalarUnit().getValue();
             final int index = Integer.parseInt(dataObjects.get(1).getValue().toString());
             final DlmsUnitTypeDto unitType = DlmsUnitTypeDto.getUnitType(index);
             if (unitType != null) {
@@ -388,42 +390,38 @@ public class GetPowerQualityProfileCommandExecutor
         return DlmsUnitTypeDto.UNDEFINED;
     }
 
-    private String getUnit(final ScalerUnitInfo scalerUnitInfo) {
-        return this.getUnitType(scalerUnitInfo).getUnit();
+    private String getUnit(final ScalarUnitInfo scalarUnitInfo) {
+        return this.getUnitType(scalarUnitInfo).getUnit();
     }
 
-    private List<ProfileEntryValueDto> makeProfileEntryValueDto(final DataObject profEntryDataObjects,
-            final List<ScalerUnitInfo> scalerUnitInfos, ProfileEntryDto previousProfileEntryDto, int timeInterval) {
+    private List<ProfileEntryValueDto> makeProfileEntryValueDto(final DataObject profileEntryDataObject,
+            final List<ScalarUnitInfo> scalarUnitInfos, ProfileEntryDto previousProfileEntryDto,
+            final Map<Integer, CaptureObjectDefinitionDto> selectableCaptureObjects, int timeInterval) {
 
         final List<ProfileEntryValueDto> result = new ArrayList<>();
-
-        final List<DataObject> dataObjects = profEntryDataObjects.getValue();
-
-        if (dataObjects.size() != scalerUnitInfos.size()) {
-            LOGGER.info("Size of dataobjects {} does not equal size of scalar units {}", dataObjects.size(),
-                    scalerUnitInfos.size());
-        }
+        final List<DataObject> dataObjects = profileEntryDataObject.getValue();
 
         for (int i = 0; i < dataObjects.size(); i++) {
 
-            ProfileEntryValueDto currenProfileEntryValueDto = this
-                    .makeProfileEntryValueDto(dataObjects.get(i), scalerUnitInfos.get(i), previousProfileEntryDto,
-                            timeInterval);
-            result.add(currenProfileEntryValueDto);
-
+            if (selectableCaptureObjects.containsKey(i)) {
+                ProfileEntryValueDto currentProfileEntryValueDto = this
+                        .makeProfileEntryValueDto(dataObjects.get(i), scalarUnitInfos.get(i), previousProfileEntryDto,
+                                timeInterval);
+                result.add(currentProfileEntryValueDto);
+            }
         }
         return result;
     }
 
     private ProfileEntryValueDto makeProfileEntryValueDto(final DataObject dataObject,
-            final ScalerUnitInfo scalerUnitInfo, ProfileEntryDto previousProfileEntryDto, int timeInterval) {
-        if (InterfaceClass.CLOCK.id() == scalerUnitInfo.getClassId()) {
+            final ScalarUnitInfo scalarUnitInfo, ProfileEntryDto previousProfileEntryDto, int timeInterval) {
+        if (InterfaceClass.CLOCK.id() == scalarUnitInfo.getClassId()) {
             return this.makeDateProfileEntryValueDto(dataObject, previousProfileEntryDto, timeInterval);
         } else if (dataObject.isNumber()) {
-            return this.makeNumericProfileEntryValueDto(dataObject, scalerUnitInfo);
+            return this.makeNumericProfileEntryValueDto(dataObject, scalarUnitInfo);
         } else {
             final String dbgInfo = this.dlmsHelper.getDebugInfo(dataObject);
-            LOGGER.debug("creating ProfileEntryDto from {} {} ", dbgInfo, scalerUnitInfo);
+            LOGGER.debug("creating ProfileEntryDto from {} {} ", dbgInfo, scalarUnitInfo);
             return new ProfileEntryValueDto(dbgInfo);
         }
     }
@@ -447,18 +445,18 @@ public class GetPowerQualityProfileCommandExecutor
     }
 
     private ProfileEntryValueDto makeNumericProfileEntryValueDto(final DataObject dataObject,
-            final ScalerUnitInfo scalerUnitInfo) {
+            final ScalarUnitInfo scalarUnitInfo) {
         try {
-            if (scalerUnitInfo.getScalerUnit() != null) {
+            if (scalarUnitInfo.getScalarUnit() != null) {
                 final DlmsMeterValueDto meterValue = this.dlmsHelper
-                        .getScaledMeterValue(dataObject, scalerUnitInfo.getScalerUnit(), "getScaledMeterValue");
-                if (DlmsUnitTypeDto.COUNT.equals(this.getUnitType(scalerUnitInfo))) {
+                        .getScaledMeterValue(dataObject, scalarUnitInfo.getScalarUnit(), "getScaledMeterValue" );
+                if (DlmsUnitTypeDto.COUNT.equals(this.getUnitType(scalarUnitInfo))) {
                     return new ProfileEntryValueDto(meterValue.getValue().longValue());
                 } else {
                     return new ProfileEntryValueDto(meterValue.getValue());
                 }
             } else {
-                final long value = this.dlmsHelper.readLong(dataObject, "read long");
+                final long value = this.dlmsHelper.readLong(dataObject, "read long" );
                 return new ProfileEntryValueDto(value);
             }
         } catch (final ProtocolAdapterException e) {
@@ -468,38 +466,103 @@ public class GetPowerQualityProfileCommandExecutor
         }
     }
 
-    private List<ScalerUnitInfo> retrieveScalerUnits(final DlmsConnectionManager conn, final DlmsDevice device,
-            final List<GetResult> captureObjects) throws ProtocolAdapterException {
+    private Map<Integer, CaptureObjectDefinitionDto> createSelectableCaptureObjects(
+            final List<GetResult> captureObjects, List<String> logicalNames) throws ProtocolAdapterException {
 
-        final List<ScalerUnitInfo> result = new ArrayList<>();
+        Map<Integer, CaptureObjectDefinitionDto> selectableCaptureObjects = new HashMap<>();
 
+        // there is always only one GetResult
         for (final GetResult captureObjectResult : captureObjects) {
-            final DataObject dataObject = captureObjectResult.getResultData();
-            final List<DataObject> dataObjectList1 = dataObject.getValue();
-            for (final DataObject captureObjectDataObject : dataObjectList1) {
+
+            final List<DataObject> dataObjects = captureObjectResult.getResultData().getValue();
+
+            int i = 0;
+
+            for (DataObject dataObject : dataObjects) {
 
                 final CosemObjectDefinitionDto cosemObjectDefinitionDto = this.dlmsHelper
-                        .readObjectDefinition(captureObjectDataObject, CAPTURE_OBJECT);
-                final int classId = cosemObjectDefinitionDto.getClassId();
+                        .readObjectDefinition(dataObject, CAPTURE_OBJECT);
+
                 final String logicalName = cosemObjectDefinitionDto.getLogicalName().toString();
-                if (this.hasScalerUnit(classId)) {
-                    final AttributeAddress addr = new AttributeAddress(classId, logicalName,
-                            SCALER_UNITS_MAP.get(classId));
-                    final List<GetResult> scalerUnitResult = this.dlmsHelper
-                            .getAndCheck(conn, device, "retrieve scaler unit for capture object", addr);
-                    final DataObject scalerUnitDataObject = scalerUnitResult.get(0).getResultData();
-                    result.add(new ScalerUnitInfo(logicalName, classId, scalerUnitDataObject));
-                } else {
-                    result.add(new ScalerUnitInfo(logicalName, classId, null));
+
+                if (logicalNames.contains(logicalName)) {
+                    selectableCaptureObjects.put(i,
+                            new CaptureObjectDefinitionDto(cosemObjectDefinitionDto.getClassId(),
+                                    new ObisCodeValuesDto(logicalName),
+                                    (byte) cosemObjectDefinitionDto.getAttributeIndex(),
+                                    cosemObjectDefinitionDto.getDataIndex()));
                 }
+                i++;
             }
         }
 
-        return result;
+        return selectableCaptureObjects;
+    }
+
+    private List<ScalarUnitInfo> createScalarUnitInfos(final DlmsConnectionManager conn, final DlmsDevice device,
+            final List<GetResult> captureObjects) throws ProtocolAdapterException {
+
+        List<ScalarUnitInfo> scalarUnitInfos = new ArrayList<>();
+
+        // there is always only one GetResult
+        for (final GetResult captureObjectResult : captureObjects) {
+
+            final List<DataObject> dataObjects = captureObjectResult.getResultData().getValue();
+
+            for (DataObject dataObject : dataObjects) {
+
+                final CosemObjectDefinitionDto cosemObjectDefinitionDto = this.dlmsHelper
+                        .readObjectDefinition(dataObject, CAPTURE_OBJECT);
+
+                final int classId = cosemObjectDefinitionDto.getClassId();
+                final String logicalName = cosemObjectDefinitionDto.getLogicalName().toString();
+
+                scalarUnitInfos.add(createScalarUnitInfo(conn, device, classId, logicalName));
+            }
+        }
+
+        return scalarUnitInfos;
+    }
+
+    private ScalarUnitInfo createScalarUnitInfo(DlmsConnectionManager conn, DlmsDevice device, int classId,
+            String logicalName) throws ProtocolAdapterException {
+
+        if (this.hasScalerUnit(classId)) {
+            final AttributeAddress addr = new AttributeAddress(classId, logicalName, SCALAR_UNITS_MAP.get(classId));
+            final List<GetResult> scalarUnitResult = this.dlmsHelper
+                    .getAndCheck(conn, device, "retrieve scalar unit for capture object", addr);
+            final DataObject scalarUnitDataObject = scalarUnitResult.get(0).getResultData();
+            return new ScalarUnitInfo(logicalName, classId, scalarUnitDataObject);
+        } else {
+            return new ScalarUnitInfo(logicalName, classId, null);
+        }
+    }
+
+    private static List<String> getLogicalNamesPublicDefinableLoadProfile() {
+
+        return Arrays
+                .asList("1.0.32.32.0.255", "1.0.52.32.0.255", "1.0.72.32.0.255", "1.0.32.36.0.255", "1.0.52.36.0.255",
+                        "1.0.72.36.0.255", "0.0.96.7.21.255", "0.1.25.6.0.255", "0.0.25.6.0.255", "0.1.25.6.0.255",
+                        "0.0.25.6.0.255", "0.1.24.1.0.255", "0.2.24.1.0.255", "0.1.24.9.0.255", "0.2.24.9.0.255",
+                        "0.1.24.9.0.255", "0.2.24.9.0.255" );
+    }
+
+    private static List<String> getLogicalNamesPublicProfile2() {
+        return Arrays.asList("1.0.32.24.0.255", "1.0.52.24.0.255", "1.0.72.24.0.255" );
+    }
+
+    private static List<String> getLogicalNamesPrivateProfile1() {
+        return Arrays.asList("1.0.21.4.0.255", "1.0.41.4.0.255", "1.0.61.4.0.255", "1.0.22.4.0.255", "1.0.42.4.0.255",
+                "1.0.62.4.0.255", "1.0.23.4.0.255", "1.0.43.4.0.255", "1.0.63.4.0.255", "1.0.24.4.0.255",
+                "1.0.44.4.0.255", "1.0.64.4.0.255" );
+    }
+
+    private static List<String> getLogicalNamesPrivateProfile2() {
+        return Arrays.asList("1.0.31.24.0.255", "1.0.51.24.0.255", "1.0.71.24.0.255", "1.0.31.7.0.255" );
     }
 
     private boolean hasScalerUnit(final int classId) {
-        return SCALER_UNITS_MAP.containsKey(classId);
+        return SCALAR_UNITS_MAP.containsKey(classId);
     }
 
 }

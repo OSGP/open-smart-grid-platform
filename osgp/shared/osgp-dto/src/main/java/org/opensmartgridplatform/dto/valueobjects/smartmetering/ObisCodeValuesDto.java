@@ -1,9 +1,10 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
@@ -28,6 +29,22 @@ public class ObisCodeValuesDto implements Serializable {
         this.d = d;
         this.e = e;
         this.f = f;
+    }
+
+    public ObisCodeValuesDto(String obisCode) {
+
+        byte[] bytes = obisCode.getBytes();
+
+        if (bytes.length != 11) {
+            throw new IllegalArgumentException("Invalid String to create an ObisCodeValueDto. " + obisCode);
+        }
+
+        this.a = bytes[0];
+        this.b = bytes[2];
+        this.c = bytes[4];
+        this.d = bytes[6];
+        this.e = bytes[8];
+        this.f = bytes[10];
     }
 
     public byte getA() {
@@ -74,8 +91,9 @@ public class ObisCodeValuesDto implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("%d.%d.%d.%d.%d.%d", this.a & 0xFF, this.b & 0xFF, this.c & 0xFF, this.d & 0xFF,
-                this.e & 0xFF, this.f & 0xFF);
+        return String
+                .format("%d.%d.%d.%d.%d.%d", this.a & 0xFF, this.b & 0xFF, this.c & 0xFF, this.d & 0xFF, this.e & 0xFF,
+                        this.f & 0xFF);
     }
 
     public byte[] toByteArray() {
