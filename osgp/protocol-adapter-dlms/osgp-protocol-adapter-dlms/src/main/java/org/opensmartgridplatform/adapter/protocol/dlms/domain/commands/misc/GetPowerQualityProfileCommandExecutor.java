@@ -449,14 +449,14 @@ public class GetPowerQualityProfileCommandExecutor
         try {
             if (scalarUnitInfo.getScalarUnit() != null) {
                 final DlmsMeterValueDto meterValue = this.dlmsHelper
-                        .getScaledMeterValue(dataObject, scalarUnitInfo.getScalarUnit(), "getScaledMeterValue" );
+                        .getScaledMeterValue(dataObject, scalarUnitInfo.getScalarUnit(), "getScaledMeterValue");
                 if (DlmsUnitTypeDto.COUNT.equals(this.getUnitType(scalarUnitInfo))) {
                     return new ProfileEntryValueDto(meterValue.getValue().longValue());
                 } else {
                     return new ProfileEntryValueDto(meterValue.getValue());
                 }
             } else {
-                final long value = this.dlmsHelper.readLong(dataObject, "read long" );
+                final long value = this.dlmsHelper.readLong(dataObject, "read long");
                 return new ProfileEntryValueDto(value);
             }
         } catch (final ProtocolAdapterException e) {
@@ -541,24 +541,25 @@ public class GetPowerQualityProfileCommandExecutor
     private static List<String> getLogicalNamesPublicDefinableLoadProfile() {
 
         return Arrays
-                .asList("1.0.32.32.0.255", "1.0.52.32.0.255", "1.0.72.32.0.255", "1.0.32.36.0.255", "1.0.52.36.0.255",
-                        "1.0.72.36.0.255", "0.0.96.7.21.255", "0.1.25.6.0.255", "0.0.25.6.0.255", "0.1.25.6.0.255",
-                        "0.0.25.6.0.255", "0.1.24.1.0.255", "0.2.24.1.0.255", "0.1.24.9.0.255", "0.2.24.9.0.255",
-                        "0.1.24.9.0.255", "0.2.24.9.0.255" );
+                .asList("0.0.1.0.0.255", "1.0.32.32.0.255", "1.0.52.32.0.255", "1.0.72.32.0.255", "1.0.32.36.0.255",
+                        "1.0.52.36.0.255", "1.0.72.36.0.255", "0.0.96.7.21.255", "0.1.25.6.0.255", "0.0.25.6.0.255",
+                        "0.1.25.6.0.255", "0.0.25.6.0.255", "0.1.24.1.0.255", "0.2.24.1.0.255", "0.1.24.9.0.255",
+                        "0.2.24.9.0.255", "0.1.24.9.0.255", "0.2.24.9.0.255");
     }
 
     private static List<String> getLogicalNamesPublicProfile2() {
-        return Arrays.asList("1.0.32.24.0.255", "1.0.52.24.0.255", "1.0.72.24.0.255" );
+        return Arrays.asList("0.0.1.0.0.255", "1.0.32.24.0.255", "1.0.52.24.0.255", "1.0.72.24.0.255");
     }
 
     private static List<String> getLogicalNamesPrivateProfile1() {
-        return Arrays.asList("1.0.21.4.0.255", "1.0.41.4.0.255", "1.0.61.4.0.255", "1.0.22.4.0.255", "1.0.42.4.0.255",
-                "1.0.62.4.0.255", "1.0.23.4.0.255", "1.0.43.4.0.255", "1.0.63.4.0.255", "1.0.24.4.0.255",
-                "1.0.44.4.0.255", "1.0.64.4.0.255" );
+        return Arrays.asList("0.0.1.0.0.255", "1.0.21.4.0.255", "1.0.41.4.0.255", "1.0.61.4.0.255", "1.0.22.4.0.255",
+                "1.0.42.4.0.255", "1.0.62.4.0.255", "1.0.23.4.0.255", "1.0.43.4.0.255", "1.0.63.4.0.255",
+                "1.0.24.4.0.255", "1.0.44.4.0.255", "1.0.64.4.0.255");
     }
 
     private static List<String> getLogicalNamesPrivateProfile2() {
-        return Arrays.asList("1.0.31.24.0.255", "1.0.51.24.0.255", "1.0.71.24.0.255", "1.0.31.7.0.255" );
+        return Arrays
+                .asList("0.0.1.0.0.255", "1.0.31.24.0.255", "1.0.51.24.0.255", "1.0.71.24.0.255", "1.0.31.7.0.255");
     }
 
     private boolean hasScalerUnit(final int classId) {

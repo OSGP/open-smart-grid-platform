@@ -26,6 +26,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryDto;
 
 /**
  * Copyright 2019 Smart Society Services B.V.
@@ -79,6 +80,49 @@ public class GetPowerQualityProfileCommandExecutorTest {
         assertThat(responseDto.getPowerQualityProfileResponseDatas().get(0).getCaptureObjects().size()).isEqualTo(3);
         assertThat(responseDto.getPowerQualityProfileResponseDatas().get(0).getProfileEntries().size()).isEqualTo(4);
 
+        for (ProfileEntryDto profileEntryDto : responseDto.getPowerQualityProfileResponseDatas().get(0)
+                                                          .getProfileEntries()) {
+            assertThat(profileEntryDto.getProfileEntryValues().size()).isEqualTo(3);
+        }
+    }
+
+    @Test
+    public void testExecuteWithFilteredValues() throws ProtocolAdapterException {
+
+        // SETUP
+
+        GetPowerQualityProfileRequestDataDto requestDto = new GetPowerQualityProfileRequestDataDto("PUBLIC",
+                Date.from(Instant.now().minus(2, ChronoUnit.DAYS)), new Date(), new ArrayList<>());
+
+        when(dlmsHelper.getAndCheck(any(DlmsConnectionManager.class), any(DlmsDevice.class), any(String.class),
+                any(AttributeAddress.class)))
+                .thenReturn(createPartialNotAllowedCaptureObjects(), createProfileEntries(),
+                        createPartialNotAllowedCaptureObjects(), createProfileEntries());
+
+        when(dlmsHelper.readLogicalName(any(DataObject.class), any(String.class))).thenCallRealMethod();
+        when(dlmsHelper.readObjectDefinition(any(DataObject.class), any(String.class))).thenCallRealMethod();
+        when(dlmsHelper.readLongNotNull(any(DataObject.class), any(String.class))).thenCallRealMethod();
+        when(dlmsHelper.readLong(any(DataObject.class), any(String.class))).thenCallRealMethod();
+        when(dlmsHelper.convertDataObjectToDateTime(any(DataObject.class))).thenCallRealMethod();
+        when(dlmsHelper.fromDateTimeValue(any())).thenCallRealMethod();
+
+        GetPowerQualityProfileCommandExecutor executor = new GetPowerQualityProfileCommandExecutor(dlmsHelper);
+
+        // EXECUTE
+
+        GetPowerQualityProfileResponseDto responseDto = executor.execute(conn, dlmsDevice, requestDto);
+
+        // ASSERT
+
+        assertThat(responseDto.getPowerQualityProfileResponseDatas().size()).isEqualTo(2);
+        assertThat(responseDto.getPowerQualityProfileResponseDatas().get(0).getCaptureObjects().size()).isEqualTo(2);
+        assertThat(responseDto.getPowerQualityProfileResponseDatas().get(0).getProfileEntries().size()).isEqualTo(4);
+
+        for (ProfileEntryDto profileEntryDto : responseDto.getPowerQualityProfileResponseDatas().get(0)
+                                                          .getProfileEntries()) {
+            assertThat(profileEntryDto.getProfileEntryValues().size()).isEqualTo(2);
+        }
+
     }
 
     private List<GetResult> createProfileEntries() {
@@ -108,6 +152,24 @@ public class GetPowerQualityProfileCommandExecutorTest {
         structures.add(structureData4);
 
         GetResult getResult = new GetResultImpl(DataObject.newArrayData(structures));
+
+        return Collections.singletonList(getResult);
+    }
+
+    private List<GetResult> createPartialNotAllowedCaptureObjects() {
+
+        DataObject allowedCaptureObject1 = DataObject.newStructureData(DataObject.newUInteger32Data(8),
+                DataObject.newOctetStringData(new byte[] { 0, 0, 1, 0, 0, (byte) 255 }), DataObject.newInteger32Data(2),
+                DataObject.newUInteger32Data(0));
+        DataObject nonAllowedCaptureObject2 = DataObject.newStructureData(DataObject.newUInteger32Data(1),
+                DataObject.newOctetStringData(new byte[] { 80, 0, 32, 32, 0, (byte) 255 }),
+                DataObject.newInteger32Data(2), DataObject.newUInteger32Data(0));
+        DataObject allowedCaptureObject3 = DataObject.newStructureData(DataObject.newUInteger32Data(1),
+                DataObject.newOctetStringData(new byte[] { 1, 0, 52, 32, 0, (byte) 255 }),
+                DataObject.newInteger32Data(2), DataObject.newUInteger32Data(0));
+
+        GetResult getResult = new GetResultImpl(DataObject
+                .newArrayData(Arrays.asList(allowedCaptureObject1, nonAllowedCaptureObject2, allowedCaptureObject3)));
 
         return Collections.singletonList(getResult);
     }
