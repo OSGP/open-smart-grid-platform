@@ -11,10 +11,10 @@ It is also possible to run this module as a Docker instance, see below.
 
 Create Docker image
 ```
-mkdir target\dependency
-cd target\dependency
-jar -xf ..\*.jar
-cd ..\..
+mkdir target/dependency
+cd target/dependency
+jar -xf ../*.jar
+cd ../..
 mvn com.google.cloud.tools:jib-maven-plugin:dockerBuild -Dimage=osgp-protocol-simulator-mqtt
 ```
 
@@ -61,24 +61,25 @@ INSERT INTO public.device(
             in_maintenance, technical_installation_date, 
             device_model, device_lifecycle_status)
     VALUES ('2020-01-01 12:34', '2020-01-01 12:34', 0, 'TST-1', 
-	    'SSLD', 1, 
-            9, '127.0.0.1', 
-            0, '2020-01-01 12:34', 
-            300, 'IN_USE');
+	    'SSLD', true, 
+            (SELECT id FROM protocol_info WHERE protocol = 'MQTT'), '127.0.0.1', 
+            false, '2020-01-01 12:34', 
+            (SELECT id FROM device_model WHERE model_code = 'TSTMOD'), 'IN_USE'); 
 ```
 
-Check that the protocol_info_id matches the auto generated value above.
-Check that device_model 300 = "Test"
+These queries depend on the dummy device scripts. 
+It may be needed to delete TST-1 or rename it before inserting the device using the query above.
 
 ```
 INSERT INTO public.rtu_device(
             id, last_communication_time)
-    VALUES (42002, '2020-01-24 13:33:33.501');
+    VALUES ((SELECT id FROM device WHERE device_identification = 'TST-1'), '2020-01-24 13:33:33.501');
 
 INSERT INTO public.device_authorization(
             creation_time, modification_time, version, function_group, 
             device, organisation)
-    VALUES ('2020-01-01 12:34', '2020-01-01 12:34', 0, 0, 42002, 303);
+    VALUES ('2020-01-01 12:34', '2020-01-01 12:34', 0, 0, (SELECT id FROM device WHERE device_identification = 'TST-1'), 
+            (SELECT id FROM organisation WHERE organisation_identification = 'LianderNetManagement'));
 ```
 
 Note: function_group 0 = OWNER 
