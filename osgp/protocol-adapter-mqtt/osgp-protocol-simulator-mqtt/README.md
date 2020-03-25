@@ -83,3 +83,10 @@ INSERT INTO public.device_authorization(
 ```
 
 Note: function_group 0 = OWNER 
+
+After inserting these records, enable the device communication monitoring task for osgp-adapter-domain-distributionautomation using this property:
+
+```
+communication.monitoring.enabled=true
+```
+
