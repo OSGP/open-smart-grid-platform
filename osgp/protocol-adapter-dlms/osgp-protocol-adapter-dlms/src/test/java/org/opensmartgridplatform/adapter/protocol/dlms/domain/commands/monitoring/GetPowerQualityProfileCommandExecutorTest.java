@@ -1,4 +1,4 @@
-package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
+package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.monitoring;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -69,7 +69,9 @@ public class GetPowerQualityProfileCommandExecutorTest {
         when(dlmsHelper.fromDateTimeValue(any())).thenCallRealMethod();
         when(dlmsHelper.getClockDefinition()).thenCallRealMethod();
 
-        GetPowerQualityProfileCommandExecutor executor = new GetPowerQualityProfileCommandExecutor(dlmsHelper);
+        GetPowerQualityProfileCommandExecutorSelectiveAccess executor =
+                new GetPowerQualityProfileCommandExecutorSelectiveAccess(
+                dlmsHelper);
 
         // EXECUTE
 
@@ -88,7 +90,7 @@ public class GetPowerQualityProfileCommandExecutorTest {
     }
 
     @Test
-    public void testExecuteWithFilteredValues() throws ProtocolAdapterException {
+    public void testExecuteNoSelectiveAccess() throws ProtocolAdapterException {
 
         // SETUP
 
@@ -108,7 +110,9 @@ public class GetPowerQualityProfileCommandExecutorTest {
         when(dlmsHelper.fromDateTimeValue(any())).thenCallRealMethod();
         when(dlmsHelper.getClockDefinition()).thenCallRealMethod();
 
-        GetPowerQualityProfileCommandExecutor executor = new GetPowerQualityProfileCommandExecutor(dlmsHelper);
+        GetPowerQualityProfileCommandExecutorNoSelectiveAccess executor =
+                new GetPowerQualityProfileCommandExecutorNoSelectiveAccess(
+                dlmsHelper);
 
         // EXECUTE
 
