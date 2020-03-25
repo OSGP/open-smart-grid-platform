@@ -199,8 +199,11 @@ public class GetPowerQualityProfileCommandExecutor
             final ObisCode obisCode, final DateTime beginDateTime, final DateTime endDateTime,
             final List<CaptureObjectDefinitionDto> selectableCaptureObjects) throws ProtocolAdapterException {
 
+        final DataObject selectableValues = this
+                .convertSelectableCaptureObjects(selectableCaptureObjects, device.isSelectiveAccessSupported());
+
         final SelectiveAccessDescription selectiveAccessDescription = this
-                .getSelectiveAccessDescription(beginDateTime, endDateTime, selectableCaptureObjects);
+                .getSelectiveAccessDescription(beginDateTime, endDateTime, selectableValues);
         final AttributeAddress bufferAttributeAddress = new AttributeAddress(InterfaceClass.PROFILE_GENERIC.id(),
                 obisCode, ProfileGenericAttribute.BUFFER.attributeId(), selectiveAccessDescription);
 
@@ -316,7 +319,7 @@ public class GetPowerQualityProfileCommandExecutor
     }
 
     private SelectiveAccessDescription getSelectiveAccessDescription(final DateTime beginDateTime,
-            final DateTime endDateTime, final List<CaptureObjectDefinitionDto> selectableCaptureObjects) {
+            final DateTime endDateTime, final DataObject selectableCaptureObjects) {
 
         /*
          * Define the clock object {8,0-0:1.0.0.255,2,0} to be used as
@@ -325,34 +328,30 @@ public class GetPowerQualityProfileCommandExecutor
          * retrieved.
          */
         final DataObject clockDefinition = this.dlmsHelper.getClockDefinition();
-
         final DataObject fromValue = this.dlmsHelper.asDataObject(beginDateTime);
         final DataObject toValue = this.dlmsHelper.asDataObject(endDateTime);
 
-        final DataObject selectableValues = this.convertSelectableCaptureObjects(selectableCaptureObjects);
-
         final DataObject accessParameter = DataObject
-                .newStructureData(Arrays.asList(clockDefinition, fromValue, toValue, selectableValues));
+                .newStructureData(Arrays.asList(clockDefinition, fromValue, toValue, selectableCaptureObjects));
 
         return new SelectiveAccessDescription(ACCESS_SELECTOR_RANGE_DESCRIPTOR, accessParameter);
     }
 
-    private DataObject convertSelectableCaptureObjects(
-            final List<CaptureObjectDefinitionDto> selectableCaptureObjects) {
+    private DataObject convertSelectableCaptureObjects(final List<CaptureObjectDefinitionDto> selectableCaptureObjects,
+            boolean isSelectiveAccessSupported) {
+
         final List<DataObject> objectDefinitions = new ArrayList<>();
-        if (selectableCaptureObjects.isEmpty()) {
+
+        if (isSelectiveAccessSupported && !selectableCaptureObjects.isEmpty()) {
             // The captured clock is always included.
             objectDefinitions.add(this.dlmsHelper.getClockDefinition());
             for (final CaptureObjectDefinitionDto captureObjectDefinition : selectableCaptureObjects) {
                 final int classId = captureObjectDefinition.getClassId();
                 final byte[] obisBytes = captureObjectDefinition.getLogicalName().toByteArray();
                 final byte attributeIndex = captureObjectDefinition.getAttributeIndex();
-                final int dataIndex;
-                if (captureObjectDefinition.getDataIndex() == null) {
-                    dataIndex = 0;
-                } else {
-                    dataIndex = captureObjectDefinition.getDataIndex();
-                }
+                final int dataIndex =
+                        captureObjectDefinition.getDataIndex() == null ? 0 : captureObjectDefinition.getDataIndex();
+
                 objectDefinitions.add(DataObject.newStructureData(
                         Arrays.asList(DataObject.newUInteger16Data(classId), DataObject.newOctetStringData(obisBytes),
                                 DataObject.newInteger8Data(attributeIndex), DataObject.newUInteger16Data(dataIndex))));

@@ -67,6 +67,7 @@ public class GetPowerQualityProfileCommandExecutorTest {
         when(dlmsHelper.readLong(any(DataObject.class), any(String.class))).thenCallRealMethod();
         when(dlmsHelper.convertDataObjectToDateTime(any(DataObject.class))).thenCallRealMethod();
         when(dlmsHelper.fromDateTimeValue(any())).thenCallRealMethod();
+        when(dlmsHelper.getClockDefinition()).thenCallRealMethod();
 
         GetPowerQualityProfileCommandExecutor executor = new GetPowerQualityProfileCommandExecutor(dlmsHelper);
 
@@ -105,6 +106,7 @@ public class GetPowerQualityProfileCommandExecutorTest {
         when(dlmsHelper.readLong(any(DataObject.class), any(String.class))).thenCallRealMethod();
         when(dlmsHelper.convertDataObjectToDateTime(any(DataObject.class))).thenCallRealMethod();
         when(dlmsHelper.fromDateTimeValue(any())).thenCallRealMethod();
+        when(dlmsHelper.getClockDefinition()).thenCallRealMethod();
 
         GetPowerQualityProfileCommandExecutor executor = new GetPowerQualityProfileCommandExecutor(dlmsHelper);
 
