@@ -31,7 +31,7 @@ import org.openmuc.jdlms.interfaceclass.attribute.ExtendedRegisterAttribute;
 import org.openmuc.jdlms.interfaceclass.attribute.ProfileGenericAttribute;
 import org.openmuc.jdlms.interfaceclass.attribute.RegisterAttribute;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ScalarUnitInfo;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ScalerUnitInfo;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -54,16 +54,16 @@ public abstract class AbstractGetPowerQualityProfileHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractGetPowerQualityProfileHandler.class);
 
-    protected static final String CAPTURE_OBJECT = "capture-object";
+    private static final String CAPTURE_OBJECT = "capture-object";
 
     private static final int ACCESS_SELECTOR_RANGE_DESCRIPTOR = 1;
 
-    static final ObisCodeValuesDto OBIS_CODE_DEFINABLE_LOAD_PROFILE = new ObisCodeValuesDto((byte) 0, (byte) 1,
+    private static final ObisCodeValuesDto OBIS_CODE_DEFINABLE_LOAD_PROFILE = new ObisCodeValuesDto((byte) 0, (byte) 1,
             (byte) 94, (byte) 31, (byte) 6, (byte) 255);
-    static final ObisCodeValuesDto OBIS_CODE_PROFILE_1 = new ObisCodeValuesDto((byte) 1, (byte) 0, (byte) 99, (byte) 1,
-            (byte) 1, (byte) 255);
-    static final ObisCodeValuesDto OBIS_CODE_PROFILE_2 = new ObisCodeValuesDto((byte) 1, (byte) 0, (byte) 99, (byte) 1,
-            (byte) 2, (byte) 255);
+    private static final ObisCodeValuesDto OBIS_CODE_PROFILE_1 = new ObisCodeValuesDto((byte) 1, (byte) 0, (byte) 99,
+            (byte) 1, (byte) 1, (byte) 255);
+    private static final ObisCodeValuesDto OBIS_CODE_PROFILE_2 = new ObisCodeValuesDto((byte) 1, (byte) 0, (byte) 99,
+            (byte) 1, (byte) 2, (byte) 255);
 
     private static final int INTERVAL_DEFINABLE_LOAD_PROFILE = 15;
     private static final int INTERVAL_PROFILE_1 = 15;
@@ -72,7 +72,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
     private static final String PRIVATE = "PRIVATE";
     private static final String OBIS_CODE_CLOCK = "0.0.1.0.0.255";
 
-    enum Profile {
+    private enum Profile {
 
         DEFINABLE_LOAD_PROFILE_PUBLIC(OBIS_CODE_DEFINABLE_LOAD_PROFILE, INTERVAL_DEFINABLE_LOAD_PROFILE,
                 getLogicalNamesPublicDefinableLoadProfile()),
@@ -103,15 +103,15 @@ public abstract class AbstractGetPowerQualityProfileHandler {
         }
     }
 
-    protected static final byte[] OBIS_BYTES_CLOCK = new byte[] { 0, 0, 1, 0, 0, (byte) 255 };
+    private static final byte[] OBIS_BYTES_CLOCK = new byte[] { 0, 0, 1, 0, 0, (byte) 255 };
 
-    private static final Map<Integer, Integer> SCALAR_UNITS_MAP = new HashMap<>();
+    private static final Map<Integer, Integer> SCALER_UNITS_MAP = new HashMap<>();
 
     static {
-        SCALAR_UNITS_MAP.put(InterfaceClass.REGISTER.id(), RegisterAttribute.SCALER_UNIT.attributeId());
-        SCALAR_UNITS_MAP
+        SCALER_UNITS_MAP.put(InterfaceClass.REGISTER.id(), RegisterAttribute.SCALER_UNIT.attributeId());
+        SCALER_UNITS_MAP
                 .put(InterfaceClass.EXTENDED_REGISTER.id(), ExtendedRegisterAttribute.SCALER_UNIT.attributeId());
-        SCALAR_UNITS_MAP.put(InterfaceClass.DEMAND_REGISTER.id(), DemandRegisterAttribute.SCALER_UNIT.attributeId());
+        SCALER_UNITS_MAP.put(InterfaceClass.DEMAND_REGISTER.id(), DemandRegisterAttribute.SCALER_UNIT.attributeId());
     }
 
     protected final DlmsHelper dlmsHelper;
@@ -120,10 +120,17 @@ public abstract class AbstractGetPowerQualityProfileHandler {
         this.dlmsHelper = dlmsHelper;
     }
 
+    protected abstract DataObject convertSelectableCaptureObjects(
+            final List<CaptureObjectDefinitionDto> selectableCaptureObjects);
+
+    protected abstract List<ProfileEntryValueDto> createProfileEntryValueDto(final DataObject profileEntryDataObject,
+            final List<ScalerUnitInfo> scalerUnitInfos, ProfileEntryDto previousProfileEntryDto,
+            final Map<Integer, CaptureObjectDefinitionDto> selectableCaptureObjects, int timeInterval);
+
     protected GetPowerQualityProfileResponseDto handle(final DlmsConnectionManager conn, final DlmsDevice device,
             final GetPowerQualityProfileRequestDataDto getPowerQualityProfileRequestDataDto)
             throws ProtocolAdapterException {
-        
+
         final String profileType = getPowerQualityProfileRequestDataDto.getProfileType();
         final List<Profile> profiles = determineProfileForDevice(profileType);
         final GetPowerQualityProfileResponseDto response = new GetPowerQualityProfileResponseDto();
@@ -139,7 +146,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
             final List<GetResult> captureObjects = retrieveCaptureObjects(conn, device, obisCode);
 
             // the units of measure for all capture objects
-            final List<ScalarUnitInfo> scalarUnitInfos = createScalarUnitInfos(conn, device, captureObjects);
+            final List<ScalerUnitInfo> scalerUnitInfos = createScalerUnitInfos(conn, device, captureObjects);
 
             // the values that are allowed to be retrieved from the meter, used as filter either before (SMR 5.1+) or
             // after data retrieval
@@ -149,7 +156,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
             final List<GetResult> bufferList = retrieveBuffer(conn, device, obisCode, beginDateTime, endDateTime,
                     new ArrayList<>(selectableCaptureObjects.values()));
 
-            final PowerQualityProfileDataDto responseDataDto = processData(profile, captureObjects, scalarUnitInfos,
+            final PowerQualityProfileDataDto responseDataDto = processData(profile, captureObjects, scalerUnitInfos,
                     selectableCaptureObjects, bufferList);
 
             responseDatas.add(responseDataDto);
@@ -197,20 +204,20 @@ public abstract class AbstractGetPowerQualityProfileHandler {
     }
 
     private PowerQualityProfileDataDto processData(final Profile profile, final List<GetResult> captureObjects,
-            final List<ScalarUnitInfo> scalarUnitInfos,
+            final List<ScalerUnitInfo> scalerUnitInfos,
             final Map<Integer, CaptureObjectDefinitionDto> selectableCaptureObjects, final List<GetResult> bufferList)
             throws ProtocolAdapterException {
 
         final List<CaptureObjectDto> captureObjectDtos = this
-                .createSelectableCaptureObjects(captureObjects, scalarUnitInfos,
+                .createSelectableCaptureObjects(captureObjects, scalerUnitInfos,
                         new ArrayList<>(selectableCaptureObjects.values()));
-        final List<ProfileEntryDto> profileEntryDtos = createProfileEntries(bufferList, scalarUnitInfos,
+        final List<ProfileEntryDto> profileEntryDtos = createProfileEntries(bufferList, scalerUnitInfos,
                 selectableCaptureObjects, profile.getInterval());
         return new PowerQualityProfileDataDto(profile.getObisCodeValuesDto(), captureObjectDtos, profileEntryDtos);
     }
 
     private List<ProfileEntryDto> createProfileEntries(final List<GetResult> bufferList,
-            final List<ScalarUnitInfo> scalarUnitInfos,
+            final List<ScalerUnitInfo> scalerUnitInfos,
             final Map<Integer, CaptureObjectDefinitionDto> selectableCaptureObjects, int timeInterval) {
 
         final List<ProfileEntryDto> profileEntryDtos = new ArrayList<>();
@@ -225,7 +232,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
             for (final DataObject profileEntryDataObject : dataObjectValue) {
 
                 ProfileEntryDto profileEntryDto = new ProfileEntryDto(
-                        createProfileEntryValueDto(profileEntryDataObject, scalarUnitInfos, previousProfileEntryDto,
+                        createProfileEntryValueDto(profileEntryDataObject, scalerUnitInfos, previousProfileEntryDto,
                                 selectableCaptureObjects, timeInterval));
 
                 profileEntryDtos.add(profileEntryDto);
@@ -238,7 +245,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
 
     // the available CaptureObjects are filtered with the ones that can be selected
     private List<CaptureObjectDto> createSelectableCaptureObjects(final List<GetResult> captureObjects,
-            final List<ScalarUnitInfo> scalarUnitInfos, final List<CaptureObjectDefinitionDto> selectableCaptureObjects)
+            final List<ScalerUnitInfo> scalerUnitInfos, final List<CaptureObjectDefinitionDto> selectableCaptureObjects)
             throws ProtocolAdapterException {
 
         final List<CaptureObjectDto> captureObjectDtos = new ArrayList<>();
@@ -249,7 +256,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
                 final boolean addCaptureObject = this
                         .isSelectableValue(selectableCaptureObjects, captureObjectList.get(i));
                 if (addCaptureObject) {
-                    captureObjectDtos.add(this.makeCaptureObjectDto(captureObjectList.get(i), scalarUnitInfos.get(i)));
+                    captureObjectDtos.add(this.makeCaptureObjectDto(captureObjectList.get(i), scalerUnitInfos.get(i)));
                 }
             }
         }
@@ -283,7 +290,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
                 && ClockAttribute.TIME.attributeId() == attributeIndex && 0 == dataIndex;
     }
 
-    protected boolean isDefinitionOfSameObject(final CosemObjectDefinitionDto cosemObjectDefinitionDto,
+    private boolean isDefinitionOfSameObject(final CosemObjectDefinitionDto cosemObjectDefinitionDto,
             final CaptureObjectDefinitionDto captureObjectDefinition) {
 
         final int classIdCosemObjectDefinition = cosemObjectDefinitionDto.getClassId();
@@ -321,27 +328,24 @@ public abstract class AbstractGetPowerQualityProfileHandler {
         return new SelectiveAccessDescription(ACCESS_SELECTOR_RANGE_DESCRIPTOR, accessParameter);
     }
 
-    protected abstract DataObject convertSelectableCaptureObjects(
-            final List<CaptureObjectDefinitionDto> selectableCaptureObjects);
-
     private ObisCode makeObisCode(final ObisCodeValuesDto obisCodeValues) {
         return new ObisCode(obisCodeValues.toByteArray());
     }
 
     private CaptureObjectDto makeCaptureObjectDto(final DataObject captureObjectDataObject,
-            final ScalarUnitInfo scalarUnitInfo) throws ProtocolAdapterException {
+            final ScalerUnitInfo scalerUnitInfo) throws ProtocolAdapterException {
 
         final CosemObjectDefinitionDto cosemObjectDefinitionDto = this.dlmsHelper
                 .readObjectDefinition(captureObjectDataObject, CAPTURE_OBJECT);
 
         return new CaptureObjectDto(cosemObjectDefinitionDto.getClassId(),
                 cosemObjectDefinitionDto.getLogicalName().toString(), cosemObjectDefinitionDto.getAttributeIndex(),
-                cosemObjectDefinitionDto.getDataIndex(), this.getUnit(scalarUnitInfo));
+                cosemObjectDefinitionDto.getDataIndex(), this.getUnit(scalerUnitInfo));
     }
 
-    private DlmsUnitTypeDto getUnitType(final ScalarUnitInfo scalarUnitInfo) {
-        if (scalarUnitInfo.getScalarUnit() != null) {
-            final List<DataObject> dataObjects = scalarUnitInfo.getScalarUnit().getValue();
+    private DlmsUnitTypeDto getUnitType(final ScalerUnitInfo scalerUnitInfo) {
+        if (scalerUnitInfo.getScalerUnit() != null) {
+            final List<DataObject> dataObjects = scalerUnitInfo.getScalerUnit().getValue();
             final int index = Integer.parseInt(dataObjects.get(1).getValue().toString());
             final DlmsUnitTypeDto unitType = DlmsUnitTypeDto.getUnitType(index);
             if (unitType != null) {
@@ -351,23 +355,19 @@ public abstract class AbstractGetPowerQualityProfileHandler {
         return DlmsUnitTypeDto.UNDEFINED;
     }
 
-    private String getUnit(final ScalarUnitInfo scalarUnitInfo) {
-        return this.getUnitType(scalarUnitInfo).getUnit();
+    private String getUnit(final ScalerUnitInfo scalerUnitInfo) {
+        return this.getUnitType(scalerUnitInfo).getUnit();
     }
 
-    protected abstract List<ProfileEntryValueDto> createProfileEntryValueDto(final DataObject profileEntryDataObject,
-            final List<ScalarUnitInfo> scalarUnitInfos, ProfileEntryDto previousProfileEntryDto,
-            final Map<Integer, CaptureObjectDefinitionDto> selectableCaptureObjects, int timeInterval);
-
     protected ProfileEntryValueDto makeProfileEntryValueDto(final DataObject dataObject,
-            final ScalarUnitInfo scalarUnitInfo, ProfileEntryDto previousProfileEntryDto, int timeInterval) {
-        if (InterfaceClass.CLOCK.id() == scalarUnitInfo.getClassId()) {
+            final ScalerUnitInfo scalerUnitInfo, ProfileEntryDto previousProfileEntryDto, int timeInterval) {
+        if (InterfaceClass.CLOCK.id() == scalerUnitInfo.getClassId()) {
             return this.makeDateProfileEntryValueDto(dataObject, previousProfileEntryDto, timeInterval);
         } else if (dataObject.isNumber()) {
-            return this.createNumericProfileEntryValueDto(dataObject, scalarUnitInfo);
+            return this.createNumericProfileEntryValueDto(dataObject, scalerUnitInfo);
         } else {
             final String dbgInfo = this.dlmsHelper.getDebugInfo(dataObject);
-            LOGGER.debug("creating ProfileEntryDto from {} {} ", dbgInfo, scalarUnitInfo);
+            LOGGER.debug("creating ProfileEntryDto from {} {} ", dbgInfo, scalerUnitInfo);
             return new ProfileEntryValueDto(dbgInfo);
         }
     }
@@ -390,12 +390,12 @@ public abstract class AbstractGetPowerQualityProfileHandler {
     }
 
     private ProfileEntryValueDto createNumericProfileEntryValueDto(final DataObject dataObject,
-            final ScalarUnitInfo scalarUnitInfo) {
+            final ScalerUnitInfo scalerUnitInfo) {
         try {
-            if (scalarUnitInfo.getScalarUnit() != null) {
+            if (scalerUnitInfo.getScalerUnit() != null) {
                 final DlmsMeterValueDto meterValue = this.dlmsHelper
-                        .getScaledMeterValue(dataObject, scalarUnitInfo.getScalarUnit(), "getScaledMeterValue");
-                if (DlmsUnitTypeDto.COUNT.equals(this.getUnitType(scalarUnitInfo))) {
+                        .getScaledMeterValue(dataObject, scalerUnitInfo.getScalerUnit(), "getScaledMeterValue");
+                if (DlmsUnitTypeDto.COUNT.equals(this.getUnitType(scalerUnitInfo))) {
                     return new ProfileEntryValueDto(meterValue.getValue().longValue());
                 } else {
                     return new ProfileEntryValueDto(meterValue.getValue());
@@ -443,10 +443,10 @@ public abstract class AbstractGetPowerQualityProfileHandler {
         return selectableCaptureObjects;
     }
 
-    private List<ScalarUnitInfo> createScalarUnitInfos(final DlmsConnectionManager conn, final DlmsDevice device,
+    private List<ScalerUnitInfo> createScalerUnitInfos(final DlmsConnectionManager conn, final DlmsDevice device,
             final List<GetResult> captureObjects) throws ProtocolAdapterException {
 
-        List<ScalarUnitInfo> scalarUnitInfos = new ArrayList<>();
+        List<ScalerUnitInfo> scalerUnitInfos = new ArrayList<>();
 
         // there is always only one GetResult
         for (final GetResult captureObjectResult : captureObjects) {
@@ -454,14 +454,14 @@ public abstract class AbstractGetPowerQualityProfileHandler {
             final List<DataObject> dataObjects = captureObjectResult.getResultData().getValue();
 
             for (DataObject dataObject : dataObjects) {
-                scalarUnitInfos.add(createScalarUnitInfo(conn, device, dataObject));
+                scalerUnitInfos.add(createScalerUnitInfo(conn, device, dataObject));
             }
         }
 
-        return scalarUnitInfos;
+        return scalerUnitInfos;
     }
 
-    private ScalarUnitInfo createScalarUnitInfo(final DlmsConnectionManager conn, final DlmsDevice device,
+    private ScalerUnitInfo createScalerUnitInfo(final DlmsConnectionManager conn, final DlmsDevice device,
             final DataObject dataObject) throws ProtocolAdapterException {
 
         final CosemObjectDefinitionDto cosemObjectDefinitionDto = this.dlmsHelper
@@ -470,14 +470,14 @@ public abstract class AbstractGetPowerQualityProfileHandler {
         final int classId = cosemObjectDefinitionDto.getClassId();
         final String logicalName = cosemObjectDefinitionDto.getLogicalName().toString();
 
-        if (this.hasScalarUnit(classId)) {
-            final AttributeAddress addr = new AttributeAddress(classId, logicalName, SCALAR_UNITS_MAP.get(classId));
-            final List<GetResult> scalarUnitResult = this.dlmsHelper
-                    .getAndCheck(conn, device, "retrieve scalar unit for capture object", addr);
-            final DataObject scalarUnitDataObject = scalarUnitResult.get(0).getResultData();
-            return new ScalarUnitInfo(logicalName, classId, scalarUnitDataObject);
+        if (this.hasScalerUnit(classId)) {
+            final AttributeAddress addr = new AttributeAddress(classId, logicalName, SCALER_UNITS_MAP.get(classId));
+            final List<GetResult> scalerUnitResult = this.dlmsHelper
+                    .getAndCheck(conn, device, "retrieve scaler unit for capture object", addr);
+            final DataObject scalerUnitDataObject = scalerUnitResult.get(0).getResultData();
+            return new ScalerUnitInfo(logicalName, classId, scalerUnitDataObject);
         } else {
-            return new ScalarUnitInfo(logicalName, classId, null);
+            return new ScalerUnitInfo(logicalName, classId, null);
         }
     }
 
@@ -505,8 +505,8 @@ public abstract class AbstractGetPowerQualityProfileHandler {
                 .asList(OBIS_CODE_CLOCK, "1.0.31.24.0.255", "1.0.51.24.0.255", "1.0.71.24.0.255", "1.0.31.7.0.255");
     }
 
-    private boolean hasScalarUnit(final int classId) {
-        return SCALAR_UNITS_MAP.containsKey(classId);
+    private boolean hasScalerUnit(final int classId) {
+        return SCALER_UNITS_MAP.containsKey(classId);
     }
 
 }

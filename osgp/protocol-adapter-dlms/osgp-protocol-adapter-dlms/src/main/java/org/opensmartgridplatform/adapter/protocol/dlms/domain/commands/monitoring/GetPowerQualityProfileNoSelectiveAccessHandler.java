@@ -14,7 +14,7 @@ import java.util.Map;
 
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ScalarUnitInfo;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ScalerUnitInfo;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CaptureObjectDefinitionDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryValueDto;
@@ -33,7 +33,7 @@ public class GetPowerQualityProfileNoSelectiveAccessHandler extends AbstractGetP
 
     @Override
     protected List<ProfileEntryValueDto> createProfileEntryValueDto(final DataObject profileEntryDataObject,
-            final List<ScalarUnitInfo> scalarUnitInfos, ProfileEntryDto previousProfileEntryDto,
+            final List<ScalerUnitInfo> scalerUnitInfos, ProfileEntryDto previousProfileEntryDto,
             final Map<Integer, CaptureObjectDefinitionDto> selectableCaptureObjects, int timeInterval) {
 
         final List<ProfileEntryValueDto> result = new ArrayList<>();
@@ -43,7 +43,7 @@ public class GetPowerQualityProfileNoSelectiveAccessHandler extends AbstractGetP
 
             if (selectableCaptureObjects.containsKey(i)) {
                 ProfileEntryValueDto currentProfileEntryValueDto = this
-                        .makeProfileEntryValueDto(dataObjects.get(i), scalarUnitInfos.get(i), previousProfileEntryDto,
+                        .makeProfileEntryValueDto(dataObjects.get(i), scalerUnitInfos.get(i), previousProfileEntryDto,
                                 timeInterval);
                 result.add(currentProfileEntryValueDto);
             } else {
