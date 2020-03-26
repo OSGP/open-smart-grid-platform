@@ -70,6 +70,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
     private static final int INTERVAL_PROFILE_2 = 10;
     private static final String PUBLIC = "PUBLIC";
     private static final String PRIVATE = "PRIVATE";
+    private static final String OBIS_CODE_CLOCK = "0.0.1.0.0.255";
 
     enum Profile {
 
@@ -122,10 +123,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
     protected GetPowerQualityProfileResponseDto handle(final DlmsConnectionManager conn, final DlmsDevice device,
             final GetPowerQualityProfileRequestDataDto getPowerQualityProfileRequestDataDto)
             throws ProtocolAdapterException {
-
-        LOGGER.info("----- EXECUTE GetPowerQualityProfileCommandExecutor "
-                + "GetPowerQualityProfileCommandExecutorSelectiveAccess ----");
-
+        
         final String profileType = getPowerQualityProfileRequestDataDto.getProfileType();
         final List<Profile> profiles = determineProfileForDevice(profileType);
         final GetPowerQualityProfileResponseDto response = new GetPowerQualityProfileResponseDto();
@@ -147,11 +145,6 @@ public abstract class AbstractGetPowerQualityProfileHandler {
             // after data retrieval
             Map<Integer, CaptureObjectDefinitionDto> selectableCaptureObjects = this
                     .createSelectableCaptureObjects(captureObjects, profile.getLogicalNames());
-
-            for (Integer i : selectableCaptureObjects.keySet()) {
-                LOGGER.info("PQ -- Profile {}  has selectable object {} at position {}", profile.name(),
-                        selectableCaptureObjects.get(i).getLogicalName(), i);
-            }
 
             final List<GetResult> bufferList = retrieveBuffer(conn, device, obisCode, beginDateTime, endDateTime,
                     new ArrayList<>(selectableCaptureObjects.values()));
@@ -491,25 +484,25 @@ public abstract class AbstractGetPowerQualityProfileHandler {
     private static List<String> getLogicalNamesPublicDefinableLoadProfile() {
 
         return Arrays
-                .asList("0.0.1.0.0.255", "1.0.32.32.0.255", "1.0.52.32.0.255", "1.0.72.32.0.255", "1.0.32.36.0.255",
+                .asList(OBIS_CODE_CLOCK, "1.0.32.32.0.255", "1.0.52.32.0.255", "1.0.72.32.0.255", "1.0.32.36.0.255",
                         "1.0.52.36.0.255", "1.0.72.36.0.255", "0.0.96.7.21.255", "0.1.25.6.0.255", "0.0.25.6.0.255",
                         "0.1.25.6.0.255", "0.0.25.6.0.255", "0.1.24.1.0.255", "0.2.24.1.0.255", "0.1.24.9.0.255",
                         "0.2.24.9.0.255", "0.1.24.9.0.255", "0.2.24.9.0.255");
     }
 
     private static List<String> getLogicalNamesPublicProfile2() {
-        return Arrays.asList("0.0.1.0.0.255", "1.0.32.24.0.255", "1.0.52.24.0.255", "1.0.72.24.0.255");
+        return Arrays.asList(OBIS_CODE_CLOCK, "1.0.32.24.0.255", "1.0.52.24.0.255", "1.0.72.24.0.255");
     }
 
     private static List<String> getLogicalNamesPrivateProfile1() {
-        return Arrays.asList("0.0.1.0.0.255", "1.0.21.4.0.255", "1.0.41.4.0.255", "1.0.61.4.0.255", "1.0.22.4.0.255",
+        return Arrays.asList(OBIS_CODE_CLOCK, "1.0.21.4.0.255", "1.0.41.4.0.255", "1.0.61.4.0.255", "1.0.22.4.0.255",
                 "1.0.42.4.0.255", "1.0.62.4.0.255", "1.0.23.4.0.255", "1.0.43.4.0.255", "1.0.63.4.0.255",
                 "1.0.24.4.0.255", "1.0.44.4.0.255", "1.0.64.4.0.255");
     }
 
     private static List<String> getLogicalNamesPrivateProfile2() {
         return Arrays
-                .asList("0.0.1.0.0.255", "1.0.31.24.0.255", "1.0.51.24.0.255", "1.0.71.24.0.255", "1.0.31.7.0.255");
+                .asList(OBIS_CODE_CLOCK, "1.0.31.24.0.255", "1.0.51.24.0.255", "1.0.71.24.0.255", "1.0.31.7.0.255");
     }
 
     private boolean hasScalarUnit(final int classId) {

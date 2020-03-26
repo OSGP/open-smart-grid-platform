@@ -19,17 +19,11 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Sca
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CaptureObjectDefinitionDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryValueDto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class GetPowerQualityProfileSelectiveAccessHandler
-        extends AbstractGetPowerQualityProfileHandler {
-
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(GetPowerQualityProfileSelectiveAccessHandler.class);
-
+public class GetPowerQualityProfileSelectiveAccessHandler extends AbstractGetPowerQualityProfileHandler {
+    
     public GetPowerQualityProfileSelectiveAccessHandler(final DlmsHelper dlmsHelper) {
         super(dlmsHelper);
     }
@@ -50,7 +44,6 @@ public class GetPowerQualityProfileSelectiveAccessHandler
             result.add(currentProfileEntryValueDto);
         }
 
-        LOGGER.info("PQ -- ProfileEntryValueDto is of size {} ", result.size());
         return result;
     }
 

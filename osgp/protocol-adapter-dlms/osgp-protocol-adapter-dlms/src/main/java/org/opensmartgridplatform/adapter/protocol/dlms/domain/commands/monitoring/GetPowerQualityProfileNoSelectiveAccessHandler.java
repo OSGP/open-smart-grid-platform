@@ -51,7 +51,6 @@ public class GetPowerQualityProfileNoSelectiveAccessHandler extends AbstractGetP
             }
         }
 
-        LOGGER.info("PQ -- ProfileEntryValueDto is of size {} ", result.size());
         return result;
     }
 
