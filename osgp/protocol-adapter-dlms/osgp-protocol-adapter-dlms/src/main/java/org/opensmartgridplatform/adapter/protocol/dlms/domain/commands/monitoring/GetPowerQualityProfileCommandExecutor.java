@@ -26,10 +26,10 @@ public class GetPowerQualityProfileCommandExecutor
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPowerQualityProfileCommandExecutor.class);
 
     @Autowired
-    private GetPowerQualityProfileCommandExecutorNoSelectiveAccess getPowerQualityProfileCommandExecutorNoSelectiveAccess;
+    private GetPowerQualityProfileNoSelectiveAccessHandler getPowerQualityProfileNoSelectiveAccessHandler;
 
     @Autowired
-    private GetPowerQualityProfileCommandExecutorSelectiveAccess getPowerQualityProfileCommandExecutorSelectiveAccess;
+    private GetPowerQualityProfileSelectiveAccessHandler getPowerQualityProfileSelectiveAccessHandler;
 
     public GetPowerQualityProfileCommandExecutor() {
         super(GetPowerQualityProfileRequestDataDto.class);
@@ -46,14 +46,14 @@ public class GetPowerQualityProfileCommandExecutor
 
             LOGGER.info("Executing PQ Command Executor with Selective Access");
 
-            return this.getPowerQualityProfileCommandExecutorSelectiveAccess
-                    .execute(conn, device, getPowerQualityProfileRequestDataDto);
+            return this.getPowerQualityProfileSelectiveAccessHandler
+                    .handle(conn, device, getPowerQualityProfileRequestDataDto);
         } else {
 
             LOGGER.info("Executing PQ Command Executor without Selective Access");
 
-            return this.getPowerQualityProfileCommandExecutorNoSelectiveAccess
-                    .execute(conn, device, getPowerQualityProfileRequestDataDto);
+            return this.getPowerQualityProfileNoSelectiveAccessHandler
+                    .handle(conn, device, getPowerQualityProfileRequestDataDto);
         }
     }
 }

@@ -69,13 +69,12 @@ public class GetPowerQualityProfileCommandExecutorTest {
         when(dlmsHelper.fromDateTimeValue(any())).thenCallRealMethod();
         when(dlmsHelper.getClockDefinition()).thenCallRealMethod();
 
-        GetPowerQualityProfileCommandExecutorSelectiveAccess executor =
-                new GetPowerQualityProfileCommandExecutorSelectiveAccess(
+        GetPowerQualityProfileSelectiveAccessHandler handler = new GetPowerQualityProfileSelectiveAccessHandler(
                 dlmsHelper);
 
         // EXECUTE
 
-        GetPowerQualityProfileResponseDto responseDto = executor.execute(conn, dlmsDevice, requestDto);
+        GetPowerQualityProfileResponseDto responseDto = handler.handle(conn, dlmsDevice, requestDto);
 
         // ASSERT
 
@@ -110,13 +109,12 @@ public class GetPowerQualityProfileCommandExecutorTest {
         when(dlmsHelper.fromDateTimeValue(any())).thenCallRealMethod();
         when(dlmsHelper.getClockDefinition()).thenCallRealMethod();
 
-        GetPowerQualityProfileCommandExecutorNoSelectiveAccess executor =
-                new GetPowerQualityProfileCommandExecutorNoSelectiveAccess(
+        GetPowerQualityProfileNoSelectiveAccessHandler handler = new GetPowerQualityProfileNoSelectiveAccessHandler(
                 dlmsHelper);
 
         // EXECUTE
 
-        GetPowerQualityProfileResponseDto responseDto = executor.execute(conn, dlmsDevice, requestDto);
+        GetPowerQualityProfileResponseDto responseDto = handler.handle(conn, dlmsDevice, requestDto);
 
         // ASSERT
 
