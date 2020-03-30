@@ -42,9 +42,7 @@ public abstract class AppBase {
     @Option(name = "-report", metaVar = "DIR", usage = "Directory to produce test reports")
     private File reportDir;
 
-    @Option(name = "-skip-xml-report",
-            metaVar = "DIR",
-            usage = "Suppress the JUnit XML report generation (for more logging)")
+    @Option(name = "-skip-xml-report", metaVar = "DIR", usage = "Suppress the JUnit XML report generation (for more logging)")
     private boolean skipXmlReport;
 
     /**

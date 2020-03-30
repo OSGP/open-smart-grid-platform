@@ -65,8 +65,8 @@ public class GetConfigurationObjectServiceTest {
         // SETUP
         when(this.dlmsConnection.get(any(AttributeAddress.class))).thenThrow(new IOException());
 
+        // CALL
         assertThatExceptionOfType(ConnectionException.class).isThrownBy(() -> {
-            // CALL
             this.instance.getConfigurationObject(this.conn);
         });
     }
@@ -77,8 +77,8 @@ public class GetConfigurationObjectServiceTest {
         // SETUP
         when(this.dlmsConnection.get(any(AttributeAddress.class))).thenReturn(null);
 
+        // CALL
         assertThatExceptionOfType(ProtocolAdapterException.class).isThrownBy(() -> {
-            // CALL
             this.instance.getConfigurationObject(this.conn);
         });
     }
@@ -90,8 +90,8 @@ public class GetConfigurationObjectServiceTest {
         when(this.getResult.getResultCode()).thenReturn(AccessResultCode.READ_WRITE_DENIED);
         when(this.dlmsConnection.get(any(AttributeAddress.class))).thenReturn(this.getResult);
 
+        // CALL
         assertThatExceptionOfType(ProtocolAdapterException.class).isThrownBy(() -> {
-            // CALL
             this.instance.getConfigurationObject(this.conn);
         });
     }

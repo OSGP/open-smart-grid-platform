@@ -5,10 +5,11 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.da.application.services;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import javax.persistence.OptimisticLockException;
@@ -64,7 +65,7 @@ public class BaseService {
     }
 
     protected Organisation findOrganisation(final String organisationIdentification) throws FunctionalException {
-        Organisation organisation;
+        final Organisation organisation;
         try {
             organisation = this.organisationDomainService.searchOrganisation(organisationIdentification);
         } catch (final UnknownEntityException e) {
@@ -72,6 +73,10 @@ public class BaseService {
                     ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION, e);
         }
         return organisation;
+    }
+
+    protected Optional<RtuDevice> findRtuDeviceForDevice(final Device device) {
+        return this.rtuDeviceRepository.findById(device.getId());
     }
 
     protected OsgpException ensureOsgpException(final Throwable t, final String defaultMessage) {
