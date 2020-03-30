@@ -474,9 +474,11 @@ public abstract class AbstractGetPowerQualityProfileHandler {
         for (final GetResult captureObjectResult : captureObjects) {
 
             final List<DataObject> dataObjects = captureObjectResult.getResultData().getValue();
-            int positionInDataObjectsList = 0;
 
-            for (DataObject dataObject : dataObjects) {
+            for (int positionInDataObjectsList = 0;
+                 positionInDataObjectsList < dataObjects.size(); positionInDataObjectsList++) {
+
+                DataObject dataObject = dataObjects.get(positionInDataObjectsList);
 
                 final CosemObjectDefinitionDto cosemObjectDefinitionDto = this.dlmsHelper
                         .readObjectDefinition(dataObject, CAPTURE_OBJECT);
@@ -491,7 +493,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
                                     (byte) cosemObjectDefinitionDto.getAttributeIndex(),
                                     cosemObjectDefinitionDto.getDataIndex()));
                 }
-                positionInDataObjectsList++;
+
             }
         }
 
