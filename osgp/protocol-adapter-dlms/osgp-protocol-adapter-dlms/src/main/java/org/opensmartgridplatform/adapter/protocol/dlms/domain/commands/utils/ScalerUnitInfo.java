@@ -16,21 +16,17 @@ public class ScalerUnitInfo {
     private final int classId;
     private final DataObject scalerUnit;
 
-    public ScalerUnitInfo(final String logicalName, final int classId, final DataObject scalarUnit) {
+    public ScalerUnitInfo(final String logicalName, final int classId, final DataObject scalerUnit) {
         super();
         this.logicalName = logicalName;
         this.classId = classId;
-        this.scalerUnit = scalarUnit;
+        this.scalerUnit = scalerUnit;
     }
 
     @Override
     public String toString() {
         return "ScalarUnitInfo [logicalName=" + this.logicalName + ", classId=" + this.classId + ", scalarUnit="
                 + this.scalerUnit + "]";
-    }
-
-    public String getLogicalName() {
-        return this.logicalName;
     }
 
     public int getClassId() {
