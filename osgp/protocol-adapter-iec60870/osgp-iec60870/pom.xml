@@ -28,6 +28,11 @@
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>javax.annotation</groupId>
+      <artifactId>javax.annotation-api</artifactId>
+    </dependency>
+
     <!-- Spring Framework -->
     <dependency>
       <groupId>org.springframework</groupId>
