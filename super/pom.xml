@@ -74,7 +74,7 @@
     <joda.version>2.10.5</joda.version>
     <flyway.version>6.3.2</flyway.version>
     <slf4j.version>1.7.30</slf4j.version>
-    <apache.commons.lang.version>3.9</apache.commons.lang.version>
+    <apache.commons.lang.version>3.10</apache.commons.lang.version>
     <apache.commons.text.version>1.8</apache.commons.text.version>
     <apache.httpcomponents.version>4.5.12</apache.httpcomponents.version>
     <apache.httpcomponents.httpcore.version>4.4.13</apache.httpcomponents.httpcore.version>
