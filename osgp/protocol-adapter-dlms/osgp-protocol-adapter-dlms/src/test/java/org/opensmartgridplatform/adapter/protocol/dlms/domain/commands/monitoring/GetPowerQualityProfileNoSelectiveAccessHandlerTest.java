@@ -49,7 +49,7 @@ public class GetPowerQualityProfileNoSelectiveAccessHandlerTest {
     private DlmsDevice dlmsDevice;
 
     @Test
-    public void testHandle() throws ProtocolAdapterException {
+    public void testHandlePublicProfileWithSelectiveAccess() throws ProtocolAdapterException {
 
         // SETUP
 
@@ -98,22 +98,16 @@ public class GetPowerQualityProfileNoSelectiveAccessHandlerTest {
                                 0 }),
                 DataObject.newUInteger32Data(3), DataObject.newUInteger32Data(2));
 
-        DataObject structureData2 = DataObject
-                .newStructureData(DataObject.newNullData(), DataObject.newUInteger32Data(3),
-                        DataObject.newUInteger32Data(2));
-
-        DataObject structureData3 = DataObject
-                .newStructureData(DataObject.newNullData(), DataObject.newUInteger32Data(3),
-                        DataObject.newUInteger32Data(2));
-
-        DataObject structureData4 = DataObject
-                .newStructureData(DataObject.newNullData(), DataObject.newUInteger32Data(3),
-                        DataObject.newUInteger32Data(2));
-
         structures.add(structureData1);
-        structures.add(structureData2);
-        structures.add(structureData3);
-        structures.add(structureData4);
+        structures.add(DataObject
+                .newStructureData(DataObject.newNullData(), DataObject.newUInteger32Data(3),
+                        DataObject.newUInteger32Data(2)));
+        structures.add(DataObject
+                .newStructureData(DataObject.newNullData(), DataObject.newUInteger32Data(3),
+                        DataObject.newUInteger32Data(2)));
+        structures.add(DataObject
+                .newStructureData(DataObject.newNullData(), DataObject.newUInteger32Data(3),
+                        DataObject.newUInteger32Data(2)));
 
         GetResult getResult = new GetResultImpl(DataObject.newArrayData(structures));
 

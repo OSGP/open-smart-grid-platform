@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.AttributeAddress;
@@ -70,40 +71,59 @@ public abstract class AbstractGetPowerQualityProfileHandler {
     private static final int INTERVAL_PROFILE_2 = 10;
     private static final String PUBLIC = "PUBLIC";
     private static final String PRIVATE = "PRIVATE";
-    private static final String OBIS_CODE_CLOCK = "0.0.1.0.0.255";
-    private static final String NR_VOLTAGE_SAGS_L1 = "1.0.32.32.0.255";
-    private static final String NR_VOLTAGE_SAGS_L2 = "1.0.52.32.0.255";
-    private static final String NR_VOLTAGE_SAGS_L3 = "1.0.72.32.0.255";
-    private static final String NR_VOLTAGE_SWELLS_L1 = "1.0.32.36.0.255";
-    private static final String NR_VOLTAGE_SWELLS_L2 = "1.0.52.36.0.255";
-    private static final String NR_VOLTAGE_SWELLS_L3 = "1.0.72.36.0.255";
-    private static final String NR_POWER_FAILURES = "0.0.96.7.21.255";
-    private static final String AVERAGE_VOLTAGE_L1 = "1.0.32.24.0.255";
-    private static final String AVERAGE_VOLTAGE_L2 = "1.0.52.24.0.255";
-    private static final String AVERAGE_VOLTAGE_L3 = "1.0.72.24.0.255";
-    private static final String INSTANTANEOUS_VOLTAGE_L1 = "1.0.32.7.0.255";
-    private static final String CDMA_DIAGNOSTICS = "0.1.25.6.0.255";
-    private static final String GPRS_DIAGNOSTICS = "0.0.25.6.0.255";
-    private static final String MBUS_CLIENT_SETUP_CHANNEL1 = "0.1.24.1.0.255";
-    private static final String MBUS_CLIENT_SETUP_CHANNEL2 = "0.2.24.1.0.255";
-    private static final String MBUS_DIAGNOSTICS_CHANNEL1 = "0.1.24.9.0.255";
-    private static final String MBUS_DIAGNOSTICS_CHANNEL2 = "0.2.24.9.0.255";
-    private static final String AVERAGE_ACTIVE_POWER_IMPORT_L1 = "1.0.21.4.0.255";
-    private static final String AVERAGE_ACTIVE_POWER_IMPORT_L2 = "1.0.41.4.0.255";
-    private static final String AVERAGE_ACTIVE_POWER_IMPORT_L3 = "1.0.61.4.0.255";
-    private static final String AVERAGE_ACTIVE_POWER_EXPORT_L1 = "1.0.22.4.0.255";
-    private static final String AVERAGE_ACTIVE_POWER_EXPORT_L2 = "1.0.42.4.0.255";
-    private static final String AVERAGE_ACTIVE_POWER_EXPORT_L3 = "1.0.62.4.0.255";
-    private static final String AVERAGE_REACTIVE_POWER_IMPORT_L1 = "1.0.23.4.0.255";
-    private static final String AVERAGE_REACTIVE_POWER_IMPORT_L2 = "1.0.43.4.0.255";
-    private static final String AVERAGE_REACTIVE_POWER_IMPORT_L3 = "1.0.63.4.0.255";
-    private static final String AVERAGE_REACTIVE_POWER_EXPORT_L1 = "1.0.24.4.0.255";
-    private static final String AVERAGE_REACTIVE_POWER_EXPORT_L2 = "1.0.44.4.0.255";
-    private static final String AVERAGE_REACTIVE_POWER_EXPORT_L3 = "1.0.64.4.0.255";
-    private static final String AVERAGE_CURRENT_L1 = "1.0.31.24.0.255";
-    private static final String AVERAGE_CURRENT_L2 = "1.0.51.24.0.255";
-    private static final String AVERAGE_CURRENT_L3 = "1.0.71.24.0.255";
-    private static final String INSTANTANEOUS_CURRENT_L1 = "1.0.31.7.0.255";
+
+    private enum SelectableObisCode {
+
+        OBIS_CODE_CLOCK("0.0.1.0.0.255"),
+        NR_VOLTAGE_SAGS_L1("1.0.32.32.0.255"),
+        NR_VOLTAGE_SAGS_L2("1.0.52.32.0.255"),
+        NR_VOLTAGE_SAGS_L3("1.0.72.32.0.255"),
+        NR_VOLTAGE_SWELLS_L1("1.0.32.36.0.255"),
+        NR_VOLTAGE_SWELLS_L2("1.0.52.36.0.255"),
+        NR_VOLTAGE_SWELLS_L3("1.0.72.36.0.255"),
+        NR_POWER_FAILURES("0.0.96.7.21.255"),
+        AVERAGE_VOLTAGE_L1("1.0.32.24.0.255"),
+        AVERAGE_VOLTAGE_L2("1.0.52.24.0.255"),
+        AVERAGE_VOLTAGE_L3("1.0.72.24.0.255"),
+        INSTANTANEOUS_VOLTAGE_L1("1.0.32.7.0.255"),
+        CDMA_DIAGNOSTICS("0.1.25.6.0.255"),
+        GPRS_DIAGNOSTICS("0.0.25.6.0.255"),
+        MBUS_CLIENT_SETUP_CHANNEL1("0.1.24.1.0.255"),
+        MBUS_CLIENT_SETUP_CHANNEL2("0.2.24.1.0.255"),
+        MBUS_DIAGNOSTICS_CHANNEL1("0.1.24.9.0.255"),
+        MBUS_DIAGNOSTICS_CHANNEL2("0.2.24.9.0.255"),
+        AVERAGE_ACTIVE_POWER_IMPORT_L1("1.0.21.4.0.255"),
+        AVERAGE_ACTIVE_POWER_IMPORT_L2("1.0.41.4.0.255"),
+        AVERAGE_ACTIVE_POWER_IMPORT_L3("1.0.61.4.0.255"),
+        AVERAGE_ACTIVE_POWER_EXPORT_L1("1.0.22.4.0.255"),
+        AVERAGE_ACTIVE_POWER_EXPORT_L2("1.0.42.4.0.255"),
+        AVERAGE_ACTIVE_POWER_EXPORT_L3("1.0.62.4.0.255"),
+        AVERAGE_REACTIVE_POWER_IMPORT_L1("1.0.23.4.0.255"),
+        AVERAGE_REACTIVE_POWER_IMPORT_L2("1.0.43.4.0.255"),
+        AVERAGE_REACTIVE_POWER_IMPORT_L3("1.0.63.4.0.255"),
+        AVERAGE_REACTIVE_POWER_EXPORT_L1("1.0.24.4.0.255"),
+        AVERAGE_REACTIVE_POWER_EXPORT_L2("1.0.44.4.0.255"),
+        AVERAGE_REACTIVE_POWER_EXPORT_L3("1.0.64.4.0.255"),
+        AVERAGE_CURRENT_L1("1.0.31.24.0.255"),
+        AVERAGE_CURRENT_L2("1.0.51.24.0.255"),
+        AVERAGE_CURRENT_L3("1.0.71.24.0.255"),
+        INSTANTANEOUS_CURRENT_L1("1.0.31.7.0.255");
+
+        private String obisCode;
+
+        SelectableObisCode(String obisCode) {
+            this.obisCode = obisCode;
+        }
+
+        public String getObisCode() {
+            return obisCode;
+        }
+
+        static Optional<SelectableObisCode> getByObisCode(String obisCode) {
+            return Arrays.stream(SelectableObisCode.values()).filter(value -> value.getObisCode().equals(obisCode))
+                         .findFirst();
+        }
+    }
 
     private enum Profile {
 
@@ -115,9 +135,9 @@ public abstract class AbstractGetPowerQualityProfileHandler {
 
         private final ObisCodeValuesDto obisCodeValuesDto;
         private final int interval;
-        private final List<String> logicalNames;
+        private final List<SelectableObisCode> logicalNames;
 
-        Profile(ObisCodeValuesDto obisCodeValuesDto, int interval, List<String> logicalNames) {
+        Profile(ObisCodeValuesDto obisCodeValuesDto, int interval, List<SelectableObisCode> logicalNames) {
             this.obisCodeValuesDto = obisCodeValuesDto;
             this.interval = interval;
             this.logicalNames = logicalNames;
@@ -131,7 +151,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
             return interval;
         }
 
-        public List<String> getLogicalNames() {
+        public List<SelectableObisCode> getLogicalNames() {
             return logicalNames;
         }
     }
@@ -445,7 +465,8 @@ public abstract class AbstractGetPowerQualityProfileHandler {
     }
 
     private Map<Integer, CaptureObjectDefinitionDto> createSelectableCaptureObjects(
-            final List<GetResult> captureObjects, List<String> logicalNames) throws ProtocolAdapterException {
+            final List<GetResult> captureObjects, List<SelectableObisCode> logicalNames)
+            throws ProtocolAdapterException {
 
         Map<Integer, CaptureObjectDefinitionDto> selectableCaptureObjects = new HashMap<>();
 
@@ -460,12 +481,13 @@ public abstract class AbstractGetPowerQualityProfileHandler {
                 final CosemObjectDefinitionDto cosemObjectDefinitionDto = this.dlmsHelper
                         .readObjectDefinition(dataObject, CAPTURE_OBJECT);
 
-                final String logicalName = cosemObjectDefinitionDto.getLogicalName().toString();
+                final Optional<SelectableObisCode> logicalName = SelectableObisCode
+                        .getByObisCode(cosemObjectDefinitionDto.getLogicalName().toString());
 
-                if (logicalNames.contains(logicalName)) {
+                if (logicalName.isPresent() && logicalNames.contains(logicalName.get())) {
                     selectableCaptureObjects.put(positionInDataObjectsList,
                             new CaptureObjectDefinitionDto(cosemObjectDefinitionDto.getClassId(),
-                                    new ObisCodeValuesDto(logicalName),
+                                    new ObisCodeValuesDto(logicalName.get().obisCode),
                                     (byte) cosemObjectDefinitionDto.getAttributeIndex(),
                                     cosemObjectDefinitionDto.getDataIndex()));
                 }
@@ -514,30 +536,39 @@ public abstract class AbstractGetPowerQualityProfileHandler {
         }
     }
 
-    private static List<String> getLogicalNamesPublicDefinableLoadProfile() {
+    private static List<SelectableObisCode> getLogicalNamesPublicDefinableLoadProfile() {
 
-        return Arrays.asList(OBIS_CODE_CLOCK, NR_VOLTAGE_SAGS_L1, NR_VOLTAGE_SAGS_L2, NR_VOLTAGE_SAGS_L3,
-                NR_VOLTAGE_SWELLS_L1, NR_VOLTAGE_SWELLS_L2, NR_VOLTAGE_SWELLS_L3, NR_POWER_FAILURES, CDMA_DIAGNOSTICS,
-                GPRS_DIAGNOSTICS, MBUS_CLIENT_SETUP_CHANNEL1, MBUS_CLIENT_SETUP_CHANNEL2, MBUS_DIAGNOSTICS_CHANNEL1,
-                MBUS_DIAGNOSTICS_CHANNEL2);
+        return Arrays.asList(SelectableObisCode.OBIS_CODE_CLOCK, SelectableObisCode.NR_VOLTAGE_SAGS_L1,
+                SelectableObisCode.NR_VOLTAGE_SAGS_L2, SelectableObisCode.NR_VOLTAGE_SAGS_L3,
+                SelectableObisCode.NR_VOLTAGE_SWELLS_L1, SelectableObisCode.NR_VOLTAGE_SWELLS_L2,
+                SelectableObisCode.NR_VOLTAGE_SWELLS_L3, SelectableObisCode.NR_POWER_FAILURES,
+                SelectableObisCode.CDMA_DIAGNOSTICS, SelectableObisCode.GPRS_DIAGNOSTICS,
+                SelectableObisCode.MBUS_CLIENT_SETUP_CHANNEL1, SelectableObisCode.MBUS_CLIENT_SETUP_CHANNEL2,
+                SelectableObisCode.MBUS_DIAGNOSTICS_CHANNEL1, SelectableObisCode.MBUS_DIAGNOSTICS_CHANNEL2);
     }
 
-    private static List<String> getLogicalNamesPublicProfile2() {
-        return Arrays.asList(OBIS_CODE_CLOCK, AVERAGE_VOLTAGE_L1, AVERAGE_VOLTAGE_L2, AVERAGE_VOLTAGE_L3,
-                INSTANTANEOUS_VOLTAGE_L1);
+    private static List<SelectableObisCode> getLogicalNamesPublicProfile2() {
+        return Arrays.asList(SelectableObisCode.OBIS_CODE_CLOCK, SelectableObisCode.AVERAGE_VOLTAGE_L1,
+                SelectableObisCode.AVERAGE_VOLTAGE_L2, SelectableObisCode.AVERAGE_VOLTAGE_L3,
+                SelectableObisCode.INSTANTANEOUS_VOLTAGE_L1);
     }
 
-    private static List<String> getLogicalNamesPrivateProfile1() {
-        return Arrays.asList(OBIS_CODE_CLOCK, AVERAGE_ACTIVE_POWER_IMPORT_L1, AVERAGE_ACTIVE_POWER_IMPORT_L2,
-                AVERAGE_ACTIVE_POWER_IMPORT_L3, AVERAGE_ACTIVE_POWER_EXPORT_L1, AVERAGE_ACTIVE_POWER_EXPORT_L2,
-                AVERAGE_ACTIVE_POWER_EXPORT_L3, AVERAGE_REACTIVE_POWER_IMPORT_L1, AVERAGE_REACTIVE_POWER_IMPORT_L2,
-                AVERAGE_REACTIVE_POWER_IMPORT_L3, AVERAGE_REACTIVE_POWER_EXPORT_L1, AVERAGE_REACTIVE_POWER_EXPORT_L2,
-                AVERAGE_REACTIVE_POWER_EXPORT_L3);
+    private static List<SelectableObisCode> getLogicalNamesPrivateProfile1() {
+        return Arrays.asList(SelectableObisCode.OBIS_CODE_CLOCK, SelectableObisCode.AVERAGE_ACTIVE_POWER_IMPORT_L1,
+                SelectableObisCode.AVERAGE_ACTIVE_POWER_IMPORT_L2, SelectableObisCode.AVERAGE_ACTIVE_POWER_IMPORT_L3,
+                SelectableObisCode.AVERAGE_ACTIVE_POWER_EXPORT_L1, SelectableObisCode.AVERAGE_ACTIVE_POWER_EXPORT_L2,
+                SelectableObisCode.AVERAGE_ACTIVE_POWER_EXPORT_L3, SelectableObisCode.AVERAGE_REACTIVE_POWER_IMPORT_L1,
+                SelectableObisCode.AVERAGE_REACTIVE_POWER_IMPORT_L2,
+                SelectableObisCode.AVERAGE_REACTIVE_POWER_IMPORT_L3,
+                SelectableObisCode.AVERAGE_REACTIVE_POWER_EXPORT_L1,
+                SelectableObisCode.AVERAGE_REACTIVE_POWER_EXPORT_L2,
+                SelectableObisCode.AVERAGE_REACTIVE_POWER_EXPORT_L3);
     }
 
-    private static List<String> getLogicalNamesPrivateProfile2() {
-        return Arrays.asList(OBIS_CODE_CLOCK, AVERAGE_CURRENT_L1, AVERAGE_CURRENT_L2, AVERAGE_CURRENT_L3,
-                INSTANTANEOUS_CURRENT_L1);
+    private static List<SelectableObisCode> getLogicalNamesPrivateProfile2() {
+        return Arrays.asList(SelectableObisCode.OBIS_CODE_CLOCK, SelectableObisCode.AVERAGE_CURRENT_L1,
+                SelectableObisCode.AVERAGE_CURRENT_L2, SelectableObisCode.AVERAGE_CURRENT_L3,
+                SelectableObisCode.INSTANTANEOUS_CURRENT_L1);
     }
 
     private boolean hasScalerUnit(final int classId) {

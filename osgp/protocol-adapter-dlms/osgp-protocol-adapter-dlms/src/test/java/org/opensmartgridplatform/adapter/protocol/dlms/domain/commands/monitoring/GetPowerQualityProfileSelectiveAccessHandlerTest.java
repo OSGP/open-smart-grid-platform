@@ -49,11 +49,11 @@ public class GetPowerQualityProfileSelectiveAccessHandlerTest {
     private DlmsDevice dlmsDevice;
 
     @Test
-    public void testHandle() throws ProtocolAdapterException {
+    public void testHandlePrivateProfileWithoutSelectiveAccess() throws ProtocolAdapterException {
 
         // SETUP
 
-        GetPowerQualityProfileRequestDataDto requestDto = new GetPowerQualityProfileRequestDataDto("PUBLIC",
+        GetPowerQualityProfileRequestDataDto requestDto = new GetPowerQualityProfileRequestDataDto("PRIVATE",
                 Date.from(Instant.now().minus(2, ChronoUnit.DAYS)), new Date(), new ArrayList<>());
 
         when(dlmsHelper.getAndCheck(any(DlmsConnectionManager.class), any(DlmsDevice.class), any(String.class),
@@ -97,22 +97,13 @@ public class GetPowerQualityProfileSelectiveAccessHandlerTest {
                                 0 }),
                 DataObject.newUInteger32Data(3), DataObject.newUInteger32Data(2));
 
-        DataObject structureData2 = DataObject
-                .newStructureData(DataObject.newNullData(), DataObject.newUInteger32Data(3),
-                        DataObject.newUInteger32Data(2));
-
-        DataObject structureData3 = DataObject
-                .newStructureData(DataObject.newNullData(), DataObject.newUInteger32Data(3),
-                        DataObject.newUInteger32Data(2));
-
-        DataObject structureData4 = DataObject
-                .newStructureData(DataObject.newNullData(), DataObject.newUInteger32Data(3),
-                        DataObject.newUInteger32Data(2));
-
         structures.add(structureData1);
-        structures.add(structureData2);
-        structures.add(structureData3);
-        structures.add(structureData4);
+        structures.add(DataObject.newStructureData(DataObject.newNullData(), DataObject.newUInteger32Data(3),
+                DataObject.newUInteger32Data(2)));
+        structures.add(DataObject.newStructureData(DataObject.newNullData(), DataObject.newUInteger32Data(3),
+                DataObject.newUInteger32Data(2)));
+        structures.add(DataObject.newStructureData(DataObject.newNullData(), DataObject.newUInteger32Data(3),
+                DataObject.newUInteger32Data(2)));
 
         GetResult getResult = new GetResultImpl(DataObject.newArrayData(structures));
 
@@ -125,10 +116,10 @@ public class GetPowerQualityProfileSelectiveAccessHandlerTest {
                 DataObject.newOctetStringData(new byte[] { 0, 0, 1, 0, 0, (byte) 255 }), DataObject.newInteger32Data(2),
                 DataObject.newUInteger32Data(0));
         DataObject structureData2 = DataObject.newStructureData(DataObject.newUInteger32Data(1),
-                DataObject.newOctetStringData(new byte[] { 1, 0, 32, 32, 0, (byte) 255 }),
+                DataObject.newOctetStringData(new byte[] { 1, 0, 21, 4, 0, (byte) 255 }),
                 DataObject.newInteger32Data(2), DataObject.newUInteger32Data(0));
         DataObject structureData3 = DataObject.newStructureData(DataObject.newUInteger32Data(1),
-                DataObject.newOctetStringData(new byte[] { 1, 0, 52, 32, 0, (byte) 255 }),
+                DataObject.newOctetStringData(new byte[] { 1, 0, 23, 4, 0, (byte) 255 }),
                 DataObject.newInteger32Data(2), DataObject.newUInteger32Data(0));
 
         GetResult getResult = new GetResultImpl(
