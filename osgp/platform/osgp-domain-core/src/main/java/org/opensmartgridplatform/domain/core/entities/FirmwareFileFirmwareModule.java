@@ -151,7 +151,7 @@ public class FirmwareFileFirmwareModule implements Comparable<FirmwareFileFirmwa
         this.firmwareModule = null;
     }
 
-    public final FirmwareFileFirmwareModuleId getId() {
+    public FirmwareFileFirmwareModuleId getId() {
         return this.id;
     }
 

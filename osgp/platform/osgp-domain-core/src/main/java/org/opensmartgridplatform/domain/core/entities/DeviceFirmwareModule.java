@@ -148,7 +148,7 @@ public class DeviceFirmwareModule implements Comparable<DeviceFirmwareModule>, S
         this.firmwareModule = null;
     }
 
-    public final DeviceFirmwareModuleId getId() {
+    public DeviceFirmwareModuleId getId() {
         return this.id;
     }
 
