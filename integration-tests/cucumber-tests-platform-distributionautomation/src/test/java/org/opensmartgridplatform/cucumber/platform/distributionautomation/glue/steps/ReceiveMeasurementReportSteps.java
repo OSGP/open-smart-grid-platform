@@ -16,7 +16,7 @@ import org.opensmartgridplatform.cucumber.platform.distributionautomation.mocks.
 import org.opensmartgridplatform.cucumber.platform.distributionautomation.support.ws.distributionautomation.DistributionAutomationDeviceManagementClient;
 import org.opensmartgridplatform.iec60870.Iec60870ASduHandler;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
-import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870ASduFactory;
+import org.opensmartgridplatform.simulator.protocol.iec60870.domain.profile.DefaultControlledStationAsduFactory;
 import org.opensmartgridplatform.simulator.protocol.iec60870.server.handlers.Iec60870InterrogationCommandASduHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +53,7 @@ public class ReceiveMeasurementReportSteps {
     }
 
     private Iec60870ASduHandler getInterrogationCommandASduHandler() {
-        final Iec60870ASduFactory iec60870AsduFactory = new Iec60870ASduFactory();
+        final DefaultControlledStationAsduFactory iec60870AsduFactory = new DefaultControlledStationAsduFactory();
 
         return new Iec60870InterrogationCommandASduHandler(iec60870AsduFactory);
     }
