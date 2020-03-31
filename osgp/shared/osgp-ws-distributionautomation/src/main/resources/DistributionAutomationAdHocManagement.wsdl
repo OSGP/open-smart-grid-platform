@@ -114,7 +114,7 @@
         <wsdl:port binding="tns:DistributionAutomationAdHocManagementPortSoap11"
             name="DistributionAutomationAdHocManagementPortSoap11">
             <soap:address
-                location="https://localhost:443/osgp-adapter-ws-distributionautomation/distributionautomation/adhocmanagement/"
+                location="https://localhost/osgp-adapter-ws-distributionautomation/distributionautomation/adhocmanagement/"
             />
         </wsdl:port>
     </wsdl:service>

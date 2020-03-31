@@ -190,7 +190,7 @@
     <wsdl:service name="DistributionAutomationMonitoringPortService">
         <wsdl:port binding="tns:DistributionAutomationMonitoringPortSoap11" name="DistributionAutomationMonitoringPortSoap11">
             <soap:address
-                location="http://localhost:8080/osgp-adapter-ws-distributionautomation/distributionautomation/monitoring/"/>
+                location="https://localhost/osgp-adapter-ws-distributionautomation/distributionautomation/monitoring/"/>
         </wsdl:port>
     </wsdl:service>
 </wsdl:definitions>

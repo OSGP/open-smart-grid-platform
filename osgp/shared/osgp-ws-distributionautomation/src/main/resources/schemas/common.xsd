@@ -18,6 +18,18 @@
     </xsd:restriction>
   </xsd:simpleType>
 
+  <xsd:simpleType name="DeviceIdentification">
+    <xsd:restriction base="tns:AlphaNumericType">
+      <xsd:length value="17" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="AlphaNumericType">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="[a-zA-Z0-9 ]+" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  
   <xsd:complexType name="Page">
     <xsd:sequence>
       <xsd:element name="TotalPages" type="xsd:int" minOccurs="1" maxOccurs="1"/>

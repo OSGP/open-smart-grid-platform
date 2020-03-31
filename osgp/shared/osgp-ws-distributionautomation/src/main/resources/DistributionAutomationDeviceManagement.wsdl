@@ -19,7 +19,7 @@
         </xsd:schema>
     </wsdl:types>
 
-    <!-- 
+    <!--
     ################################################################################
     ## Generic Header
     ################################################################################
@@ -30,11 +30,6 @@
         <wsdl:part element="common:ApplicationName" name="ApplicationName"/>
     </wsdl:message>
 
-    <!-- 
-    ################################################################################
-    ## Health Status
-    ################################################################################
-    -->
     <wsdl:message name="GetHealthStatusRequest">
         <wsdl:part element="da:GetHealthStatusRequest" name="GetHealthStatusRequest"/>
     </wsdl:message>
@@ -47,25 +42,37 @@
     <wsdl:message name="GetHealthStatusAsyncResponse">
         <wsdl:part element="da:GetHealthStatusAsyncResponse" name="GetHealthStatusAsyncResponse"/>
     </wsdl:message>
+    <wsdl:message name="AddRtuDeviceRequest">
+        <wsdl:part element="da:AddRtuDeviceRequest" name="AddRtuDeviceRequest"/>
+    </wsdl:message>
+    <wsdl:message name="AddRtuDeviceAsyncResponse">
+        <wsdl:part element="da:AddRtuDeviceAsyncResponse" name="AddRtuDeviceAsyncResponse"/>
+    </wsdl:message>
 
-    <!-- 
+    <!--
     ################################################################################
     ## Operations
     ################################################################################
     -->
     <wsdl:portType name="DistributionAutomationDeviceManagementPort">
+
         <wsdl:operation name="GetHealthStatus">
             <wsdl:input message="tns:GetHealthStatusRequest" name="GetHealthStatusRequest"/>
-            <wsdl:output message="tns:GetHealthStatusAsyncResponse"
-                name="GetHealthStatusAsyncResponse"/>
+            <wsdl:output message="tns:GetHealthStatusAsyncResponse" name="GetHealthStatusAsyncResponse"/>
         </wsdl:operation>
         <wsdl:operation name="GetHealthStatusAsync">
             <wsdl:input message="tns:GetHealthStatusAsyncRequest" name="GetHealthStatusAsyncRequest"/>
             <wsdl:output message="tns:GetHealthStatusResponse" name="GetHealthStatusResponse"/>
         </wsdl:operation>
+
+        <wsdl:operation name="AddRtuDevice">
+            <wsdl:input message="tns:AddRtuDeviceRequest" name="AddRtuDeviceRequest"/>
+            <wsdl:output message="tns:AddRtuDeviceAsyncResponse" name="AddRtuDeviceAsyncResponse"/>
+        </wsdl:operation>
+
     </wsdl:portType>
 
-    <!-- 
+    <!--
     ################################################################################
     ## Bindings
     ################################################################################
@@ -101,9 +108,26 @@
                 <soap:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
+
+        <wsdl:operation name="AddRtuDevice">
+            <soap:operation soapAction="" />
+            <wsdl:input name="AddRtuDeviceRequest">
+                <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+                             use="literal" />
+                <soap:header message="tns:ActionHeader" part="UserName"
+                             use="literal" />
+                <soap:header message="tns:ActionHeader" part="ApplicationName"
+                             use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="AddRtuDeviceAsyncResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
     </wsdl:binding>
 
-    <!-- 
+    <!--
     ################################################################################
     ## Service
     ################################################################################
@@ -112,7 +136,7 @@
         <wsdl:port binding="tns:DistributionAutomationDeviceManagementPortSoap11"
             name="DistributionAutomationDeviceManagementPortSoap11">
             <soap:address
-                location="http://localhost:8080/osgp-adapter-ws-distributionautomation/distributionautomation/devicemanagement/"
+                location="https://localhost/osgp-adapter-ws-distributionautomation/distributionautomation/devicemanagement/"
             />
         </wsdl:port>
     </wsdl:service>
