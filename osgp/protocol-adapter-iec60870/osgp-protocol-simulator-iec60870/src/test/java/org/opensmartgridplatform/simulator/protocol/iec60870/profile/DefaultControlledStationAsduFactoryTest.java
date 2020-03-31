@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.simulator.protocol.iec60870.domain;
+package org.opensmartgridplatform.simulator.protocol.iec60870.profile;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -13,7 +13,6 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.ASduType;
 import org.openmuc.j60870.CauseOfTransmission;
@@ -23,57 +22,68 @@ import org.openmuc.j60870.ie.IeShortFloat;
 import org.openmuc.j60870.ie.IeTime56;
 import org.openmuc.j60870.ie.InformationElement;
 import org.openmuc.j60870.ie.InformationObject;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870AsduFactory;
+import org.opensmartgridplatform.simulator.protocol.iec60870.domain.profile.DefaultControlledStationAsduFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
-@ExtendWith(SpringExtension.class)
-public class Iec60870ASduFactoryTests {
+@SpringBootTest
+@ActiveProfiles("default_controlled_station")
+class DefaultControlledStationAsduFactoryTest {
 
-    private final Iec60870ASduFactory iec60870ASduFactory = new Iec60870ASduFactory();
+    @Autowired
+    private Iec60870AsduFactory iec60870AsduFactory;
 
     @Test
-    public void shouldCreateInterrogationCommand() {
+    void testCreateInterrogationCommand() {
+
         // Arrange
         final ASdu expected = new ASdu(ASduType.C_IC_NA_1, false, CauseOfTransmission.ACTIVATION, false, false, 0, 1,
                 new InformationObject[] { new InformationObject(0,
                         new InformationElement[][] { { new IeQualifierOfInterrogation(20) } }) });
 
         // Act
-        final ASdu actual = this.iec60870ASduFactory.createInterrogationCommandAsdu();
+        final ASdu actual = this.iec60870AsduFactory.createInterrogationCommandAsdu();
 
         // Assert
         assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
     }
 
     @Test
-    public void shouldCreateInterrogationCommandResponse() {
+    void testCreateInterrogationCommandResponse() {
+
         // Arrange
         final long timestamp = ZonedDateTime.now(ZoneOffset.UTC).toInstant().toEpochMilli();
-        // @formatter:off
+        final InformationObject[] expectedInformationObjects = new InformationObject[2];
+        expectedInformationObjects[0] = new InformationObject(9127, this.createInformationElement(10.0f, timestamp));
+        expectedInformationObjects[1] = new InformationObject(9128, this.createInformationElement(20.5f, timestamp));
         final ASdu expected = new ASdu(ASduType.M_ME_TF_1, false, CauseOfTransmission.SPONTANEOUS, false, false, 0, 1,
-                new InformationObject[] {
-                        new InformationObject(9127,
-                                new InformationElement[][] { { new IeShortFloat(10.0f),
-                                        new IeQuality(false, false, false, false, false), new IeTime56(timestamp) } }),
-                        new InformationObject(9128, new InformationElement[][] { { new IeShortFloat(20.5f),
-                                new IeQuality(false, false, false, false, false), new IeTime56(timestamp) } }) });
-        // @formatter:on
+                expectedInformationObjects);
 
         // Act
-        final ASdu actual = this.iec60870ASduFactory.createInterrogationCommandResponseAsdu(timestamp);
+        final ASdu actual = this.iec60870AsduFactory.createInterrogationCommandResponseAsdu(timestamp);
 
         // Assert
         assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
     }
 
+    private InformationElement[][] createInformationElement(final float value, final long timestamp) {
+        return new InformationElement[][] { { new IeShortFloat(value), new IeQuality(false, false, false, false, false),
+                new IeTime56(timestamp) } };
+    }
+
     @Test
-    public void shouldCreateSingleCommand() {
+    void testCreateSingleCommand() {
+
         // Arrange
+        final DefaultControlledStationAsduFactory defaultControlledAsduFactory = new DefaultControlledStationAsduFactory();
         final ASdu expected = new ASdu(ASduType.C_SC_NA_1, false, CauseOfTransmission.SPONTANEOUS, false, false, 0, 1,
                 new InformationObject[] { new InformationObject(0,
                         new InformationElement[][] { { new IeQualifierOfInterrogation(20) } }) });
 
         // Act
-        final ASdu actual = this.iec60870ASduFactory.createSingleCommandAsdu();
+        final ASdu actual = defaultControlledAsduFactory.createSingleCommandAsdu();
 
         // Assert
         assertThat(actual).usingRecursiveComparison().isEqualTo(expected);

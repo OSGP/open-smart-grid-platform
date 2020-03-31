@@ -25,7 +25,7 @@ import org.openmuc.j60870.Connection;
 import org.opensmartgridplatform.iec60870.Iec60870ASduHandlerRegistry;
 import org.opensmartgridplatform.iec60870.Iec60870ConnectionEventListener;
 import org.opensmartgridplatform.iec60870.Iec60870ConnectionRegistry;
-import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870ASduFactory;
+import org.opensmartgridplatform.simulator.protocol.iec60870.domain.profile.DefaultControlledStationAsduFactory;
 import org.opensmartgridplatform.simulator.protocol.iec60870.server.handlers.Iec60870InterrogationCommandASduHandler;
 import org.opensmartgridplatform.simulator.protocol.iec60870.server.handlers.Iec60870SingleCommandASduHandler;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -47,7 +47,7 @@ public class Iec60870ConnectionEventListenerTest {
     @Mock
     private Connection connection;
 
-    private final Iec60870ASduFactory iec60870aSduFactory = new Iec60870ASduFactory();
+    private final DefaultControlledStationAsduFactory iec60870aSduFactory = new DefaultControlledStationAsduFactory();
 
     private Iec60870ConnectionEventListener iec60870ConnectionEventListener;
 

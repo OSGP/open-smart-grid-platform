@@ -13,7 +13,7 @@ import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.ASduType;
 import org.openmuc.j60870.Connection;
 import org.opensmartgridplatform.iec60870.Iec60870ASduHandler;
-import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870ASduFactory;
+import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870AsduFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +24,10 @@ public class Iec60870InterrogationCommandASduHandler extends Iec60870ASduHandler
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec60870InterrogationCommandASduHandler.class);
 
-    private final Iec60870ASduFactory iec60870AsduFactory;
+    private final Iec60870AsduFactory iec60870AsduFactory;
 
     @Autowired
-    public Iec60870InterrogationCommandASduHandler(final Iec60870ASduFactory iec60870AsduFactory) {
+    public Iec60870InterrogationCommandASduHandler(final Iec60870AsduFactory iec60870AsduFactory) {
         super(ASduType.C_IC_NA_1);
         this.iec60870AsduFactory = iec60870AsduFactory;
     }
@@ -43,7 +43,7 @@ public class Iec60870InterrogationCommandASduHandler extends Iec60870ASduHandler
 
         final ASdu terminationAsdu = this.iec60870AsduFactory.createActivationTerminationResponseAsdu();
         LOGGER.info("Finished processing interrogation command. Sending termination ASDU: {}", terminationAsdu);
-        connection.send(asdu);
+        connection.send(terminationAsdu);
 
     }
 }
