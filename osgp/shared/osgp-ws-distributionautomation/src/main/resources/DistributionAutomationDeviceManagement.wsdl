@@ -30,6 +30,11 @@
         <wsdl:part element="common:ApplicationName" name="ApplicationName"/>
     </wsdl:message>
 
+    <!--
+    ################################################################################
+    ## Health Status
+    ################################################################################
+    -->
     <wsdl:message name="GetHealthStatusRequest">
         <wsdl:part element="da:GetHealthStatusRequest" name="GetHealthStatusRequest"/>
     </wsdl:message>

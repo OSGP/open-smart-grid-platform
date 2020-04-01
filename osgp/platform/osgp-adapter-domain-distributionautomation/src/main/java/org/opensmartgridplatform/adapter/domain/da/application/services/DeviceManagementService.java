@@ -109,11 +109,6 @@ public class DeviceManagementService extends BaseService {
                 deviceIdentification);
         this.rtuDeviceService.storeRtuDevice(organisationIdentification, addRtuDeviceRequest);
         final RtuDevice rtuDevice = addRtuDeviceRequest.getRtuDevice();
-//        final RtuDeviceDto rtuDeviceDto = this.mapper.map(rtuDevice, RtuDeviceDto.class);
-//        final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-//                organisationIdentification, deviceIdentification, rtuDeviceDto);
-//        this.osgpCoreRequestMessageSender.send(requestMessage, deviceMessageMetadata.getMessageType(),
-//                rtuDevice.getNetworkAddress(), deviceMessageMetadata.getScheduleTime());
     }
 
 }

@@ -1,10 +1,9 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.ws.da.presentation.ws;
 
@@ -32,26 +31,23 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 public class DeviceManagementEndpoint extends GenericDistributionAutomationEndPoint {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementEndpoint.class);
-    protected static final String NAMESPACE =
-            "http://www.opensmartgridplatform" + ".org/schemas/distributionautomation/defs/2017/04";
+    protected static final String NAMESPACE = "http://www.opensmartgridplatform.org/schemas/distributionautomation/defs/2017/04";
 
-    @PayloadRoot(localPart = "GetHealthStatusRequest", namespace = NAMESPACE)
+    @PayloadRoot(localPart = "GetHealthStatusRequest",
+            namespace = NAMESPACE)
     @ResponsePayload
-    public GetHealthStatusAsyncResponse getHealthStatus(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetHealthStatusRequest request) throws OsgpException {
+    public GetHealthStatusAsyncResponse getHealthStatus(@OrganisationIdentification final String organisationIdentification,
+                                                        @RequestPayload final GetHealthStatusRequest request) throws OsgpException {
 
-        LOGGER.info("Get Health Status Request received from organisation: {} for device: {}.",
-                organisationIdentification, request.getDeviceIdentification());
+        LOGGER.info("Get Health Status Request received from organisation: {} for device: {}.", organisationIdentification,
+                request.getDeviceIdentification());
 
         final GetHealthStatusAsyncResponse response = new GetHealthStatusAsyncResponse();
 
         try {
-            final org.opensmartgridplatform.domain.da.valueobjects.GetHealthStatusRequest getHealthStatusRequest =
-                    this.mapper
-                    .map(request, org.opensmartgridplatform.domain.da.valueobjects.GetHealthStatusRequest.class);
-            final String correlationUid = this.service.enqueueGetHealthStatusRequest(organisationIdentification,
-                    request.getDeviceIdentification(), getHealthStatusRequest);
+            final org.opensmartgridplatform.domain.da.valueobjects.GetHealthStatusRequest getHealthStatusRequest = this.mapper.map(request, org.opensmartgridplatform.domain.da.valueobjects.GetHealthStatusRequest.class);
+            final String correlationUid = this.service
+                    .enqueueGetHealthStatusRequest(organisationIdentification, request.getDeviceIdentification(), getHealthStatusRequest);
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
             asyncResponse.setDeviceId(request.getDeviceIdentification());
@@ -62,19 +58,18 @@ public class DeviceManagementEndpoint extends GenericDistributionAutomationEndPo
         return response;
     }
 
-    @PayloadRoot(localPart = "GetHealthStatusAsyncRequest", namespace = NAMESPACE)
+    @PayloadRoot(localPart = "GetHealthStatusAsyncRequest",
+            namespace = NAMESPACE)
     @ResponsePayload
-    public GetHealthStatusResponse getHealthStatusResponse(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetHealthStatusAsyncRequest request) throws OsgpException {
+    public GetHealthStatusResponse getHealthStatusResponse(@OrganisationIdentification final String organisationIdentification,
+                                                           @RequestPayload final GetHealthStatusAsyncRequest request) throws OsgpException {
 
-        LOGGER.info("Get Health Status Response received from organisation: {} for correlationUid: {}.",
-                organisationIdentification, request.getAsyncRequest().getCorrelationUid());
+        LOGGER.info("Get Health Status Response received from organisation: {} for correlationUid: {}.", organisationIdentification,
+                request.getAsyncRequest().getCorrelationUid());
 
         GetHealthStatusResponse response = new GetHealthStatusResponse();
         try {
-            final org.opensmartgridplatform.domain.da.valueobjects.GetHealthStatusResponse healthStatusResponse =
-                    this.service
+            final org.opensmartgridplatform.domain.da.valueobjects.GetHealthStatusResponse healthStatusResponse = this.service
                     .dequeueGetHealthResponse(request.getAsyncRequest().getCorrelationUid());
             if (healthStatusResponse != null) {
                 response = this.mapper.map(healthStatusResponse, GetHealthStatusResponse.class);
