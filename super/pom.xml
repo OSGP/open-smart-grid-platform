@@ -126,7 +126,7 @@
     <args4j.version>2.33</args4j.version>
     <cucumber.version>5.5.0</cucumber.version>
     <sun.httpserver.version>20070405</sun.httpserver.version>
-    <postgresql.version>42.2.11</postgresql.version>
+    <postgresql.version>42.2.12</postgresql.version>
   </properties>
 
   <repositories>
