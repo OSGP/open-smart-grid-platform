@@ -83,6 +83,8 @@ public class DefaultControlledStationAsduFactory implements Iec60870AsduFactory 
 
     }
 
+    // TODO: remove these setters when the cucumber mock server can read these
+    // values from a property file
     public void setIoa(final int[] ioa) {
         this.ioa = ioa;
     }

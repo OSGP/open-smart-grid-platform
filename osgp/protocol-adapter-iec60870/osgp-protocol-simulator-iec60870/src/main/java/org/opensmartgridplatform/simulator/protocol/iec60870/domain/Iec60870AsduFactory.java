@@ -26,7 +26,7 @@ public interface Iec60870AsduFactory {
 
     default ASdu createInterrogationCommandAsdu() {
         return new Iec60870ASduBuilder().withTypeId(ASduType.C_IC_NA_1)
-                .withCauseOfTransmission(CauseOfTransmission.ACTIVATION)
+                .withCauseOfTransmission(CauseOfTransmission.ACTIVATION_CON)
                 .withInformationObjects(new InformationObject[] { new InformationObject(0,
                         new InformationElement[][] { { this.defaultIeQualifierOfInterrogation() } }) })
                 .build();

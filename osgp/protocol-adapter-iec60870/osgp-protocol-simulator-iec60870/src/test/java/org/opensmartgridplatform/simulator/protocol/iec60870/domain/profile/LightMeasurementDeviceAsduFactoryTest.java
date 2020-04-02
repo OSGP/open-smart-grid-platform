@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.simulator.protocol.iec60870.profile;
+package org.opensmartgridplatform.simulator.protocol.iec60870.domain.profile;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

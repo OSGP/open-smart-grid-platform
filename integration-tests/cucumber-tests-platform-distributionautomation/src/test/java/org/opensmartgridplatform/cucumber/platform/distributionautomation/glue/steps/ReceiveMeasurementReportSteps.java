@@ -54,6 +54,13 @@ public class ReceiveMeasurementReportSteps {
 
     private Iec60870ASduHandler getInterrogationCommandASduHandler() {
         final DefaultControlledStationAsduFactory iec60870AsduFactory = new DefaultControlledStationAsduFactory();
+
+        /*
+         * These values should be read from a property file based on the active
+         * profile. Since that functionality hasn't been build yet, we set them
+         * this way.
+         */
+        // TODO: change this by reading the property file
         iec60870AsduFactory.setIoa(new int[] { 9127, 9128 });
         iec60870AsduFactory.setIev(new float[] { 10.0f, 20.5f });
 

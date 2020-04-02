@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.simulator.protocol.iec60870.profile;
+package org.opensmartgridplatform.simulator.protocol.iec60870.domain.profile;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -23,7 +23,6 @@ import org.openmuc.j60870.ie.IeTime56;
 import org.openmuc.j60870.ie.InformationElement;
 import org.openmuc.j60870.ie.InformationObject;
 import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870AsduFactory;
-import org.opensmartgridplatform.simulator.protocol.iec60870.domain.profile.DefaultControlledStationAsduFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -34,21 +33,6 @@ class DefaultControlledStationAsduFactoryTest {
 
     @Autowired
     private Iec60870AsduFactory iec60870AsduFactory;
-
-    @Test
-    void testCreateInterrogationCommand() {
-
-        // Arrange
-        final ASdu expected = new ASdu(ASduType.C_IC_NA_1, false, CauseOfTransmission.ACTIVATION, false, false, 0, 1,
-                new InformationObject[] { new InformationObject(0,
-                        new InformationElement[][] { { new IeQualifierOfInterrogation(20) } }) });
-
-        // Act
-        final ASdu actual = this.iec60870AsduFactory.createInterrogationCommandAsdu();
-
-        // Assert
-        assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
-    }
 
     @Test
     void testCreateInterrogationCommandResponse() {
