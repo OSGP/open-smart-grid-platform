@@ -44,9 +44,9 @@ class Iec60870InterrogationCommandASduHandlerTest {
 
         // Arrange
         doNothing().when(this.connection).sendConfirmation(any(ASdu.class));
-        final ASdu responseAsdu = this.getAsdu(ASduType.M_SP_NA_1);
+        final ASdu responseAsdu = this.getAsdu(ASduType.M_SP_NA_1, CauseOfTransmission.ACTIVATION_CON);
         when(this.iec60870AsduFactory.createInterrogationCommandResponseAsdu()).thenReturn(responseAsdu);
-        final ASdu terminationAsdu = this.getAsdu(ASduType.C_IC_NA_1);
+        final ASdu terminationAsdu = this.getAsdu(ASduType.C_IC_NA_1, CauseOfTransmission.ACTIVATION_TERMINATION);
         when(this.iec60870AsduFactory.createActivationTerminationResponseAsdu()).thenReturn(terminationAsdu);
         doNothing().when(this.connection).send(any(ASdu.class));
 
@@ -60,13 +60,14 @@ class Iec60870InterrogationCommandASduHandlerTest {
         // Assert
         inOrder.verify(this.connection).sendConfirmation(any(ASdu.class));
         inOrder.verify(this.connection).send(argThat(new AsduTypeArgumentMatcher(ASduType.M_SP_NA_1)));
-        inOrder.verify(this.connection).send(argThat(new AsduTypeArgumentMatcher(ASduType.C_IC_NA_1)));
-
+        inOrder.verify(this.connection)
+                .send(argThat(
+                        new AsduTypeArgumentMatcher(ASduType.C_IC_NA_1, CauseOfTransmission.ACTIVATION_TERMINATION)));
+        inOrder.verifyNoMoreInteractions();
     }
 
-    private ASdu getAsdu(final ASduType asduType) {
-        return new ASdu(asduType, false, CauseOfTransmission.ACTIVATION, false, false, 0, 1,
-                this.getInformationObjects());
+    private ASdu getAsdu(final ASduType asduType, final CauseOfTransmission causeOfTransmission) {
+        return new ASdu(asduType, false, causeOfTransmission, false, false, 0, 1, this.getInformationObjects());
     }
 
     private InformationObject[] getInformationObjects() {
@@ -78,13 +79,25 @@ class Iec60870InterrogationCommandASduHandlerTest {
 
         private final ASduType type;
 
+        private CauseOfTransmission causeOfTransmission;
+
         public AsduTypeArgumentMatcher(final ASduType type) {
             this.type = type;
         }
 
+        public AsduTypeArgumentMatcher(final ASduType type, final CauseOfTransmission causeOfTransmission) {
+            super();
+            this.type = type;
+            this.causeOfTransmission = causeOfTransmission;
+        }
+
         @Override
         public boolean matches(final ASdu argument) {
-            return argument.getTypeIdentification() == this.type;
+            if (this.causeOfTransmission == null) {
+                return argument.getTypeIdentification() == this.type;
+            }
+            return argument.getTypeIdentification() == this.type
+                    && argument.getCauseOfTransmission() == this.causeOfTransmission;
         }
 
     }
