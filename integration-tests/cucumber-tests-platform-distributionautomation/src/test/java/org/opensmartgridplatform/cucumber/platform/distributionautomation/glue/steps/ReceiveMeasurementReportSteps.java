@@ -54,6 +54,8 @@ public class ReceiveMeasurementReportSteps {
 
     private Iec60870ASduHandler getInterrogationCommandASduHandler() {
         final DefaultControlledStationAsduFactory iec60870AsduFactory = new DefaultControlledStationAsduFactory();
+        iec60870AsduFactory.setIoa(new int[] { 9127, 9128 });
+        iec60870AsduFactory.setIev(new float[] { 10.0f, 20.5f });
 
         return new Iec60870InterrogationCommandASduHandler(iec60870AsduFactory);
     }

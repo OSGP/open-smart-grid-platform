@@ -34,10 +34,6 @@ public class DefaultControlledStationAsduFactory implements Iec60870AsduFactory 
     @Value("${general_interrogation_element_values}")
     private float[] iev;
 
-    public float[] getIev() {
-        return this.iev;
-    }
-
     @Override
     public ASdu createInterrogationCommandResponseAsdu(final long timestamp) {
         final InformationObject[] informationObjects = new InformationObject[this.ioa.length];
@@ -87,4 +83,11 @@ public class DefaultControlledStationAsduFactory implements Iec60870AsduFactory 
 
     }
 
+    public void setIoa(final int[] ioa) {
+        this.ioa = ioa;
+    }
+
+    public void setIev(final float[] iev) {
+        this.iev = iev;
+    }
 }
