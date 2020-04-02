@@ -44,7 +44,7 @@ class Iec60870InterrogationCommandASduHandlerTest {
 
         // Arrange
         doNothing().when(this.connection).sendConfirmation(any(ASdu.class));
-        final ASdu responseAsdu = this.getAsdu(ASduType.M_SP_NA_1, CauseOfTransmission.ACTIVATION_CON);
+        final ASdu responseAsdu = this.getAsdu(ASduType.M_SP_NA_1, CauseOfTransmission.INTERROGATED_BY_STATION);
         when(this.iec60870AsduFactory.createInterrogationCommandResponseAsdu()).thenReturn(responseAsdu);
         final ASdu terminationAsdu = this.getAsdu(ASduType.C_IC_NA_1, CauseOfTransmission.ACTIVATION_TERMINATION);
         when(this.iec60870AsduFactory.createActivationTerminationResponseAsdu()).thenReturn(terminationAsdu);
