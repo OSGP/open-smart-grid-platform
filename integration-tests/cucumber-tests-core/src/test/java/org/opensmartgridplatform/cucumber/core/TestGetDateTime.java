@@ -10,21 +10,20 @@ package org.opensmartgridplatform.cucumber.core;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.joda.time.DateTime;
-import org.junit.jupiter.api.Assertions;
+import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.Test;
 
 public class TestGetDateTime {
 
+    private DateTimeZone cetTime = DateTimeHelper.getCentralEuropeanTimeZone();
+
     @Test
     public void testGetDateTime() {
-        try {
-            final DateTime nowPlus4 = new DateTime().plusMinutes(4);
-            final DateTime nowPlus6 = new DateTime().plusMinutes(6);
-            final DateTime dt = DateTimeHelper.getDateTime("now + 5 minutes");
-            assertThat(nowPlus4.getMillis() < dt.getMillis()).isTrue();
-            assertThat(nowPlus6.getMillis() > dt.getMillis()).isTrue();
-        } catch (final Exception e) {
-            Assertions.fail("error parsing date " + e);
-        }
+        final DateTime nowPlus4 = new DateTime(this.cetTime).plusMinutes(4);
+        final DateTime nowPlus6 = new DateTime(this.cetTime).plusMinutes(6);
+
+        final DateTime dt = DateTimeHelper.getDateTime("now + 5 minutes");
+
+        assertThat(dt).isStrictlyBetween(nowPlus4, nowPlus6);
     }
 }

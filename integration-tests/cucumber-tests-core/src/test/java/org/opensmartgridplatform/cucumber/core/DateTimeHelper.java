@@ -37,7 +37,7 @@ public class DateTimeHelper {
 
     /**
      * This is a generic method which will translate the given string to a
-     * datetime. Supported:
+     * datetime using central European time (CET/CEST). Supported:
      * <p>
      * <ul>
      * <li>now + 3 months
@@ -57,7 +57,7 @@ public class DateTimeHelper {
             return null;
         }
 
-        DateTime retval = DateTime.now(getCentralEuropeanTimeZone()).withTimeAtStartOfDay();
+        DateTime retval = DateTime.now(getCentralEuropeanTimeZone());
 
         final String pattern = "([a-z ]*)[ ]*([+-]?)[ ]*([0-9]*)[ ]*([a-z]*)";
         final Pattern r = Pattern.compile(pattern);
@@ -97,6 +97,10 @@ public class DateTimeHelper {
                     + "], expected the string to begin with tomorrow, yesterday or now or today");
         }
 
+        // Normalize the seconds and milliseconds to zero
+        retval = retval.withSecondOfMinute(0);
+        retval = retval.withMillisOfSecond(0);
+
         if (whenMatcher.groupCount() > 1 && whenMatcher.group(2).equals("at")) {
 
             switch (whenMatcher.group(3)) {
@@ -111,6 +115,8 @@ public class DateTimeHelper {
                 throw new IllegalArgumentException(
                         "Invalid dateString [" + dateString + "], expected \"midday\", \"noon\" or \"midnight\"");
             }
+            retval = retval.withMinuteOfHour(0);
+            retval = retval.withSecondOfMinute(0);
         }
 
         if (op.equals("+")) {
