@@ -10,6 +10,7 @@ package org.opensmartgridplatform.cucumber.platform.glue.steps.database.core;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.DateTimeHelper.getDateTime2;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getDate;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getInteger;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
@@ -99,7 +100,8 @@ public class SsldDeviceSteps extends BaseDeviceSteps {
         final String[] deviceOutputSettings = getString(settings, PlatformKeys.DEVICE_OUTPUT_SETTINGS,
                 PlatformDefaults.DEVICE_OUTPUT_SETTINGS).replaceAll(" ", "").split(PlatformKeys.SEPARATOR_SEMICOLON);
         final String[] relayStatuses = getString(settings, PlatformKeys.RELAY_STATUSES, PlatformDefaults.RELAY_STATUSES)
-                .replaceAll(" ", "").split(PlatformKeys.SEPARATOR_SEMICOLON);
+                .replaceAll(" ", "")
+                .split(PlatformKeys.SEPARATOR_SEMICOLON);
 
         final List<DeviceOutputSetting> dosList = new ArrayList<>();
 
@@ -121,7 +123,8 @@ public class SsldDeviceSteps extends BaseDeviceSteps {
             final RelayStatus currentRelayStatus = ssld.getRelayStatusByIndex(index);
             if (currentRelayStatus == null) {
                 this.relayStatusRepository.save(new RelayStatus.Builder(ssld, index)
-                        .withLastSwitchingEventState(lastSwitchingEventState, lastSwitchingEventTime).build());
+                        .withLastSwitchingEventState(lastSwitchingEventState, lastSwitchingEventTime)
+                        .build());
             } else {
                 currentRelayStatus.updateLastSwitchingEventState(lastSwitchingEventState, lastSwitchingEventTime);
                 this.relayStatusRepository.save(currentRelayStatus);
@@ -170,6 +173,10 @@ public class SsldDeviceSteps extends BaseDeviceSteps {
                 getBoolean(settings, PlatformKeys.DEVICE_IN_MAINTENANCE, PlatformDefaults.DEVICE_IN_MAINTENANCE));
         ssld.setFailedConnectionCount(getInteger(settings, PlatformKeys.KEY_FAILED_CONNECTION_COUNT,
                 PlatformDefaults.DEFAULT_FAILED_CONNECTION_COUNT));
+
+        final DateTime lastSuccessfulConnectionTimestamp = getDate(settings, PlatformKeys.KEY_LAST_COMMUNICATION_TIME,
+                DateTime.now());
+        ssld.setLastSuccessfulConnectionTimestamp(lastSuccessfulConnectionTimestamp.toDate());
 
         this.ssldRepository.save(ssld);
 
