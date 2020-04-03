@@ -12,7 +12,6 @@ package org.opensmartgridplatform.adapter.domain.da.application.services;
 import org.opensmartgridplatform.adapter.domain.da.application.mapping.DomainDistributionAutomationMapper;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.valueobjects.AddRtuDeviceRequest;
-import org.opensmartgridplatform.domain.core.valueobjects.RtuDevice;
 import org.opensmartgridplatform.domain.da.valueobjects.GetHealthStatusRequest;
 import org.opensmartgridplatform.domain.da.valueobjects.GetHealthStatusResponse;
 import org.opensmartgridplatform.dto.da.GetHealthStatusRequestDto;
@@ -105,10 +104,10 @@ public class DeviceManagementService extends BaseService {
             final AddRtuDeviceRequest addRtuDeviceRequest) throws FunctionalException {
         final String organisationIdentification = deviceMessageMetadata.getOrganisationIdentification();
         final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
-        LOGGER.debug("addMeter for organisationIdentification: {} for deviceIdentification: {}", organisationIdentification,
+        LOGGER.debug("addMeter for organisationIdentification: {} for deviceIdentification: {}",
+                organisationIdentification,
                 deviceIdentification);
         this.rtuDeviceService.storeRtuDevice(organisationIdentification, addRtuDeviceRequest);
-        final RtuDevice rtuDevice = addRtuDeviceRequest.getRtuDevice();
     }
 
 }
