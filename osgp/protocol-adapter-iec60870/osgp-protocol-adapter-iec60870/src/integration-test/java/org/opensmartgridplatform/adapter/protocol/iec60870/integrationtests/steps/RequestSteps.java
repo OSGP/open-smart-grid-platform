@@ -14,13 +14,19 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.DeviceRequestMessageListener;
+import org.opensmartgridplatform.dto.da.ConnectRequestDto;
 import org.opensmartgridplatform.dto.da.GetHealthStatusRequestDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ObjectMessageBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
 
 public class RequestSteps {
+    @Autowired
+    private ConnectionSteps connectionSteps;
+
     @Autowired
     private DeviceRequestMessageListener messageListener;
 
@@ -29,6 +35,17 @@ public class RequestSteps {
         final ObjectMessage message = new ObjectMessageBuilder().withDeviceIdentification(DEFAULT_DEVICE_IDENTIFICATION)
                 .withMessageType(DEFAULT_MESSAGE_TYPE)
                 .withObject(new GetHealthStatusRequestDto())
+                .build();
+        this.messageListener.onMessage(message);
+    }
+
+    @When("I receive a connect request for IEC60870 device {string} from osgp core")
+    public void whenIReceiveAConnectRequestForIEC60870DeviceFromOsgpCore(final String deviceIdentification)
+            throws Exception {
+        this.connectionSteps.prepareForConnect(deviceIdentification);
+        final ObjectMessage message = new ObjectMessageBuilder().withDeviceIdentification(deviceIdentification)
+                .withMessageType(MessageType.CONNECT.name())
+                .withObject(new ConnectRequestDto())
                 .build();
         this.messageListener.onMessage(message);
     }

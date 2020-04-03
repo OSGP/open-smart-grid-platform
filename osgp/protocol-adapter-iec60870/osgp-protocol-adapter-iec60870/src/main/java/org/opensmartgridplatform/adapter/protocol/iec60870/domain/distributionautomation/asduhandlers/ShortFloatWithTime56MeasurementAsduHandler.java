@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.asduhandlers;
+package org.opensmartgridplatform.adapter.protocol.iec60870.domain.distributionautomation.asduhandlers;
 
 import org.openmuc.j60870.ASduType;
 import org.springframework.stereotype.Component;

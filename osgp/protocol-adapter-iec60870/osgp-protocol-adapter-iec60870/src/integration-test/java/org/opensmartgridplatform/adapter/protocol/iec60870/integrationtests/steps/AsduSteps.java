@@ -7,16 +7,29 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.steps;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.ASduType;
+import org.openmuc.j60870.CauseOfTransmission;
+import org.openmuc.j60870.Connection;
+import org.openmuc.j60870.ie.IeQualifierOfInterrogation;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.AsduFactory;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionCache;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
 public class AsduSteps {
+
+    @Autowired
+    private ClientConnectionCache clientConnectionCacheSpy;
 
     @Autowired
     private ConnectionSteps connectionSteps;
@@ -29,5 +42,16 @@ public class AsduSteps {
 
         final ASdu asdu = AsduFactory.ofType(ASduType.valueOf(asduType));
         this.connectionSteps.getConnectionEventListener().newASdu(asdu);
+    }
+
+    @Then("^I should send a general interrogation command to device \"([^\"]*)\"$")
+    public void iShouldSendAGeneralInterrogationCommandToDevice(final String deviceIdentification) throws Throwable {
+        LOGGER.debug("Then I should send a general interrogation command to device {}", deviceIdentification);
+
+        final DeviceConnection deviceConnection = (DeviceConnection) this.clientConnectionCacheSpy
+                .getConnection(deviceIdentification);
+        final Connection connectionMock = deviceConnection.getConnection();
+        verify(connectionMock).interrogation(eq(0), eq(CauseOfTransmission.ACTIVATION),
+                any(IeQualifierOfInterrogation.class));
     }
 }

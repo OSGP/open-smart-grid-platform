@@ -13,6 +13,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceType;
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
 
 @Entity
@@ -27,18 +28,29 @@ public class Iec60870Device extends AbstractEntity {
     @Column(unique = true, nullable = false, length = 40)
     private String deviceIdentification;
 
+    private DeviceType deviceType;
+
+    private String gatewayDeviceIdentification;
+
     @Column(nullable = false)
     private Integer commonAddress;
 
     @Column
     private Integer port;
 
+    private Integer informationObjectAddress;
+
     public Iec60870Device() {
         // Default constructor for Hibernate
     }
 
     public Iec60870Device(final String deviceIdentification) {
+        this(deviceIdentification, DeviceType.DA_DEVICE);
+    }
+
+    public Iec60870Device(final String deviceIdentification, final DeviceType deviceType) {
         this.deviceIdentification = deviceIdentification;
+        this.deviceType = deviceType;
     }
 
     @Override
@@ -70,6 +82,10 @@ public class Iec60870Device extends AbstractEntity {
         return this.deviceIdentification;
     }
 
+    public DeviceType getDeviceType() {
+        return this.deviceType;
+    }
+
     public Integer getCommonAddress() {
         return this.commonAddress;
     }
@@ -86,4 +102,19 @@ public class Iec60870Device extends AbstractEntity {
         this.port = port;
     }
 
+    public String getGatewayDeviceIdentification() {
+        return this.gatewayDeviceIdentification;
+    }
+
+    public void setGatewayDeviceIdentification(final String gatewayDeviceIdentification) {
+        this.gatewayDeviceIdentification = gatewayDeviceIdentification;
+    }
+
+    public Integer getInformationObjectAddress() {
+        return this.informationObjectAddress;
+    }
+
+    public void setInformationObjectAddress(final Integer informationObjectAddress) {
+        this.informationObjectAddress = informationObjectAddress;
+    }
 }

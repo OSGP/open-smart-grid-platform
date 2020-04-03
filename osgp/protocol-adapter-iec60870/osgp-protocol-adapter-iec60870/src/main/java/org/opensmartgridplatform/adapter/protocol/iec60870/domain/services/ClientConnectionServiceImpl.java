@@ -19,6 +19,7 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.C
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceConnection;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.RequestMetadata;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseMetadata;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.ConnectionFailureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +35,7 @@ public class ClientConnectionServiceImpl implements ClientConnectionService {
     private ClientConnectionCache connectionCache;
 
     @Autowired
-    private ClientAsduHandlerRegistry asduHandlerRegistry;
+    private ClientAsduHandlerRegistryMap asduHandlerRegistryMap;
 
     @Autowired
     private Client iec60870Client;
@@ -98,20 +99,25 @@ public class ClientConnectionServiceImpl implements ClientConnectionService {
     }
 
     private ClientConnection createConnection(final RequestMetadata requestMetadata) throws ConnectionFailureException {
-        final ConnectionParameters connectionParameters = this.createConnectionParameters(requestMetadata);
+        final String deviceIdentification = requestMetadata.getDeviceIdentification();
+        final Iec60870Device device = this.iec60870DeviceRepository.findByDeviceIdentification(deviceIdentification)
+                .orElseThrow(
+                        () -> new ConnectionFailureException(ComponentType.PROTOCOL_IEC60870, "Device not found."));
+
+        final ConnectionParameters connectionParameters = this.createConnectionParameters(device,
+                requestMetadata.getIpAddress());
         final ResponseMetadata responseMetadata = ResponseMetadata.from(requestMetadata);
 
         final ClientConnectionEventListener eventListener = new ClientConnectionEventListener(
-                connectionParameters.getDeviceIdentification(), this.connectionCache, this.asduHandlerRegistry,
-                responseMetadata);
+                connectionParameters.getDeviceIdentification(), this.connectionCache,
+                this.getAsduHandlerRegistry(device), responseMetadata);
 
         final ClientConnection newDeviceConnection = this.iec60870Client.connect(connectionParameters, eventListener);
 
+        // TODO - refactor
         try {
-            this.connectionCache.addConnection(requestMetadata.getDeviceIdentification(), newDeviceConnection);
+            this.connectionCache.addConnection(deviceIdentification, newDeviceConnection);
         } catch (final ClientConnectionAlreadyInCacheException e) {
-            final String deviceIdentification = e.getClientConnection().getConnectionParameters()
-                    .getDeviceIdentification();
             LOGGER.warn(
                     "Client connection for device {} already exists. Closing new connection and returning existing connection",
                     deviceIdentification);
@@ -122,11 +128,16 @@ public class ClientConnectionServiceImpl implements ClientConnectionService {
         return newDeviceConnection;
     }
 
-    private ConnectionParameters createConnectionParameters(final RequestMetadata requestMetadata) {
-        final String deviceIdentification = requestMetadata.getDeviceIdentification();
-        final Iec60870Device device = this.iec60870DeviceRepository.findByDeviceIdentification(deviceIdentification);
-        return ConnectionParameters.newBuilder().deviceIdentification(deviceIdentification)
-                .ipAddress(requestMetadata.getIpAddress()).commonAddress(device.getCommonAddress())
-                .port(device.getPort()).build();
+    private ClientAsduHandlerRegistry getAsduHandlerRegistry(final Iec60870Device device) {
+        return this.asduHandlerRegistryMap.forDeviceType(device.getDeviceType());
+    }
+
+    private ConnectionParameters createConnectionParameters(final Iec60870Device device, final String ipAddress) {
+        return ConnectionParameters.newBuilder()
+                .deviceIdentification(device.getDeviceIdentification())
+                .ipAddress(ipAddress)
+                .commonAddress(device.getCommonAddress())
+                .port(device.getPort())
+                .build();
     }
 }

@@ -5,19 +5,19 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.steps;
+package org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests;
 
 import static org.mockito.Mockito.reset;
 
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.LogItemRequestMessageSender;
-import org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.TestConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 import io.cucumber.java.Before;
 
-@ContextConfiguration(classes = { TestConfiguration.class })
-public class ContextConfigurationSteps {
+@ContextConfiguration(classes = { TestConfiguration.class, LightMeasurementTestConfiguration.class,
+        DistributionAutomationTestConfiguration.class })
+public class TestContextConfiguration {
 
     @Autowired
     LogItemRequestMessageSender logItemRequestMessageSenderMock;

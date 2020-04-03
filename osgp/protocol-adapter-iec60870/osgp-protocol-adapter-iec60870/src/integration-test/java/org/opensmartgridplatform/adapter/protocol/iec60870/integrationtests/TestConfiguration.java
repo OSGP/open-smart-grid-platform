@@ -15,27 +15,21 @@ import javax.jms.ConnectionFactory;
 import org.apache.activemq.jms.pool.PooledConnectionFactory;
 import org.openmuc.j60870.Connection;
 import org.opensmartgridplatform.adapter.protocol.iec60870.application.mapping.Iec60870Mapper;
-import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.Iec60870AsduConverterService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.Iec60870LoggingService;
-import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.Iec60870MeasurementReportingService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.LogItemFactory;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.ResponseMetadataFactory;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.repositories.Iec60870DeviceRepository;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.AsduConverterService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.Client;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientAsduHandler;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientAsduHandlerRegistryImpl;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientAsduHandlerRegistryMap;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionCache;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionCacheImpl;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionServiceImpl;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.LoggingService;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.MeasurementReportingService;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.asduhandlers.InterrogationAsduHandler;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.asduhandlers.ShortFloatWithTime56MeasurementAsduHandler;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.DeviceRequestMessageListener;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.DeviceResponseMessageSender;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.LogItemRequestMessageSender;
+import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.processors.ConnectRequestMessageProcessor;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.processors.GetHealthStatusRequestMessageProcessor;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.Iec60870Client;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
@@ -137,6 +131,11 @@ public class TestConfiguration {
     }
 
     @Bean
+    public ConnectRequestMessageProcessor connectRequestMessageProcessor() {
+        return new ConnectRequestMessageProcessor();
+    }
+
+    @Bean
     public GetHealthStatusRequestMessageProcessor getHealthStatusRequestMessageProcessor() {
         return new GetHealthStatusRequestMessageProcessor();
     }
@@ -157,33 +156,13 @@ public class TestConfiguration {
     }
 
     @Bean
-    public ClientAsduHandlerRegistryImpl iec60870ClientASduHandlerRegistry() {
-        return new ClientAsduHandlerRegistryImpl();
-    }
-
-    @Bean
-    public ClientAsduHandler shortFloatWithTime56MeasurementASduHandler() {
-        return new ShortFloatWithTime56MeasurementAsduHandler();
-    }
-
-    @Bean
-    public ClientAsduHandler interrogationCommandASduHandler() {
-        return new InterrogationAsduHandler();
+    public ClientAsduHandlerRegistryMap clientAsduHandlerRegistryMap() {
+        return new ClientAsduHandlerRegistryMap();
     }
 
     @Bean
     public MapperFacade iec60870Mapper() {
         return new Iec60870Mapper();
-    }
-
-    @Bean
-    public AsduConverterService asduToMeasurementReportMapper() {
-        return new Iec60870AsduConverterService();
-    }
-
-    @Bean
-    public MeasurementReportingService measurementReportMessageSender() {
-        return new Iec60870MeasurementReportingService();
     }
 
     @Bean

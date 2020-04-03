@@ -1,0 +1,107 @@
+package org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.steps;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.mockito.invocation.InvocationOnMock;
+import org.openmuc.j60870.ASdu;
+import org.openmuc.j60870.ASduType;
+import org.openmuc.j60870.CauseOfTransmission;
+import org.openmuc.j60870.Connection;
+import org.openmuc.j60870.ConnectionEventListener;
+import org.openmuc.j60870.ie.IeQualifierOfInterrogation;
+import org.openmuc.j60870.ie.IeSinglePointWithQuality;
+import org.openmuc.j60870.ie.InformationObject;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import io.cucumber.datatable.DataTable;
+import io.cucumber.java.en.Given;
+
+public class MockedDeviceSteps {
+    @Autowired
+    private ConnectionSteps connectionSteps;
+
+    @Autowired
+    private Connection connection;
+
+    @Given("a process image on the controlled station")
+    public void processImageOnTheControlledStation(final DataTable datatable) throws Throwable {
+
+        final ProcessImage processImage = ProcessImage.fromDataTable(datatable);
+
+        doAnswer(invocation -> this.sendInterrogationResponse(invocation, processImage)).when(this.connection)
+                .interrogation(any(Integer.class), eq(CauseOfTransmission.ACTIVATION),
+                        any(IeQualifierOfInterrogation.class));
+    }
+
+    private Object sendInterrogationResponse(final InvocationOnMock invocation, final ProcessImage processImage) {
+        final int commonAddress = invocation.getArgument(0);
+        final IeQualifierOfInterrogation qualifier = invocation.getArgument(2);
+
+        final ConnectionEventListener listener = this.connectionSteps.getConnectionEventListener();
+        listener.newASdu(this.interrogationActivationConfirmationAsdu(commonAddress, qualifier));
+        for (final ASdu asdu : processImage.toInterrogationAsdus(commonAddress, qualifier)) {
+            listener.newASdu(asdu);
+        }
+        listener.newASdu(this.interrogationActivationTerminationAsdu(commonAddress, qualifier));
+        return null;
+    }
+
+    private ASdu interrogationActivationConfirmationAsdu(final int commonAddress,
+            final IeQualifierOfInterrogation qualifier) {
+        return this.interrogationAsdu(commonAddress, CauseOfTransmission.ACTIVATION_CON, qualifier);
+    }
+
+    private ASdu interrogationActivationTerminationAsdu(final int commonAddress,
+            final IeQualifierOfInterrogation qualifier) {
+        return this.interrogationAsdu(commonAddress, CauseOfTransmission.ACTIVATION_TERMINATION, qualifier);
+    }
+
+    private ASdu interrogationAsdu(final int commonAddress, final CauseOfTransmission cot,
+            final IeQualifierOfInterrogation qualifier) {
+        return new ASdu(ASduType.C_IC_NA_1, false, cot, false, false, 0, commonAddress,
+                new InformationObject(0, qualifier));
+    }
+
+    private static class ProcessImage {
+        private final List<InformationObject> image;
+
+        private ProcessImage(final List<InformationObject> image) {
+            this.image = image;
+        }
+
+        public static ProcessImage fromDataTable(final DataTable datatable) {
+
+            final List<Map<String, String>> rows = datatable.asMaps();
+
+            final List<InformationObject> informationObjects = rows.stream()
+                    .map(ProcessImage::informationObject)
+                    .collect(Collectors.toList());
+            return new ProcessImage(informationObjects);
+        }
+
+        public List<ASdu> toInterrogationAsdus(final int commonAddress, final IeQualifierOfInterrogation qualifier) {
+            final CauseOfTransmission cot = CauseOfTransmission.causeFor(qualifier.getValue());
+            final List<ASdu> asdus = new ArrayList<>();
+            asdus.add(new ASdu(ASduType.M_SP_NA_1, true, cot, false, false, 0, commonAddress,
+                    this.image.toArray(new InformationObject[0])));
+            return asdus;
+        }
+
+        public static InformationObject informationObject(final Map<String, String> map) {
+            final int informationObjectAddress = Integer.parseInt(map.getOrDefault("information_object_address", "0"));
+            // final String informationObjectType =
+            // map.get("information_object_type");
+            final String informationElementValue = map.get("information_element_value");
+            final boolean on = "ON".equalsIgnoreCase(informationElementValue);
+            return new InformationObject(informationObjectAddress,
+                    new IeSinglePointWithQuality(on, false, false, false, false));
+        }
+    }
+}
