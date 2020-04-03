@@ -53,12 +53,11 @@ public class DateTimeHelper {
      * @throws Exception
      */
     public static DateTime getDateTime(final String dateString) {
-
-        DateTime retval;
-
         if (dateString.isEmpty()) {
             return null;
         }
+
+        DateTime retval = DateTime.now(getCentralEuropeanTimeZone()).withTimeAtStartOfDay();
 
         final String pattern = "([a-z ]*)[ ]*([+-]?)[ ]*([0-9]*)[ ]*([a-z]*)";
         final Pattern r = Pattern.compile(pattern);
@@ -85,23 +84,18 @@ public class DateTimeHelper {
         whenMatcher.find();
         switch (whenMatcher.group(1)) {
         case "tomorrow":
-            retval = DateTime.now().plusDays(1);
+            retval = retval.plusDays(1);
             break;
         case "yesterday":
-            retval = DateTime.now().minusDays(1);
+            retval = retval.minusDays(1);
             break;
         case "now":
         case "today":
-            retval = DateTime.now();
             break;
         default:
             throw new IllegalArgumentException("Invalid dateString [" + dateString
                     + "], expected the string to begin with tomorrow, yesterday or now or today");
         }
-
-        // Normalize the seconds and milliseconds to zero
-        retval = retval.withSecondOfMinute(0);
-        retval = retval.withMillisOfSecond(0);
 
         if (whenMatcher.groupCount() > 1 && whenMatcher.group(2).equals("at")) {
 
@@ -117,8 +111,6 @@ public class DateTimeHelper {
                 throw new IllegalArgumentException(
                         "Invalid dateString [" + dateString + "], expected \"midday\", \"noon\" or \"midnight\"");
             }
-            retval = retval.withMinuteOfHour(0);
-            retval = retval.withSecondOfMinute(0);
         }
 
         if (op.equals("+")) {
