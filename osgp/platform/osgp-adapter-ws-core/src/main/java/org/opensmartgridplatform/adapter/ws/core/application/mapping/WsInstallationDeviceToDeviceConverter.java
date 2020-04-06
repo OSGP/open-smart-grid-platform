@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.Device;
+import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Manufacturer;
 import org.opensmartgridplatform.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceModelRepository;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
@@ -80,25 +81,15 @@ public class WsInstallationDeviceToDeviceConverter
                     source.getAlias(), address, new GpsCoordinates(source.getGpsLatitude(), source.getGpsLongitude()),
                     null);
 
-            /*
-             * Model code does not uniquely identify a device model, which is
-             * why deviceModelRepository is changed to return a list of device
-             * models.
-             *
-             * A better solution would be to determine the manufacturer and do a
-             * lookup by manufacturer and model code, which should uniquely
-             * define the device model.
-             */
-            final List<DeviceModel> deviceModels = this.writableDeviceModelRepository
-                    .findByModelCode(source.getDeviceModel().getModelCode());
+            final DeviceModel deviceModel = this.writableDeviceModelRepository.findByManufacturerCodeAndModelCode(
+                    source.getDeviceModel().getManufacturer(), source.getDeviceModel().getModelCode());
 
-            if (deviceModels.size() > 1) {
+            if (deviceModel == null) {
                 throw new AssertionError("Model code \"" + source.getDeviceModel().getModelCode()
-                        + "\" does not uniquely identify a device model.");
-            }
-            if (!deviceModels.isEmpty()) {
-                destination.setDeviceModel(deviceModels.get(0));
-            }
+                        + "\" and Manufacturer \"" + source.getDeviceModel().getManufacturer()
+                        + "\" do not identify an existing device model.");
+            } else
+                destination.setDeviceModel(deviceModel);
 
             return destination;
         }
