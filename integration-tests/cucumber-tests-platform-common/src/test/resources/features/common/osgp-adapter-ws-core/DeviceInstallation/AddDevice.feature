@@ -7,7 +7,6 @@ Feature: CoreDeviceInstallation Device Creating
   Scenario Outline: Add New Device
     Given a device model
       | ModelCode | <ModelCode> |
-      | Metered   | <Metered>   |
     When receiving an add device request
       | DeviceUid               | <DeviceUid>               |
       | DeviceIdentification    | <DeviceIdentification>    |
@@ -25,8 +24,6 @@ Feature: CoreDeviceInstallation Device Creating
       | PublicKeyPresent        | <PublicKeyPresent>        |
       | Manufacturer            | <Manufacturer>            |
       | DeviceModelCode         | <ModelCode>               |
-      | DeviceModelDescription  | <Description>             |
-      | Metered                 | <Metered>                 |
     Then the add device response is successful
     And the device exists
       | DeviceIdentification       | <DeviceIdentification>    |
@@ -46,14 +43,13 @@ Feature: CoreDeviceInstallation Device Creating
       | DeviceModel                | <ModelCode>               |
 
     Examples: 
-      | DeviceUid  | DeviceIdentification                     | Alias | Owner    | ContainerPostalCode | ContainerCity | ContainerStreet | ContainerNumber | ContainerNumberAddition | ContainerMunicipality | GpsLatitude | GpsLongitude | HasSchedule | PublicKeyPresent | Manufacturer | ModelCode  | Description | Metered |
-      | 1234567890 | TEST1024000000001                        |       | test-org | 1234AA              | Maastricht    | Stationsstraat  |              12 | A                       |                       |           0 |            0 | false       | false            | Test         | Test Model | Test        | true    |
-      | 3456789012 | 0123456789012345678901234567890123456789 |       | test-org | 1234AA              | Maastricht    | Stationsstraat  |              12 |                         |                       |           0 |            0 | false       | false            | Test         | Test Model | Test        | true    |
+      | DeviceUid  | DeviceIdentification                     | Alias | Owner    | ContainerPostalCode | ContainerCity | ContainerStreet | ContainerNumber | ContainerNumberAddition | ContainerMunicipality | GpsLatitude | GpsLongitude | HasSchedule | PublicKeyPresent | Manufacturer | ModelCode  |
+      | 1234567890 | TEST1024000000001                        |       | test-org | 1234AA              | Maastricht    | Stationsstraat  |              12 | A                       |                       |           0 |            0 | false       | false            | Test         | Test Model |
+      | 3456789012 | 0123456789012345678901234567890123456789 |       | test-org | 1234AA              | Maastricht    | Stationsstraat  |              12 |                         |                       |           0 |            0 | false       | false            | Test         | Test Model |
 
   Scenario Outline: Add a device with an incorrect device identification
     Given a device model
       | ModelCode | <ModelCode> |
-      | Metered   | <Metered>   |
     When receiving an add device request
       | DeviceUid               | <DeviceUid>             |
       | DeviceIdentification    | <DeviceIdentification>  |
@@ -71,8 +67,6 @@ Feature: CoreDeviceInstallation Device Creating
       | PublicKeyPresent        | <PublicKeyPresent>      |
       | DeviceModelManufacturer | <Manufacturer>          |
       | DeviceModelModelCode    | <ModelCode>             |
-      | DeviceModelDescription  | <Description>           |
-      | DeviceModelMetered      | <Metered>               |
     Then the add device response contains soap fault
       | FaultCode        | SOAP-ENV:Client                                                                                                                                                                                                                                          |
       | FaultString      | Validation error                                                                                                                                                                                                                                         |
@@ -80,13 +74,12 @@ Feature: CoreDeviceInstallation Device Creating
 
     # Note: The validation errors are ; separated if there are multiple.
     Examples: 
-      | DeviceUid  | DeviceIdentification | Alias       | Owner    | ContainerPostalCode | ContainerCity | ContainerStreet | ContainerNumber | ContainerMunicipality | GpsLatitude | GpsLongitude | Activated | HasSchedule | PublicKeyPresent | Manufacturer | ModelCode  | Description | Metered |
-      | 2345678901 |                      | Test device | test-org | 1234AA              | Maastricht    | Stationsstraat  |              12 |                       |           0 |            0 | true      | false       | false            | Test         | Test Model | Test        | true    |
+      | DeviceUid  | DeviceIdentification | Alias       | Owner    | ContainerPostalCode | ContainerCity | ContainerStreet | ContainerNumber | ContainerMunicipality | GpsLatitude | GpsLongitude | Activated | HasSchedule | PublicKeyPresent | Manufacturer | ModelCode  |
+      | 2345678901 |                      | Test device | test-org | 1234AA              | Maastricht    | Stationsstraat  |              12 |                       |           0 |            0 | true      | false       | false            | Test         | Test Model |
 
   Scenario Outline: Add a device with incorrect data
     Given a device model
       | ModelCode | <ModelCode> |
-      | Metered   | <Metered>   |
     When receiving an add device request
       | DeviceUid               | <DeviceUid>             |
       | DeviceIdentification    | <DeviceIdentification>  |
@@ -104,8 +97,6 @@ Feature: CoreDeviceInstallation Device Creating
       | PublicKeyPresent        | <PublicKeyPresent>      |
       | DeviceModelManufacturer | <Manufacturer>          |
       | DeviceModelModelCode    | <ModelCode>             |
-      | DeviceModelDescription  | <Description>           |
-      | DeviceModelMetered      | <Metered>               |
     Then the add device response contains soap fault
       | FaultCode         | SOAP-ENV:Client                                                                                                                                                                                                                             |
       | FaultString       | Validation error                                                                                                                                                                                                                            |
@@ -115,8 +106,8 @@ Feature: CoreDeviceInstallation Device Creating
       # TODO, deviceidentification with 40 characters.
       # Empty owner, is defaulted
       # Unknown is also default as I am requesting with test-org in the headers.
-      | DeviceUid  | DeviceIdentification                                | Alias       | Owner | ContainerPostalCode | ContainerCity | ContainerStreet | ContainerNumber | ContainerMunicipality | GpsLatitude | GpsLongitude | Activated | HasSchedule | PublicKeyPresent | Manufacturer | ModelCode  | Description | Metered |
-      | 5678901234 | TEST1024000000001TEST1024000000001TEST1024000000001 | Test device |       | 1234AA              | Maastricht    | Stationsstraat  |              12 |                       |           0 |            0 | true      | false       | false            | Test         | Test Model | Test        | true    |
+      | DeviceUid  | DeviceIdentification                                | Alias       | Owner | ContainerPostalCode | ContainerCity | ContainerStreet | ContainerNumber | ContainerMunicipality | GpsLatitude | GpsLongitude | Activated | HasSchedule | PublicKeyPresent | Manufacturer | ModelCode  |
+      | 5678901234 | TEST1024000000001TEST1024000000001TEST1024000000001 | Test device |       | 1234AA              | Maastricht    | Stationsstraat  |              12 |                       |           0 |            0 | true      | false       | false            | Test         | Test Model |
 
   Scenario Outline: Add new device with only spaces as device identification
     Given a device model
@@ -139,21 +130,18 @@ Feature: CoreDeviceInstallation Device Creating
       | PublicKeyPresent       | <PublicKeyPresent>      |
       | Manufacturer           | <Manufacturer>          |
       | DeviceModelCode        | <ModelCode>             |
-      | DeviceModelDescription | <Description>           |
-      | Metered                | <Metered>               |
     Then the add device response contains soap fault
       | FaultCode        | SOAP-ENV:Client                                                                                                                                                                                                                             |
       | FaultString      | Validation error                                                                                                                                                                                                                            |
       | ValidationErrors | cvc-pattern-valid: Value '<DeviceIdentification>' is not facet-valid with respect to pattern '[^ ]{0,40}' for type 'Identification'.;cvc-type.3.1.3: The value '<DeviceIdentification>' of element 'ns2:DeviceIdentification' is not valid. |
 
     Examples: 
-      | DeviceUid  | DeviceIdentification   | Alias | Owner    | ContainerPostalCode | ContainerCity | ContainerStreet | ContainerNumber | ContainerMunicipality | GpsLatitude | GpsLongitude | Activated | HasSchedule | PublicKeyPresent | Manufacturer | ModelCode  | Description | Metered |
-      | 1234567890 | "                    " |       | test-org | 1234AA              | Maastricht    | Stationsstraat  |              12 |                       |           0 |            0 | false     | false       | false            | Test         | Test Model | Test        | true    |
+      | DeviceUid  | DeviceIdentification   | Alias | Owner    | ContainerPostalCode | ContainerCity | ContainerStreet | ContainerNumber | ContainerMunicipality | GpsLatitude | GpsLongitude | Activated | HasSchedule | PublicKeyPresent | Manufacturer | ModelCode  |
+      | 1234567890 | "                    " |       | test-org | 1234AA              | Maastricht    | Stationsstraat  |              12 |                       |           0 |            0 | false     | false       | false            | Test         | Test Model |
 
   Scenario: Add New Device With Unknown Owner Organization
     Given a device model
       | ModelCode | Test Model |
-      | Metered   | true       |
     When receiving an add device request with an unknown organization
       | DeviceIdentification | TEST1024000000001 |
       | Owner                | org-test          |
@@ -166,7 +154,6 @@ Feature: CoreDeviceInstallation Device Creating
   Scenario: Allow adding an existing device if there has been no communication with the device yet
     Given a device model
       | ModelCode | Test Model |
-      | Metered   | true       |
     And a device
       | DeviceIdentification       | TEST1024000000001 |
       | Alias                      | ALIAS_ORIGINAL    |
@@ -199,8 +186,6 @@ Feature: CoreDeviceInstallation Device Creating
       | PublicKeyPresent       | false             |
       | Manufacturer           | Test              |
       | DeviceModelCode        | Test Model        |
-      | DeviceModelDescription | Test              |
-      | Metered                | true              |
     Then the add device response is successful
     And the device exists
       | DeviceIdentification       | TEST1024000000001 |
