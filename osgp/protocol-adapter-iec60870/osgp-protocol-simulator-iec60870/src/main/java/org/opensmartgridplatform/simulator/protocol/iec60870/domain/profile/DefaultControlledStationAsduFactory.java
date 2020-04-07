@@ -35,23 +35,23 @@ public class DefaultControlledStationAsduFactory implements Iec60870AsduFactory 
     private float[] iev;
 
     @Override
-    public ASdu createInterrogationCommandResponseAsdu(final long timestamp) {
+    public ASdu createInterrogationCommandResponseAsdu() {
         final InformationObject[] informationObjects = new InformationObject[this.ioa.length];
         for (int index = 0; index < this.ioa.length; index++) {
             informationObjects[index] = new InformationObject(this.ioa[index],
-                    this.createInformationElement(this.iev[index], timestamp));
+                    this.createInformationElementWithoutTimetag(this.iev[index]));
         }
 
-        return new Iec60870AsduBuilder().withTypeId(ASduType.M_ME_TF_1)
+        return new Iec60870AsduBuilder().withTypeId(ASduType.M_ME_NC_1)
                 .withSequenceOfElements(false)
-                .withCauseOfTransmission(CauseOfTransmission.SPONTANEOUS)
+                .withCauseOfTransmission(CauseOfTransmission.INTERROGATED_BY_STATION)
                 .withInformationObjects(informationObjects)
                 .build();
     }
 
-    private InformationElement[][] createInformationElement(final float value, final long timestamp) {
-        return new InformationElement[][] { { new IeShortFloat(value), new IeQuality(false, false, false, false, false),
-                new IeTime56(timestamp) } };
+    private InformationElement[][] createInformationElementWithoutTimetag(final float value) {
+        return new InformationElement[][] {
+                { new IeShortFloat(value), new IeQuality(false, false, false, false, false) } };
     }
 
     public ASdu createSingleCommandAsdu() {
@@ -72,7 +72,7 @@ public class DefaultControlledStationAsduFactory implements Iec60870AsduFactory 
         for (int index = 0; index < this.ioa.length; index++) {
             final float value = (index == 0 ? hour : minute);
             informationObjects[index] = new InformationObject(this.ioa[index],
-                    this.createInformationElement(value, timestamp));
+                    this.createInformationElementWithTimetag(value, timestamp));
         }
 
         return new Iec60870AsduBuilder().withTypeId(ASduType.M_ME_TF_1)
@@ -81,6 +81,11 @@ public class DefaultControlledStationAsduFactory implements Iec60870AsduFactory 
                 .withInformationObjects(informationObjects)
                 .build();
 
+    }
+
+    private InformationElement[][] createInformationElementWithTimetag(final float value, final long timestamp) {
+        return new InformationElement[][] { { new IeShortFloat(value), new IeQuality(false, false, false, false, false),
+                new IeTime56(timestamp) } };
     }
 
     // TODO: remove these setters when the cucumber mock server can read these

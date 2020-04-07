@@ -19,7 +19,6 @@ import org.openmuc.j60870.CauseOfTransmission;
 import org.openmuc.j60870.ie.IeQualifierOfInterrogation;
 import org.openmuc.j60870.ie.IeQuality;
 import org.openmuc.j60870.ie.IeShortFloat;
-import org.openmuc.j60870.ie.IeTime56;
 import org.openmuc.j60870.ie.InformationElement;
 import org.openmuc.j60870.ie.InformationObject;
 import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870AsduFactory;
@@ -40,21 +39,21 @@ class DefaultControlledStationAsduFactoryTest {
         // Arrange
         final long timestamp = ZonedDateTime.now(ZoneOffset.UTC).toInstant().toEpochMilli();
         final InformationObject[] expectedInformationObjects = new InformationObject[2];
-        expectedInformationObjects[0] = new InformationObject(9127, this.createInformationElement(10.0f, timestamp));
-        expectedInformationObjects[1] = new InformationObject(9128, this.createInformationElement(20.5f, timestamp));
-        final ASdu expected = new ASdu(ASduType.M_ME_TF_1, false, CauseOfTransmission.SPONTANEOUS, false, false, 0, 1,
-                expectedInformationObjects);
+        expectedInformationObjects[0] = new InformationObject(9127, this.createInformationElement(10.0f));
+        expectedInformationObjects[1] = new InformationObject(9128, this.createInformationElement(20.5f));
+        final ASdu expected = new ASdu(ASduType.M_ME_NC_1, false, CauseOfTransmission.INTERROGATED_BY_STATION, false,
+                false, 0, 1, expectedInformationObjects);
 
         // Act
-        final ASdu actual = this.iec60870AsduFactory.createInterrogationCommandResponseAsdu(timestamp);
+        final ASdu actual = this.iec60870AsduFactory.createInterrogationCommandResponseAsdu();
 
         // Assert
         assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
     }
 
-    private InformationElement[][] createInformationElement(final float value, final long timestamp) {
-        return new InformationElement[][] { { new IeShortFloat(value), new IeQuality(false, false, false, false, false),
-                new IeTime56(timestamp) } };
+    private InformationElement[][] createInformationElement(final float value) {
+        return new InformationElement[][] {
+                { new IeShortFloat(value), new IeQuality(false, false, false, false, false) } };
     }
 
     @Test

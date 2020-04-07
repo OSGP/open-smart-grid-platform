@@ -65,7 +65,7 @@ public class Iec60870AsduFactoryTest {
     private class AsduFactory implements Iec60870AsduFactory {
 
         @Override
-        public ASdu createInterrogationCommandResponseAsdu(final long timestamp) {
+        public ASdu createInterrogationCommandResponseAsdu() {
             // we only test the default methods in this class
             return null;
         }

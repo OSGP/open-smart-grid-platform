@@ -7,9 +7,6 @@
  */
 package org.opensmartgridplatform.simulator.protocol.iec60870.domain;
 
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.ASduType;
 import org.openmuc.j60870.CauseOfTransmission;
@@ -32,12 +29,7 @@ public interface Iec60870AsduFactory {
                 .build();
     }
 
-    default ASdu createInterrogationCommandResponseAsdu() {
-        final long timestamp = ZonedDateTime.now(ZoneOffset.UTC).toInstant().toEpochMilli();
-        return this.createInterrogationCommandResponseAsdu(timestamp);
-    }
-
-    ASdu createInterrogationCommandResponseAsdu(long timestamp);
+    ASdu createInterrogationCommandResponseAsdu();
 
     default ASdu createActivationTerminationResponseAsdu() {
         return new Iec60870AsduBuilder().withTypeId(ASduType.C_IC_NA_1)

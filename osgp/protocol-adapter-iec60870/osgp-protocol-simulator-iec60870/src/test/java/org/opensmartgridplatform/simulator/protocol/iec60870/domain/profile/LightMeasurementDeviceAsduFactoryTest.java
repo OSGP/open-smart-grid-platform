@@ -44,7 +44,7 @@ class LightMeasurementDeviceAsduFactoryTest {
                 false, 0, 1, expectedInformationObjects);
 
         // Act
-        final ASdu actual = this.iec60870AsduFactory.createInterrogationCommandResponseAsdu(timestamp);
+        final ASdu actual = this.iec60870AsduFactory.createInterrogationCommandResponseAsdu();
 
         // Assert
         assertThat(actual).usingRecursiveComparison().isEqualTo(expected);

@@ -30,7 +30,7 @@ public class LightMeasurementDeviceAsduFactory implements Iec60870AsduFactory {
     private boolean[] iev;
 
     @Override
-    public ASdu createInterrogationCommandResponseAsdu(final long timestamp) {
+    public ASdu createInterrogationCommandResponseAsdu() {
         final InformationObject[] informationObjects = new InformationObject[this.ioa.length];
         for (int index = 0; index < this.ioa.length; index++) {
             informationObjects[index] = new InformationObject(this.ioa[index],
