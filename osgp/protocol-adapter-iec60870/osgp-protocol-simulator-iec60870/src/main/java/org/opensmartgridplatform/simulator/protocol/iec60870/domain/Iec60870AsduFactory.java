@@ -22,7 +22,7 @@ public interface Iec60870AsduFactory {
     }
 
     default ASdu createInterrogationCommandAsdu() {
-        return new Iec60870AsduBuilder().withTypeId(ASduType.C_IC_NA_1)
+        return new Iec60870AsduBuilder().withAsduType(ASduType.C_IC_NA_1)
                 .withCauseOfTransmission(CauseOfTransmission.ACTIVATION_CON)
                 .withInformationObjects(new InformationObject[] { new InformationObject(0,
                         new InformationElement[][] { { this.defaultIeQualifierOfInterrogation() } }) })
@@ -32,7 +32,7 @@ public interface Iec60870AsduFactory {
     ASdu createInterrogationCommandResponseAsdu();
 
     default ASdu createActivationTerminationResponseAsdu() {
-        return new Iec60870AsduBuilder().withTypeId(ASduType.C_IC_NA_1)
+        return new Iec60870AsduBuilder().withAsduType(ASduType.C_IC_NA_1)
                 .withSequenceOfElements(false)
                 .withCauseOfTransmission(CauseOfTransmission.ACTIVATION_TERMINATION)
                 .withInformationObjects(new InformationObject[] { new InformationObject(0,

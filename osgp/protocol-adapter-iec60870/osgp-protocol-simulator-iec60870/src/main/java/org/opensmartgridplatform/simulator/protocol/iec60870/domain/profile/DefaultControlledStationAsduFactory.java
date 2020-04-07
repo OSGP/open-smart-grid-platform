@@ -42,7 +42,7 @@ public class DefaultControlledStationAsduFactory implements Iec60870AsduFactory 
                     this.createInformationElementWithoutTimetag(this.iev[index]));
         }
 
-        return new Iec60870AsduBuilder().withTypeId(ASduType.M_ME_NC_1)
+        return new Iec60870AsduBuilder().withAsduType(ASduType.M_ME_NC_1)
                 .withSequenceOfElements(false)
                 .withCauseOfTransmission(CauseOfTransmission.INTERROGATED_BY_STATION)
                 .withInformationObjects(informationObjects)
@@ -55,7 +55,7 @@ public class DefaultControlledStationAsduFactory implements Iec60870AsduFactory 
     }
 
     public ASdu createSingleCommandAsdu() {
-        return new Iec60870AsduBuilder().withTypeId(ASduType.C_SC_NA_1)
+        return new Iec60870AsduBuilder().withAsduType(ASduType.C_SC_NA_1)
                 .withCauseOfTransmission(CauseOfTransmission.SPONTANEOUS)
                 .withInformationObjects(new InformationObject[] { new InformationObject(0,
                         new InformationElement[][] { { this.defaultIeQualifierOfInterrogation() } }) })
@@ -75,7 +75,7 @@ public class DefaultControlledStationAsduFactory implements Iec60870AsduFactory 
                     this.createInformationElementWithTimetag(value, timestamp));
         }
 
-        return new Iec60870AsduBuilder().withTypeId(ASduType.M_ME_TF_1)
+        return new Iec60870AsduBuilder().withAsduType(ASduType.M_ME_TF_1)
                 .withSequenceOfElements(false)
                 .withCauseOfTransmission(CauseOfTransmission.SPONTANEOUS)
                 .withInformationObjects(informationObjects)

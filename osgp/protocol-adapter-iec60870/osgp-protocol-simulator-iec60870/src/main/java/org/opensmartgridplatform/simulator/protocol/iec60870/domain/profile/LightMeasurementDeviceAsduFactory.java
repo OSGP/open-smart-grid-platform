@@ -36,7 +36,7 @@ public class LightMeasurementDeviceAsduFactory implements Iec60870AsduFactory {
             informationObjects[index] = new InformationObject(this.ioa[index],
                     this.createInformationElement(this.iev[index]));
         }
-        return new Iec60870AsduBuilder().withTypeId(ASduType.M_SP_NA_1)
+        return new Iec60870AsduBuilder().withAsduType(ASduType.M_SP_NA_1)
                 .withSequenceOfElements(false)
                 .withCauseOfTransmission(CauseOfTransmission.INTERROGATED_BY_STATION)
                 .withInformationObjects(informationObjects)

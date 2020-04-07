@@ -57,7 +57,7 @@ public class Iec60870AsduHandlerRegistryTest {
     }
 
     @Test
-    public void registryShouldReturnInterrogationCommandHandlerForInterrogationCommandTypeId() throws Exception {
+    public void registryShouldReturnInterrogationCommandHandlerForInterrogationCommandAsduType() throws Exception {
         // arrange
         final ASduType asduType = ASduType.C_IC_NA_1;
         final Iec60870InterrogationCommandAsduHandler expected = this.iec60870InterrogationCommandAsduHandler;
@@ -70,7 +70,7 @@ public class Iec60870AsduHandlerRegistryTest {
     }
 
     @Test
-    public void registryShouldReturnSingleCommandHandlerForSingleCommandTypeId() throws Exception {
+    public void registryShouldReturnSingleCommandHandlerForSingleCommandAsduType() throws Exception {
         // arrange
         final ASduType asduType = ASduType.C_SC_NA_1;
         final Iec60870SingleCommandAsduHandler expected = this.iec60870SingleCommandAsduHandler;

@@ -14,7 +14,7 @@ import org.openmuc.j60870.ie.InformationObject;
 
 public class Iec60870AsduBuilder {
 
-    private ASduType typeId = ASduType.M_ME_NB_1;
+    private ASduType asduType = ASduType.M_ME_NB_1;
     private boolean sequenceOfElements = false;
     private CauseOfTransmission causeOfTransmission = CauseOfTransmission.SPONTANEOUS;
     private boolean test = false;
@@ -23,8 +23,8 @@ public class Iec60870AsduBuilder {
     private int commonAddress = 1;
     private InformationObject[] informationObjects;
 
-    public Iec60870AsduBuilder withTypeId(final ASduType asduType) {
-        this.typeId = asduType;
+    public Iec60870AsduBuilder withAsduType(final ASduType asduType) {
+        this.asduType = asduType;
         return this;
     }
 
@@ -64,7 +64,7 @@ public class Iec60870AsduBuilder {
     }
 
     public ASdu build() {
-        return new ASdu(this.typeId, this.sequenceOfElements, this.causeOfTransmission, this.test, this.negativeConfirm,
+        return new ASdu(this.asduType, this.sequenceOfElements, this.causeOfTransmission, this.test, this.negativeConfirm,
                 this.originatorAddress, this.commonAddress, this.informationObjects);
     }
 }
