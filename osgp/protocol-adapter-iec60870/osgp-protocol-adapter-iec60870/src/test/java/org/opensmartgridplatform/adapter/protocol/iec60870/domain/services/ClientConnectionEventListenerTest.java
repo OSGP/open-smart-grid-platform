@@ -27,7 +27,7 @@ import org.openmuc.j60870.ASduType;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.AsduFactory;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DomainInfo;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseMetadata;
-import org.opensmartgridplatform.iec60870.Iec60870ASduHandlerNotFoundException;
+import org.opensmartgridplatform.iec60870.Iec60870AsduHandlerNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
 public class ClientConnectionEventListenerTest {
@@ -58,7 +58,7 @@ public class ClientConnectionEventListenerTest {
     }
 
     @Test
-    public void shouldHandleAsduWhenNewAsduIsReceived() throws Iec60870ASduHandlerNotFoundException {
+    public void shouldHandleAsduWhenNewAsduIsReceived() throws Iec60870AsduHandlerNotFoundException {
         // Arrange
         final ASdu asdu = AsduFactory.ofType(ASduType.C_IC_NA_1);
         when(this.asduHandlerRegistry.getHandler(asdu)).thenReturn(this.asduHandler);

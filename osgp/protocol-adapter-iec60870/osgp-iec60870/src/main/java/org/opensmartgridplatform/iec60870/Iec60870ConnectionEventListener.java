@@ -29,24 +29,24 @@ public class Iec60870ConnectionEventListener implements ConnectionEventListener 
 
     private final Connection connection;
     private final Iec60870ConnectionRegistry iec60870ConnectionRegistry;
-    private final Iec60870ASduHandlerRegistry iec60870ASduHandlerRegistry;
+    private final Iec60870AsduHandlerRegistry iec60870AsduHandlerRegistry;
 
     public Iec60870ConnectionEventListener(final Connection connection,
             final Iec60870ConnectionRegistry iec60870ConnectionRegistry,
-            final Iec60870ASduHandlerRegistry iec60870aSduHandlerRegistry) {
+            final Iec60870AsduHandlerRegistry iec60870AsduHandlerRegistry) {
         this.connection = connection;
         this.iec60870ConnectionRegistry = iec60870ConnectionRegistry;
-        this.iec60870ASduHandlerRegistry = iec60870aSduHandlerRegistry;
+        this.iec60870AsduHandlerRegistry = iec60870AsduHandlerRegistry;
     }
 
     @Override
     public void newASdu(final ASdu aSdu) {
         try {
             final ASduType asduType = aSdu.getTypeIdentification();
-            final Iec60870ASduHandler aSduHandler = this.iec60870ASduHandlerRegistry.getHandler(asduType);
-            aSduHandler.handleASdu(this.connection, aSdu);
+            final Iec60870AsduHandler aSduHandler = this.iec60870AsduHandlerRegistry.getHandler(asduType);
+            aSduHandler.handleAsdu(this.connection, aSdu);
 
-        } catch (final Iec60870ASduHandlerNotFoundException e) {
+        } catch (final Iec60870AsduHandlerNotFoundException e) {
             LOGGER.error("Unknown request received, no handler available for ASdu: {}", aSdu.toString(), e);
         } catch (final EOFException e) {
             LOGGER.error("Connection closed on connection ({}).", this.connection, e);

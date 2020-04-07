@@ -31,7 +31,7 @@ import org.openmuc.j60870.ie.InformationObject;
 import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870AsduFactory;
 
 @ExtendWith(MockitoExtension.class)
-class Iec60870InterrogationCommandASduHandlerTest {
+class Iec60870InterrogationCommandAsduHandlerTest {
 
     @Mock
     private Iec60870AsduFactory iec60870AsduFactory;
@@ -53,9 +53,9 @@ class Iec60870InterrogationCommandASduHandlerTest {
         final InOrder inOrder = inOrder(this.connection);
 
         // Act
-        final Iec60870InterrogationCommandASduHandler interrogationCommandHandler = new Iec60870InterrogationCommandASduHandler(
+        final Iec60870InterrogationCommandAsduHandler interrogationCommandHandler = new Iec60870InterrogationCommandAsduHandler(
                 this.iec60870AsduFactory);
-        interrogationCommandHandler.handleASdu(this.connection, responseAsdu);
+        interrogationCommandHandler.handleAsdu(this.connection, responseAsdu);
 
         // Assert
         inOrder.verify(this.connection).sendConfirmation(any(ASdu.class));

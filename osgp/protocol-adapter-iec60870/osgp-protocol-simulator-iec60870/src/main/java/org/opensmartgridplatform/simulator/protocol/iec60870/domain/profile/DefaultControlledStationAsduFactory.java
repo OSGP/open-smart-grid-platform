@@ -18,7 +18,7 @@ import org.openmuc.j60870.ie.IeShortFloat;
 import org.openmuc.j60870.ie.IeTime56;
 import org.openmuc.j60870.ie.InformationElement;
 import org.openmuc.j60870.ie.InformationObject;
-import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870ASduBuilder;
+import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870AsduBuilder;
 import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870AsduFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -42,7 +42,7 @@ public class DefaultControlledStationAsduFactory implements Iec60870AsduFactory 
                     this.createInformationElement(this.iev[index], timestamp));
         }
 
-        return new Iec60870ASduBuilder().withTypeId(ASduType.M_ME_TF_1)
+        return new Iec60870AsduBuilder().withTypeId(ASduType.M_ME_TF_1)
                 .withSequenceOfElements(false)
                 .withCauseOfTransmission(CauseOfTransmission.SPONTANEOUS)
                 .withInformationObjects(informationObjects)
@@ -55,7 +55,7 @@ public class DefaultControlledStationAsduFactory implements Iec60870AsduFactory 
     }
 
     public ASdu createSingleCommandAsdu() {
-        return new Iec60870ASduBuilder().withTypeId(ASduType.C_SC_NA_1)
+        return new Iec60870AsduBuilder().withTypeId(ASduType.C_SC_NA_1)
                 .withCauseOfTransmission(CauseOfTransmission.SPONTANEOUS)
                 .withInformationObjects(new InformationObject[] { new InformationObject(0,
                         new InformationElement[][] { { this.defaultIeQualifierOfInterrogation() } }) })
@@ -75,7 +75,7 @@ public class DefaultControlledStationAsduFactory implements Iec60870AsduFactory 
                     this.createInformationElement(value, timestamp));
         }
 
-        return new Iec60870ASduBuilder().withTypeId(ASduType.M_ME_TF_1)
+        return new Iec60870AsduBuilder().withTypeId(ASduType.M_ME_TF_1)
                 .withSequenceOfElements(false)
                 .withCauseOfTransmission(CauseOfTransmission.SPONTANEOUS)
                 .withInformationObjects(informationObjects)

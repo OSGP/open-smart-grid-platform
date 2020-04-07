@@ -157,17 +157,17 @@ public class TestConfiguration {
     }
 
     @Bean
-    public ClientAsduHandlerRegistryImpl iec60870ClientASduHandlerRegistry() {
+    public ClientAsduHandlerRegistryImpl iec60870ClientAsduHandlerRegistry() {
         return new ClientAsduHandlerRegistryImpl();
     }
 
     @Bean
-    public ClientAsduHandler shortFloatWithTime56MeasurementASduHandler() {
+    public ClientAsduHandler shortFloatWithTime56MeasurementAsduHandler() {
         return new ShortFloatWithTime56MeasurementAsduHandler();
     }
 
     @Bean
-    public ClientAsduHandler interrogationCommandASduHandler() {
+    public ClientAsduHandler interrogationCommandAsduHandler() {
         return new InterrogationAsduHandler();
     }
 

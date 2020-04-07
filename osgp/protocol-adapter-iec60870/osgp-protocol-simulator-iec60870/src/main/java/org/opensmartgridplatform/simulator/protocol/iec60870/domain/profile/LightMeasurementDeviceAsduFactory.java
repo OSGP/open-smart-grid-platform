@@ -13,7 +13,7 @@ import org.openmuc.j60870.CauseOfTransmission;
 import org.openmuc.j60870.ie.IeSinglePointWithQuality;
 import org.openmuc.j60870.ie.InformationElement;
 import org.openmuc.j60870.ie.InformationObject;
-import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870ASduBuilder;
+import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870AsduBuilder;
 import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870AsduFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -36,7 +36,7 @@ public class LightMeasurementDeviceAsduFactory implements Iec60870AsduFactory {
             informationObjects[index] = new InformationObject(this.ioa[index],
                     this.createInformationElement(this.iev[index]));
         }
-        return new Iec60870ASduBuilder().withTypeId(ASduType.M_SP_NA_1)
+        return new Iec60870AsduBuilder().withTypeId(ASduType.M_SP_NA_1)
                 .withSequenceOfElements(false)
                 .withCauseOfTransmission(CauseOfTransmission.INTERROGATED_BY_STATION)
                 .withInformationObjects(informationObjects)

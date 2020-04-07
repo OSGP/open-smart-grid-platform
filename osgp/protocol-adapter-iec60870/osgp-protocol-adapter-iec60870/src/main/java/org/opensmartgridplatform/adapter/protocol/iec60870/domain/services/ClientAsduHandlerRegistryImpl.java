@@ -12,7 +12,7 @@ import java.util.Map;
 
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.ASduType;
-import org.opensmartgridplatform.iec60870.Iec60870ASduHandlerNotFoundException;
+import org.opensmartgridplatform.iec60870.Iec60870AsduHandlerNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -32,12 +32,12 @@ public class ClientAsduHandlerRegistryImpl implements ClientAsduHandlerRegistry 
     private final Map<ASduType, ClientAsduHandler> handlers = new EnumMap<>(ASduType.class);
 
     @Override
-    public ClientAsduHandler getHandler(final ASdu asdu) throws Iec60870ASduHandlerNotFoundException {
+    public ClientAsduHandler getHandler(final ASdu asdu) throws Iec60870AsduHandlerNotFoundException {
         final ASduType asduType = asdu.getTypeIdentification();
         final ClientAsduHandler handler = this.handlers.get(asduType);
         if (handler == null) {
-            LOGGER.error("No ASdu handler found for ASdu type {}", asduType);
-            throw new Iec60870ASduHandlerNotFoundException(asduType);
+            LOGGER.error("No ASdu handler found for Asdu type {}", asduType);
+            throw new Iec60870AsduHandlerNotFoundException(asduType);
         }
         return handler;
     }
