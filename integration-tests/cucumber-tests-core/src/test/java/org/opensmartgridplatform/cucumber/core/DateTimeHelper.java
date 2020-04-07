@@ -37,7 +37,7 @@ public class DateTimeHelper {
 
     /**
      * This is a generic method which will translate the given string to a
-     * datetime. Supported:
+     * datetime using central European time (CET/CEST). Supported:
      * <p>
      * <ul>
      * <li>now + 3 months
@@ -53,12 +53,11 @@ public class DateTimeHelper {
      * @throws Exception
      */
     public static DateTime getDateTime(final String dateString) {
-
-        DateTime retval;
-
         if (dateString.isEmpty()) {
             return null;
         }
+
+        DateTime retval = DateTime.now(getCentralEuropeanTimeZone());
 
         final String pattern = "([a-z ]*)[ ]*([+-]?)[ ]*([0-9]*)[ ]*([a-z]*)";
         final Pattern r = Pattern.compile(pattern);
@@ -85,14 +84,13 @@ public class DateTimeHelper {
         whenMatcher.find();
         switch (whenMatcher.group(1)) {
         case "tomorrow":
-            retval = DateTime.now().plusDays(1);
+            retval = retval.plusDays(1);
             break;
         case "yesterday":
-            retval = DateTime.now().minusDays(1);
+            retval = retval.minusDays(1);
             break;
         case "now":
         case "today":
-            retval = DateTime.now();
             break;
         default:
             throw new IllegalArgumentException("Invalid dateString [" + dateString
