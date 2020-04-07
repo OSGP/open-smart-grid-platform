@@ -57,7 +57,7 @@ public class ReceiveMeasurementReportSteps {
 
         /*
          * These values should be read from a property file based on the active
-         * profile. Since that functionality hasn't been build yet, we set them
+         * profile. Since that functionality hasn't been built yet, we set them
          * this way.
          */
         // TODO: change this by reading the property file
