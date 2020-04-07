@@ -25,7 +25,7 @@ import org.openmuc.j60870.ConnectionEventListener;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.entities.Iec60870Device;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.exceptions.ClientConnectionAlreadyInCacheException;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.Client;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientAsduHandlerRegistryMap;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientAsduHandlerRegistry;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionCache;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionEventListener;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionService;
@@ -58,7 +58,7 @@ public class ConnectionSteps {
     private Client clientMock;
 
     @Autowired
-    private ClientAsduHandlerRegistryMap clientAsduHandlerRegistryMap;
+    private ClientAsduHandlerRegistry clientAsduHandlerRegistry;
 
     @Autowired
     private Iec60870DeviceSteps iec60870DeviceSteps;
@@ -88,20 +88,22 @@ public class ConnectionSteps {
                 .thenReturn(deviceConnection);
     }
 
-    @Given("an existing connection with an IEC60870 device")
-    public void givenIec60870DeviceIsConnected() throws ClientConnectionAlreadyInCacheException {
+    @Given("an existing connection with an IEC60870 device of type {string}")
+    public void givenIec60870DeviceIsConnected(final String typeOfDevice)
+            throws ClientConnectionAlreadyInCacheException {
         LOGGER.debug("Given IEC60870 device is connected");
-
+        final DeviceType deviceType = DeviceType.valueOf(typeOfDevice);
         // Make sure the connection event listener works as expected
         final ResponseMetadata responseMetadata = new ResponseMetadata.Builder()
                 .withDeviceIdentification(DEFAULT_DEVICE_IDENTIFICATION)
+                .withDeviceType(deviceType)
                 .withOrganisationIdentification(DEFAULT_ORGANISATION_IDENTIFICATION)
                 .withDomainInfo(new DomainInfo(DEFAULT_DOMAIN, DEFAULT_DOMAIN_VERSION))
                 .withMessageType(DEFAULT_MESSAGE_TYPE)
                 .build();
         this.connectionEventListener = new ClientConnectionEventListener(
                 this.connectionParameters.getDeviceIdentification(), this.connectionCacheSpy,
-                this.clientAsduHandlerRegistryMap.forDeviceType(DeviceType.DA_DEVICE), responseMetadata);
+                this.clientAsduHandlerRegistry, responseMetadata);
 
         // Make sure a connection could be retrieved from the cache
         // Only needed for scenarios sending requests to a device
@@ -117,8 +119,7 @@ public class ConnectionSteps {
         this.connectionParameters = this.initConnectionParameters(deviceIdentification);
         this.connectionEventListener = new ClientConnectionEventListener(
                 this.connectionParameters.getDeviceIdentification(), this.connectionCacheSpy,
-                this.clientAsduHandlerRegistryMap.forDeviceType(deviceType),
-                this.initResponseMetadata(deviceIdentification));
+                this.clientAsduHandlerRegistry, this.initResponseMetadata(deviceIdentification, deviceType));
         // final Connection connection = mock(Connection.class);
         when(this.clientMock.connect(any(ConnectionParameters.class), any(ConnectionEventListener.class)))
                 .thenReturn(new DeviceConnection(this.connection, this.connectionParameters));
@@ -146,14 +147,13 @@ public class ConnectionSteps {
                 .build();
     }
 
-    private ResponseMetadata initResponseMetadata(final String deviceIdentification) throws Exception {
-        final Iec60870Device device = this.iec60870DeviceSteps.getDevice(deviceIdentification)
-                .orElseThrow(() -> new Exception("Device not found."));
-        final DeviceType deviceType = device.getDeviceType();
+    private ResponseMetadata initResponseMetadata(final String deviceIdentification, final DeviceType deviceType)
+            throws Exception {
         final DomainInfo domainInfo = deviceType.domainType().domainInfo();
         // Make sure the connection event listener works as expected
         final ResponseMetadata responseMetadata = new ResponseMetadata.Builder()
                 .withDeviceIdentification(deviceIdentification)
+                .withDeviceType(deviceType)
                 .withOrganisationIdentification(DEFAULT_ORGANISATION_IDENTIFICATION)
                 .withDomainInfo(domainInfo)
                 .withMessageType(DEFAULT_MESSAGE_TYPE)

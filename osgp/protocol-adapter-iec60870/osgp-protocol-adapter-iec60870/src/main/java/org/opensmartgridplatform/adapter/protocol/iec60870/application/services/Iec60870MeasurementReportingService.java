@@ -7,7 +7,7 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.application.services;
 
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.distributionautomation.MeasurementReportingService;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.MeasurementReportingService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseMetadata;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.DeviceResponseMessageSender;
 import org.opensmartgridplatform.dto.da.measurements.MeasurementReportDto;

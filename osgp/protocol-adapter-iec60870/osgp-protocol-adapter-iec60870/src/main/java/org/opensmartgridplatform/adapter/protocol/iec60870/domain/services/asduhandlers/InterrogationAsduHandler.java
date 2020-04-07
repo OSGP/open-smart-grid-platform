@@ -5,13 +5,13 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.protocol.iec60870.domain.distributionautomation.asduhandlers;
+package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.asduhandlers;
 
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.ASduType;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.distributionautomation.DistributionAutomationClientAsduHandler;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.LogItemFactory;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.ResponseMetadataFactory;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientAsduHandlerImpl;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.LoggingService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.LogItem;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseMetadata;
@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
  * </ul>
  */
 @Component
-public class InterrogationAsduHandler extends DistributionAutomationClientAsduHandler {
+public class InterrogationAsduHandler extends ClientAsduHandlerImpl {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InterrogationAsduHandler.class);
 

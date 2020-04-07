@@ -10,13 +10,17 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests;
 import static org.mockito.Mockito.reset;
 
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.LogItemRequestMessageSender;
+import org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.config.InboundRequestsTestConfiguration;
+import org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.config.LogItemTestConfiguration;
+import org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.config.OutboundResponsesTestConfiguration;
+import org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.config.TestConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 import io.cucumber.java.Before;
 
-@ContextConfiguration(classes = { TestConfiguration.class, LightMeasurementTestConfiguration.class,
-        DistributionAutomationTestConfiguration.class })
+@ContextConfiguration(classes = { TestConfiguration.class, InboundRequestsTestConfiguration.class,
+        OutboundResponsesTestConfiguration.class, LogItemTestConfiguration.class })
 public class TestContextConfiguration {
 
     @Autowired

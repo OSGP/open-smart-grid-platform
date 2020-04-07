@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.protocol.iec60870.domain.distributionautomation.asduhandlers;
+package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.asduhandlers;
 
 import org.openmuc.j60870.ASduType;
 import org.springframework.stereotype.Component;
@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
  * <ul>
  * <li>Measured value, short floating point number with time tag CP56Time2a</li>
  * </ul>
- *
  */
 @Component
 public class ShortFloatWithTime56MeasurementAsduHandler extends MeasurementAsduHandler {

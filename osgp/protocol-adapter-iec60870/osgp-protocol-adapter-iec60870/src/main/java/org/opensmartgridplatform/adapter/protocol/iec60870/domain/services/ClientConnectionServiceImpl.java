@@ -35,13 +35,13 @@ public class ClientConnectionServiceImpl implements ClientConnectionService {
     private ClientConnectionCache connectionCache;
 
     @Autowired
-    private ClientAsduHandlerRegistryMap asduHandlerRegistryMap;
-
-    @Autowired
     private Client iec60870Client;
 
     @Autowired
     private Iec60870DeviceRepository iec60870DeviceRepository;
+
+    @Autowired
+    private ClientAsduHandlerRegistry clientAsduHandlerRegistry;
 
     @Override
     public ClientConnection getConnection(final RequestMetadata requestMetadata) throws ConnectionFailureException {
@@ -106,11 +106,11 @@ public class ClientConnectionServiceImpl implements ClientConnectionService {
 
         final ConnectionParameters connectionParameters = this.createConnectionParameters(device,
                 requestMetadata.getIpAddress());
-        final ResponseMetadata responseMetadata = ResponseMetadata.from(requestMetadata);
+        final ResponseMetadata responseMetadata = ResponseMetadata.from(requestMetadata, device.getDeviceType());
 
         final ClientConnectionEventListener eventListener = new ClientConnectionEventListener(
-                connectionParameters.getDeviceIdentification(), this.connectionCache,
-                this.getAsduHandlerRegistry(device), responseMetadata);
+                connectionParameters.getDeviceIdentification(), this.connectionCache, this.clientAsduHandlerRegistry,
+                responseMetadata);
 
         final ClientConnection newDeviceConnection = this.iec60870Client.connect(connectionParameters, eventListener);
 
@@ -126,10 +126,6 @@ public class ClientConnectionServiceImpl implements ClientConnectionService {
             return e.getClientConnection();
         }
         return newDeviceConnection;
-    }
-
-    private ClientAsduHandlerRegistry getAsduHandlerRegistry(final Iec60870Device device) {
-        return this.asduHandlerRegistryMap.forDeviceType(device.getDeviceType());
     }
 
     private ConnectionParameters createConnectionParameters(final Iec60870Device device, final String ipAddress) {

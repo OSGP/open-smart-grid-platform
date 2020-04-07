@@ -49,8 +49,8 @@ public class ResponseSteps {
         verify(this.responseMessageSenderMock).send(argThat(new MeasurementReportTypeMatcher(typeId)));
     }
 
-    @Then("^I should send get status response messages to osgp core$")
-    public void iShouldSendGetStatusResponseMessagesToOsgpCore(final DataTable dataTable) throws Throwable {
+    @Then("^I should send get light sensor status response messages to osgp core$")
+    public void iShouldSendGetLightSensorStatusResponseMessagesToOsgpCore(final DataTable dataTable) throws Throwable {
         LOGGER.debug("Then I should send get status response messages to osgp core");
 
         final List<Map<String, String>> rows = dataTable.asMaps();

@@ -5,23 +5,16 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.protocol.iec60870.domain.distributionautomation;
+package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services;
 
 import java.util.EnumMap;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.ASduType;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientAsduHandler;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientAsduHandlerRegistry;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientAsduHandlerRegistryMap;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceType;
 import org.opensmartgridplatform.iec60870.Iec60870ASduHandlerNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -32,14 +25,9 @@ import org.springframework.stereotype.Component;
  *
  */
 @Component
-public class DistributionAutomationClientAsduHandlerRegistry implements ClientAsduHandlerRegistry {
+public class ClientAsduHandlerRegistryImpl implements ClientAsduHandlerRegistry {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DistributionAutomationClientAsduHandlerRegistry.class);
-
-    private static final DeviceType DEVICE_TYPE = DeviceType.DA_DEVICE;
-
-    @Autowired
-    private ClientAsduHandlerRegistryMap clientAsduHandlerRegistryMap;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClientAsduHandlerRegistryImpl.class);
 
     private final Map<ASduType, ClientAsduHandler> handlers = new EnumMap<>(ASduType.class);
 
@@ -57,12 +45,5 @@ public class DistributionAutomationClientAsduHandlerRegistry implements ClientAs
     @Override
     public void registerHandler(final ASduType asduType, final ClientAsduHandler clientAsduHandler) {
         this.handlers.put(asduType, clientAsduHandler);
-    }
-
-    @PostConstruct
-    public void addToRegistryMap() {
-        LOGGER.info("Adding asdu handler registry {} for device type {} to map.", this.getClass().getSimpleName(),
-                DEVICE_TYPE);
-        this.clientAsduHandlerRegistryMap.addClientAsduHandlerRegistry(DEVICE_TYPE, this);
     }
 }

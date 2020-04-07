@@ -5,15 +5,15 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.protocol.iec60870.domain.distributionautomation.asduhandlers;
+package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.asduhandlers;
 
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.ASduType;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.distributionautomation.DistributionAutomationClientAsduHandler;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.distributionautomation.MeasurementReportingService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.LogItemFactory;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.ResponseMetadataFactory;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.AsduConverterService;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientAsduHandlerImpl;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.DeviceResponseServiceMap;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.LoggingService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.LogItem;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseMetadata;
@@ -26,7 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Abstract class providing an implementation for handling Measurement ASDUs.
  *
  */
-public abstract class MeasurementAsduHandler extends DistributionAutomationClientAsduHandler {
+public abstract class MeasurementAsduHandler extends ClientAsduHandlerImpl {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MeasurementAsduHandler.class);
 
@@ -34,7 +34,7 @@ public abstract class MeasurementAsduHandler extends DistributionAutomationClien
     private AsduConverterService converter;
 
     @Autowired
-    private MeasurementReportingService reportingService;
+    private DeviceResponseServiceMap deviceResponseServiceMap;
 
     @Autowired
     private LoggingService loggingService;
@@ -56,7 +56,8 @@ public abstract class MeasurementAsduHandler extends DistributionAutomationClien
                 .createWithNewCorrelationUid(responseMetadata);
 
         final MeasurementReportDto measurementReportDto = this.converter.convert(asdu);
-        this.reportingService.send(measurementReportDto, newResponseMetadata);
+        this.deviceResponseServiceMap.forDeviceType(responseMetadata.getDeviceType())
+                .process(measurementReportDto, newResponseMetadata);
 
         final LogItem logItem = this.logItemFactory.create(asdu, newResponseMetadata, true);
         this.loggingService.log(logItem);

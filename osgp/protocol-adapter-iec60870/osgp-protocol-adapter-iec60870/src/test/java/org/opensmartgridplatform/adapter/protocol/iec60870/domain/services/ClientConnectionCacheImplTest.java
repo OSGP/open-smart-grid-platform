@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.protocol.iec60870.application.services;
+package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -17,7 +17,7 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.Clien
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionCacheImpl;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceConnection;
 
-public class Iec60870ClientConnectionCacheTest {
+public class ClientConnectionCacheImplTest {
 
     private final static String KEY = "TestKey";
 

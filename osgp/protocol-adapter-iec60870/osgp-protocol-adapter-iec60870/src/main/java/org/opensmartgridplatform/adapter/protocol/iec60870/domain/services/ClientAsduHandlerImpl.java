@@ -5,12 +5,11 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.protocol.iec60870.domain.distributionautomation;
+package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services;
 
 import javax.annotation.PostConstruct;
 
 import org.openmuc.j60870.ASduType;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientAsduHandler;
 import org.opensmartgridplatform.iec60870.Iec60870ASduHandlerRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,16 +21,16 @@ import org.springframework.beans.factory.annotation.Autowired;
  * registration of implementation classes to {@link Iec60870ASduHandlerRegistry}
  *
  */
-public abstract class DistributionAutomationClientAsduHandler implements ClientAsduHandler {
+public abstract class ClientAsduHandlerImpl implements ClientAsduHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DistributionAutomationClientAsduHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClientAsduHandlerImpl.class);
 
     @Autowired
-    private DistributionAutomationClientAsduHandlerRegistry iec60870ClientASduHandlerRegistry;
+    private ClientAsduHandlerRegistry iec60870ClientASduHandlerRegistry;
 
     private final ASduType asduType;
 
-    public DistributionAutomationClientAsduHandler(final ASduType asduType) {
+    public ClientAsduHandlerImpl(final ASduType asduType) {
         this.asduType = asduType;
     }
 

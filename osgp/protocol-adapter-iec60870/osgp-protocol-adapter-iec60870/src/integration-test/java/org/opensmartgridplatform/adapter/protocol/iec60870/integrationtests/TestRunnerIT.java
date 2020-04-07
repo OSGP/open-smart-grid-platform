@@ -15,6 +15,7 @@ import io.cucumber.junit.CucumberOptions.SnippetType;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(plugin = { "pretty" },
+        strict = true,
         features = "src/integration-test/resources/features/",
         snippets = SnippetType.CAMELCASE)
 public class TestRunnerIT {
