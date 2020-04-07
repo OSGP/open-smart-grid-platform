@@ -142,9 +142,11 @@ Feature: CoreDeviceInstallation Device Creating
   Scenario: Add New Device With Unknown Owner Organization
     Given a device model
       | ModelCode | Test Model |
+      | Manufacturer | Test |
     When receiving an add device request with an unknown organization
       | DeviceIdentification | TEST1024000000001 |
       | Owner                | org-test          |
+      | Manufacturer         | Test              |
     Then the add device response contains soap fault
       | FaultCode      | SOAP-ENV:Server                                                         |
       | FaultString    | UNKNOWN_ORGANISATION                                                    |
@@ -210,6 +212,7 @@ Feature: CoreDeviceInstallation Device Creating
       | DeviceType           | SSLD              |
     When receiving an add device request
       | DeviceIdentification | TEST1024000000001 |
+      | Manufacturer         | Test              |
     Then the add device response contains soap fault
       | Message | EXISTING_DEVICE |
 
@@ -219,5 +222,6 @@ Feature: CoreDeviceInstallation Device Creating
       | Enabled                    | false    |
     When receiving an add device request
       | DeviceIdentification | TEST1024000000001 |
+      | Manufacturer         | Test              |
     Then the add device response contains soap fault
       | Message | DISABLED_ORGANISATION |
