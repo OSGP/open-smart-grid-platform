@@ -10,14 +10,15 @@ Build de following modules:
 * osgp_adapter-domain-core
 * osgp-core
 * osgp-protocol-adapter-mqtt
+* osgp-protocol-simulator-mqtt
 
 e.g. with `mvn clean install`.
 Deploy the war files in Tomcat.
 
 Follow the README of `osgp-protocol-simulator-mqtt`. 
-This involves building the module and inserting a test RTU device in the osgp-core database.
+This involves inserting a test RTU device in the osgp-core database.
 
-Run the simulator, it will repeatedly publish MQTT messages as specified in its spec file.
+The simulator will repeatedly publish MQTT messages as specified in its `mqtt_simulator_spec.json` file.
 
 Start Tomcat with the war files built above. 
 

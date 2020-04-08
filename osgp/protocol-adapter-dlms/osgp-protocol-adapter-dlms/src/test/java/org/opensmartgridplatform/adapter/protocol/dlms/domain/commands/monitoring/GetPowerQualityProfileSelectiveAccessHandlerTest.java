@@ -1,4 +1,4 @@
-package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
+package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.monitoring;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -26,6 +26,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryDto;
 
 /**
  * Copyright 2019 Smart Society Services B.V.
@@ -36,7 +37,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityP
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 @ExtendWith(MockitoExtension.class)
-public class GetPowerQualityProfileCommandExecutorTest {
+public class GetPowerQualityProfileSelectiveAccessHandlerTest {
 
     @Mock
     private DlmsHelper dlmsHelper;
@@ -48,11 +49,11 @@ public class GetPowerQualityProfileCommandExecutorTest {
     private DlmsDevice dlmsDevice;
 
     @Test
-    public void testExecute() throws ProtocolAdapterException {
+    public void testHandlePrivateProfileWithoutSelectiveAccess() throws ProtocolAdapterException {
 
         // SETUP
 
-        GetPowerQualityProfileRequestDataDto requestDto = new GetPowerQualityProfileRequestDataDto("PUBLIC",
+        GetPowerQualityProfileRequestDataDto requestDto = new GetPowerQualityProfileRequestDataDto("PRIVATE",
                 Date.from(Instant.now().minus(2, ChronoUnit.DAYS)), new Date(), new ArrayList<>());
 
         when(dlmsHelper.getAndCheck(any(DlmsConnectionManager.class), any(DlmsDevice.class), any(String.class),
@@ -66,12 +67,14 @@ public class GetPowerQualityProfileCommandExecutorTest {
         when(dlmsHelper.readLong(any(DataObject.class), any(String.class))).thenCallRealMethod();
         when(dlmsHelper.convertDataObjectToDateTime(any(DataObject.class))).thenCallRealMethod();
         when(dlmsHelper.fromDateTimeValue(any())).thenCallRealMethod();
+        when(dlmsHelper.getClockDefinition()).thenCallRealMethod();
 
-        GetPowerQualityProfileCommandExecutor executor = new GetPowerQualityProfileCommandExecutor(dlmsHelper);
+        GetPowerQualityProfileSelectiveAccessHandler handler = new GetPowerQualityProfileSelectiveAccessHandler(
+                dlmsHelper);
 
         // EXECUTE
 
-        GetPowerQualityProfileResponseDto responseDto = executor.execute(conn, dlmsDevice, requestDto);
+        GetPowerQualityProfileResponseDto responseDto = handler.handle(conn, dlmsDevice, requestDto);
 
         // ASSERT
 
@@ -79,6 +82,10 @@ public class GetPowerQualityProfileCommandExecutorTest {
         assertThat(responseDto.getPowerQualityProfileResponseDatas().get(0).getCaptureObjects().size()).isEqualTo(3);
         assertThat(responseDto.getPowerQualityProfileResponseDatas().get(0).getProfileEntries().size()).isEqualTo(4);
 
+        for (ProfileEntryDto profileEntryDto : responseDto.getPowerQualityProfileResponseDatas().get(0)
+                                                          .getProfileEntries()) {
+            assertThat(profileEntryDto.getProfileEntryValues().size()).isEqualTo(3);
+        }
     }
 
     private List<GetResult> createProfileEntries() {
@@ -90,22 +97,13 @@ public class GetPowerQualityProfileCommandExecutorTest {
                                 0 }),
                 DataObject.newUInteger32Data(3), DataObject.newUInteger32Data(2));
 
-        DataObject structureData2 = DataObject
-                .newStructureData(DataObject.newNullData(), DataObject.newUInteger32Data(3),
-                        DataObject.newUInteger32Data(2));
-
-        DataObject structureData3 = DataObject
-                .newStructureData(DataObject.newNullData(), DataObject.newUInteger32Data(3),
-                        DataObject.newUInteger32Data(2));
-
-        DataObject structureData4 = DataObject
-                .newStructureData(DataObject.newNullData(), DataObject.newUInteger32Data(3),
-                        DataObject.newUInteger32Data(2));
-
         structures.add(structureData1);
-        structures.add(structureData2);
-        structures.add(structureData3);
-        structures.add(structureData4);
+        structures.add(DataObject.newStructureData(DataObject.newNullData(), DataObject.newUInteger32Data(3),
+                DataObject.newUInteger32Data(2)));
+        structures.add(DataObject.newStructureData(DataObject.newNullData(), DataObject.newUInteger32Data(3),
+                DataObject.newUInteger32Data(2)));
+        structures.add(DataObject.newStructureData(DataObject.newNullData(), DataObject.newUInteger32Data(3),
+                DataObject.newUInteger32Data(2)));
 
         GetResult getResult = new GetResultImpl(DataObject.newArrayData(structures));
 
@@ -118,10 +116,10 @@ public class GetPowerQualityProfileCommandExecutorTest {
                 DataObject.newOctetStringData(new byte[] { 0, 0, 1, 0, 0, (byte) 255 }), DataObject.newInteger32Data(2),
                 DataObject.newUInteger32Data(0));
         DataObject structureData2 = DataObject.newStructureData(DataObject.newUInteger32Data(1),
-                DataObject.newOctetStringData(new byte[] { 1, 0, 32, 32, 0, (byte) 255 }),
+                DataObject.newOctetStringData(new byte[] { 1, 0, 21, 4, 0, (byte) 255 }),
                 DataObject.newInteger32Data(2), DataObject.newUInteger32Data(0));
         DataObject structureData3 = DataObject.newStructureData(DataObject.newUInteger32Data(1),
-                DataObject.newOctetStringData(new byte[] { 1, 0, 52, 32, 0, (byte) 255 }),
+                DataObject.newOctetStringData(new byte[] { 1, 0, 23, 4, 0, (byte) 255 }),
                 DataObject.newInteger32Data(2), DataObject.newUInteger32Data(0));
 
         GetResult getResult = new GetResultImpl(
