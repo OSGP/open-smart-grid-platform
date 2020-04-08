@@ -29,6 +29,13 @@ public class DateTimeHelper {
     private static final String CET_TIMEZONE = "Europe/Paris";
 
     /**
+     * @return CET/CEST time zone based on ID {@value #CET_TIMEZONE}
+     */
+    public static DateTimeZone getCentralEuropeanTimeZone() {
+        return DateTimeZone.forID(CET_TIMEZONE);
+    }
+
+    /**
      * This is a generic method which will translate the given string to a
      * datetime. Supported:
      * <p>

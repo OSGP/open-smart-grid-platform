@@ -50,7 +50,7 @@
     <osgp.dlms.version>5.1.0-SNAPSHOT</osgp.dlms.version>
     <osgp.shared.version>5.1.0-SNAPSHOT</osgp.shared.version>
     <osgp.jasper-interface.version>5.1.0-SNAPSHOT</osgp.jasper-interface.version>
-    <spring.version>5.2.4.RELEASE</spring.version>
+    <spring.version>5.2.5.RELEASE</spring.version>
     <spring.data.version>2.2.3.RELEASE</spring.data.version>
     <spring.data.commons.version>2.2.3.RELEASE</spring.data.commons.version>
     <spring.security.version>5.3.0.RELEASE</spring.security.version>
@@ -60,21 +60,21 @@
     <spring.ws.version>3.0.8.RELEASE</spring.ws.version>
     <assertj.version>3.15.0</assertj.version>
     <xmlunit.version>1.6</xmlunit.version>
-    <mockito.core.version>3.3.0</mockito.core.version>
+    <mockito.core.version>3.3.3</mockito.core.version>
     <apache.wss4j.version>1.6.19</apache.wss4j.version>
     <servlet.version>4.0.1</servlet.version>
     <servlet.jstl.version>1.2</servlet.jstl.version>
-    <hibernate.version>5.4.12.Final</hibernate.version>
+    <hibernate.version>5.4.13.Final</hibernate.version>
     <hibernate.validator.version>6.1.2.Final</hibernate.validator.version>
     <hibernate.jpa.version>1.0.2.Final</hibernate.jpa.version>
     <javax.validation.api.version>2.0.1.Final</javax.validation.api.version>
-    <junit.version>5.6.0</junit.version>
-    <junit.platform.launcher.version>1.6.0</junit.platform.launcher.version>
-    <byte.buddy.version>1.10.8</byte.buddy.version>
+    <junit.version>5.6.1</junit.version>
+    <junit.platform.launcher.version>1.6.1</junit.platform.launcher.version>
+    <byte.buddy.version>1.10.9</byte.buddy.version>
     <joda.version>2.10.5</joda.version>
-    <flyway.version>6.3.0</flyway.version>
+    <flyway.version>6.3.2</flyway.version>
     <slf4j.version>1.7.30</slf4j.version>
-    <apache.commons.lang.version>3.9</apache.commons.lang.version>
+    <apache.commons.lang.version>3.10</apache.commons.lang.version>
     <apache.commons.text.version>1.8</apache.commons.text.version>
     <apache.httpcomponents.version>4.5.12</apache.httpcomponents.version>
     <apache.httpcomponents.httpcore.version>4.4.13</apache.httpcomponents.httpcore.version>
@@ -83,7 +83,7 @@
     <jxr.version>3.0.0</jxr.version>
     <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
     <maven.site.plugin>3.9.0</maven.site.plugin>
-    <maven.javadoc.version>3.1.1</maven.javadoc.version>
+    <maven.javadoc.version>3.2.0</maven.javadoc.version>
     <maven.jar.plugin.version>3.2.0</maven.jar.plugin.version>
     <maven.war.plugin.version>3.2.3</maven.war.plugin.version>
     <maven.surefire.plugin.version>3.0.0-M4</maven.surefire.plugin.version>
@@ -95,14 +95,14 @@
     <spotbugs.maven.plugin.version>3.1.12.2</spotbugs.maven.plugin.version>
     <pmd.maven.plugin.version>3.13.0</pmd.maven.plugin.version>
     <checkstyle.maven.plugin.version>3.1.1</checkstyle.maven.plugin.version>
-    <dependency-check.maven.plugin.version>5.3.1</dependency-check.maven.plugin.version>
+    <dependency-check.maven.plugin.version>5.3.2</dependency-check.maven.plugin.version>
     <versions.maven.plugin.version>2.7</versions.maven.plugin.version>
-    <apache.activemq.version>5.15.11</apache.activemq.version>
+    <apache.activemq.version>5.15.12</apache.activemq.version>
     <logback.version>1.2.3</logback.version>
     <logback.ext.version>0.1.5</logback.ext.version>
     <apache.commons.schema>2.2.5</apache.commons.schema>
     <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
-    <netty.version>4.1.47.Final</netty.version>
+    <netty.version>4.1.48.Final</netty.version>
     <openmuc.jdlms.version>1.6.0</openmuc.jdlms.version>
     <beanit.openiec61850.version>1.8.0</beanit.openiec61850.version>
     <openmuc.j60870.version>1.3.1</openmuc.j60870.version>
@@ -111,14 +111,14 @@
     <license.maven.plugin>3.0</license.maven.plugin>
     <jackson.version>2.10.3</jackson.version>
     <jackson-databind.version>2.10.3</jackson-databind.version>
-    <cxf.version>3.3.5</cxf.version>
+    <cxf.version>3.3.6</cxf.version>
     <quartz.version>2.3.2</quartz.version>
     <hikaricp.version>3.4.2</hikaricp.version>
-    <micrometer.version>1.3.5</micrometer.version>
+    <micrometer.version>1.4.1</micrometer.version>
     <protobuf.version>2.4.1</protobuf.version>
     <protobuf.maven.plugin>0.6.5</protobuf.maven.plugin>
     <guava.version>28.2-jre</guava.version>
-    <spotbugs.version>4.0.0</spotbugs.version>
+    <spotbugs.version>4.0.1</spotbugs.version>
     <jacoco.version>0.8.5</jacoco.version>
     <selenium.java.version>3.141.59</selenium.java.version>
     <SunriseSunsetCalculator.version>1.2</SunriseSunsetCalculator.version>

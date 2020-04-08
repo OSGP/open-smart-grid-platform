@@ -74,7 +74,7 @@ public class FirmwareModule implements Comparable<FirmwareModule>, Serializable 
         return String.format("FirmwareModule[%s]", this.description);
     }
 
-    public final Long getId() {
+    public Long getId() {
         return this.id;
     }
 
