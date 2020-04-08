@@ -31,7 +31,7 @@ public class Iec60870AsduGeneratorService {
      *            Generator for the value.
      */
     public Iec60870AsduGeneratorService(final Iec60870ConnectionRegistry connectionRegistry,
-            final Iec60870ASduGenerator asduGenerator) {
+            final Iec60870AsduGenerator asduGenerator) {
 
         LOGGER.info("Creating a 'generate once' generator");
         new RunnableTask(connectionRegistry, asduGenerator).run();
@@ -49,7 +49,7 @@ public class Iec60870AsduGeneratorService {
      *            Generator for the values.
      */
     public Iec60870AsduGeneratorService(final Iec60870ConnectionRegistry connectionRegistry,
-            final CronTrigger cronTrigger, final Iec60870ASduGenerator asduGenerator) {
+            final CronTrigger cronTrigger, final Iec60870AsduGenerator asduGenerator) {
 
         LOGGER.info("Creating a 'periodic' generator");
         this.getThreadPoolTaskScheduler().schedule(new RunnableTask(connectionRegistry, asduGenerator), cronTrigger);
@@ -67,10 +67,10 @@ public class Iec60870AsduGeneratorService {
     private class RunnableTask implements Runnable {
 
         private Iec60870ConnectionRegistry connectionRegistry;
-        private Iec60870ASduGenerator asduFactory;
+        private Iec60870AsduGenerator asduFactory;
 
         public RunnableTask(final Iec60870ConnectionRegistry connectionRegistry,
-                final Iec60870ASduGenerator asduFactory) {
+                final Iec60870AsduGenerator asduFactory) {
             this.connectionRegistry = connectionRegistry;
             this.asduFactory = asduFactory;
         }

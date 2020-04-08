@@ -121,6 +121,7 @@
             <xsd:enumeration value="PERIODIC"/>
             <xsd:enumeration value="BACKGROUND_SCAN"/>
             <xsd:enumeration value="SPONTANEOUS"/>
+            <xsd:enumeration value="INTERROGATED_BY_STATION"/>
         </xsd:restriction>
     </xsd:simpleType>
 

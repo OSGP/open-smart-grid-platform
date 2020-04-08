@@ -9,11 +9,11 @@ package org.opensmartgridplatform.simulator.protocol.iec60870;
 
 import java.util.TimeZone;
 
-import org.opensmartgridplatform.iec60870.Iec60870ASduHandlerRegistry;
+import org.opensmartgridplatform.iec60870.Iec60870AsduHandlerRegistry;
 import org.opensmartgridplatform.iec60870.Iec60870ConnectionRegistry;
 import org.opensmartgridplatform.iec60870.Iec60870Server;
 import org.opensmartgridplatform.iec60870.Iec60870ServerEventListener;
-import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870ASduGenerator;
+import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870AsduGenerator;
 import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870AsduGeneratorService;
 import org.opensmartgridplatform.simulator.protocol.iec60870.domain.SimpleShortFloatingPointMeasurementAsduGenerator;
 import org.slf4j.Logger;
@@ -48,11 +48,11 @@ public class Iec60870SimulatorConfig {
 
     @Bean(destroyMethod = "stop")
     public Iec60870Server iec60870Server(final Iec60870ConnectionRegistry iec60870ConnectionRegistry,
-            final Iec60870ASduHandlerRegistry iec60870ASduHandlerRegistry) {
+            final Iec60870AsduHandlerRegistry iec60870AsduHandlerRegistry) {
         LOGGER.debug("Creating IEC60870 Simulator Bean.");
 
         final Iec60870Server server = new Iec60870Server(new Iec60870ServerEventListener(iec60870ConnectionRegistry,
-                iec60870ASduHandlerRegistry, this.connectionTimeout), this.port);
+                iec60870AsduHandlerRegistry, this.connectionTimeout), this.port);
 
         LOGGER.debug("Starting IEC60870 Simulator.");
         server.start();
@@ -72,7 +72,7 @@ public class Iec60870SimulatorConfig {
         LOGGER.info("ASDU generator in simulator is enabled");
 
         final CronTrigger cronTrigger = new CronTrigger(this.cronExpression, TimeZone.getTimeZone("UTC"));
-        final Iec60870ASduGenerator generator = new SimpleShortFloatingPointMeasurementAsduGenerator();
+        final Iec60870AsduGenerator generator = new SimpleShortFloatingPointMeasurementAsduGenerator();
 
         return new Iec60870AsduGeneratorService(iec60870ConnectionRegistry, cronTrigger, generator);
     }
