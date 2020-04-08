@@ -31,7 +31,7 @@ public class Iec60870AsduHandlerRegistry {
 
     public Iec60870AsduHandler getHandler(final ASduType asduType) throws Iec60870AsduHandlerNotFoundException {
         if (!this.handlers.containsKey(asduType)) {
-            LOGGER.error("No ASDU handler found for type Id {}", asduType);
+            LOGGER.error("No ASDU handler found for ASDU type {}", asduType);
             throw new Iec60870AsduHandlerNotFoundException(asduType);
         }
         return this.handlers.get(asduType);
