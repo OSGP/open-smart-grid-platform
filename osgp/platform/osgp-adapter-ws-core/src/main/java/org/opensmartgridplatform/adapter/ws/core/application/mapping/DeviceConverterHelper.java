@@ -150,6 +150,9 @@ class DeviceConverterHelper<T extends org.opensmartgridplatform.domain.core.enti
             destination.setDeviceModel(deviceModel);
         }
 
+        destination.setLastCommunicationTime(
+                this.convertDateToXMLGregorianCalendar(source.getLastSuccessfulConnectionTimestamp()));
+
         if (source instanceof LightMeasurementDevice) {
             final LightMeasurementDevice sourceLmd = (LightMeasurementDevice) source;
             final org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.LightMeasurementDevice destinationLmd = new org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.LightMeasurementDevice();
