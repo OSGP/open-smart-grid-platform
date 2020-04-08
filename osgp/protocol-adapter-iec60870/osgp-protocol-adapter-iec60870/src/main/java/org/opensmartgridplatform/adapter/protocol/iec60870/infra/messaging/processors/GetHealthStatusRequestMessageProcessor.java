@@ -60,9 +60,9 @@ public class GetHealthStatusRequestMessageProcessor extends AbstractMessageProce
             this.getLoggingService().log(logItem);
 
         } catch (final IOException | RuntimeException e) {
-            final String message = String.format("Requesting the health status for device %s failed with error %s",
-                    deviceIdentification, e.getMessage());
-            throw new ProtocolAdapterException(ComponentType.PROTOCOL_IEC60870, message);
+            final String message = String.format("Requesting the health status for device %s failed",
+                    deviceIdentification);
+            throw new ProtocolAdapterException(ComponentType.PROTOCOL_IEC60870, message, e);
         }
     }
 }
