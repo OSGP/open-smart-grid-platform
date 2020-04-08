@@ -25,13 +25,13 @@ public class Iec60870ServerEventListener implements ServerEventListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec60870ServerEventListener.class);
 
     private final Iec60870ConnectionRegistry iec60870ConnectionRegistry;
-    private final Iec60870ASduHandlerRegistry iec60870ASduHandlerRegistry;
+    private final Iec60870AsduHandlerRegistry iec60870AsduHandlerRegistry;
     private final int connectionTimeout;
 
     public Iec60870ServerEventListener(final Iec60870ConnectionRegistry iec60870ConnectionRegistry,
-            final Iec60870ASduHandlerRegistry iec60870ASduHandlerRegistry, final int connectionTimeout) {
+            final Iec60870AsduHandlerRegistry iec60870AsduHandlerRegistry, final int connectionTimeout) {
         this.iec60870ConnectionRegistry = iec60870ConnectionRegistry;
-        this.iec60870ASduHandlerRegistry = iec60870ASduHandlerRegistry;
+        this.iec60870AsduHandlerRegistry = iec60870AsduHandlerRegistry;
         this.connectionTimeout = connectionTimeout;
     }
 
@@ -42,7 +42,7 @@ public class Iec60870ServerEventListener implements ServerEventListener {
         try {
             LOGGER.info("Waiting for StartDT on connection ({}) for {} ms.", connection, this.connectionTimeout);
             connection.waitForStartDT(new Iec60870ConnectionEventListener(connection, this.iec60870ConnectionRegistry,
-                    this.iec60870ASduHandlerRegistry), this.connectionTimeout);
+                    this.iec60870AsduHandlerRegistry), this.connectionTimeout);
         } catch (final IOException e) {
             LOGGER.error("Exception occurred while connection ({}) was waiting for StartDT.", connection, e);
             return;

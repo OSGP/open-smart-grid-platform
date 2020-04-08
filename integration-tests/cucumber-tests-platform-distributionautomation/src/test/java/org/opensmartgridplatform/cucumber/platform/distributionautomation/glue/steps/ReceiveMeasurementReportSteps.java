@@ -14,10 +14,10 @@ import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.notifi
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.notification.NotificationType;
 import org.opensmartgridplatform.cucumber.platform.distributionautomation.mocks.iec60870.Iec60870MockServer;
 import org.opensmartgridplatform.cucumber.platform.distributionautomation.support.ws.distributionautomation.DistributionAutomationDeviceManagementClient;
-import org.opensmartgridplatform.iec60870.Iec60870ASduHandler;
+import org.opensmartgridplatform.iec60870.Iec60870AsduHandler;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
-import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870ASduFactory;
-import org.opensmartgridplatform.simulator.protocol.iec60870.server.handlers.Iec60870InterrogationCommandASduHandler;
+import org.opensmartgridplatform.simulator.protocol.iec60870.domain.profile.DefaultControlledStationAsduFactory;
+import org.opensmartgridplatform.simulator.protocol.iec60870.server.handlers.Iec60870InterrogationCommandAsduHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,10 +52,19 @@ public class ReceiveMeasurementReportSteps {
                 response.getAsyncResponse().getCorrelationUid());
     }
 
-    private Iec60870ASduHandler getInterrogationCommandASduHandler() {
-        final Iec60870ASduFactory iec60870AsduFactory = new Iec60870ASduFactory();
+    private Iec60870AsduHandler getInterrogationCommandASduHandler() {
+        final DefaultControlledStationAsduFactory iec60870AsduFactory = new DefaultControlledStationAsduFactory();
 
-        return new Iec60870InterrogationCommandASduHandler(iec60870AsduFactory);
+        /*
+         * These values should be read from a property file based on the active
+         * profile. Since that functionality hasn't been built yet, we set them
+         * this way.
+         */
+        // TODO: change this by reading the property file
+        iec60870AsduFactory.setIoa(new int[] { 9127, 9128 });
+        iec60870AsduFactory.setIev(new float[] { 10.0f, 20.5f });
+
+        return new Iec60870InterrogationCommandAsduHandler(iec60870AsduFactory);
     }
 
     @Then("^I get a measurement report for device (.+)$")

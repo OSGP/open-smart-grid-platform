@@ -12,7 +12,7 @@ import java.io.IOException;
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.ConnectionEventListener;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseMetadata;
-import org.opensmartgridplatform.iec60870.Iec60870ASduHandlerNotFoundException;
+import org.opensmartgridplatform.iec60870.Iec60870AsduHandlerNotFoundException;
 import org.opensmartgridplatform.iec60870.Iec60870ConnectionEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,10 +38,10 @@ public class ClientConnectionEventListener implements ConnectionEventListener {
     public void newASdu(final ASdu asdu) {
         LOGGER.info("Received incoming ASDU {} from device {}", asdu, this.deviceIdentification);
         try {
-            final ClientAsduHandler aSduHandler = this.asduHandlerRegistry.getHandler(asdu);
-            aSduHandler.handleAsdu(asdu, this.responseMetadata);
+            final ClientAsduHandler asduHandler = this.asduHandlerRegistry.getHandler(asdu);
+            asduHandler.handleAsdu(asdu, this.responseMetadata);
 
-        } catch (final Iec60870ASduHandlerNotFoundException e) {
+        } catch (final Iec60870AsduHandlerNotFoundException e) {
             LOGGER.error("Unknown request received, no handler available for ASDU: {}", asdu, e);
         } catch (final Exception e) {
             LOGGER.error("Exception occurred while handling an incoming ASDU from device {}.",

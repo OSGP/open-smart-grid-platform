@@ -11,23 +11,23 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmuc.j60870.ASduType;
 
-public class Iec60870ASduHandlerRegistryTest {
-    private Iec60870ASduHandlerRegistry iec60870ASduHandlerRegistry;
+public class Iec60870AsduHandlerRegistryTest {
+    private Iec60870AsduHandlerRegistry iec60870AsduHandlerRegistry;
 
     @BeforeEach
     public void setup() {
-        this.iec60870ASduHandlerRegistry = new Iec60870ASduHandlerRegistry();
+        this.iec60870AsduHandlerRegistry = new Iec60870AsduHandlerRegistry();
     }
 
     @Test
-    public void getHandlerShouldReturnHandlerWhenPresent() throws Iec60870ASduHandlerNotFoundException {
+    public void getHandlerShouldReturnHandlerWhenPresent() throws Iec60870AsduHandlerNotFoundException {
         // Arrange
         final ASduType typeId = ASduType.M_ME_TF_1;
-        final Iec60870ASduHandler expected = mock(Iec60870ASduHandler.class);
-        this.iec60870ASduHandlerRegistry.registerHandler(typeId, expected);
+        final Iec60870AsduHandler expected = mock(Iec60870AsduHandler.class);
+        this.iec60870AsduHandlerRegistry.registerHandler(typeId, expected);
 
         // Act
-        final Iec60870ASduHandler actual = this.iec60870ASduHandlerRegistry.getHandler(typeId);
+        final Iec60870AsduHandler actual = this.iec60870AsduHandlerRegistry.getHandler(typeId);
 
         // Assert
         assertThat(actual).isEqualTo(expected);
@@ -37,10 +37,10 @@ public class Iec60870ASduHandlerRegistryTest {
     public void getHandlerShouldThrowExceptionWhenNotPresent() {
         // Arrange
         final ASduType typeId = ASduType.M_ME_TF_1;
-        final Class<?> expected = Iec60870ASduHandlerNotFoundException.class;
+        final Class<?> expected = Iec60870AsduHandlerNotFoundException.class;
 
         // Act
-        final Throwable actual = catchThrowable(() -> this.iec60870ASduHandlerRegistry.getHandler(typeId));
+        final Throwable actual = catchThrowable(() -> this.iec60870AsduHandlerRegistry.getHandler(typeId));
 
         // Assert
         assertThat(actual).isInstanceOf(expected);

@@ -9,7 +9,7 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services;
 
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.ASduType;
-import org.opensmartgridplatform.iec60870.Iec60870ASduHandlerNotFoundException;
+import org.opensmartgridplatform.iec60870.Iec60870AsduHandlerNotFoundException;
 
 /**
  *
@@ -24,9 +24,9 @@ public interface ClientAsduHandlerRegistry {
      * @param asdu
      *            The {@link ASdu} for which to find a handler.
      * @return A {@link ClientAsduHandler} instance.
-     * @throws Iec60870ASduHandlerNotFoundException
+     * @throws Iec60870AsduHandlerNotFoundException
      */
-    ClientAsduHandler getHandler(ASdu asdu) throws Iec60870ASduHandlerNotFoundException;
+    ClientAsduHandler getHandler(ASdu asdu) throws Iec60870AsduHandlerNotFoundException;
 
     /**
      * Register a handler.

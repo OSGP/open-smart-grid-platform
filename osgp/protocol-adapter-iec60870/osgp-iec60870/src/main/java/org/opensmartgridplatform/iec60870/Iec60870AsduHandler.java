@@ -21,23 +21,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * Abstract class providing an abstract method for ASdu handling (each type of
  * ASdu will have a specific ASdu Handler implementation) and automatic
- * registration of implementation classes to {@link Iec60870ASduHandlerRegistry}
+ * registration of implementation classes to {@link Iec60870AsduHandlerRegistry}
  *
  */
-public abstract class Iec60870ASduHandler {
+public abstract class Iec60870AsduHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Iec60870ASduHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Iec60870AsduHandler.class);
 
     @Autowired
-    private Iec60870ASduHandlerRegistry iec60870ASduHandlerRegistry;
+    private Iec60870AsduHandlerRegistry iec60870AsduHandlerRegistry;
 
     private final ASduType asduType;
 
-    public Iec60870ASduHandler(final ASduType asduType) {
+    public Iec60870AsduHandler(final ASduType asduType) {
         this.asduType = asduType;
     }
 
-    public abstract void handleASdu(Connection t, ASdu u) throws IOException;
+    public abstract void handleAsdu(Connection t, ASdu u) throws IOException;
 
     public ASduType getAsduType() {
         return this.asduType;
@@ -45,7 +45,7 @@ public abstract class Iec60870ASduHandler {
 
     @PostConstruct
     protected void register() {
-        LOGGER.info("Registering ASdu Handler {}", this.getClass().getSimpleName());
-        this.iec60870ASduHandlerRegistry.registerHandler(this.asduType, this);
+        LOGGER.info("Registering ASDU Handler {}", this.getClass().getSimpleName());
+        this.iec60870AsduHandlerRegistry.registerHandler(this.asduType, this);
     }
 }

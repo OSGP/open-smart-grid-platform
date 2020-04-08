@@ -12,9 +12,9 @@ import org.openmuc.j60870.ASduType;
 import org.openmuc.j60870.CauseOfTransmission;
 import org.openmuc.j60870.ie.InformationObject;
 
-public class Iec60870ASduBuilder {
+public class Iec60870AsduBuilder {
 
-    private ASduType typeId = ASduType.M_ME_NB_1;
+    private ASduType asduType = ASduType.M_ME_NB_1;
     private boolean sequenceOfElements = false;
     private CauseOfTransmission causeOfTransmission = CauseOfTransmission.SPONTANEOUS;
     private boolean test = false;
@@ -23,48 +23,48 @@ public class Iec60870ASduBuilder {
     private int commonAddress = 1;
     private InformationObject[] informationObjects;
 
-    public Iec60870ASduBuilder withTypeId(final ASduType asduType) {
-        this.typeId = asduType;
+    public Iec60870AsduBuilder withAsduType(final ASduType asduType) {
+        this.asduType = asduType;
         return this;
     }
 
-    public Iec60870ASduBuilder withSequenceOfElements(final boolean sequenceOfElements) {
+    public Iec60870AsduBuilder withSequenceOfElements(final boolean sequenceOfElements) {
         this.sequenceOfElements = sequenceOfElements;
         return this;
     }
 
-    public Iec60870ASduBuilder withCauseOfTransmission(final CauseOfTransmission causeOfTransmission) {
+    public Iec60870AsduBuilder withCauseOfTransmission(final CauseOfTransmission causeOfTransmission) {
         this.causeOfTransmission = causeOfTransmission;
         return this;
     }
 
-    public Iec60870ASduBuilder withTest(final boolean test) {
+    public Iec60870AsduBuilder withTest(final boolean test) {
         this.test = test;
         return this;
     }
 
-    public Iec60870ASduBuilder withNegativeConfirm(final boolean negativeConfirm) {
+    public Iec60870AsduBuilder withNegativeConfirm(final boolean negativeConfirm) {
         this.negativeConfirm = negativeConfirm;
         return this;
     }
 
-    public Iec60870ASduBuilder withOriginatorAddress(final int originatorAddress) {
+    public Iec60870AsduBuilder withOriginatorAddress(final int originatorAddress) {
         this.originatorAddress = originatorAddress;
         return this;
     }
 
-    public Iec60870ASduBuilder withCommonAddress(final int commonAddress) {
+    public Iec60870AsduBuilder withCommonAddress(final int commonAddress) {
         this.commonAddress = commonAddress;
         return this;
     }
 
-    public Iec60870ASduBuilder withInformationObjects(final InformationObject[] informationObjects) {
+    public Iec60870AsduBuilder withInformationObjects(final InformationObject[] informationObjects) {
         this.informationObjects = informationObjects.clone();
         return this;
     }
 
     public ASdu build() {
-        return new ASdu(this.typeId, this.sequenceOfElements, this.causeOfTransmission, this.test, this.negativeConfirm,
+        return new ASdu(this.asduType, this.sequenceOfElements, this.causeOfTransmission, this.test, this.negativeConfirm,
                 this.originatorAddress, this.commonAddress, this.informationObjects);
     }
 }
