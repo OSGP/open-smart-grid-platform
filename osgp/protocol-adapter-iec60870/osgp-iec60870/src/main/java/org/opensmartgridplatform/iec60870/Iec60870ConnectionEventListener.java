@@ -40,14 +40,14 @@ public class Iec60870ConnectionEventListener implements ConnectionEventListener 
     }
 
     @Override
-    public void newASdu(final ASdu aSdu) {
+    public void newASdu(final ASdu asdu) {
         try {
-            final ASduType asduType = aSdu.getTypeIdentification();
-            final Iec60870AsduHandler aSduHandler = this.iec60870AsduHandlerRegistry.getHandler(asduType);
-            aSduHandler.handleAsdu(this.connection, aSdu);
+            final ASduType asduType = asdu.getTypeIdentification();
+            final Iec60870AsduHandler asduHandler = this.iec60870AsduHandlerRegistry.getHandler(asduType);
+            asduHandler.handleAsdu(this.connection, asdu);
 
         } catch (final Iec60870AsduHandlerNotFoundException e) {
-            LOGGER.error("Unknown request received, no handler available for ASdu: {}", aSdu.toString(), e);
+            LOGGER.error("Unknown request received, no handler available for ASDU: {}", asdu.toString(), e);
         } catch (final EOFException e) {
             LOGGER.error("Connection closed on connection ({}).", this.connection, e);
         } catch (final Exception e) {

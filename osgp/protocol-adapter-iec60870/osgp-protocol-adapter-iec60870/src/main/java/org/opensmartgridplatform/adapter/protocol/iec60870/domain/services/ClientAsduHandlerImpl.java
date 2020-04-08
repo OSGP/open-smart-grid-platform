@@ -16,8 +16,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * Abstract class providing an abstract method for ASdu handling (each type of
- * ASdu will have a specific ASdu Handler implementation) and automatic
+ * Abstract class providing an abstract method for ASDU handling (each type of
+ * ASDU will have a specific ASDU Handler implementation) and automatic
  * registration of implementation classes to {@link Iec60870AsduHandlerRegistry}
  *
  */
@@ -40,7 +40,7 @@ public abstract class ClientAsduHandlerImpl implements ClientAsduHandler {
 
     @PostConstruct
     protected void register() {
-        LOGGER.info("Registering Asdu Handler {}", this.getClass().getSimpleName());
+        LOGGER.info("Registering ASDU Handler {}", this.getClass().getSimpleName());
         this.iec60870ClientAsduHandlerRegistry.registerHandler(this.asduType, this);
     }
 }

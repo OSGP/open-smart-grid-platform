@@ -61,12 +61,12 @@ public class Iec60870ConnectionEventListenerTest {
     @Test
     public void interrogationCommandShouldBeHandledByInterrogationCommandHandler() throws Exception {
         // Arrange
-        final ASdu aSdu = this.iec60870AsduFactory.createInterrogationCommandAsdu();
+        final ASdu asdu = this.iec60870AsduFactory.createInterrogationCommandAsdu();
         when(this.iec60870AsduHandlerRegistry.getHandler(ASduType.C_IC_NA_1))
                 .thenReturn(this.interrogationCommandHandler);
 
         // Act
-        this.iec60870ConnectionEventListener.newASdu(aSdu);
+        this.iec60870ConnectionEventListener.newASdu(asdu);
 
         // Assert
         verify(this.interrogationCommandHandler).handleAsdu(any(Connection.class), any(ASdu.class));
@@ -75,14 +75,14 @@ public class Iec60870ConnectionEventListenerTest {
     @Test
     public void singleCommandShouldBeHandledBySingleCommandHandler() throws Exception {
         // Arrange
-        final ASdu aSdu = this.iec60870AsduFactory.createSingleCommandAsdu();
+        final ASdu asdu = this.iec60870AsduFactory.createSingleCommandAsdu();
         when(this.iec60870AsduHandlerRegistry.getHandler(ASduType.C_SC_NA_1)).thenReturn(this.singleCommandHandler);
 
         // Act
-        this.iec60870ConnectionEventListener.newASdu(aSdu);
+        this.iec60870ConnectionEventListener.newASdu(asdu);
 
         // Assert
-        Mockito.verify(this.singleCommandHandler, Mockito.times(1)).handleAsdu(this.connection, aSdu);
+        Mockito.verify(this.singleCommandHandler, Mockito.times(1)).handleAsdu(this.connection, asdu);
     }
 
 }

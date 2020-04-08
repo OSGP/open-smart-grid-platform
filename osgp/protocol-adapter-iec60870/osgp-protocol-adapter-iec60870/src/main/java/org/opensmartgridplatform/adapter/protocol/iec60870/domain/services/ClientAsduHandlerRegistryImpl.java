@@ -36,7 +36,7 @@ public class ClientAsduHandlerRegistryImpl implements ClientAsduHandlerRegistry 
         final ASduType asduType = asdu.getTypeIdentification();
         final ClientAsduHandler handler = this.handlers.get(asduType);
         if (handler == null) {
-            LOGGER.error("No ASdu handler found for Asdu type {}", asduType);
+            LOGGER.error("No ASDU handler found for ASDU type {}", asduType);
             throw new Iec60870AsduHandlerNotFoundException(asduType);
         }
         return handler;

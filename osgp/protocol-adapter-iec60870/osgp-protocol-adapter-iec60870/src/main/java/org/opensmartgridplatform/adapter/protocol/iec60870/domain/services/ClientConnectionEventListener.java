@@ -38,8 +38,8 @@ public class ClientConnectionEventListener implements ConnectionEventListener {
     public void newASdu(final ASdu asdu) {
         LOGGER.info("Received incoming ASDU {} from device {}", asdu, this.deviceIdentification);
         try {
-            final ClientAsduHandler aSduHandler = this.asduHandlerRegistry.getHandler(asdu);
-            aSduHandler.handleAsdu(asdu, this.responseMetadata);
+            final ClientAsduHandler asduHandler = this.asduHandlerRegistry.getHandler(asdu);
+            asduHandler.handleAsdu(asdu, this.responseMetadata);
 
         } catch (final Iec60870AsduHandlerNotFoundException e) {
             LOGGER.error("Unknown request received, no handler available for ASDU: {}", asdu, e);

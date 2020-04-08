@@ -45,7 +45,7 @@ public abstract class Iec60870AsduHandler {
 
     @PostConstruct
     protected void register() {
-        LOGGER.info("Registering Asdu Handler {}", this.getClass().getSimpleName());
+        LOGGER.info("Registering ASDU Handler {}", this.getClass().getSimpleName());
         this.iec60870AsduHandlerRegistry.registerHandler(this.asduType, this);
     }
 }

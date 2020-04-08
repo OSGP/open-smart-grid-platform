@@ -27,7 +27,7 @@ public class Iec60870SingleCommandAsduHandler extends Iec60870AsduHandler {
     }
 
     @Override
-    public void handleAsdu(final Connection connection, final ASdu aSdu) throws IOException {
+    public void handleAsdu(final Connection connection, final ASdu asdu) throws IOException {
         LOGGER.info("Received single command. Not implemented yet.");
         throw new UnsupportedOperationException();
     }
