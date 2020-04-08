@@ -9,6 +9,7 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.asdu
 
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.ASduType;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.exceptions.AsduHandlerException;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.LogItemFactory;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.ResponseMetadataFactory;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.AsduConverterService;
@@ -50,7 +51,7 @@ public abstract class MeasurementAsduHandler extends ClientAsduHandlerImpl {
     }
 
     @Override
-    public void handleAsdu(final ASdu asdu, final ResponseMetadata responseMetadata) {
+    public void handleAsdu(final ASdu asdu, final ResponseMetadata responseMetadata) throws AsduHandlerException {
         LOGGER.info("Received measurement of type {}.", asdu.getTypeIdentification());
         final ResponseMetadata newResponseMetadata = this.responseMetadataFactory
                 .createWithNewCorrelationUid(responseMetadata);

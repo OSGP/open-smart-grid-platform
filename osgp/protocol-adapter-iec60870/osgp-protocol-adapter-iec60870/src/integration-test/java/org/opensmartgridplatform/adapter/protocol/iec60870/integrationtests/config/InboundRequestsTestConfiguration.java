@@ -15,6 +15,7 @@ import org.apache.activemq.jms.pool.PooledConnectionFactory;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.DeviceRequestMessageListener;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.processors.ConnectRequestMessageProcessor;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.processors.GetHealthStatusRequestMessageProcessor;
+import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.processors.GetLightSensorStatusRequestMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.springframework.context.annotation.Bean;
@@ -46,5 +47,10 @@ public class InboundRequestsTestConfiguration {
     @Bean
     public GetHealthStatusRequestMessageProcessor getHealthStatusRequestMessageProcessor() {
         return new GetHealthStatusRequestMessageProcessor();
+    }
+
+    @Bean
+    public GetLightSensorStatusRequestMessageProcessor getLightSensorStatusRequestMessageProcessor() {
+        return new GetLightSensorStatusRequestMessageProcessor();
     }
 }

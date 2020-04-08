@@ -11,11 +11,11 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.application.services
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.Iec60870DeviceFactory.KEY_DEVICE_IDENTIFICATION;
-import static org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.Iec60870DeviceFactory.KEY_DEVICE_TYPE;
-import static org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.Iec60870DeviceFactory.KEY_GATEWAY_DEVICE_IDENTIFICATION;
-import static org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.Iec60870DeviceFactory.KEY_INFORMATION_OBJECT_ADDRESS;
-import static org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.Iec60870DeviceFactory.fromSettings;
+import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.factories.Iec60870DeviceFactory.KEY_DEVICE_IDENTIFICATION;
+import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.factories.Iec60870DeviceFactory.KEY_DEVICE_TYPE;
+import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.factories.Iec60870DeviceFactory.KEY_GATEWAY_DEVICE_IDENTIFICATION;
+import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.factories.Iec60870DeviceFactory.KEY_INFORMATION_OBJECT_ADDRESS;
+import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.factories.Iec60870DeviceFactory.fromSettings;
 
 import java.util.Arrays;
 import java.util.HashMap;

@@ -31,7 +31,7 @@ public class MockedDeviceSteps {
     private Connection connection;
 
     @Given("a process image on the controlled station")
-    public void processImageOnTheControlledStation(final DataTable datatable) throws Throwable {
+    public void givenAProcessImageOnTheControlledStation(final DataTable datatable) throws Throwable {
 
         final ProcessImage processImage = ProcessImage.fromDataTable(datatable);
 

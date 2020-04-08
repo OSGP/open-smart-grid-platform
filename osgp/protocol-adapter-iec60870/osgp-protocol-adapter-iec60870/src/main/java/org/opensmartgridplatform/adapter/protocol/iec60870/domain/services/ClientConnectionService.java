@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services;
 
+import org.openmuc.j60870.Connection;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.RequestMetadata;
 import org.opensmartgridplatform.shared.exceptionhandling.ConnectionFailureException;
 
@@ -20,6 +21,24 @@ public interface ClientConnectionService {
      * @throws ConnectionFailureException
      */
     ClientConnection getConnection(RequestMetadata requestMetadata) throws ConnectionFailureException;
+
+    /**
+     * Closes the {@link Connection}, sends a disconnect request and closes the
+     * socket.
+     *
+     * @param deviceIdentification
+     *            Device for which to close the connection.
+     */
+    void disconnect(String deviceIdentification);
+
+    /**
+     * Closes the {@link Connection}, sends a disconnect request and closes the
+     * socket.
+     *
+     * @param deviceIdentification
+     *            Device for which to close the connection.
+     */
+    void disconnect(ClientConnection connection);
 
     /**
      * Close all connections.

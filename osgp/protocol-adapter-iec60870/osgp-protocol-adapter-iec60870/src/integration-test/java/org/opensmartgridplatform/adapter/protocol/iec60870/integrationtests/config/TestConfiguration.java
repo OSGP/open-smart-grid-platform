@@ -17,6 +17,7 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.
 import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.Iec60870LightMeasurementService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.Iec60870LoggingService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.Iec60870MeasurementReportingService;
+import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.LightMeasurementDeviceResponseService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.LightMeasurementGatewayDeviceResponseService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.ResponseMetadataFactory;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.repositories.Iec60870DeviceRepository;
@@ -151,6 +152,11 @@ public class TestConfiguration {
     @Bean
     public DeviceResponseServiceMap deviceResponseServiceMap() {
         return new DeviceResponseServiceMap();
+    }
+
+    @Bean
+    public DeviceResponseService lightMeasurementDeviceResponseService() {
+        return new LightMeasurementDeviceResponseService();
     }
 
     @Bean

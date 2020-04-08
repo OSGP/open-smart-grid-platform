@@ -12,7 +12,6 @@ public class AsduMatcher implements ArgumentMatcher<ASdu> {
 
     @Override
     public boolean matches(final ASdu actualAsdu) {
-        // TODO add more checks
         if (actualAsdu.getTypeIdentification() != this.expectedAsdu.getTypeIdentification()) {
             return false;
         }

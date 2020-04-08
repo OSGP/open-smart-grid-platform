@@ -23,9 +23,9 @@ Feature: General Interrogation
       | LMD_2                 | ON           |
 
   Scenario: Send general interrogation command after receiving a get status request message from osgp core
-    Given an active connection with gateway device "GATEWAY_1"
-    When I receive a get light sensor status request message for device LMD_2 from osgp core
-    Then I should send a general interrogation command to the controlled station "GATEWAY_1"
+    Given an existing connection with IEC60870 device "GATEWAY_1" of type "LIGHT_MEASUREMENT_GATEWAY"
+    When I receive a get light sensor status request message for IEC60870 device "LMD_2" from osgp core
+    Then I should send a general interrogation command to device "GATEWAY_1"
     And I should send get light sensor status response messages to osgp core
       | device_identification | relay_status |
       | LMD_2                 | ON           |

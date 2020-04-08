@@ -7,12 +7,15 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.steps;
 
+import static java.util.stream.Collectors.toList;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.verify;
 
 import java.util.List;
 import java.util.Map;
 
+import org.mockito.internal.verification.Times;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.entities.Iec60870Device;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DomainInfo;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.DeviceResponseMessageSender;
@@ -22,6 +25,7 @@ import org.opensmartgridplatform.dto.valueobjects.LightSensorStatusDto;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,12 +54,29 @@ public class ResponseSteps {
     }
 
     @Then("^I should send get light sensor status response messages to osgp core$")
-    public void iShouldSendGetLightSensorStatusResponseMessagesToOsgpCore(final DataTable dataTable) throws Throwable {
+    public void thenIShouldSendGetLightSensorStatusResponseMessagesToOsgpCore(final DataTable dataTable)
+            throws Throwable {
         LOGGER.debug("Then I should send get status response messages to osgp core");
 
-        final List<Map<String, String>> rows = dataTable.asMaps();
+        final List<ProtocolResponseMessage> responseMessages = dataTable.asMaps()
+                .stream()
+                .map(m -> this.protocolResponseMessage(m))
+                .collect(toList());
 
-        rows.stream().map(m -> this.protocolResponseMessage(m)).forEach(this::verifyResponse);
+        this.verifyNumberOfResponseMessages(responseMessages.size());
+        this.verifyResponseMessages(responseMessages);
+    }
+
+    private void verifyNumberOfResponseMessages(final int rows) {
+        verify(this.responseMessageSenderMock, new Times(rows)).send(any(ResponseMessage.class));
+    }
+
+    private void verifyResponseMessages(final List<ProtocolResponseMessage> responseMessages) {
+        responseMessages.stream().forEach(this::verifyResponse);
+    }
+
+    private void verifyResponse(final ProtocolResponseMessage msg) {
+        verify(this.responseMessageSenderMock).send(argThat(new GetLightSensorStatusResponseMessageMatcher(msg)));
     }
 
     private ProtocolResponseMessage protocolResponseMessage(final Map<String, String> map) {
@@ -75,7 +96,4 @@ public class ResponseSteps {
                 .build();
     }
 
-    private void verifyResponse(final ProtocolResponseMessage msg) {
-        verify(this.responseMessageSenderMock).send(argThat(new GetLightSensorStatusResponseMessageMatcher(msg)));
-    }
 }

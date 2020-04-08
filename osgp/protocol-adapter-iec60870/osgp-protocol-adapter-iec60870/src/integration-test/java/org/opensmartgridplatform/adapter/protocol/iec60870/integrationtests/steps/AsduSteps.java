@@ -16,9 +16,9 @@ import org.openmuc.j60870.ASduType;
 import org.openmuc.j60870.CauseOfTransmission;
 import org.openmuc.j60870.Connection;
 import org.openmuc.j60870.ie.IeQualifierOfInterrogation;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.AsduFactory;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionCache;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceConnection;
+import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.factories.AsduFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +45,8 @@ public class AsduSteps {
     }
 
     @Then("^I should send a general interrogation command to device \"([^\"]*)\"$")
-    public void iShouldSendAGeneralInterrogationCommandToDevice(final String deviceIdentification) throws Throwable {
+    public void thenIShouldSendAGeneralInterrogationCommandToDevice(final String deviceIdentification)
+            throws Exception {
         LOGGER.debug("Then I should send a general interrogation command to device {}", deviceIdentification);
 
         final DeviceConnection deviceConnection = (DeviceConnection) this.clientConnectionCacheSpy

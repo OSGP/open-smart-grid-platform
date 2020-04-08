@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories;
+package org.opensmartgridplatform.adapter.protocol.iec60870.testutils.factories;
 
 import java.util.Map;
 import java.util.Optional;
@@ -31,7 +31,27 @@ public class Iec60870DeviceFactory {
         final Iec60870Device device = new Iec60870Device(deviceIdentification);
         device.setCommonAddress(Integer.parseInt(DEFAULT_COMMON_ADDRESS));
         device.setPort(Integer.parseInt(DEFAULT_PORT));
+        return device;
+    }
 
+    public static Iec60870Device createDistributionAutomationDevice(final String deviceIdentification) {
+        final Iec60870Device device = new Iec60870Device(deviceIdentification, DeviceType.DA_DEVICE);
+        device.setCommonAddress(Integer.parseInt(DEFAULT_COMMON_ADDRESS));
+        device.setPort(Integer.parseInt(DEFAULT_PORT));
+        return device;
+    }
+
+    public static Iec60870Device createLightMeasurementDevice(final String deviceIdentification,
+            final String gatewayDeviceIdentification) {
+        final Iec60870Device device = new Iec60870Device(deviceIdentification, DeviceType.LIGHT_MEASUREMENT_DEVICE);
+        device.setGatewayDeviceIdentification(gatewayDeviceIdentification);
+        return device;
+    }
+
+    public static Iec60870Device createLightMeasurementGatewayDevice(final String deviceIdentification) {
+        final Iec60870Device device = new Iec60870Device(deviceIdentification, DeviceType.LIGHT_MEASUREMENT_GATEWAY);
+        device.setCommonAddress(Integer.parseInt(DEFAULT_COMMON_ADDRESS));
+        device.setPort(Integer.parseInt(DEFAULT_PORT));
         return device;
     }
 

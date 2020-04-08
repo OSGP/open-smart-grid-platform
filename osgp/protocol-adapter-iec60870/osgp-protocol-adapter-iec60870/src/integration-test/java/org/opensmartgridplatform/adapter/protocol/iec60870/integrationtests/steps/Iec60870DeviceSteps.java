@@ -18,8 +18,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.entities.Iec60870Device;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.Iec60870DeviceFactory;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.repositories.Iec60870DeviceRepository;
+import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.factories.Iec60870DeviceFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.cucumber.datatable.DataTable;

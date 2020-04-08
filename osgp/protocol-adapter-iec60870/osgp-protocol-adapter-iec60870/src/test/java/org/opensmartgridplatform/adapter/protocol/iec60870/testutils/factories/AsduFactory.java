@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories;
+package org.opensmartgridplatform.adapter.protocol.iec60870.testutils.factories;
 
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.ASduType;

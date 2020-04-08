@@ -9,12 +9,15 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests;
 
 import static org.mockito.Mockito.reset;
 
+import org.openmuc.j60870.Connection;
+import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.DeviceResponseMessageSender;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.LogItemRequestMessageSender;
 import org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.config.InboundRequestsTestConfiguration;
 import org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.config.LogItemTestConfiguration;
 import org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.config.OutboundResponsesTestConfiguration;
 import org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.config.TestConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 
 import io.cucumber.java.Before;
@@ -26,8 +29,15 @@ public class TestContextConfiguration {
     @Autowired
     LogItemRequestMessageSender logItemRequestMessageSenderMock;
 
+    @Autowired
+    @Qualifier("protocolIec60870OutboundOsgpCoreResponsesMessageSender")
+    private DeviceResponseMessageSender responseMessageSenderMock;
+
+    @Autowired
+    private Connection connection;
+
     @Before
     public void resetContext() {
-        reset(this.logItemRequestMessageSenderMock);
+        reset(this.logItemRequestMessageSenderMock, this.responseMessageSenderMock, this.connection);
     }
 }

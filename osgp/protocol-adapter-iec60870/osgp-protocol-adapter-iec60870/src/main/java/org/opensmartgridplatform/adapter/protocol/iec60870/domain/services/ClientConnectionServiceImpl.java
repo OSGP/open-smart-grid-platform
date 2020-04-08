@@ -8,10 +8,10 @@
 package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services;
 
 import java.util.Collection;
+import java.util.function.Supplier;
 
 import javax.annotation.PreDestroy;
 
-import org.openmuc.j60870.Connection;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.entities.Iec60870Device;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.exceptions.ClientConnectionAlreadyInCacheException;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.repositories.Iec60870DeviceRepository;
@@ -46,45 +46,36 @@ public class ClientConnectionServiceImpl implements ClientConnectionService {
     @Override
     public ClientConnection getConnection(final RequestMetadata requestMetadata) throws ConnectionFailureException {
         final String deviceIdentification = requestMetadata.getDeviceIdentification();
-        final ClientConnection cachedDeviceConnection = this.connectionCache.getConnection(deviceIdentification);
+        LOGGER.debug("Get connection called for device {}.", deviceIdentification);
+
+        final Iec60870Device device = this.getIec60870Device(deviceIdentification);
+        final String connectionDeviceIdentification = this.getConnectionDeviceIdentification(device);
+
+        if (device.hasGatewayDevice()) {
+            LOGGER.debug("Getting connection for device {} using gateway device {}.", deviceIdentification,
+                    connectionDeviceIdentification);
+        }
+
+        final ClientConnection cachedDeviceConnection = this.connectionCache
+                .getConnection(connectionDeviceIdentification);
 
         if (cachedDeviceConnection != null) {
-            LOGGER.info("Connection found in cache for device {}.", deviceIdentification);
+            LOGGER.info("Connection found in cache for device {}.", connectionDeviceIdentification);
             return cachedDeviceConnection;
         } else {
-            LOGGER.info("No connection found in cache for device {}, creating new connection.", deviceIdentification);
+            LOGGER.info("No connection found in cache for device {}, creating new connection.",
+                    connectionDeviceIdentification);
             return this.createConnection(requestMetadata);
         }
     }
 
     @Override
-    @PreDestroy
-    public void closeAllConnections() {
-        LOGGER.info("Closing all connections.");
-        final Collection<ClientConnection> connections = this.connectionCache.getConnections();
-        LOGGER.warn("{} active connections found, closing all.", connections.size());
-        connections.forEach(this::disconnect);
-    }
-
-    /**
-     * Closes the {@link Connection}, sends a disconnect request and closes the
-     * socket.
-     *
-     * @param deviceIdentification
-     *            Device for which to close the connection.
-     */
     public void disconnect(final String deviceIdentification) {
         final ClientConnection connection = this.connectionCache.getConnection(deviceIdentification);
         this.disconnect(connection);
     }
 
-    /**
-     * Closes the {@link Connection}, sends a disconnect request and closes the
-     * socket.
-     *
-     * @param deviceIdentification
-     *            Device for which to close the connection.
-     */
+    @Override
     public synchronized void disconnect(final ClientConnection connection) {
         final String deviceIdentification = connection.getConnectionParameters().getDeviceIdentification();
         if (connection instanceof DeviceConnection) {
@@ -98,13 +89,21 @@ public class ClientConnectionServiceImpl implements ClientConnectionService {
         }
     }
 
+    @Override
+    @PreDestroy
+    public void closeAllConnections() {
+        LOGGER.info("Closing all connections.");
+        final Collection<ClientConnection> connections = this.connectionCache.getConnections();
+        LOGGER.warn("{} active connections found, closing all.", connections.size());
+        connections.forEach(this::disconnect);
+    }
+
     private ClientConnection createConnection(final RequestMetadata requestMetadata) throws ConnectionFailureException {
         final String deviceIdentification = requestMetadata.getDeviceIdentification();
-        final Iec60870Device device = this.iec60870DeviceRepository.findByDeviceIdentification(deviceIdentification)
-                .orElseThrow(
-                        () -> new ConnectionFailureException(ComponentType.PROTOCOL_IEC60870, "Device not found."));
+        final Iec60870Device device = this.getIec60870Device(deviceIdentification);
+        final Iec60870Device connectionDevice = this.getConnectionDevice(device);
 
-        final ConnectionParameters connectionParameters = this.createConnectionParameters(device,
+        final ConnectionParameters connectionParameters = this.createConnectionParameters(connectionDevice,
                 requestMetadata.getIpAddress());
         final ResponseMetadata responseMetadata = ResponseMetadata.from(requestMetadata, device.getDeviceType());
 
@@ -114,7 +113,6 @@ public class ClientConnectionServiceImpl implements ClientConnectionService {
 
         final ClientConnection newDeviceConnection = this.iec60870Client.connect(connectionParameters, eventListener);
 
-        // TODO - refactor
         try {
             this.connectionCache.addConnection(deviceIdentification, newDeviceConnection);
         } catch (final ClientConnectionAlreadyInCacheException e) {
@@ -135,5 +133,32 @@ public class ClientConnectionServiceImpl implements ClientConnectionService {
                 .commonAddress(device.getCommonAddress())
                 .port(device.getPort())
                 .build();
+    }
+
+    private String getConnectionDeviceIdentification(final Iec60870Device device) {
+        if (device.hasGatewayDevice()) {
+            return device.getGatewayDeviceIdentification();
+        } else {
+            return device.getDeviceIdentification();
+        }
+    }
+
+    private Iec60870Device getConnectionDevice(final Iec60870Device device) throws ConnectionFailureException {
+        if (device.hasGatewayDevice()) {
+            final String gatewayDeviceIdentification = device.getGatewayDeviceIdentification();
+            return this.getIec60870Device(gatewayDeviceIdentification);
+        } else {
+            return device;
+        }
+    }
+
+    private Iec60870Device getIec60870Device(final String deviceIdentification) throws ConnectionFailureException {
+        return this.iec60870DeviceRepository.findByDeviceIdentification(deviceIdentification)
+                .orElseThrow(this.connectionFailureException(deviceIdentification));
+    }
+
+    private Supplier<ConnectionFailureException> connectionFailureException(final String deviceIdentification) {
+        final String message = String.format("Device %s not found", deviceIdentification);
+        return () -> new ConnectionFailureException(ComponentType.PROTOCOL_IEC60870, message);
     }
 }

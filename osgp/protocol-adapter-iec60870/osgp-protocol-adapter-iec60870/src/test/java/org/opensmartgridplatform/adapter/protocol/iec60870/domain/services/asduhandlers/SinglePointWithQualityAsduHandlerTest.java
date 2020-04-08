@@ -82,9 +82,11 @@ public class SinglePointWithQualityAsduHandlerTest {
     /**
      * Test method for
      * {@link org.opensmartgridplatform.adapter.protocol.iec60870.domain.lightmeasurement.asduhandlers.SinglePointWithQualityAsduHandler#handleAsdu(org.openmuc.j60870.ASdu, org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseMetadata)}.
+     *
+     * @throws Exception
      */
     @Test
-    public void testHandleAsduShouldSendMeasurementReportAndLogItem() {
+    public void testHandleAsduShouldSendMeasurementReportAndLogItem() throws Exception {
         // Arrange
         when(this.deviceResponseServiceMap.forDeviceType(DeviceType.LIGHT_MEASUREMENT_GATEWAY))
                 .thenReturn(this.deviceResponseService);

@@ -6,7 +6,7 @@ Feature: OSGP Protocol Adapter IEC60870 - Receive Measurements
     
 
 Scenario Outline: Receive an ASDU
-    Given an existing connection with an IEC60870 device of type "DA_DEVICE"
+    Given an existing connection with IEC60870 device "DA_DVC_1" of type "DA_DEVICE"
     When I receive an ASDU of type "<type_id>" from the IEC60870 device
     Then I should send a measurement report of type "<type_id>" to the platform
     And I should send a log item with a message containing type "<type_id>"

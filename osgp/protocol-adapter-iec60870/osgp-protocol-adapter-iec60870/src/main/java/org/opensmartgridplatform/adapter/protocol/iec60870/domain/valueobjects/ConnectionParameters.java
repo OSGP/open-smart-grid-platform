@@ -61,10 +61,10 @@ public class ConnectionParameters {
     }
 
     public static class Builder {
-        private String ipAddress = null;
+        private String ipAddress = "localhost";
         private String deviceIdentification = null;
-        private int commonAddress;
-        private Integer port;
+        private int commonAddress = 0;
+        private Integer port = 2404;
 
         public Builder ipAddress(final String ipAddress) {
             this.ipAddress = ipAddress;

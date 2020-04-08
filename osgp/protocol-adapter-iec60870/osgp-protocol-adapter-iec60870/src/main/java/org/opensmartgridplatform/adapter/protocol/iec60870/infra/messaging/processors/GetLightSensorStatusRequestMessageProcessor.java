@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Smart Society Services B.V.
+ * Copyright 2020 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -9,8 +9,11 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.proc
 
 import java.io.IOException;
 
+import org.openmuc.j60870.ASdu;
+import org.openmuc.j60870.ASduType;
 import org.openmuc.j60870.CauseOfTransmission;
 import org.openmuc.j60870.ie.IeQualifierOfInterrogation;
+import org.openmuc.j60870.ie.InformationObject;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnection;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.LogItem;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.RequestMetadata;
@@ -23,15 +26,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
- * Class for processing get health status requests.
+ * Class for processing get light sensor status requests.
  */
 @Component
-public class GetHealthStatusRequestMessageProcessor extends AbstractMessageProcessor {
+public class GetLightSensorStatusRequestMessageProcessor extends AbstractMessageProcessor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetHealthStatusRequestMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetLightSensorStatusRequestMessageProcessor.class);
 
-    public GetHealthStatusRequestMessageProcessor() {
-        super(MessageType.GET_HEALTH_STATUS);
+    public GetLightSensorStatusRequestMessageProcessor() {
+        super(MessageType.GET_LIGHT_SENSOR_STATUS);
     }
 
     @Override
@@ -41,27 +44,34 @@ public class GetHealthStatusRequestMessageProcessor extends AbstractMessageProce
         final String deviceIdentification = requestMetadata.getDeviceIdentification();
         final String organisationIdentification = requestMetadata.getOrganisationIdentification();
 
-        LOGGER.info("getHealthStatus for IEC60870 device {} for organisation {}", deviceIdentification,
+        LOGGER.info("Get light sensor status request for IEC60870 device {} for organisation {}", deviceIdentification,
                 organisationIdentification);
 
         try {
+            // Perform general interrogation
             final int ieQualifierOfInterrogationValue = 20;
+            final int originatorAddress = 0;
             final int commonAddress = deviceConnection.getConnectionParameters().getCommonAddress();
+
             deviceConnection.getConnection()
                     .interrogation(commonAddress, CauseOfTransmission.ACTIVATION,
                             new IeQualifierOfInterrogation(ieQualifierOfInterrogationValue));
 
-            final String interrogationMessage = "Interrogation [CommonAddress: " + commonAddress
-                    + ", CauseOfTransmission: " + CauseOfTransmission.ACTIVATION + ", IeQualifierOfInterrogation: "
-                    + ieQualifierOfInterrogationValue + "]";
+            // interrogation command creates this asdu internally, however we
+            // need it here as well for logging...
+            final ASdu asdu = new ASdu(ASduType.C_IC_NA_1, false, CauseOfTransmission.ACTIVATION, false, false,
+                    originatorAddress, commonAddress,
+                    new InformationObject(0, new IeQualifierOfInterrogation(ieQualifierOfInterrogationValue)));
 
             final LogItem logItem = new LogItem(deviceIdentification, organisationIdentification, false,
-                    interrogationMessage);
+                    asdu.toString());
+
             this.getLoggingService().log(logItem);
 
         } catch (final IOException | RuntimeException e) {
-            final String message = String.format("Requesting the health status for device %s failed with error %s",
-                    deviceIdentification, e.getMessage());
+            final String message = String.format(
+                    "Requesting the light sensor status for device %s failed with error %s", deviceIdentification,
+                    e.getMessage());
             throw new ProtocolAdapterException(ComponentType.PROTOCOL_IEC60870, message);
         }
     }

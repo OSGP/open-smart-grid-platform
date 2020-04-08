@@ -13,13 +13,12 @@ import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.ConnectionEventListener;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseMetadata;
 import org.opensmartgridplatform.iec60870.Iec60870ASduHandlerNotFoundException;
-import org.opensmartgridplatform.iec60870.Iec60870ConnectionEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ClientConnectionEventListener implements ConnectionEventListener {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Iec60870ConnectionEventListener.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClientConnectionEventListener.class);
 
     private final ResponseMetadata responseMetadata;
     private final ClientConnectionCache connectionCache;

@@ -13,6 +13,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceType;
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
 
@@ -116,5 +117,9 @@ public class Iec60870Device extends AbstractEntity {
 
     public void setInformationObjectAddress(final Integer informationObjectAddress) {
         this.informationObjectAddress = informationObjectAddress;
+    }
+
+    public boolean hasGatewayDevice() {
+        return StringUtils.isNotBlank(this.gatewayDeviceIdentification);
     }
 }

@@ -19,7 +19,6 @@ import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.ASduType;
 import org.opensmartgridplatform.adapter.protocol.iec60870.application.mapping.Iec60870Mapper;
 import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.DistributionAutomationDeviceResponseService;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.AsduFactory;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.LogItemFactory;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.ResponseMetadataFactory;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.AsduConverterService;
@@ -28,6 +27,7 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.Loggi
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceType;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.LogItem;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseMetadata;
+import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.factories.AsduFactory;
 import org.opensmartgridplatform.dto.da.measurements.MeasurementReportDto;
 
 import ma.glasnost.orika.MapperFacade;
@@ -64,7 +64,7 @@ public class MeasurementAsduHandlerTest {
     private final MapperFacade mapper = new Iec60870Mapper();
 
     @Test
-    public void shouldSendMeasurementReportAndLogItemWhenHandlingAsdu() {
+    public void shouldSendMeasurementReportAndLogItemWhenHandlingAsdu() throws Exception {
         // Arrange
         final ASdu asdu = AsduFactory.ofType(ASduType.M_ME_TF_1);
         final MeasurementReportDto measurementReportDto = this.mapper.map(asdu, MeasurementReportDto.class);

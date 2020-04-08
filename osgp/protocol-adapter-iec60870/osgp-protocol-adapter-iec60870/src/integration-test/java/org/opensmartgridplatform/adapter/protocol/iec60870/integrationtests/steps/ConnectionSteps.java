@@ -13,12 +13,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.TestDefaults.DEFAULT_DEVICE_IDENTIFICATION;
-import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.TestDefaults.DEFAULT_DOMAIN;
-import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.TestDefaults.DEFAULT_DOMAIN_VERSION;
 import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.TestDefaults.DEFAULT_MESSAGE_TYPE;
 import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.TestDefaults.DEFAULT_ORGANISATION_IDENTIFICATION;
-
-import java.util.Optional;
 
 import org.openmuc.j60870.Connection;
 import org.openmuc.j60870.ConnectionEventListener;
@@ -88,19 +84,15 @@ public class ConnectionSteps {
                 .thenReturn(deviceConnection);
     }
 
-    @Given("an existing connection with an IEC60870 device of type {string}")
-    public void givenIec60870DeviceIsConnected(final String typeOfDevice)
-            throws ClientConnectionAlreadyInCacheException {
-        LOGGER.debug("Given IEC60870 device is connected");
+    @Given("an existing connection with IEC60870 device {string} of type {string}")
+    public void givenIec60870DeviceIsConnected(final String deviceIdentification, final String typeOfDevice)
+            throws Exception {
+        LOGGER.debug("Given an existing connection with IEC60870 device {} of type {}", deviceIdentification,
+                typeOfDevice);
         final DeviceType deviceType = DeviceType.valueOf(typeOfDevice);
         // Make sure the connection event listener works as expected
-        final ResponseMetadata responseMetadata = new ResponseMetadata.Builder()
-                .withDeviceIdentification(DEFAULT_DEVICE_IDENTIFICATION)
-                .withDeviceType(deviceType)
-                .withOrganisationIdentification(DEFAULT_ORGANISATION_IDENTIFICATION)
-                .withDomainInfo(new DomainInfo(DEFAULT_DOMAIN, DEFAULT_DOMAIN_VERSION))
-                .withMessageType(DEFAULT_MESSAGE_TYPE)
-                .build();
+        this.connectionParameters = this.initConnectionParameters(deviceIdentification);
+        final ResponseMetadata responseMetadata = this.initResponseMetadata(deviceIdentification, deviceType);
         this.connectionEventListener = new ClientConnectionEventListener(
                 this.connectionParameters.getDeviceIdentification(), this.connectionCacheSpy,
                 this.clientAsduHandlerRegistry, responseMetadata);
@@ -108,19 +100,25 @@ public class ConnectionSteps {
         // Make sure a connection could be retrieved from the cache
         // Only needed for scenarios sending requests to a device
         // final Connection connection = mock(Connection.class);
-        this.connectionCacheSpy.addConnection(DEFAULT_DEVICE_IDENTIFICATION,
+        this.connectionCacheSpy.addConnection(deviceIdentification,
                 new DeviceConnection(this.connection, this.connectionParameters));
     }
 
     @When("I connect to IEC60870 device {string}")
     public void whenIConnectToIEC60870Device(final String deviceIdentification) throws Exception {
-        final Optional<Iec60870Device> device = this.iec60870DeviceSteps.getDevice(deviceIdentification);
-        final DeviceType deviceType = device.isPresent() ? device.get().getDeviceType() : DeviceType.DA_DEVICE;
-        this.connectionParameters = this.initConnectionParameters(deviceIdentification);
+        LOGGER.debug("When I connect to IEC60870 device {}", deviceIdentification);
+        final Iec60870Device device = this.iec60870DeviceSteps.getDevice(deviceIdentification)
+                .orElseThrow(() -> new Exception("Device not found"));
+        final DeviceType deviceType = device.getDeviceType();
+        String connectionDevice = deviceIdentification;
+        if (device.getGatewayDeviceIdentification() != null) {
+            connectionDevice = device.getGatewayDeviceIdentification();
+        }
+        this.connectionParameters = this.initConnectionParameters(connectionDevice);
         this.connectionEventListener = new ClientConnectionEventListener(
                 this.connectionParameters.getDeviceIdentification(), this.connectionCacheSpy,
                 this.clientAsduHandlerRegistry, this.initResponseMetadata(deviceIdentification, deviceType));
-        // final Connection connection = mock(Connection.class);
+
         when(this.clientMock.connect(any(ConnectionParameters.class), any(ConnectionEventListener.class)))
                 .thenReturn(new DeviceConnection(this.connection, this.connectionParameters));
     }
