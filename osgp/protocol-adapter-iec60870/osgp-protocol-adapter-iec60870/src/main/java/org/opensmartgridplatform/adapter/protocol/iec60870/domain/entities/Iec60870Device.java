@@ -11,6 +11,8 @@ import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
 import org.apache.commons.lang3.StringUtils;
@@ -29,8 +31,11 @@ public class Iec60870Device extends AbstractEntity {
     @Column(unique = true, nullable = false, length = 40)
     private String deviceIdentification;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private DeviceType deviceType;
 
+    @Column
     private String gatewayDeviceIdentification;
 
     @Column(nullable = false)
@@ -39,6 +44,7 @@ public class Iec60870Device extends AbstractEntity {
     @Column
     private Integer port;
 
+    @Column
     private Integer informationObjectAddress;
 
     public Iec60870Device() {
