@@ -10,15 +10,15 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services;
 import javax.annotation.PostConstruct;
 
 import org.openmuc.j60870.ASduType;
-import org.opensmartgridplatform.iec60870.Iec60870ASduHandlerRegistry;
+import org.opensmartgridplatform.iec60870.Iec60870AsduHandlerRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * Abstract class providing an abstract method for ASdu handling (each type of
- * ASdu will have a specific ASdu Handler implementation) and automatic
- * registration of implementation classes to {@link Iec60870ASduHandlerRegistry}
+ * Abstract class providing an abstract method for ASDU handling (each type of
+ * ASDU will have a specific ASDU Handler implementation) and automatic
+ * registration of implementation classes to {@link Iec60870AsduHandlerRegistry}
  *
  */
 public abstract class ClientAsduHandlerImpl implements ClientAsduHandler {
@@ -26,7 +26,7 @@ public abstract class ClientAsduHandlerImpl implements ClientAsduHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(ClientAsduHandlerImpl.class);
 
     @Autowired
-    private ClientAsduHandlerRegistry iec60870ClientASduHandlerRegistry;
+    private ClientAsduHandlerRegistryImpl iec60870ClientAsduHandlerRegistry;
 
     private final ASduType asduType;
 
@@ -40,7 +40,7 @@ public abstract class ClientAsduHandlerImpl implements ClientAsduHandler {
 
     @PostConstruct
     protected void register() {
-        LOGGER.info("Registering Asdu Handler {}", this.getClass().getSimpleName());
-        this.iec60870ClientASduHandlerRegistry.registerHandler(this.asduType, this);
+        LOGGER.info("Registering ASDU Handler {} with ASDU type {}", this.getClass().getSimpleName(), this.asduType);
+        this.iec60870ClientAsduHandlerRegistry.registerHandler(this.asduType, this);
     }
 }

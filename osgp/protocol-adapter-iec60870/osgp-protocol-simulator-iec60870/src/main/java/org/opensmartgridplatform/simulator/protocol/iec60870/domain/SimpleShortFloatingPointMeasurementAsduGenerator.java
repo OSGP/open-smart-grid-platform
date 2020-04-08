@@ -8,12 +8,13 @@
 package org.opensmartgridplatform.simulator.protocol.iec60870.domain;
 
 import org.openmuc.j60870.ASdu;
+import org.opensmartgridplatform.simulator.protocol.iec60870.domain.profile.DefaultControlledStationAsduFactory;
 
-public class SimpleShortFloatingPointMeasurementAsduGenerator implements Iec60870ASduGenerator {
+public class SimpleShortFloatingPointMeasurementAsduGenerator implements Iec60870AsduGenerator {
 
     @Override
     public ASdu getNextAsdu() {
-        final Iec60870ASduFactory factory = new Iec60870ASduFactory();
+        final DefaultControlledStationAsduFactory factory = new DefaultControlledStationAsduFactory();
 
         return factory.createShortFloatingPointMeasurementAsdu();
     }

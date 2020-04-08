@@ -120,12 +120,12 @@ public class TestConfiguration {
     }
 
     @Bean
-    public ClientAsduHandler interrogationCommandASduHandler() {
+    public ClientAsduHandler interrogationCommandAsduHandler() {
         return new InterrogationAsduHandler();
     }
 
     @Bean
-    public ClientAsduHandler shortFloatWithTime56MeasurementASduHandler() {
+    public ClientAsduHandler shortFloatWithTime56MeasurementAsduHandler() {
         return new ShortFloatWithTime56MeasurementAsduHandler();
     }
 

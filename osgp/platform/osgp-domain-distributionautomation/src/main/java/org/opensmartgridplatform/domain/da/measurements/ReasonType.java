@@ -10,7 +10,8 @@ package org.opensmartgridplatform.domain.da.measurements;
 public enum ReasonType {
     PERIODIC(1),
     BACKGROUND_SCAN(2),
-    SPONTANEOUS(3);
+    SPONTANEOUS(3),
+    INTERROGATED_BY_STATION(4);
 
     private int reasonCode;
 

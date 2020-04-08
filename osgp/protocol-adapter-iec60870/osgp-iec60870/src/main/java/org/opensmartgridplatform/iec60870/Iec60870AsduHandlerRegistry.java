@@ -23,21 +23,21 @@ import org.springframework.stereotype.Component;
  *
  */
 @Component
-public class Iec60870ASduHandlerRegistry {
+public class Iec60870AsduHandlerRegistry {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Iec60870ASduHandlerRegistry.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Iec60870AsduHandlerRegistry.class);
 
-    private final Map<ASduType, Iec60870ASduHandler> handlers = new EnumMap<>(ASduType.class);
+    private final Map<ASduType, Iec60870AsduHandler> handlers = new EnumMap<>(ASduType.class);
 
-    public Iec60870ASduHandler getHandler(final ASduType asduType) throws Iec60870ASduHandlerNotFoundException {
+    public Iec60870AsduHandler getHandler(final ASduType asduType) throws Iec60870AsduHandlerNotFoundException {
         if (!this.handlers.containsKey(asduType)) {
-            LOGGER.error("No ASdu handler found for type Id {}", asduType);
-            throw new Iec60870ASduHandlerNotFoundException(asduType);
+            LOGGER.error("No ASDU handler found for ASDU type {}", asduType);
+            throw new Iec60870AsduHandlerNotFoundException(asduType);
         }
         return this.handlers.get(asduType);
     }
 
-    public void registerHandler(final ASduType asduType, final Iec60870ASduHandler handler) {
+    public void registerHandler(final ASduType asduType, final Iec60870AsduHandler handler) {
         this.handlers.put(asduType, handler);
     }
 
