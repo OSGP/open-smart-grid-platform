@@ -92,6 +92,7 @@
     <maven.eclipse.plugin.version>2.10</maven.eclipse.plugin.version>
     <maven.exec.plugin.version>1.6.0</maven.exec.plugin.version>
     <jaxb2.maven.plugin.version>2.5.0</jaxb2.maven.plugin.version>
+    <jaxb.api.version>2.3.1</jaxb.api.version>
     <spotbugs.maven.plugin.version>3.1.12.2</spotbugs.maven.plugin.version>
     <pmd.maven.plugin.version>3.13.0</pmd.maven.plugin.version>
     <checkstyle.maven.plugin.version>3.1.1</checkstyle.maven.plugin.version>
@@ -127,6 +128,10 @@
     <cucumber.version>5.6.0</cucumber.version>
     <sun.httpserver.version>20070405</sun.httpserver.version>
     <postgresql.version>42.2.12</postgresql.version>
+    <javax.xml.soap-api.version>1.4.0</javax.xml.soap-api.version>
+    <kafka.version>2.4.0</kafka.version>
+    <avro.version>1.9.1</avro.version>
+    <spring.kafka.version>2.4.4.RELEASE</spring.kafka.version>
   </properties>
 
   <repositories>
@@ -484,6 +489,13 @@
         <version>${servlet.jstl.version}</version>
       </dependency>
 
+      <!--  Jaxb xml bind -->
+      <dependency>
+        <groupId>javax.xml.bind</groupId>
+        <artifactId>jaxb-api</artifactId>
+        <version>${jaxb.api.version}</version>
+      </dependency>
+
       <!-- Joda Time (Date/Time functions) -->
       <dependency>
         <groupId>joda-time</groupId>
@@ -611,7 +623,24 @@
         <version>${apache.httpcomponents.httpcore.version}</version>
       </dependency>
 
-      <!-- Apache MQ client -->
+     <!-- Kafka, Avro -->
+      <dependency>
+        <groupId>org.apache.kafka</groupId>
+        <artifactId>kafka-clients</artifactId>
+        <version>${kafka.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.avro</groupId>
+        <artifactId>avro</artifactId>
+        <version>${avro.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.kafka</groupId>
+        <artifactId>spring-kafka</artifactId>
+        <version>${spring.kafka.version}</version>
+      </dependency>
+
+      <!-- Apache ActiveMQ client -->
       <dependency>
         <groupId>org.apache.activemq</groupId>
         <artifactId>activemq-client</artifactId>
@@ -872,6 +901,12 @@
         <groupId>com.sun.net.httpserver</groupId>
         <artifactId>http</artifactId>
         <version>${sun.httpserver.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>javax.xml.soap</groupId>
+        <artifactId>javax.xml.soap-api</artifactId>
+        <version>${javax.xml.soap-api.version}</version>
       </dependency>
 
     </dependencies>

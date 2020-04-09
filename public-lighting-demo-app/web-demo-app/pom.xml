@@ -12,13 +12,6 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>web-demo-app</artifactId>
-  <name>osgp-web-demo-app</name>
-  <packaging>war</packaging>
-  <!-- Description, Organization, Licenses, URL and Distribution Management elements are needed for the maven-jxr-plugin 
-    to generate a maven site -->
-  <description>Web Demo App for the OSGP Platform</description>
-
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-os-webapps</artifactId>
@@ -26,12 +19,18 @@
     <relativePath>../parent-os-webapps/pom.xml</relativePath>
   </parent>
 
+  <artifactId>web-demo-app</artifactId>
+  <packaging>war</packaging>
+  <name>osgp-web-demo-app</name>
+  <!-- Description, Organization, Licenses, URL and Distribution Management elements are needed for the maven-jxr-plugin
+    to generate a maven site -->
+  <description>Web Demo App for the OSGP Platform</description>
+
   <properties>
     <display.version>${project.version}-${BUILD_TAG}</display.version>
   </properties>
 
   <dependencies>
-
     <dependency>
       <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-ws-core</artifactId>
@@ -111,6 +110,10 @@
       <artifactId>orika-core</artifactId>
     </dependency>
 
+   <dependency>
+      <groupId>javax.xml.soap</groupId>
+      <artifactId>javax.xml.soap-api</artifactId>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

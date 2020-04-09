@@ -28,6 +28,11 @@
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>javax.annotation</groupId>
+      <artifactId>javax.annotation-api</artifactId>
+    </dependency>
+
     <!-- Spring Framework -->
     <dependency>
       <groupId>org.springframework</groupId>
@@ -89,7 +94,7 @@
       <groupId>org.openmuc</groupId>
       <artifactId>j60870</artifactId>
     </dependency>
-    
+
     <!-- Testing dependencies -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
