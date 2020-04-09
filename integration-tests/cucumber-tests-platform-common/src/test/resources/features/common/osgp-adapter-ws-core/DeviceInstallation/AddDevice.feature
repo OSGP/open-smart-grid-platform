@@ -112,7 +112,6 @@ Feature: CoreDeviceInstallation Device Creating
   Scenario Outline: Add new device with only spaces as device identification
     Given a device model
       | ModelCode | <ModelCode> |
-      | Metered   | <Metered>   |
     When receiving an add device request
       | DeviceUid              | <DeviceUid>             |
       | DeviceIdentification   | <DeviceIdentification>  |
@@ -225,3 +224,18 @@ Feature: CoreDeviceInstallation Device Creating
       | Manufacturer         | Test              |
     Then the add device response contains soap fault
       | Message | DISABLED_ORGANISATION |
+       
+  Scenario: Add a device with incorrect Model and Manufacturer combination
+    Given a device
+      | DeviceIdentification | TEST1024000000001 |
+      | DeviceType           | SSLD              |
+    When receiving an add device request with an unknown manufacturer and device model combination
+      | DeviceIdentification | Kaif             |
+      | DeviceModel          | nonexistingmodel |
+      | Owner                | org-test         |
+    Then the add device response contains soap fault
+      | FaultCode         | SOAP-ENV:Server                                                                                |
+      | FaultString       | org.opensmartgridplatform.shared.exceptionhandling.TechnicalException                          |
+      | InnerException    | java.lang.AssertionError                                                                       |
+      | InnerMessage      | Model code "nonexistingmodel" and Manufacturer "Kaif" do not identify an existing device model.|
+

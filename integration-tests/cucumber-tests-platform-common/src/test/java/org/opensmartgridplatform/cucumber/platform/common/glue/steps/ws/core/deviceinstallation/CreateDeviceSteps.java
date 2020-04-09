@@ -62,6 +62,28 @@ public class CreateDeviceSteps {
         this.receivingAnAddDeviceRequest(settings);
     }
 
+    @When("^receiving an add device request with an unknown manufacturer and device model combination$")
+    public void receivingAnAddDeviceRequestWithAnUnknownManufacturerAndDeviceModelCombination(
+            final Map<String, String> settings) {
+
+        System.out.println("HELP");
+        final AddDeviceRequest request = new AddDeviceRequest();
+        final Device device = this.createDevice(settings);
+
+        final DeviceModel deviceModel = new DeviceModel();
+        deviceModel.setManufacturer(getString(settings, PlatformKeys.KEY_DEVICE_MODEL_MANUFACTURER,
+                PlatformCommonDefaults.DEFAULT_DEVICE_MODEL_MANUFACTURER));
+        deviceModel.setModelCode(getString(settings, PlatformKeys.KEY_DEVICE_MODEL_MODELCODE, "nonexistingmodel"));
+        device.setDeviceModel(deviceModel);
+        request.setDevice(device);
+
+        try {
+            ScenarioContext.current().put(PlatformKeys.RESPONSE, this.client.addDevice(request));
+        } catch (final Exception ex) {
+            ScenarioContext.current().put(PlatformKeys.RESPONSE, ex);
+        }
+    }
+
     /**
      * Verify the response of a add device request.
      *

@@ -7,12 +7,10 @@
  */
 package org.opensmartgridplatform.adapter.ws.core.application.mapping;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.Device;
-import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Manufacturer;
 import org.opensmartgridplatform.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceModelRepository;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
