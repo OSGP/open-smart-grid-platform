@@ -39,7 +39,6 @@
 
   <properties>
     <display.version>${project.version}-${BUILD_TAG}</display.version>
-    <kafka-avro-serializer.version>3.3.1</kafka-avro-serializer.version>
   </properties>
 
   <dependencies>
@@ -207,22 +206,6 @@
       <groupId>org.springframework.kafka</groupId>
       <artifactId>spring-kafka</artifactId>
     </dependency>
-    <dependency>
-      <groupId>io.confluent</groupId>
-      <artifactId>kafka-avro-serializer</artifactId>
-      <version>${kafka-avro-serializer.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-log4j12</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>log4j</groupId>
-          <artifactId>log4j</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
 
     <!-- Testing dependencies -->
     <dependency>
