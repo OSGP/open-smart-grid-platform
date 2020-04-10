@@ -12,7 +12,7 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
-import org.opensmartgridplatform.adapter.kafka.da.infra.messageprocessors.DomainResponseMessageProcessor;
+import org.opensmartgridplatform.adapter.kafka.da.infra.jms.messageprocessors.DomainResponseMessageProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

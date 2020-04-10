@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.kafka.da.infra.messageprocessors;
+package org.opensmartgridplatform.adapter.kafka.da.infra.jms.messageprocessors;
 
 import java.io.Serializable;
 
@@ -13,7 +13,7 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.kafka.da.application.mapping.DistributionAutomationMapper;
-import org.opensmartgridplatform.adapter.kafka.da.io.kafka.out.MeasurementReadingProducer;
+import org.opensmartgridplatform.adapter.kafka.da.infra.kafka.out.MeterReadingProducer;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.notification.NotificationType;
 import org.opensmartgridplatform.domain.da.measurements.MeasurementReport;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
@@ -38,7 +38,7 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
     protected DistributionAutomationMapper mapper;
 
     @Autowired
-    private MeasurementReadingProducer measurementReadingProducer;
+    private MeterReadingProducer measurementReadingProducer;
 
     @Override
     public void processMessage(final ObjectMessage message) {

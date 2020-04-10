@@ -1,0 +1,30 @@
+package org.opensmartgridplatform.adapter.kafka.da.infra.kafka.out;
+
+import org.opensmartgridplatform.adapter.kafka.MeterReading;
+import org.opensmartgridplatform.adapter.kafka.da.application.mapping.DistributionAutomationMapper;
+import org.opensmartgridplatform.domain.da.measurements.MeasurementReport;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Service;
+
+@Service
+public class MeterReadingProducer {
+    @Autowired
+    private KafkaTemplate<String, MeterReading> kafkaTemplate;
+
+    @Autowired
+    private DistributionAutomationMapper mapper;
+
+    public void send(final MeasurementReport measurementReport) {
+
+        // TODO - Map measurementReport to correct Avro type and send...
+        final MeterReading meterReading = this.mapper.map(measurementReport, MeterReading.class);
+        /*
+         * No need for callback functionality now; by default, the template is
+         * configured with a LoggingProducerListener, which logs errors and does
+         * nothing when the send is successful.
+         */
+        this.kafkaTemplate.sendDefault(meterReading);
+    }
+
+}
