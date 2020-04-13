@@ -69,7 +69,7 @@
     <hibernate.jpa.version>1.0.2.Final</hibernate.jpa.version>
     <javax.validation.api.version>2.0.1.Final</javax.validation.api.version>
     <junit.version>5.6.1</junit.version>
-    <junit.platform.launcher.version>1.6.1</junit.platform.launcher.version>
+    <junit.platform.launcher.version>1.6.2</junit.platform.launcher.version>
     <byte.buddy.version>1.10.9</byte.buddy.version>
     <joda.version>2.10.5</joda.version>
     <flyway.version>6.3.3</flyway.version>
