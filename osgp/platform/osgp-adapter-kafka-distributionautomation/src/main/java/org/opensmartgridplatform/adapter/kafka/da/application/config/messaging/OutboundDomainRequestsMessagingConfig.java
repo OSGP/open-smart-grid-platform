@@ -35,15 +35,15 @@ public class OutboundDomainRequestsMessagingConfig {
                 "jms.outbound.domain.requests");
     }
 
-    @Bean(destroyMethod = "stop", name = "wsDistributionAutomationOutboundDomainRequestsConnectionFactory")
+    @Bean(destroyMethod = "stop", name = "kafkaDistributionAutomationOutboundDomainRequestsConnectionFactory")
     public ConnectionFactory connectionFactory() {
-        LOGGER.info("Initializing wsDistributionAutomationOutboundDomainRequestsConnectionFactory bean.");
+        LOGGER.info("Initializing kafkaDistributionAutomationOutboundDomainRequestsConnectionFactory bean.");
         return this.jmsConfigurationFactory.getPooledConnectionFactory();
     }
 
-    @Bean(name = "wsDistributionAutomationOutboundDomainRequestsJmsTemplate")
+    @Bean(name = "kafkaDistributionAutomationOutboundDomainRequestsJmsTemplate")
     public JmsTemplate jmsTemplate() {
-        LOGGER.info("Initializing wsDistributionAutomationOutboundDomainRequestsJmsTemplate bean.");
+        LOGGER.info("Initializing kafkaDistributionAutomationOutboundDomainRequestsJmsTemplate bean.");
         return this.jmsConfigurationFactory.initJmsTemplate();
     }
 }

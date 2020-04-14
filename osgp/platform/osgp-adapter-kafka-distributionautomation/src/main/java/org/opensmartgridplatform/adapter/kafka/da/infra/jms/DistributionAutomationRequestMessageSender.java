@@ -7,10 +7,7 @@
  */
 package org.opensmartgridplatform.adapter.kafka.da.infra.jms;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
 import javax.jms.ObjectMessage;
-import javax.jms.Session;
 
 import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.domain.core.exceptions.ArgumentNullOrEmptyException;
@@ -20,19 +17,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Component;
 
 /**
  * Class for sending distribution automation request messages to a queue
  */
-@Component("wsDistributionAutomationOutboundDomainRequestsMessageSender")
+@Component("kafkaDistributionAutomationOutboundDomainRequestsMessageSender")
 public class DistributionAutomationRequestMessageSender {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DistributionAutomationRequestMessageSender.class);
 
     @Autowired
-    @Qualifier("wsDistributionAutomationOutboundDomainRequestsJmsTemplate")
+    @Qualifier("kafkaDistributionAutomationOutboundDomainRequestsJmsTemplate")
     private JmsTemplate jmsTemplate;
 
     /**
@@ -76,19 +72,14 @@ public class DistributionAutomationRequestMessageSender {
     private void sendMessage(final DistributionAutomationRequestMessage requestMessage) {
         LOGGER.info("Sending message to the da requests queue");
 
-        this.jmsTemplate.send(new MessageCreator() {
-
-            @Override
-            public Message createMessage(final Session session) throws JMSException {
-                final ObjectMessage objectMessage = session.createObjectMessage(requestMessage.getRequest());
-                objectMessage.setJMSCorrelationID(requestMessage.getCorrelationUid());
-                objectMessage.setJMSType(requestMessage.getMessageType().name());
-                objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
-                        requestMessage.getOrganisationIdentification());
-                objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
-                        requestMessage.getDeviceIdentification());
-                return objectMessage;
-            }
+        this.jmsTemplate.send(session -> {
+            final ObjectMessage objectMessage = session.createObjectMessage(requestMessage.getRequest());
+            objectMessage.setJMSCorrelationID(requestMessage.getCorrelationUid());
+            objectMessage.setJMSType(requestMessage.getMessageType().name());
+            objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
+                    requestMessage.getOrganisationIdentification());
+            objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION, requestMessage.getDeviceIdentification());
+            return objectMessage;
         });
     }
 }

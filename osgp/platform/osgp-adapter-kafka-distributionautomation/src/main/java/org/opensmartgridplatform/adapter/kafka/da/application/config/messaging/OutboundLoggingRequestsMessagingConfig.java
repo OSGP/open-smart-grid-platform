@@ -38,9 +38,9 @@ public class OutboundLoggingRequestsMessagingConfig {
                 "jms.outbound.logging.requests");
     }
 
-    @Bean(destroyMethod = "stop", name = "wsDistributionAutomationOutboundLoggingRequestsConnectionFactory")
+    @Bean(destroyMethod = "stop", name = "kafkaDistributionAutomationOutboundLoggingRequestsConnectionFactory")
     public ConnectionFactory connectionFactory() {
-        LOGGER.info("Initializing wsDistributionAutomationOutboundLoggingRequestsConnectionFactory bean.");
+        LOGGER.info("Initializing kafkaDistributionAutomationOutboundLoggingRequestsConnectionFactory bean.");
         return this.jmsConfigurationFactory.getPooledConnectionFactory();
     }
 

@@ -9,23 +9,23 @@ package org.opensmartgridplatform.adapter.kafka.da.application.services;
 
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
+import org.opensmartgridplatform.domain.core.entities.RtuDevice;
 import org.opensmartgridplatform.domain.core.exceptions.NotAuthorizedException;
 import org.opensmartgridplatform.domain.core.exceptions.UnknownEntityException;
 import org.opensmartgridplatform.domain.core.repositories.OrganisationRepository;
+import org.opensmartgridplatform.domain.core.repositories.RtuDeviceRepository;
 import org.opensmartgridplatform.domain.core.services.SecurityService;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
-import org.opensmartgridplatform.domain.core.entities.RtuDevice;
-import org.opensmartgridplatform.domain.core.repositories.RtuDeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class DomainHelperService {
 
-    private static final ComponentType COMPONENT_TYPE = ComponentType.WS_DISTRIBUTION_AUTOMATION;
+    private static final ComponentType COMPONENT_TYPE = ComponentType.KAFKA_DISTRIBUTION_AUTOMATION;
 
     @Autowired
     private RtuDeviceRepository rtuDeviceRepository;
@@ -46,7 +46,8 @@ public class DomainHelperService {
     }
 
     public Organisation findOrganisation(final String organisationIdentification) throws FunctionalException {
-        final Organisation organisation = this.organisationRepository.findByOrganisationIdentification(organisationIdentification);
+        final Organisation organisation = this.organisationRepository
+                .findByOrganisationIdentification(organisationIdentification);
         if (organisation == null) {
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_ORGANISATION, COMPONENT_TYPE,
                     new UnknownEntityException(Organisation.class, organisationIdentification));
@@ -54,7 +55,8 @@ public class DomainHelperService {
         return organisation;
     }
 
-    public void isAllowed(final Organisation organisation, final Device device, final DeviceFunction deviceFunction) throws FunctionalException {
+    public void isAllowed(final Organisation organisation, final Device device, final DeviceFunction deviceFunction)
+            throws FunctionalException {
         try {
             this.securityService.checkAuthorization(organisation, device, deviceFunction);
         } catch (final NotAuthorizedException e) {

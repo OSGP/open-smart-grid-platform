@@ -39,23 +39,23 @@ public class InboundDomainResponsesMessagingConfig {
                 "jms.inbound.domain.responses");
     }
 
-    @Bean(destroyMethod = "stop", name = "wsDistributionAutomationInboundDomainResponsesConnectionFactory")
+    @Bean(destroyMethod = "stop", name = "kafkaDistributionAutomationInboundDomainResponsesConnectionFactory")
     public ConnectionFactory connectionFactory() {
-        LOGGER.info("Initializing wsDistributionAutomationInboundDomainResponsesConnectionFactory bean.");
+        LOGGER.info("Initializing kafkaDistributionAutomationInboundDomainResponsesConnectionFactory bean.");
         return this.jmsConfigurationFactory.getPooledConnectionFactory();
     }
 
-    @Bean(name = "wsDistributionAutomationInboundDomainResponsesMessageListenerContainer")
+    @Bean(name = "kafkaDistributionAutomationInboundDomainResponsesMessageListenerContainer")
     public DefaultMessageListenerContainer messageListenerContainer(
-            @Qualifier("wsDistributionAutomationInboundDomainResponsesMessageListener") final MessageListener messageListener) {
-        LOGGER.info("Initializing wsDistributionAutomationInboundDomainResponsesMessageListenerContainer bean.");
+            @Qualifier("kafkaDistributionAutomationInboundDomainResponsesMessageListener") final MessageListener messageListener) {
+        LOGGER.info("Initializing kafkaDistributionAutomationInboundDomainResponsesMessageListenerContainer bean.");
         return this.jmsConfigurationFactory.initMessageListenerContainer(messageListener);
     }
 
-    @Bean("wsDistributionAutomationInboundDomainResponsesMessageProcessorMap")
+    @Bean("kafkaDistributionAutomationInboundDomainResponsesMessageProcessorMap")
     public MessageProcessorMap messageProcessorMap() {
-        LOGGER.info("Initializing wsDistributionAutomationInboundDomainResponsesMessageProcessorMap bean.");
-        return new BaseMessageProcessorMap("wsDistributionAutomationInboundDomainResponsesMessageProcessorMap");
+        LOGGER.info("Initializing kafkaDistributionAutomationInboundDomainResponsesMessageProcessorMap bean.");
+        return new BaseMessageProcessorMap("kafkaDistributionAutomationInboundDomainResponsesMessageProcessorMap");
     }
 
 }
