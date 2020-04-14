@@ -51,10 +51,6 @@
       <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-adapter-ws-shared</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.opensmartgridplatform</groupId>
-      <artifactId>osgp-ws-distributionautomation</artifactId>
-    </dependency>
 
     <!-- Spring Framework -->
     <dependency>
