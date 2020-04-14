@@ -20,12 +20,7 @@
     </encoder>
   </appender>
 
-  <logger name="org.springframework.ws" level="debug" additivity="false">
-    <appender-ref ref="CONSOLE"/>
-    <appender-ref ref="FILE"/>
-  </logger>
-
-  <logger name="org.opensmartgridplatform" level="debug" additivity="false">
+  <logger name="org.opensmartgridplatform" level="info" additivity="false">
     <appender-ref ref="CONSOLE"/>
     <appender-ref ref="FILE"/>
   </logger>
