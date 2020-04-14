@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-@Component(value = "wsDistributionAutomationInboundDomainResponsesMessageListener")
+@Component(value = "kafkaDistributionAutomationInboundDomainResponsesMessageListener")
 public class DistributionAutomationResponseMessageListener implements MessageListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DistributionAutomationResponseMessageListener.class);
