@@ -8,7 +8,7 @@ import org.opensmartgridplatform.adapter.kafka.MeterReading;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// TODO - Update for correct Avro type.
+// TODO - Rename and update for correct Avro message format.
 public class MeterReadingSerializer implements Serializer<MeterReading> {
     private static final Logger LOGGER = LoggerFactory.getLogger(MeterReadingSerializer.class);
 

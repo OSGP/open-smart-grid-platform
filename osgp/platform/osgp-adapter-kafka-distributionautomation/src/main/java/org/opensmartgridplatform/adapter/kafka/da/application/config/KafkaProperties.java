@@ -3,6 +3,7 @@ package org.opensmartgridplatform.adapter.kafka.da.application.config;
 import java.util.HashMap;
 import java.util.Map;
 
+// TODO - Move to a shared location for reuse
 public class KafkaProperties {
 
     private KafkaProperties() {

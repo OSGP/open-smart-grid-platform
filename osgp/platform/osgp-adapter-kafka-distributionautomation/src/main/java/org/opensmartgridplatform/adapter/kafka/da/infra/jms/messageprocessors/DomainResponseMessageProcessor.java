@@ -14,7 +14,6 @@ import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.kafka.da.application.mapping.DistributionAutomationMapper;
 import org.opensmartgridplatform.adapter.kafka.da.infra.kafka.out.MeterReadingProducer;
-import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.notification.NotificationType;
 import org.opensmartgridplatform.domain.da.measurements.MeasurementReport;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
@@ -38,7 +37,7 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
     protected DistributionAutomationMapper mapper;
 
     @Autowired
-    private MeterReadingProducer measurementReadingProducer;
+    private MeterReadingProducer meterReadingProducer;
 
     @Override
     public void processMessage(final ObjectMessage message) {
@@ -59,7 +58,6 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
 
             messageType = message.getJMSType();
-            validateMessageType(messageType);
 
             resultType = ResponseMessageResultType.valueOf(message.getStringProperty(Constants.RESULT));
             resultDescription = message.getStringProperty(Constants.DESCRIPTION);
@@ -96,7 +94,7 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
         if (!(dataObject instanceof MeasurementReport)) {
             LOGGER.error("For this component we only handle measurement reports");
         } else {
-            this.measurementReadingProducer.send(this.mapper.map(dataObject,
+            this.meterReadingProducer.send(this.mapper.map(dataObject,
                     org.opensmartgridplatform.domain.da.measurements.MeasurementReport.class));
         }
 
@@ -117,19 +115,6 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
 
         LOGGER.warn("Error '{}' occurred while trying to send message with correlationUid: {}", e.getMessage(),
                 correlationUid, e);
-    }
-
-    /**
-     * Checks if a given messageType has a known {@link NotificationType}.
-     *
-     * @param messageType
-     *            The messageType to check.
-     * @throws IllegalArgumentException,
-     *             when no NotificationType is found for the given messageType.
-     */
-    private static void validateMessageType(final String messageType) {
-        final NotificationType notificationType = NotificationType.valueOf(messageType);
-        LOGGER.debug("Received message has known notification type: \"{}\"", notificationType);
     }
 
     private static void logDebugInformation(final String messageType, final String correlationUid,

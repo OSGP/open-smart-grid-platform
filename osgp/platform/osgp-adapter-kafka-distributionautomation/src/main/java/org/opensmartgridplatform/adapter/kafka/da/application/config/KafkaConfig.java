@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.kafka.annotation.EnableKafka;
+// TODO - Enable when consumer is implemented
 //import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 //import org.springframework.kafka.core.ConsumerFactory;
 //import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
@@ -26,12 +27,13 @@ public class KafkaConfig {
     @Value("${distributionautomation.kafka.producer.topic}")
     private String topicProducer;
 
-    // @Value("${kafka.consumer.concurrency}")
+    // TODO - Enable when consumer is implemented
+    // @Value("${distributionautomation.kafka.consumer.concurrency}")
     // private Integer concurrency;
     //
-    // @Value("${kafka.consumer.poll.timeout}")
+    // @Value("${distributionautomation.kafka.consumer.poll.timeout}")
     // private Integer pollTimeout;
-    //
+
     private Map<String, Object> producerConfigs() {
         final Map<String, Object> properties = this.createCommonProperties();
         properties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
@@ -50,16 +52,18 @@ public class KafkaConfig {
         return properties;
     }
 
-    @Bean
-    public Map<String, Object> consumerConfigs() {
-        final Map<String, Object> properties = this.createCommonProperties();
-
-        properties.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        properties.put("value.deserializer",
-                "com.alliander.osgp.cmdb.client.infra.kafka.in.CmdbOtLogEventDeserializer");
-        KafkaProperties.consumerProperties().forEach((k, v) -> this.addIfExist(properties, k, "kafka.consumer", v));
-        return properties;
-    }
+    // TODO - Enable when consumer is implemented
+    // @formatter:off
+//    @Bean
+//    public Map<String, Object> consumerConfigs() {
+//        final Map<String, Object> properties = this.createCommonProperties();
+//
+//        properties.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+//        properties.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+//        KafkaProperties.consumerProperties().forEach((k, v) -> this.addIfExist(properties, k, "kafka.consumer", v));
+//        return properties;
+//    }
+    // @formatter:on
 
     private <T> void addIfExist(final Map<String, Object> properties, final String kafkaProperty, final String prefix,
             final Class<T> targetType) {
@@ -78,20 +82,21 @@ public class KafkaConfig {
         return template;
     }
 
-    // @Bean
-    // public ConsumerFactory<String, CMDBOTLogEvent> consumerFactory() {
-    // return new DefaultKafkaConsumerFactory<>(this.consumerConfigs());
-    // }
-    //
-    // @Bean
-    // public ConcurrentKafkaListenerContainerFactory<String, CMDBOTLogEvent>
-    // kafkaListenerContainerFactory() {
-    // final ConcurrentKafkaListenerContainerFactory<String, CMDBOTLogEvent>
-    // factory = new ConcurrentKafkaListenerContainerFactory<>();
-    // factory.setConsumerFactory(this.consumerFactory());
-    // factory.setConcurrency(this.concurrency);
-    // factory.getContainerProperties().setPollTimeout(this.pollTimeout);
-    // return factory;
-    // }
+    // TODO - Enable when consumer is implemented
+    // @formatter:off
+//    @Bean
+//    public ConsumerFactory<String, String> consumerFactory() {
+//        return new DefaultKafkaConsumerFactory<>(this.consumerConfigs());
+//    }
+//
+//    @Bean
+//    public ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory() {
+//        final ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
+//        factory.setConsumerFactory(this.consumerFactory());
+//        factory.setConcurrency(this.concurrency);
+//        factory.getContainerProperties().setPollTimeout(this.pollTimeout);
+//        return factory;
+//    }
+    // @formatter:on
 
 }
