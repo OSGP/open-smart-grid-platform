@@ -117,7 +117,7 @@
     <micrometer.version>1.4.1</micrometer.version>
     <protobuf.version>2.4.1</protobuf.version>
     <protobuf.maven.plugin>0.6.5</protobuf.maven.plugin>
-    <guava.version>28.2-jre</guava.version>
+    <guava.version>29.0-jre</guava.version>
     <spotbugs.version>4.0.1</spotbugs.version>
     <jacoco.version>0.8.5</jacoco.version>
     <selenium.java.version>3.141.59</selenium.java.version>
