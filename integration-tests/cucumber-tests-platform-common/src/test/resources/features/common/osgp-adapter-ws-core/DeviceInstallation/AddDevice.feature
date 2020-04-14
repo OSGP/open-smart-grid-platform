@@ -6,7 +6,8 @@ Feature: CoreDeviceInstallation Device Creating
 
   Scenario Outline: Add New Device
     Given a device model
-      | ModelCode | <ModelCode> |
+      | ModelCode    | <ModelCode>    |
+      | Manufacturer | <Manufacturer> |
     When receiving an add device request
       | DeviceUid               | <DeviceUid>               |
       | DeviceIdentification    | <DeviceIdentification>    |
@@ -49,7 +50,8 @@ Feature: CoreDeviceInstallation Device Creating
 
   Scenario Outline: Add a device with an incorrect device identification
     Given a device model
-      | ModelCode | <ModelCode> |
+      | ModelCode    | <ModelCode>    |
+      | Manufacturer | <Manufacturer> |
     When receiving an add device request
       | DeviceUid               | <DeviceUid>             |
       | DeviceIdentification    | <DeviceIdentification>  |
@@ -79,7 +81,8 @@ Feature: CoreDeviceInstallation Device Creating
 
   Scenario Outline: Add a device with incorrect data
     Given a device model
-      | ModelCode | <ModelCode> |
+      | ModelCode    | <ModelCode     |
+      | Manufacturer | <Manufacturer> |
     When receiving an add device request
       | DeviceUid               | <DeviceUid>             |
       | DeviceIdentification    | <DeviceIdentification>  |
@@ -111,7 +114,8 @@ Feature: CoreDeviceInstallation Device Creating
 
   Scenario Outline: Add new device with only spaces as device identification
     Given a device model
-      | ModelCode | <ModelCode> |
+      | ModelCode    | <ModelCode>    |
+      | Manufacturer | <Manufacturer> |
     When receiving an add device request
       | DeviceUid              | <DeviceUid>             |
       | DeviceIdentification   | <DeviceIdentification>  |
@@ -140,12 +144,11 @@ Feature: CoreDeviceInstallation Device Creating
 
   Scenario: Add New Device With Unknown Owner Organization
     Given a device model
-      | ModelCode | Test Model |
-      | Manufacturer | Test |
+      | ModelCode    | Test Model |
+      | Manufacturer | Test       |
     When receiving an add device request with an unknown organization
       | DeviceIdentification | TEST1024000000001 |
       | Owner                | org-test          |
-      | Manufacturer         | Test              |
     Then the add device response contains soap fault
       | FaultCode      | SOAP-ENV:Server                                                         |
       | FaultString    | UNKNOWN_ORGANISATION                                                    |
@@ -154,7 +157,8 @@ Feature: CoreDeviceInstallation Device Creating
 
   Scenario: Allow adding an existing device if there has been no communication with the device yet
     Given a device model
-      | ModelCode | Test Model |
+      | ModelCode    | Test Model |
+      | Manufacturer | Test       |
     And a device
       | DeviceIdentification       | TEST1024000000001 |
       | Alias                      | ALIAS_ORIGINAL    |
@@ -206,12 +210,10 @@ Feature: CoreDeviceInstallation Device Creating
       | DeviceType                 |                   |
 
   Scenario: Disallow adding an existing device if there has been communication with the device
-    Given a device
+    Given an ssld device
       | DeviceIdentification | TEST1024000000001 |
-      | DeviceType           | SSLD              |
     When receiving an add device request
       | DeviceIdentification | TEST1024000000001 |
-      | Manufacturer         | Test              |
     Then the add device response contains soap fault
       | Message | EXISTING_DEVICE |
 
@@ -221,7 +223,6 @@ Feature: CoreDeviceInstallation Device Creating
       | Enabled                    | false    |
     When receiving an add device request
       | DeviceIdentification | TEST1024000000001 |
-      | Manufacturer         | Test              |
     Then the add device response contains soap fault
       | Message | DISABLED_ORGANISATION |
        
@@ -229,13 +230,13 @@ Feature: CoreDeviceInstallation Device Creating
     Given a device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SSLD              |
-    When receiving an add device request with an unknown manufacturer and device model combination
-      | DeviceIdentification | Kaif             |
-      | DeviceModel          | nonexistingmodel |
+    When receiving an add device request
+      | Manufacturer         | Test             |
+      | DeviceModelCode      | nonexistingmodel |
       | Owner                | org-test         |
     Then the add device response contains soap fault
       | FaultCode         | SOAP-ENV:Server                                                                                |
       | FaultString       | org.opensmartgridplatform.shared.exceptionhandling.TechnicalException                          |
       | InnerException    | java.lang.AssertionError                                                                       |
-      | InnerMessage      | Model code "nonexistingmodel" and Manufacturer "Kaif" do not identify an existing device model.|
+      | InnerMessage      | Model code "nonexistingmodel" and Manufacturer "Test" do not identify an existing device model.|
 

@@ -54,7 +54,7 @@ public class PlatformDefaults {
 
     public static final String DEFAULT_DEVICE_IDENTIFICATION = "TD01";
     public static final String DEFAULT_DEVICE_MODEL_DESCRIPTION = "Test Model";
-    public static final String DEFAULT_DEVICE_MODEL_MANUFACTURER = "Kaif";
+    public static final String DEFAULT_DEVICE_MODEL_MANUFACTURER = "Test";
     public static final Boolean DEFAULT_DEVICE_MODEL_METERED = true;
     public static final String DEFAULT_DEVICE_MODEL_MODEL_CODE = "Test";
     public static final String DEFAULT_DEVICE_MODEL_NAME = "Test Model";
