@@ -96,6 +96,11 @@ public class FirmwareFile extends AbstractEntity {
     }
 
     public FirmwareFile(final String identification, final String filename, final String description,
+            final boolean pushToNewDevices, final byte[] file) {
+        this(identification, filename, description, pushToNewDevices, file, null);
+    }
+
+    public FirmwareFile(final String identification, final String filename, final String description,
             final boolean pushToNewDevices) {
         this(identification, filename, description, pushToNewDevices, null, null);
     }
@@ -103,6 +108,11 @@ public class FirmwareFile extends AbstractEntity {
     public FirmwareFile(final String filename, final String description, final boolean pushToNewDevices,
             final byte[] file, final String hash) {
         this(newRandomIdentification(), filename, description, pushToNewDevices, file, hash);
+    }
+
+    public FirmwareFile(final String filename, final String description, final boolean pushToNewDevices,
+            final byte[] file) {
+        this(filename, description, pushToNewDevices, file, null);
     }
 
     public FirmwareFile(final String filename, final String description, final boolean pushToNewDevices) {

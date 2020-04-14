@@ -135,7 +135,7 @@ public class FirmwareFileSteps {
                 getString(settings, PlatformKeys.FIRMWARE_DESCRIPTION, PlatformDefaults.FIRMWARE_DESCRIPTION),
                 getBoolean(settings, PlatformKeys.FIRMWARE_PUSH_TO_NEW_DEVICES,
                         PlatformDefaults.FIRMWARE_PUSH_TO_NEW_DEVICE),
-                file, null);
+                file);
 
         if (!isForSmartMeters) {
             // Create file on disk

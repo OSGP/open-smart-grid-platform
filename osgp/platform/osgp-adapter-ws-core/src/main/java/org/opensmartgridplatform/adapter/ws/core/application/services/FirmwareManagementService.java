@@ -10,10 +10,7 @@ package org.opensmartgridplatform.adapter.ws.core.application.services;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.nio.file.Files;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -569,7 +566,7 @@ public class FirmwareManagementService {
 
     private FirmwareFile savedToDatabase(final FirmwareFileRequest firmwareFileRequest, final byte[] file) {
         return new FirmwareFile(firmwareFileRequest.getFileName(), firmwareFileRequest.getDescription(),
-                firmwareFileRequest.isPushToNewDevices(), file, this.getMd5Hash(file));
+                firmwareFileRequest.isPushToNewDevices(), file);
     }
 
     /**
@@ -765,23 +762,6 @@ public class FirmwareManagementService {
     }
 
     // HELPER METHODS
-
-    private String getMd5Hash(final byte[] file) {
-        String md5Hash;
-        try {
-            final MessageDigest md = MessageDigest.getInstance("MD5");
-            final byte[] messageDigest = md.digest(file);
-            final BigInteger number = new BigInteger(1, messageDigest);
-            md5Hash = number.toString(16);
-            while (md5Hash.length() < 32) {
-                md5Hash = "0" + md5Hash;
-            }
-        } catch (final NoSuchAlgorithmException e) {
-            LOGGER.error("RuntimeException while creating MD5 hash for firmware file.", e);
-            throw new AssertionError("Expected MD5 to be present as algorithm", e);
-        }
-        return md5Hash;
-    }
 
     private void writeToFilesystem(final byte[] file, final String fileName, final DeviceModel deviceModel)
             throws TechnicalException {
