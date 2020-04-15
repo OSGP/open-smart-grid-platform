@@ -111,15 +111,9 @@
     </dependency>
 
     <!-- Hibernate validator -->
-      <dependency>
-        <groupId>org.hibernate.validator</groupId>
-        <artifactId>hibernate-validator</artifactId>
-      </dependency>
-
-    <!-- Flyway (DB Migration) -->
     <dependency>
-      <groupId>org.flywaydb</groupId>
-      <artifactId>flyway-core</artifactId>
+      <groupId>org.hibernate.validator</groupId>
+      <artifactId>hibernate-validator</artifactId>
     </dependency>
 
     <!-- Logging -->
@@ -150,12 +144,6 @@
     </dependency>
 
     <!-- Apache commons -->
-    <dependency>
-      <groupId>org.apache.ws.xmlschema</groupId>
-      <artifactId>xmlschema-core</artifactId>
-      <version>${apache.commons.schema}</version>
-    </dependency>
-
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>

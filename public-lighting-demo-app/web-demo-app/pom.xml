@@ -86,7 +86,6 @@
       <artifactId>spring-webmvc</artifactId>
     </dependency>
 
-
     <!-- Servlet API 3.0 -->
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -110,7 +109,7 @@
       <artifactId>orika-core</artifactId>
     </dependency>
 
-   <dependency>
+    <dependency>
       <groupId>javax.xml.soap</groupId>
       <artifactId>javax.xml.soap-api</artifactId>
     </dependency>
