@@ -560,13 +560,18 @@ public class FirmwareManagementService {
     }
 
     private FirmwareFile firmwareFileFrom(final FirmwareFileRequest firmwareFileRequest) {
-        return new FirmwareFile(firmwareFileRequest.getFileName(), firmwareFileRequest.getDescription(),
-                firmwareFileRequest.isPushToNewDevices());
+        return new FirmwareFile.Builder().withFilename(firmwareFileRequest.getFileName())
+                .withDescription(firmwareFileRequest.getDescription())
+                .withPushToNewDevices(firmwareFileRequest.isPushToNewDevices())
+                .build();
     }
 
     private FirmwareFile savedToDatabase(final FirmwareFileRequest firmwareFileRequest, final byte[] file) {
-        return new FirmwareFile(firmwareFileRequest.getFileName(), firmwareFileRequest.getDescription(),
-                firmwareFileRequest.isPushToNewDevices(), file);
+        return new FirmwareFile.Builder().withFilename(firmwareFileRequest.getFileName())
+                .withDescription(firmwareFileRequest.getDescription())
+                .withPushToNewDevices(firmwareFileRequest.isPushToNewDevices())
+                .withFile(file)
+                .build();
     }
 
     /**
