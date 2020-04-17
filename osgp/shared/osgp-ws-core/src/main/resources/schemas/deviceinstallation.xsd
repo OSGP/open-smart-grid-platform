@@ -360,23 +360,13 @@
           </xsd:restriction>
         </xsd:simpleType>
       </xsd:element>
-      <xsd:element name="ModelCode" minOccurs="0" maxOccurs="1">
+      <xsd:element name="ModelCode" minOccurs="1" maxOccurs="1">
         <xsd:simpleType>
           <xsd:restriction base="xsd:string">
             <xsd:maxLength value="255" />
           </xsd:restriction>
         </xsd:simpleType>
       </xsd:element>
-      <xsd:element name="Description" minOccurs="0"
-        maxOccurs="1">
-        <xsd:simpleType>
-          <xsd:restriction base="xsd:string">
-            <xsd:maxLength value="255" />
-          </xsd:restriction>
-        </xsd:simpleType>
-      </xsd:element>
-      <xsd:element name="Metered" type="xsd:boolean"
-        minOccurs="1" maxOccurs="1" />
     </xsd:sequence>
   </xsd:complexType>
 

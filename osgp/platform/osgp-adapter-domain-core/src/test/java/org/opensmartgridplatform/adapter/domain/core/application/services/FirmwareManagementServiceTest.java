@@ -75,7 +75,7 @@ public class FirmwareManagementServiceTest {
     }
 
     private FirmwareFile createFirmwareFile(final String version) {
-        final FirmwareFile firmwareFile = new FirmwareFile();
+        final FirmwareFile firmwareFile = new FirmwareFile.Builder().build();
         final FirmwareModule module1 = new FirmwareModule("Functional");
         final FirmwareModule module2 = new FirmwareModule("Security");
         firmwareFile.addFirmwareModule(module1, version);
@@ -140,7 +140,10 @@ public class FirmwareManagementServiceTest {
     public void testTryToAddFirmwareVersionToHistoryWhenFileIsAvailable() throws FunctionalException {
 
         // Arrange
-        final FirmwareFile firmwareFile = new FirmwareFile("filename", "description", false);
+        final FirmwareFile firmwareFile = new FirmwareFile.Builder().withFilename("filename")
+                .withDescription("description")
+                .withPushToNewDevices(false)
+                .build();
         final FirmwareModule firmwareModule = new FirmwareModule(
                 FirmwareModuleType.SECURITY.getDescription().toLowerCase());
         firmwareFile.addFirmwareModule(firmwareModule, VERSION_2);
@@ -159,7 +162,10 @@ public class FirmwareManagementServiceTest {
     public void testTryToAddFirmwareVersionToHistoryWhenFileIsNotAvailable() throws FunctionalException {
 
         // Arrange
-        final FirmwareFile firmwareFile = new FirmwareFile("filename", "description", false);
+        final FirmwareFile firmwareFile = new FirmwareFile.Builder().withFilename("filename")
+                .withDescription("description")
+                .withPushToNewDevices(false)
+                .build();
         when(this.firmwareFileRepository.findByDeviceModel(any(DeviceModel.class)))
                 .thenReturn(Arrays.asList(firmwareFile));
         final FirmwareVersion firmwareVersion1 = new FirmwareVersion(FirmwareModuleType.SECURITY, VERSION_2);

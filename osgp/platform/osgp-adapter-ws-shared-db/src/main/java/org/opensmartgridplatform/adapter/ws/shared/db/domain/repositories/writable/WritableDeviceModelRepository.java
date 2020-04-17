@@ -18,6 +18,10 @@ import org.opensmartgridplatform.domain.core.entities.Manufacturer;
 @Repository
 public interface WritableDeviceModelRepository extends JpaRepository<DeviceModel, Long> {
     DeviceModel findByManufacturerAndModelCode(Manufacturer manufacturer, String modelCode);
+
+    DeviceModel findByManufacturerCodeAndModelCode(String string, String modelCode);
+
     List<DeviceModel> findByManufacturer(Manufacturer manufacturer);
+
     List<DeviceModel> findByModelCode(String modelCode);
 }

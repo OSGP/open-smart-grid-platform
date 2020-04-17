@@ -52,7 +52,7 @@ public class FirmwareFile extends AbstractEntity {
     private static final long serialVersionUID = 6996358385968307111L;
 
     @Column(unique = true, nullable = false, updatable = false)
-    private String identification = newRandomIdentification();
+    private String identification;
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
     @JoinTable(name = "device_model_firmware_file",
@@ -81,44 +81,22 @@ public class FirmwareFile extends AbstractEntity {
     @Column()
     private String hash;
 
-    public FirmwareFile() {
+    protected FirmwareFile() {
         // Default constructor
     }
 
-    public FirmwareFile(final String identification, final String filename, final String description,
-            final boolean pushToNewDevices, final byte[] file, final String hash) {
-        this.identification = identification;
-        this.filename = filename;
-        this.description = description;
-        this.pushToNewDevices = pushToNewDevices;
-        this.file = file;
-        this.hash = hash;
-    }
-
-    public FirmwareFile(final String identification, final String filename, final String description,
-            final boolean pushToNewDevices) {
-        this(identification, filename, description, pushToNewDevices, null, null);
-    }
-
-    public FirmwareFile(final String filename, final String description, final boolean pushToNewDevices,
-            final byte[] file, final String hash) {
-        this(newRandomIdentification(), filename, description, pushToNewDevices, file, hash);
-    }
-
-    public FirmwareFile(final String filename, final String description, final boolean pushToNewDevices) {
-        this(filename, description, pushToNewDevices, null, null);
-    }
-
-    private static String newRandomIdentification() {
-        return UUID.randomUUID().toString().replace("-", "");
+    private FirmwareFile(final Builder builder) {
+        this.identification = builder.identification;
+        this.filename = builder.filename;
+        this.description = builder.description;
+        this.pushToNewDevices = builder.pushToNewDevices;
+        this.file = builder.file;
+        this.hash = builder.hash;
     }
 
     public void updateFirmwareModuleData(final Map<FirmwareModule, String> versionsByModule) {
         this.firmwareModules.clear();
-
-        for (final Entry<FirmwareModule, String> versionByModule : versionsByModule.entrySet()) {
-            this.addFirmwareModule(versionByModule.getKey(), versionByModule.getValue());
-        }
+        versionsByModule.forEach(this::addFirmwareModule);
     }
 
     public String getIdentification() {
@@ -360,4 +338,49 @@ public class FirmwareFile extends AbstractEntity {
                 + this.description + ", pushToNewDevices=" + this.pushToNewDevices + ", file="
                 + Arrays.toString(this.file) + ", hash=" + this.hash + "]";
     }
+
+    public static class Builder {
+
+        private String identification = UUID.randomUUID().toString().replace("-", "");
+        private String filename;
+        private String description;
+        private boolean pushToNewDevices;
+        private byte[] file;
+        private String hash;
+
+        public Builder withIdentification(final String identification) {
+            this.identification = identification;
+            return this;
+        }
+
+        public Builder withFilename(final String filename) {
+            this.filename = filename;
+            return this;
+        }
+
+        public Builder withDescription(final String description) {
+            this.description = description;
+            return this;
+        }
+
+        public Builder withPushToNewDevices(final boolean pushToNewDevices) {
+            this.pushToNewDevices = pushToNewDevices;
+            return this;
+        }
+
+        public Builder withFile(final byte[] file) {
+            this.file = file;
+            return this;
+        }
+
+        public Builder withHash(final String hash) {
+            this.hash = hash;
+            return this;
+        }
+
+        public FirmwareFile build() {
+            return new FirmwareFile(this);
+        }
+    }
+
 }
