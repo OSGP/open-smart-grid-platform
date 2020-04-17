@@ -7,34 +7,41 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services;
 
+import java.util.EnumMap;
+import java.util.Map;
+
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.ASduType;
 import org.opensmartgridplatform.iec60870.Iec60870AsduHandlerNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  *
- * Container for Client ASDU Handlers
+ * Registry of Client Asdu Handlers, used to look up the corresponding handler
+ * for a specific Asdu type. Each Client Asdu Handler should register itself to
+ * this registry.
  *
  */
-public interface ClientAsduHandlerRegistry {
+@Component
+public class ClientAsduHandlerRegistry {
 
-    /**
-     * Get a handler.
-     *
-     * @param asdu
-     *            The {@link ASdu} for which to find a handler.
-     * @return A {@link ClientAsduHandler} instance.
-     * @throws Iec60870AsduHandlerNotFoundException
-     */
-    ClientAsduHandler getHandler(ASdu asdu) throws Iec60870AsduHandlerNotFoundException;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClientAsduHandlerRegistry.class);
 
-    /**
-     * Register a handler.
-     *
-     * @param asduType
-     *            The {@link ASduType} of the handler.
-     * @param clientAsduHandler
-     *            The {@link ClientAsduHandler} instance.
-     */
-    void registerHandler(ASduType asduType, ClientAsduHandler clientAsduHandler);
+    private final Map<ASduType, ClientAsduHandler> handlers = new EnumMap<>(ASduType.class);
+
+    public ClientAsduHandler getHandler(final ASdu asdu) throws Iec60870AsduHandlerNotFoundException {
+        final ASduType asduType = asdu.getTypeIdentification();
+        final ClientAsduHandler handler = this.handlers.get(asduType);
+        if (handler == null) {
+            LOGGER.error("Unable to process ASDU {}, no ASDU handler found for ASDU type {}", asdu, asduType);
+            throw new Iec60870AsduHandlerNotFoundException(asduType);
+        }
+        return handler;
+    }
+
+    public void registerHandler(final ASduType asduType, final ClientAsduHandler clientAsduHandler) {
+        this.handlers.put(asduType, clientAsduHandler);
+    }
 }

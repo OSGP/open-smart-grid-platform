@@ -91,7 +91,7 @@ public abstract class AbstractMessageProcessor implements MessageProcessor {
 
     @Override
     public void processMessage(final ObjectMessage message) {
-        LOGGER.info("Processing get health status request message in new code...");
+        LOGGER.info("Processing message.");
 
         MessageMetadata messageMetadata = null;
         try {

@@ -13,13 +13,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.TestDefaults.DEFAULT_DEVICE_IDENTIFICATION;
-import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.TestDefaults.DEFAULT_DOMAIN;
-import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.TestDefaults.DEFAULT_DOMAIN_VERSION;
 import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.TestDefaults.DEFAULT_MESSAGE_TYPE;
 import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.TestDefaults.DEFAULT_ORGANISATION_IDENTIFICATION;
 
 import org.openmuc.j60870.Connection;
 import org.openmuc.j60870.ConnectionEventListener;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.entities.Iec60870Device;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.exceptions.ClientConnectionAlreadyInCacheException;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.Client;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientAsduHandlerRegistry;
@@ -28,8 +27,10 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.Clien
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ConnectionParameters;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceConnection;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceType;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DomainInfo;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseMetadata;
+import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.factories.DomainInfoFactory;
 import org.opensmartgridplatform.shared.exceptionhandling.ConnectionFailureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 public class ConnectionSteps {
 
@@ -55,6 +57,12 @@ public class ConnectionSteps {
     @Autowired
     private ClientAsduHandlerRegistry clientAsduHandlerRegistry;
 
+    @Autowired
+    private Iec60870DeviceSteps iec60870DeviceSteps;
+
+    @Autowired
+    private Connection connection;
+
     private ConnectionEventListener connectionEventListener;
 
     private ConnectionParameters connectionParameters;
@@ -63,12 +71,7 @@ public class ConnectionSteps {
     public void setup() {
         // Make sure there is no connection in the cache
         this.clientConnectionService.closeAllConnections();
-
-        this.connectionParameters = new ConnectionParameters.Builder().commonAddress(0)
-                .deviceIdentification(DEFAULT_DEVICE_IDENTIFICATION)
-                .ipAddress("localhost")
-                .port(2404)
-                .build();
+        this.connectionParameters = this.initConnectionParameters(DEFAULT_DEVICE_IDENTIFICATION);
     }
 
     @Given("the IEC60870 device is not connected")
@@ -82,26 +85,42 @@ public class ConnectionSteps {
                 .thenReturn(deviceConnection);
     }
 
-    @Given("an existing connection with an IEC60870 device")
-    public void givenIec60870DeviceIsConnected() throws ClientConnectionAlreadyInCacheException {
-        LOGGER.debug("Given IEC60870 device is connected");
-
+    @Given("an existing connection with IEC60870 device {string} of type {deviceType}")
+    public void givenIec60870DeviceIsConnected(final String deviceIdentification, final DeviceType deviceType)
+            throws Exception {
+        LOGGER.debug("Given an existing connection with IEC60870 device {} of type {}", deviceIdentification,
+                deviceType);
         // Make sure the connection event listener works as expected
-        final ResponseMetadata responseMetadata = new ResponseMetadata.Builder()
-                .withDeviceIdentification(DEFAULT_DEVICE_IDENTIFICATION)
-                .withOrganisationIdentification(DEFAULT_ORGANISATION_IDENTIFICATION)
-                .withDomainInfo(new DomainInfo(DEFAULT_DOMAIN, DEFAULT_DOMAIN_VERSION))
-                .withMessageType(DEFAULT_MESSAGE_TYPE)
-                .build();
+        this.connectionParameters = this.initConnectionParameters(deviceIdentification);
+        final ResponseMetadata responseMetadata = this.initResponseMetadata(deviceIdentification, deviceType);
         this.connectionEventListener = new ClientConnectionEventListener(
                 this.connectionParameters.getDeviceIdentification(), this.connectionCacheSpy,
                 this.clientAsduHandlerRegistry, responseMetadata);
 
         // Make sure a connection could be retrieved from the cache
         // Only needed for scenarios sending requests to a device
-        final Connection connection = mock(Connection.class);
-        this.connectionCacheSpy.addConnection(DEFAULT_DEVICE_IDENTIFICATION,
-                new DeviceConnection(connection, this.connectionParameters));
+        // final Connection connection = mock(Connection.class);
+        this.connectionCacheSpy.addConnection(deviceIdentification,
+                new DeviceConnection(this.connection, this.connectionParameters));
+    }
+
+    @When("I connect to IEC60870 device {string}")
+    public void whenIConnectToIEC60870Device(final String deviceIdentification) throws Exception {
+        LOGGER.debug("When I connect to IEC60870 device {}", deviceIdentification);
+        final Iec60870Device device = this.iec60870DeviceSteps.getDevice(deviceIdentification)
+                .orElseThrow(() -> new Exception("Device not found"));
+        final DeviceType deviceType = device.getDeviceType();
+        String connectionDeviceIdentification = deviceIdentification;
+        if (device.hasGatewayDevice()) {
+            connectionDeviceIdentification = device.getGatewayDeviceIdentification();
+        }
+        this.connectionParameters = this.initConnectionParameters(connectionDeviceIdentification);
+        this.connectionEventListener = new ClientConnectionEventListener(
+                this.connectionParameters.getDeviceIdentification(), this.connectionCacheSpy,
+                this.clientAsduHandlerRegistry, this.initResponseMetadata(deviceIdentification, deviceType));
+
+        when(this.clientMock.connect(any(ConnectionParameters.class), any(ConnectionEventListener.class)))
+                .thenReturn(new DeviceConnection(this.connection, this.connectionParameters));
     }
 
     @Then("I should connect to the IEC60870 device")
@@ -116,5 +135,27 @@ public class ConnectionSteps {
 
     public ConnectionEventListener getConnectionEventListener() {
         return this.connectionEventListener;
+    }
+
+    private ConnectionParameters initConnectionParameters(final String deviceIdentification) {
+        return new ConnectionParameters.Builder().deviceIdentification(deviceIdentification).build();
+    }
+
+    private ResponseMetadata initResponseMetadata(final String deviceIdentification, final DeviceType deviceType)
+            throws Exception {
+        final DomainInfo domainInfo = DomainInfoFactory.forDeviceType(deviceType);
+        // Make sure the connection event listener works as expected
+        final ResponseMetadata responseMetadata = new ResponseMetadata.Builder()
+                .withDeviceIdentification(deviceIdentification)
+                .withDeviceType(deviceType)
+                .withOrganisationIdentification(DEFAULT_ORGANISATION_IDENTIFICATION)
+                .withDomainInfo(domainInfo)
+                .withMessageType(DEFAULT_MESSAGE_TYPE)
+                .build();
+        return responseMetadata;
+    }
+
+    public void prepareForConnect(final String deviceIdentification) throws Exception {
+        this.whenIConnectToIEC60870Device(deviceIdentification);
     }
 }

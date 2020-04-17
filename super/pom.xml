@@ -12,14 +12,16 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>super-osgp</artifactId>
   <groupId>org.opensmartgridplatform</groupId>
+  <artifactId>super-osgp</artifactId>
   <version>5.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>super-osgp</name>
   <!-- Description, Organization, Licences, URL and Distribution Management
     elements are needed for the maven-jxr-plugin to generate a maven site -->
   <description>Super pom for OSGP components.</description>
+  <!-- URL is passed in as a maven argument: -Dmaven.site.url=http://my/url/for/the/site -->
+  <url>${maven.site.url}</url>
   <organization>
     <name>OSGP</name>
     <url>http://opensmartgridplatform.org</url>
@@ -30,8 +32,6 @@
       <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
     </license>
   </licenses>
-  <!-- URL is passed in as a maven argument: -Dmaven.site.url=http://my/url/for/the/site -->
-  <url>${maven.site.url}</url>
   <distributionManagement>
     <site>
       <id>super-osgp</id>
@@ -92,6 +92,7 @@
     <maven.eclipse.plugin.version>2.10</maven.eclipse.plugin.version>
     <maven.exec.plugin.version>1.6.0</maven.exec.plugin.version>
     <jaxb2.maven.plugin.version>2.5.0</jaxb2.maven.plugin.version>
+    <jaxb.api.version>2.3.1</jaxb.api.version>
     <spotbugs.maven.plugin.version>3.1.12.2</spotbugs.maven.plugin.version>
     <pmd.maven.plugin.version>3.13.0</pmd.maven.plugin.version>
     <checkstyle.maven.plugin.version>3.1.1</checkstyle.maven.plugin.version>
@@ -127,44 +128,11 @@
     <cucumber.version>5.6.0</cucumber.version>
     <sun.httpserver.version>20070405</sun.httpserver.version>
     <postgresql.version>42.2.12</postgresql.version>
+    <javax.xml.soap-api.version>1.4.0</javax.xml.soap-api.version>
   </properties>
-
-  <repositories>
-    <repository>
-      <id>fuse-repo</id>
-      <name>Fuse Source</name>
-      <url>http://repo.fusesource.com/nexus/content/groups/public/</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>oss-sonatype</id>
-      <name>oss-sonatype</name>
-      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>maven-repo1</id>
-      <name>Maven Repository</name>
-      <url>https://repo1.maven.org/maven2/</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
 
   <dependencyManagement>
     <dependencies>
-
       <!-- OSGP -->
       <dependency>
         <groupId>org.opensmartgridplatform</groupId>
@@ -482,6 +450,13 @@
         <groupId>javax.servlet</groupId>
         <artifactId>jstl</artifactId>
         <version>${servlet.jstl.version}</version>
+      </dependency>
+
+      <!--  Jaxb xml bind -->
+      <dependency>
+        <groupId>javax.xml.bind</groupId>
+        <artifactId>jaxb-api</artifactId>
+        <version>${jaxb.api.version}</version>
       </dependency>
 
       <!-- Joda Time (Date/Time functions) -->
@@ -874,8 +849,46 @@
         <version>${sun.httpserver.version}</version>
       </dependency>
 
+      <dependency>
+        <groupId>javax.xml.soap</groupId>
+        <artifactId>javax.xml.soap-api</artifactId>
+        <version>${javax.xml.soap-api.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
+
+  <repositories>
+    <repository>
+      <id>fuse-repo</id>
+      <name>Fuse Source</name>
+      <url>http://repo.fusesource.com/nexus/content/groups/public/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>oss-sonatype</id>
+      <name>oss-sonatype</name>
+      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>maven-repo1</id>
+      <name>Maven Repository</name>
+      <url>https://repo1.maven.org/maven2/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 
   <build>
     <pluginManagement>
