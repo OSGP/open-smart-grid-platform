@@ -9,6 +9,15 @@ BEGIN
 
   	ALTER TABLE iec60870_device ALTER COLUMN common_address SET DEFAULT 0;
 
+    ALTER TABLE iec60870_device
+      ADD CONSTRAINT iec60870_device_gateway_key
+        UNIQUE (gateway_device_identification, information_object_address);
+
+  	ALTER TABLE iec60870_device
+  	  ADD CONSTRAINT iec60870_device_gateway_check
+  	    CHECK ((gateway_device_identification IS NULL AND information_object_address IS NULL)
+  		    OR (gateway_device_identification IS NOT NULL AND information_object_address IS NOT NULL));
+
     COMMENT ON COLUMN iec60870_device.device_type IS 'Device type of this IEC60870 device.';
     COMMENT ON COLUMN iec60870_device.gateway_device_identification IS 'Identification of the IEC60870 device acting as gateway for this IEC60870 device.';
     COMMENT ON COLUMN iec60870_device.information_object_address IS 'Information object address used for identifying this IEC60870 device when having a gateway device.';

@@ -14,10 +14,10 @@ import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.exceptions.ClientConnectionAlreadyInCacheException;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnection;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionCache;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionCacheImpl;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionCache;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceConnection;
 
-public class ClientConnectionCacheImplTest {
+public class ClientConnectionCacheTest {
 
     private final static String KEY = "TestKey";
 
@@ -25,7 +25,7 @@ public class ClientConnectionCacheImplTest {
 
     @BeforeEach
     public void setup() {
-        this.cache = new ClientConnectionCacheImpl();
+        this.cache = new ClientConnectionCache();
     }
 
     @Test

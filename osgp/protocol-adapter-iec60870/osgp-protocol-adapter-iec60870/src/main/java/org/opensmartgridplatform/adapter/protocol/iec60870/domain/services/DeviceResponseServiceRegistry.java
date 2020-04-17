@@ -14,8 +14,13 @@ import java.util.Map;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceType;
 import org.springframework.stereotype.Component;
 
+/*
+ * Component for resolving device response service for specific device types.
+ * Per device type different handling of measurement report responses may be needed.
+ * Therefore each device type will have its own device response service.
+ */
 @Component
-public class DeviceResponseServiceMap {
+public class DeviceResponseServiceRegistry {
 
     private final Map<DeviceType, DeviceResponseService> map = new EnumMap<>(DeviceType.class);
 

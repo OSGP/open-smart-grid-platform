@@ -22,7 +22,7 @@ public class DistributionAutomationDeviceResponseService extends AbstractDeviceR
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DistributionAutomationDeviceResponseService.class);
 
-    private static final DeviceType DEVICE_TYPE = DeviceType.DA_DEVICE;
+    private static final DeviceType DEVICE_TYPE = DeviceType.DISTRIBUTION_AUTOMATION_DEVICE;
 
     @Autowired
     private MeasurementReportingService measurementReportingService;
@@ -33,7 +33,7 @@ public class DistributionAutomationDeviceResponseService extends AbstractDeviceR
 
     @Override
     public void process(final MeasurementReportDto measurementReportDto, final ResponseMetadata responseMetadata) {
-        LOGGER.info("Received measurement report {} for light measurement gateway {}.", measurementReportDto,
+        LOGGER.info("Received measurement report {} for distribution automation device {}.", measurementReportDto,
                 responseMetadata.getDeviceIdentification());
 
         this.measurementReportingService.send(measurementReportDto, responseMetadata);

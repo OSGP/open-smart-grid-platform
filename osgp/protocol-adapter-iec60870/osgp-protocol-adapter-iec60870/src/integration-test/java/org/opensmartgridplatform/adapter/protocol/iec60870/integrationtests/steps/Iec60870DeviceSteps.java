@@ -38,13 +38,11 @@ public class Iec60870DeviceSteps {
     }
 
     @Given("IEC60870 devices")
-    public void givenIec60870Devices(final DataTable dataTable) {
-
-        final List<Map<String, String>> rows = dataTable.asMaps();
+    public void givenIec60870Devices(final DataTable devicesTable) {
 
         final List<Iec60870Device> devices = new ArrayList<>();
 
-        for (final Map<String, String> colums : rows) {
+        for (final Map<String, String> colums : devicesTable.asMaps()) {
             final Iec60870Device device = Iec60870DeviceFactory.fromSettings(colums);
             when(this.repositoryMock.findByDeviceIdentification(device.getDeviceIdentification()))
                     .thenReturn(Optional.of(device));
@@ -52,7 +50,7 @@ public class Iec60870DeviceSteps {
         }
 
         when(this.repositoryMock.findByGatewayDeviceIdentification(anyString()))
-                .thenAnswer(i -> this.getDevicesForGateway(i.getArgument(0), devices));
+                .thenAnswer(invocation -> this.getDevicesForGateway(invocation.getArgument(0), devices));
     }
 
     private List<Iec60870Device> getDevicesForGateway(final String gatewayDeviceIdentification,

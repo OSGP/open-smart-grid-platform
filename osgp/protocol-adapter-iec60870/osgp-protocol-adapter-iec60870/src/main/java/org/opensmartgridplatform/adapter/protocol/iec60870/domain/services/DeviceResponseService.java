@@ -8,13 +8,11 @@
 
 package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services;
 
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.exceptions.AsduHandlerException;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseMetadata;
 import org.opensmartgridplatform.dto.da.measurements.MeasurementReportDto;
 
 @FunctionalInterface
 public interface DeviceResponseService {
 
-    abstract void process(MeasurementReportDto measurementReportDto, ResponseMetadata responseMetadata)
-            throws AsduHandlerException;
+    void process(MeasurementReportDto measurementReportDto, ResponseMetadata responseMetadata);
 }

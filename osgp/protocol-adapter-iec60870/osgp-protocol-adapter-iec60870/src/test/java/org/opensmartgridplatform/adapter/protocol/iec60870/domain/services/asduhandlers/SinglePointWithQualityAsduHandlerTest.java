@@ -29,7 +29,7 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.
 import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.LightMeasurementGatewayDeviceResponseService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.LogItemFactory;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.ResponseMetadataFactory;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.DeviceResponseServiceMap;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.DeviceResponseServiceRegistry;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.LoggingService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceType;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.LogItem;
@@ -51,10 +51,10 @@ public class SinglePointWithQualityAsduHandlerTest {
     private static final boolean LMD_1_ON = true;
     private static final int LMD_2_IOA = 2;
     private static final boolean LMD_2_ON = false;
-    private static String MEASUREMENT_TYPE = ASduType.M_SP_NA_1.name();
-    private static String MEASUREMENT_REASON = CauseOfTransmission.INTERROGATED_BY_STATION.name();
-    private static int MEASUREMENT_ORIGINATOR_ADDRESS = 0;
-    private static int MEASUREMENT_COMMON_ADDRESS = 0;
+    private static final String MEASUREMENT_TYPE = ASduType.M_SP_NA_1.name();
+    private static final String MEASUREMENT_REASON = CauseOfTransmission.INTERROGATED_BY_STATION.name();
+    private static final int MEASUREMENT_ORIGINATOR_ADDRESS = 0;
+    private static final int MEASUREMENT_COMMON_ADDRESS = 0;
     private static final String ORGANISATION_IDENTIFICATION = "TEST-ORG-1";
     private static final String CORRELATION_UID = "TEST-CORR-1";
 
@@ -74,7 +74,7 @@ public class SinglePointWithQualityAsduHandlerTest {
     private LightMeasurementGatewayDeviceResponseService deviceResponseService;
 
     @Mock
-    private DeviceResponseServiceMap deviceResponseServiceMap;
+    private DeviceResponseServiceRegistry deviceResponseServiceMap;
 
     @Mock
     private LoggingService loggingService;

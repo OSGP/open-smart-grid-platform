@@ -16,7 +16,7 @@ import org.openmuc.j60870.ie.InformationObject;
 public class AsduBuilder {
 
     private final ASduType asduType;
-    private CauseOfTransmission cot = CauseOfTransmission.SPONTANEOUS;
+    private CauseOfTransmission causeOfTransmission = CauseOfTransmission.SPONTANEOUS;
     private int commonAddress = 0;
     private int originatorAddress = 0;
     private InformationObject[] informationObjects;
@@ -29,8 +29,8 @@ public class AsduBuilder {
         return new AsduBuilder(asduType);
     }
 
-    public AsduBuilder withCauseOfTransmission(final CauseOfTransmission cot) {
-        this.cot = cot;
+    public AsduBuilder withCauseOfTransmission(final CauseOfTransmission causeOfTransmission) {
+        this.causeOfTransmission = causeOfTransmission;
         return this;
     }
 
@@ -50,7 +50,7 @@ public class AsduBuilder {
     }
 
     public ASdu build() {
-        return new ASdu(this.asduType, false, this.cot, false, false, this.originatorAddress, this.commonAddress,
+        return new ASdu(this.asduType, false, this.causeOfTransmission, false, false, this.originatorAddress, this.commonAddress,
                 this.informationObjects);
     }
 }

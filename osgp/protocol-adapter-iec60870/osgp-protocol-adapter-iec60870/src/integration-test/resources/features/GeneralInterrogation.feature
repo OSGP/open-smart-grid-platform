@@ -3,7 +3,7 @@ Feature: General Interrogation
   I want to send general interrogation requests to controlled stations
   So that I am able to return the actual statuses of the controlled stations
 
-	Background:
+  Background:
     Given IEC60870 devices
       | device_identification | device_type               | gateway_device_identification | device_address |
       | GATEWAY_1             | LIGHT_MEASUREMENT_GATEWAY |                               |                |
@@ -23,7 +23,7 @@ Feature: General Interrogation
       | LMD_2                 | ON           |
 
   Scenario: Send general interrogation command after receiving a get status request message from osgp core
-    Given an existing connection with IEC60870 device "GATEWAY_1" of type "LIGHT_MEASUREMENT_GATEWAY"
+    Given an existing connection with IEC60870 device "GATEWAY_1" of type LIGHT_MEASUREMENT_GATEWAY
     When I receive a get light sensor status request message for IEC60870 device "LMD_2" from osgp core
     Then I should send a general interrogation command to device "GATEWAY_1"
     And I should send get light sensor status response messages to osgp core

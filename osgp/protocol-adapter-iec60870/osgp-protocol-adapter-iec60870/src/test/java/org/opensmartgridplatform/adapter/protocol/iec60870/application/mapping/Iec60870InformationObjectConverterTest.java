@@ -9,8 +9,6 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.application.mapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
@@ -31,7 +29,7 @@ public class Iec60870InformationObjectConverterTest {
 
     private final Iec60870Mapper mapper = new Iec60870Mapper();
 
-    private static final long TIMESTAMP_NOW = ZonedDateTime.now(ZoneOffset.UTC).toInstant().toEpochMilli();
+    private static final long TIMESTAMP_NOW = System.currentTimeMillis();
 
     private static final InformationElement IE_1 = new IeQuality(true, true, true, true, true);
     private static final InformationElement IE_2 = new IeShortFloat(30.51f);

@@ -11,46 +11,39 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-class DomainInfoTest {
-    static final String DOMAIN_DISTRIBUTION_AUTOMATION = "DISTRIBUTION_AUTOMATION";
-    static final String DOMAIN_PUBLIC_LIGHTING = "PUBLIC_LIGHTING";
-    static final String DOMAIN_VERSION = "1.0";
-    static final DomainInfo DOMAIN_INFO_DISTRIBUTION_AUTOMATION = new DomainInfo(DOMAIN_DISTRIBUTION_AUTOMATION,
+public class DomainInfoTest {
+    private static final String DOMAIN_DISTRIBUTION_AUTOMATION = "DISTRIBUTION_AUTOMATION";
+    private static final String DOMAIN_PUBLIC_LIGHTING = "PUBLIC_LIGHTING";
+    private static final String DOMAIN_VERSION = "1.0";
+    private static final DomainInfo DOMAIN_INFO_DISTRIBUTION_AUTOMATION = new DomainInfo(DOMAIN_DISTRIBUTION_AUTOMATION,
             DOMAIN_VERSION);
-    static final DomainInfo DOMAIN_INFO_PUBLIC_LIGHTING = new DomainInfo(DOMAIN_PUBLIC_LIGHTING, DOMAIN_VERSION);
+    private static final DomainInfo DOMAIN_INFO_PUBLIC_LIGHTING = new DomainInfo(DOMAIN_PUBLIC_LIGHTING,
+            DOMAIN_VERSION);
 
     @Test
-    void testDomainInfo() {
-        // Arrange
-        final DomainInfo expected = DOMAIN_INFO_DISTRIBUTION_AUTOMATION;
-        // Act
-        final DomainInfo actual = new DomainInfo("DISTRIBUTION_AUTOMATION", "1.0");
-        // Assert
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    void testGetDomain() {
+    public void testGetDomain() {
         // Arrange
         final String expected = DOMAIN_DISTRIBUTION_AUTOMATION;
+        final DomainInfo domainInfo = new DomainInfo(DOMAIN_DISTRIBUTION_AUTOMATION, DOMAIN_VERSION);
         // Act
-        final String actual = DOMAIN_INFO_DISTRIBUTION_AUTOMATION.getDomain();
+        final String actual = domainInfo.getDomain();
         // Assert
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
-    void testGetDomainVersion() {
+    public void testGetDomainVersion() {
         // Arrange
         final String expected = DOMAIN_VERSION;
+        final DomainInfo domainInfo = new DomainInfo(DOMAIN_DISTRIBUTION_AUTOMATION, DOMAIN_VERSION);
         // Act
-        final String actual = DOMAIN_INFO_DISTRIBUTION_AUTOMATION.getDomainVersion();
+        final String actual = domainInfo.getDomainVersion();
         // Assert
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
-    void testEqualsReturnsTrueForSameObjects() {
+    public void testEqualsReturnsTrueForSameObjects() {
         // Arrange
         final DomainInfo thisDomainInfo = DOMAIN_INFO_DISTRIBUTION_AUTOMATION;
         final DomainInfo otherDomainInfo = DOMAIN_INFO_DISTRIBUTION_AUTOMATION;
@@ -61,9 +54,9 @@ class DomainInfoTest {
     }
 
     @Test
-    void testEqualsReturnsTrueForObjectsWithSameValues() {
+    public void testEqualsReturnsTrueForObjectsWithSameValues() {
         // Arrange
-        final DomainInfo thisDomainInfo = DOMAIN_INFO_DISTRIBUTION_AUTOMATION;
+        final DomainInfo thisDomainInfo = new DomainInfo(DOMAIN_DISTRIBUTION_AUTOMATION, DOMAIN_VERSION);
         final DomainInfo otherDomainInfo = new DomainInfo(DOMAIN_DISTRIBUTION_AUTOMATION, DOMAIN_VERSION);
         // Act
         final boolean actual = thisDomainInfo.equals(otherDomainInfo);
@@ -72,7 +65,7 @@ class DomainInfoTest {
     }
 
     @Test
-    void testEqualsReturnsFalseForObjectsWithDifferentDomainValues() {
+    public void testEqualsReturnsFalseForObjectsWithDifferentDomainValues() {
         // Arrange
         final DomainInfo thisDomainInfo = new DomainInfo(DOMAIN_DISTRIBUTION_AUTOMATION, DOMAIN_VERSION);
         final DomainInfo otherDomainInfo = new DomainInfo(DOMAIN_PUBLIC_LIGHTING, DOMAIN_VERSION);
@@ -83,7 +76,7 @@ class DomainInfoTest {
     }
 
     @Test
-    void testEqualsReturnsFalseForObjectsWithDifferentDomainVersionValues() {
+    public void testEqualsReturnsFalseForObjectsWithDifferentDomainVersionValues() {
         // Arrange
         final DomainInfo thisDomainInfo = new DomainInfo(DOMAIN_DISTRIBUTION_AUTOMATION, "1.0");
         final DomainInfo otherDomainInfo = new DomainInfo(DOMAIN_DISTRIBUTION_AUTOMATION, "2.0");
@@ -94,7 +87,7 @@ class DomainInfoTest {
     }
 
     @Test
-    void testHashCode() {
+    public void testHashCode() {
         // Arrange
         final DomainInfo domainInfo = new DomainInfo(DOMAIN_PUBLIC_LIGHTING, DOMAIN_VERSION);
         final int expected = DOMAIN_INFO_PUBLIC_LIGHTING.hashCode();
@@ -105,7 +98,7 @@ class DomainInfoTest {
     }
 
     @Test
-    void testToString() {
+    public void testToString() {
         // Arrange
         final String expected = "DomainInfo [domain=PUBLIC_LIGHTING, domainVersion=1.0]";
         // Act

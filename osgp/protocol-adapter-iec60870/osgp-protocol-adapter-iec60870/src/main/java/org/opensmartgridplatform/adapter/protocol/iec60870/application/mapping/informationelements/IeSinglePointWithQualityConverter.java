@@ -17,11 +17,11 @@ import ma.glasnost.orika.metadata.Type;
 public class IeSinglePointWithQualityConverter
         extends CustomConverter<IeSinglePointWithQuality, BitmaskMeasurementElementDto> {
 
-    private static final int BIT_ON = 1 << 0;
-    private static final int BIT_BLOCKED = 1 << 4;
-    private static final int BIT_SUBSTITUTED = 1 << 5;
-    private static final int BIT_NOT_TOPICAL = 1 << 6;
-    private static final int BIT_INVALID = 1 << 7;
+    private static final int BIT_ON = 0b00000001;
+    private static final int BIT_BLOCKED = 0b00010000;
+    private static final int BIT_SUBSTITUTED = 0b00100000;
+    private static final int BIT_NOT_TOPICAL = 0b01000000;
+    private static final int BIT_INVALID = 0b10000000;
 
     @Override
     public BitmaskMeasurementElementDto convert(final IeSinglePointWithQuality source,

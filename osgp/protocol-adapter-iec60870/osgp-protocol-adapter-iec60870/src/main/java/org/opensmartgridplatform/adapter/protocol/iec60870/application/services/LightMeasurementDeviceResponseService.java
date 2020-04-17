@@ -11,8 +11,6 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.application.services
 import java.util.Optional;
 
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.entities.Iec60870Device;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.exceptions.AsduHandlerException;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.ResponseMetadataFactory;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.repositories.Iec60870DeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.LightMeasurementService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceType;
@@ -32,13 +30,12 @@ public class LightMeasurementDeviceResponseService extends AbstractDeviceRespons
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LightMeasurementDeviceResponseService.class);
 
+    private static final String ERROR_PREFIX = "Error while processing measurement report for light measurement device:";
+
     private static final DeviceType DEVICE_TYPE = DeviceType.LIGHT_MEASUREMENT_DEVICE;
 
     @Autowired
     private Iec60870DeviceRepository iec60870DeviceRepository;
-
-    @Autowired
-    private ResponseMetadataFactory responseMetadataFactory;
 
     @Autowired
     private LightMeasurementService lightMeasurementService;
@@ -48,19 +45,18 @@ public class LightMeasurementDeviceResponseService extends AbstractDeviceRespons
     }
 
     @Override
-    public void process(final MeasurementReportDto measurementReportDto, final ResponseMetadata responseMetadata)
-            throws AsduHandlerException {
-        LOGGER.info("Received measurement report {} for light measurement gateway {}.", measurementReportDto,
+    public void process(final MeasurementReportDto measurementReportDto, final ResponseMetadata responseMetadata) {
+        LOGGER.info("Received measurement report {} for light measurement device {}.", measurementReportDto,
                 responseMetadata.getDeviceIdentification());
 
-        final ResponseMetadata newResponseMetadata = this.responseMetadataFactory
-                .createWithNewCorrelationUid(responseMetadata);
+        final Optional<Iec60870Device> device = this.iec60870DeviceRepository
+                .findByDeviceIdentification(responseMetadata.getDeviceIdentification());
 
-        final Iec60870Device device = this.iec60870DeviceRepository
-                .findByDeviceIdentification(responseMetadata.getDeviceIdentification())
-                .orElseThrow(AsduHandlerException.withMessage("Device not found."));
-
-        this.sendLightSensorStatusResponse(measurementReportDto, device, newResponseMetadata);
+        if (device.isPresent()) {
+            this.sendLightSensorStatusResponse(measurementReportDto, device.get(), responseMetadata);
+        } else {
+            LOGGER.error("{} Device {} not found.", ERROR_PREFIX, responseMetadata.getDeviceIdentification());
+        }
     }
 
     private void sendLightSensorStatusResponse(final MeasurementReportDto measurementReportDto,
@@ -70,7 +66,13 @@ public class LightMeasurementDeviceResponseService extends AbstractDeviceRespons
                 .stream()
                 .filter(mg -> mg.getIdentification().equals(device.getInformationObjectAddress().toString()))
                 .findFirst();
-        measurementGroupDto.ifPresent(mg -> this.sendLightSensorStatusResponse(mg, device, responseMetadata));
+
+        if (measurementGroupDto.isPresent()) {
+            this.sendLightSensorStatusResponse(measurementGroupDto.get(), device, responseMetadata);
+        } else {
+            LOGGER.error("{} MeasurementGroup {} not found for device {}", ERROR_PREFIX,
+                    device.getInformationObjectAddress(), device.getDeviceIdentification());
+        }
     }
 
     private void sendLightSensorStatusResponse(final MeasurementGroupDto measurementGroupDto,
@@ -78,18 +80,24 @@ public class LightMeasurementDeviceResponseService extends AbstractDeviceRespons
         final ResponseMetadata rm = new ResponseMetadata.Builder()
                 .withCorrelationUid(responseMetadata.getCorrelationUid())
                 .withDeviceIdentification(device.getDeviceIdentification())
-                .withDomainInfo(device.getDeviceType().domainType().domainInfo())
+                .withDomainInfo(responseMetadata.getDomainInfo())
                 .withMessageType(MessageType.GET_LIGHT_SENSOR_STATUS.name())
                 .withOrganisationIdentification(responseMetadata.getOrganisationIdentification())
                 .build();
 
-        final boolean on = ((BitmaskMeasurementElementDto) measurementGroupDto.getMeasurements()
-                .get(0)
-                .getMeasurementElements()
-                .get(0)).getValue() == 1;
-        final LightSensorStatusDto dto = new LightSensorStatusDto(on);
+        final Optional<Boolean> on = measurementGroupDto.getMeasurements()
+                .stream()
+                .flatMap(m -> m.getMeasurementElements().stream())
+                .filter(me -> me instanceof BitmaskMeasurementElementDto)
+                .findFirst()
+                .map(me -> ((BitmaskMeasurementElementDto) me).getValue() == 1);
 
-        this.lightMeasurementService.send(dto, rm);
+        if (on.isPresent()) {
+            final LightSensorStatusDto dto = new LightSensorStatusDto(on.get());
+            this.lightMeasurementService.send(dto, rm);
+        } else {
+            LOGGER.error("{} Light sensor status information not found for device {}", ERROR_PREFIX,
+                    device.getDeviceIdentification());
+        }
     }
-
 }

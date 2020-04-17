@@ -35,7 +35,7 @@ public class Iec60870DeviceFactory {
     }
 
     public static Iec60870Device createDistributionAutomationDevice(final String deviceIdentification) {
-        final Iec60870Device device = new Iec60870Device(deviceIdentification, DeviceType.DA_DEVICE);
+        final Iec60870Device device = new Iec60870Device(deviceIdentification, DeviceType.DISTRIBUTION_AUTOMATION_DEVICE);
         device.setCommonAddress(Integer.parseInt(DEFAULT_COMMON_ADDRESS));
         device.setPort(Integer.parseInt(DEFAULT_PORT));
         return device;

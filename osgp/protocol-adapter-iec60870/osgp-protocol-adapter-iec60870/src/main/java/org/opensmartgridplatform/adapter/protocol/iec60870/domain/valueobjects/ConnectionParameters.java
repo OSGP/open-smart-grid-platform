@@ -22,6 +22,11 @@ import java.util.Objects;
  */
 public class ConnectionParameters {
 
+    private static final String DEFAULT_IP_ADDRESS = "localhost";
+    private static final String DEFAULT_DEVICE_IDENTIFICATION = null;
+    private static final int DEFAULT_COMMON_ADDRESS = 0;
+    private static final int DEFAULT_PORT = 2404;
+
     final String ipAddress;
     final String deviceIdentification;
     final int commonAddress;
@@ -61,10 +66,10 @@ public class ConnectionParameters {
     }
 
     public static class Builder {
-        private String ipAddress = "localhost";
-        private String deviceIdentification = null;
-        private int commonAddress = 0;
-        private Integer port = 2404;
+        private String ipAddress = DEFAULT_IP_ADDRESS;
+        private String deviceIdentification = DEFAULT_DEVICE_IDENTIFICATION;
+        private int commonAddress = DEFAULT_COMMON_ADDRESS;
+        private Integer port = DEFAULT_PORT;
 
         public Builder ipAddress(final String ipAddress) {
             this.ipAddress = ipAddress;

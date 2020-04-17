@@ -22,7 +22,7 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.LogItemFactory;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.ResponseMetadataFactory;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.AsduConverterService;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.DeviceResponseServiceMap;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.DeviceResponseServiceRegistry;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.LoggingService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceType;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.LogItem;
@@ -36,7 +36,7 @@ import ma.glasnost.orika.MapperFacade;
 public class MeasurementAsduHandlerTest {
 
     private static final String DEVICE_IDENTIFICATION = "TEST-DEVICE-1";
-    private static final DeviceType DEVICE_TYPE = DeviceType.DA_DEVICE;
+    private static final DeviceType DEVICE_TYPE = DeviceType.DISTRIBUTION_AUTOMATION_DEVICE;
     private static final String ORGANISATION_IDENTIFICATION = "TEST-ORG-1";
     private static final String CORRELATION_UID = "TEST-CORR-1";
 
@@ -47,7 +47,7 @@ public class MeasurementAsduHandlerTest {
     private ResponseMetadataFactory responseMetadataFactory;
 
     @Mock
-    private DeviceResponseServiceMap deviceResponseServiceMap;
+    private DeviceResponseServiceRegistry deviceResponseServiceRegistry;
 
     @Mock
     private AsduConverterService converter;
@@ -77,7 +77,7 @@ public class MeasurementAsduHandlerTest {
 
         when(this.responseMetadataFactory.createWithNewCorrelationUid(responseMetadata)).thenReturn(responseMetadata);
         when(this.converter.convert(asdu)).thenReturn(measurementReportDto);
-        when(this.deviceResponseServiceMap.forDeviceType(DEVICE_TYPE)).thenReturn(this.deviceResponseService);
+        when(this.deviceResponseServiceRegistry.forDeviceType(DEVICE_TYPE)).thenReturn(this.deviceResponseService);
         when(this.logItemFactory.create(asdu, responseMetadata, true)).thenReturn(logItem);
         // Act
         this.asduHandler.handleAsdu(asdu, responseMetadata);

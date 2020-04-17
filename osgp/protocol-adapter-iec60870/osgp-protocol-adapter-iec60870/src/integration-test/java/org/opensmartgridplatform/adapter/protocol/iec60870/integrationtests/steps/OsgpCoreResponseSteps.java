@@ -19,7 +19,8 @@ import org.mockito.internal.verification.Times;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.entities.Iec60870Device;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DomainInfo;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.DeviceResponseMessageSender;
-import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.matchers.GetLightSensorStatusResponseMessageMatcher;
+import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.factories.DomainInfoFactory;
+import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.matchers.ProtocolResponseMessageMatcher;
 import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.matchers.MeasurementReportTypeMatcher;
 import org.opensmartgridplatform.dto.valueobjects.LightSensorStatusDto;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
@@ -35,9 +36,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Then;
 
-public class ResponseSteps {
+public class OsgpCoreResponseSteps {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ResponseSteps.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OsgpCoreResponseSteps.class);
 
     @Autowired
     @Qualifier("protocolIec60870OutboundOsgpCoreResponsesMessageSender")
@@ -76,13 +77,13 @@ public class ResponseSteps {
     }
 
     private void verifyResponse(final ProtocolResponseMessage msg) {
-        verify(this.responseMessageSenderMock).send(argThat(new GetLightSensorStatusResponseMessageMatcher(msg)));
+        verify(this.responseMessageSenderMock).send(argThat(new ProtocolResponseMessageMatcher(msg)));
     }
 
     private ProtocolResponseMessage protocolResponseMessage(final Map<String, String> map) {
         final String deviceIdentification = map.get("device_identification");
         final Iec60870Device device = this.deviceSteps.getDevice(deviceIdentification).orElse(null);
-        final DomainInfo domainInfo = device.getDeviceType().domainType().domainInfo();
+        final DomainInfo domainInfo = DomainInfoFactory.forDeviceType(device.getDeviceType());
         final DeviceMessageMetadata deviceMessageMetadata = DeviceMessageMetadata.newBuilder()
                 .withDeviceIdentification(deviceIdentification)
                 .withMessageType(MessageType.GET_LIGHT_SENSOR_STATUS.name())

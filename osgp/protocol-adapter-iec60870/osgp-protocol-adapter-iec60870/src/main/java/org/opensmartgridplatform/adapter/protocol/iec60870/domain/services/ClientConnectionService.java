@@ -7,41 +7,154 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services;
 
-import org.openmuc.j60870.Connection;
+import java.util.Collection;
+import java.util.function.Supplier;
+
+import javax.annotation.PreDestroy;
+
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.entities.Iec60870Device;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.exceptions.ClientConnectionAlreadyInCacheException;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.repositories.Iec60870DeviceRepository;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ConnectionParameters;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceConnection;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.RequestMetadata;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseMetadata;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.ConnectionFailureException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-public interface ClientConnectionService {
-    /**
-     * Gets a connection.
-     *
-     * @param requestMetadata
-     *            The {@link RequestMetadata} instance.
-     * @return A {@link ClientConnection} instance.
-     * @throws ConnectionFailureException
-     */
-    ClientConnection getConnection(RequestMetadata requestMetadata) throws ConnectionFailureException;
+@Component
+public class ClientConnectionService {
 
-    /**
-     * Closes the {@link Connection}, sends a disconnect request and closes the
-     * socket.
-     *
-     * @param deviceIdentification
-     *            Device for which to close the connection.
-     */
-    void disconnect(String deviceIdentification);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClientConnectionService.class);
 
-    /**
-     * Closes the {@link Connection}, sends a disconnect request and closes the
-     * socket.
-     *
-     * @param deviceIdentification
-     *            Device for which to close the connection.
-     */
-    void disconnect(ClientConnection connection);
+    @Autowired
+    private ClientConnectionCache connectionCache;
 
-    /**
-     * Close all connections.
-     */
-    void closeAllConnections();
+    @Autowired
+    private Client iec60870Client;
+
+    @Autowired
+    private Iec60870DeviceRepository iec60870DeviceRepository;
+
+    @Autowired
+    private ClientAsduHandlerRegistry clientAsduHandlerRegistry;
+
+    public ClientConnection getConnection(final RequestMetadata requestMetadata) throws ConnectionFailureException {
+        final String deviceIdentification = requestMetadata.getDeviceIdentification();
+        LOGGER.debug("Get connection called for device {}.", deviceIdentification);
+
+        final Iec60870Device device = this.getIec60870Device(deviceIdentification);
+        final String connectionDeviceIdentification = this.getConnectionDeviceIdentification(device);
+
+        if (device.hasGatewayDevice()) {
+            LOGGER.debug("Getting connection for device {} using gateway device {}.", deviceIdentification,
+                    connectionDeviceIdentification);
+        }
+
+        final ClientConnection cachedDeviceConnection = this.connectionCache
+                .getConnection(connectionDeviceIdentification);
+
+        if (cachedDeviceConnection != null) {
+            LOGGER.info("Connection found in cache for device {}.", connectionDeviceIdentification);
+            return cachedDeviceConnection;
+        } else {
+            LOGGER.info("No connection found in cache for device {}, creating new connection.",
+                    connectionDeviceIdentification);
+            return this.createConnection(requestMetadata);
+        }
+    }
+
+    public void closeConnection(final String deviceIdentification) {
+        final ClientConnection connection = this.connectionCache.getConnection(deviceIdentification);
+        this.close(connection);
+    }
+
+    public synchronized void close(final ClientConnection connection) {
+        final String deviceIdentification = connection.getConnectionParameters().getDeviceIdentification();
+        if (connection instanceof DeviceConnection) {
+
+            this.iec60870Client.disconnect(connection);
+
+            this.connectionCache.removeConnection(deviceIdentification);
+
+        } else {
+            LOGGER.warn("No connection found for deviceIdentification {}", deviceIdentification);
+        }
+    }
+
+    @PreDestroy
+    public void closeAllConnections() {
+        LOGGER.info("Closing all connections.");
+        final Collection<ClientConnection> connections = this.connectionCache.getConnections();
+        LOGGER.warn("{} active connections found, closing all.", connections.size());
+        connections.forEach(this::close);
+    }
+
+    private ClientConnection createConnection(final RequestMetadata requestMetadata) throws ConnectionFailureException {
+        final String deviceIdentification = requestMetadata.getDeviceIdentification();
+        final Iec60870Device device = this.getIec60870Device(deviceIdentification);
+        final Iec60870Device connectionDevice = this.getConnectionDevice(device);
+
+        final ConnectionParameters connectionParameters = this.createConnectionParameters(connectionDevice,
+                requestMetadata.getIpAddress());
+        final ResponseMetadata responseMetadata = ResponseMetadata.from(requestMetadata, device.getDeviceType());
+
+        final ClientConnectionEventListener eventListener = new ClientConnectionEventListener(
+                connectionParameters.getDeviceIdentification(), this.connectionCache, this.clientAsduHandlerRegistry,
+                responseMetadata);
+
+        final ClientConnection newDeviceConnection = this.iec60870Client.connect(connectionParameters, eventListener);
+
+        try {
+            this.connectionCache.addConnection(deviceIdentification, newDeviceConnection);
+        } catch (final ClientConnectionAlreadyInCacheException e) {
+            LOGGER.warn(
+                    "Client connection for device {} already exists. Closing new connection and returning existing connection",
+                    deviceIdentification);
+            LOGGER.debug("Exception: ", e);
+            newDeviceConnection.getConnection().close();
+            return e.getClientConnection();
+        }
+        return newDeviceConnection;
+    }
+
+    private ConnectionParameters createConnectionParameters(final Iec60870Device device, final String ipAddress) {
+        return ConnectionParameters.newBuilder()
+                .deviceIdentification(device.getDeviceIdentification())
+                .ipAddress(ipAddress)
+                .commonAddress(device.getCommonAddress())
+                .port(device.getPort())
+                .build();
+    }
+
+    private String getConnectionDeviceIdentification(final Iec60870Device device) {
+        if (device.hasGatewayDevice()) {
+            return device.getGatewayDeviceIdentification();
+        } else {
+            return device.getDeviceIdentification();
+        }
+    }
+
+    private Iec60870Device getConnectionDevice(final Iec60870Device device) throws ConnectionFailureException {
+        if (device.hasGatewayDevice()) {
+            final String gatewayDeviceIdentification = device.getGatewayDeviceIdentification();
+            return this.getIec60870Device(gatewayDeviceIdentification);
+        } else {
+            return device;
+        }
+    }
+
+    private Iec60870Device getIec60870Device(final String deviceIdentification) throws ConnectionFailureException {
+        return this.iec60870DeviceRepository.findByDeviceIdentification(deviceIdentification)
+                .orElseThrow(this.connectionFailureException(deviceIdentification));
+    }
+
+    private Supplier<ConnectionFailureException> connectionFailureException(final String deviceIdentification) {
+        final String message = String.format("Device %s not found", deviceIdentification);
+        return () -> new ConnectionFailureException(ComponentType.PROTOCOL_IEC60870, message);
+    }
 }

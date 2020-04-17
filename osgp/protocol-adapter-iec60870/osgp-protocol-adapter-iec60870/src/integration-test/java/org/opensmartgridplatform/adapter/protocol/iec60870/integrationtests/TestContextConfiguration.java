@@ -27,7 +27,7 @@ import io.cucumber.java.Before;
 public class TestContextConfiguration {
 
     @Autowired
-    LogItemRequestMessageSender logItemRequestMessageSenderMock;
+    private LogItemRequestMessageSender logItemRequestMessageSenderMock;
 
     @Autowired
     @Qualifier("protocolIec60870OutboundOsgpCoreResponsesMessageSender")

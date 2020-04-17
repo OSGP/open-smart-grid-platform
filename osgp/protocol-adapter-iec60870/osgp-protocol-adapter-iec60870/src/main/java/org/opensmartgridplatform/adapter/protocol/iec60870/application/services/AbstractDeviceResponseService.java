@@ -11,7 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.application.services
 import javax.annotation.PostConstruct;
 
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.DeviceResponseService;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.DeviceResponseServiceMap;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.DeviceResponseServiceRegistry;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +22,7 @@ public abstract class AbstractDeviceResponseService implements DeviceResponseSer
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDeviceResponseService.class);
 
     @Autowired
-    private DeviceResponseServiceMap deviceResponseServiceMap;
+    private DeviceResponseServiceRegistry deviceResponseServiceRegistry;
 
     private final DeviceType deviceType;
 
@@ -33,6 +33,6 @@ public abstract class AbstractDeviceResponseService implements DeviceResponseSer
     @PostConstruct
     private void registerService() {
         LOGGER.info("Registering device response service for device type {}", this.deviceType);
-        this.deviceResponseServiceMap.register(this.deviceType, this);
+        this.deviceResponseServiceRegistry.register(this.deviceType, this);
     }
 }

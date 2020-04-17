@@ -52,7 +52,7 @@ public class Iec60870Device extends AbstractEntity {
     }
 
     public Iec60870Device(final String deviceIdentification) {
-        this(deviceIdentification, DeviceType.DA_DEVICE);
+        this(deviceIdentification, DeviceType.DISTRIBUTION_AUTOMATION_DEVICE);
     }
 
     public Iec60870Device(final String deviceIdentification, final DeviceType deviceType) {

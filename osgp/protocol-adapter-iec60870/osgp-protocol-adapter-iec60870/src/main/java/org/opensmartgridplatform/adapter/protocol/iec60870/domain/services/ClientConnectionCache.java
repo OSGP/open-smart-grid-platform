@@ -8,45 +8,33 @@
 package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.exceptions.ClientConnectionAlreadyInCacheException;
+import org.springframework.stereotype.Component;
 
-public interface ClientConnectionCache {
+@Component
+public class ClientConnectionCache {
+    private ConcurrentHashMap<String, ClientConnection> cache = new ConcurrentHashMap<>();
 
-    /**
-     * Gets all connections from the cache.
-     *
-     * @return A {@link Collection} of {@link ClientConnection} instances.
-     */
-    public Collection<ClientConnection> getConnections();
+    public Collection<ClientConnection> getConnections() {
+        return Collections.unmodifiableCollection(this.cache.values());
+    }
 
-    /**
-     * Gets a connection from the cache.
-     *
-     * @param key
-     *            The key of the connection to be retrieved.
-     * @return A {@link ClientConnection} instance or null when no connection is
-     *         found.
-     */
-    public ClientConnection getConnection(String key);
+    public ClientConnection getConnection(final String key) {
+        return this.cache.get(key);
+    }
 
-    /**
-     * Adds a connection to the cache.
-     *
-     * @param key
-     *            The key of the connection to be added.
-     * @param connection
-     *            The {@link ClientConnection} instance to be added.
-     * @throws ClientConnectionAlreadyInCacheException
-     *             when a connection is already present using the same key.
-     */
-    public void addConnection(String key, ClientConnection connection) throws ClientConnectionAlreadyInCacheException;
+    public void addConnection(final String key, final ClientConnection connection)
+            throws ClientConnectionAlreadyInCacheException {
+        final ClientConnection conn = this.cache.putIfAbsent(key, connection);
+        if (conn != null) {
+            throw new ClientConnectionAlreadyInCacheException(conn);
+        }
+    }
 
-    /**
-     * Removes a connection from the cache.
-     *
-     * @param key
-     *            The key of the connection to be removed.
-     */
-    public void removeConnection(String key);
+    public void removeConnection(final String key) {
+        this.cache.remove(key);
+    }
 }

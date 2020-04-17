@@ -44,7 +44,7 @@ public class AsduSteps {
         this.connectionSteps.getConnectionEventListener().newASdu(asdu);
     }
 
-    @Then("^I should send a general interrogation command to device \"([^\"]*)\"$")
+    @Then("I should send a general interrogation command to device {string}")
     public void thenIShouldSendAGeneralInterrogationCommandToDevice(final String deviceIdentification)
             throws Exception {
         LOGGER.debug("Then I should send a general interrogation command to device {}", deviceIdentification);

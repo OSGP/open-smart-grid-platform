@@ -82,7 +82,6 @@ public class LightMeasurementGatewayDeviceResponseServiceTest {
         final MeasurementReportDto measurementReportDto = this.getMeasurementReportDto();
 
         final ResponseMetadata responseMetadata = this.getResponseMetadata(GATEWAY_DEVICE_IDENTIFICATION);
-        when(this.responseMetadataFactory.createWithNewCorrelationUid(responseMetadata)).thenReturn(responseMetadata);
 
         // Act
         this.lightMeasurementGatewayDeviceResponseService.process(measurementReportDto, responseMetadata);

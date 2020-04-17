@@ -30,6 +30,7 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.D
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceType;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DomainInfo;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseMetadata;
+import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.factories.DomainInfoFactory;
 import org.opensmartgridplatform.shared.exceptionhandling.ConnectionFailureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,12 +85,11 @@ public class ConnectionSteps {
                 .thenReturn(deviceConnection);
     }
 
-    @Given("an existing connection with IEC60870 device {string} of type {string}")
-    public void givenIec60870DeviceIsConnected(final String deviceIdentification, final String typeOfDevice)
+    @Given("an existing connection with IEC60870 device {string} of type {deviceType}")
+    public void givenIec60870DeviceIsConnected(final String deviceIdentification, final DeviceType deviceType)
             throws Exception {
         LOGGER.debug("Given an existing connection with IEC60870 device {} of type {}", deviceIdentification,
-                typeOfDevice);
-        final DeviceType deviceType = DeviceType.valueOf(typeOfDevice);
+                deviceType);
         // Make sure the connection event listener works as expected
         this.connectionParameters = this.initConnectionParameters(deviceIdentification);
         final ResponseMetadata responseMetadata = this.initResponseMetadata(deviceIdentification, deviceType);
@@ -110,11 +110,11 @@ public class ConnectionSteps {
         final Iec60870Device device = this.iec60870DeviceSteps.getDevice(deviceIdentification)
                 .orElseThrow(() -> new Exception("Device not found"));
         final DeviceType deviceType = device.getDeviceType();
-        String connectionDevice = deviceIdentification;
-        if (device.getGatewayDeviceIdentification() != null) {
-            connectionDevice = device.getGatewayDeviceIdentification();
+        String connectionDeviceIdentification = deviceIdentification;
+        if (device.hasGatewayDevice()) {
+            connectionDeviceIdentification = device.getGatewayDeviceIdentification();
         }
-        this.connectionParameters = this.initConnectionParameters(connectionDevice);
+        this.connectionParameters = this.initConnectionParameters(connectionDeviceIdentification);
         this.connectionEventListener = new ClientConnectionEventListener(
                 this.connectionParameters.getDeviceIdentification(), this.connectionCacheSpy,
                 this.clientAsduHandlerRegistry, this.initResponseMetadata(deviceIdentification, deviceType));
@@ -138,16 +138,12 @@ public class ConnectionSteps {
     }
 
     private ConnectionParameters initConnectionParameters(final String deviceIdentification) {
-        return new ConnectionParameters.Builder().commonAddress(0)
-                .deviceIdentification(deviceIdentification)
-                .ipAddress("localhost")
-                .port(2404)
-                .build();
+        return new ConnectionParameters.Builder().deviceIdentification(deviceIdentification).build();
     }
 
     private ResponseMetadata initResponseMetadata(final String deviceIdentification, final DeviceType deviceType)
             throws Exception {
-        final DomainInfo domainInfo = deviceType.domainType().domainInfo();
+        final DomainInfo domainInfo = DomainInfoFactory.forDeviceType(deviceType);
         // Make sure the connection event listener works as expected
         final ResponseMetadata responseMetadata = new ResponseMetadata.Builder()
                 .withDeviceIdentification(deviceIdentification)

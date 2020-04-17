@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Smart Society Services B.V.
+ * Copyright 2020 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -15,14 +15,14 @@ import org.opensmartgridplatform.dto.da.measurements.elements.BitmaskMeasurement
 
 public class IeSinglePointWithQualityConverterTest {
 
-    private static final int IE_OFF = 0;
-    private static final int IE_ON = 1 << 0;
-    private static final int IE_QUALITY_BLOCKED = 1 << 4;
-    private static final int IE_QUALITY_SUBSTITUTED = 1 << 5;
-    private static final int IE_QUALITY_NOT_TOPICAL = 1 << 6;
-    private static final int IE_QUALITY_INVALID = 1 << 7;
-    private static final int IE_ALL = IE_ON + IE_QUALITY_BLOCKED + IE_QUALITY_SUBSTITUTED + IE_QUALITY_NOT_TOPICAL
-            + IE_QUALITY_INVALID;
+    private static final int IE_OFF = 0b00000000;
+    private static final int IE_ON = 0b00000001;
+    private static final int IE_QUALITY_BLOCKED = 0b00010000;
+    private static final int IE_QUALITY_SUBSTITUTED = 0b00100000;
+    private static final int IE_QUALITY_NOT_TOPICAL = 0b01000000;
+    private static final int IE_QUALITY_INVALID = 0b10000000;
+    private static final int IE_ALL = IE_ON | IE_QUALITY_BLOCKED | IE_QUALITY_SUBSTITUTED | IE_QUALITY_NOT_TOPICAL
+            | IE_QUALITY_INVALID;
 
     private final IeSinglePointWithQualityConverter converter = new IeSinglePointWithQualityConverter();
 

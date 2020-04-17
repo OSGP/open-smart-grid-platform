@@ -15,14 +15,15 @@ import org.opensmartgridplatform.dto.da.measurements.elements.BitmaskMeasurement
 
 public class IeQualityConverterTest {
 
-    private static final int IE_QUALITY_NONE = 0;
-    private static final int IE_QUALITY_OVERFLOW = 1 << 0;
-    private static final int IE_QUALITY_BLOCKED = 1 << 4;
-    private static final int IE_QUALITY_SUBSTITUTED = 1 << 5;
-    private static final int IE_QUALITY_NOT_TOPICAL = 1 << 6;
-    private static final int IE_QUALITY_INVALID = 1 << 7;
-    private static final int IE_QUALITY_ALL = IE_QUALITY_OVERFLOW + IE_QUALITY_BLOCKED + IE_QUALITY_SUBSTITUTED
-            + IE_QUALITY_NOT_TOPICAL + IE_QUALITY_INVALID;
+    private static final int IE_QUALITY_NONE = 0b00000000;
+    private static final int IE_QUALITY_OVERFLOW = 0b00000001;
+    private static final int IE_QUALITY_BLOCKED = 0b00010000;
+    private static final int IE_QUALITY_SUBSTITUTED = 0b00100000;
+    private static final int IE_QUALITY_NOT_TOPICAL = 0b01000000;
+    private static final int IE_QUALITY_INVALID = 0b10000000;
+
+    private static final int IE_QUALITY_ALL = IE_QUALITY_OVERFLOW | IE_QUALITY_BLOCKED | IE_QUALITY_SUBSTITUTED
+            | IE_QUALITY_NOT_TOPICAL | IE_QUALITY_INVALID;
 
     private final IeQualityConverter converter = new IeQualityConverter();
 

@@ -1,3 +1,10 @@
+/**
+ * Copyright 2020 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.steps;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -9,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.mockito.invocation.InvocationOnMock;
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.ASduType;
 import org.openmuc.j60870.CauseOfTransmission;
@@ -23,7 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
 
-public class MockedDeviceSteps {
+public class ControlledStationSteps {
     @Autowired
     private ConnectionSteps connectionSteps;
 
@@ -31,18 +37,18 @@ public class MockedDeviceSteps {
     private Connection connection;
 
     @Given("a process image on the controlled station")
-    public void givenAProcessImageOnTheControlledStation(final DataTable datatable) throws Throwable {
+    public void givenAProcessImageOnTheControlledStation(final DataTable processImageTable) throws Throwable {
 
-        final ProcessImage processImage = ProcessImage.fromDataTable(datatable);
+        final ProcessImage processImage = ProcessImage.fromDataTable(processImageTable);
 
-        doAnswer(invocation -> this.sendInterrogationResponse(invocation, processImage)).when(this.connection)
-                .interrogation(any(Integer.class), eq(CauseOfTransmission.ACTIVATION),
-                        any(IeQualifierOfInterrogation.class));
+        doAnswer(invocation -> this.sendInterrogationResponse(invocation.getArgument(0), invocation.getArgument(2),
+                processImage)).when(this.connection)
+                        .interrogation(any(Integer.class), eq(CauseOfTransmission.ACTIVATION),
+                                any(IeQualifierOfInterrogation.class));
     }
 
-    private Object sendInterrogationResponse(final InvocationOnMock invocation, final ProcessImage processImage) {
-        final int commonAddress = invocation.getArgument(0);
-        final IeQualifierOfInterrogation qualifier = invocation.getArgument(2);
+    private Object sendInterrogationResponse(final int commonAddress, final IeQualifierOfInterrogation qualifier,
+            final ProcessImage processImage) {
 
         final ConnectionEventListener listener = this.connectionSteps.getConnectionEventListener();
         listener.newASdu(this.interrogationActivationConfirmationAsdu(commonAddress, qualifier));
@@ -76,11 +82,10 @@ public class MockedDeviceSteps {
             this.image = image;
         }
 
-        public static ProcessImage fromDataTable(final DataTable datatable) {
+        public static ProcessImage fromDataTable(final DataTable processImageTable) {
 
-            final List<Map<String, String>> rows = datatable.asMaps();
-
-            final List<InformationObject> informationObjects = rows.stream()
+            final List<InformationObject> informationObjects = processImageTable.asMaps()
+                    .stream()
                     .map(ProcessImage::informationObject)
                     .collect(Collectors.toList());
             return new ProcessImage(informationObjects);
@@ -96,8 +101,6 @@ public class MockedDeviceSteps {
 
         public static InformationObject informationObject(final Map<String, String> map) {
             final int informationObjectAddress = Integer.parseInt(map.getOrDefault("information_object_address", "0"));
-            // final String informationObjectType =
-            // map.get("information_object_type");
             final String informationElementValue = map.get("information_element_value");
             final boolean on = "ON".equalsIgnoreCase(informationElementValue);
             return new InformationObject(informationObjectAddress,

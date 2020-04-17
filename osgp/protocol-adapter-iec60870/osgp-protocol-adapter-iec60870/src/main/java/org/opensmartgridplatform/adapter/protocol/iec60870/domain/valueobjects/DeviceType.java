@@ -8,17 +8,7 @@
 package org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects;
 
 public enum DeviceType {
-    DA_DEVICE(DomainType.DISTRIBUTION_AUTOMATION),
-    LIGHT_MEASUREMENT_GATEWAY(DomainType.PUBLIC_LIGHTING),
-    LIGHT_MEASUREMENT_DEVICE(DomainType.PUBLIC_LIGHTING);
-
-    private DomainType domainType;
-
-    private DeviceType(final DomainType domainType) {
-        this.domainType = domainType;
-    }
-
-    public DomainType domainType() {
-        return this.domainType;
-    }
+    DISTRIBUTION_AUTOMATION_DEVICE,
+    LIGHT_MEASUREMENT_GATEWAY,
+    LIGHT_MEASUREMENT_DEVICE;
 }

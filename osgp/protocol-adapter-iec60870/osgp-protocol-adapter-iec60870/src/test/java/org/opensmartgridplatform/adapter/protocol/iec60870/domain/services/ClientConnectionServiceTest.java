@@ -31,13 +31,13 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.factories.I
 import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.factories.RequestMetadataFactory;
 
 @ExtendWith(MockitoExtension.class)
-public class ClientConnectionServiceImplTest {
+public class ClientConnectionServiceTest {
 
     @InjectMocks
-    private ClientConnectionServiceImpl clientConnectionService;
+    private ClientConnectionService clientConnectionService;
 
     @Spy
-    private ClientConnectionCacheImpl connectionCache;
+    private ClientConnectionCache connectionCache;
 
     @Mock
     private Client iec60870Client;
@@ -48,12 +48,6 @@ public class ClientConnectionServiceImplTest {
     @Mock
     private ClientAsduHandlerRegistry clientAsduHandlerRegistry;
 
-    /**
-     * Test method for
-     * {@link org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionServiceImpl#getConnection(org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.RequestMetadata)}.
-     *
-     * @throws Exception
-     */
     @Test
     void testGetConnectionShouldReturnExistingConnectionWhenInCache() throws Exception {
         // Arrange
@@ -73,12 +67,6 @@ public class ClientConnectionServiceImplTest {
         assertThat(actualConnection).isEqualTo(expectedConnection);
     }
 
-    /**
-     * Test method for
-     * {@link org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionServiceImpl#getConnection(org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.RequestMetadata)}.
-     *
-     * @throws Exception
-     */
     @Test
     void testGetConnectionShouldReturnExistingConnectionToGatewayDeviceWhenInCache() throws Exception {
         // Arrange
@@ -101,14 +89,8 @@ public class ClientConnectionServiceImplTest {
         assertThat(actualConnection).isEqualTo(expectedConnection);
     }
 
-    /**
-     * Test method for
-     * {@link org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionServiceImpl#getConnection(org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.RequestMetadata)}.
-     *
-     * @throws Exception
-     */
     @Test
-    void testGetConnectionShouldReturnCreateConnectionWhenNotInCache() throws Exception {
+    void testGetConnectionShouldReturnNewConnectionWhenNotInCache() throws Exception {
         // Arrange
         final String deviceIdentification = "DA_DVC_1";
         final Iec60870Device device = Iec60870DeviceFactory.createDistributionAutomationDevice(deviceIdentification);
@@ -127,14 +109,8 @@ public class ClientConnectionServiceImplTest {
         assertThat(actualConnection).isEqualTo(expectedConnection);
     }
 
-    /**
-     * Test method for
-     * {@link org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionServiceImpl#getConnection(org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.RequestMetadata)}.
-     *
-     * @throws Exception
-     */
     @Test
-    void testGetConnectionShouldReturnCreateConnectionToGatewayDeviceWhenNotInCache() throws Exception {
+    void testGetConnectionShouldReturnNewConnectionToGatewayDeviceWhenNotInCache() throws Exception {
         // Arrange
         final String deviceIdentification = "LM_DVC_1";
         final String gatewayDeviceIdentification = "LM_GATEWAY_1";
@@ -159,54 +135,36 @@ public class ClientConnectionServiceImplTest {
         assertThat(actualConnection).isEqualTo(expectedConnection);
     }
 
-    /**
-     * Test method for
-     * {@link org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionServiceImpl#disconnect(java.lang.String)}.
-     *
-     * @throws Exception
-     */
     @Test
-    void testDisconnectString() throws Exception {
+    void testDisconnectByDeviceIdentification() throws Exception {
         // Arrange
         final String deviceIdentification = "DA_DVC_1";
         final ClientConnection clientConnection = ClientConnectionFactory.forDevice(deviceIdentification);
         this.connectionCache.addConnection(deviceIdentification, clientConnection);
 
         // Act
-        this.clientConnectionService.disconnect(deviceIdentification);
+        this.clientConnectionService.closeConnection(deviceIdentification);
 
         // Assert
         verify(this.iec60870Client).disconnect(clientConnection);
         verify(this.connectionCache).removeConnection(deviceIdentification);
     }
 
-    /**
-     * Test method for
-     * {@link org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionServiceImpl#disconnect(org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnection)}.
-     *
-     * @throws Exception
-     */
     @Test
-    void testDisconnectClientConnection() throws Exception {
+    void testDisconnectByClientConnection() throws Exception {
         // Arrange
         final String deviceIdentification = "DA_DVC_1";
         final ClientConnection clientConnection = ClientConnectionFactory.forDevice(deviceIdentification);
         this.connectionCache.addConnection(deviceIdentification, clientConnection);
 
         // Act
-        this.clientConnectionService.disconnect(clientConnection);
+        this.clientConnectionService.close(clientConnection);
 
         // Assert
         verify(this.iec60870Client).disconnect(clientConnection);
         verify(this.connectionCache).removeConnection(deviceIdentification);
     }
 
-    /**
-     * Test method for
-     * {@link org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionServiceImpl#closeAllConnections()}.
-     *
-     * @throws Exception
-     */
     @Test
     void testCloseAllConnections() throws Exception {
         // Arrange

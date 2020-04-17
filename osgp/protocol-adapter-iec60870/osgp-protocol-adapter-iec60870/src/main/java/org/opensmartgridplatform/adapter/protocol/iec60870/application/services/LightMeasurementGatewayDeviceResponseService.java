@@ -32,6 +32,8 @@ public class LightMeasurementGatewayDeviceResponseService extends AbstractDevice
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LightMeasurementGatewayDeviceResponseService.class);
 
+    private static final String ERROR_PREFIX = "Error while processing measurement report for light measurement gateway: ";
+
     private static final DeviceType DEVICE_TYPE = DeviceType.LIGHT_MEASUREMENT_GATEWAY;
 
     @Autowired
@@ -52,13 +54,10 @@ public class LightMeasurementGatewayDeviceResponseService extends AbstractDevice
         LOGGER.info("Received measurement report {} for light measurement gateway {}.", measurementReportDto,
                 responseMetadata.getDeviceIdentification());
 
-        final ResponseMetadata newResponseMetadata = this.responseMetadataFactory
-                .createWithNewCorrelationUid(responseMetadata);
-
         final List<Iec60870Device> lightMeasurementDevices = this.iec60870DeviceRepository
                 .findByGatewayDeviceIdentification(responseMetadata.getDeviceIdentification());
 
-        this.sendLightSensorStatusResponses(measurementReportDto, lightMeasurementDevices, newResponseMetadata);
+        this.sendLightSensorStatusResponses(measurementReportDto, lightMeasurementDevices, responseMetadata);
     }
 
     private void sendLightSensorStatusResponses(final MeasurementReportDto measurementReportDto,
@@ -68,7 +67,12 @@ public class LightMeasurementGatewayDeviceResponseService extends AbstractDevice
             final Optional<Iec60870Device> device = lightMeasurementDevices.stream()
                     .filter(d -> d.getInformationObjectAddress().toString().equals(mg.getIdentification()))
                     .findFirst();
-            device.ifPresent(d -> this.sendLightSensorStatusResponse(mg, d, responseMetadata));
+
+            if (device.isPresent()) {
+                this.sendLightSensorStatusResponse(mg, device.get(), responseMetadata);
+            } else {
+                LOGGER.error("{} No device found for measurement group {}", ERROR_PREFIX, mg.getIdentification());
+            }
         }
     }
 
@@ -77,18 +81,25 @@ public class LightMeasurementGatewayDeviceResponseService extends AbstractDevice
         final ResponseMetadata rm = new ResponseMetadata.Builder()
                 .withCorrelationUid(responseMetadata.getCorrelationUid())
                 .withDeviceIdentification(device.getDeviceIdentification())
-                .withDomainInfo(device.getDeviceType().domainType().domainInfo())
+                .withDomainInfo(responseMetadata.getDomainInfo())
                 .withMessageType(MessageType.GET_LIGHT_SENSOR_STATUS.name())
                 .withOrganisationIdentification(responseMetadata.getOrganisationIdentification())
                 .build();
 
-        final boolean on = ((BitmaskMeasurementElementDto) measurementGroupDto.getMeasurements()
-                .get(0)
-                .getMeasurementElements()
-                .get(0)).getValue() == 1;
-        final LightSensorStatusDto dto = new LightSensorStatusDto(on);
+        final Optional<Boolean> on = measurementGroupDto.getMeasurements()
+                .stream()
+                .flatMap(m -> m.getMeasurementElements().stream())
+                .filter(me -> me instanceof BitmaskMeasurementElementDto)
+                .findFirst()
+                .map(me -> ((BitmaskMeasurementElementDto) me).getValue() == 1);
 
-        this.lightMeasurementService.send(dto, rm);
+        if (on.isPresent()) {
+            final LightSensorStatusDto dto = new LightSensorStatusDto(on.get());
+            this.lightMeasurementService.send(dto, rm);
+        } else {
+            LOGGER.error("{} Light sensor status information not found for device {}", ERROR_PREFIX,
+                    device.getDeviceIdentification());
+        }
     }
 
 }

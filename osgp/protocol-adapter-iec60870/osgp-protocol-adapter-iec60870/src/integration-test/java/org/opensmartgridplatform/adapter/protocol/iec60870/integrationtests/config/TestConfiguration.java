@@ -25,13 +25,11 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.AsduC
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.Client;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientAsduHandler;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientAsduHandlerRegistry;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientAsduHandlerRegistryImpl;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionCache;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionCacheImpl;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionService;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionServiceImpl;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.DeviceResponseService;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.DeviceResponseServiceMap;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.DeviceResponseServiceRegistry;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.GeneralInterrogationService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.LightMeasurementService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.LoggingService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.MeasurementReportingService;
@@ -81,7 +79,7 @@ public class TestConfiguration {
 
     @Bean
     public ClientConnectionCache iec60870ClientConnectionCache() {
-        return spy(ClientConnectionCacheImpl.class);
+        return spy(ClientConnectionCache.class);
     }
 
     @Bean
@@ -91,7 +89,7 @@ public class TestConfiguration {
 
     @Bean
     public ClientConnectionService iec60870ClientConnectionService() {
-        return new ClientConnectionServiceImpl();
+        return new ClientConnectionService();
     }
 
     @Bean
@@ -116,7 +114,7 @@ public class TestConfiguration {
 
     @Bean
     public ClientAsduHandlerRegistry clientAsduHandlerRegistry() {
-        return new ClientAsduHandlerRegistryImpl();
+        return new ClientAsduHandlerRegistry();
     }
 
     @Bean
@@ -150,8 +148,8 @@ public class TestConfiguration {
     }
 
     @Bean
-    public DeviceResponseServiceMap deviceResponseServiceMap() {
-        return new DeviceResponseServiceMap();
+    public DeviceResponseServiceRegistry deviceResponseServiceMap() {
+        return new DeviceResponseServiceRegistry();
     }
 
     @Bean
@@ -167,6 +165,11 @@ public class TestConfiguration {
     @Bean
     public DeviceResponseService distributionAutomationDeviceResponseService() {
         return new DistributionAutomationDeviceResponseService();
+    }
+
+    @Bean
+    public GeneralInterrogationService generalInterrogationService() {
+        return new GeneralInterrogationService();
     }
 
 }

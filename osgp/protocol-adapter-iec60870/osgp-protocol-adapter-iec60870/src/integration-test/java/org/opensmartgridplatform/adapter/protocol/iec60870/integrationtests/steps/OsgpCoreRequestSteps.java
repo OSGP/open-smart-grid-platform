@@ -22,7 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import io.cucumber.java.en.When;
 
-public class RequestSteps {
+public class OsgpCoreRequestSteps {
     @Autowired
     private ConnectionSteps connectionSteps;
 
