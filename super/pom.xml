@@ -54,7 +54,7 @@
     <spring.data.version>2.2.3.RELEASE</spring.data.version>
     <spring.data.commons.version>2.2.3.RELEASE</spring.data.commons.version>
     <spring.security.version>5.3.1.RELEASE</spring.security.version>
-    <spring.wscore.version>3.0.8.RELEASE</spring.wscore.version>
+    <spring.wscore.version>3.0.9.RELEASE</spring.wscore.version>
     <spring.wssecurity.version>3.0.8.RELEASE</spring.wssecurity.version>
     <spring.wssupport.version>3.0.8.RELEASE</spring.wssupport.version>
     <spring.ws.version>3.0.9.RELEASE</spring.ws.version>
