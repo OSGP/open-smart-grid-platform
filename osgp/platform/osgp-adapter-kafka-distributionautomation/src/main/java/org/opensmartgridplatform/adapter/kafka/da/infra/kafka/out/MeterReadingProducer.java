@@ -1,9 +1,10 @@
 package org.opensmartgridplatform.adapter.kafka.da.infra.kafka.out;
 
-import org.opensmartgridplatform.adapter.kafka.MeterReading;
 import org.opensmartgridplatform.adapter.kafka.da.application.mapping.DistributionAutomationMapper;
+import org.opensmartgridplatform.adapter.kafka.da.avro.MeterReading;
 import org.opensmartgridplatform.domain.da.measurements.MeasurementReport;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class MeterReadingProducer {
     @Autowired
+    @Qualifier("distributionAutomationKafkaTemplate")
     private KafkaTemplate<String, MeterReading> kafkaTemplate;
 
     @Autowired

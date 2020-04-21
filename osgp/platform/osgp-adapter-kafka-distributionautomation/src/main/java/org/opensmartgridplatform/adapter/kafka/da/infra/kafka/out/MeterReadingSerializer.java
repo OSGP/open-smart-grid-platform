@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import org.apache.kafka.common.serialization.Serializer;
-import org.opensmartgridplatform.adapter.kafka.MeterReading;
+import org.opensmartgridplatform.adapter.kafka.da.avro.MeterReading;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

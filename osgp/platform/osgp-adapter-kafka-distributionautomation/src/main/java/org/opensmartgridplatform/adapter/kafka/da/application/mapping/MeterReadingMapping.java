@@ -8,19 +8,20 @@
  */
 package org.opensmartgridplatform.adapter.kafka.da.application.mapping;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
+import java.time.ZoneOffset;
+import java.time.temporal.TemporalAdjusters;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.opensmartgridplatform.adapter.kafka.IntervalBlock;
-import org.opensmartgridplatform.adapter.kafka.IntervalReading;
-import org.opensmartgridplatform.adapter.kafka.MeterReading;
-import org.opensmartgridplatform.adapter.kafka.ReadingType;
-import org.opensmartgridplatform.adapter.kafka.UsagePoint;
-import org.opensmartgridplatform.adapter.kafka.ValuesInterval;
+import org.opensmartgridplatform.adapter.kafka.da.avro.IntervalBlock;
+import org.opensmartgridplatform.adapter.kafka.da.avro.IntervalReading;
+import org.opensmartgridplatform.adapter.kafka.da.avro.MeterReading;
+import org.opensmartgridplatform.adapter.kafka.da.avro.ReadingType;
+import org.opensmartgridplatform.adapter.kafka.da.avro.UsagePoint;
+import org.opensmartgridplatform.adapter.kafka.da.avro.ValuesInterval;
 import org.opensmartgridplatform.domain.da.measurements.Measurement;
 import org.opensmartgridplatform.domain.da.measurements.MeasurementElement;
 import org.opensmartgridplatform.domain.da.measurements.MeasurementGroup;
@@ -32,6 +33,11 @@ import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.metadata.Type;
 
+/**
+ * Class for mapping MeasurementReport to MeterReading
+ *
+ * The class will be removed once a different AVRO message format is defined.
+ */
 public class MeterReadingMapping extends CustomConverter<MeasurementReport, MeterReading> {
 
     @Override
@@ -48,25 +54,28 @@ public class MeterReadingMapping extends CustomConverter<MeasurementReport, Mete
 
         final List<IntervalReading> intervalReadings = Arrays.asList(this.getIntervalReading(measurementElements));
 
-        final String identification = source.getMeasurementGroups()
-                .get(0)
-                .getIdentification();
+        final String identification = source.getMeasurementGroups().get(0).getIdentification();
         final ReadingType readingType = this.getReadingType(identification);
         final IntervalBlock intervalBlock = new IntervalBlock(readingType, intervalReadings);
 
+        final LocalDateTime startTime = LocalDate.now(ZoneOffset.UTC)
+                .with(TemporalAdjusters.firstDayOfYear())
+                .atStartOfDay();
         final Long start = intervalReadings.stream()
                 .map(IntervalReading::getTimeStamp)
                 .min(Long::compareTo)
-                .orElse(dateStringToEpoch("2020-01-13 00:00:00"));
+                .orElse(startTime.toInstant(ZoneOffset.UTC).toEpochMilli());
+
+        final LocalDateTime endTime = startTime.plusYears(1);
         final Long end = intervalReadings.stream()
                 .map(IntervalReading::getTimeStamp)
                 .max(Long::compareTo)
-                .orElse(dateStringToEpoch("2020-01-16 00:00:00"));
+                .orElse(endTime.toInstant(ZoneOffset.UTC).toEpochMilli());
+
         final ValuesInterval valuesInterval = new ValuesInterval(start, end);
 
         final UsagePoint usagePoint = new UsagePoint(this.getUsagePoint(identification));
         return new MeterReading(valuesInterval, null, identification, usagePoint, Arrays.asList(intervalBlock));
-
     }
 
     private ReadingType getReadingType(final String identification) {
@@ -75,14 +84,6 @@ public class MeterReadingMapping extends CustomConverter<MeasurementReport, Mete
         } else {
             return new ReadingType("60s", "temperature", "none", "degC", "Temperature transformateur °C en 60s", null);
         }
-    }
-
-    private static long dateStringToEpoch(final String dateString) {
-        final LocalDateTime localDateTime = LocalDateTime.parse(dateString,
-                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        return localDateTime.atZone(ZoneId.systemDefault())
-                .toInstant()
-                .toEpochMilli();
     }
 
     private CharSequence getUsagePoint(final String identification) {
@@ -105,11 +106,9 @@ public class MeterReadingMapping extends CustomConverter<MeasurementReport, Mete
             }
             if (measurementElement instanceof FloatMeasurementElement) {
                 final FloatMeasurementElement floatMeasurement = (FloatMeasurementElement) measurementElement;
-                reading.setValue(floatMeasurement.getValue()
-                        .toString());
+                reading.setValue(floatMeasurement.getValue().toString());
             }
         }
         return reading;
     }
-
 }

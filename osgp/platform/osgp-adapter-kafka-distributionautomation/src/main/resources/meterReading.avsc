@@ -1,7 +1,7 @@
 {
   "type" : "record",
   "name" : "MeterReading",
-  "namespace" : "org.opensmartgridplatform.adapter.kafka",
+  "namespace" : "org.opensmartgridplatform.adapter.kafka.da.avro",
   "fields" : [ {
     "name" : "valuesInterval",
     "type" : [ "null", {

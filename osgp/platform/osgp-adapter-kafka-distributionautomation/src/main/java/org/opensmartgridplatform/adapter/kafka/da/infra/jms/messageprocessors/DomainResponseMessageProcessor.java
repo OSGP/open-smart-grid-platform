@@ -89,31 +89,20 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
 
     private void handleMessage(final CorrelationIds ids, final String messageType,
             final ResponseMessageResultType resultType, final String resultDescription, final ResponseMessage message) {
+        LOGGER.debug("Handling message of type {} for device {} with result: type {}, description {}.", messageType,
+                ids.getDeviceIdentification(), resultType, resultDescription);
 
         final Serializable dataObject = message.getDataObject();
         if (!(dataObject instanceof MeasurementReport)) {
             LOGGER.error("For this component we only handle measurement reports");
         } else {
-            this.meterReadingProducer.send(this.mapper.map(dataObject,
-                    org.opensmartgridplatform.domain.da.measurements.MeasurementReport.class));
+            this.meterReadingProducer.send(this.mapper.map(dataObject, MeasurementReport.class));
         }
-
     }
 
-    /**
-     * In case of an error, this function can be used to send a response
-     * containing the exception to the web-service-adapter.
-     *
-     * @param e
-     *            The exception.
-     * @param correlationUid
-     *            The correlation UID.
-     * @param notificationType
-     *            The message type.
-     */
     private static void handleError(final RuntimeException e, final String correlationUid) {
 
-        LOGGER.warn("Error '{}' occurred while trying to send message with correlationUid: {}", e.getMessage(),
+        LOGGER.error("Error '{}' occurred while trying to send message with correlationUid: {}", e.getMessage(),
                 correlationUid, e);
     }
 

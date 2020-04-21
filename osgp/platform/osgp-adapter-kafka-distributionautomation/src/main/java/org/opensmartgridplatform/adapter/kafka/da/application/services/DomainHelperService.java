@@ -27,22 +27,22 @@ public class DomainHelperService {
 
     private static final ComponentType COMPONENT_TYPE = ComponentType.KAFKA_DISTRIBUTION_AUTOMATION;
 
-    @Autowired
-    private RtuDeviceRepository rtuDeviceRepository;
+    private final RtuDeviceRepository rtuDeviceRepository;
+    private final OrganisationRepository organisationRepository;
+    private final SecurityService securityService;
 
     @Autowired
-    private OrganisationRepository organisationRepository;
-
-    @Autowired
-    private SecurityService securityService;
+    public DomainHelperService(final RtuDeviceRepository rtuDeviceRepository,
+            final OrganisationRepository organisationRepository, final SecurityService securityService) {
+        this.rtuDeviceRepository = rtuDeviceRepository;
+        this.organisationRepository = organisationRepository;
+        this.securityService = securityService;
+    }
 
     public RtuDevice findDevice(final String deviceIdentification) throws FunctionalException {
-        final RtuDevice device = this.rtuDeviceRepository.findByDeviceIdentification(deviceIdentification);
-        if (device == null) {
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, COMPONENT_TYPE,
-                    new UnknownEntityException(RtuDevice.class, deviceIdentification));
-        }
-        return device;
+        return this.rtuDeviceRepository.findByDeviceIdentification(deviceIdentification)
+                .orElseThrow(() -> new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, COMPONENT_TYPE,
+                        new UnknownEntityException(RtuDevice.class, deviceIdentification)));
     }
 
     public Organisation findOrganisation(final String organisationIdentification) throws FunctionalException {

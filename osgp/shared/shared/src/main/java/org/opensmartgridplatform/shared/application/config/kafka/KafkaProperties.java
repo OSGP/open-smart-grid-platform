@@ -1,9 +1,15 @@
-package org.opensmartgridplatform.adapter.kafka.da.application.config;
+/**
+ * Copyright 2020 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
+package org.opensmartgridplatform.shared.application.config.kafka;
 
 import java.util.HashMap;
 import java.util.Map;
 
-// TODO - Move to a shared location for reuse
 public class KafkaProperties {
 
     private KafkaProperties() {
@@ -38,6 +44,8 @@ public class KafkaProperties {
 
     public static Map<String, Class<?>> producerProperties() {
         final HashMap<String, Class<?>> map = new HashMap<>();
+        map.put("key.serializer", String.class);
+        map.put("value.serializer", String.class);
         map.put("acks", String.class);
         map.put("buffer.memory", Long.class);
         map.put("compression.type", String.class);
@@ -58,7 +66,8 @@ public class KafkaProperties {
 
     public static Map<String, Class<?>> consumerProperties() {
         final HashMap<String, Class<?>> map = new HashMap<>();
-
+        map.put("key.deserializer", String.class);
+        map.put("value.deserializer", String.class);
         map.put("group.id", String.class);
         map.put("fetch.min.bytes", Integer.class);
         map.put("heartbeat.interval.ms", Integer.class);

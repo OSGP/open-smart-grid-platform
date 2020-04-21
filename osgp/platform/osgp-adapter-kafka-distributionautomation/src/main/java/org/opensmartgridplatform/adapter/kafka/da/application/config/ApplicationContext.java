@@ -16,15 +16,12 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
-/**
- * An application context Java configuration class. The usage of Java
- * configuration requires Spring Framework 3.0
- */
 @Configuration
-@ComponentScan(basePackages = { "org.opensmartgridplatform.shared.domain.services",
-        "org.opensmartgridplatform.domain.da", "org.opensmartgridplatform.adapter.kafka.da",
-        "org.opensmartgridplatform.domain.logging", "org.opensmartgridplatform.domain.core.services",
-        "org.opensmartgridplatform.shared.application.config" })
+@ComponentScan(
+        basePackages = { "org.opensmartgridplatform.shared.domain.services", "org.opensmartgridplatform.domain.da",
+                "org.opensmartgridplatform.adapter.kafka.da", "org.opensmartgridplatform.domain.logging",
+                "org.opensmartgridplatform.domain.core.services", "org.opensmartgridplatform.shared.application.config",
+                "org.opensmartgridplatform.adapter.kafka.da.infra.jms.messageprocessors" })
 @Import({ PersistenceConfigCore.class, MessagingConfig.class })
 @PropertySource("classpath:osgp-adapter-kafka-distributionautomation.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
