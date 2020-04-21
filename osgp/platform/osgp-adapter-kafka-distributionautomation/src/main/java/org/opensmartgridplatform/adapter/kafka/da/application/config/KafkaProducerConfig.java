@@ -9,18 +9,26 @@ package org.opensmartgridplatform.adapter.kafka.da.application.config;
 
 import org.opensmartgridplatform.adapter.kafka.da.avro.MeterReading;
 import org.opensmartgridplatform.shared.application.config.kafka.AbstractKafkaProducerConfig;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.kafka.core.KafkaTemplate;
 
 @Configuration
 public class KafkaProducerConfig extends AbstractKafkaProducerConfig<String, MeterReading> {
 
-    @Bean("distributionAutomationKafkaTemplate")
-    public KafkaTemplate<String, MeterReading> kafkaTemplate(
+    @Autowired
+    public KafkaProducerConfig(final Environment environment,
             @Value("${distributionautomation.kafka.common.properties.prefix}") final String propertiesPrefix,
             @Value("${distributionautomation.kafka.producer.topic}") final String topic) {
-        return this.initKafkaTemplate(propertiesPrefix, topic);
+        super(environment, propertiesPrefix, topic);
+    }
+
+    @Bean("distributionAutomationKafkaTemplate")
+    @Override
+    public KafkaTemplate<String, MeterReading> kafkaTemplate() {
+        return this.getKafkaTemplate();
     }
 }

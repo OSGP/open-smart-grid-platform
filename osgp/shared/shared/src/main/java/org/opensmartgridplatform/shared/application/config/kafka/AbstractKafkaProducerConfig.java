@@ -11,35 +11,50 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 
-public abstract class AbstractKafkaProducerConfig<T, U> extends AbstractKafkaConfig {
+public abstract class AbstractKafkaProducerConfig<K, V> extends KafkaConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractKafkaProducerConfig.class);
 
-    protected KafkaTemplate<T, U> initKafkaTemplate(final String propertiesPrefix, final String topic) {
+    private KafkaTemplate<K, V> kafkaTemplate;
+
+    public AbstractKafkaProducerConfig(final Environment environment, final String propertiesPrefix,
+            final String topic) {
+        super(environment);
 
         LOGGER.debug("=================================================================================");
-        LOGGER.info("Initializing KafkaTemplate for Topic {}", topic);
-        LOGGER.debug("Common property prefix: {}", propertiesPrefix);
-        LOGGER.debug("Producer property prefix: {}", this.getProducerPropertiesPrefix(propertiesPrefix));
+        LOGGER.info("Initializing Kafka Producer for Topic {}", topic);
+        LOGGER.debug("Common properties prefix: {}", propertiesPrefix);
+        LOGGER.debug("Producer properties prefix: {}", getProducerPropertiesPrefix(propertiesPrefix));
         LOGGER.debug("=================================================================================");
-        final Map<String, Object> producerConfigs = this.producerConfigs(propertiesPrefix);
-        final KafkaTemplate<T, U> template = new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(producerConfigs));
-        template.setDefaultTopic(topic);
-        return template;
+
+        this.initKafkaTemplate(propertiesPrefix, topic);
     }
 
-    protected Map<String, Object> producerConfigs(final String propertiesPrefix) {
+    public abstract KafkaTemplate<K, V> kafkaTemplate();
+
+    protected KafkaTemplate<K, V> getKafkaTemplate() {
+        return this.kafkaTemplate;
+    }
+
+    private static String getProducerPropertiesPrefix(final String propertiesPrefix) {
+        return propertiesPrefix + ".producer";
+    }
+
+    private void initKafkaTemplate(final String propertiesPrefix, final String topic) {
+        final Map<String, Object> producerConfigs = this.producerConfigs(propertiesPrefix);
+        final KafkaTemplate<K, V> template = new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(producerConfigs));
+        template.setDefaultTopic(topic);
+        this.kafkaTemplate = template;
+    }
+
+    private Map<String, Object> producerConfigs(final String propertiesPrefix) {
         final Map<String, Object> properties = this.createCommonProperties(propertiesPrefix);
         KafkaProperties.producerProperties()
-                .forEach((k, v) -> this.addIfExist(properties, k, this.getProducerPropertiesPrefix(propertiesPrefix),
-                        v));
+                .forEach((k, v) -> this.addIfExist(properties, k, getProducerPropertiesPrefix(propertiesPrefix), v));
         return properties;
-    }
-
-    private String getProducerPropertiesPrefix(final String propertiesPrefix) {
-        return propertiesPrefix + ".producer";
     }
 }

@@ -10,13 +10,15 @@ package org.opensmartgridplatform.shared.application.config.kafka;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.Resource;
-
 import org.springframework.core.env.Environment;
 
-public abstract class AbstractKafkaConfig {
-    @Resource
-    private Environment environment;
+public class KafkaConfig {
+
+    private final Environment environment;
+
+    public KafkaConfig(final Environment environment) {
+        this.environment = environment;
+    }
 
     protected Map<String, Object> createCommonProperties(final String propertiesPrefix) {
         final Map<String, Object> properties = new HashMap<>();
