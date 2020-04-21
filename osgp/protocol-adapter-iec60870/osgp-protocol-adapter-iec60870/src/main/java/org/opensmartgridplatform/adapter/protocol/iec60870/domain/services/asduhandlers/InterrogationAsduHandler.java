@@ -11,7 +11,7 @@ import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.ASduType;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.LogItemFactory;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.ResponseMetadataFactory;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientAsduHandlerImpl;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.AbstractClientAsduHandler;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.LoggingService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.LogItem;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseMetadata;
@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
  * </ul>
  */
 @Component
-public class InterrogationAsduHandler extends ClientAsduHandlerImpl {
+public class InterrogationAsduHandler extends AbstractClientAsduHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InterrogationAsduHandler.class);
 

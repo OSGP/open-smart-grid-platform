@@ -12,20 +12,16 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>os-webapps</artifactId>
   <groupId>org.opensmartgridplatform</groupId>
+  <artifactId>os-webapps</artifactId>
   <version>5.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-
-  <properties>
-    <jxr.version>2.5</jxr.version>
-    <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
-    <maven.site.plugin>3.7.1</maven.site.plugin>
-  </properties>
 
   <!-- Description, Organization, Licenses, URL and Distribution Management elements are needed for the maven-jxr-plugin 
     to generate a maven site -->
   <description>Open Source Webapps for the OSGP Platform.</description>
+  <!-- URL is passed in as a maven argument: -Dmaven.site.url=http://my/url/for/the/site -->
+  <url>${maven.site.url}</url>
   <organization>
     <name>OSGP</name>
     <url>www.opensmartgridplatform.org</url>
@@ -36,8 +32,15 @@
       <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
     </license>
   </licenses>
-  <!-- URL is passed in as a maven argument: -Dmaven.site.url=http://my/url/for/the/site -->
-  <url>${maven.site.url}</url>
+
+  <modules>
+    <module>parent-os-webapps</module>
+    <module>web-demo-app</module>
+    <module>../osgp/shared/osgp-ws-core</module>
+    <module>../osgp/shared/osgp-ws-admin</module>
+    <module>../osgp/shared/osgp-ws-publiclighting</module>
+  </modules>
+
   <distributionManagement>
     <site>
       <id>os-webapps</id>
@@ -49,6 +52,12 @@
       <url>${maven.site.distributionManagement.site.url}</url>
     </site>
   </distributionManagement>
+
+  <properties>
+    <jxr.version>2.5</jxr.version>
+    <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
+    <maven.site.plugin>3.7.1</maven.site.plugin>
+  </properties>
 
   <build>
     <plugins>
@@ -69,12 +78,4 @@
       </plugin>
     </plugins>
   </build>
-
-  <modules>
-    <module>parent-os-webapps</module>
-    <module>web-demo-app</module>
-    <module>../osgp/shared/osgp-ws-core</module>
-    <module>../osgp/shared/osgp-ws-admin</module>
-    <module>../osgp/shared/osgp-ws-publiclighting</module>
-  </modules>
 </project>

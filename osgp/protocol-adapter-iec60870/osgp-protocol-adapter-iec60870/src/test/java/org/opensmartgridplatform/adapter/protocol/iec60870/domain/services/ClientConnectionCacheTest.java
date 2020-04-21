@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.protocol.iec60870.application.services;
+package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -14,10 +14,10 @@ import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.exceptions.ClientConnectionAlreadyInCacheException;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnection;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionCache;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionCacheImpl;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionCache;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceConnection;
 
-public class Iec60870ClientConnectionCacheTest {
+public class ClientConnectionCacheTest {
 
     private final static String KEY = "TestKey";
 
@@ -25,7 +25,7 @@ public class Iec60870ClientConnectionCacheTest {
 
     @BeforeEach
     public void setup() {
-        this.cache = new ClientConnectionCacheImpl();
+        this.cache = new ClientConnectionCache();
     }
 
     @Test

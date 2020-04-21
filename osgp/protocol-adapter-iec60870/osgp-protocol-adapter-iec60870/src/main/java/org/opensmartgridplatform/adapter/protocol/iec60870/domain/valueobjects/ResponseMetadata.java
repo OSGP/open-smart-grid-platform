@@ -16,6 +16,7 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects;
  * <li>Organisation Identification</li>
  * <li>Message Type</li>
  * <li>{@link DomainInfo}</li>
+ * <li>{@link DeviceType}</li>
  * </ul>
  *
  */
@@ -26,6 +27,7 @@ public class ResponseMetadata {
     private final String organisationIdentification;
     private final String messageType;
     private final DomainInfo domainInfo;
+    private final DeviceType deviceType;
 
     private ResponseMetadata(final Builder builder) {
         this.correlationUid = builder.correlationUid;
@@ -33,13 +35,25 @@ public class ResponseMetadata {
         this.organisationIdentification = builder.organisationIdentification;
         this.messageType = builder.messageType;
         this.domainInfo = builder.domainInfo;
+        this.deviceType = builder.deviceType;
+    }
+
+    public static ResponseMetadata from(final RequestMetadata requestMetadata, final DeviceType deviceType) {
+        return new Builder().withCorrelationUid(requestMetadata.correlationUid)
+                .withDeviceIdentification(requestMetadata.getDeviceIdentification())
+                .withOrganisationIdentification(requestMetadata.getOrganisationIdentification())
+                .withMessageType(requestMetadata.getMessageType())
+                .withDomainInfo(requestMetadata.getDomainInfo())
+                .withDeviceType(deviceType)
+                .build();
     }
 
     public static ResponseMetadata from(final RequestMetadata requestMetadata) {
         return new Builder().withCorrelationUid(requestMetadata.correlationUid)
                 .withDeviceIdentification(requestMetadata.getDeviceIdentification())
                 .withOrganisationIdentification(requestMetadata.getOrganisationIdentification())
-                .withMessageType(requestMetadata.getMessageType()).withDomainInfo(requestMetadata.getDomainInfo())
+                .withMessageType(requestMetadata.getMessageType())
+                .withDomainInfo(requestMetadata.getDomainInfo())
                 .build();
     }
 
@@ -63,6 +77,10 @@ public class ResponseMetadata {
         return this.domainInfo;
     }
 
+    public DeviceType getDeviceType() {
+        return this.deviceType;
+    }
+
     public static class Builder {
 
         private String correlationUid;
@@ -70,6 +88,7 @@ public class ResponseMetadata {
         private String organisationIdentification;
         private String messageType;
         private DomainInfo domainInfo;
+        private DeviceType deviceType;
 
         public Builder() {
         }
@@ -80,6 +99,7 @@ public class ResponseMetadata {
             this.organisationIdentification = responseMetadata.getOrganisationIdentification();
             this.messageType = responseMetadata.getMessageType();
             this.domainInfo = responseMetadata.getDomainInfo();
+            this.deviceType = responseMetadata.getDeviceType();
         }
 
         public Builder withCorrelationUid(final String correlationUid) {
@@ -104,6 +124,11 @@ public class ResponseMetadata {
 
         public Builder withDomainInfo(final DomainInfo domainInfo) {
             this.domainInfo = domainInfo;
+            return this;
+        }
+
+        public Builder withDeviceType(final DeviceType deviceType) {
+            this.deviceType = deviceType;
             return this;
         }
 

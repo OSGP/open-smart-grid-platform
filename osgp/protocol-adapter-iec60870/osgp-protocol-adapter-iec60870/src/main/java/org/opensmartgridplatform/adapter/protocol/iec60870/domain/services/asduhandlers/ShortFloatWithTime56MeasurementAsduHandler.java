@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
  * <ul>
  * <li>Measured value, short floating point number with time tag CP56Time2a</li>
  * </ul>
- *
  */
 @Component
 public class ShortFloatWithTime56MeasurementAsduHandler extends MeasurementAsduHandler {

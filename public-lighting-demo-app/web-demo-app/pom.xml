@@ -114,6 +114,7 @@
       <artifactId>javax.xml.soap-api</artifactId>
     </dependency>
   </dependencies>
+
   <build>
     <plugins>
       <plugin>

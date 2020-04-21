@@ -35,8 +35,6 @@ public class DeviceResponseMessageSender implements ResponseMessageSender {
 
     private static final String LOG_MESSAGE_RESPONSE_MESSAGE_OF_WRONG_TYPE = "Only ProtocolResponseMessage type is expected for DeviceResponseMessageSender, received responseMessage of type {}.";
     private static final String LOG_MESSAGE_JMS_EXCEPTION = "JMS Exception, closing all connections.";
-    private static final String LOG_MESSAGE_BLANK_FIELD = "{} is blank.";
-    private static final String LOG_MESSAGE_NULL_FIELD = "{} is null.";
 
     @Autowired
     @Qualifier("protocolIec60870OutboundOsgpCoreResponsesJmsTemplate")

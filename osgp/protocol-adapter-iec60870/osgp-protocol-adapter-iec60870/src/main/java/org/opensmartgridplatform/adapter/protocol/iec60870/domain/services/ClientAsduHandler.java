@@ -19,6 +19,7 @@ public interface ClientAsduHandler {
      *            The {@link ASdu} instance.
      * @param responseMetadata
      *            The {@link ResponseMetadata} instance.
+     * @throws AsduHandlerException
      */
     void handleAsdu(ASdu asdu, ResponseMetadata responseMetadata);
 }
