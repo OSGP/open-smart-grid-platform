@@ -46,8 +46,6 @@ public class GetPowerQualityProfileNoSelectiveAccessHandler extends AbstractGetP
                         .makeProfileEntryValueDto(dataObjects.get(i), scalerUnitInfos.get(i), previousProfileEntryDto,
                                 timeInterval);
                 result.add(currentProfileEntryValueDto);
-            } else {
-                LOGGER.info("PQ -- we are skipping element at position {} ", i);
             }
         }
 

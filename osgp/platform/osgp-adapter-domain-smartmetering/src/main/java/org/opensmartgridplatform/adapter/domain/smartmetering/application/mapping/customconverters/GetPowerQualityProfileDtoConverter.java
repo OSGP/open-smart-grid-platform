@@ -92,7 +92,9 @@ public class GetPowerQualityProfileDtoConverter
             List<ProfileEntryValue> profileEntryValues = new ArrayList<>();
 
             for (ProfileEntryValueDto profileEntryValueDto : profileEntryDto.getProfileEntryValues()) {
-                ProfileEntryValue profileEntryValue = new ProfileEntryValue(profileEntryValueDto.getValue());
+
+                ProfileEntryValue profileEntryValue = this.mapperFactory.getMapperFacade().map(profileEntryValueDto,
+                        ProfileEntryValue.class);
                 profileEntryValues.add(profileEntryValue);
             }
             profileEntries.add(new ProfileEntry(profileEntryValues));
