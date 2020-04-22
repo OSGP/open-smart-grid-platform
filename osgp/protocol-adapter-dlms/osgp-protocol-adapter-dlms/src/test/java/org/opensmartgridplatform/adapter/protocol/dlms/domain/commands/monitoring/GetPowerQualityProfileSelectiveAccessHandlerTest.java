@@ -49,7 +49,7 @@ public class GetPowerQualityProfileSelectiveAccessHandlerTest {
     private DlmsDevice dlmsDevice;
 
     @Test
-    public void testHandlePrivateProfileWithoutSelectiveAccess() throws ProtocolAdapterException {
+    public void testHandlePrivateProfileSelectiveAccess() throws ProtocolAdapterException {
 
         // SETUP
 
@@ -58,7 +58,7 @@ public class GetPowerQualityProfileSelectiveAccessHandlerTest {
 
         when(dlmsHelper.getAndCheck(any(DlmsConnectionManager.class), any(DlmsDevice.class), any(String.class),
                 any(AttributeAddress.class)))
-                .thenReturn(createCaptureObjects(), createProfileEntries(), createCaptureObjects(),
+                .thenReturn(createCaptureObjects(), createProfileEntries(), createCaptureObjectsProfile2(),
                         createProfileEntries());
 
         when(dlmsHelper.readLogicalName(any(DataObject.class), any(String.class))).thenCallRealMethod();
@@ -120,6 +120,24 @@ public class GetPowerQualityProfileSelectiveAccessHandlerTest {
                 DataObject.newInteger32Data(2), DataObject.newUInteger32Data(0));
         DataObject structureData3 = DataObject.newStructureData(DataObject.newUInteger32Data(1),
                 DataObject.newOctetStringData(new byte[] { 1, 0, 23, 4, 0, (byte) 255 }),
+                DataObject.newInteger32Data(2), DataObject.newUInteger32Data(0));
+
+        GetResult getResult = new GetResultImpl(
+                DataObject.newArrayData(Arrays.asList(structureData1, structureData2, structureData3)));
+
+        return Collections.singletonList(getResult);
+    }
+
+    private List<GetResult> createCaptureObjectsProfile2() {
+
+        DataObject structureData1 = DataObject.newStructureData(DataObject.newUInteger32Data(8),
+                DataObject.newOctetStringData(new byte[] { 0, 0, 1, 0, 0, (byte) 255 }), DataObject.newInteger32Data(2),
+                DataObject.newUInteger32Data(0));
+        DataObject structureData2 = DataObject.newStructureData(DataObject.newUInteger32Data(1),
+                DataObject.newOctetStringData(new byte[] { 1, 0, 31, 24, 0, (byte) 255 }),
+                DataObject.newInteger32Data(2), DataObject.newUInteger32Data(0));
+        DataObject structureData3 = DataObject.newStructureData(DataObject.newUInteger32Data(1),
+                DataObject.newOctetStringData(new byte[] { 1, 0, 51, 24, 0, (byte) 255 }),
                 DataObject.newInteger32Data(2), DataObject.newUInteger32Data(0));
 
         GetResult getResult = new GetResultImpl(

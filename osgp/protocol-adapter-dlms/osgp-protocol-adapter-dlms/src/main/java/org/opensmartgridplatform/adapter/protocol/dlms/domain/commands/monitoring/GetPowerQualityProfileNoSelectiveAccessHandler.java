@@ -43,8 +43,8 @@ public class GetPowerQualityProfileNoSelectiveAccessHandler extends AbstractGetP
 
             if (selectableCaptureObjects.containsKey(i)) {
                 ProfileEntryValueDto currentProfileEntryValueDto = this
-                        .makeProfileEntryValueDto(dataObjects.get(i), scalerUnitInfos.get(i), previousProfileEntryDto,
-                                timeInterval);
+                        .makeProfileEntryValueDto(dataObjects.get(i), scalerUnitInfos.get(result.size()),
+                                previousProfileEntryDto, timeInterval);
                 result.add(currentProfileEntryValueDto);
             }
         }
