@@ -29,7 +29,7 @@ public abstract class AbstractKafkaConsumerConfig<K, V> extends KafkaConfig {
         LOGGER.debug("Consumer properties prefix: {}", getConsumerPropertiesPrefix(propertiesPrefix));
         LOGGER.debug("=================================================================================");
 
-        this.initKafkaConsumer(propertiesPrefix, topic, concurrency, pollTimeout);
+        this.initKafkaConsumer(propertiesPrefix, concurrency, pollTimeout);
     }
 
     public abstract ConsumerFactory<K, V> consumerFactory();
@@ -48,8 +48,7 @@ public abstract class AbstractKafkaConsumerConfig<K, V> extends KafkaConfig {
         return propertiesPrefix + ".consumer";
     }
 
-    private void initKafkaConsumer(final String propertiesPrefix, final String topic, final int concurrency,
-            final int pollTimeout) {
+    private void initKafkaConsumer(final String propertiesPrefix, final int concurrency, final int pollTimeout) {
         final Map<String, Object> consumerConfigs = this.consumerConfigs(propertiesPrefix);
         this.consumerFactory = new DefaultKafkaConsumerFactory<>(consumerConfigs);
         this.kafkaListenerContainerFactory = this.initKafkaListenerContainerFactory(concurrency, pollTimeout);
