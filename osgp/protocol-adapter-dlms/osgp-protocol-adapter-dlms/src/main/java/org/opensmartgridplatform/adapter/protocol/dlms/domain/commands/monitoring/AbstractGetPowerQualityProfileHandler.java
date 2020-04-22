@@ -181,7 +181,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
             final List<ScalerUnitInfo> scalerUnitInfos, ProfileEntryDto previousProfileEntryDto,
             final Map<Integer, CaptureObjectDefinitionDto> selectableCaptureObjects, int timeInterval);
 
-    public GetPowerQualityProfileResponseDto handle(final DlmsConnectionManager conn, final DlmsDevice device,
+    protected GetPowerQualityProfileResponseDto handle(final DlmsConnectionManager conn, final DlmsDevice device,
             final GetPowerQualityProfileRequestDataDto getPowerQualityProfileRequestDataDto)
             throws ProtocolAdapterException {
 
@@ -207,9 +207,6 @@ public abstract class AbstractGetPowerQualityProfileHandler {
             // the units of measure for all Selectable Capture objects
             final List<ScalerUnitInfo> scalerUnitInfos = createScalerUnitInfos(conn, device,
                     selectableCaptureObjects.values());
-
-            LOGGER.info("---- I have {} capture objects and I have {} scaler units",
-                    selectableCaptureObjects.values().size(), scalerUnitInfos.size());
 
             final List<GetResult> bufferList = retrieveBuffer(conn, device, obisCode, beginDateTime, endDateTime,
                     new ArrayList<>(selectableCaptureObjects.values()));
@@ -498,7 +495,6 @@ public abstract class AbstractGetPowerQualityProfileHandler {
                                     (byte) cosemObjectDefinitionDto.getAttributeIndex(),
                                     cosemObjectDefinitionDto.getDataIndex()));
                 }
-
             }
         }
 

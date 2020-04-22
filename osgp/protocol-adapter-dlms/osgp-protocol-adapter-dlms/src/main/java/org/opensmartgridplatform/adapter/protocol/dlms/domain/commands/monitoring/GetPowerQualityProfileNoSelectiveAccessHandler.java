@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class GetPowerQualityProfileNoSelectiveAccessHandler extends AbstractGetPowerQualityProfileHandler {
-    
+
     public GetPowerQualityProfileNoSelectiveAccessHandler(final DlmsHelper dlmsHelper) {
         super(dlmsHelper);
     }
