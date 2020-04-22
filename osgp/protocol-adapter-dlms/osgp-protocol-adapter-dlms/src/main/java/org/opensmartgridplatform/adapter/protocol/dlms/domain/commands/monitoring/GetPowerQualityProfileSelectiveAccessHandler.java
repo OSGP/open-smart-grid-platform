@@ -35,7 +35,7 @@ public class GetPowerQualityProfileSelectiveAccessHandler extends AbstractGetPow
 
         final List<ProfileEntryValueDto> result = new ArrayList<>();
         final List<DataObject> dataObjects = profileEntryDataObject.getValue();
-
+        
         for (int i = 0; i < dataObjects.size(); i++) {
 
             ProfileEntryValueDto currentProfileEntryValueDto = super

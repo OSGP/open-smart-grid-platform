@@ -18,14 +18,10 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Sca
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CaptureObjectDefinitionDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryValueDto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
 public class GetPowerQualityProfileNoSelectiveAccessHandler extends AbstractGetPowerQualityProfileHandler {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetPowerQualityProfileNoSelectiveAccessHandler.class);
 
     public GetPowerQualityProfileNoSelectiveAccessHandler(final DlmsHelper dlmsHelper) {
         super(dlmsHelper);
@@ -43,11 +39,9 @@ public class GetPowerQualityProfileNoSelectiveAccessHandler extends AbstractGetP
 
             if (selectableCaptureObjects.containsKey(i)) {
                 ProfileEntryValueDto currentProfileEntryValueDto = this
-                        .makeProfileEntryValueDto(dataObjects.get(i), scalerUnitInfos.get(i), previousProfileEntryDto,
-                                timeInterval);
+                        .makeProfileEntryValueDto(dataObjects.get(i), scalerUnitInfos.get(result.size()),
+                                previousProfileEntryDto, timeInterval);
                 result.add(currentProfileEntryValueDto);
-            } else {
-                LOGGER.info("PQ -- we are skipping element at position {} ", i);
             }
         }
 

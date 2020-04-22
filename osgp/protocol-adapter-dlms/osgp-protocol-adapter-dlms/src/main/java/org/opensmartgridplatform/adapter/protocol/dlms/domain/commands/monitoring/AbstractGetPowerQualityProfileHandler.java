@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -198,13 +199,14 @@ public abstract class AbstractGetPowerQualityProfileHandler {
             // all value types that can be selected within this profile.
             final List<GetResult> captureObjects = retrieveCaptureObjects(conn, device, obisCode);
 
-            // the units of measure for all capture objects
-            final List<ScalerUnitInfo> scalerUnitInfos = createScalerUnitInfos(conn, device, captureObjects);
-
             // the values that are allowed to be retrieved from the meter, used as filter either before (SMR 5.1+) or
             // after data retrieval
             Map<Integer, CaptureObjectDefinitionDto> selectableCaptureObjects = this
                     .createSelectableCaptureObjects(captureObjects, profile.getLogicalNames());
+
+            // the units of measure for all Selectable Capture objects
+            final List<ScalerUnitInfo> scalerUnitInfos = createScalerUnitInfos(conn, device,
+                    selectableCaptureObjects.values());
 
             final List<GetResult> bufferList = retrieveBuffer(conn, device, obisCode, beginDateTime, endDateTime,
                     new ArrayList<>(selectableCaptureObjects.values()));
@@ -305,11 +307,11 @@ public abstract class AbstractGetPowerQualityProfileHandler {
         for (final GetResult captureObjectResult : captureObjects) {
             final DataObject dataObject = captureObjectResult.getResultData();
             final List<DataObject> captureObjectList = dataObject.getValue();
-            for (int i = 0; i < captureObjectList.size(); i++) {
-                final boolean addCaptureObject = this
-                        .isSelectableValue(selectableCaptureObjects, captureObjectList.get(i));
+            for (DataObject object : captureObjectList) {
+                final boolean addCaptureObject = this.isSelectableValue(selectableCaptureObjects, object);
                 if (addCaptureObject) {
-                    captureObjectDtos.add(this.makeCaptureObjectDto(captureObjectList.get(i), scalerUnitInfos.get(i)));
+                    captureObjectDtos
+                            .add(this.makeCaptureObjectDto(object, scalerUnitInfos.get(captureObjectDtos.size())));
                 }
             }
         }
@@ -493,7 +495,6 @@ public abstract class AbstractGetPowerQualityProfileHandler {
                                     (byte) cosemObjectDefinitionDto.getAttributeIndex(),
                                     cosemObjectDefinitionDto.getDataIndex()));
                 }
-
             }
         }
 
@@ -501,31 +502,24 @@ public abstract class AbstractGetPowerQualityProfileHandler {
     }
 
     private List<ScalerUnitInfo> createScalerUnitInfos(final DlmsConnectionManager conn, final DlmsDevice device,
-            final List<GetResult> captureObjects) throws ProtocolAdapterException {
+            final Collection<CaptureObjectDefinitionDto> values) throws ProtocolAdapterException {
 
         List<ScalerUnitInfo> scalerUnitInfos = new ArrayList<>();
 
-        // there is always only one GetResult
-        for (final GetResult captureObjectResult : captureObjects) {
+        for (final CaptureObjectDefinitionDto dto : values) {
 
-            final List<DataObject> dataObjects = captureObjectResult.getResultData().getValue();
-
-            for (DataObject dataObject : dataObjects) {
-                scalerUnitInfos.add(createScalerUnitInfo(conn, device, dataObject));
-            }
+            ScalerUnitInfo newScalerUnitInfo = createScalerUnitInfo(conn, device, dto);
+            scalerUnitInfos.add(newScalerUnitInfo);
         }
 
         return scalerUnitInfos;
     }
 
     private ScalerUnitInfo createScalerUnitInfo(final DlmsConnectionManager conn, final DlmsDevice device,
-            final DataObject dataObject) throws ProtocolAdapterException {
+            final CaptureObjectDefinitionDto captureObjectDefinitionDto) throws ProtocolAdapterException {
 
-        final CosemObjectDefinitionDto cosemObjectDefinitionDto = this.dlmsHelper
-                .readObjectDefinition(dataObject, CAPTURE_OBJECT);
-
-        final int classId = cosemObjectDefinitionDto.getClassId();
-        final String logicalName = cosemObjectDefinitionDto.getLogicalName().toString();
+        final int classId = captureObjectDefinitionDto.getClassId();
+        final String logicalName = captureObjectDefinitionDto.getLogicalName().toString();
 
         if (this.hasScalerUnit(classId)) {
             final AttributeAddress addr = new AttributeAddress(classId, logicalName, SCALER_UNITS_MAP.get(classId));

@@ -24,6 +24,7 @@ public class ProfileEntryValueConverter extends
     public ProfileEntryValue convert(
             final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileEntryValue source,
             final Type<? extends ProfileEntryValue> destinationType, final MappingContext context) {
+
         final ProfileEntryValue result = new ProfileEntryValue();
         if (source.getValue() instanceof Date) {
             final XMLGregorianCalendar xmlGregCal = this.mapperFacade.map(source.getValue(),
