@@ -18,15 +18,11 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Sca
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CaptureObjectDefinitionDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryValueDto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
 public class GetPowerQualityProfileNoSelectiveAccessHandler extends AbstractGetPowerQualityProfileHandler {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetPowerQualityProfileNoSelectiveAccessHandler.class);
-
+    
     public GetPowerQualityProfileNoSelectiveAccessHandler(final DlmsHelper dlmsHelper) {
         super(dlmsHelper);
     }

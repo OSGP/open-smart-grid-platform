@@ -204,8 +204,8 @@ public abstract class AbstractGetPowerQualityProfileHandler {
             Map<Integer, CaptureObjectDefinitionDto> selectableCaptureObjects = this
                     .createSelectableCaptureObjects(captureObjects, profile.getLogicalNames());
 
-            // the units of measure for all capture objects
-            final List<ScalerUnitInfo> scalerUnitInfos = createScalerUnitInfos(conn, device, captureObjects,
+            // the units of measure for all Selectable Capture objects
+            final List<ScalerUnitInfo> scalerUnitInfos = createScalerUnitInfos(conn, device,
                     selectableCaptureObjects.values());
 
             LOGGER.info("---- I have {} capture objects and I have {} scaler units",
@@ -506,26 +506,24 @@ public abstract class AbstractGetPowerQualityProfileHandler {
     }
 
     private List<ScalerUnitInfo> createScalerUnitInfos(final DlmsConnectionManager conn, final DlmsDevice device,
-            final List<GetResult> captureObjects, Collection<CaptureObjectDefinitionDto> values)
-            throws ProtocolAdapterException {
+            final Collection<CaptureObjectDefinitionDto> values) throws ProtocolAdapterException {
 
         List<ScalerUnitInfo> scalerUnitInfos = new ArrayList<>();
 
         for (final CaptureObjectDefinitionDto dto : values) {
 
             ScalerUnitInfo newScalerUnitInfo = createScalerUnitInfo(conn, device, dto);
-
             scalerUnitInfos.add(newScalerUnitInfo);
         }
 
         return scalerUnitInfos;
     }
 
-    protected ScalerUnitInfo createScalerUnitInfo(final DlmsConnectionManager conn, final DlmsDevice device,
-            final CaptureObjectDefinitionDto dataObject) throws ProtocolAdapterException {
+    private ScalerUnitInfo createScalerUnitInfo(final DlmsConnectionManager conn, final DlmsDevice device,
+            final CaptureObjectDefinitionDto captureObjectDefinitionDto) throws ProtocolAdapterException {
 
-        final int classId = dataObject.getClassId();
-        final String logicalName = dataObject.getLogicalName().toString();
+        final int classId = captureObjectDefinitionDto.getClassId();
+        final String logicalName = captureObjectDefinitionDto.getLogicalName().toString();
 
         if (this.hasScalerUnit(classId)) {
             final AttributeAddress addr = new AttributeAddress(classId, logicalName, SCALER_UNITS_MAP.get(classId));
