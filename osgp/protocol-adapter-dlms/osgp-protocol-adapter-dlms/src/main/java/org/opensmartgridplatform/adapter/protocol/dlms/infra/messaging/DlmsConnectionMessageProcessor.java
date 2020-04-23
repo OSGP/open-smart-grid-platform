@@ -12,6 +12,7 @@ import java.io.Serializable;
 
 import javax.jms.JMSException;
 
+import org.opensmartgridplatform.adapter.protocol.dlms.application.throttling.ThrottlingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
@@ -52,8 +53,14 @@ public abstract class DlmsConnectionMessageProcessor {
     @Autowired
     protected DlmsDeviceRepository deviceRepository;
 
+    @Autowired
+    protected ThrottlingService throttlingService;
+
     protected DlmsConnectionManager createConnectionForDevice(final DlmsDevice device,
             final MessageMetadata messageMetadata) throws OsgpException {
+
+
+
         final DlmsMessageListener dlmsMessageListener = this
                 .createMessageListenerForDeviceConnection(device, messageMetadata);
         return this.connectionHelper.createConnectionForDevice(device, dlmsMessageListener);
