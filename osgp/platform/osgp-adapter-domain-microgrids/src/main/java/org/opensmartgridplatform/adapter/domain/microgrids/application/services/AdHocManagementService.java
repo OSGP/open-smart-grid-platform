@@ -13,6 +13,7 @@ import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.domain.microgrids.application.mapping.DomainMicrogridsMapper;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.RtuDevice;
+import org.opensmartgridplatform.domain.core.exceptions.UnknownEntityException;
 import org.opensmartgridplatform.domain.microgrids.valueobjects.EmptyResponse;
 import org.opensmartgridplatform.domain.microgrids.valueobjects.GetDataRequest;
 import org.opensmartgridplatform.domain.microgrids.valueobjects.GetDataResponse;
@@ -21,10 +22,12 @@ import org.opensmartgridplatform.dto.valueobjects.microgrids.EmptyResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.GetDataRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.GetDataResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.SetDataRequestDto;
-import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderUUIDService;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
@@ -39,6 +42,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AdHocManagementService extends BaseService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdHocManagementService.class);
+    private static final ComponentType COMPONENT_TYPE = ComponentType.DOMAIN_MICROGRIDS;
 
     @Autowired
     private DomainMicrogridsMapper mapper;
@@ -108,8 +112,12 @@ public class AdHocManagementService extends BaseService {
         }
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withIds(ids).withCorrelationUid(actualCorrelationUid).withResult(result).withOsgpException(exception)
-                .withDataObject(dataResponse).build();
+                .withIds(ids)
+                .withCorrelationUid(actualCorrelationUid)
+                .withResult(result)
+                .withOsgpException(exception)
+                .withDataObject(dataResponse)
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage, messageType);
     }
 
@@ -157,14 +165,20 @@ public class AdHocManagementService extends BaseService {
             exception = this.ensureOsgpException(e, "Exception occurred while setting data");
         }
 
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withIds(ids)
-                .withResult(result).withOsgpException(exception).withDataObject(emptyResponse).build();
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withIds(ids)
+                .withResult(result)
+                .withOsgpException(exception)
+                .withDataObject(emptyResponse)
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage, messageType);
     }
 
-    private void handleResponseMessageReceived(final String deviceIdentification) {
+    private void handleResponseMessageReceived(final String deviceIdentification) throws FunctionalException {
         try {
-            final RtuDevice device = this.rtuDeviceRepository.findByDeviceIdentification(deviceIdentification);
+            final RtuDevice device = this.rtuDeviceRepository.findByDeviceIdentification(deviceIdentification)
+                    .orElseThrow(() -> new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, COMPONENT_TYPE,
+                            new UnknownEntityException(RtuDevice.class, deviceIdentification)));
             if (this.shouldUpdateCommunicationTime(device)) {
                 device.messageReceived();
                 this.rtuDeviceRepository.save(device);

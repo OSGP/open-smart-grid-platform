@@ -36,6 +36,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 public class BaseService {
 
+    private static final ComponentType COMPONENT_TYPE = ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION;
+
     @Autowired
     protected DeviceDomainService deviceDomainService;
 
@@ -87,9 +89,12 @@ public class BaseService {
         return new TechnicalException(ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION, defaultMessage, t);
     }
 
-    protected void handleResponseMessageReceived(final Logger logger, final String deviceIdentification) {
+    protected void handleResponseMessageReceived(final Logger logger, final String deviceIdentification)
+            throws FunctionalException {
         try {
-            final RtuDevice device = this.rtuDeviceRepository.findByDeviceIdentification(deviceIdentification);
+            final RtuDevice device = this.rtuDeviceRepository.findByDeviceIdentification(deviceIdentification)
+                    .orElseThrow(() -> new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, COMPONENT_TYPE,
+                            new UnknownEntityException(RtuDevice.class, deviceIdentification)));
             if (this.shouldUpdateCommunicationTime(device, this.lastCommunicationUpdateInterval)) {
                 device.messageReceived();
                 this.rtuDeviceRepository.save(device);

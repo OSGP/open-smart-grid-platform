@@ -94,7 +94,7 @@
       <groupId>org.openmuc</groupId>
       <artifactId>j60870</artifactId>
     </dependency>
-    
+
     <!-- Testing dependencies -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>

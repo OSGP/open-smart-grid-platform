@@ -1,11 +1,11 @@
 /**
- * Copyright 2017 Smart Society Services B.V.
+ * Copyright 2020 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.ws.da.application.services;
+package org.opensmartgridplatform.adapter.kafka.da.application.services;
 
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
@@ -25,16 +25,19 @@ import org.springframework.stereotype.Service;
 @Service
 public class DomainHelperService {
 
-    private static final ComponentType COMPONENT_TYPE = ComponentType.WS_DISTRIBUTION_AUTOMATION;
+    private static final ComponentType COMPONENT_TYPE = ComponentType.KAFKA_DISTRIBUTION_AUTOMATION;
+
+    private final RtuDeviceRepository rtuDeviceRepository;
+    private final OrganisationRepository organisationRepository;
+    private final SecurityService securityService;
 
     @Autowired
-    private RtuDeviceRepository rtuDeviceRepository;
-
-    @Autowired
-    private OrganisationRepository organisationRepository;
-
-    @Autowired
-    private SecurityService securityService;
+    public DomainHelperService(final RtuDeviceRepository rtuDeviceRepository,
+            final OrganisationRepository organisationRepository, final SecurityService securityService) {
+        this.rtuDeviceRepository = rtuDeviceRepository;
+        this.organisationRepository = organisationRepository;
+        this.securityService = securityService;
+    }
 
     public RtuDevice findDevice(final String deviceIdentification) throws FunctionalException {
         return this.rtuDeviceRepository.findByDeviceIdentification(deviceIdentification)
