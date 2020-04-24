@@ -131,7 +131,7 @@
     <sun.httpserver.version>20070405</sun.httpserver.version>
     <postgresql.version>42.2.12</postgresql.version>
     <javax.xml.soap-api.version>1.4.0</javax.xml.soap-api.version>
-    <kafka.version>2.4.0</kafka.version>
+    <kafka.version>2.5.0</kafka.version>
     <avro.version>1.9.1</avro.version>
     <spring.kafka.version>2.4.4.RELEASE</spring.kafka.version>
   </properties>
