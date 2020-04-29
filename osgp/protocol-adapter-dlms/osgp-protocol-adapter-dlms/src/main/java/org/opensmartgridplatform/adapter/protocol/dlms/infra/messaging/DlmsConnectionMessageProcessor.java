@@ -12,7 +12,7 @@ import java.io.Serializable;
 
 import javax.jms.JMSException;
 
-import org.opensmartgridplatform.adapter.protocol.dlms.application.throttling.ThrottlingService;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
@@ -57,12 +57,14 @@ public abstract class DlmsConnectionMessageProcessor {
     protected ThrottlingService throttlingService;
 
     protected DlmsConnectionManager createConnectionForDevice(final DlmsDevice device,
-            final MessageMetadata messageMetadata) throws OsgpException {
+            final MessageMetadata messageMetadata) throws OsgpException, InterruptedException {
 
-
+        throttlingService.newConnection();
+        throttlingService.openConnection();
 
         final DlmsMessageListener dlmsMessageListener = this
                 .createMessageListenerForDeviceConnection(device, messageMetadata);
+
         return this.connectionHelper.createConnectionForDevice(device, dlmsMessageListener);
     }
 
@@ -94,6 +96,8 @@ public abstract class DlmsConnectionMessageProcessor {
 
         this.closeDlmsConnection(device, conn);
 
+        this.throttlingService.closeConnection();
+
         if (device.needsInvocationCounter()) {
             this.updateInvocationCounterForDevice(device, conn);
         }
@@ -117,7 +121,7 @@ public abstract class DlmsConnectionMessageProcessor {
                             + "communication with an InvocationCountingDlmsMessageListener - device: {}, hls5: {}, "
                             + "listener: {}", device.getDeviceIdentification(), device.isHls5Active(),
                     conn.getDlmsMessageListener() == null ? "null" : conn.getDlmsMessageListener().getClass()
-                            .getName());
+                                                                         .getName());
             return;
         }
 

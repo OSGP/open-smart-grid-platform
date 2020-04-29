@@ -5,11 +5,12 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands;
+package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.map;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.CommandExecutor;
 import org.springframework.stereotype.Component;
 
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;

@@ -302,5 +302,24 @@
       <artifactId>postgresql</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-kahadb-store</artifactId>
+      <scope>test</scope>
+      <version>5.15.11</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.activemq.tooling</groupId>
+      <artifactId>activemq-junit</artifactId>
+      <version>5.15.11</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-broker</artifactId>
+      <version>5.15.11</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>

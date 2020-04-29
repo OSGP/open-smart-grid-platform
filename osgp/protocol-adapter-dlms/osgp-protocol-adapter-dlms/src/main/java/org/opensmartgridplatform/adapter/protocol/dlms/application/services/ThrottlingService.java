@@ -6,7 +6,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.protocol.dlms.application.throttling;
+package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -29,7 +29,7 @@ public class ThrottlingService {
     private int maxNewConnections = 10;
 
     private final Semaphore openConnectionsSemaphore;
-    private final Semaphore newConnectionsSemaphore;
+    private Semaphore newConnectionsSemaphore;
 
     public ThrottlingService() {
 
@@ -66,6 +66,8 @@ public class ThrottlingService {
         public void run() {
 
             newConnectionsSemaphore.release(maxNewConnections);
+
+            newConnectionsSemaphore = new Semaphore(maxNewConnections);
 
             LOGGER.info("ThrottlingService - Timer Reset and Unlocking, newConnections available = {}  ",
                     newConnectionsSemaphore.availablePermits());

@@ -23,7 +23,7 @@ class DlmsConnectionMessageProcessorImpl extends DlmsConnectionMessageProcessor 
 
     @Override
     public DlmsConnectionManager createConnectionForDevice(final DlmsDevice device,
-            final MessageMetadata messageMetadata) throws OsgpException {
+            final MessageMetadata messageMetadata) throws OsgpException, InterruptedException {
         return super.createConnectionForDevice(device, messageMetadata);
     }
 

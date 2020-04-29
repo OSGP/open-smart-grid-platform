@@ -6,13 +6,14 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.protocol.dlms.application.throttling;
+package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.jupiter.api.Test;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
 
 public class ThrottlingServiceTest {
 
@@ -41,7 +42,7 @@ public class ThrottlingServiceTest {
     private Thread openingThread() {
         return new Thread(() -> {
 
-            for (int i = 0; i < 500; i++) {
+            for (int i = 0; i < 100; i++) {
                 try {
                     System.out.println("Incoming request " + i);
                     throttlingService.newConnection();
@@ -58,7 +59,7 @@ public class ThrottlingServiceTest {
 
     private Thread closingThread() {
         return new Thread(() -> {
-            for (int i = 0; i < 500; i++) {
+            for (int i = 0; i < 100; i++) {
                 throttlingService.closeConnection();
                 try {
                     Thread.sleep(200);
