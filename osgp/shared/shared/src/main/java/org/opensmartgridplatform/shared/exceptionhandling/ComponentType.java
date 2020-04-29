@@ -8,7 +8,7 @@
 package org.opensmartgridplatform.shared.exceptionhandling;
 
 /**
- * Enum having list of ExceptionsCodes
+ * Enum having list of components used within OSGP
  */
 public enum ComponentType {
     WS_ADMIN("Osgp Web Service Adapter Admin"),
@@ -18,6 +18,7 @@ public enum ComponentType {
     WS_SMART_METERING("Osgp Web Service Adapter Smart Metering"),
     WS_MICROGRIDS("Osgp Web Service Adapter Microgrids"),
     WS_DISTRIBUTION_AUTOMATION("Osgp Web Service Adapter Distribution Automation"),
+    KAFKA_DISTRIBUTION_AUTOMATION("Osgp Kafka Adapter Distribution Automation"),
     DOMAIN_ADMIN("Osgp Domain Adapter Admin"),
     DOMAIN_CORE("Osgp Domain Adapter Core"),
     DOMAIN_PUBLIC_LIGHTING("Osgp Domain Adapter Public Lighting"),

@@ -40,6 +40,9 @@ public class Iec60870SimulatorConfig {
     @Value("${iec60870.simulator.connection.timeout}")
     private int connectionTimeout;
 
+    @Value("${iec60870.simulator.sendEndOfInitialization:false}")
+    private boolean sendEndOfInitialization;
+
     @Value("${iec60870.simulator.port:2404}")
     private int port;
 
@@ -52,7 +55,7 @@ public class Iec60870SimulatorConfig {
         LOGGER.debug("Creating IEC60870 Simulator Bean.");
 
         final Iec60870Server server = new Iec60870Server(new Iec60870ServerEventListener(iec60870ConnectionRegistry,
-                iec60870AsduHandlerRegistry, this.connectionTimeout), this.port);
+                iec60870AsduHandlerRegistry, this.connectionTimeout, this.sendEndOfInitialization), this.port);
 
         LOGGER.debug("Starting IEC60870 Simulator.");
         server.start();

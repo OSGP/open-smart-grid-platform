@@ -50,7 +50,7 @@
     <osgp.dlms.version>5.1.0-SNAPSHOT</osgp.dlms.version>
     <osgp.shared.version>5.1.0-SNAPSHOT</osgp.shared.version>
     <osgp.jasper-interface.version>5.1.0-SNAPSHOT</osgp.jasper-interface.version>
-    <spring.version>5.2.5.RELEASE</spring.version>
+    <spring.version>5.2.6.RELEASE</spring.version>
     <spring.data.version>2.2.3.RELEASE</spring.data.version>
     <spring.data.commons.version>2.2.3.RELEASE</spring.data.commons.version>
     <spring.security.version>5.3.1.RELEASE</spring.security.version>
@@ -71,8 +71,8 @@
     <junit.version>5.6.2</junit.version>
     <junit.platform.launcher.version>1.6.2</junit.platform.launcher.version>
     <byte.buddy.version>1.10.9</byte.buddy.version>
-    <joda.version>2.10.5</joda.version>
-    <flyway.version>6.3.3</flyway.version>
+    <joda.version>2.10.6</joda.version>
+    <flyway.version>6.4.0</flyway.version>
     <slf4j.version>1.7.30</slf4j.version>
     <apache.commons.lang.version>3.10</apache.commons.lang.version>
     <apache.commons.text.version>1.8</apache.commons.text.version>
@@ -91,9 +91,11 @@
     <maven.assembly.plugin.version>3.2.0</maven.assembly.plugin.version>
     <maven.eclipse.plugin.version>2.10</maven.eclipse.plugin.version>
     <maven.exec.plugin.version>1.6.0</maven.exec.plugin.version>
+    <maven.enforcer.plugin.version>3.0.0-M3</maven.enforcer.plugin.version>
+    <maven.enforcer.maven.version>3.0.0</maven.enforcer.maven.version>
     <jaxb2.maven.plugin.version>2.5.0</jaxb2.maven.plugin.version>
     <jaxb.api.version>2.3.1</jaxb.api.version>
-    <spotbugs.maven.plugin.version>3.1.12.2</spotbugs.maven.plugin.version>
+    <spotbugs.maven.plugin.version>4.0.0</spotbugs.maven.plugin.version>
     <pmd.maven.plugin.version>3.13.0</pmd.maven.plugin.version>
     <checkstyle.maven.plugin.version>3.1.1</checkstyle.maven.plugin.version>
     <dependency-check.maven.plugin.version>5.3.2</dependency-check.maven.plugin.version>
@@ -103,23 +105,23 @@
     <logback.ext.version>0.1.5</logback.ext.version>
     <apache.commons.schema>2.2.5</apache.commons.schema>
     <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
-    <netty.version>4.1.48.Final</netty.version>
+    <netty.version>4.1.49.Final</netty.version>
     <openmuc.jdlms.version>1.6.1</openmuc.jdlms.version>
     <beanit.openiec61850.version>1.8.0</beanit.openiec61850.version>
     <openmuc.j60870.version>1.3.1</openmuc.j60870.version>
     <javax.inject.version>1</javax.inject.version>
     <javax.annotation.version>1.3.2</javax.annotation.version>
     <license.maven.plugin>3.0</license.maven.plugin>
-    <jackson.version>2.10.3</jackson.version>
+    <jackson.version>2.11.0</jackson.version>
     <jackson-databind.version>2.10.3</jackson-databind.version>
     <cxf.version>3.3.6</cxf.version>
     <quartz.version>2.3.2</quartz.version>
-    <hikaricp.version>3.4.2</hikaricp.version>
-    <micrometer.version>1.4.1</micrometer.version>
+    <hikaricp.version>3.4.3</hikaricp.version>
+    <micrometer.version>1.4.2</micrometer.version>
     <protobuf.version>2.4.1</protobuf.version>
     <protobuf.maven.plugin>0.6.5</protobuf.maven.plugin>
-    <guava.version>28.2-jre</guava.version>
-    <spotbugs.version>4.0.1</spotbugs.version>
+    <guava.version>29.0-jre</guava.version>
+    <spotbugs.version>4.0.2</spotbugs.version>
     <jacoco.version>0.8.5</jacoco.version>
     <selenium.java.version>3.141.59</selenium.java.version>
     <SunriseSunsetCalculator.version>1.2</SunriseSunsetCalculator.version>
@@ -129,6 +131,9 @@
     <sun.httpserver.version>20070405</sun.httpserver.version>
     <postgresql.version>42.2.12</postgresql.version>
     <javax.xml.soap-api.version>1.4.0</javax.xml.soap-api.version>
+    <kafka.version>2.5.0</kafka.version>
+    <avro.version>1.9.2</avro.version>
+    <spring.kafka.version>2.4.6.RELEASE</spring.kafka.version>
   </properties>
 
   <dependencyManagement>
@@ -586,7 +591,24 @@
         <version>${apache.httpcomponents.httpcore.version}</version>
       </dependency>
 
-      <!-- Apache MQ client -->
+     <!-- Kafka, Avro -->
+      <dependency>
+        <groupId>org.apache.kafka</groupId>
+        <artifactId>kafka-clients</artifactId>
+        <version>${kafka.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.avro</groupId>
+        <artifactId>avro</artifactId>
+        <version>${avro.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.kafka</groupId>
+        <artifactId>spring-kafka</artifactId>
+        <version>${spring.kafka.version}</version>
+      </dependency>
+
+      <!-- Apache ActiveMQ client -->
       <dependency>
         <groupId>org.apache.activemq</groupId>
         <artifactId>activemq-client</artifactId>
@@ -893,7 +915,6 @@
   <build>
     <pluginManagement>
       <plugins>
-
         <plugin>
           <groupId>external.atlassian.jgitflow</groupId>
           <artifactId>jgitflow-maven-plugin</artifactId>
@@ -1001,6 +1022,45 @@
               <goals>
                 <goal>check</goal>
               </goals>
+            </execution>
+          </executions>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-enforcer-plugin</artifactId>
+          <version>${maven.enforcer.plugin.version}</version>
+          <executions>
+            <execution>
+              <id>enforce-maven</id>
+              <goals>
+                <goal>enforce</goal>
+              </goals>
+              <configuration>
+                <rules>
+                  <requireMavenVersion>
+                    <version>${maven.enforcer.maven.version}</version>
+                  </requireMavenVersion>
+                </rules>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.avro</groupId>
+          <artifactId>avro-maven-plugin</artifactId>
+          <version>${avro.version}</version>
+          <executions>
+            <execution>
+              <phase>generate-sources</phase>
+              <goals>
+                <goal>schema</goal>
+              </goals>
+              <configuration>
+                <sourceDirectory>${project.basedir}/src/main/resources/</sourceDirectory>
+                <outputDirectory>${project.basedir}/target/generated-sources/avro/</outputDirectory>
+              </configuration>
             </execution>
           </executions>
         </plugin>
