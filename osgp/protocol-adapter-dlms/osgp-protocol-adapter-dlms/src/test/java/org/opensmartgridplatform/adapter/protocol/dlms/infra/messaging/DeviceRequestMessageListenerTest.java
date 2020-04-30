@@ -1,5 +1,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging;
 
+import java.util.Date;
+
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
@@ -8,7 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileRequestDataDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ObjectMessageBuilder;
 import org.slf4j.Logger;
@@ -29,12 +31,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = MessagingTestConfiguration.class)
 @ActiveProfiles("test")
-public class DeviceRequestMessageProcessorTest {
+public class DeviceRequestMessageListenerTest {
 
-    //@Rule
-    //public EmbeddedActiveMQBroker broker = new EmbeddedActiveMQBroker();
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceRequestMessageProcessorTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceRequestMessageListenerTest.class);
 
     @Autowired
     private DeviceRequestMessageListener listener;
@@ -56,13 +55,13 @@ public class DeviceRequestMessageProcessorTest {
 
         LOGGER.info("Starting Test");
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 10000; i++) {
 
             LOGGER.info("Starting Test " + i);
 
             final ObjectMessage message = new ObjectMessageBuilder().withDeviceIdentification("osgp").withMessageType(
-                    MessageType.GET_PROFILE_GENERIC_DATA.toString()).withObject(new GetPowerQualityProfileResponseDto())
-                                                                    .build();
+                    MessageType.GET_PROFILE_GENERIC_DATA.toString()).withObject(
+                    new GetPowerQualityProfileRequestDataDto("PUBLIC", new Date(), new Date(), null)).build();
 
             listener.onMessage(message);
         }

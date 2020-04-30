@@ -1,8 +1,5 @@
 package org.opensmartgridplatform.shared.security;
 
-import org.springframework.context.annotation.Primary;
-import org.springframework.stereotype.Component;
-
 /**
  * Copyright 2019 Smart Society Services B.V.
  *
@@ -11,7 +8,5 @@ import org.springframework.stereotype.Component;
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-@Component
-@Primary
-public class RsaEncryptionService {
+public class MockRsaEncryptionService {
 }

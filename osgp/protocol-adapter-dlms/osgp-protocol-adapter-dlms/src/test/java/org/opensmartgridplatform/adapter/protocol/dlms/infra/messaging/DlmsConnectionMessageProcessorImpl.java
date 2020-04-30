@@ -14,10 +14,10 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 class DlmsConnectionMessageProcessorImpl extends DlmsConnectionMessageProcessor {
     private final DlmsMessageListener messageListener;
 
-    public DlmsConnectionMessageProcessorImpl(final DlmsConnectionHelper connectionHelper,
+    public DlmsConnectionMessageProcessorImpl(final DlmsConnectionHelper dlmsConnectionHelper,
             final DlmsMessageListener messageListener, final DlmsDeviceRepository deviceRepository) {
         this.deviceRepository = deviceRepository;
-        this.connectionHelper = connectionHelper;
+        this.dlmsConnectionHelper = dlmsConnectionHelper;
         this.messageListener = messageListener;
     }
 

@@ -30,7 +30,7 @@ public class DlmsConnectionMessageProcessorTest {
     private DlmsConnectionMessageProcessorImpl processor;
 
     @Mock
-    private DlmsConnectionHelper connectionHelper;
+    private DlmsConnectionHelper dlmsConnectionHelper;
 
     @Mock
     private DlmsDeviceRepository deviceRepository;
@@ -40,7 +40,7 @@ public class DlmsConnectionMessageProcessorTest {
     @BeforeEach
     public void setUp() {
         this.messageListener = new InvocationCountingDlmsMessageListener();
-        this.processor = new DlmsConnectionMessageProcessorImpl(this.connectionHelper, this.messageListener,
+        this.processor = new DlmsConnectionMessageProcessorImpl(this.dlmsConnectionHelper, this.messageListener,
                 this.deviceRepository);
     }
 
@@ -50,7 +50,7 @@ public class DlmsConnectionMessageProcessorTest {
         final MessageMetadata metadata = mock(MessageMetadata.class);
 
         final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
-        when(this.connectionHelper.createConnectionForDevice(device, this.messageListener))
+        when(this.dlmsConnectionHelper.createConnectionForDevice(device, this.messageListener))
                 .thenReturn(connectionManager);
 
         final DlmsConnectionManager result = this.processor.createConnectionForDevice(device, metadata);

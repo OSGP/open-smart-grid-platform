@@ -23,10 +23,10 @@ public class ThrottlingService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ThrottlingService.class);
 
     @Value("${throttling.max.open.connections:30}")
-    private int maxOpenConnections = 30;
+    private int maxOpenConnections = 10;
 
     @Value("${throttling.new.connections:10}")
-    private int maxNewConnections = 10;
+    private int maxNewConnections = 30;
 
     private final Semaphore openConnectionsSemaphore;
     private Semaphore newConnectionsSemaphore;

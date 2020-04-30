@@ -39,7 +39,7 @@ public abstract class DlmsConnectionMessageProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(DlmsConnectionMessageProcessor.class);
 
     @Autowired
-    protected DlmsConnectionHelper connectionHelper;
+    protected DlmsConnectionHelper dlmsConnectionHelper;
 
     @Autowired
     protected DlmsLogItemRequestMessageSender dlmsLogItemRequestMessageSender;
@@ -56,7 +56,7 @@ public abstract class DlmsConnectionMessageProcessor {
     @Autowired
     protected ThrottlingService throttlingService;
 
-    protected DlmsConnectionManager createConnectionForDevice(final DlmsDevice device,
+    public DlmsConnectionManager createConnectionForDevice(final DlmsDevice device,
             final MessageMetadata messageMetadata) throws OsgpException, InterruptedException {
 
         throttlingService.newConnection();
@@ -65,7 +65,7 @@ public abstract class DlmsConnectionMessageProcessor {
         final DlmsMessageListener dlmsMessageListener = this
                 .createMessageListenerForDeviceConnection(device, messageMetadata);
 
-        return this.connectionHelper.createConnectionForDevice(device, dlmsMessageListener);
+        return this.dlmsConnectionHelper.createConnectionForDevice(device, dlmsMessageListener);
     }
 
     protected DlmsMessageListener createMessageListenerForDeviceConnection(final DlmsDevice device,

@@ -1,9 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
@@ -14,16 +15,14 @@ import org.opensmartgridplatform.adapter.protocol.jasper.infra.ws.JasperWireless
 import org.opensmartgridplatform.adapter.protocol.jasper.sessionproviders.SessionProvider;
 import org.opensmartgridplatform.adapter.protocol.jasper.sessionproviders.SessionProviderService;
 import org.opensmartgridplatform.adapter.protocol.jasper.sessionproviders.exceptions.SessionProviderException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 @Service(value = "dlmsDomainHelperService")
 public class DomainHelperService {
@@ -32,20 +31,26 @@ public class DomainHelperService {
 
     private static final ComponentType COMPONENT_TYPE = ComponentType.PROTOCOL_DLMS;
 
-    @Autowired
     private DlmsDeviceRepository dlmsDeviceRepository;
 
-    @Autowired
     private SessionProviderService sessionProviderService;
 
-    @Autowired
     private JasperWirelessSmsClient jasperWirelessSmsClient;
 
-    @Autowired
     private int jasperGetSessionRetries;
 
-    @Autowired
     private int jasperGetSessionSleepBetweenRetries;
+
+    public DomainHelperService(DlmsDeviceRepository dlmsDeviceRepository, SessionProviderService sessionProviderService,
+            JasperWirelessSmsClient jasperWirelessSmsClient, int jasperGetSessionRetries,
+            int jasperGetSessionSleepBetweenRetries) {
+        this.dlmsDeviceRepository = dlmsDeviceRepository;
+        this.sessionProviderService = sessionProviderService;
+        this.jasperWirelessSmsClient = jasperWirelessSmsClient;
+        this.jasperGetSessionRetries = jasperGetSessionRetries;
+        this.jasperGetSessionSleepBetweenRetries = jasperGetSessionSleepBetweenRetries;
+
+    }
 
     /**
      * This method can be used to find an mBusDevice. For other devices, use
@@ -68,8 +73,8 @@ public class DomainHelperService {
     public DlmsDevice findDlmsDevice(final String deviceIdentification, final String ipAddress) throws OsgpException {
         final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
         if (dlmsDevice == null) {
-            final String errorMessage = String.format("Unable to communicate with unknown device: %s",
-                    deviceIdentification);
+            final String errorMessage = String
+                    .format("Unable to communicate with unknown device: %s", deviceIdentification);
             LOGGER.error(errorMessage);
 
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.PROTOCOL_DLMS);
@@ -141,8 +146,9 @@ public class DomainHelperService {
                         mbusManufacturerIdentification);
         if (dlmsDevice == null) {
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, COMPONENT_TYPE,
-                    new ProtocolAdapterException("Unable to find M-Bus device for M-Bus identification number: "
-                            + mbusIdentificationNumber + " and manufacturer ID: " + mbusManufacturerIdentification));
+                    new ProtocolAdapterException(
+                            "Unable to find M-Bus device for M-Bus identification number: " + mbusIdentificationNumber
+                                    + " and manufacturer ID: " + mbusManufacturerIdentification));
         }
         return dlmsDevice;
     }
