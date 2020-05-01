@@ -70,7 +70,7 @@
     <javax.validation.api.version>2.0.1.Final</javax.validation.api.version>
     <junit.version>5.6.2</junit.version>
     <junit.platform.launcher.version>1.6.2</junit.platform.launcher.version>
-    <byte.buddy.version>1.10.9</byte.buddy.version>
+    <byte.buddy.version>1.10.10</byte.buddy.version>
     <joda.version>2.10.6</joda.version>
     <flyway.version>6.4.1</flyway.version>
     <slf4j.version>1.7.30</slf4j.version>
