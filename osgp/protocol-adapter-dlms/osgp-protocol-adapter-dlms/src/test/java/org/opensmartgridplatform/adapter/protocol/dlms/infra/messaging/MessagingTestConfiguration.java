@@ -136,7 +136,7 @@ public class MessagingTestConfiguration extends AbstractConfig {
 
     @Bean
     public ThrottlingService throttlingService() {
-        return new ThrottlingService();
+        return new ThrottlingService(10, 30);
     }
 
     @Bean

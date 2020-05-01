@@ -55,7 +55,7 @@ public class DeviceRequestMessageListenerTest {
 
         LOGGER.info("Starting Test");
 
-        for (int i = 0; i < 10000; i++) {
+        for (int i = 0; i < 200; i++) {
 
             LOGGER.info("Starting Test " + i);
 

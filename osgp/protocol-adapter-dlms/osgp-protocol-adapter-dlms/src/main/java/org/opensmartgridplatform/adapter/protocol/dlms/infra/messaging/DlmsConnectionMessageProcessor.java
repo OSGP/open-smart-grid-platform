@@ -55,11 +55,11 @@ public abstract class DlmsConnectionMessageProcessor {
 
     @Autowired
     protected ThrottlingService throttlingService;
-
+    
     public DlmsConnectionManager createConnectionForDevice(final DlmsDevice device,
             final MessageMetadata messageMetadata) throws OsgpException, InterruptedException {
 
-        throttlingService.newConnection();
+        throttlingService.newConnectionRequest();
         throttlingService.openConnection();
 
         final DlmsMessageListener dlmsMessageListener = this

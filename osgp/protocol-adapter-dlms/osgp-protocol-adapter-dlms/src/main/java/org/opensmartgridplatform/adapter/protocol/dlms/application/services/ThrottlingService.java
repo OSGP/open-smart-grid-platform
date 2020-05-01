@@ -22,21 +22,21 @@ public class ThrottlingService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ThrottlingService.class);
 
-    @Value("${throttling.max.open.connections:30}")
-    private int maxOpenConnections = 10;
-
-    @Value("${throttling.new.connections:10}")
-    private int maxNewConnections = 30;
+    private final int maxNewConnectionRequests;
 
     private final Semaphore openConnectionsSemaphore;
-    private Semaphore newConnectionsSemaphore;
+    private Semaphore newConnectionRequestsSemaphore;
 
-    public ThrottlingService() {
+    public ThrottlingService(
+            @Value("${throttling.max.open.connections:30}") int maxOpenConnections,
+            @Value("${throttling.new.connection.requests:10}") int maxNewConnectionRequests) {
 
-        LOGGER.info("Initializing ThrottlingService");
+        LOGGER.info("Initializing ThrottlingService. MaxOpenConnections = {}", maxOpenConnections);
+
+        this.maxNewConnectionRequests = maxNewConnectionRequests;
 
         openConnectionsSemaphore = new Semaphore(maxOpenConnections);
-        newConnectionsSemaphore = new Semaphore(maxNewConnections);
+        newConnectionRequestsSemaphore = new Semaphore(maxNewConnectionRequests);
 
         new Timer().scheduleAtFixedRate(new ResetTask(), 2000, 2000);
     }
@@ -54,23 +54,23 @@ public class ThrottlingService {
         this.openConnectionsSemaphore.release();
     }
 
-    public void newConnection() throws InterruptedException {
+    public void newConnectionRequest() throws InterruptedException {
 
-        this.newConnectionsSemaphore.acquire();
+        this.newConnectionRequestsSemaphore.acquire();
 
-        LOGGER.info("acquired newConnection. available = {} ", this.newConnectionsSemaphore.availablePermits());
+        LOGGER.info("acquired newConnection. available = {} ", this.newConnectionRequestsSemaphore.availablePermits());
     }
 
     private class ResetTask extends TimerTask {
         @Override
         public void run() {
 
-            newConnectionsSemaphore.release(maxNewConnections);
+            newConnectionRequestsSemaphore.release(maxNewConnectionRequests);
 
-            newConnectionsSemaphore = new Semaphore(maxNewConnections);
+            newConnectionRequestsSemaphore = new Semaphore(maxNewConnectionRequests);
 
-            LOGGER.info("ThrottlingService - Timer Reset and Unlocking, newConnections available = {}  ",
-                    newConnectionsSemaphore.availablePermits());
+            LOGGER.info("ThrottlingService - Timer Reset and Unlocking, max newConnectionRequests available = {}  ",
+                    newConnectionRequestsSemaphore.availablePermits());
         }
     }
 

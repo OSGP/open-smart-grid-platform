@@ -13,7 +13,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.jupiter.api.Test;
-import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
 
 public class ThrottlingServiceTest {
 
@@ -25,7 +24,7 @@ public class ThrottlingServiceTest {
     @Test
     public void testThrottling() throws InterruptedException {
 
-        throttlingService = new ThrottlingService();
+        throttlingService = new ThrottlingService(10, 30);
         openingThreadDone = new AtomicBoolean(false);
         closingThreadDone = new AtomicBoolean(false);
 
@@ -35,7 +34,7 @@ public class ThrottlingServiceTest {
         assertThat(true).isEqualTo(true);
 
         while (!openingThreadDone.get() && !closingThreadDone.get()) {
-
+            //
         }
     }
 
@@ -45,7 +44,7 @@ public class ThrottlingServiceTest {
             for (int i = 0; i < 100; i++) {
                 try {
                     System.out.println("Incoming request " + i);
-                    throttlingService.newConnection();
+                    throttlingService.newConnectionRequest();
                     throttlingService.openConnection();
                 } catch (InterruptedException e) {
                     e.printStackTrace();

@@ -30,6 +30,7 @@ import org.mockito.quality.Strictness;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ConfigurationService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.FirmwareService;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDeviceBuilder;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHelper;
@@ -72,6 +73,9 @@ public class UpdateFirmwareRequestMessageProcessorTest {
 
     @Mock
     private DlmsMessageListener messageListenerMock;
+
+    @Mock
+    private ThrottlingService throttlingService;
 
     private DlmsDevice device;
 

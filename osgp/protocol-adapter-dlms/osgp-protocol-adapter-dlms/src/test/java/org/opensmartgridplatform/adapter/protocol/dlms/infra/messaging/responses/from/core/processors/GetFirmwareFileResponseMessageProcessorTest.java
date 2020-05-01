@@ -30,6 +30,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.FirmwareService;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDeviceBuilder;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHelper;
@@ -68,6 +69,9 @@ public class GetFirmwareFileResponseMessageProcessorTest {
 
     @Mock
     private DlmsConnectionManager dlmsConnectionManagerMock;
+
+    @Mock
+    private ThrottlingService throttlingService;
 
     private DlmsDevice dlmsDevice;
 
