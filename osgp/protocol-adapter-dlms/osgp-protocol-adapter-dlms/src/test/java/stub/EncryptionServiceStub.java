@@ -1,4 +1,4 @@
-package util;
+package stub;
 
 import org.opensmartgridplatform.shared.security.EncryptionService;
 

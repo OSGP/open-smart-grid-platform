@@ -27,23 +27,23 @@ public class OutboundOsgpCoreResponsesMessagingConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OutboundOsgpCoreResponsesMessagingConfig.class);
 
-    private JmsConfigurationFactory jmsConfigurationFactory;
+   /* private JmsConfigurationFactory jmsConfigurationFactory;
 
     public OutboundOsgpCoreResponsesMessagingConfig(final Environment environment,
             final DefaultJmsConfiguration defaultJmsConfiguration) throws SSLException {
         this.jmsConfigurationFactory = new JmsConfigurationFactory(environment, defaultJmsConfiguration,
                 "jms.dlms.responses");
-    }
+    }*/
 
     @Bean(destroyMethod = "stop", name = "protocolDlmsOutboundOsgpCoreResponsesConnectionFactory")
-    public ConnectionFactory connectionFactory() {
+    public ConnectionFactory connectionFactory(JmsConfigurationFactory jmsConfigurationFactory) {
         LOGGER.info("Initializing protocolDlmsOutboundOsgpCoreResponsesConnectionFactory bean.");
-        return this.jmsConfigurationFactory.getPooledConnectionFactory();
+        return jmsConfigurationFactory.getPooledConnectionFactory();
     }
 
     @Bean(name = "protocolDlmsOutboundOsgpCoreResponsesJmsTemplate")
-    public JmsTemplate jmsTemplate() {
+    public JmsTemplate jmsTemplate(JmsConfigurationFactory jmsConfigurationFactory) {
         LOGGER.info("Initializing protocolDlmsOutboundOsgpCoreResponsesJmsTemplate bean.");
-        return this.jmsConfigurationFactory.initJmsTemplate();
+        return jmsConfigurationFactory.initJmsTemplate();
     }
 }

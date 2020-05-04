@@ -1,15 +1,15 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Date;
 
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileRequestDataDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ObjectMessageBuilder;
@@ -31,22 +31,15 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = MessagingTestConfiguration.class)
 @ActiveProfiles("test")
-public class DeviceRequestMessageListenerTest {
+public class DeviceRequestMessageListenerIT {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceRequestMessageListenerTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceRequestMessageListenerIT.class);
 
     @Autowired
     private DeviceRequestMessageListener listener;
 
-    @BeforeAll
-    static void initAll() {
-        System.out.println("---Inside initAll---");
-    }
-
-    @BeforeEach
-    void init(TestInfo testInfo) {
-        System.out.println("Start..." + testInfo.getDisplayName());
-    }
+    @Autowired
+    private ThrottlingService throttlingService;
 
     @Test
     public void testManyMessages() throws JMSException {
@@ -65,6 +58,8 @@ public class DeviceRequestMessageListenerTest {
 
             listener.onMessage(message);
         }
+
+        assertThat(throttlingService.toString()).isEqualTo("ThrottlingService. maxOpenConnections = 10, maxNewConnectionRequests=30, resetTime=2000");
 
     }
 

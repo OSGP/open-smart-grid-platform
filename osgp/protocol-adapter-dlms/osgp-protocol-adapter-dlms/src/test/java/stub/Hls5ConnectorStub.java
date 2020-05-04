@@ -1,4 +1,4 @@
-package util;
+package stub;
 
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.TcpConnectionBuilder;

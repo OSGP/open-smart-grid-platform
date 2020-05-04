@@ -148,7 +148,7 @@ public class DlmsConnectionManager implements AutoCloseable {
         try {
             this.dlmsConnection.close();
         } catch (final Exception e) {
-            LOGGER.warn("Failure while trying to close a DLMS connection", e);
+            //LOGGER.warn("Failure while trying to close a DLMS connection", e);
         }
         this.dlmsConnection = null;
     }

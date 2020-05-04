@@ -6,7 +6,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging;
+package stub;
 
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -37,7 +37,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @EnableTransactionManagement()
 @PropertySource("classpath:osgp-adapter-protocol-dlms.properties")
-public class MockDlmsPersistenceConfig extends AbstractPersistenceConfig {
+public class DlmsPersistenceConfigStub extends AbstractPersistenceConfig {
 
     @Value("${db.username.dlms}")
     private String username;
@@ -63,7 +63,7 @@ public class MockDlmsPersistenceConfig extends AbstractPersistenceConfig {
                                                                       .withDatabaseHost(this.databaseHost)
                                                                       .withDatabasePort(this.databasePort)
                                                                       .withDatabaseName(this.databaseName);
-            final DefaultConnectionPoolFactory factory = builder.build();
+
             this.dataSourceDlms = new DataSource() {
                 @Override
                 public Connection getConnection() throws SQLException {
@@ -129,8 +129,6 @@ public class MockDlmsPersistenceConfig extends AbstractPersistenceConfig {
     @Override
     @PreDestroy
     public void destroyDataSource() {
-        if (this.dataSourceDlms != null) {
-            //this.dataSourceDlms.getConnection().close();
-        }
+        //
     }
 }

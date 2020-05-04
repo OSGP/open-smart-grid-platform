@@ -1,18 +1,19 @@
-package util;
-
-import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-
 /**
- * Copyright 2019 Smart Society Services B.V.
+ * Copyright 2020 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-public class MockDomainHelperService extends DomainHelperService {
-    public MockDomainHelperService() {
+package stub;
+
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+
+
+public class DomainHelperServiceStub extends DomainHelperService {
+    public DomainHelperServiceStub() {
         super(null, null, null, 0, 0);
     }
 

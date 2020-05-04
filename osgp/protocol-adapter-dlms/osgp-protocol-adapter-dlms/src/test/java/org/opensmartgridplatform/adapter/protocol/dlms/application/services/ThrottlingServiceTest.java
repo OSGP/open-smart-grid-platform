@@ -24,7 +24,7 @@ public class ThrottlingServiceTest {
     @Test
     public void testThrottling() throws InterruptedException {
 
-        throttlingService = new ThrottlingService(10, 30);
+        throttlingService = new ThrottlingService(10, 30, 2000);
         openingThreadDone = new AtomicBoolean(false);
         closingThreadDone = new AtomicBoolean(false);
 

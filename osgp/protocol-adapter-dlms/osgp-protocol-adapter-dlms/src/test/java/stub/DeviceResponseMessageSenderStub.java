@@ -1,4 +1,4 @@
-package util;
+package stub;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;

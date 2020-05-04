@@ -7,6 +7,8 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.config;
 
+import javax.net.ssl.SSLException;
+
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.messaging.InboundOsgpCoreRequestsMessagingConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.messaging.InboundOsgpCoreResponsesMessagingConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.messaging.OutboundLogItemRequestsMessagingConfig;
@@ -14,6 +16,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.config.messag
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.messaging.OutboundOsgpCoreResponsesMessagingConfig;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsConfiguration;
+import org.opensmartgridplatform.shared.application.config.messaging.JmsConfigurationFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -34,5 +37,10 @@ public class MessagingConfig extends AbstractConfig {
     @Bean
     public DefaultJmsConfiguration defaultJmsConfiguration() {
         return new DefaultJmsConfiguration();
+    }
+
+    @Bean
+    public JmsConfigurationFactory jmsConfigurationFactory() throws SSLException {
+        return new JmsConfigurationFactory(environment, defaultJmsConfiguration(), "jms.dlms.log.item.requests");
     }
 }

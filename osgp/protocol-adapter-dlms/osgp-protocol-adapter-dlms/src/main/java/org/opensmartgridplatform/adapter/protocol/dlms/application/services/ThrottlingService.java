@@ -22,23 +22,27 @@ public class ThrottlingService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ThrottlingService.class);
 
+    private final int maxOpenConnections;
     private final int maxNewConnectionRequests;
+    private final int resetTime;
 
     private final Semaphore openConnectionsSemaphore;
     private Semaphore newConnectionRequestsSemaphore;
 
-    public ThrottlingService(
-            @Value("${throttling.max.open.connections:30}") int maxOpenConnections,
-            @Value("${throttling.new.connection.requests:10}") int maxNewConnectionRequests) {
+    public ThrottlingService(@Value("${throttling.max.open.connections:30}") int maxOpenConnections,
+            @Value("${throttling.new.connection.requests:10}") int maxNewConnectionRequests,
+            @Value("${throttling.new.connection.requests.reset.time:2000}") int resetTime) {
 
-        LOGGER.info("Initializing ThrottlingService. MaxOpenConnections = {}", maxOpenConnections);
-
+        this.maxOpenConnections = maxOpenConnections;
         this.maxNewConnectionRequests = maxNewConnectionRequests;
+        this.resetTime = resetTime;
+
+        LOGGER.info("Initializing ThrottlingService. {}", toString());
 
         openConnectionsSemaphore = new Semaphore(maxOpenConnections);
         newConnectionRequestsSemaphore = new Semaphore(maxNewConnectionRequests);
 
-        new Timer().scheduleAtFixedRate(new ResetTask(), 2000, 2000);
+        new Timer().scheduleAtFixedRate(new ResetTask(), resetTime, resetTime);
     }
 
     public synchronized void openConnection() throws InterruptedException {
@@ -72,6 +76,12 @@ public class ThrottlingService {
             LOGGER.info("ThrottlingService - Timer Reset and Unlocking, max newConnectionRequests available = {}  ",
                     newConnectionRequestsSemaphore.availablePermits());
         }
+    }
+
+    @Override
+    public String toString() {
+        return String.format("ThrottlingService. maxOpenConnections = %d, maxNewConnectionRequests=%d, resetTime=%d",
+                maxOpenConnections, maxNewConnectionRequests, resetTime);
     }
 
 }

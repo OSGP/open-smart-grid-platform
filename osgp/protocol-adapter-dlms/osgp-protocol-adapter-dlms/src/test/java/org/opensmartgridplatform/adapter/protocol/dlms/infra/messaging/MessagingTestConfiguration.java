@@ -11,9 +11,10 @@ package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.jms.ConnectionFactory;
 import javax.net.ssl.SSLException;
 
+import org.opensmartgridplatform.adapter.protocol.dlms.application.config.messaging.OutboundLogItemRequestsMessagingConfig;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.config.messaging.OutboundOsgpCoreResponsesMessagingConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.MonitoringService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecurityKeyService;
@@ -40,24 +41,30 @@ import org.springframework.core.type.ClassMetadata;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.filter.TypeFilter;
-import org.springframework.jms.core.JmsTemplate;
-import util.DeviceResponseMessageSenderStub;
-import util.MockDlmsConnectionFactory;
-import util.MockDomainHelperService;
-import util.MockMonitoringService;
-import util.SecurityKeyServiceStub;
+import stub.DeviceResponseMessageSenderStub;
+import stub.DlmsConnectionFactoryStub;
+import stub.DomainHelperServiceStub;
+import stub.DlmsPersistenceConfigStub;
+import stub.MonitoringServiceStub;
+import stub.SecurityKeyServiceStub;
 
 @Configuration
-@ComponentScan(basePackages = {}, includeFilters = @ComponentScan.Filter(type = FilterType.CUSTOM, classes = {
-        MessagingTestConfiguration.IncludeFilter.class }), excludeFilters = @ComponentScan.Filter(type =
-        FilterType.CUSTOM, classes = MessagingTestConfiguration.ExcludeFilter.class))
+@ComponentScan(basePackages = {}, excludeFilters = @ComponentScan.Filter(type = FilterType.CUSTOM, classes =
+        MessagingTestConfiguration.ExcludeFilter.class))
 @PropertySource("classpath:osgp-adapter-protocol-dlms.properties")
-@Import({ MockDlmsPersistenceConfig.class })
+@Import({ DlmsPersistenceConfigStub.class, OutboundLogItemRequestsMessagingConfig.class,
+        OutboundOsgpCoreResponsesMessagingConfig.class })
 public class MessagingTestConfiguration extends AbstractConfig {
 
+    // JMS
     @Bean
     public DefaultJmsConfiguration defaultJmsConfiguration() {
         return new DefaultJmsConfiguration();
+    }
+
+    @Bean
+    public JmsConfigurationFactory jmsConfigurationFactory() throws SSLException {
+        return new JmsConfigurationFactory(environment, defaultJmsConfiguration(), "jms.dlms.log.item.requests");
     }
 
     @Bean
@@ -67,7 +74,7 @@ public class MessagingTestConfiguration extends AbstractConfig {
 
     @Bean
     public DlmsConnectionFactory dlmsConnectionFactory() {
-        return new MockDlmsConnectionFactory();
+        return new DlmsConnectionFactoryStub();
     }
 
     @Bean
@@ -83,22 +90,6 @@ public class MessagingTestConfiguration extends AbstractConfig {
     @Bean
     public DlmsLogItemRequestMessageSender dlmsLogItemRequestMessageSender() {
         return new DlmsLogItemRequestMessageSender();
-    }
-
-    @Bean
-    public JmsConfigurationFactory jmsConfigurationFactory() throws SSLException {
-        return new JmsConfigurationFactory(environment, defaultJmsConfiguration(), "jms.dlms.log.item.requests");
-    }
-
-    @Bean(destroyMethod = "stop", name = "protocolDlmsOutboundLogItemRequestsConnectionFactory")
-    public ConnectionFactory connectionFactory() throws SSLException {
-        return this.jmsConfigurationFactory().getPooledConnectionFactory();
-    }
-
-    @Bean(name = "protocolDlmsOutboundLogItemRequestsJmsTemplate")
-    public JmsTemplate jmsTemplate() throws SSLException {
-
-        return this.jmsConfigurationFactory().initJmsTemplate();
     }
 
     @Bean("protocolDlmsInboundOsgpCoreRequestsMessageListener")
@@ -118,17 +109,6 @@ public class MessagingTestConfiguration extends AbstractConfig {
         return new DeviceResponseMessageSenderStub();
     }
 
-    @Bean(destroyMethod = "stop", name = "protocolDlmsOutboundOsgpCoreResponsesConnectionFactory")
-    public ConnectionFactory connectionFactory2() throws SSLException {
-
-        return this.jmsConfigurationFactory().getPooledConnectionFactory();
-    }
-
-    @Bean(name = "protocolDlmsOutboundOsgpCoreResponsesJmsTemplate")
-    public JmsTemplate jmsTemplate2() throws SSLException {
-        return this.jmsConfigurationFactory().initJmsTemplate();
-    }
-
     @Bean
     public OsgpExceptionConverter osgpExceptionConverter() {
         return new OsgpExceptionConverter();
@@ -136,7 +116,7 @@ public class MessagingTestConfiguration extends AbstractConfig {
 
     @Bean
     public ThrottlingService throttlingService() {
-        return new ThrottlingService(10, 30);
+        return new ThrottlingService(10, 30, 2000);
     }
 
     @Bean
@@ -151,52 +131,17 @@ public class MessagingTestConfiguration extends AbstractConfig {
 
     @Bean
     public DomainHelperService domainHelperService() {
-        return new MockDomainHelperService();
+        return new DomainHelperServiceStub();
     }
 
     @Bean
     public MonitoringService monitoringService() {
-        return new MockMonitoringService();
+        return new MonitoringServiceStub();
     }
 
     @Bean
     public SecurityKeyService securityKeyService() {
         return new SecurityKeyServiceStub();
-    }
-
-    public static class IncludeFilter implements TypeFilter {
-
-        @Override
-        public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory) {
-            ClassMetadata classMetadata = metadataReader.getClassMetadata();
-            String fullyQualifiedName = classMetadata.getClassName();
-
-            return classesNeeded.stream().anyMatch(fullyQualifiedName::contains);
-
-        }
-
-        //@formatter:off
-        private final List<String> classesNeeded = Arrays
-                .asList("DlmsConnectionHelper",
-                        "DlmsConnectionManager",
-                        "InvocationCounterManager",
-                        "DlmsDeviceRepository",
-                        "OsgpExceptionConverter",
-                        "DlmsConnectionFactory",
-                        "DlmsHelper",
-                        "DlmsDeviceRepository",
-                        "DeviceRequestMessageListener",
-                        "CommandExecutorMap",
-                        "MessageProcessorMap",
-                        "DefaultJmsConfiguration",
-                        "JmsConfiguration",
-                        "ActualMeterReadsRequestMessageProcessor",
-                        "GetPowerQualityProfileRequestMessageProcessor",
-                        "DeviceResponseMessageSender",
-                        "RetryHeaderFactory",
-                        "ThrottlingService",
-                        "MonitoringService");
-        //@formatter:on
     }
 
     public static class ExcludeFilter implements TypeFilter {
@@ -208,12 +153,7 @@ public class MessagingTestConfiguration extends AbstractConfig {
 
             boolean match = classesNeeded.stream().anyMatch(fullyQualifiedName::contains);
 
-           /* return match || (!fullyQualifiedName.contains("ActualMeterReadsRequestMessageProcessor")
-                    && !fullyQualifiedName.contains("GetPowerQualityProfileRequestMessageProcessor"));
-*/
             return match || !fullyQualifiedName.contains("GetPowerQualityProfileRequestMessageProcessor");
-
-            //return false;
         }
 
         private final List<String> classesNeeded = Arrays
