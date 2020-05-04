@@ -12,6 +12,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Semaphore;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,34 +25,42 @@ public class ThrottlingService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ThrottlingService.class);
 
-    private final int maxOpenConnections;
-    private final int maxNewConnectionRequests;
-    private final int resetTime;
+    @Value("${throttlingService.maxOpenConnections}")
+    private int maxOpenConnections;
+    @Value("${throttlingService.maxNewConnectionRequests}")
+    private int maxNewConnectionRequests;
+    @Value("${throttlingService.resetTime}")
+    private int resetTime;
 
-    private final Semaphore openConnectionsSemaphore;
+    private Semaphore openConnectionsSemaphore;
     private Semaphore newConnectionRequestsSemaphore;
+    private Timer resetTimer;
 
-    public ThrottlingService(@Value("${throttling.max.open.connections:30}") int maxOpenConnections,
-            @Value("${throttling.new.connection.requests:10}") int maxNewConnectionRequests,
-            @Value("${throttling.new.connection.requests.reset.time:2000}") int resetTime) {
-
-        this.maxOpenConnections = maxOpenConnections;
-        this.maxNewConnectionRequests = maxNewConnectionRequests;
-        this.resetTime = resetTime;
-
+    @PostConstruct
+    public void postConstruct() {
         LOGGER.info("Initializing ThrottlingService. {}", toString());
 
         openConnectionsSemaphore = new Semaphore(maxOpenConnections);
         newConnectionRequestsSemaphore = new Semaphore(maxNewConnectionRequests);
 
-        new Timer().scheduleAtFixedRate(new ResetTask(), resetTime, resetTime);
+        resetTimer = new Timer();
+        resetTimer.scheduleAtFixedRate(new ResetTask(), resetTime, resetTime);
+    }
+
+    @PreDestroy
+    public void preDestroy() {
+        if (this.resetTimer != null) {
+            this.resetTimer.cancel();
+        }
     }
 
     public synchronized void openConnection() throws InterruptedException {
 
+        LOGGER.info("Requesting openConnection. available = {} ", this.openConnectionsSemaphore.availablePermits());
+
         this.openConnectionsSemaphore.acquire();
 
-        LOGGER.info("acquired openConnection. available = {} ", this.openConnectionsSemaphore.availablePermits());
+        LOGGER.info("openConnection granted. available = {} ", this.openConnectionsSemaphore.availablePermits());
     }
 
     public void closeConnection() {
@@ -60,9 +71,12 @@ public class ThrottlingService {
 
     public void newConnectionRequest() throws InterruptedException {
 
+        LOGGER.info("Request newConnection. available = {} ", this.newConnectionRequestsSemaphore.availablePermits());
+
         this.newConnectionRequestsSemaphore.acquire();
 
-        LOGGER.info("acquired newConnection. available = {} ", this.newConnectionRequestsSemaphore.availablePermits());
+        LOGGER.info("Request newConnection granted. available = {} ",
+                this.newConnectionRequestsSemaphore.availablePermits());
     }
 
     private class ResetTask extends TimerTask {

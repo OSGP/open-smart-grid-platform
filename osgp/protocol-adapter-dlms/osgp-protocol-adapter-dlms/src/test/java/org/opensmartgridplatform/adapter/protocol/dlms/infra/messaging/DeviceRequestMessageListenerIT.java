@@ -1,3 +1,11 @@
+/**
+ * Copyright 2020 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -16,27 +24,21 @@ import org.opensmartgridplatform.shared.infra.jms.ObjectMessageBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import stub.DeviceResponseMessageSenderStub;
 
-/**
- * Copyright 2020 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = MessagingTestConfiguration.class)
-@ActiveProfiles("test")
 public class DeviceRequestMessageListenerIT {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceRequestMessageListenerIT.class);
 
     @Autowired
     private DeviceRequestMessageListener listener;
+
+    @Autowired
+    private DeviceResponseMessageSenderStub deviceResponseMessageSender;
 
     @Autowired
     private ThrottlingService throttlingService;
@@ -59,7 +61,10 @@ public class DeviceRequestMessageListenerIT {
             listener.onMessage(message);
         }
 
-        assertThat(throttlingService.toString()).isEqualTo("ThrottlingService. maxOpenConnections = 10, maxNewConnectionRequests=30, resetTime=2000");
+        assertThat(deviceResponseMessageSender.getResponseMessagesSent()).isEqualTo(200);
+
+        assertThat(throttlingService.toString())
+                .isEqualTo("ThrottlingService. maxOpenConnections = 10, maxNewConnectionRequests=30, resetTime=2000");
 
     }
 

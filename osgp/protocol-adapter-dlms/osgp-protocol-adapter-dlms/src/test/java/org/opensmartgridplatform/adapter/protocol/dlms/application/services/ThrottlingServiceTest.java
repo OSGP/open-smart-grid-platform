@@ -13,9 +13,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = ThrottlingService.class)
+@TestPropertySource(properties = { "throttlingService.maxOpenConnections=10",
+        "throttlingService.maxNewConnectionRequests=30", "throttlingService.resetTime=2000" })
 public class ThrottlingServiceTest {
 
+    @Autowired
     ThrottlingService throttlingService;
 
     AtomicBoolean openingThreadDone;
@@ -24,7 +34,10 @@ public class ThrottlingServiceTest {
     @Test
     public void testThrottling() throws InterruptedException {
 
-        throttlingService = new ThrottlingService(10, 30, 2000);
+        // throttlingService = new ThrottlingService();
+
+        // ReflectionTestUtils.setField(throttlingService, "maxOpenConnections", 10);
+
         openingThreadDone = new AtomicBoolean(false);
         closingThreadDone = new AtomicBoolean(false);
 

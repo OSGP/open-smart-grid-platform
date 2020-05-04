@@ -11,8 +11,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.net.ssl.SSLException;
-
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.messaging.OutboundLogItemRequestsMessagingConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.messaging.OutboundOsgpCoreResponsesMessagingConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
@@ -28,7 +26,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.OsgpExceptionC
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.processors.GetPowerQualityProfileRequestMessageProcessor;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsConfiguration;
-import org.opensmartgridplatform.shared.application.config.messaging.JmsConfigurationFactory;
 import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.springframework.context.annotation.Bean;
@@ -43,8 +40,8 @@ import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.filter.TypeFilter;
 import stub.DeviceResponseMessageSenderStub;
 import stub.DlmsConnectionFactoryStub;
-import stub.DomainHelperServiceStub;
 import stub.DlmsPersistenceConfigStub;
+import stub.DomainHelperServiceStub;
 import stub.MonitoringServiceStub;
 import stub.SecurityKeyServiceStub;
 
@@ -62,10 +59,22 @@ public class MessagingTestConfiguration extends AbstractConfig {
         return new DefaultJmsConfiguration();
     }
 
-    @Bean
-    public JmsConfigurationFactory jmsConfigurationFactory() throws SSLException {
-        return new JmsConfigurationFactory(environment, defaultJmsConfiguration(), "jms.dlms.log.item.requests");
+    @Bean("protocolDlmsInboundOsgpCoreRequestsMessageListener")
+    public DeviceRequestMessageListener deviceRequestMessageListener() {
+        return new DeviceRequestMessageListener();
     }
+
+    @Bean("protocolDlmsInboundOsgpCoreRequestsMessageProcessorMap")
+    public MessageProcessorMap messageProcessorMap() {
+        return new BaseMessageProcessorMap("InboundOsgpCoreRequestsMessageProcessorMap");
+    }
+
+    @Bean("protocolDlmsOutboundOsgpCoreResponsesMessageSender")
+    public DeviceResponseMessageSender deviceResponseMessageSender() {
+        return new DeviceResponseMessageSenderStub();
+    }
+
+    // Beans and Stubs
 
     @Bean
     public DlmsHelper dlmsHelper() {
@@ -92,23 +101,6 @@ public class MessagingTestConfiguration extends AbstractConfig {
         return new DlmsLogItemRequestMessageSender();
     }
 
-    @Bean("protocolDlmsInboundOsgpCoreRequestsMessageListener")
-    public DeviceRequestMessageListener deviceRequestMessageListener() {
-        return new DeviceRequestMessageListener();
-    }
-
-    @Bean("protocolDlmsInboundOsgpCoreRequestsMessageProcessorMap")
-    public MessageProcessorMap messageProcessorMap() {
-        return new BaseMessageProcessorMap("InboundOsgpCoreRequestsMessageProcessorMap");
-    }
-
-    //// OUTBOUND /////
-
-    @Bean("protocolDlmsOutboundOsgpCoreResponsesMessageSender")
-    public DeviceResponseMessageSender deviceResponseMessageSender() {
-        return new DeviceResponseMessageSenderStub();
-    }
-
     @Bean
     public OsgpExceptionConverter osgpExceptionConverter() {
         return new OsgpExceptionConverter();
@@ -116,7 +108,7 @@ public class MessagingTestConfiguration extends AbstractConfig {
 
     @Bean
     public ThrottlingService throttlingService() {
-        return new ThrottlingService(10, 30, 2000);
+        return new ThrottlingService();
     }
 
     @Bean

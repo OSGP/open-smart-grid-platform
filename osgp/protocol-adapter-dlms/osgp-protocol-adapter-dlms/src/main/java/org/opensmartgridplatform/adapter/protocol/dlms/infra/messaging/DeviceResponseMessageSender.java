@@ -36,6 +36,7 @@ public class DeviceResponseMessageSender implements ResponseMessageSender {
 
     @Override
     public void send(final ResponseMessage responseMessage) {
+
         if (!(responseMessage instanceof ProtocolResponseMessage)) {
             LOGGER.error("Only ProtocolResponseMessage type is expected for DeviceResponseMessageSender");
             return;
