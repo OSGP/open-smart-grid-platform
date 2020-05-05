@@ -20,8 +20,7 @@ public class MeterReadingDeserializer implements Deserializer<MeterReading> {
         try {
             return MeterReading.fromByteBuffer(ByteBuffer.wrap(data));
         } catch (final IOException e) {
-            e.printStackTrace();
-            return null;
+            throw new RuntimeException(e);
         }
     }
 
