@@ -20,7 +20,6 @@ public class MeterReadingProducer {
     public MeterReadingProducer(
             @Qualifier("distributionAutomationKafkaTemplate") final KafkaTemplate<String, MeterReading> kafkaTemplate,
             final DistributionAutomationMapper mapper) {
-        super();
         this.kafkaTemplate = kafkaTemplate;
         this.mapper = mapper;
     }
