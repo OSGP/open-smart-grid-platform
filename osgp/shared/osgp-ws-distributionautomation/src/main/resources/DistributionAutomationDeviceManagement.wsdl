@@ -117,11 +117,11 @@
         <wsdl:operation name="AddRtuDevice">
             <soap:operation soapAction="" />
             <wsdl:input name="AddRtuDeviceRequest">
-                <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+                <soap:header message="tns:GenericHeader" part="OrganisationIdentification"
                              use="literal" />
-                <soap:header message="tns:ActionHeader" part="UserName"
+                <soap:header message="tns:GenericHeader" part="UserName"
                              use="literal" />
-                <soap:header message="tns:ActionHeader" part="ApplicationName"
+                <soap:header message="tns:GenericHeader" part="ApplicationName"
                              use="literal" />
                 <soap:body use="literal" />
             </wsdl:input>

@@ -34,7 +34,7 @@ public class AddDeviceRequestMessageProcessor extends BaseNotificationMessagePro
     @Autowired
     public AddDeviceRequestMessageProcessor(final NotificationResponseMessageSender responseMessageSender,
             @Qualifier("domainDistributionAutomationInboundWebServiceRequestsMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
-        super(responseMessageSender, messageProcessorMap, MessageType.ADD_METER);
+        super(responseMessageSender, messageProcessorMap, MessageType.ADD_DEVICE);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class AddDeviceRequestMessageProcessor extends BaseNotificationMessagePro
         final AddRtuDeviceRequest addRtuDeviceRequest = (AddRtuDeviceRequest) message.getObject();
 
         try {
-            this.deviceManagementService.addMeter(deviceMessageMetadata, addRtuDeviceRequest);
+            this.deviceManagementService.addDevice(deviceMessageMetadata, addRtuDeviceRequest);
         } catch (final FunctionalException e) {
             this.handleError(e, deviceMessageMetadata.getCorrelationUid(),
                     deviceMessageMetadata.getOrganisationIdentification(),

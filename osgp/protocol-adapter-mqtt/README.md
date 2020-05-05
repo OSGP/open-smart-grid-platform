@@ -2,7 +2,7 @@
 
 To run a demonstration follow the steps below.
 
-Build de following modules:
+Build the following modules:
 
 * osgp-protocol-simulator-mqtt
 * osgp-logging

@@ -14,6 +14,11 @@ public class RtuDevice implements Serializable {
 
     private static final long serialVersionUID = -6133164707489276802L;
 
+    /**
+     * Device type indicator for Peak Shaving Device
+     */
+    public static final String PSD_TYPE = "PSD";
+
     protected String deviceIdentification;
     protected String protocolName;
     protected String protocolVersion;

@@ -155,7 +155,7 @@ public class DistributionAutomationService {
                 deviceIdentification);
 
         final DistributionAutomationRequestMessage message = new DistributionAutomationRequestMessage(
-                MessageType.ADD_METER, correlationUid, organisationIdentification, deviceIdentification,
+                MessageType.ADD_DEVICE, correlationUid, organisationIdentification, deviceIdentification,
                 addRtuDeviceRequest);
 
         try {

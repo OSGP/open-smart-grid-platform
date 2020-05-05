@@ -16,7 +16,6 @@ import org.opensmartgridplatform.domain.core.entities.DeviceModel;
 import org.opensmartgridplatform.domain.core.entities.Manufacturer;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
 import org.opensmartgridplatform.domain.core.entities.ProtocolInfo;
-import org.opensmartgridplatform.domain.core.entities.Ssld;
 import org.opensmartgridplatform.domain.core.repositories.DeviceAuthorizationRepository;
 import org.opensmartgridplatform.domain.core.repositories.DeviceModelRepository;
 import org.opensmartgridplatform.domain.core.repositories.ManufacturerRepository;
@@ -37,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(value = "transactionManager")
 public class RtuDeviceService {
 
+    @SuppressWarnings("squid:S1313")
     private static final String LOCAL_HOST = "127.0.0.1";
 
     @Autowired
@@ -61,8 +61,7 @@ public class RtuDeviceService {
             throws FunctionalException {
         this.throwExceptionOnExistingDevice(addRtuDeviceRequest);
         final RtuDevice rtuDevice = addRtuDeviceRequest.getRtuDevice();
-        org.opensmartgridplatform.domain.core.entities.RtuDevice rtuDeviceEntity =
-                new org.opensmartgridplatform.domain.core.entities.RtuDevice(
+        org.opensmartgridplatform.domain.core.entities.RtuDevice rtuDeviceEntity = new org.opensmartgridplatform.domain.core.entities.RtuDevice(
                 rtuDevice.getDeviceIdentification());
         this.addProtocolInfo(rtuDevice, rtuDeviceEntity);
         this.addRegistrationData(rtuDevice, rtuDeviceEntity);
@@ -73,8 +72,8 @@ public class RtuDeviceService {
 
     private void throwExceptionOnExistingDevice(final AddRtuDeviceRequest addRtuDeviceRequest)
             throws FunctionalException {
-        if (this.rtuDeviceRepository.findByDeviceIdentification(
-                addRtuDeviceRequest.getRtuDevice().getDeviceIdentification()) != null) {
+        if (this.rtuDeviceRepository
+                .findByDeviceIdentification(addRtuDeviceRequest.getRtuDevice().getDeviceIdentification()) != null) {
             throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICE,
                     ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION);
         }
@@ -85,13 +84,13 @@ public class RtuDeviceService {
         final String networkAddress = rtuDevice.getNetworkAddress();
         final InetAddress inetAddress;
         try {
-            inetAddress = LOCAL_HOST.equals(networkAddress) ? InetAddress.getLoopbackAddress() : InetAddress.getByName(
-                    networkAddress);
+            inetAddress = LOCAL_HOST.equals(networkAddress) ? InetAddress.getLoopbackAddress()
+                    : InetAddress.getByName(networkAddress);
         } catch (final UnknownHostException e) {
             throw new FunctionalException(FunctionalExceptionType.INVALID_IP_ADDRESS,
                     ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION, e);
         }
-        rtuDeviceEntity.updateRegistrationData(inetAddress, Ssld.SSLD_TYPE);
+        rtuDeviceEntity.updateRegistrationData(inetAddress, RtuDevice.PSD_TYPE);
     }
 
     private void addDeviceModel(final org.opensmartgridplatform.domain.core.valueobjects.DeviceModel deviceModel,
@@ -108,8 +107,8 @@ public class RtuDeviceService {
 
     private void addProtocolInfo(final RtuDevice rtuDevice,
             final org.opensmartgridplatform.domain.core.entities.RtuDevice rtuDeviceEntity) throws FunctionalException {
-        final ProtocolInfo protocolInfo = this.protocolInfoRepository.findByProtocolAndProtocolVersion(
-                rtuDevice.getProtocolName(), rtuDevice.getProtocolVersion());
+        final ProtocolInfo protocolInfo = this.protocolInfoRepository
+                .findByProtocolAndProtocolVersion(rtuDevice.getProtocolName(), rtuDevice.getProtocolVersion());
         if (protocolInfo == null) {
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_PROTOCOL_NAME_OR_VERSION,
                     ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION);
@@ -119,8 +118,8 @@ public class RtuDeviceService {
 
     private void storeAuthorization(final String organisationIdentification,
             final org.opensmartgridplatform.domain.core.entities.RtuDevice rtuDevice) {
-        final Organisation organisation = this.organisationRepository.findByOrganisationIdentification(
-                organisationIdentification);
+        final Organisation organisation = this.organisationRepository
+                .findByOrganisationIdentification(organisationIdentification);
         final DeviceAuthorization authorization = rtuDevice.addAuthorization(organisation, DeviceFunctionGroup.OWNER);
         this.deviceAuthorizationRepository.save(authorization);
     }

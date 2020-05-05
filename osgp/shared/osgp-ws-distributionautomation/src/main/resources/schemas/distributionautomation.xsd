@@ -194,9 +194,9 @@
 
     <xsd:complexType name="RtuDevice">
         <xsd:sequence>
-            <xsd:element name="Device_Identification" minOccurs="0" type="common:DeviceIdentification" />
+            <xsd:element name="DeviceIdentification" minOccurs="1" type="common:DeviceIdentification" />
 
-            <xsd:element name="protocolName" minOccurs="0">
+            <xsd:element name="ProtocolName" minOccurs="1">
                 <xsd:simpleType>
                     <xsd:restriction base="xsd:string">
                         <xsd:maxLength value="10" />
@@ -204,7 +204,7 @@
                 </xsd:simpleType>
             </xsd:element>
 
-            <xsd:element name="protocolVersion" minOccurs="0">
+            <xsd:element name="ProtocolVersion" minOccurs="1">
                 <xsd:simpleType>
                     <xsd:restriction base="xsd:string">
                         <xsd:maxLength value="10" />
@@ -212,7 +212,7 @@
                 </xsd:simpleType>
             </xsd:element>
 
-            <xsd:element name="Network_Address" minOccurs="0">
+            <xsd:element name="NetworkAddress" minOccurs="1">
                 <xsd:simpleType>
                     <xsd:restriction base="xsd:string">
                         <xsd:maxLength value="50" />
@@ -233,7 +233,7 @@
                     </xsd:restriction>
                 </xsd:simpleType>
             </xsd:element>
-            <xsd:element name="ModelCode" minOccurs="0" maxOccurs="1">
+            <xsd:element name="ModelCode" minOccurs="1">
                 <xsd:simpleType>
                     <xsd:restriction base="xsd:string">
                         <xsd:maxLength value="255" />

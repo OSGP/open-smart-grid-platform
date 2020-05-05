@@ -100,13 +100,12 @@ public class DeviceManagementService extends BaseService {
         this.webServiceResponseMessageSender.send(responseMessage, messageType);
     }
 
-    public void addMeter(final DeviceMessageMetadata deviceMessageMetadata,
+    public void addDevice(final DeviceMessageMetadata deviceMessageMetadata,
             final AddRtuDeviceRequest addRtuDeviceRequest) throws FunctionalException {
         final String organisationIdentification = deviceMessageMetadata.getOrganisationIdentification();
         final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
-        LOGGER.debug("addMeter for organisationIdentification: {} for deviceIdentification: {}",
-                organisationIdentification,
-                deviceIdentification);
+        LOGGER.debug("addDevice for organisationIdentification: {} for deviceIdentification: {}",
+                organisationIdentification, deviceIdentification);
         this.rtuDeviceService.storeRtuDevice(organisationIdentification, addRtuDeviceRequest);
     }
 
