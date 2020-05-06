@@ -11,12 +11,18 @@ import org.springframework.stereotype.Service;
 // TODO - Rename class once AVRO message format is known
 @Service
 public class MeterReadingProducer {
-    @Autowired
-    @Qualifier("distributionAutomationKafkaTemplate")
-    private KafkaTemplate<String, MeterReading> kafkaTemplate;
+
+    private final KafkaTemplate<String, MeterReading> kafkaTemplate;
+
+    private final DistributionAutomationMapper mapper;
 
     @Autowired
-    private DistributionAutomationMapper mapper;
+    public MeterReadingProducer(
+            @Qualifier("distributionAutomationKafkaTemplate") final KafkaTemplate<String, MeterReading> kafkaTemplate,
+            final DistributionAutomationMapper mapper) {
+        this.kafkaTemplate = kafkaTemplate;
+        this.mapper = mapper;
+    }
 
     public void send(final MeasurementReport measurementReport) {
 
