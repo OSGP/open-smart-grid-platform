@@ -13,12 +13,12 @@ import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.adapter.protocol.jasper.config.JasperWirelessConfig;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
-import org.springframework.beans.factory.config.PropertyOverrideConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -28,9 +28,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement()
 @Import({ MessagingConfig.class, DlmsPersistenceConfig.class, JasperWirelessConfig.class })
 @PropertySource("classpath:osgp-adapter-protocol-dlms.properties")
-//@PropertySource(value = "file:/etc/osp/osgp-adapter-protocol-dlms.properties")
-//@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
-//@PropertySource(value = "file:${osgp/AdapterProtocolDlms/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:/etc/osp/osgp-adapter-protocol-dlms.properties", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/AdapterProtocolDlms/config}", ignoreResourceNotFound = true)
 public class ApplicationContext extends AbstractConfig {
 
     private static final String LOCAL_TIME_ZONE_IDENTIFIER = "Europe/Paris";
@@ -55,10 +55,4 @@ public class ApplicationContext extends AbstractConfig {
         return TIME_ZONE_OFFSET_MINUTES;
     }
 
-    @Bean
-    public static PropertyOverrideConfigurer propertyOverrideConfigurer() {
-        PropertyOverrideConfigurer overrideConfigurer = new PropertyOverrideConfigurer();
-        overrideConfigurer.setLocation(new FileSystemResource("/etc/osp/osgp-adapter-protocol-dlms.properties"));
-        return overrideConfigurer;
-    }
 }

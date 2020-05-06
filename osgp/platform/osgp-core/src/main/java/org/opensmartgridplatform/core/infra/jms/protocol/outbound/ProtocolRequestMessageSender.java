@@ -1,18 +1,16 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.core.infra.jms.protocol.outbound;
 
 import static org.opensmartgridplatform.shared.infra.jms.MessageType.GET_POWER_USAGE_HISTORY;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
 import javax.jms.ObjectMessage;
-import javax.jms.Session;
 
 import org.opensmartgridplatform.core.domain.model.protocol.ProtocolRequestService;
 import org.opensmartgridplatform.core.infra.messaging.CoreLogItemRequestMessage;
@@ -24,7 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.core.MessageCreator;
 
 /**
  * This class sends protocol request messages to the requests queue for the
@@ -68,50 +65,45 @@ public class ProtocolRequestMessageSender implements ProtocolRequestService {
             final JmsTemplate jmsTemplate) {
         LOGGER.info("Sending request message to protocol requests queue");
 
-        final Long originalTimeToLive = jmsTemplate.getTimeToLive();
+        final long originalTimeToLive = jmsTemplate.getTimeToLive();
         boolean isCustomTimeToLiveSet = false;
         if (requestMessage.getMessageType().equals(GET_POWER_USAGE_HISTORY.toString())) {
             jmsTemplate.setTimeToLive(this.getPowerUsageHistoryRequestTimeToLive);
             isCustomTimeToLiveSet = true;
         }
 
-        jmsTemplate.send(new MessageCreator() {
+        jmsTemplate.send(session -> {
 
-            @Override
-            public Message createMessage(final Session session) throws JMSException {
+            final String deviceIdentification = requestMessage.getDeviceIdentification();
 
-                final String deviceIdentification = requestMessage.getDeviceIdentification();
+            final ObjectMessage objectMessage = session.createObjectMessage(requestMessage.getRequest());
+            objectMessage.setJMSCorrelationID(requestMessage.getCorrelationUid());
+            objectMessage.setJMSType(requestMessage.getMessageType());
+            objectMessage.setJMSPriority(requestMessage.getMessagePriority());
+            objectMessage.setStringProperty(Constants.DOMAIN, requestMessage.getDomain());
+            objectMessage.setStringProperty(Constants.DOMAIN_VERSION, requestMessage.getDomainVersion());
+            objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
+                    requestMessage.getOrganisationIdentification());
+            objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION, deviceIdentification);
+            objectMessage.setStringProperty(Constants.IP_ADDRESS, requestMessage.getIpAddress());
+            objectMessage.setBooleanProperty(Constants.IS_SCHEDULED, requestMessage.isScheduled());
+            objectMessage.setIntProperty(Constants.RETRY_COUNT, requestMessage.getRetryCount());
+            objectMessage.setBooleanProperty(Constants.BYPASS_RETRY, requestMessage.bypassRetry());
 
-                final ObjectMessage objectMessage = session.createObjectMessage(requestMessage.getRequest());
-                objectMessage.setJMSCorrelationID(requestMessage.getCorrelationUid());
-                objectMessage.setJMSType(requestMessage.getMessageType());
-                objectMessage.setJMSPriority(requestMessage.getMessagePriority());
-                objectMessage.setStringProperty(Constants.DOMAIN, requestMessage.getDomain());
-                objectMessage.setStringProperty(Constants.DOMAIN_VERSION, requestMessage.getDomainVersion());
-                objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
-                        requestMessage.getOrganisationIdentification());
-                objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION, deviceIdentification);
-                objectMessage.setStringProperty(Constants.IP_ADDRESS, requestMessage.getIpAddress());
-                objectMessage.setBooleanProperty(Constants.IS_SCHEDULED, requestMessage.isScheduled());
-                objectMessage.setIntProperty(Constants.RETRY_COUNT, requestMessage.getRetryCount());
-                objectMessage.setBooleanProperty(Constants.BYPASS_RETRY, requestMessage.bypassRetry());
-
-                if (!protocolInfo.isParallelRequestsAllowed()) {
-                    final String messageGroupId = ProtocolRequestMessageSender.this
-                            .getMessageGroupId(deviceIdentification);
-                    LOGGER.debug("Setting message group property for device {} to: {}", deviceIdentification,
-                            messageGroupId);
-                    objectMessage.setStringProperty(Constants.MESSAGE_GROUP, messageGroupId);
-                }
-
-                return objectMessage;
+            if (!protocolInfo.isParallelRequestsAllowed()) {
+                final String messageGroupId = ProtocolRequestMessageSender.this.getMessageGroupId(deviceIdentification);
+                LOGGER.debug("Setting message group property for device {} to: {}", deviceIdentification,
+                        messageGroupId);
+                objectMessage.setStringProperty(Constants.MESSAGE_GROUP, messageGroupId);
             }
 
+            return objectMessage;
         });
 
         if (requestMessage.getRetryCount() != 0) {
-            final String decodedMessageWithDescription = String.format("retry count= %s, correlationuid= %s ",
-                    requestMessage.getRetryCount(), requestMessage.getCorrelationUid());
+            final String decodedMessageWithDescription = String
+                    .format("retry count= %s, correlationuid= %s ", requestMessage.getRetryCount(),
+                            requestMessage.getCorrelationUid());
 
             final CoreLogItemRequestMessage coreLogItemRequestMessage = new CoreLogItemRequestMessage(
                     requestMessage.getDeviceIdentification(), requestMessage.getOrganisationIdentification(),

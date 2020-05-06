@@ -25,6 +25,18 @@ public class ThrottlingService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ThrottlingService.class);
 
+    public void setMaxOpenConnections(int maxOpenConnections) {
+        this.maxOpenConnections = maxOpenConnections;
+    }
+
+    public void setMaxNewConnectionRequests(int maxNewConnectionRequests) {
+        this.maxNewConnectionRequests = maxNewConnectionRequests;
+    }
+
+    public void setResetTime(int resetTime) {
+        this.resetTime = resetTime;
+    }
+
     @Value("${throttlingService.maxOpenConnections}")
     private int maxOpenConnections;
     @Value("${throttlingService.maxNewConnectionRequests}")
