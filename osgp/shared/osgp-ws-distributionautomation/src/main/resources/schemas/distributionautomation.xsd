@@ -194,7 +194,7 @@
 
     <xsd:complexType name="RtuDevice">
         <xsd:sequence>
-            <xsd:element name="DeviceIdentification" minOccurs="1" type="common:DeviceIdentification" />
+            <xsd:element name="DeviceIdentification" minOccurs="1" type="common:Identification" />
 
             <xsd:element name="ProtocolName" minOccurs="1">
                 <xsd:simpleType>
@@ -225,8 +225,7 @@
 
     <xsd:complexType name="DeviceModel">
         <xsd:sequence>
-            <xsd:element name="Manufacturer" minOccurs="1"
-                         maxOccurs="1">
+            <xsd:element name="Manufacturer" minOccurs="1">
                 <xsd:simpleType>
                     <xsd:restriction base="xsd:string">
                         <xsd:maxLength value="4" />

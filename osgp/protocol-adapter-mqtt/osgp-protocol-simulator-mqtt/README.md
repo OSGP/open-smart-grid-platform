@@ -68,14 +68,14 @@ A test request could look like this:
    <soapenv:Body>
       <ns:AddRtuDeviceRequest>
          <ns:RtuDevice>
-            <ns:DeviceIdentification>TST-01</ns:Device_Identification>
+            <ns:DeviceIdentification>TST-01</ns:DeviceIdentification>
             <ns:ProtocolName>MQTT</ns:ProtocolName>
             <ns:ProtocolVersion>3</ns:ProtocolVersion>
             <ns:NetworkAddress>127.0.0.1</ns:NetworkAddress> 
          </ns:RtuDevice>
          <ns:DeviceModel>
-            <ns:Manufacturer>Test</ns:Manufacturer>
-            <ns:ModelCode>Test</ns:ModelCode>
+            <ns:Manufacturer>TST</ns:Manufacturer>
+            <ns:ModelCode>TSTMOD</ns:ModelCode>
          </ns:DeviceModel>
       </ns:AddRtuDeviceRequest>
    </soapenv:Body>
@@ -93,7 +93,7 @@ INSERT INTO public.protocol_info(
             outgoing_requests_property_prefix, incoming_responses_property_prefix, 
             incoming_requests_property_prefix, outgoing_responses_property_prefix, 
             parallel_requests_allowed)
-    VALUES ('2020-02-24 00:00:00', '2020-02-24 00:00:00', 0, 'MQTT', '3', 
+    VALUES (now(), now(), 0, 'MQTT', '3', 
     'jms.protocol.mqtt.outgoing.requests', 'jms.protocol.mqtt.incoming.responses',
     'jms.protocol.mqtt.incoming.requests', 'jms.protocol.mqtt.outgoing.responses',TRUE
     );
@@ -107,10 +107,10 @@ INSERT INTO public.device(
             protocol_info_id, network_address,  
             in_maintenance, technical_installation_date, 
             device_model, device_lifecycle_status)
-    VALUES ('2020-01-01 12:34', '2020-01-01 12:34', 0, 'TST-1', 
-	    'SSLD', true, 
+    VALUES (now(), now(), 0, 'TST-1', 
+	    'PSD', true, 
             (SELECT id FROM protocol_info WHERE protocol = 'MQTT'), '127.0.0.1', 
-            false, '2020-01-01 12:34', 
+            false, now(), 
             (SELECT id FROM device_model WHERE model_code = 'TSTMOD'), 'IN_USE'); 
 ```
 
@@ -120,12 +120,12 @@ It may be needed to delete TST-1 or rename it before inserting the device using 
 ```
 INSERT INTO public.rtu_device(
             id, last_communication_time)
-    VALUES ((SELECT id FROM device WHERE device_identification = 'TST-1'), '2020-01-24 13:33:33.501');
+    VALUES ((SELECT id FROM device WHERE device_identification = 'TST-1'), now());
 
 INSERT INTO public.device_authorization(
             creation_time, modification_time, version, function_group, 
             device, organisation)
-    VALUES ('2020-01-01 12:34', '2020-01-01 12:34', 0, 0, (SELECT id FROM device WHERE device_identification = 'TST-1'), 
+    VALUES (now(), now(), 0, 0, (SELECT id FROM device WHERE device_identification = 'TST-1'), 
             (SELECT id FROM organisation WHERE organisation_identification = 'LianderNetManagement'));
 ```
 
