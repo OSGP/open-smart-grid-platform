@@ -15,7 +15,7 @@
     <xsd:import namespace="http://www.opensmartgridplatform.org/schemas/common/2014/10"
         schemaLocation="common.xsd"/>
 
-    <!-- 
+    <!--
     ##################################################################################
     ## Generic Types
     ##################################################################################
@@ -155,9 +155,9 @@
     <xsd:complexType name="MeasurementElements">
         <xsd:sequence>
             <xsd:choice minOccurs="1" maxOccurs="unbounded">
-                 <xsd:element name="FloatMeasurementElement" type="da:FloatMeasurementElement"></xsd:element>
-                 <xsd:element name="BitmaskMeasurementElement" type="da:BitmaskMeasurementElement"></xsd:element>
-                 <xsd:element name="TimestampMeasurementElement" type="da:TimestampMeasurementElement"></xsd:element>
+                <xsd:element name="FloatMeasurementElement" type="da:FloatMeasurementElement"/>
+                <xsd:element name="BitmaskMeasurementElement" type="da:BitmaskMeasurementElement"/>
+                <xsd:element name="TimestampMeasurementElement" type="da:TimestampMeasurementElement"/>
             </xsd:choice>
         </xsd:sequence>
     </xsd:complexType>
@@ -186,6 +186,61 @@
                 <xsd:attribute name="value" type="xsd:long"/>
             </xsd:extension>
         </xsd:complexContent>
+    </xsd:complexType>
+
+
+    <!--
+    Types for device management
+    -->
+
+    <xsd:complexType name="RtuDevice">
+        <xsd:sequence>
+            <xsd:element name="DeviceIdentification" minOccurs="1" type="common:Identification" />
+
+            <xsd:element name="ProtocolName" minOccurs="1">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:maxLength value="10" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+
+            <xsd:element name="ProtocolVersion" minOccurs="1">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:maxLength value="10" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+
+            <xsd:element name="NetworkAddress" minOccurs="1">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:maxLength value="50" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="DeviceModel">
+        <xsd:sequence>
+            <xsd:element name="Manufacturer" minOccurs="1">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:maxLength value="4" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="ModelCode" minOccurs="1">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:maxLength value="255" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+        </xsd:sequence>
     </xsd:complexType>
 
     <!--
@@ -224,6 +279,23 @@
             <xsd:sequence>
                 <xsd:element name="AsyncResponse" type="common:AsyncResponse" />
             </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="AddRtuDeviceRequest">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="RtuDevice" type="da:RtuDevice" />
+                <xsd:element name="DeviceModel" type="da:DeviceModel" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="AddRtuDeviceAsyncResponse">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="common:AsyncResponse"/>
+            </xsd:complexContent>
         </xsd:complexType>
     </xsd:element>
 
@@ -308,7 +380,7 @@
         </xsd:complexType>
     </xsd:element>
 
-    <!-- 
+    <!--
     ##################################################################################
     ## Response Elements
     ##################################################################################

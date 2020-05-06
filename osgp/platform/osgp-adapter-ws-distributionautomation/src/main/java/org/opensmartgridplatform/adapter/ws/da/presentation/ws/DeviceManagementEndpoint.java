@@ -7,16 +7,19 @@
  */
 package org.opensmartgridplatform.adapter.ws.da.presentation.ws;
 
-import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
-import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.adapter.ws.da.application.exceptionhandling.ResponseNotFoundException;
+import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.common.AsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.common.OsgpResultType;
+import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.AddRtuDeviceAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.AddRtuDeviceRequest;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.GetHealthStatusAsyncRequest;
-import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.GetHealthStatusResponse;
-import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.GetHealthStatusRequest;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.GetHealthStatusAsyncResponse;
-
+import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.GetHealthStatusRequest;
+import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.GetHealthStatusResponse;
+import org.opensmartgridplatform.domain.core.valueobjects.DeviceModel;
+import org.opensmartgridplatform.domain.core.valueobjects.RtuDevice;
+import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
@@ -81,6 +84,30 @@ public class DeviceManagementEndpoint extends GenericDistributionAutomationEndPo
             this.handleException(LOGGER, e);
         }
         response.setDeviceIdentification(request.getAsyncRequest().getDeviceId());
+        return response;
+    }
+
+    @PayloadRoot(localPart = "AddRtuDeviceRequest", namespace = NAMESPACE)
+    @ResponsePayload
+    public AddRtuDeviceAsyncResponse addRtuDevice(@OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final AddRtuDeviceRequest request) throws OsgpException {
+
+        LOGGER.info("Incoming AddRtuDeviceRequest for device: {}.", request.getRtuDevice().getDeviceIdentification());
+
+        AddRtuDeviceAsyncResponse response = null;
+        try {
+            response = new AddRtuDeviceAsyncResponse();
+            final RtuDevice rtuDevice = this.mapper.map(request.getRtuDevice(), RtuDevice.class);
+            final DeviceModel deviceModel = new DeviceModel(request.getDeviceModel().getManufacturer(),
+                    request.getDeviceModel().getModelCode(), "");
+            final String correlationUid = this.service.enqueueAddRtuDeviceRequest(organisationIdentification,
+                    rtuDevice.getDeviceIdentification(),
+                    new org.opensmartgridplatform.domain.core.valueobjects.AddRtuDeviceRequest(rtuDevice, deviceModel));
+            response.setCorrelationUid(correlationUid);
+            response.setDeviceId(request.getRtuDevice().getDeviceIdentification());
+        } catch (final Exception e) {
+            this.handleException(LOGGER, e);
+        }
         return response;
     }
 }
