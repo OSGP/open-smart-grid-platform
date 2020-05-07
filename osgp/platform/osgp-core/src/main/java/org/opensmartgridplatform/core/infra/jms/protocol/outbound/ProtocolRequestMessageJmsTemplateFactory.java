@@ -1,9 +1,10 @@
 /**
  * Copyright 2019 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.core.infra.jms.protocol.outbound;
 
@@ -33,11 +34,10 @@ public class ProtocolRequestMessageJmsTemplateFactory implements InitializingBea
     @Autowired
     private DefaultProtocolJmsConfiguration defaultProtocolJmsConfiguration;
 
-    private Environment environment;
-    private List<ProtocolInfo> protocolInfos;
-
-    private ConnectionFactoryRegistry connectionFactoryRegistry = new ConnectionFactoryRegistry();
-    private Registry<JmsTemplate> jmsTemplateRegistry = new Registry<>();
+    private final Environment environment;
+    private final List<ProtocolInfo> protocolInfos;
+    private final ConnectionFactoryRegistry connectionFactoryRegistry = new ConnectionFactoryRegistry();
+    private final Registry<JmsTemplate> jmsTemplateRegistry = new Registry<>();
 
     public ProtocolRequestMessageJmsTemplateFactory(final Environment environment,
             final List<ProtocolInfo> protocolInfos) {
@@ -64,16 +64,17 @@ public class ProtocolRequestMessageJmsTemplateFactory implements InitializingBea
     private void init(final ProtocolInfo protocolInfo) throws SSLException {
         final String key = protocolInfo.getKey();
 
-        LOGGER.debug("Initializing JmsConfigurationFactory for protocol {}", key);
+        LOGGER.info("Initializing JmsConfigurationFactory for protocol {} -- propertyPrefix = {}", key,
+                protocolInfo.getOutgoingRequestsPropertyPrefix());
         final JmsConfigurationFactory jmsConfigurationFactory = new JmsConfigurationFactory(this.environment,
                 this.defaultProtocolJmsConfiguration, protocolInfo.getOutgoingRequestsPropertyPrefix());
 
-        LOGGER.debug("Initializing PooledConnectionFactory for protocol {}", key);
+        LOGGER.info("Initializing PooledConnectionFactory for protocol {}", key);
         final PooledConnectionFactory connectionFactory = jmsConfigurationFactory.getPooledConnectionFactory();
         this.connectionFactoryRegistry.register(key, connectionFactory);
         connectionFactory.start();
 
-        LOGGER.debug("Initializing JmsTemplate for protocol {}", key);
+        LOGGER.info("Initializing JmsTemplate for protocol {}", key);
         final JmsTemplate jmsTemplate = jmsConfigurationFactory.initJmsTemplate();
         this.jmsTemplateRegistry.register(key, jmsTemplate);
         jmsTemplate.afterPropertiesSet();

@@ -1,9 +1,10 @@
 /**
  * Copyright 2019 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.shared.application.config.messaging;
 
@@ -20,9 +21,9 @@ class JmsPropertyReader {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JmsPropertyReader.class);
 
-    private Environment environment;
-    private String propertyPrefix;
-    private JmsConfiguration defaultJmsConfiguration;
+    private final Environment environment;
+    private final String propertyPrefix;
+    private final JmsConfiguration defaultJmsConfiguration;
 
     public JmsPropertyReader(final Environment environment, final String propertyPrefix,
             final JmsConfiguration defaultJmsConfiguration) {

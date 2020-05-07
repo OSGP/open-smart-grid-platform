@@ -50,13 +50,14 @@ public class ProtocolRequestMessageSender implements ProtocolRequestService {
 
     @Override
     public void send(final ProtocolRequestMessage message, final ProtocolInfo protocolInfo) {
+
         LOGGER.info("Sending protocol request message for device [{}] using protocol [{}] with version [{}]",
                 message.getDeviceIdentification(), protocolInfo.getProtocol(), protocolInfo.getProtocolVersion());
 
         final JmsTemplate jmsTemplate = this.protocolRequestMessageJmsTemplateFactory.getJmsTemplate(protocolInfo);
 
         LOGGER.info("Message sender destination queue: [{}] for protocol [{}] with version [{}]",
-                jmsTemplate.getDefaultDestinationName(), protocolInfo.getProtocol(), protocolInfo.getProtocolVersion());
+                jmsTemplate.getDefaultDestination(), protocolInfo.getProtocol(), protocolInfo.getProtocolVersion());
 
         this.sendMessage(message, protocolInfo, jmsTemplate);
     }
