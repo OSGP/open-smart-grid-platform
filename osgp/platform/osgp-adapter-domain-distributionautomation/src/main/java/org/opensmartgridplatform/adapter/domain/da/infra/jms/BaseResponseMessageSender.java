@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.domain.da.infra.jms.ws;
+package org.opensmartgridplatform.adapter.domain.da.infra.jms;
 
 import javax.jms.ObjectMessage;
 import javax.jms.Session;

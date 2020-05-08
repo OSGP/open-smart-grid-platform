@@ -9,6 +9,7 @@
  */
 package org.opensmartgridplatform.adapter.domain.da.infra.jms.ws;
 
+import org.opensmartgridplatform.adapter.domain.da.infra.jms.BaseResponseMessageSender;
 import org.opensmartgridplatform.shared.infra.jms.NotificationResponseMessageSender;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.springframework.beans.factory.annotation.Autowired;

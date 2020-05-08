@@ -5,13 +5,13 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.domain.da.infra.jms.ws;
+package org.opensmartgridplatform.adapter.domain.da.application.routing;
 
+import org.opensmartgridplatform.adapter.domain.da.infra.jms.kafka.KafkaResponseMessageSender;
+import org.opensmartgridplatform.adapter.domain.da.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.services.DeviceDomainService;
 import org.opensmartgridplatform.domain.core.valueobjects.IntegrationType;
-import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
-import org.opensmartgridplatform.shared.infra.jms.NotificationResponseMessageSender;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,14 +19,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-//Send response message to the web service adapter, the kafka adapter or both.
-@Component(value = "domainDistributionAutomationOutboundResponseMessageSender")
-public class ResponseMessageSender implements NotificationResponseMessageSender {
+/*
+ * Handles the routing of the response message. It sends it to the web service adapter, the kafka adapter or both.
+ */
+@Component
+public class ResponseMessageRouter {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ResponseMessageSender.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ResponseMessageRouter.class);
 
     @Autowired
-    protected DeviceDomainService deviceDomainService;
+    private DeviceDomainService deviceDomainService;
 
     @Autowired
     @Qualifier(value = "domainDistributionAutomationOutboundWebServiceResponsesMessageSender")
@@ -36,8 +38,7 @@ public class ResponseMessageSender implements NotificationResponseMessageSender 
     @Qualifier(value = "domainDistributionAutomationOutboundKafkaResponsesMessageSender")
     private KafkaResponseMessageSender kafkaResponseMessageSender;
 
-    @Override
-    public void send(final ResponseMessage responseMessage, final String messageType) {
+    public void route(final ResponseMessage responseMessage, final String messageType) {
 
         final IntegrationType integrationType = this.getIntegrationType(responseMessage.getDeviceIdentification());
 
@@ -59,7 +60,7 @@ public class ResponseMessageSender implements NotificationResponseMessageSender 
         try {
             final Device device = this.deviceDomainService.searchDevice(deviceIdentification);
             return device.getIntegrationType();
-        } catch (final FunctionalException e) {
+        } catch (final Exception e) {
             LOGGER.error("Could not determine integration type based on the device, using the default WEB_SERVICE");
             return IntegrationType.WEB_SERVICE;
         }

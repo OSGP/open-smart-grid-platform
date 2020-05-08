@@ -5,8 +5,9 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.domain.da.infra.jms.ws;
+package org.opensmartgridplatform.adapter.domain.da.infra.jms.kafka;
 
+import org.opensmartgridplatform.adapter.domain.da.infra.jms.BaseResponseMessageSender;
 import org.opensmartgridplatform.shared.infra.jms.NotificationResponseMessageSender;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.springframework.beans.factory.annotation.Autowired;

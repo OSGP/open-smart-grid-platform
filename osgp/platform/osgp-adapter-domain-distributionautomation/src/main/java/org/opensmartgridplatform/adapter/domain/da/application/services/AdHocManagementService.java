@@ -97,7 +97,7 @@ public class AdHocManagementService extends BaseService {
                 .withOsgpException(exception)
                 .withDataObject(getDeviceModelResponse)
                 .build();
-        this.responseMessageSender.send(responseMessage, messageType);
+        this.responseMessageRouter.route(responseMessage, messageType);
     }
 
     public void handleGetDataResponse(final String payload, final String deviceIdentification) {
