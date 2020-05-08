@@ -64,7 +64,8 @@ public class ResponseMessageRouter implements NotificationResponseMessageSender 
             return device.getIntegrationType();
         } catch (final Exception e) {
             LOGGER.error(
-                    "Could not determine integration type based on the device; we are using the default WEB_SERVICE");
+                    "Could not determine integration type based on the device; we are using the default value WEB_SERVICE",
+                    e);
             return IntegrationType.WEB_SERVICE;
         }
     }
