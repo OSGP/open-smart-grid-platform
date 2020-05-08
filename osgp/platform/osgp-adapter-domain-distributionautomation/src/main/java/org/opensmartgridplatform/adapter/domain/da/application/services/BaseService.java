@@ -17,7 +17,7 @@ import javax.persistence.OptimisticLockException;
 import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.domain.da.application.mapping.DomainDistributionAutomationMapper;
 import org.opensmartgridplatform.adapter.domain.da.infra.jms.core.OsgpCoreRequestMessageSender;
-import org.opensmartgridplatform.adapter.domain.da.infra.jms.ws.WebServiceResponseMessageSender;
+import org.opensmartgridplatform.adapter.domain.da.infra.jms.ws.ResponseMessageSender;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
 import org.opensmartgridplatform.domain.core.entities.RtuDevice;
@@ -55,8 +55,8 @@ public class BaseService {
     protected DomainDistributionAutomationMapper domainCoreMapper;
 
     @Autowired
-    @Qualifier(value = "domainDistributionAutomationOutboundWebServiceResponsesMessageSender")
-    protected WebServiceResponseMessageSender webServiceResponseMessageSender;
+    @Qualifier(value = "domainDistributionAutomationOutboundResponseMessageSender")
+    protected ResponseMessageSender responseMessageSender;
 
     @Autowired
     private Integer lastCommunicationUpdateInterval;
