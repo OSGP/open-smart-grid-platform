@@ -12,6 +12,7 @@ import org.opensmartgridplatform.adapter.domain.da.infra.jms.ws.WebServiceRespon
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.services.DeviceDomainService;
 import org.opensmartgridplatform.domain.core.valueobjects.IntegrationType;
+import org.opensmartgridplatform.shared.infra.jms.NotificationResponseMessageSender;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,8 +23,8 @@ import org.springframework.stereotype.Component;
 /*
  * Handles the routing of the response message. It sends it to the web service adapter, the kafka adapter or both.
  */
-@Component
-public class ResponseMessageRouter {
+@Component(value = "domainDistributionAutomationOutboundResponseMessageRouter")
+public class ResponseMessageRouter implements NotificationResponseMessageSender {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ResponseMessageRouter.class);
 
@@ -38,7 +39,8 @@ public class ResponseMessageRouter {
     @Qualifier(value = "domainDistributionAutomationOutboundKafkaResponsesMessageSender")
     private KafkaResponseMessageSender kafkaResponseMessageSender;
 
-    public void route(final ResponseMessage responseMessage, final String messageType) {
+    @Override
+    public void send(final ResponseMessage responseMessage, final String messageType) {
 
         final IntegrationType integrationType = this.getIntegrationType(responseMessage.getDeviceIdentification());
 
@@ -61,7 +63,8 @@ public class ResponseMessageRouter {
             final Device device = this.deviceDomainService.searchDevice(deviceIdentification);
             return device.getIntegrationType();
         } catch (final Exception e) {
-            LOGGER.error("Could not determine integration type based on the device, using the default WEB_SERVICE");
+            LOGGER.error(
+                    "Could not determine integration type based on the device; we are using the default WEB_SERVICE");
             return IntegrationType.WEB_SERVICE;
         }
     }

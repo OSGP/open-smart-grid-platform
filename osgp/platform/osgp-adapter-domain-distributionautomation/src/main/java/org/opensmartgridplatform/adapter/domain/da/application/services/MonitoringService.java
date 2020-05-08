@@ -120,7 +120,7 @@ public class MonitoringService extends BaseService {
                 .withOsgpException(exception)
                 .withDataObject(getPQValuesResponse)
                 .build();
-        this.responseMessageRouter.route(responseMessage, messageType);
+        this.responseMessageRouter.send(responseMessage, messageType);
     }
 
     public void handleGetMeasurementReportResponse(final MeasurementReportDto measurementReportDto,
@@ -155,6 +155,6 @@ public class MonitoringService extends BaseService {
                 .withOsgpException(exception)
                 .withDataObject(measurementReport)
                 .build();
-        this.responseMessageRouter.route(responseMessage, messageType);
+        this.responseMessageRouter.send(responseMessage, messageType);
     }
 }

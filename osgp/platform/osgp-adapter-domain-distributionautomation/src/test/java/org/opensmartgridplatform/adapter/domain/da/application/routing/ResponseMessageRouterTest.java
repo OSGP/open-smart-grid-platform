@@ -51,7 +51,7 @@ class ResponseMessageRouterTest {
     void testSendDefault() {
 
         // Act
-        this.responseMessageRouter.route(MESSAGE, MESSAGE_TYPE);
+        this.responseMessageRouter.send(MESSAGE, MESSAGE_TYPE);
 
         // Assert
         verify(this.webServiceResponseMessageSender).send(any(ResponseMessage.class), anyString());
@@ -65,7 +65,7 @@ class ResponseMessageRouterTest {
         when(this.deviceDomainService.searchDevice(anyString())).thenReturn(device);
 
         // Act
-        this.responseMessageRouter.route(MESSAGE, MESSAGE_TYPE);
+        this.responseMessageRouter.send(MESSAGE, MESSAGE_TYPE);
 
         // Assert
         verify(this.webServiceResponseMessageSender).send(any(ResponseMessage.class), anyString());
@@ -79,7 +79,7 @@ class ResponseMessageRouterTest {
         when(this.deviceDomainService.searchDevice(anyString())).thenReturn(device);
 
         // Act
-        this.responseMessageRouter.route(MESSAGE, MESSAGE_TYPE);
+        this.responseMessageRouter.send(MESSAGE, MESSAGE_TYPE);
 
         // Assert
         verify(this.kafkaResponseMessageSender).send(any(ResponseMessage.class), anyString());
@@ -93,7 +93,7 @@ class ResponseMessageRouterTest {
         when(this.deviceDomainService.searchDevice(anyString())).thenReturn(device);
 
         // Act
-        this.responseMessageRouter.route(MESSAGE, MESSAGE_TYPE);
+        this.responseMessageRouter.send(MESSAGE, MESSAGE_TYPE);
 
         // Assert
         verify(this.webServiceResponseMessageSender).send(any(ResponseMessage.class), anyString());

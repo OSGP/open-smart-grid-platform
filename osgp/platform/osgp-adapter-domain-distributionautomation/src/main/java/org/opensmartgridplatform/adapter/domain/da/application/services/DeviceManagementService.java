@@ -97,7 +97,7 @@ public class DeviceManagementService extends BaseService {
                 .withOsgpException(exception)
                 .withDataObject(getHealthStatusResponse)
                 .build();
-        this.responseMessageRouter.route(responseMessage, messageType);
+        this.responseMessageRouter.send(responseMessage, messageType);
     }
 
     public void addDevice(final DeviceMessageMetadata deviceMessageMetadata,

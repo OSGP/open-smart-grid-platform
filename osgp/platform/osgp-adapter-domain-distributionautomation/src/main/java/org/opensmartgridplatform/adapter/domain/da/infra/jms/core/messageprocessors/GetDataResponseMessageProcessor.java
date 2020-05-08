@@ -39,7 +39,8 @@ public class GetDataResponseMessageProcessor extends BaseNotificationMessageProc
     private AdHocManagementService adHocManagementService;
 
     @Autowired
-    protected GetDataResponseMessageProcessor(final NotificationResponseMessageSender responseMessageSender,
+    protected GetDataResponseMessageProcessor(
+            @Qualifier("domainDistributionAutomationOutboundResponseMessageRouter") final NotificationResponseMessageSender responseMessageSender,
             @Qualifier("domainDistributionAutomationInboundOsgpCoreResponsesMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.GET_DATA);
     }
@@ -55,8 +56,8 @@ public class GetDataResponseMessageProcessor extends BaseNotificationMessageProc
         try {
             responseValues.correlationUid = message.getJMSCorrelationID();
             responseValues.messageType = message.getJMSType();
-            responseValues.organisationIdentification = message.getStringProperty(
-                    Constants.ORGANISATION_IDENTIFICATION);
+            responseValues.organisationIdentification = message
+                    .getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             responseValues.deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
             responseValues.responseMessage = (ResponseMessage) message.getObject();
             responseValues.responseMessageResultType = responseValues.responseMessage.getResult();
