@@ -16,16 +16,9 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileResponseDto;
 
-
 public class MonitoringServiceStub extends MonitoringService {
 
-    public MonitoringServiceStub(/*GetPeriodicMeterReadsCommandExecutor getPeriodicMeterReadsCommandExecutor,
-            GetPeriodicMeterReadsGasCommandExecutor getPeriodicMeterReadsGasCommandExecutor,
-            GetActualMeterReadsCommandExecutor actualMeterReadsCommandExecutor,
-            GetActualMeterReadsGasCommandExecutor actualMeterReadsGasCommandExecutor,
-            ReadAlarmRegisterCommandExecutor readAlarmRegisterCommandExecutor,
-            GetPowerQualityProfileCommandExecutor getPowerQualityProfileCommandExecutor,
-            ClearAlarmRegisterCommandExecutor clearAlarmRegisterCommandExecutor*/) {
+    public MonitoringServiceStub() {
         super(null, null, null, null, null, null, null);
     }
 

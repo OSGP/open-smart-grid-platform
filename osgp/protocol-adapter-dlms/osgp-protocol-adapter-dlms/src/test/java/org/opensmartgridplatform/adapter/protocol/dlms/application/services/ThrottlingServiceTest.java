@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 Smart Society Services B.V.
+ * Copyright 2020 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
@@ -14,6 +14,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
@@ -21,9 +23,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = ThrottlingService.class)
-@TestPropertySource(properties = { "throttlingService.maxOpenConnections=10",
-        "throttlingService.maxNewConnectionRequests=30", "throttlingService.resetTime=2000" })
+@TestPropertySource(properties = { "throttling.max.open.connections=10", "throttling.max.new.connection.requests=30",
+        "throttling.reset.time=2000" })
 public class ThrottlingServiceTest {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ThrottlingServiceTest.class);
 
     @Autowired
     ThrottlingService throttlingService;
@@ -34,10 +38,6 @@ public class ThrottlingServiceTest {
     @Test
     public void testThrottling() throws InterruptedException {
 
-        // throttlingService = new ThrottlingService();
-
-        // ReflectionTestUtils.setField(throttlingService, "maxOpenConnections", 10);
-
         openingThreadDone = new AtomicBoolean(false);
         closingThreadDone = new AtomicBoolean(false);
 
@@ -47,24 +47,23 @@ public class ThrottlingServiceTest {
         assertThat(true).isEqualTo(true);
 
         while (!openingThreadDone.get() && !closingThreadDone.get()) {
-            //
+            Thread.sleep(1000);
         }
+
     }
 
     private Thread openingThread() {
         return new Thread(() -> {
 
             for (int i = 0; i < 100; i++) {
-                try {
-                    System.out.println("Incoming request " + i);
-                    throttlingService.newConnectionRequest();
-                    throttlingService.openConnection();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+
+                LOGGER.info("Incoming request {}", i);
+                throttlingService.newConnectionRequest();
+                throttlingService.openConnection();
+
             }
 
-            System.out.println("Opening done");
+            LOGGER.info("Opening Connection Thread done");
             openingThreadDone.set(true);
         });
     }
@@ -76,12 +75,11 @@ public class ThrottlingServiceTest {
                 try {
                     Thread.sleep(200);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
                     closingThreadDone.set(true);
                 }
             }
 
-            System.out.println("CLosing done");
+            LOGGER.info("CLosing Connection Thread done");
             closingThreadDone.set(true);
         });
     }

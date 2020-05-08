@@ -10,7 +10,9 @@ package org.opensmartgridplatform.core.infra.jms.protocol.outbound;
 
 import static org.opensmartgridplatform.shared.infra.jms.MessageType.GET_POWER_USAGE_HISTORY;
 
+import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
+import javax.jms.Session;
 
 import org.opensmartgridplatform.core.domain.model.protocol.ProtocolRequestService;
 import org.opensmartgridplatform.core.infra.messaging.CoreLogItemRequestMessage;
@@ -73,33 +75,7 @@ public class ProtocolRequestMessageSender implements ProtocolRequestService {
             isCustomTimeToLiveSet = true;
         }
 
-        jmsTemplate.send(session -> {
-
-            final String deviceIdentification = requestMessage.getDeviceIdentification();
-
-            final ObjectMessage objectMessage = session.createObjectMessage(requestMessage.getRequest());
-            objectMessage.setJMSCorrelationID(requestMessage.getCorrelationUid());
-            objectMessage.setJMSType(requestMessage.getMessageType());
-            objectMessage.setJMSPriority(requestMessage.getMessagePriority());
-            objectMessage.setStringProperty(Constants.DOMAIN, requestMessage.getDomain());
-            objectMessage.setStringProperty(Constants.DOMAIN_VERSION, requestMessage.getDomainVersion());
-            objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
-                    requestMessage.getOrganisationIdentification());
-            objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION, deviceIdentification);
-            objectMessage.setStringProperty(Constants.IP_ADDRESS, requestMessage.getIpAddress());
-            objectMessage.setBooleanProperty(Constants.IS_SCHEDULED, requestMessage.isScheduled());
-            objectMessage.setIntProperty(Constants.RETRY_COUNT, requestMessage.getRetryCount());
-            objectMessage.setBooleanProperty(Constants.BYPASS_RETRY, requestMessage.bypassRetry());
-
-            if (!protocolInfo.isParallelRequestsAllowed()) {
-                final String messageGroupId = ProtocolRequestMessageSender.this.getMessageGroupId(deviceIdentification);
-                LOGGER.debug("Setting message group property for device {} to: {}", deviceIdentification,
-                        messageGroupId);
-                objectMessage.setStringProperty(Constants.MESSAGE_GROUP, messageGroupId);
-            }
-
-            return objectMessage;
-        });
+        jmsTemplate.send(session -> createObjectMessage(requestMessage, protocolInfo, session));
 
         if (requestMessage.getRetryCount() != 0) {
             final String decodedMessageWithDescription = String
@@ -116,6 +92,32 @@ public class ProtocolRequestMessageSender implements ProtocolRequestService {
         if (isCustomTimeToLiveSet) {
             jmsTemplate.setTimeToLive(originalTimeToLive);
         }
+    }
+
+    private ObjectMessage createObjectMessage(ProtocolRequestMessage requestMessage, ProtocolInfo protocolInfo,
+            Session session) throws JMSException {
+        final ObjectMessage objectMessage = session.createObjectMessage(requestMessage.getRequest());
+        objectMessage.setJMSCorrelationID(requestMessage.getCorrelationUid());
+        objectMessage.setJMSType(requestMessage.getMessageType());
+        objectMessage.setJMSPriority(requestMessage.getMessagePriority());
+        objectMessage.setStringProperty(Constants.DOMAIN, requestMessage.getDomain());
+        objectMessage.setStringProperty(Constants.DOMAIN_VERSION, requestMessage.getDomainVersion());
+        objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
+                requestMessage.getOrganisationIdentification());
+
+        final String deviceIdentification = requestMessage.getDeviceIdentification();
+        objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION, deviceIdentification);
+        objectMessage.setStringProperty(Constants.IP_ADDRESS, requestMessage.getIpAddress());
+        objectMessage.setBooleanProperty(Constants.IS_SCHEDULED, requestMessage.isScheduled());
+        objectMessage.setIntProperty(Constants.RETRY_COUNT, requestMessage.getRetryCount());
+        objectMessage.setBooleanProperty(Constants.BYPASS_RETRY, requestMessage.bypassRetry());
+
+        if (!protocolInfo.isParallelRequestsAllowed()) {
+            final String messageGroupId = ProtocolRequestMessageSender.this.getMessageGroupId(deviceIdentification);
+            LOGGER.debug("Setting message group property for device {} to: {}", deviceIdentification, messageGroupId);
+            objectMessage.setStringProperty(Constants.MESSAGE_GROUP, messageGroupId);
+        }
+        return objectMessage;
     }
 
     protected String getMessageGroupId(final String deviceIdentification) {
