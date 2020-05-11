@@ -65,12 +65,11 @@ public class ThrottlingService {
 
         try {
             this.openConnectionsSemaphore.acquire();
+            LOGGER.debug("openConnection granted. available = {} ", this.openConnectionsSemaphore.availablePermits());
         } catch (InterruptedException e) {
             LOGGER.warn("Unable to acquire Open Connection", e);
             Thread.currentThread().interrupt();
         }
-
-        LOGGER.debug("openConnection granted. available = {} ", this.openConnectionsSemaphore.availablePermits());
     }
 
     public void closeConnection() {
@@ -87,13 +86,12 @@ public class ThrottlingService {
 
         try {
             this.newConnectionRequestsSemaphore.acquire();
+            LOGGER.debug("Request newConnection granted. available = {} ",
+                    this.newConnectionRequestsSemaphore.availablePermits());
         } catch (InterruptedException e) {
             LOGGER.warn("Unable to acquire New Connection Request", e);
             Thread.currentThread().interrupt();
         }
-
-        LOGGER.debug("Request newConnection granted. available = {} ",
-                this.newConnectionRequestsSemaphore.availablePermits());
     }
 
     private synchronized void awaitReset() {
