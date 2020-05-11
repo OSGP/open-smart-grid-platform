@@ -53,26 +53,26 @@
     <spring.version>5.2.6.RELEASE</spring.version>
     <spring.data.version>2.2.3.RELEASE</spring.data.version>
     <spring.data.commons.version>2.2.3.RELEASE</spring.data.commons.version>
-    <spring.security.version>5.3.1.RELEASE</spring.security.version>
+    <spring.security.version>5.3.2.RELEASE</spring.security.version>
     <spring.wscore.version>3.0.9.RELEASE</spring.wscore.version>
     <spring.wssecurity.version>3.0.9.RELEASE</spring.wssecurity.version>
     <spring.wssupport.version>3.0.9.RELEASE</spring.wssupport.version>
     <spring.ws.version>3.0.9.RELEASE</spring.ws.version>
-    <assertj.version>3.15.0</assertj.version>
+    <assertj.version>3.16.0</assertj.version>
     <xmlunit.version>1.6</xmlunit.version>
     <mockito.core.version>3.3.3</mockito.core.version>
     <apache.wss4j.version>1.6.19</apache.wss4j.version>
     <servlet.version>4.0.1</servlet.version>
     <servlet.jstl.version>1.2</servlet.jstl.version>
-    <hibernate.version>5.4.14.Final</hibernate.version>
-    <hibernate.validator.version>6.1.4.Final</hibernate.validator.version>
+    <hibernate.version>5.4.15.Final</hibernate.version>
+    <hibernate.validator.version>6.1.5.Final</hibernate.validator.version>
     <hibernate.jpa.version>1.0.2.Final</hibernate.jpa.version>
     <javax.validation.api.version>2.0.1.Final</javax.validation.api.version>
     <junit.version>5.6.2</junit.version>
     <junit.platform.launcher.version>1.6.2</junit.platform.launcher.version>
-    <byte.buddy.version>1.10.9</byte.buddy.version>
+    <byte.buddy.version>1.10.10</byte.buddy.version>
     <joda.version>2.10.6</joda.version>
-    <flyway.version>6.4.0</flyway.version>
+    <flyway.version>6.4.1</flyway.version>
     <slf4j.version>1.7.30</slf4j.version>
     <apache.commons.lang.version>3.10</apache.commons.lang.version>
     <apache.commons.text.version>1.8</apache.commons.text.version>
@@ -88,7 +88,7 @@
     <maven.war.plugin.version>3.2.3</maven.war.plugin.version>
     <maven.surefire.plugin.version>3.0.0-M4</maven.surefire.plugin.version>
     <maven.failsafe.plugin.version>3.0.0-M4</maven.failsafe.plugin.version>
-    <maven.assembly.plugin.version>3.2.0</maven.assembly.plugin.version>
+    <maven.assembly.plugin.version>3.3.0</maven.assembly.plugin.version>
     <maven.eclipse.plugin.version>2.10</maven.eclipse.plugin.version>
     <maven.exec.plugin.version>1.6.0</maven.exec.plugin.version>
     <maven.enforcer.plugin.version>3.0.0-M3</maven.enforcer.plugin.version>
@@ -117,7 +117,7 @@
     <cxf.version>3.3.6</cxf.version>
     <quartz.version>2.3.2</quartz.version>
     <hikaricp.version>3.4.3</hikaricp.version>
-    <micrometer.version>1.4.2</micrometer.version>
+    <micrometer.version>1.5.0</micrometer.version>
     <protobuf.version>2.4.1</protobuf.version>
     <protobuf.maven.plugin>0.6.5</protobuf.maven.plugin>
     <guava.version>29.0-jre</guava.version>
@@ -131,7 +131,8 @@
     <sun.httpserver.version>20070405</sun.httpserver.version>
     <postgresql.version>42.2.12</postgresql.version>
     <javax.xml.soap-api.version>1.4.0</javax.xml.soap-api.version>
-    <kafka.version>2.5.0</kafka.version>
+    <!-- to avoid conflicts with spring-kafka-test the older kafka version 2.4.1 is used-->
+    <kafka.version>2.4.1</kafka.version>
     <avro.version>1.9.2</avro.version>
     <spring.kafka.version>2.4.6.RELEASE</spring.kafka.version>
   </properties>
@@ -792,6 +793,14 @@
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-text</artifactId>
         <version>${apache.commons.text.version}</version>
+      </dependency>
+
+      <!-- Spring Test -->
+      <dependency>
+        <groupId>org.springframework.kafka</groupId>
+        <artifactId>spring-kafka-test</artifactId>
+        <version>${spring.kafka.version}</version>
+        <scope>test</scope>
       </dependency>
 
       <!-- Cucumber Framework -->

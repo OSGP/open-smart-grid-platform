@@ -32,8 +32,6 @@ public class DistributionAutomationWebServiceConfig {
         final Resource[] resources = new Resource[] { new ClassPathResource(COMMON_XSD_PATH),
                 new ClassPathResource(DISTRIBUTION_AUTOMATION_XSD_PATH) };
         payloadValidatingInterceptor.setSchemas(resources);
-        payloadValidatingInterceptor.setValidateRequest(true);
-        payloadValidatingInterceptor.setValidateResponse(false);
         return payloadValidatingInterceptor;
     }
 
