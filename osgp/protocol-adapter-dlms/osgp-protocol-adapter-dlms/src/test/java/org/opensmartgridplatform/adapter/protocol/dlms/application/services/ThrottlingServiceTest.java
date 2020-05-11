@@ -71,6 +71,7 @@ public class ThrottlingServiceTest {
     private Thread closingThread() {
         return new Thread(() -> {
             for (int i = 0; i < 100; i++) {
+                LOGGER.info("Closing Connection {}", i);
                 throttlingService.closeConnection();
                 try {
                     Thread.sleep(200);

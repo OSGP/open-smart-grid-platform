@@ -19,8 +19,6 @@ import javax.sql.DataSource;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.shared.application.config.AbstractPersistenceConfig;
-import org.opensmartgridplatform.shared.infra.db.DefaultConnectionPoolFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -39,79 +37,55 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @PropertySource("classpath:osgp-adapter-protocol-dlms.properties")
 public class DlmsPersistenceConfigStub extends AbstractPersistenceConfig {
 
-    @Value("${db.username.dlms}")
-    private String username;
-
-    @Value("${db.password.dlms}")
-    private String password;
-
-    @Value("${db.host.dlms}")
-    private String databaseHost;
-
-    @Value("${db.port.dlms}")
-    private int databasePort;
-
-    @Value("${db.name.dlms}")
-    private String databaseName;
-
-    private DataSource dataSourceDlms;
-
     public DataSource getDataSourceDlms() {
-        if (this.dataSourceDlms == null) {
-            final DefaultConnectionPoolFactory.Builder builder = super.builder().withUsername(this.username)
-                                                                      .withPassword(this.password)
-                                                                      .withDatabaseHost(this.databaseHost)
-                                                                      .withDatabasePort(this.databasePort)
-                                                                      .withDatabaseName(this.databaseName);
 
-            this.dataSourceDlms = new DataSource() {
-                @Override
-                public Connection getConnection() throws SQLException {
-                    return null;
-                }
+        return new DataSource() {
+            @Override
+            public Connection getConnection() throws SQLException {
+                return null;
+            }
 
-                @Override
-                public Connection getConnection(String username, String password) throws SQLException {
-                    return null;
-                }
+            @Override
+            public Connection getConnection(String username, String password) throws SQLException {
+                return null;
+            }
 
-                @Override
-                public <T> T unwrap(Class<T> iface) throws SQLException {
-                    return null;
-                }
+            @Override
+            public <T> T unwrap(Class<T> iface) throws SQLException {
+                return null;
+            }
 
-                @Override
-                public boolean isWrapperFor(Class<?> iface) throws SQLException {
-                    return false;
-                }
+            @Override
+            public boolean isWrapperFor(Class<?> iface) throws SQLException {
+                return false;
+            }
 
-                @Override
-                public PrintWriter getLogWriter() throws SQLException {
-                    return null;
-                }
+            @Override
+            public PrintWriter getLogWriter() throws SQLException {
+                return null;
+            }
 
-                @Override
-                public void setLogWriter(PrintWriter out) throws SQLException {
+            @Override
+            public void setLogWriter(PrintWriter out) throws SQLException {
 
-                }
+            }
 
-                @Override
-                public void setLoginTimeout(int seconds) throws SQLException {
+            @Override
+            public void setLoginTimeout(int seconds) throws SQLException {
 
-                }
+            }
 
-                @Override
-                public int getLoginTimeout() throws SQLException {
-                    return 0;
-                }
+            @Override
+            public int getLoginTimeout() throws SQLException {
+                return 0;
+            }
 
-                @Override
-                public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-                    return null;
-                }
-            };
-        }
-        return this.dataSourceDlms;
+            @Override
+            public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+                return null;
+            }
+        };
+
     }
 
     @Override

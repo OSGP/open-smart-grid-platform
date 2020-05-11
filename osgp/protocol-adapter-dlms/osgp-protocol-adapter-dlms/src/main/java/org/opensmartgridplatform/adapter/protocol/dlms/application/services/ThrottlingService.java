@@ -11,6 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -35,16 +36,20 @@ public class ThrottlingService {
     private Semaphore openConnectionsSemaphore;
     private Semaphore newConnectionRequestsSemaphore;
     private Timer resetTimer;
+    private ReentrantLock resetTimerLock;
 
     @PostConstruct
     public void postConstruct() {
-        LOGGER.info("Initializing ThrottlingService. {}", this);
 
         openConnectionsSemaphore = new Semaphore(maxOpenConnections);
         newConnectionRequestsSemaphore = new Semaphore(maxNewConnectionRequests);
 
+        resetTimerLock = new ReentrantLock();
+
         resetTimer = new Timer();
         resetTimer.scheduleAtFixedRate(new ResetTask(), resetTime, resetTime);
+
+        LOGGER.info("Initialized ThrottlingService. {}", this);
     }
 
     @PreDestroy
@@ -56,7 +61,7 @@ public class ThrottlingService {
 
     public void openConnection() {
 
-        LOGGER.info("Requesting openConnection. available = {} ", this.openConnectionsSemaphore.availablePermits());
+        LOGGER.debug("Requesting openConnection. available = {} ", this.openConnectionsSemaphore.availablePermits());
 
         try {
             this.openConnectionsSemaphore.acquire();
@@ -65,18 +70,20 @@ public class ThrottlingService {
             Thread.currentThread().interrupt();
         }
 
-        LOGGER.info("openConnection granted. available = {} ", this.openConnectionsSemaphore.availablePermits());
+        LOGGER.debug("openConnection granted. available = {} ", this.openConnectionsSemaphore.availablePermits());
     }
 
     public void closeConnection() {
 
-        LOGGER.info("closeConnection available = {} ", this.openConnectionsSemaphore.availablePermits());
+        LOGGER.debug("closeConnection(). available = {} ", this.openConnectionsSemaphore.availablePermits());
         this.openConnectionsSemaphore.release();
     }
 
     public void newConnectionRequest() {
 
-        LOGGER.info("Request newConnection. available = {} ", this.newConnectionRequestsSemaphore.availablePermits());
+        awaitReset();
+
+        LOGGER.debug("newConnectionRequest(). available = {} ", this.newConnectionRequestsSemaphore.availablePermits());
 
         try {
             this.newConnectionRequestsSemaphore.acquire();
@@ -85,20 +92,38 @@ public class ThrottlingService {
             Thread.currentThread().interrupt();
         }
 
-        LOGGER.info("Request newConnection granted. available = {} ",
+        LOGGER.debug("Request newConnection granted. available = {} ",
                 this.newConnectionRequestsSemaphore.availablePermits());
     }
 
+    private synchronized void awaitReset() {
+        while (resetTimerLock.isLocked()) {
+            try {
+                resetTimerLock.wait(this.resetTime);
+            } catch (InterruptedException e) {
+                LOGGER.warn("Unable to acquire New Connection Request Lock", e);
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
     private class ResetTask extends TimerTask {
+
         @Override
         public void run() {
 
-            newConnectionRequestsSemaphore.release(maxNewConnectionRequests);
+            try {
+                resetTimerLock.lock();
 
-            newConnectionRequestsSemaphore = new Semaphore(maxNewConnectionRequests);
+                int nrOfPermitsToBeReleased =
+                        maxNewConnectionRequests - newConnectionRequestsSemaphore.availablePermits();
+                newConnectionRequestsSemaphore.release(nrOfPermitsToBeReleased);
 
-            LOGGER.info("ThrottlingService - Timer Reset and Unlocking, max newConnectionRequests available = {}  ",
-                    newConnectionRequestsSemaphore.availablePermits());
+                LOGGER.debug("ThrottlingService - Timer Reset and Unlocking, newConnectionRequests available = {}  ",
+                        newConnectionRequestsSemaphore.availablePermits());
+            } finally {
+                resetTimerLock.unlock();
+            }
         }
     }
 
