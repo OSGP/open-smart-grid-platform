@@ -42,6 +42,9 @@ import org.springframework.core.type.filter.TypeFilter;
 import stub.DlmsConnectionFactoryStub;
 import stub.DlmsPersistenceConfigStub;
 
+/**
+ * Test Configuration for JMS Listener triggered tests.
+ */
 @Configuration
 @ComponentScan(basePackages = {}, excludeFilters = @ComponentScan.Filter(type = FilterType.CUSTOM, classes =
         MessagingTestConfiguration.ExcludeFilter.class))
@@ -51,6 +54,7 @@ import stub.DlmsPersistenceConfigStub;
 public class MessagingTestConfiguration extends AbstractConfig {
 
     // JMS
+
     @Bean
     public DefaultJmsConfiguration defaultJmsConfiguration() {
         return new DefaultJmsConfiguration();
@@ -71,7 +75,7 @@ public class MessagingTestConfiguration extends AbstractConfig {
         return Mockito.mock(DeviceResponseMessageSender.class);
     }
 
-    // Beans and Stubs
+    // Beans, Mocks and Stubs
 
     @Bean
     public DlmsHelper dlmsHelper() {

@@ -37,6 +37,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+/**
+ * Tests the incoming JMS messages and processors. Verifies that response messages were sent.
+ */
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = MessagingTestConfiguration.class)
 public class DeviceRequestMessageListenerIT {
@@ -56,7 +59,7 @@ public class DeviceRequestMessageListenerIT {
     private DomainHelperService domainHelperService;
 
     @Test
-    public void testManyMessages() throws JMSException, OsgpException {
+    public void testProcessRequestMessages() throws JMSException, OsgpException {
 
         // SETUP
 
@@ -75,7 +78,7 @@ public class DeviceRequestMessageListenerIT {
 
         for (int i = 0; i < 200; i++) {
 
-            LOGGER.info("Starting Test " + i);
+            LOGGER.info("Send message number {} ", i);
 
             final ObjectMessage message = new ObjectMessageBuilder().withDeviceIdentification("osgp").withMessageType(
                     MessageType.GET_PROFILE_GENERIC_DATA.toString()).withObject(
