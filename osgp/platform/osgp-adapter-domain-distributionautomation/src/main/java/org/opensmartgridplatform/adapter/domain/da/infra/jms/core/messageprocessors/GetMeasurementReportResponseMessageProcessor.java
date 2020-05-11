@@ -42,7 +42,7 @@ public class GetMeasurementReportResponseMessageProcessor extends BaseNotificati
 
     @Autowired
     protected GetMeasurementReportResponseMessageProcessor(
-            final NotificationResponseMessageSender responseMessageSender,
+            @Qualifier("domainDistributionAutomationOutboundResponseMessageRouter") final NotificationResponseMessageSender responseMessageSender,
             @Qualifier("domainDistributionAutomationInboundOsgpCoreResponsesMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.GET_MEASUREMENT_REPORT);
     }

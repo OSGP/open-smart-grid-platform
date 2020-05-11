@@ -1,13 +1,11 @@
 /**
- * Copyright 2017 Smart Society Services B.V.
+ * Copyright 2020 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.domain.da.infra.jms.ws;
+package org.opensmartgridplatform.adapter.domain.da.infra.jms.kafka;
 
 import org.opensmartgridplatform.adapter.domain.da.infra.jms.BaseResponseMessageSender;
 import org.opensmartgridplatform.shared.infra.jms.NotificationResponseMessageSender;
@@ -17,13 +15,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
-// Send response message to the web service adapter.
-@Component(value = "domainDistributionAutomationOutboundWebServiceResponsesMessageSender")
-public class WebServiceResponseMessageSender extends BaseResponseMessageSender
-        implements NotificationResponseMessageSender {
+// Send response message to the kafka adapter.
+@Component(value = "domainDistributionAutomationOutboundKafkaResponsesMessageSender")
+public class KafkaResponseMessageSender extends BaseResponseMessageSender implements NotificationResponseMessageSender {
 
     @Autowired
-    @Qualifier("domainDistributionAutomationOutboundWebServiceResponsesJmsTemplate")
+    @Qualifier("domainDistributionAutomationOutboundKafkaResponsesJmsTemplate")
     private JmsTemplate jmsTemplate;
 
     @Override

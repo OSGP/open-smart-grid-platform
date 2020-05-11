@@ -32,7 +32,8 @@ public class AddDeviceRequestMessageProcessor extends BaseNotificationMessagePro
     private DeviceManagementService deviceManagementService;
 
     @Autowired
-    public AddDeviceRequestMessageProcessor(final NotificationResponseMessageSender responseMessageSender,
+    public AddDeviceRequestMessageProcessor(
+            @Qualifier("domainDistributionAutomationOutboundResponseMessageRouter") final NotificationResponseMessageSender responseMessageSender,
             @Qualifier("domainDistributionAutomationInboundWebServiceRequestsMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.ADD_DEVICE);
     }
