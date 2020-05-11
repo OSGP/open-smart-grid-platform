@@ -9,6 +9,11 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.Date;
 
@@ -17,16 +22,20 @@ import javax.jms.ObjectMessage;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileRequestDataDto;
+import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ObjectMessageBuilder;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import stub.DeviceResponseMessageSenderStub;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = MessagingTestConfiguration.class)
@@ -38,15 +47,29 @@ public class DeviceRequestMessageListenerIT {
     private DeviceRequestMessageListener listener;
 
     @Autowired
-    private DeviceResponseMessageSenderStub deviceResponseMessageSender;
+    private DeviceResponseMessageSender protocolDlmsOutboundOsgpCoreResponsesMessageSender;
 
     @Autowired
     private ThrottlingService throttlingService;
 
-    @Test
-    public void testManyMessages() throws JMSException {
+    @Autowired
+    private DomainHelperService domainHelperService;
 
-        System.out.println("Starting Test ");
+    @Test
+    public void testManyMessages() throws JMSException, OsgpException {
+
+        // SETUP
+
+        DlmsDevice dlmsDevice = new DlmsDevice();
+        dlmsDevice.setDeviceIdentification("1");
+        dlmsDevice.setIpAddress("127.0.0.1");
+        dlmsDevice.setHls5Active(true);
+
+        when(domainHelperService.findDlmsDevice(any(String.class), any(String.class))).thenReturn(dlmsDevice);
+        when(domainHelperService.findDlmsDevice(any(MessageMetadata.class))).thenReturn(dlmsDevice);
+        doNothing().when(protocolDlmsOutboundOsgpCoreResponsesMessageSender).send(any(ResponseMessage.class));
+
+        // EXECUTE
 
         LOGGER.info("Starting Test");
 
@@ -61,7 +84,7 @@ public class DeviceRequestMessageListenerIT {
             listener.onMessage(message);
         }
 
-        assertThat(deviceResponseMessageSender.getResponseMessagesSent()).isEqualTo(200);
+        verify(protocolDlmsOutboundOsgpCoreResponsesMessageSender, times(200)).send(any(ResponseMessage.class));
 
         assertThat(throttlingService.toString())
                 .isEqualTo("ThrottlingService. maxOpenConnections = 10, maxNewConnectionRequests=30, resetTime=2000");

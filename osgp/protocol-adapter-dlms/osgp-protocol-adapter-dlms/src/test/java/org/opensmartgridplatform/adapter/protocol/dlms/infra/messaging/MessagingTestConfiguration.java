@@ -11,6 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging;
 import java.util.Arrays;
 import java.util.List;
 
+import org.mockito.Mockito;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.messaging.OutboundLogItemRequestsMessagingConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.messaging.OutboundOsgpCoreResponsesMessagingConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
@@ -38,12 +39,8 @@ import org.springframework.core.type.ClassMetadata;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.filter.TypeFilter;
-import stub.DeviceResponseMessageSenderStub;
 import stub.DlmsConnectionFactoryStub;
 import stub.DlmsPersistenceConfigStub;
-import stub.DomainHelperServiceStub;
-import stub.MonitoringServiceStub;
-import stub.SecurityKeyServiceStub;
 
 @Configuration
 @ComponentScan(basePackages = {}, excludeFilters = @ComponentScan.Filter(type = FilterType.CUSTOM, classes =
@@ -71,7 +68,7 @@ public class MessagingTestConfiguration extends AbstractConfig {
 
     @Bean("protocolDlmsOutboundOsgpCoreResponsesMessageSender")
     public DeviceResponseMessageSender deviceResponseMessageSender() {
-        return new DeviceResponseMessageSenderStub();
+        return Mockito.mock(DeviceResponseMessageSender.class);
     }
 
     // Beans and Stubs
@@ -123,17 +120,17 @@ public class MessagingTestConfiguration extends AbstractConfig {
 
     @Bean
     public DomainHelperService domainHelperService() {
-        return new DomainHelperServiceStub();
+        return Mockito.mock(DomainHelperService.class);
     }
 
     @Bean
     public MonitoringService monitoringService() {
-        return new MonitoringServiceStub();
+        return Mockito.mock(MonitoringService.class);
     }
 
     @Bean
     public SecurityKeyService securityKeyService() {
-        return new SecurityKeyServiceStub();
+        return Mockito.mock(SecurityKeyService.class);
     }
 
     public static class ExcludeFilter implements TypeFilter {

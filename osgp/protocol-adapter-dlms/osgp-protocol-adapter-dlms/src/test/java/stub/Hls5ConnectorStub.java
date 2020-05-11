@@ -1,13 +1,3 @@
-package stub;
-
-import org.openmuc.jdlms.DlmsConnection;
-import org.openmuc.jdlms.TcpConnectionBuilder;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsDeviceAssociation;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.Hls5Connector;
-import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
-import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-
 /**
  * Copyright 2019 Smart Society Services B.V.
  *
@@ -16,6 +6,17 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+package stub;
+
+import org.openmuc.jdlms.DlmsConnection;
+import org.openmuc.jdlms.TcpConnectionBuilder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.DlmsConnectionStub;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsDeviceAssociation;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.Hls5Connector;
+import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
+import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+
 public class Hls5ConnectorStub extends Hls5Connector {
 
     public Hls5ConnectorStub() {
@@ -32,6 +33,6 @@ public class Hls5ConnectorStub extends Hls5Connector {
     public DlmsConnection connect(final DlmsDevice device, final DlmsMessageListener dlmsMessageListener)
             throws OsgpException {
 
-        return null;
+        return new DlmsConnectionStub();
     }
 }

@@ -11,8 +11,7 @@ package stub;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
 
 public class DlmsConnectionFactoryStub extends DlmsConnectionFactory {
-    public DlmsConnectionFactoryStub(/*Hls5Connector hls5Connector, Lls1Connector lls1Connector,
-            Lls0Connector lls0Connector, DomainHelperService domainHelperService*/) {
+    public DlmsConnectionFactoryStub() {
         super(new Hls5ConnectorStub(), null, null, null);
     }
 
