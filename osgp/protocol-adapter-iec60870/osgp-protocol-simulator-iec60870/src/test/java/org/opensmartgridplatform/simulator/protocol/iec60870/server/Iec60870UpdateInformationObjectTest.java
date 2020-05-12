@@ -91,7 +91,6 @@ class Iec60870UpdateInformationObjectTest {
     private void registerConnection() throws IOException {
         final Iec60870ServerEventListener eventListener = this.iec60870Server.getIec60870ServerEventListener();
         eventListener.connectionIndication(this.connection);
-        verify(this.connection).send(argThat(new AsduTypeArgumentMatcher(ASduType.M_EI_NA_1)));
     }
 
 }
