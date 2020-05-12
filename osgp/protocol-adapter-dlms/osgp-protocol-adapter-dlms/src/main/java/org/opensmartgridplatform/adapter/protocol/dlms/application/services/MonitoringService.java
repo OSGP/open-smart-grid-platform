@@ -26,32 +26,36 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClearAlarmRegist
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ReadAlarmRegisterRequestDto;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service(value = "dlmsDeviceMonitoringService")
 public class MonitoringService {
 
-    @Autowired
-    private GetPeriodicMeterReadsCommandExecutor getPeriodicMeterReadsCommandExecutor;
+    private final GetPeriodicMeterReadsCommandExecutor getPeriodicMeterReadsCommandExecutor;
+    private final GetPeriodicMeterReadsGasCommandExecutor getPeriodicMeterReadsGasCommandExecutor;
+    private final GetActualMeterReadsCommandExecutor actualMeterReadsCommandExecutor;
+    private final GetActualMeterReadsGasCommandExecutor actualMeterReadsGasCommandExecutor;
+    private final ReadAlarmRegisterCommandExecutor readAlarmRegisterCommandExecutor;
+    private final GetPowerQualityProfileCommandExecutor getPowerQualityProfileCommandExecutor;
+    private final ClearAlarmRegisterCommandExecutor clearAlarmRegisterCommandExecutor;
 
-    @Autowired
-    private GetPeriodicMeterReadsGasCommandExecutor getPeriodicMeterReadsGasCommandExecutor;
+    public MonitoringService(GetPeriodicMeterReadsCommandExecutor getPeriodicMeterReadsCommandExecutor,
+            GetPeriodicMeterReadsGasCommandExecutor getPeriodicMeterReadsGasCommandExecutor,
+            GetActualMeterReadsCommandExecutor actualMeterReadsCommandExecutor,
+            GetActualMeterReadsGasCommandExecutor actualMeterReadsGasCommandExecutor,
+            ReadAlarmRegisterCommandExecutor readAlarmRegisterCommandExecutor,
+            GetPowerQualityProfileCommandExecutor getPowerQualityProfileCommandExecutor,
+            ClearAlarmRegisterCommandExecutor clearAlarmRegisterCommandExecutor) {
 
-    @Autowired
-    private GetActualMeterReadsCommandExecutor actualMeterReadsCommandExecutor;
+        this.getPeriodicMeterReadsCommandExecutor = getPeriodicMeterReadsCommandExecutor;
+        this.getPeriodicMeterReadsGasCommandExecutor = getPeriodicMeterReadsGasCommandExecutor;
+        this.actualMeterReadsCommandExecutor = actualMeterReadsCommandExecutor;
+        this.actualMeterReadsGasCommandExecutor = actualMeterReadsGasCommandExecutor;
+        this.readAlarmRegisterCommandExecutor = readAlarmRegisterCommandExecutor;
+        this.getPowerQualityProfileCommandExecutor = getPowerQualityProfileCommandExecutor;
+        this.clearAlarmRegisterCommandExecutor = clearAlarmRegisterCommandExecutor;
 
-    @Autowired
-    private GetActualMeterReadsGasCommandExecutor actualMeterReadsGasCommandExecutor;
-
-    @Autowired
-    private ReadAlarmRegisterCommandExecutor readAlarmRegisterCommandExecutor;
-
-    @Autowired
-    private GetPowerQualityProfileCommandExecutor getPowerQualityProfileCommandExecutor;
-
-    @Autowired
-    private ClearAlarmRegisterCommandExecutor clearAlarmRegisterCommandExecutor;
+    }
 
     // === REQUEST PERIODIC METER DATA ===
 

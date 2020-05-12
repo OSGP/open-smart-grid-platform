@@ -1,9 +1,10 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
@@ -16,11 +17,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.BundleMessagesRequestDto;
@@ -31,6 +27,10 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service(value = "dlmsBundleService")
 public class BundleService {
@@ -69,8 +69,8 @@ public class BundleService {
                     LOGGER.warn("A connection exception occurred while executing {}", executorName,
                             connectionException);
 
-                    final List<ActionDto> remainingActionDtoList = actionList.subList(actionList.indexOf(actionDto),
-                            actionList.size());
+                    final List<ActionDto> remainingActionDtoList = actionList
+                            .subList(actionList.indexOf(actionDto), actionList.size());
 
                     for (final ActionDto remainingActionDto : remainingActionDtoList) {
                         LOGGER.debug("Skipping: {}", remainingActionDto.getRequest().getClass().getSimpleName());
@@ -82,8 +82,8 @@ public class BundleService {
 
                     LOGGER.error("Error while executing bundle action for {} with {}", actionRequestClass.getName(),
                             executorName, exception);
-                    final String responseMessage = executor == null ? "Unable to handle request"
-                            : "Error handling request with " + executorName;
+                    final String responseMessage = executor == null ? "Unable to handle request" :
+                            "Error handling request with " + executorName;
 
                     this.addFaultResponse(actionDto, exception, responseMessage, device);
                 }
@@ -111,13 +111,16 @@ public class BundleService {
         final FaultResponseParametersDto faultResponseParameters = this.faultResponseParametersForList(parameters);
 
         if (exception instanceof FunctionalException || exception instanceof TechnicalException) {
-            return this.faultResponseForFunctionalOrTechnicalException((OsgpException) exception,
-                    faultResponseParameters, defaultMessage);
+            return this
+                    .faultResponseForFunctionalOrTechnicalException((OsgpException) exception, faultResponseParameters,
+                            defaultMessage);
         }
 
         return new FaultResponseDto.Builder().withMessage(defaultMessage)
-                .withComponent(ComponentType.PROTOCOL_DLMS.name()).withInnerException(exception.getClass().getName())
-                .withInnerMessage(exception.getMessage()).withFaultResponseParameters(faultResponseParameters).build();
+                                             .withComponent(ComponentType.PROTOCOL_DLMS.name())
+                                             .withInnerException(exception.getClass().getName())
+                                             .withInnerMessage(exception.getMessage())
+                                             .withFaultResponseParameters(faultResponseParameters).build();
     }
 
     private FaultResponseParametersDto faultResponseParametersForList(
@@ -164,8 +167,8 @@ public class BundleService {
         }
 
         return new FaultResponseDto.Builder().withCode(code).withMessage(message).withComponent(component)
-                .withInnerException(innerException).withInnerMessage(innerMessage)
-                .withFaultResponseParameters(faultResponseParameters).build();
+                                             .withInnerException(innerException).withInnerMessage(innerMessage)
+                                             .withFaultResponseParameters(faultResponseParameters).build();
     }
 
     private void checkIfExecutorExists(final Class<? extends ActionRequestDto> actionRequestClass,

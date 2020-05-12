@@ -1,9 +1,10 @@
 /**
  * Copyright 2019 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.config.messaging;
 
@@ -31,10 +32,14 @@ public class InboundOsgpCoreRequestsMessagingConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InboundOsgpCoreRequestsMessagingConfig.class);
 
-    private JmsConfigurationFactory jmsConfigurationFactory;
+    private final JmsConfigurationFactory jmsConfigurationFactory;
 
     public InboundOsgpCoreRequestsMessagingConfig(final Environment environment,
             final DefaultJmsConfiguration defaultJmsConfiguration) throws SSLException {
+
+        LOGGER.info("Init InboundOsgpCoreRequestsMessagingConfig. queue = {}",
+                environment.getProperty("jms.dlms.requests.queue"));
+
         this.jmsConfigurationFactory = new JmsConfigurationFactory(environment, defaultJmsConfiguration,
                 "jms.dlms.requests");
     }
@@ -42,14 +47,20 @@ public class InboundOsgpCoreRequestsMessagingConfig {
     @Bean(destroyMethod = "stop", name = "protocolDlmsInboundOsgpCoreRequestsConnectionFactory")
     public ConnectionFactory connectionFactory() {
         LOGGER.info("Initializing protocolDlmsInboundOsgpCoreRequestsConnectionFactory bean.");
+
         return this.jmsConfigurationFactory.getPooledConnectionFactory();
     }
 
     @Bean(name = "protocolDlmsInboundOsgpCoreRequestsMessageListenerContainer")
     public DefaultMessageListenerContainer messageListenerContainer(
             @Qualifier("protocolDlmsInboundOsgpCoreRequestsMessageListener") final MessageListener messageListener) {
-        LOGGER.info("Initializing protocolDlmsInboundOsgpCoreRequestsMessageListenerContainer bean.");
-        return this.jmsConfigurationFactory.initMessageListenerContainer(messageListener);
+
+        DefaultMessageListenerContainer container = this.jmsConfigurationFactory
+                .initMessageListenerContainer(messageListener);
+
+        LOGGER.info("Initializing protocolDlmsInboundOsgpCoreRequestsMessageListenerContainer bean at Destination {}",
+                container.getDestination());
+        return container;
     }
 
     @Bean("protocolDlmsInboundOsgpCoreRequestsMessageProcessorMap")

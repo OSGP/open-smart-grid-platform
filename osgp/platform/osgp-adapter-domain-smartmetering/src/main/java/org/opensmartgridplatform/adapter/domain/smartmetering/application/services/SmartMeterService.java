@@ -84,8 +84,10 @@ public class SmartMeterService {
     }
 
     private ProtocolInfo getProtocolInfo(final SmartMeteringDevice smartMeteringDevice) throws FunctionalException {
-        final ProtocolInfo protocolInfo = this.protocolInfoRepository.findByProtocolAndProtocolVersion(
-                smartMeteringDevice.getProtocolName(), smartMeteringDevice.getProtocolVersion());
+        
+        final ProtocolInfo protocolInfo = this.protocolInfoRepository
+                .findByProtocolAndProtocolVersion(smartMeteringDevice.getProtocolInfoLookupName(),
+                        smartMeteringDevice.getProtocolVersion());
         if (protocolInfo == null) {
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_PROTOCOL_NAME_OR_VERSION,
                     ComponentType.DOMAIN_SMART_METERING);
@@ -93,8 +95,8 @@ public class SmartMeterService {
         return protocolInfo;
     }
 
-    private DeviceModel
-            getDeviceModel(final org.opensmartgridplatform.domain.core.valueobjects.DeviceModel deviceModel) {
+    private DeviceModel getDeviceModel(
+            final org.opensmartgridplatform.domain.core.valueobjects.DeviceModel deviceModel) {
         final Manufacturer manufacturer = this.manufacturerRepository.findByCode(deviceModel.getManufacturer());
         return this.deviceModelRepository.findByManufacturerAndModelCode(manufacturer, deviceModel.getModelCode());
     }

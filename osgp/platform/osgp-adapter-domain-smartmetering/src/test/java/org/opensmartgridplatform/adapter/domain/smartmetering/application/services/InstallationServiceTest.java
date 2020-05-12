@@ -95,8 +95,9 @@ public class InstallationServiceTest {
         when(this.smartMeteringDeviceRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION)).thenReturn(null);
         when(this.smartMeteringDevice.getProtocolName()).thenReturn(PROTOCOL_NAME);
         when(this.smartMeteringDevice.getProtocolVersion()).thenReturn(PROTOCOL_VERSION);
-        when(this.protocolInfoRepository.findByProtocolAndProtocolVersion(PROTOCOL_NAME, PROTOCOL_VERSION))
-                .thenReturn(this.protocolInfo);
+        when(this.protocolInfoRepository
+                .findByProtocolAndProtocolVersion(this.smartMeteringDevice.getProtocolInfoLookupName(),
+                        PROTOCOL_VERSION)).thenReturn(this.protocolInfo);
 
         // CALL
         this.instance.addMeter(this.deviceMessageMetadata, this.addSmartMeterRequest);

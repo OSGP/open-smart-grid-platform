@@ -1,9 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.config;
 
@@ -19,10 +20,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-/**
- * An application context Java configuration class. The usage of Java
- * configuration requires Spring Framework 3.0
- */
 @Configuration
 @ComponentScan(basePackages = { "org.opensmartgridplatform.adapter.protocol.dlms",
         "org.opensmartgridplatform.shared.security" })
@@ -30,13 +27,13 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Import({ MessagingConfig.class, DlmsPersistenceConfig.class, JasperWirelessConfig.class })
 @PropertySource("classpath:osgp-adapter-protocol-dlms.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
-@PropertySource(value = "file:${osgp/AdapterProtocolDlms/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/AdapterProtocolDlms/config}")
 public class ApplicationContext extends AbstractConfig {
 
     private static final String LOCAL_TIME_ZONE_IDENTIFIER = "Europe/Paris";
     private static final DateTimeZone LOCAL_TIME_ZONE = DateTimeZone.forID(LOCAL_TIME_ZONE_IDENTIFIER);
-    private static final int TIME_ZONE_OFFSET_MINUTES = LOCAL_TIME_ZONE.getStandardOffset(new DateTime().getMillis())
-            / DateTimeConstants.MILLIS_PER_MINUTE;
+    private static final int TIME_ZONE_OFFSET_MINUTES =
+            LOCAL_TIME_ZONE.getStandardOffset(new DateTime().getMillis()) / DateTimeConstants.MILLIS_PER_MINUTE;
 
     // === Time zone config ===
 
@@ -54,4 +51,5 @@ public class ApplicationContext extends AbstractConfig {
     public Integer timeZoneOffsetMinutes() {
         return TIME_ZONE_OFFSET_MINUTES;
     }
+
 }
