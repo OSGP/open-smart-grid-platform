@@ -31,13 +31,13 @@ import org.springframework.stereotype.Service;
 @Service(value = "dlmsDeviceMonitoringService")
 public class MonitoringService {
 
-    private GetPeriodicMeterReadsCommandExecutor getPeriodicMeterReadsCommandExecutor;
-    private GetPeriodicMeterReadsGasCommandExecutor getPeriodicMeterReadsGasCommandExecutor;
-    private GetActualMeterReadsCommandExecutor actualMeterReadsCommandExecutor;
-    private GetActualMeterReadsGasCommandExecutor actualMeterReadsGasCommandExecutor;
-    private ReadAlarmRegisterCommandExecutor readAlarmRegisterCommandExecutor;
-    private GetPowerQualityProfileCommandExecutor getPowerQualityProfileCommandExecutor;
-    private ClearAlarmRegisterCommandExecutor clearAlarmRegisterCommandExecutor;
+    private final GetPeriodicMeterReadsCommandExecutor getPeriodicMeterReadsCommandExecutor;
+    private final GetPeriodicMeterReadsGasCommandExecutor getPeriodicMeterReadsGasCommandExecutor;
+    private final GetActualMeterReadsCommandExecutor actualMeterReadsCommandExecutor;
+    private final GetActualMeterReadsGasCommandExecutor actualMeterReadsGasCommandExecutor;
+    private final ReadAlarmRegisterCommandExecutor readAlarmRegisterCommandExecutor;
+    private final GetPowerQualityProfileCommandExecutor getPowerQualityProfileCommandExecutor;
+    private final ClearAlarmRegisterCommandExecutor clearAlarmRegisterCommandExecutor;
 
     public MonitoringService(GetPeriodicMeterReadsCommandExecutor getPeriodicMeterReadsCommandExecutor,
             GetPeriodicMeterReadsGasCommandExecutor getPeriodicMeterReadsGasCommandExecutor,

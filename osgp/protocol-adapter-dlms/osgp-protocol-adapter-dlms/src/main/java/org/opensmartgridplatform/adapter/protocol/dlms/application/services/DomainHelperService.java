@@ -31,15 +31,15 @@ public class DomainHelperService {
 
     private static final ComponentType COMPONENT_TYPE = ComponentType.PROTOCOL_DLMS;
 
-    private DlmsDeviceRepository dlmsDeviceRepository;
+    private final DlmsDeviceRepository dlmsDeviceRepository;
 
-    private SessionProviderService sessionProviderService;
+    private final SessionProviderService sessionProviderService;
 
-    private JasperWirelessSmsClient jasperWirelessSmsClient;
+    private final JasperWirelessSmsClient jasperWirelessSmsClient;
 
-    private int jasperGetSessionRetries;
+    private final int jasperGetSessionRetries;
 
-    private int jasperGetSessionSleepBetweenRetries;
+    private final int jasperGetSessionSleepBetweenRetries;
 
     public DomainHelperService(DlmsDeviceRepository dlmsDeviceRepository, SessionProviderService sessionProviderService,
             JasperWirelessSmsClient jasperWirelessSmsClient, int jasperGetSessionRetries,

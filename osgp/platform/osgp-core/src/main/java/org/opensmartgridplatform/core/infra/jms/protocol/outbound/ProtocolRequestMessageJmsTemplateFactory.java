@@ -69,12 +69,12 @@ public class ProtocolRequestMessageJmsTemplateFactory implements InitializingBea
         final JmsConfigurationFactory jmsConfigurationFactory = new JmsConfigurationFactory(this.environment,
                 this.defaultProtocolJmsConfiguration, protocolInfo.getOutgoingRequestsPropertyPrefix());
 
-        LOGGER.info("Initializing PooledConnectionFactory for protocol {}", key);
+        LOGGER.debug("Initializing PooledConnectionFactory for protocol {}", key);
         final PooledConnectionFactory connectionFactory = jmsConfigurationFactory.getPooledConnectionFactory();
         this.connectionFactoryRegistry.register(key, connectionFactory);
         connectionFactory.start();
 
-        LOGGER.info("Initializing JmsTemplate for protocol {}", key);
+        LOGGER.debug("Initializing JmsTemplate for protocol {}", key);
         final JmsTemplate jmsTemplate = jmsConfigurationFactory.initJmsTemplate();
         this.jmsTemplateRegistry.register(key, jmsTemplate);
         jmsTemplate.afterPropertiesSet();
