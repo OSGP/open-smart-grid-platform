@@ -9,16 +9,13 @@ package org.opensmartgridplatform.simulator.protocol.iec60870.domain.profile;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-
 import org.junit.jupiter.api.Test;
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.ASduType;
 import org.openmuc.j60870.CauseOfTransmission;
-import org.openmuc.j60870.ie.IeSinglePointWithQuality;
 import org.openmuc.j60870.ie.InformationElement;
 import org.openmuc.j60870.ie.InformationObject;
+import org.opensmartgridplatform.iec60870.factory.InformationElementFactory;
 import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870AsduFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,10 +28,15 @@ class LightMeasurementDeviceAsduFactoryTest {
     @Autowired
     private Iec60870AsduFactory iec60870AsduFactory;
 
+    @Autowired
+    private InformationElementFactory informationElementFactory;
+
     @Test
     void shouldCreateInterrogationCommandResponse() {
+
         // Arrange
-        final long timestamp = ZonedDateTime.now(ZoneOffset.UTC).toInstant().toEpochMilli();
+        this.iec60870AsduFactory.initialize();
+
         final InformationObject[] expectedInformationObjects = new InformationObject[4];
         expectedInformationObjects[0] = new InformationObject(42, this.createInformationElement(false));
         expectedInformationObjects[1] = new InformationObject(78, this.createInformationElement(false));
@@ -51,7 +53,7 @@ class LightMeasurementDeviceAsduFactoryTest {
     }
 
     private InformationElement[][] createInformationElement(final boolean on) {
-        return new InformationElement[][] { { new IeSinglePointWithQuality(on, false, false, false, false) } };
+        return this.informationElementFactory.createInformationElements("IeSinglePointWithQuality", on);
     }
 
 }

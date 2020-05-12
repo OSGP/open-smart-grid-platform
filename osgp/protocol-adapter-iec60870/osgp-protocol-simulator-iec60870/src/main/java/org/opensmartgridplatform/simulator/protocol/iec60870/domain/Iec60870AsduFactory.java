@@ -7,6 +7,8 @@
  */
 package org.opensmartgridplatform.simulator.protocol.iec60870.domain;
 
+import java.util.Map;
+
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.ASduType;
 import org.openmuc.j60870.CauseOfTransmission;
@@ -15,6 +17,10 @@ import org.openmuc.j60870.ie.InformationElement;
 import org.openmuc.j60870.ie.InformationObject;
 
 public interface Iec60870AsduFactory {
+
+    default void initialize() {
+
+    }
 
     default IeQualifierOfInterrogation defaultIeQualifierOfInterrogation() {
         final int stationInterrogation = 20;
@@ -38,6 +44,15 @@ public interface Iec60870AsduFactory {
                 .withInformationObjects(new InformationObject[] { new InformationObject(0,
                         new InformationElement[][] { { this.defaultIeQualifierOfInterrogation() } }) })
                 .build();
+    }
+
+    default InformationObject[] processImageToArray(final Map<Integer, InformationElement[][]> map) {
+        final Integer[] keys = map.keySet().toArray(new Integer[map.size()]);
+        final InformationObject[] informationObjects = new InformationObject[map.size()];
+        for (int index = 0; index < map.size(); index++) {
+            informationObjects[index] = new InformationObject(keys[index], map.get(keys[index]));
+        }
+        return informationObjects;
     }
 
 }

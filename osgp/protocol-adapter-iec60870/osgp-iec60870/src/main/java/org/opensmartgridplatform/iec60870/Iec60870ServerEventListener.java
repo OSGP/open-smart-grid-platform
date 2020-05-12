@@ -16,6 +16,7 @@ import org.openmuc.j60870.CauseOfTransmission;
 import org.openmuc.j60870.Connection;
 import org.openmuc.j60870.ServerEventListener;
 import org.openmuc.j60870.ie.IeCauseOfInitialization;
+import org.openmuc.j60870.ie.InformationElement;
 import org.openmuc.j60870.ie.InformationObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +39,7 @@ public class Iec60870ServerEventListener implements ServerEventListener {
     private final Iec60870AsduHandlerRegistry iec60870AsduHandlerRegistry;
     private final int connectionTimeout;
     private final boolean sendEndOfInitialization;
-    private AtomicBoolean initializationComplete = new AtomicBoolean(false);
+    private final AtomicBoolean initializationComplete = new AtomicBoolean(false);
 
     public Iec60870ServerEventListener(final Iec60870ConnectionRegistry iec60870ConnectionRegistry,
             final Iec60870AsduHandlerRegistry iec60870AsduHandlerRegistry, final int connectionTimeout) {
@@ -81,6 +82,24 @@ public class Iec60870ServerEventListener implements ServerEventListener {
             }
         } else {
             LOGGER.debug("Not sending end of initialization ASDU as initialization was already complete");
+        }
+    }
+
+    public void sendInformationUpdateEvent(final int informationObjectAddress,
+            final InformationElement[][] informationElements) {
+
+        final ASdu event = new ASdu(ASduType.M_SP_TB_1, false, CauseOfTransmission.SPONTANEOUS, false, false, 0, 0,
+                new InformationObject(informationObjectAddress, informationElements));
+
+        this.iec60870ConnectionRegistry.getAllConnections().forEach(connection -> this.sendEvent(connection, event));
+    }
+
+    private void sendEvent(final Connection connection, final ASdu event) {
+        try {
+            LOGGER.info("Sending event {}", event);
+            connection.send(event);
+        } catch (final IOException e) {
+            LOGGER.error("Sending event {} failed", event, e);
         }
     }
 

@@ -8,18 +8,27 @@
 package org.opensmartgridplatform.iec60870;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.openmuc.j60870.Server;
+import org.openmuc.j60870.ie.InformationElement;
+import org.opensmartgridplatform.iec60870.factory.InformationElementFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class Iec60870Server {
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec60870Server.class);
+
+    @Autowired
+    private InformationElementFactory informationElementFactory;
 
     private final Iec60870ServerEventListener iec60870ServerEventListener;
     private Server server;
     private final int port;
     private boolean listening = false;
+    private Map<Integer, InformationElement[][]> processImage = new HashMap<>();
 
     public Iec60870Server(final Iec60870ServerEventListener iec60870ServerEventListener, final int port) {
         this.iec60870ServerEventListener = iec60870ServerEventListener;
@@ -53,4 +62,38 @@ public class Iec60870Server {
     public boolean isListening() {
         return this.listening;
     }
+
+    public Map<Integer, InformationElement[][]> getProcessImage() {
+        return this.processImage;
+    }
+
+    public void setProcessImage(final Map<Integer, InformationElement[][]> processImage) {
+        this.processImage = processImage;
+    }
+
+    /**
+     * If the informationObjectAddress is already in the process image, the
+     * value is updated. Otherwise a new item is added to the process image.
+     * 
+     * An event ASDU is sent to the controlling station.
+     * 
+     * @param informationObjectAddress
+     *            the address of the item in the process image
+     * @param informationObjectType
+     *            the type of information object; if not supported, a
+     *            InformationObjectTypeNotSupported is thrown
+     * @param value
+     *            the information element value
+     */
+    public void updateInformationObject(final int informationObjectAddress, final String informationObjectType,
+            final Object value) {
+
+        final InformationElement[][] informationElements = this.informationElementFactory
+                .createInformationElements(informationObjectType, value);
+
+        this.processImage.put(informationObjectAddress, informationElements);
+
+        this.iec60870ServerEventListener.sendInformationUpdateEvent(informationObjectAddress, informationElements);
+    }
+
 }

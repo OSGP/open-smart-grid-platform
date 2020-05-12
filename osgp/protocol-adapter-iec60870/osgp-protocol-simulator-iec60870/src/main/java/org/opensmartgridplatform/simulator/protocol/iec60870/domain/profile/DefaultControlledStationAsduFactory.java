@@ -9,6 +9,10 @@ package org.opensmartgridplatform.simulator.protocol.iec60870.domain.profile;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
 
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.ASduType;
@@ -18,8 +22,11 @@ import org.openmuc.j60870.ie.IeShortFloat;
 import org.openmuc.j60870.ie.IeTime56;
 import org.openmuc.j60870.ie.InformationElement;
 import org.openmuc.j60870.ie.InformationObject;
+import org.opensmartgridplatform.iec60870.Iec60870Server;
+import org.opensmartgridplatform.iec60870.factory.InformationElementFactory;
 import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870AsduBuilder;
 import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870AsduFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -34,24 +41,31 @@ public class DefaultControlledStationAsduFactory implements Iec60870AsduFactory 
     @Value("${general_interrogation_element_values}")
     private float[] iev;
 
+    @Autowired
+    private Iec60870Server iec60870Server;
+
+    @Autowired
+    private InformationElementFactory informationElementFactory;
+
+    @PostConstruct
+    @Override
+    public void initialize() {
+        final Map<Integer, InformationElement[][]> processImage = new HashMap<>();
+        for (int index = 0; index < this.ioa.length; index++) {
+            processImage.put(this.ioa[index],
+                    this.informationElementFactory.createInformationElements("IeShortFloat", this.iev[index]));
+        }
+        this.iec60870Server.setProcessImage(processImage);
+    }
+
     @Override
     public ASdu createInterrogationCommandResponseAsdu() {
-        final InformationObject[] informationObjects = new InformationObject[this.ioa.length];
-        for (int index = 0; index < this.ioa.length; index++) {
-            informationObjects[index] = new InformationObject(this.ioa[index],
-                    this.createInformationElementWithoutTimetag(this.iev[index]));
-        }
 
         return new Iec60870AsduBuilder().withAsduType(ASduType.M_ME_NC_1)
                 .withSequenceOfElements(false)
                 .withCauseOfTransmission(CauseOfTransmission.INTERROGATED_BY_STATION)
-                .withInformationObjects(informationObjects)
+                .withInformationObjects(this.processImageToArray(this.iec60870Server.getProcessImage()))
                 .build();
-    }
-
-    private InformationElement[][] createInformationElementWithoutTimetag(final float value) {
-        return new InformationElement[][] {
-                { new IeShortFloat(value), new IeQuality(false, false, false, false, false) } };
     }
 
     public ASdu createSingleCommandAsdu() {
