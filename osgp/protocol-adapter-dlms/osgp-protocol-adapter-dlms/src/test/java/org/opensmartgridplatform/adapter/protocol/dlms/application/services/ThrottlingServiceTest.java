@@ -58,7 +58,6 @@ public class ThrottlingServiceTest {
             for (int i = 0; i < 100; i++) {
 
                 LOGGER.info("Incoming request {}", i);
-                throttlingService.newConnectionRequest();
                 throttlingService.openConnection();
 
             }

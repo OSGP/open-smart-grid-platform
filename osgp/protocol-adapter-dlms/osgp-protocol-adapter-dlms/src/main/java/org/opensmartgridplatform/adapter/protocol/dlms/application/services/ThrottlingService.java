@@ -61,6 +61,8 @@ public class ThrottlingService {
 
     public void openConnection() {
 
+        this.newConnectionRequest();
+
         LOGGER.debug("Requesting openConnection. available = {} ", this.openConnectionsSemaphore.availablePermits());
 
         try {
@@ -78,7 +80,7 @@ public class ThrottlingService {
         this.openConnectionsSemaphore.release();
     }
 
-    public void newConnectionRequest() {
+    private void newConnectionRequest() {
 
         awaitReset();
 

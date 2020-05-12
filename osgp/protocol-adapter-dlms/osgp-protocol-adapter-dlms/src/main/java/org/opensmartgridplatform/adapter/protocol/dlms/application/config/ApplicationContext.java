@@ -26,7 +26,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement()
 @Import({ MessagingConfig.class, DlmsPersistenceConfig.class, JasperWirelessConfig.class })
 @PropertySource("classpath:osgp-adapter-protocol-dlms.properties")
-@PropertySource(value = "file:/etc/osp/osgp-adapter-protocol-dlms.properties", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/AdapterProtocolDlms/config}")
 public class ApplicationContext extends AbstractConfig {
 
     private static final String LOCAL_TIME_ZONE_IDENTIFIER = "Europe/Paris";

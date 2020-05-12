@@ -36,8 +36,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(value = "transactionManager")
 public class SmartMeterService {
 
-    private static final String CDMA = "CDMA";
-
     @Autowired
     private SmartMeterRepository smartMeteringDeviceRepository;
 
@@ -86,23 +84,15 @@ public class SmartMeterService {
     }
 
     private ProtocolInfo getProtocolInfo(final SmartMeteringDevice smartMeteringDevice) throws FunctionalException {
-
-        String protocolName = getProtocolName(smartMeteringDevice);
-
+        
         final ProtocolInfo protocolInfo = this.protocolInfoRepository
-                .findByProtocolAndProtocolVersion(protocolName, smartMeteringDevice.getProtocolVersion());
+                .findByProtocolAndProtocolVersion(smartMeteringDevice.getProtocolInfoLookupName(),
+                        smartMeteringDevice.getProtocolVersion());
         if (protocolInfo == null) {
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_PROTOCOL_NAME_OR_VERSION,
                     ComponentType.DOMAIN_SMART_METERING);
         }
         return protocolInfo;
-    }
-
-    private String getProtocolName(final SmartMeteringDevice smartMeteringDevice) {
-        if (CDMA.equals(smartMeteringDevice.getCommunicationMethod())) {
-            return String.format("%s_%s", smartMeteringDevice.getProtocolName(), CDMA);
-        }
-        return smartMeteringDevice.getProtocolName();
     }
 
     private DeviceModel getDeviceModel(

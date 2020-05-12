@@ -58,8 +58,7 @@ public abstract class DlmsConnectionMessageProcessor {
 
     public DlmsConnectionManager createConnectionForDevice(final DlmsDevice device,
             final MessageMetadata messageMetadata) throws OsgpException {
-
-        throttlingService.newConnectionRequest();
+        
         throttlingService.openConnection();
 
         final DlmsMessageListener dlmsMessageListener = this
