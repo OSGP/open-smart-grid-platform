@@ -12,7 +12,7 @@ if not exists (
 
 insert into device_model(
     id,
-    manufacturerid,
+    manufacturer_id,
     creation_time,
     modification_time,
     model_code,
@@ -41,7 +41,7 @@ if not exists (
 
 insert into device_model(
     id,
-    manufacturerid,
+    manufacturer_id,
     creation_time,
     modification_time,
     model_code,
@@ -70,7 +70,7 @@ if not exists (
 
 insert into device_model(
     id,
-    manufacturerid,
+    manufacturer_id,
     creation_time,
     modification_time,
     model_code,
@@ -99,7 +99,7 @@ if not exists (
 
 insert into device_model(
     id,
-    manufacturerid,
+    manufacturer_id,
     creation_time,
     modification_time,
     model_code,
@@ -130,7 +130,7 @@ if not exists (
 
 insert into device_model(
     id,
-    manufacturerid,
+    manufacturer_id,
     creation_time,
     modification_time,
     model_code,
@@ -159,7 +159,7 @@ if not exists (
 
 insert into device_model(
     id,
-    manufacturerid,
+    manufacturer_id,
     creation_time,
     modification_time,
     model_code,
@@ -188,7 +188,7 @@ if not exists (
 
 insert into device_model(
     id,
-    manufacturerid,
+    manufacturer_id,
     creation_time,
     modification_time,
     model_code,
@@ -217,7 +217,7 @@ if not exists (
 
 insert into device_model(
     id,
-    manufacturerid,
+    manufacturer_id,
     creation_time,
     modification_time,
     model_code,
@@ -250,7 +250,7 @@ if not exists (
 
 insert into device_model(
     id,
-    manufacturerid,
+    manufacturer_id,
     creation_time,
     modification_time,
     model_code,
@@ -279,7 +279,7 @@ if not exists (
 
 insert into device_model(
     id,
-    manufacturerid,
+    manufacturer_id,
     creation_time,
     modification_time,
     model_code,
@@ -308,7 +308,7 @@ if not exists (
 
 insert into device_model(
     id,
-    manufacturerid,
+    manufacturer_id,
     creation_time,
     modification_time,
     model_code,
@@ -337,7 +337,7 @@ if not exists (
 
 insert into device_model(
     id,
-    manufacturerid,
+    manufacturer_id,
     creation_time,
     modification_time,
     model_code,
@@ -366,7 +366,7 @@ if not exists (
 
 insert into device_model(
     id,
-    manufacturerid,
+    manufacturer_id,
     creation_time,
     modification_time,
     model_code,
@@ -395,7 +395,7 @@ if not exists (
 
 insert into device_model(
     id,
-    manufacturerid,
+    manufacturer_id,
     creation_time,
     modification_time,
     model_code,
@@ -424,7 +424,7 @@ if not exists (
 
 insert into device_model(
     id,
-    manufacturerid,
+    manufacturer_id,
     creation_time,
     modification_time,
     model_code,
@@ -453,7 +453,7 @@ if not exists (
 
 insert into device_model(
     id,
-    manufacturerid,
+    manufacturer_id,
     creation_time,
     modification_time,
     model_code,
@@ -484,7 +484,7 @@ if not exists (
 
 insert into device_model(
     id,
-    manufacturerid,
+    manufacturer_id,
     creation_time,
     modification_time,
     model_code,
@@ -513,7 +513,7 @@ if not exists (
 
 insert into device_model(
     id,
-    manufacturerid,
+    manufacturer_id,
     creation_time,
     modification_time,
     model_code,
@@ -542,7 +542,7 @@ if not exists (
 
 insert into device_model(
     id,
-    manufacturerid,
+    manufacturer_id,
     creation_time,
     modification_time,
     model_code,
@@ -571,7 +571,7 @@ if not exists (
 
 insert into device_model(
     id,
-    manufacturerid,
+    manufacturer_id,
     creation_time,
     modification_time,
     model_code,
@@ -600,7 +600,7 @@ if not exists (
 
 insert into device_model(
     id,
-    manufacturerid,
+    manufacturer_id,
     creation_time,
     modification_time,
     model_code,
@@ -629,7 +629,7 @@ if not exists (
 
 insert into device_model(
     id,
-    manufacturerid,
+    manufacturer_id,
     creation_time,
     modification_time,
     model_code,
@@ -658,7 +658,7 @@ if not exists (
 
 insert into device_model(
     id,
-    manufacturerid,
+    manufacturer_id,
     creation_time,
     modification_time,
     model_code,
@@ -687,7 +687,7 @@ if not exists (
 
 insert into device_model(
     id,
-    manufacturerid,
+    manufacturer_id,
     creation_time,
     modification_time,
     model_code,
