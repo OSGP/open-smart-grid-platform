@@ -7,15 +7,25 @@
  */
 package org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.steps;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.opensmartgridplatform.cucumber.platform.distributionautomation.PlatformDistributionAutomationKeys.INFORMATION_ELEMENT_VALUE;
+import static org.opensmartgridplatform.cucumber.platform.distributionautomation.PlatformDistributionAutomationKeys.INFORMATION_OBJECT_ADDRESS;
+import static org.opensmartgridplatform.cucumber.platform.distributionautomation.PlatformDistributionAutomationKeys.INFORMATION_OBJECT_TYPE;
+
+import java.util.Map;
+
 import org.openmuc.j60870.ASduType;
+import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.FloatMeasurementElement;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.GetHealthStatusAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.GetHealthStatusRequest;
+import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.GetMeasurementReportResponse;
+import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.MeasurementElement;
+import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.MeasurementGroup;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.notification.Notification;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.notification.NotificationType;
 import org.opensmartgridplatform.cucumber.platform.distributionautomation.mocks.iec60870.Iec60870MockServer;
 import org.opensmartgridplatform.cucumber.platform.distributionautomation.support.ws.distributionautomation.DistributionAutomationDeviceManagementClient;
 import org.opensmartgridplatform.iec60870.Iec60870AsduHandler;
-import org.opensmartgridplatform.iec60870.factory.InformationElementFactory;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
 import org.opensmartgridplatform.simulator.protocol.iec60870.domain.profile.DefaultControlledStationAsduFactory;
 import org.opensmartgridplatform.simulator.protocol.iec60870.server.handlers.Iec60870InterrogationCommandAsduHandler;
@@ -56,26 +66,15 @@ public class ReceiveMeasurementReportSteps {
     private Iec60870AsduHandler getInterrogationCommandASduHandler() {
         final DefaultControlledStationAsduFactory iec60870AsduFactory = new DefaultControlledStationAsduFactory();
 
-        /*
-         * These values should be read from a property file based on the active
-         * profile. Since that functionality hasn't been built yet, we set them
-         * this way.
-         */
-        // TODO: change this by reading the property file
-        iec60870AsduFactory.setIoa(new int[] { 9127, 9128 });
-        iec60870AsduFactory.setIev(new float[] { 10.0f, 20.5f });
-
-        // TODO: provide instances via the beans
         iec60870AsduFactory.setIec60870Server(this.mockServer.getRtuSimulator());
-        iec60870AsduFactory.setInformationElementFactory(new InformationElementFactory());
-
         iec60870AsduFactory.initialize();
 
         return new Iec60870InterrogationCommandAsduHandler(iec60870AsduFactory);
     }
 
     @Then("^I get a measurement report for device (.+)$")
-    public void iGetAMeasurementReportForDevice(final String deviceIdentification) throws WebServiceSecurityException {
+    public void iGetAMeasurementReportForDevice(final String deviceIdentification,
+            final Map<String, String> reportValues) throws WebServiceSecurityException {
 
         Notification notification = null;
         boolean found = false;
@@ -86,7 +85,36 @@ public class ReceiveMeasurementReportSteps {
                     && NotificationType.GET_MEASUREMENT_REPORT == notification.getNotificationType();
         } while (!found);
 
-        this.client.getMeasurementReportResponse(notification);
+        final GetMeasurementReportResponse measurementReportResponse = this.client
+                .getMeasurementReportResponse(notification);
+
+        if (!reportValues.isEmpty()) {
+            this.checkMeasurementReportValues(reportValues, measurementReportResponse);
+        }
+
+    }
+
+    private void checkMeasurementReportValues(final Map<String, String> reportValues,
+            final GetMeasurementReportResponse measurementReportResponse) {
+        final String expectedAddress = reportValues.get(INFORMATION_OBJECT_ADDRESS);
+        final String expectedType = reportValues.get(INFORMATION_OBJECT_TYPE);
+        final String expectedValue = reportValues.get(INFORMATION_ELEMENT_VALUE);
+        final MeasurementGroup measurementGroup = measurementReportResponse.getMeasurementReport()
+                .getMeasurementGroups()
+                .getMeasurementGroupList()
+                .get(0);
+        assertThat(measurementGroup.getIdentification()).isEqualTo(expectedAddress);
+
+        final MeasurementElement measurementElement = measurementGroup.getMeasurements()
+                .getMeasurementList()
+                .get(0)
+                .getMeasurementElements()
+                .getMeasurementElementList()
+                .get(0);
+        if ("FloatMeasurementElement".equals(expectedType)) {
+            final FloatMeasurementElement element = (FloatMeasurementElement) measurementElement;
+            assertThat(element.getValue()).isEqualTo(Float.valueOf(expectedValue));
+        }
     }
 
 }

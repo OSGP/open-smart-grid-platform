@@ -30,16 +30,15 @@ import org.springframework.context.annotation.Profile;
 public class LightMeasurementDeviceAsduFactory implements Iec60870AsduFactory {
 
     @Value("${general_interrogation_object_addresses}")
-    private int[] ioa;
+    private final int[] ioa = new int[0];
 
     @Value("${general_interrogation_element_values}")
-    private boolean[] iev;
+    private final boolean[] iev = new boolean[0];
 
     @Autowired
     private Iec60870Server iec60870Server;
 
-    @Autowired
-    private InformationElementFactory informationElementFactory;
+    private final InformationElementFactory informationElementFactory = new InformationElementFactory();
 
     @PostConstruct
     @Override
@@ -59,6 +58,10 @@ public class LightMeasurementDeviceAsduFactory implements Iec60870AsduFactory {
                 .withCauseOfTransmission(CauseOfTransmission.INTERROGATED_BY_STATION)
                 .withInformationObjects(this.processImageToArray(this.iec60870Server.getProcessImage()))
                 .build();
+    }
+
+    public void setIec60870Server(final Iec60870Server iec60870Server) {
+        this.iec60870Server = iec60870Server;
     }
 
 }

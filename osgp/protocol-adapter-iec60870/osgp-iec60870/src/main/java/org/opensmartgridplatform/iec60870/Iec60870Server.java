@@ -16,13 +16,11 @@ import org.openmuc.j60870.ie.InformationElement;
 import org.opensmartgridplatform.iec60870.factory.InformationElementFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class Iec60870Server {
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec60870Server.class);
 
-    @Autowired
-    private InformationElementFactory informationElementFactory;
+    private final InformationElementFactory informationElementFactory = new InformationElementFactory();
 
     private final Iec60870ServerEventListener iec60870ServerEventListener;
     private Server server;

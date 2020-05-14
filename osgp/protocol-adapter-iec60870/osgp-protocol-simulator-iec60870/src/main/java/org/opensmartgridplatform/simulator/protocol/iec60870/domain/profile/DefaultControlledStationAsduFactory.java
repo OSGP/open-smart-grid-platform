@@ -36,16 +36,15 @@ import org.springframework.context.annotation.Profile;
 public class DefaultControlledStationAsduFactory implements Iec60870AsduFactory {
 
     @Value("${general_interrogation_object_addresses}")
-    private int[] ioa;
+    private final int[] ioa = new int[0];
 
     @Value("${general_interrogation_element_values}")
-    private float[] iev;
+    private final float[] iev = new float[0];
 
     @Autowired
     private Iec60870Server iec60870Server;
 
-    @Autowired
-    private InformationElementFactory informationElementFactory;
+    private final InformationElementFactory informationElementFactory = new InformationElementFactory();
 
     @PostConstruct
     @Override
@@ -102,24 +101,8 @@ public class DefaultControlledStationAsduFactory implements Iec60870AsduFactory 
                 new IeTime56(timestamp) } };
     }
 
-    /*
-     * TODO: remove these setters when the cucumber mock server can read these
-     * values from a property file and the Iec60870Server is properly created by
-     * the cucumber mock server
-     */
-    public void setIoa(final int[] ioa) {
-        this.ioa = ioa;
-    }
-
-    public void setIev(final float[] iev) {
-        this.iev = iev;
-    }
-
     public void setIec60870Server(final Iec60870Server iec60870Server) {
         this.iec60870Server = iec60870Server;
     }
 
-    public void setInformationElementFactory(final InformationElementFactory informationElementFactory) {
-        this.informationElementFactory = informationElementFactory;
-    }
 }
