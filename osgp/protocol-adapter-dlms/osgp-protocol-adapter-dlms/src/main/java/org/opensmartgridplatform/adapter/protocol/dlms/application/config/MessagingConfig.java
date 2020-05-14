@@ -26,7 +26,7 @@ import org.springframework.context.annotation.PropertySource;
 @Configuration
 @PropertySource("classpath:osgp-adapter-protocol-dlms.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
-@PropertySource(value = "file:${osgp/AdapterProtocolDlms/config}")
+@PropertySource(value = "file:${osgp/AdapterProtocolDlms/config}", ignoreResourceNotFound = true)
 @Import(value = { InboundOsgpCoreRequestsMessagingConfig.class, InboundOsgpCoreResponsesMessagingConfig.class,
         OutboundLogItemRequestsMessagingConfig.class, OutboundOsgpCoreRequestsMessagingConfig.class,
         OutboundOsgpCoreResponsesMessagingConfig.class })
