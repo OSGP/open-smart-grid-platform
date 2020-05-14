@@ -101,6 +101,7 @@ public class DefaultControlledStationAsduFactory implements Iec60870AsduFactory 
                 new IeTime56(timestamp) } };
     }
 
+    @Override
     public void setIec60870Server(final Iec60870Server iec60870Server) {
         this.iec60870Server = iec60870Server;
     }

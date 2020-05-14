@@ -15,6 +15,7 @@ import org.openmuc.j60870.CauseOfTransmission;
 import org.openmuc.j60870.ie.IeQualifierOfInterrogation;
 import org.openmuc.j60870.ie.InformationElement;
 import org.openmuc.j60870.ie.InformationObject;
+import org.opensmartgridplatform.iec60870.Iec60870Server;
 
 public interface Iec60870AsduFactory {
 
@@ -54,5 +55,7 @@ public interface Iec60870AsduFactory {
         }
         return informationObjects;
     }
+
+    void setIec60870Server(Iec60870Server iec60870Server);
 
 }

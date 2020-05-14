@@ -10,9 +10,11 @@ package org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.
 import static org.opensmartgridplatform.cucumber.platform.distributionautomation.PlatformDistributionAutomationKeys.INFORMATION_ELEMENT_VALUE;
 import static org.opensmartgridplatform.cucumber.platform.distributionautomation.PlatformDistributionAutomationKeys.INFORMATION_OBJECT_ADDRESS;
 import static org.opensmartgridplatform.cucumber.platform.distributionautomation.PlatformDistributionAutomationKeys.INFORMATION_OBJECT_TYPE;
+import static org.opensmartgridplatform.cucumber.platform.distributionautomation.PlatformDistributionAutomationKeys.PROFILE;
 
 import java.util.Map;
 
+import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.distributionautomation.mocks.iec60870.Iec60870MockServer;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -27,9 +29,17 @@ public class ProcessImageSteps {
     public void iUpdateTheInformationObject(final Map<String, String> parameters) {
         final Integer informationObjectAddress = Integer.valueOf(parameters.get(INFORMATION_OBJECT_ADDRESS));
         final String informationObjectType = parameters.get(INFORMATION_OBJECT_TYPE);
-        final Float value = Float.valueOf(parameters.get(INFORMATION_ELEMENT_VALUE));
         this.mockServer.getRtuSimulator()
-                .updateInformationObject(informationObjectAddress, informationObjectType, value);
+                .updateInformationObject(informationObjectAddress, informationObjectType,
+                        this.informationElementvalue(parameters.get(INFORMATION_ELEMENT_VALUE)));
+    }
+
+    private Object informationElementvalue(final String value) {
+        final String profile = (String) ScenarioContext.current().get(PROFILE);
+        if ("light_measurement_device".equals(profile)) {
+            return Boolean.valueOf(value);
+        }
+        return Float.valueOf(value);
     }
 
 }
