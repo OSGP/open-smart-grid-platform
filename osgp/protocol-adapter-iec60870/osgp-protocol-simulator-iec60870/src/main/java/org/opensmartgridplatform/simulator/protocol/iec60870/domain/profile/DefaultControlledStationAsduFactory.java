@@ -102,13 +102,24 @@ public class DefaultControlledStationAsduFactory implements Iec60870AsduFactory 
                 new IeTime56(timestamp) } };
     }
 
-    // TODO: remove these setters when the cucumber mock server can read these
-    // values from a property file
+    /*
+     * TODO: remove these setters when the cucumber mock server can read these
+     * values from a property file and the Iec60870Server is properly created by
+     * the cucumber mock server
+     */
     public void setIoa(final int[] ioa) {
         this.ioa = ioa;
     }
 
     public void setIev(final float[] iev) {
         this.iev = iev;
+    }
+
+    public void setIec60870Server(final Iec60870Server iec60870Server) {
+        this.iec60870Server = iec60870Server;
+    }
+
+    public void setInformationElementFactory(final InformationElementFactory informationElementFactory) {
+        this.informationElementFactory = informationElementFactory;
     }
 }

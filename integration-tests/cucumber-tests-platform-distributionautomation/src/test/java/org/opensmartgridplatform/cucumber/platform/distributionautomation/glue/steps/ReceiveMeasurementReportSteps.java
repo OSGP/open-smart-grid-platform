@@ -15,6 +15,7 @@ import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.notifi
 import org.opensmartgridplatform.cucumber.platform.distributionautomation.mocks.iec60870.Iec60870MockServer;
 import org.opensmartgridplatform.cucumber.platform.distributionautomation.support.ws.distributionautomation.DistributionAutomationDeviceManagementClient;
 import org.opensmartgridplatform.iec60870.Iec60870AsduHandler;
+import org.opensmartgridplatform.iec60870.factory.InformationElementFactory;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
 import org.opensmartgridplatform.simulator.protocol.iec60870.domain.profile.DefaultControlledStationAsduFactory;
 import org.opensmartgridplatform.simulator.protocol.iec60870.server.handlers.Iec60870InterrogationCommandAsduHandler;
@@ -63,6 +64,12 @@ public class ReceiveMeasurementReportSteps {
         // TODO: change this by reading the property file
         iec60870AsduFactory.setIoa(new int[] { 9127, 9128 });
         iec60870AsduFactory.setIev(new float[] { 10.0f, 20.5f });
+
+        // TODO: provide instances via the beans
+        iec60870AsduFactory.setIec60870Server(this.mockServer.getRtuSimulator());
+        iec60870AsduFactory.setInformationElementFactory(new InformationElementFactory());
+
+        iec60870AsduFactory.initialize();
 
         return new Iec60870InterrogationCommandAsduHandler(iec60870AsduFactory);
     }
