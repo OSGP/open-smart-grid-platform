@@ -93,6 +93,8 @@
       <xsd:sequence>
         <xsd:element name="DeviceIdentification" type="common:Identification"
           minOccurs="0" />
+        <xsd:element name="Description" type="xsd:string" minOccurs="0"/>
+        <xsd:element name="DescriptionStartsWith" type="xsd:string" minOccurs="0"/>
         <xsd:element name="From" type="xsd:dateTime"
           minOccurs="0" />
         <xsd:element name="Until" type="xsd:dateTime"

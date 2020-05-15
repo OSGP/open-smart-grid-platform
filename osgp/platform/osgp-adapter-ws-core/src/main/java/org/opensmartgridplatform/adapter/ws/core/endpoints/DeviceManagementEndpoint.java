@@ -251,7 +251,8 @@ public class DeviceManagementEndpoint {
             final Page<org.opensmartgridplatform.domain.core.entities.Event> result = this.deviceManagementService
                     .findEvents(organisationIdentification, request.getDeviceIdentification(), this.pageFrom(request),
                             from, until,
-                            this.deviceManagementMapper.mapAsList(request.getEventTypes(), EventType.class));
+                            this.deviceManagementMapper.mapAsList(request.getEventTypes(), EventType.class),
+                            request.getDescription(), request.getDescriptionStartsWith());
 
             response.getEvents().addAll(this.deviceManagementMapper.mapAsList(result.getContent(), Event.class));
             response.setPage(new org.opensmartgridplatform.adapter.ws.schema.core.common.Page());

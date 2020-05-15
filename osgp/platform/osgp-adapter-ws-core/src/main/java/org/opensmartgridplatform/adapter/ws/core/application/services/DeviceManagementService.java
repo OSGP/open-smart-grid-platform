@@ -186,7 +186,8 @@ public class DeviceManagementService {
     @Transactional(value = "transactionManager")
     public Page<Event> findEvents(@Identification final String organisationIdentification,
             final String deviceIdentification, final PageSpecifier pageSpecifier, final DateTime from,
-            final DateTime until, final List<EventType> eventTypes) throws FunctionalException {
+            final DateTime until, final List<EventType> eventTypes, final String description,
+            final String descriptionStartsWith) throws FunctionalException {
 
         LOGGER.debug("findEvents called for organisation {} and device {}", organisationIdentification,
                 deviceIdentification);
@@ -221,6 +222,7 @@ public class DeviceManagementService {
             if (eventTypes != null && !eventTypes.isEmpty()) {
                 specification = specification.and(this.eventSpecifications.hasEventTypes(eventTypes));
             }
+            specification = handleDescription(description, descriptionStartsWith, specification);
         } catch (final ArgumentNullOrEmptyException e) {
             throw new FunctionalException(FunctionalExceptionType.ARGUMENT_NULL, ComponentType.WS_CORE, e);
         }
@@ -231,6 +233,25 @@ public class DeviceManagementService {
         LOGGER.debug("        sort       : {}", request.getSort());
 
         return this.eventRepository.findAll(specification, request);
+    }
+
+    private Specification<Event> handleDescription(final String description, final String descriptionStartsWith,
+            Specification<Event> specification) throws ArgumentNullOrEmptyException {
+        if (description == null) {
+            if (descriptionStartsWith != null) {
+                specification = specification
+                        .and((this.eventSpecifications.startsWithDescription(descriptionStartsWith)));
+            }
+        } else {
+            final Specification<Event> descriptionSpec = this.eventSpecifications.withDescription(description);
+            if (descriptionStartsWith == null) {
+                specification = specification.and(descriptionSpec);
+            } else {
+                specification = specification.and(
+                        descriptionSpec.or(this.eventSpecifications.startsWithDescription(descriptionStartsWith)));
+            }
+        }
+        return specification;
     }
 
     /**

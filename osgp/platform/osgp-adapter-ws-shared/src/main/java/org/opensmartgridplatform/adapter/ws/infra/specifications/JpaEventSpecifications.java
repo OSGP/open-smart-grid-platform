@@ -30,6 +30,7 @@ import org.springframework.data.jpa.domain.Specification;
 public class JpaEventSpecifications implements EventSpecifications {
 
     private static final String DEVICE = "device";
+    private static final String DESCRIPTION = "description";
 
     @Override
     public Specification<Event> isCreatedAfter(final Date dateFrom) throws ArgumentNullOrEmptyException {
@@ -97,5 +98,24 @@ public class JpaEventSpecifications implements EventSpecifications {
         final Path<Event> eventType = eventRoot.<Event> get("eventType");
 
         return eventType.in(eventTypes);
+    }
+
+    @Override
+    public Specification<Event> withDescription(final String description) throws ArgumentNullOrEmptyException {
+        if (description == null) {
+            throw new ArgumentNullOrEmptyException(DESCRIPTION);
+        }
+
+        return ((eventRoot, query, cb) -> cb.equal(eventRoot.<String> get(DESCRIPTION), description));
+    }
+
+    @Override
+    public Specification<Event> startsWithDescription(final String descriptionStartsWith)
+            throws ArgumentNullOrEmptyException {
+        if (descriptionStartsWith == null) {
+            throw new ArgumentNullOrEmptyException("descriptionStartsWith");
+        }
+
+        return ((eventRoot, query, cb) -> cb.like(eventRoot.<String> get(DESCRIPTION), descriptionStartsWith + "%"));
     }
 }
