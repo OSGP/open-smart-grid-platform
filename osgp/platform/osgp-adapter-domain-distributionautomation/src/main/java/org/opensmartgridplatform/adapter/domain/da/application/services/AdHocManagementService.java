@@ -102,7 +102,7 @@ public class AdHocManagementService extends BaseService {
 
     public void handleGetDataResponse(final ResponseMessage response) {
         LOGGER.info("Forward GET_DATA response {} for device: {}", response, response.getDeviceIdentification());
-        this.webServiceResponseMessageSender.send(response, null, "GET_DATA");
+        this.responseMessageRouter.send(response, "GET_DATA");
     }
 
 }
