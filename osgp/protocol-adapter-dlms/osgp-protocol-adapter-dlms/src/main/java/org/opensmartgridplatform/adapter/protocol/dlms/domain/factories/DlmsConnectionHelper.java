@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class DlmsConnectionHelper {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(DlmsConnectionHelper.class);
 
     private final InvocationCounterManager invocationCounterManager;

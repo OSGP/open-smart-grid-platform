@@ -31,7 +31,9 @@ import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class Hls5Connector extends SecureDlmsConnector {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Hls5Connector.class);
@@ -106,9 +108,10 @@ public class Hls5Connector extends SecureDlmsConnector {
         this.configureIvData(tcpConnectionBuilder, device);
 
         final SecuritySuite securitySuite = SecuritySuite.builder().setAuthenticationKey(dlmsAuthenticationKey)
-                .setAuthenticationMechanism(AuthenticationMechanism.HLS5_GMAC)
-                .setGlobalUnicastEncryptionKey(dlmsEncryptionKey)
-                .setEncryptionMechanism(EncryptionMechanism.AES_GCM_128).build();
+                                                         .setAuthenticationMechanism(AuthenticationMechanism.HLS5_GMAC)
+                                                         .setGlobalUnicastEncryptionKey(dlmsEncryptionKey)
+                                                         .setEncryptionMechanism(EncryptionMechanism.AES_GCM_128)
+                                                         .build();
 
         tcpConnectionBuilder.setSecuritySuite(securitySuite).setClientId(this.clientId);
     }

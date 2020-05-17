@@ -37,7 +37,8 @@ public class GetDataResponseMessageProcessor extends BaseNotificationMessageProc
     private AdHocManagementService adHocManagementService;
 
     @Autowired
-    protected GetDataResponseMessageProcessor(final NotificationResponseMessageSender responseMessageSender,
+    protected GetDataResponseMessageProcessor(
+            @Qualifier("domainDistributionAutomationOutboundResponseMessageRouter") final NotificationResponseMessageSender responseMessageSender,
             @Qualifier("domainDistributionAutomationInboundOsgpCoreResponsesMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, GET_DATA);
     }

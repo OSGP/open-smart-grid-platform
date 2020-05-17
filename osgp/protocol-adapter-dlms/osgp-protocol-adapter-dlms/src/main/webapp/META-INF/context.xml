@@ -22,6 +22,7 @@
   <Environment name="osgp/AdapterProtocolDlms/config"
     value="/etc/osp/osgp-adapter-protocol-dlms.properties" type="java.lang.String"
     override="true" />
+
   <Environment name="osgp/AdapterProtocolDlms/log-config"
     value="/etc/osp/osgp-adapter-protocol-dlms-logback.xml" type="java.lang.String"
     override="true" />

@@ -40,7 +40,8 @@ public class GetHealthStatusRequestMessageProcessor extends BaseNotificationMess
     private DeviceManagementService deviceManagementService;
 
     @Autowired
-    public GetHealthStatusRequestMessageProcessor(final NotificationResponseMessageSender responseMessageSender,
+    public GetHealthStatusRequestMessageProcessor(
+            @Qualifier("domainDistributionAutomationOutboundResponseMessageRouter") final NotificationResponseMessageSender responseMessageSender,
             @Qualifier("domainDistributionAutomationInboundWebServiceRequestsMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.GET_HEALTH_STATUS);
     }

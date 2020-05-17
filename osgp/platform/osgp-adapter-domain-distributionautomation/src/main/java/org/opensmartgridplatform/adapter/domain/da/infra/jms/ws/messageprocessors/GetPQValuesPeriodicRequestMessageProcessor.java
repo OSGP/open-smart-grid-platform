@@ -41,7 +41,8 @@ public class GetPQValuesPeriodicRequestMessageProcessor extends BaseNotification
     private MonitoringService monitoringService;
 
     @Autowired
-    public GetPQValuesPeriodicRequestMessageProcessor(final NotificationResponseMessageSender responseMessageSender,
+    public GetPQValuesPeriodicRequestMessageProcessor(
+            @Qualifier("domainDistributionAutomationOutboundResponseMessageRouter") final NotificationResponseMessageSender responseMessageSender,
             @Qualifier("domainDistributionAutomationInboundWebServiceRequestsMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.GET_POWER_QUALITY_VALUES_PERIODIC);
     }

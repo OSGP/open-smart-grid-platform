@@ -44,6 +44,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.CdmaSettings;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
+import org.opensmartgridplatform.domain.core.valueobjects.IntegrationType;
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
 import org.opensmartgridplatform.shared.validation.Identification;
 
@@ -187,6 +188,10 @@ public class Device extends AbstractEntity {
 
     @Column(nullable = false)
     private Integer failedConnectionCount = 0;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private IntegrationType integrationType = IntegrationType.WEB_SERVICE;
 
     public Device() {
         // Default constructor
@@ -416,8 +421,9 @@ public class Device extends AbstractEntity {
     }
 
     public Map<FirmwareModule, String> getFirmwareVersions() {
-        return this.deviceFirmwareModules.stream().collect(
-                Collectors.toMap(DeviceFirmwareModule::getFirmwareModule, DeviceFirmwareModule::getModuleVersion));
+        return this.deviceFirmwareModules.stream()
+                .collect(Collectors.toMap(DeviceFirmwareModule::getFirmwareModule,
+                        DeviceFirmwareModule::getModuleVersion));
     }
 
     public void setFirmwareVersions(final Map<FirmwareModule, String> firmwareVersions) {
@@ -428,7 +434,9 @@ public class Device extends AbstractEntity {
         if (firmwareVersions == null) {
             return Collections.emptySet();
         }
-        return firmwareVersions.entrySet().stream().map(e -> new DeviceFirmwareModule(this, e.getKey(), e.getValue()))
+        return firmwareVersions.entrySet()
+                .stream()
+                .map(e -> new DeviceFirmwareModule(this, e.getKey(), e.getValue()))
                 .collect(Collectors.toSet());
     }
 
@@ -496,6 +504,14 @@ public class Device extends AbstractEntity {
 
     public boolean hasConnectionFailures() {
         return this.failedConnectionCount != 0;
+    }
+
+    public IntegrationType getIntegrationType() {
+        return this.integrationType;
+    }
+
+    public void setIntegrationType(final IntegrationType integrationType) {
+        this.integrationType = integrationType;
     }
 
 }

@@ -1,9 +1,10 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
@@ -23,6 +24,7 @@ import org.slf4j.LoggerFactory;
  * Object that manages and exposes a single DLMS connection.
  */
 public class DlmsConnectionManager implements AutoCloseable {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(DlmsConnectionManager.class);
     private static final DlmsMessageListener DO_NOTHING_LISTENER = new DlmsMessageListener() {
 
@@ -64,8 +66,9 @@ public class DlmsConnectionManager implements AutoCloseable {
     /**
      * @return the current connection, obtained by calling {@link #connect()
      *         connect}.
+     *
      * @throws IllegalStateException
-     *             when there is no connection available.
+     *         when there is no connection available.
      */
     public DlmsConnection getConnection() {
         if (!this.isConnected()) {
@@ -87,7 +90,7 @@ public class DlmsConnectionManager implements AutoCloseable {
      * reference.
      *
      * @throws IOException
-     *             When an exception occurs while disconnecting.
+     *         When an exception occurs while disconnecting.
      */
     public void disconnect() throws IOException {
         if (this.dlmsConnection != null) {
@@ -105,10 +108,10 @@ public class DlmsConnectionManager implements AutoCloseable {
      * before {@link #getConnection() getConnection} is called.
      *
      * @throws IllegalStateException
-     *             When there is already a connection set.
+     *         When there is already a connection set.
      * @throws OsgpException
-     *             in case of a TechnicalException (When an exceptions occurs
-     *             while creating the exception) or a FunctionalException
+     *         in case of a TechnicalException (When an exceptions occurs
+     *         while creating the exception) or a FunctionalException
      */
     public void connect() throws OsgpException {
         if (this.dlmsConnection != null) {
@@ -122,7 +125,8 @@ public class DlmsConnectionManager implements AutoCloseable {
      * Obtains a new connection with a device. A connection should be obtained
      * before {@link #getConnection() getConnection} is called.
      *
-     * @throws OsgpException in case of a TechnicalException (When an exceptions
+     * @throws OsgpException
+     *         in case of a TechnicalException (When an exceptions
      *         occurs while creating the exception), a FunctionalException or a
      *         ProtocolAdapterException
      */

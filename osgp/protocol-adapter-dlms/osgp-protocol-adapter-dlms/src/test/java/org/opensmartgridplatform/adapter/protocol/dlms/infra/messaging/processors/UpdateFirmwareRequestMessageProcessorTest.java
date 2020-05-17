@@ -30,6 +30,7 @@ import org.mockito.quality.Strictness;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ConfigurationService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.FirmwareService;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDeviceBuilder;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHelper;
@@ -73,6 +74,9 @@ public class UpdateFirmwareRequestMessageProcessorTest {
     @Mock
     private DlmsMessageListener messageListenerMock;
 
+    @Mock
+    private ThrottlingService throttlingService;
+
     private DlmsDevice device;
 
     @InjectMocks
@@ -100,8 +104,8 @@ public class UpdateFirmwareRequestMessageProcessorTest {
         this.processor.processMessage(message);
 
         // Assert
-        verify(this.osgpRequestMessageSender, times(1)).send(any(RequestMessage.class), any(String.class),
-                any(MessageMetadata.class));
+        verify(this.osgpRequestMessageSender, times(1))
+                .send(any(RequestMessage.class), any(String.class), any(MessageMetadata.class));
     }
 
     @Test
@@ -115,8 +119,8 @@ public class UpdateFirmwareRequestMessageProcessorTest {
         this.processor.processMessage(message);
 
         // Assert
-        verify(this.osgpRequestMessageSender, never()).send(any(RequestMessage.class), any(String.class),
-                any(MessageMetadata.class));
+        verify(this.osgpRequestMessageSender, never())
+                .send(any(RequestMessage.class), any(String.class), any(MessageMetadata.class));
     }
 
     @Test
@@ -144,7 +148,7 @@ public class UpdateFirmwareRequestMessageProcessorTest {
         this.processor.processMessage(message);
 
         // Assert
-        verify(this.firmwareService, times(0)).updateFirmware(this.dlmsConnectionManagerMock, this.device,
-                firmwareIdentification);
+        verify(this.firmwareService, times(0))
+                .updateFirmware(this.dlmsConnectionManagerMock, this.device, firmwareIdentification);
     }
 }

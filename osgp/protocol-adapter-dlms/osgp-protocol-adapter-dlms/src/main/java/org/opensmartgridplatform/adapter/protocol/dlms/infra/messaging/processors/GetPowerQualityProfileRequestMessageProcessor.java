@@ -1,9 +1,10 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.processors;
 
@@ -13,7 +14,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Moni
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigureDefinableLoadProfileRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileRequestDataDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -37,9 +37,10 @@ public class GetPowerQualityProfileRequestMessageProcessor extends DeviceRequest
     protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException {
 
-        this.assertRequestObjectType(ConfigureDefinableLoadProfileRequestDto.class, requestObject);
+        this.assertRequestObjectType(GetPowerQualityProfileRequestDataDto.class, requestObject);
 
-        final GetPowerQualityProfileRequestDataDto getPowerQualityProfileRequestDataDto = (GetPowerQualityProfileRequestDataDto) requestObject;
+        final GetPowerQualityProfileRequestDataDto getPowerQualityProfileRequestDataDto =
+                (GetPowerQualityProfileRequestDataDto) requestObject;
 
         return this.monitoringService.requestPowerQualityProfile(conn, device, getPowerQualityProfileRequestDataDto);
     }

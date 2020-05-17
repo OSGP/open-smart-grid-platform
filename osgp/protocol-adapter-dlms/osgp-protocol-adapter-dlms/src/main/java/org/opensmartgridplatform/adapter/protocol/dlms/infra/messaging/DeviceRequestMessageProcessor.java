@@ -1,9 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging;
 
@@ -55,8 +56,8 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
      * Each MessageProcessor should register it's MessageType at construction.
      *
      * @param messageType
-     *            The MessageType the MessageProcessor implementation can
-     *            process.
+     *         The MessageType the MessageProcessor implementation can
+     *         process.
      */
     protected DeviceRequestMessageProcessor(final MessageType messageType) {
         this.messageType = messageType;
@@ -73,7 +74,7 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
     }
 
     @SuppressWarnings("squid:S1193") // SilentException cannot be caught since
-                                     // it does not extend Exception.
+    // it does not extend Exception.
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
         LOGGER.debug("Processing {} request message", this.messageType);
@@ -132,23 +133,26 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
      * provide result data.
      *
      * @param conn
-     *            the connection to the device.
+     *         the connection to the device.
      * @param device
-     *            the device.
+     *         the device.
      * @param requestObject
-     *            Request data object.
+     *         Request data object.
+     *
      * @return A serializable object to be put on the response queue.
      */
     protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException {
         throw new UnsupportedOperationException(
-                "handleMessage(DlmsConnection, DlmsDevice, Serializable) should be overriden by a subclass, or usesDeviceConnection should return false.");
+                "handleMessage(DlmsConnection, DlmsDevice, Serializable) should be overriden by a subclass, or "
+                        + "usesDeviceConnection should return false.");
     }
 
     protected Serializable handleMessage(final DlmsDevice device, final Serializable requestObject)
             throws OsgpException {
         throw new UnsupportedOperationException(
-                "handleMessage(Serializable) should be overriden by a subclass, or usesDeviceConnection should return true.");
+                "handleMessage(Serializable) should be overriden by a subclass, or usesDeviceConnection should return"
+                        + " true.");
     }
 
     /**
