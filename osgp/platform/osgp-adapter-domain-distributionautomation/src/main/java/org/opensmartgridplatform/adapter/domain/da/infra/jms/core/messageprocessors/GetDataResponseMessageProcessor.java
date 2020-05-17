@@ -15,14 +15,11 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.da.application.services.AdHocManagementService;
-import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.BaseNotificationMessageProcessor;
-import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.NotificationResponseMessageSender;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +30,7 @@ import org.springframework.stereotype.Component;
 public class GetDataResponseMessageProcessor extends BaseNotificationMessageProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetDataResponseMessageProcessor.class);
+    private static final MessageType GET_DATA = MessageType.GET_DATA;
 
     @Autowired
     @Qualifier("domainDistributionAutomationAdHocManagementService")
@@ -41,65 +39,31 @@ public class GetDataResponseMessageProcessor extends BaseNotificationMessageProc
     @Autowired
     protected GetDataResponseMessageProcessor(final NotificationResponseMessageSender responseMessageSender,
             @Qualifier("domainDistributionAutomationInboundOsgpCoreResponsesMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
-        super(responseMessageSender, messageProcessorMap, MessageType.GET_DATA);
+        super(responseMessageSender, messageProcessorMap, GET_DATA);
     }
 
     @Override
-    public void processMessage(final ObjectMessage message) throws JMSException {
+    public void processMessage(final ObjectMessage message) {
         LOGGER.debug("Processing DA GET_DATA response message");
         this.getResponseValues(message).ifPresent(this::processResponseValues);
     }
 
-    private Optional<ResponseValues> getResponseValues(final ObjectMessage message) {
-        final ResponseValues responseValues = new ResponseValues();
+    private Optional<ResponseMessage> getResponseValues(final ObjectMessage message) {
         try {
-            responseValues.correlationUid = message.getJMSCorrelationID();
-            responseValues.messageType = message.getJMSType();
-            responseValues.organisationIdentification = message.getStringProperty(
-                    Constants.ORGANISATION_IDENTIFICATION);
-            responseValues.deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
-            responseValues.responseMessage = (ResponseMessage) message.getObject();
-            responseValues.responseMessageResultType = responseValues.responseMessage.getResult();
-            responseValues.osgpException = responseValues.responseMessage.getOsgpException();
-            responseValues.payload = (String) responseValues.responseMessage.getDataObject();
+            return Optional.of((ResponseMessage) message.getObject());
         } catch (final JMSException e) {
-            this.logJmsException(responseValues, e);
+            LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             return Optional.empty();
         }
-        return Optional.of(responseValues);
     }
 
-    private void processResponseValues(final ResponseValues responseValues) {
+    private void processResponseValues(final ResponseMessage response) {
         try {
-            LOGGER.info("Calling application service function to handle response: {}", responseValues.messageType);
-            this.adHocManagementService.handleGetDataResponse(responseValues.payload,
-                    responseValues.deviceIdentification);
-        } catch (final Exception e) {
-            this.handleError(e, responseValues.correlationUid, responseValues.organisationIdentification,
-                    responseValues.deviceIdentification, responseValues.messageType);
+            this.adHocManagementService.handleGetDataResponse(response);
+        } catch (final RuntimeException e) {
+            this.handleError(e, response.getCorrelationUid(), response.getOrganisationIdentification(),
+                    response.getDeviceIdentification(), GET_DATA.toString());
         }
-    }
-
-    private void logJmsException(final ResponseValues responseValues, final JMSException e) {
-        LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
-        LOGGER.debug("correlationUid: {}", responseValues.correlationUid);
-        LOGGER.debug("messageType: {}", responseValues.messageType);
-        LOGGER.debug("organisationIdentification: {}", responseValues.organisationIdentification);
-        LOGGER.debug("deviceIdentification: {}", responseValues.deviceIdentification);
-        LOGGER.debug("responseMessageResultType: {}", responseValues.responseMessageResultType);
-        LOGGER.debug("deviceIdentification: {}", responseValues.deviceIdentification);
-        LOGGER.debug("osgpException: {}", (Object) responseValues.osgpException);
-    }
-
-    private static class ResponseValues {
-        String correlationUid;
-        String messageType;
-        String organisationIdentification;
-        String deviceIdentification;
-        ResponseMessage responseMessage;
-        ResponseMessageResultType responseMessageResultType;
-        OsgpException osgpException;
-        String payload;
     }
 
 }

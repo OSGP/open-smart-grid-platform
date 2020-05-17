@@ -33,11 +33,10 @@ public class DistributionAutomationResponseMessageListener implements MessageLis
         try {
             LOGGER.info("Received message of type: {}", message.getJMSType());
 
-            final ObjectMessage objectMessage = (ObjectMessage) message;
-            final String correlationUid = objectMessage.getJMSCorrelationID();
+            final String correlationUid = message.getJMSCorrelationID();
             LOGGER.info("objectMessage CorrelationUID: {}", correlationUid);
 
-            this.domainResponseMessageProcessor.processMessage(objectMessage);
+            this.domainResponseMessageProcessor.processMessage((ObjectMessage) message);
 
         } catch (final JMSException ex) {
             LOGGER.error("Exception: {} ", ex.getMessage(), ex);

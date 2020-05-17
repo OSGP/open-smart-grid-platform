@@ -14,6 +14,7 @@ import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.kafka.da.application.mapping.DistributionAutomationMapper;
 import org.opensmartgridplatform.adapter.kafka.da.infra.kafka.out.MeterReadingProducer;
+import org.opensmartgridplatform.adapter.kafka.da.infra.kafka.out.PeakShavingProducer;
 import org.opensmartgridplatform.domain.da.measurements.MeasurementReport;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
@@ -38,6 +39,9 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
 
     @Autowired
     private MeterReadingProducer meterReadingProducer;
+
+    @Autowired
+    private PeakShavingProducer peakShavingProducer;
 
     @Override
     public void processMessage(final ObjectMessage message) {
@@ -80,28 +84,31 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
 
             final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification,
                     correlationUid);
-            this.handleMessage(ids, messageType, resultType, resultDescription, dataObject);
 
+            LOGGER.info("Handle message of type {} for device {} with result: type {}, description {}.", messageType,
+                    ids.getDeviceIdentification(), resultType, resultDescription);
+            this.handleMessage(messageType, dataObject);
         } catch (final RuntimeException e) {
             handleError(e, correlationUid);
         }
     }
 
-    private void handleMessage(final CorrelationIds ids, final String messageType,
-            final ResponseMessageResultType resultType, final String resultDescription, final ResponseMessage message) {
-        LOGGER.debug("Handling message of type {} for device {} with result: type {}, description {}.", messageType,
-                ids.getDeviceIdentification(), resultType, resultDescription);
+    private void handleMessage(final String messageType, final ResponseMessage message) {
 
         final Serializable dataObject = message.getDataObject();
-        if (!(dataObject instanceof MeasurementReport)) {
-            LOGGER.error("For this component we only handle measurement reports");
-        } else {
+        if (dataObject instanceof MeasurementReport) {
             this.meterReadingProducer.send(this.mapper.map(dataObject, MeasurementReport.class));
+        } else if (dataObject instanceof String && "GET_DATA".equals(messageType)) {
+            this.peakShavingProducer.send((String) dataObject);
+        } else {
+            LOGGER.warn(
+                    "For this component we only handle measurement reports and MQTT GET_DATA responses. Received message type: {}, message {}",
+                    messageType, dataObject);
         }
+
     }
 
     private static void handleError(final RuntimeException e, final String correlationUid) {
-
         LOGGER.error("Error '{}' occurred while trying to send message with correlationUid: {}", e.getMessage(),
                 correlationUid, e);
     }
