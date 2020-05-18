@@ -98,6 +98,16 @@ public class RetrieveReceivedEventNotifications {
         request.setPageSize(getInteger(settings, PlatformKeys.KEY_PAGE_SIZE, PlatformDefaults.DEFAULT_PAGE_SIZE));
         request.setPage(getInteger(settings, PlatformKeys.REQUESTED_PAGE, PlatformDefaults.REQUESTED_PAGE));
 
+        final String description = getString(settings, PlatformKeys.KEY_DESCRIPTION, null);
+        if (description != null) {
+            request.setDescription(description);
+        }
+
+        final String descriptionStartsWith = getString(settings, PlatformKeys.KEY_DESCRIPTION_STARTS_WITH, null);
+        if (descriptionStartsWith != null) {
+            request.setDescriptionStartsWith(descriptionStartsWith);
+        }
+
         try {
             ScenarioContext.current()
                     .put(getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
@@ -113,24 +123,29 @@ public class RetrieveReceivedEventNotifications {
 
     @Then("^the retrieve event notification response contains$")
     public void theRetrieveEventNotificationResponseContains(final Map<String, String> expectedResponse) {
+        final String deviceIdentification = getString(expectedResponse, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
+                PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION);
         final FindEventsResponse response = (FindEventsResponse) ScenarioContext.current()
-                .get(getString(expectedResponse, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                        PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION).concat("_").concat(PlatformKeys.RESPONSE));
+                .get(deviceIdentification.concat("_").concat(PlatformKeys.RESPONSE));
 
         final List<org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Event> events = response
                 .getEvents();
 
-        assertThat(events.isEmpty()).isFalse();
+        assertThat(events).isNotEmpty();
+        final org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Event expected = this
+                .expectedEvent(expectedResponse, deviceIdentification);
 
-        for (final org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Event e : events) {
-            assertThat(e.getTimestamp()).isNotNull();
-            assertThat(e.getDeviceIdentification()).isEqualTo(getString(expectedResponse,
-                    PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
-            assertThat(e.getEventType().value()).isEqualTo(getString(expectedResponse, PlatformKeys.EVENT_TYPE));
-            assertThat(e.getDescription()).isEqualTo(getString(expectedResponse, PlatformKeys.KEY_DESCRIPTION));
-            assertThat(e.getIndex())
-                    .isEqualTo(getInteger(expectedResponse, PlatformKeys.KEY_INDEX, PlatformDefaults.DEFAULT_INDEX));
-        }
+        assertThat(events).usingElementComparatorIgnoringFields("timestamp", "index").contains(expected);
+    }
+
+    private org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Event expectedEvent(
+            final Map<String, String> expectedResponse, final String deviceIdentification) {
+        final org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Event expected = new org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Event();
+        expected.setDeviceIdentification(deviceIdentification);
+        expected.setEventType(org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.EventType
+                .fromValue(getString(expectedResponse, PlatformKeys.EVENT_TYPE)));
+        expected.setDescription(getString(expectedResponse, PlatformKeys.KEY_DESCRIPTION));
+        return expected;
     }
 
     @Then("^the retrieve event notification request response should contain (\\d+) pages$")

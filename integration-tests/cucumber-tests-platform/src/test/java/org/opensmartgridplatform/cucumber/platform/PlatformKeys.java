@@ -93,6 +93,7 @@ public class PlatformKeys extends Keys {
     public static final String KEY_CREATION_TIME = "CreationTime";
     public static final String KEY_MODIFICATION_TIME = "ModificationTime";
     public static final String KEY_DESCRIPTION = "Description";
+    public static final String KEY_DESCRIPTION_STARTS_WITH = "Description starts with";
     public static final String KEY_DEVICE_ACTIVATED = "DeviceActivated";
     public static final String KEY_DEVICE_COMMUNICATIONMETHOD = "CommunicationMethod";
     public static final String KEY_DEVICE_COMMUNICATIONPROVIDER = "CommunicationProvider";
