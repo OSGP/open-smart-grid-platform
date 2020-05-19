@@ -15,6 +15,7 @@ import org.openmuc.j60870.ASduType;
 import org.openmuc.j60870.CauseOfTransmission;
 import org.openmuc.j60870.ie.InformationElement;
 import org.openmuc.j60870.ie.InformationObject;
+import org.opensmartgridplatform.iec60870.Iec60870InformationObjectType;
 import org.opensmartgridplatform.iec60870.factory.InformationElementFactory;
 import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870AsduFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +54,8 @@ class LightMeasurementDeviceAsduFactoryTest {
     }
 
     private InformationElement[][] createInformationElement(final boolean on) {
-        return this.informationElementFactory.createInformationElements("IeSinglePointWithQuality", on);
+        return this.informationElementFactory
+                .createInformationElements(Iec60870InformationObjectType.SINGLE_POINT_INFORMATION_WITH_QUALITY, on);
     }
 
 }

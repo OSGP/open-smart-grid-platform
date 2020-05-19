@@ -16,6 +16,7 @@ import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.ASduType;
 import org.openmuc.j60870.CauseOfTransmission;
 import org.openmuc.j60870.ie.InformationElement;
+import org.opensmartgridplatform.iec60870.Iec60870InformationObjectType;
 import org.opensmartgridplatform.iec60870.Iec60870Server;
 import org.opensmartgridplatform.iec60870.factory.InformationElementFactory;
 import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870AsduBuilder;
@@ -45,8 +46,8 @@ public class LightMeasurementDeviceAsduFactory implements Iec60870AsduFactory {
     public void initialize() {
         final Map<Integer, InformationElement[][]> processImage = new HashMap<>();
         for (int index = 0; index < this.ioa.length; index++) {
-            processImage.put(this.ioa[index], this.informationElementFactory
-                    .createInformationElements("IeSinglePointWithQuality", this.iev[index]));
+            processImage.put(this.ioa[index], this.informationElementFactory.createInformationElements(
+                    Iec60870InformationObjectType.SINGLE_POINT_INFORMATION_WITH_QUALITY, this.iev[index]));
         }
         this.iec60870Server.setProcessImage(processImage);
     }

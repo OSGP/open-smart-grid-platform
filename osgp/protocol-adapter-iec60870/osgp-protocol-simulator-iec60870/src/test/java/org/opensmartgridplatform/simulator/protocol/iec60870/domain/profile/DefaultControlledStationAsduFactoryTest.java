@@ -15,6 +15,7 @@ import org.openmuc.j60870.ASduType;
 import org.openmuc.j60870.CauseOfTransmission;
 import org.openmuc.j60870.ie.InformationElement;
 import org.openmuc.j60870.ie.InformationObject;
+import org.opensmartgridplatform.iec60870.Iec60870InformationObjectType;
 import org.opensmartgridplatform.iec60870.factory.InformationElementFactory;
 import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870AsduFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +52,8 @@ class DefaultControlledStationAsduFactoryTest {
     }
 
     private InformationElement[][] createInformationElement(final float value) {
-        return this.informationElementFactory.createInformationElements("IeShortFloat", value);
+        return this.informationElementFactory.createInformationElements(Iec60870InformationObjectType.SHORT_FLOAT,
+                value);
     }
 
     @Test
@@ -60,8 +62,8 @@ class DefaultControlledStationAsduFactoryTest {
         // Arrange
         final DefaultControlledStationAsduFactory defaultControlledAsduFactory = new DefaultControlledStationAsduFactory();
         final ASdu expected = new ASdu(ASduType.C_SC_NA_1, false, CauseOfTransmission.SPONTANEOUS, false, false, 0, 1,
-                new InformationObject[] { new InformationObject(0,
-                        this.informationElementFactory.createInformationElements("IeQualifierOfInterrogation", 20)) });
+                new InformationObject[] { new InformationObject(0, this.informationElementFactory
+                        .createInformationElements(Iec60870InformationObjectType.QUALIFIER_OF_INTERROGATION, 20)) });
 
         // Act
         final ASdu actual = defaultControlledAsduFactory.createSingleCommandAsdu();

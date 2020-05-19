@@ -16,8 +16,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
- * Abstract class providing an implementation for handling single point
- * information with time tag ASDUs.
+ * Class providing an implementation for handling single point information with
+ * time tag ASDUs.
  */
 @Component
 public class SinglePointInformationWithTimeTagAsduHandler extends AbstractClientAsduHandler {

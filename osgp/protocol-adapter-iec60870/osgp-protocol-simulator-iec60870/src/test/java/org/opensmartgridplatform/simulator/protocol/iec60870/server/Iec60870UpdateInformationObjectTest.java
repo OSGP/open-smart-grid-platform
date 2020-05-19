@@ -9,10 +9,14 @@ package org.opensmartgridplatform.simulator.protocol.iec60870.server;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.opensmartgridplatform.iec60870.Iec60870InformationObjectType.SINGLE_POINT_INFORMATION_WITH_QUALITY;
 
 import java.io.IOException;
+import java.util.Map;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -39,9 +43,16 @@ class Iec60870UpdateInformationObjectTest {
     @Mock
     private Connection connection;
 
+    private Map<Integer, InformationElement[][]> processImageBeforeUpdate;
+
     private static boolean ON = true;
     private static final IeSinglePointWithQuality EXPECTED = new IeSinglePointWithQuality(ON, false, false, false,
             false);
+
+    @BeforeEach
+    void setup() {
+        this.processImageBeforeUpdate = this.iec60870Server.getProcessImage();
+    }
 
     /**
      * informationObjectAddress 42 is in
@@ -53,10 +64,27 @@ class Iec60870UpdateInformationObjectTest {
 
         final int informationObjectAddress = 42;
 
-        this.iec60870Server.updateInformationObject(informationObjectAddress, "IeSinglePointWithQuality", ON);
+        this.iec60870Server.updateInformationObject(informationObjectAddress, SINGLE_POINT_INFORMATION_WITH_QUALITY,
+                ON);
 
-        final InformationElement[][] actual = this.iec60870Server.getProcessImage().get(informationObjectAddress);
-        assertThat(actual[0][0]).usingRecursiveComparison().isEqualTo(EXPECTED);
+        this.checkProcessImage(informationObjectAddress, this.iec60870Server.getProcessImage());
+    }
+
+    private void checkProcessImage(final int informationObjectAddress,
+            final Map<Integer, InformationElement[][]> processImage) {
+        for (final int address : processImage.keySet()) {
+            final InformationElement value = processImage.get(address)[0][0];
+            if (address == informationObjectAddress) {
+
+                // check for new value
+                assertThat(value).usingRecursiveComparison().isEqualTo(EXPECTED);
+            } else {
+
+                // check that the value didn't change
+                assertThat(value).usingRecursiveComparison()
+                        .isEqualTo(this.processImageBeforeUpdate.get(address)[0][0]);
+            }
+        }
     }
 
     /**
@@ -69,10 +97,10 @@ class Iec60870UpdateInformationObjectTest {
 
         final int informationObjectAddress = 2;
 
-        this.iec60870Server.updateInformationObject(informationObjectAddress, "IeSinglePointWithQuality", ON);
+        this.iec60870Server.updateInformationObject(informationObjectAddress, SINGLE_POINT_INFORMATION_WITH_QUALITY,
+                ON);
 
-        final InformationElement[][] actual = this.iec60870Server.getProcessImage().get(informationObjectAddress);
-        assertThat(actual[0][0]).usingRecursiveComparison().isEqualTo(EXPECTED);
+        this.checkProcessImage(informationObjectAddress, this.iec60870Server.getProcessImage());
     }
 
     @Test
@@ -80,10 +108,23 @@ class Iec60870UpdateInformationObjectTest {
 
         this.registerConnection();
 
-        this.iec60870Server.updateInformationObject(1, "IeSinglePointWithQuality", ON);
+        this.iec60870Server.updateInformationObject(1, SINGLE_POINT_INFORMATION_WITH_QUALITY, ON);
 
         // check if an event was sent
         verify(this.connection)
+                .send(argThat(new AsduTypeArgumentMatcher(ASduType.M_SP_TB_1, CauseOfTransmission.SPONTANEOUS)));
+
+    }
+
+    @Test
+    void testDontSendEventWhenValueDidntChange() throws IOException {
+
+        this.registerConnection();
+
+        this.iec60870Server.updateInformationObject(127, SINGLE_POINT_INFORMATION_WITH_QUALITY, ON);
+
+        // check that no event was sent
+        verify(this.connection, never())
                 .send(argThat(new AsduTypeArgumentMatcher(ASduType.M_SP_TB_1, CauseOfTransmission.SPONTANEOUS)));
 
     }

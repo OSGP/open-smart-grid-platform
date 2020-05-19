@@ -12,24 +12,26 @@ import org.openmuc.j60870.ie.IeQuality;
 import org.openmuc.j60870.ie.IeShortFloat;
 import org.openmuc.j60870.ie.IeSinglePointWithQuality;
 import org.openmuc.j60870.ie.InformationElement;
-import org.opensmartgridplatform.iec60870.exceptions.InformationObjectTypeNotSupported;
+import org.opensmartgridplatform.iec60870.Iec60870InformationObjectType;
+import org.opensmartgridplatform.iec60870.exceptions.InformationObjectTypeNotSupportedException;
 import org.springframework.stereotype.Component;
 
 @Component
 public class InformationElementFactory {
 
-    public InformationElement[][] createInformationElements(final String informationObjectType, final Object value) {
-        if ("IeShortFloat".equals(informationObjectType)) {
+    public InformationElement[][] createInformationElements(final Iec60870InformationObjectType informationObjectType,
+            final Object value) {
+        if (Iec60870InformationObjectType.SHORT_FLOAT == informationObjectType) {
             return new InformationElement[][] {
                     { new IeShortFloat((Float) value), new IeQuality(false, false, false, false, false) } };
         }
-        if ("IeSinglePointWithQuality".equals(informationObjectType)) {
+        if (Iec60870InformationObjectType.SINGLE_POINT_INFORMATION_WITH_QUALITY == informationObjectType) {
             return new InformationElement[][] {
                     { new IeSinglePointWithQuality((Boolean) value, false, false, false, false) } };
         }
-        if ("IeQualifierOfInterrogation".equals(informationObjectType)) {
+        if (Iec60870InformationObjectType.QUALIFIER_OF_INTERROGATION == informationObjectType) {
             return new InformationElement[][] { { new IeQualifierOfInterrogation((Integer) value) } };
         }
-        throw new InformationObjectTypeNotSupported(informationObjectType + " is not supported yet");
+        throw new InformationObjectTypeNotSupportedException(informationObjectType + " is not supported yet");
     }
 }

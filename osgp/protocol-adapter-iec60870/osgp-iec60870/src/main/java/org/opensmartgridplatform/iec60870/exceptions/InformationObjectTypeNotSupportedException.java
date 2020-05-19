@@ -7,15 +7,13 @@
  */
 package org.opensmartgridplatform.iec60870.exceptions;
 
-public class InformationObjectTypeNotSupported extends RuntimeException {
+public class InformationObjectTypeNotSupportedException extends RuntimeException {
 
-    private static final long serialVersionUID = -8763916774984177378L;
-
-    public InformationObjectTypeNotSupported() {
+    public InformationObjectTypeNotSupportedException() {
         super();
     }
 
-    public InformationObjectTypeNotSupported(final String message) {
+    public InformationObjectTypeNotSupportedException(final String message) {
         super(message);
     }
 

@@ -73,25 +73,52 @@ public class Iec60870Server {
      * If the informationObjectAddress is already in the process image, the
      * value is updated. Otherwise a new item is added to the process image.
      * 
-     * An event ASDU is sent to the controlling station.
+     * An event ASDU is sent to the controlling station if the value has
+     * changed.
      * 
      * @param informationObjectAddress
      *            the address of the item in the process image
      * @param informationObjectType
-     *            the type of information object; if not supported, a
-     *            InformationObjectTypeNotSupported is thrown
+     *            the type of information object
      * @param value
      *            the information element value
      */
-    public void updateInformationObject(final int informationObjectAddress, final String informationObjectType,
-            final Object value) {
+    public void updateInformationObject(final int informationObjectAddress,
+            final Iec60870InformationObjectType informationObjectType, final Object value) {
 
         final InformationElement[][] informationElements = this.informationElementFactory
                 .createInformationElements(informationObjectType, value);
 
+        boolean valueChanged = false;
+        if (this.processImage.containsKey(informationObjectAddress)) {
+            valueChanged = this.hasChanged(informationElements, this.processImage.get(informationObjectAddress));
+        } else {
+            valueChanged = true;
+        }
+
         this.processImage.put(informationObjectAddress, informationElements);
 
-        this.iec60870ServerEventListener.sendInformationUpdateEvent(informationObjectAddress, informationElements);
+        if (valueChanged) {
+            this.iec60870ServerEventListener.sendInformationUpdateEvent(informationObjectAddress, informationElements);
+        }
+    }
+
+    private boolean hasChanged(final InformationElement[][] newValue, final InformationElement[][] oldValue) {
+
+        if (newValue.length != oldValue.length) {
+            return true;
+        }
+        for (int index = 0; index < newValue.length; index++) {
+            if (newValue[index].length != oldValue[index].length) {
+                return true;
+            }
+            for (int idx = 0; idx < newValue[index].length; idx++) {
+                if (!newValue[index][idx].toString().equals(oldValue[index][idx].toString())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 }

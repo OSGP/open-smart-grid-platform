@@ -11,8 +11,7 @@ Feature: DistributionAutomation Receive measurement reports
       | Port                 |             62404 |
       | CommonAddress        |                75 |
     When Organization test-org connects to device TEST1024000000001
-    Then I get a measurement report for device TEST1024000000001
-      |  |  |
+    Then I receive a measurement report for device TEST1024000000001
 
   Scenario: Update process image of default controlled station
     Given an IEC 60870 RTU
@@ -26,7 +25,7 @@ Feature: DistributionAutomation Receive measurement reports
       | InformationObjectAddress |            2 |
       | InformationObjectType    | IeShortFloat |
       | InformationElementValue  |         10.0 |
-    Then I get a measurement report for device TEST1024000000002
+    Then I get a measurement report for device TEST1024000000002 with values
       | InformationObjectAddress |            2 |
       | InformationObjectType    | IeShortFloat |
       | InformationElementValue  |         10.0 |
@@ -43,7 +42,7 @@ Feature: DistributionAutomation Receive measurement reports
       | InformationObjectAddress |                        2 |
       | InformationObjectType    | IeSinglePointWithQuality |
       | InformationElementValue  | true                     |
-    Then I get a measurement report for device TEST1024000000001
+    Then I get a measurement report for device TEST1024000000001 with values
       | InformationObjectAddress |                        2 |
       | InformationObjectType    | IeSinglePointWithQuality |
       | InformationElementValue  | true                     |

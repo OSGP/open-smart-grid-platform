@@ -16,6 +16,7 @@ import java.util.Map;
 
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.distributionautomation.mocks.iec60870.Iec60870MockServer;
+import org.opensmartgridplatform.iec60870.Iec60870InformationObjectType;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.cucumber.java.en.When;
@@ -25,10 +26,11 @@ public class ProcessImageSteps {
     @Autowired
     private Iec60870MockServer mockServer;
 
-    @When("I update the information object")
+    @When("^I update the information object$")
     public void iUpdateTheInformationObject(final Map<String, String> parameters) {
         final Integer informationObjectAddress = Integer.valueOf(parameters.get(INFORMATION_OBJECT_ADDRESS));
-        final String informationObjectType = parameters.get(INFORMATION_OBJECT_TYPE);
+        final Iec60870InformationObjectType informationObjectType = Iec60870InformationObjectType
+                .fromString(parameters.get(INFORMATION_OBJECT_TYPE));
         this.mockServer.getRtuSimulator()
                 .updateInformationObject(informationObjectAddress, informationObjectType,
                         this.informationElementvalue(parameters.get(INFORMATION_ELEMENT_VALUE)));

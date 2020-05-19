@@ -48,12 +48,10 @@ public interface Iec60870AsduFactory {
     }
 
     default InformationObject[] processImageToArray(final Map<Integer, InformationElement[][]> map) {
-        final Integer[] keys = map.keySet().toArray(new Integer[map.size()]);
-        final InformationObject[] informationObjects = new InformationObject[map.size()];
-        for (int index = 0; index < map.size(); index++) {
-            informationObjects[index] = new InformationObject(keys[index], map.get(keys[index]));
-        }
-        return informationObjects;
+        return map.entrySet()
+                .stream()
+                .map(entry -> new InformationObject(entry.getKey(), entry.getValue()))
+                .toArray(InformationObject[]::new);
     }
 
     void setIec60870Server(Iec60870Server iec60870Server);

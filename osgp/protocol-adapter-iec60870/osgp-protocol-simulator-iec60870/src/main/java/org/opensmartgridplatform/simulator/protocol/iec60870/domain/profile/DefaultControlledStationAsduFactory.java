@@ -22,6 +22,7 @@ import org.openmuc.j60870.ie.IeShortFloat;
 import org.openmuc.j60870.ie.IeTime56;
 import org.openmuc.j60870.ie.InformationElement;
 import org.openmuc.j60870.ie.InformationObject;
+import org.opensmartgridplatform.iec60870.Iec60870InformationObjectType;
 import org.opensmartgridplatform.iec60870.Iec60870Server;
 import org.opensmartgridplatform.iec60870.factory.InformationElementFactory;
 import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870AsduBuilder;
@@ -51,8 +52,8 @@ public class DefaultControlledStationAsduFactory implements Iec60870AsduFactory 
     public void initialize() {
         final Map<Integer, InformationElement[][]> processImage = new HashMap<>();
         for (int index = 0; index < this.ioa.length; index++) {
-            processImage.put(this.ioa[index],
-                    this.informationElementFactory.createInformationElements("IeShortFloat", this.iev[index]));
+            processImage.put(this.ioa[index], this.informationElementFactory
+                    .createInformationElements(Iec60870InformationObjectType.SHORT_FLOAT, this.iev[index]));
         }
         this.iec60870Server.setProcessImage(processImage);
     }

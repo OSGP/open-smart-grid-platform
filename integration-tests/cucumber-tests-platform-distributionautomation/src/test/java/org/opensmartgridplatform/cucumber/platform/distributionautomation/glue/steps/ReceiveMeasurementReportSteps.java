@@ -29,6 +29,7 @@ import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.distributionautomation.mocks.iec60870.Iec60870MockServer;
 import org.opensmartgridplatform.cucumber.platform.distributionautomation.support.ws.distributionautomation.DistributionAutomationDeviceManagementClient;
 import org.opensmartgridplatform.iec60870.Iec60870AsduHandler;
+import org.opensmartgridplatform.iec60870.Iec60870InformationObjectType;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
 import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870AsduFactory;
 import org.opensmartgridplatform.simulator.protocol.iec60870.domain.profile.DefaultControlledStationAsduFactory;
@@ -72,7 +73,6 @@ public class ReceiveMeasurementReportSteps {
         final Iec60870AsduFactory iec60870AsduFactory = this.getAsduFactory();
 
         iec60870AsduFactory.setIec60870Server(this.mockServer.getRtuSimulator());
-        iec60870AsduFactory.initialize();
 
         return new Iec60870InterrogationCommandAsduHandler(iec60870AsduFactory);
     }
@@ -85,10 +85,25 @@ public class ReceiveMeasurementReportSteps {
         return new DefaultControlledStationAsduFactory();
     }
 
-    @Then("^I get a measurement report for device (.+)$")
-    public void iGetAMeasurementReportForDevice(final String deviceIdentification,
+    @Then("^I receive a measurement report for device (.+)$")
+    public void iReceiveAMeasurementReportForDevice(final String deviceIdentification)
+            throws WebServiceSecurityException {
+        this.checkReceivingMeasurementReport(deviceIdentification);
+    }
+
+    @Then("^I get a measurement report for device (.+) with values$")
+    public void iGetAMeasurementReportForDeviceWithValues(final String deviceIdentification,
             final Map<String, String> reportValues) throws WebServiceSecurityException {
 
+        final GetMeasurementReportResponse measurementReportResponse = this
+                .checkReceivingMeasurementReport(deviceIdentification);
+
+        this.checkMeasurementReportValues(reportValues, measurementReportResponse);
+
+    }
+
+    private GetMeasurementReportResponse checkReceivingMeasurementReport(final String deviceIdentification)
+            throws WebServiceSecurityException {
         Notification notification = null;
         boolean found = false;
         do {
@@ -101,10 +116,8 @@ public class ReceiveMeasurementReportSteps {
         final GetMeasurementReportResponse measurementReportResponse = this.client
                 .getMeasurementReportResponse(notification);
 
-        if (!reportValues.isEmpty()) {
-            this.checkMeasurementReportValues(reportValues, measurementReportResponse);
-        }
-
+        assertThat(measurementReportResponse).isNotNull();
+        return measurementReportResponse;
     }
 
     private void checkMeasurementReportValues(final Map<String, String> reportValues,
@@ -130,11 +143,11 @@ public class ReceiveMeasurementReportSteps {
                 .getMeasurementElements()
                 .getMeasurementElementList()
                 .get(0);
-        if ("IeShortFloat".equals(expectedType)) {
+        if (Iec60870InformationObjectType.SHORT_FLOAT.getDescription().equals(expectedType)) {
             final FloatMeasurementElement element = (FloatMeasurementElement) measurementElement;
             assertThat(element.getValue()).isEqualTo(Float.valueOf(expectedValue));
         }
-        if ("IeSinglePointWithQuality".equals(expectedType)) {
+        if (Iec60870InformationObjectType.SINGLE_POINT_INFORMATION_WITH_QUALITY.getDescription().equals(expectedType)) {
             final BitmaskMeasurementElement element = (BitmaskMeasurementElement) measurementElement;
             final Boolean booleanValue = Boolean.valueOf(expectedValue);
             assertThat(element.getValue()).isEqualTo(booleanValue ? Byte.valueOf("1") : Byte.valueOf("0"));
