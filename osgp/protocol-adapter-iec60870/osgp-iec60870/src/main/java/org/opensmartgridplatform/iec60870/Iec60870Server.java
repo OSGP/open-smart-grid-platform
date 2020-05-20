@@ -72,10 +72,10 @@ public class Iec60870Server {
     /**
      * If the informationObjectAddress is already in the process image, the
      * value is updated. Otherwise a new item is added to the process image.
-     * 
+     *
      * An event ASDU is sent to the controlling station if the value has
      * changed.
-     * 
+     *
      * @param informationObjectAddress
      *            the address of the item in the process image
      * @param informationObjectType
@@ -89,11 +89,9 @@ public class Iec60870Server {
         final InformationElement[][] informationElements = this.informationElementFactory
                 .createInformationElements(informationObjectType, value);
 
-        boolean valueChanged = false;
+        boolean valueChanged = true;
         if (this.processImage.containsKey(informationObjectAddress)) {
             valueChanged = this.hasChanged(informationElements, this.processImage.get(informationObjectAddress));
-        } else {
-            valueChanged = true;
         }
 
         this.processImage.put(informationObjectAddress, informationElements);

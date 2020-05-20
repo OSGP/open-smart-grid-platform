@@ -135,7 +135,8 @@ public class ReceiveMeasurementReportSteps {
 
     private void checkInformationElementValue(final Map<String, String> reportValues,
             final MeasurementGroup measurementGroup) {
-        final String expectedType = reportValues.get(INFORMATION_OBJECT_TYPE);
+        final Iec60870InformationObjectType expectedType = Iec60870InformationObjectType
+                .fromString(reportValues.get(INFORMATION_OBJECT_TYPE));
         final String expectedValue = reportValues.get(INFORMATION_ELEMENT_VALUE);
         final MeasurementElement measurementElement = measurementGroup.getMeasurements()
                 .getMeasurementList()
@@ -143,11 +144,11 @@ public class ReceiveMeasurementReportSteps {
                 .getMeasurementElements()
                 .getMeasurementElementList()
                 .get(0);
-        if (Iec60870InformationObjectType.SHORT_FLOAT.getDescription().equals(expectedType)) {
+        if (Iec60870InformationObjectType.SHORT_FLOAT.equals(expectedType)) {
             final FloatMeasurementElement element = (FloatMeasurementElement) measurementElement;
             assertThat(element.getValue()).isEqualTo(Float.valueOf(expectedValue));
         }
-        if (Iec60870InformationObjectType.SINGLE_POINT_INFORMATION_WITH_QUALITY.getDescription().equals(expectedType)) {
+        if (Iec60870InformationObjectType.SINGLE_POINT_INFORMATION_WITH_QUALITY.equals(expectedType)) {
             final BitmaskMeasurementElement element = (BitmaskMeasurementElement) measurementElement;
             final Boolean booleanValue = Boolean.valueOf(expectedValue);
             assertThat(element.getValue()).isEqualTo(booleanValue ? Byte.valueOf("1") : Byte.valueOf("0"));
