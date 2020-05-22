@@ -227,6 +227,13 @@
       <groupId>ma.glasnost.orika</groupId>
       <artifactId>orika-core</artifactId>
     </dependency>
+    
+    <!-- Lombok -->
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <scope>provided</scope>
+    </dependency>
 
     <!-- Apache ActiveMQ -->
     <dependency>

@@ -17,6 +17,7 @@ import javax.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.QueryException;
 import org.joda.time.DateTime;
+import org.opensmartgridplatform.adapter.ws.core.application.criteria.SearchEventsCriteria;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessage;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessageSender;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonResponseMessageFinder;
@@ -43,6 +44,7 @@ import org.opensmartgridplatform.domain.core.repositories.ScheduledTaskWithoutDa
 import org.opensmartgridplatform.domain.core.services.DeviceDomainService;
 import org.opensmartgridplatform.domain.core.specifications.DeviceSpecifications;
 import org.opensmartgridplatform.domain.core.specifications.EventSpecifications;
+import org.opensmartgridplatform.domain.core.util.SearchUtil;
 import org.opensmartgridplatform.domain.core.valueobjects.CdmaSettings;
 import org.opensmartgridplatform.domain.core.valueobjects.Certification;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceActivatedFilterType;
@@ -53,7 +55,6 @@ import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceInMaintenanceFilterType;
 import org.opensmartgridplatform.domain.core.valueobjects.EventNotificationMessageDataContainer;
 import org.opensmartgridplatform.domain.core.valueobjects.EventNotificationType;
-import org.opensmartgridplatform.domain.core.valueobjects.EventType;
 import org.opensmartgridplatform.domain.core.valueobjects.PlatformFunction;
 import org.opensmartgridplatform.shared.application.config.PageSpecifier;
 import org.opensmartgridplatform.shared.application.config.PagingSettings;
@@ -184,48 +185,44 @@ public class DeviceManagementService {
     }
 
     @Transactional(value = "transactionManager")
-    public Page<Event> findEvents(@Identification final String organisationIdentification,
-            final String deviceIdentification, final PageSpecifier pageSpecifier, final DateTime from,
-            final DateTime until, final List<EventType> eventTypes, final String description,
-            final String descriptionStartsWith) throws FunctionalException {
+    public Page<Event> findEvents(final SearchEventsCriteria criteria) throws FunctionalException {
 
+        final String organisationIdentification = criteria.getOrganisationIdentification();
+        final String deviceIdentification = criteria.getDeviceIdentification();
         LOGGER.debug("findEvents called for organisation {} and device {}", organisationIdentification,
                 deviceIdentification);
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
 
-        this.pagingSettings.updatePagingSettings(pageSpecifier);
+        this.pagingSettings.updatePagingSettings(criteria.getPageSpecifier());
 
         final PageRequest request = PageRequest.of(this.pagingSettings.getPageNumber(),
                 this.pagingSettings.getPageSize(), Sort.Direction.DESC, "dateTime");
 
         Specification<Event> specification;
 
-        try {
-            if (deviceIdentification != null && !deviceIdentification.isEmpty()) {
-                final Device device = this.domainHelperService.findDevice(deviceIdentification);
-                this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_EVENT_NOTIFICATIONS);
+        if (deviceIdentification != null && !deviceIdentification.isEmpty()) {
+            final Device device = this.domainHelperService.findDevice(deviceIdentification);
+            this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_EVENT_NOTIFICATIONS);
 
-                specification = where(this.eventSpecifications.isFromDevice(device));
-            } else {
-                specification = where(this.eventSpecifications.isAuthorized(organisation));
-            }
-
-            if (from != null) {
-                specification = specification.and(this.eventSpecifications.isCreatedAfter(from.toDate()));
-            }
-
-            if (until != null) {
-                specification = specification.and(this.eventSpecifications.isCreatedBefore(until.toDate()));
-            }
-
-            if (eventTypes != null && !eventTypes.isEmpty()) {
-                specification = specification.and(this.eventSpecifications.hasEventTypes(eventTypes));
-            }
-            specification = handleDescription(description, descriptionStartsWith, specification);
-        } catch (final ArgumentNullOrEmptyException e) {
-            throw new FunctionalException(FunctionalExceptionType.ARGUMENT_NULL, ComponentType.WS_CORE, e);
+            specification = where(this.eventSpecifications.isFromDevice(device));
+        } else {
+            specification = where(this.eventSpecifications.isAuthorized(organisation));
         }
+
+        final DateTime from = criteria.getFrom();
+        if (from != null) {
+            specification = specification.and(this.eventSpecifications.isCreatedAfter(from.toDate()));
+        }
+
+        final DateTime until = criteria.getUntil();
+        if (until != null) {
+            specification = specification.and(this.eventSpecifications.isCreatedBefore(until.toDate()));
+        }
+
+        specification = specification.and(this.eventSpecifications.hasEventTypes(criteria.getEventTypes()));
+        specification = this.handleDescription(SearchUtil.getCleanedInput(criteria.getDescription()),
+                SearchUtil.getCleanedInput(criteria.getDescriptionStartsWith()), specification);
 
         LOGGER.debug("request offset     : {}", request.getOffset());
         LOGGER.debug("        pageNumber : {}", request.getPageNumber());
@@ -236,22 +233,21 @@ public class DeviceManagementService {
     }
 
     private Specification<Event> handleDescription(final String description, final String descriptionStartsWith,
-            Specification<Event> specification) throws ArgumentNullOrEmptyException {
-        if (description == null) {
-            if (descriptionStartsWith != null) {
-                specification = specification
-                        .and((this.eventSpecifications.startsWithDescription(descriptionStartsWith)));
-            }
-        } else {
-            final Specification<Event> descriptionSpec = this.eventSpecifications.withDescription(description);
-            if (descriptionStartsWith == null) {
-                specification = specification.and(descriptionSpec);
-            } else {
-                specification = specification.and(
-                        descriptionSpec.or(this.eventSpecifications.startsWithDescription(descriptionStartsWith)));
-            }
+            final Specification<Event> specification) {
+
+        final Specification<Event> descriptionSpecification = this.eventSpecifications.withDescription(description);
+        final Specification<Event> descriptionStartsWithSpecification = this.eventSpecifications
+                .startsWithDescription(descriptionStartsWith);
+        if (description == null && descriptionStartsWith == null) {
+            return specification;
         }
-        return specification;
+        if (description == null && descriptionStartsWith != null) {
+            return specification.and(descriptionStartsWithSpecification);
+        }
+        if (description != null && descriptionStartsWith == null) {
+            return specification.and(descriptionSpecification);
+        }
+        return specification.and(descriptionSpecification.or(descriptionStartsWithSpecification));
     }
 
     /**
