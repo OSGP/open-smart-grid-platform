@@ -12,12 +12,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.moquette.broker.config.MemoryConfig;
 import org.opensmartgridplatform.simulator.protocol.mqtt.spec.SimulatorSpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.moquette.broker.config.MemoryConfig;
 
 public class Simulator {
 
@@ -38,7 +40,10 @@ public class Simulator {
     }
 
     public void run(final String specJsonPath) throws IOException {
-        final SimulatorSpec simulatorSpec = this.getSimulatorSpec(specJsonPath);
+        this.run(this.getSimulatorSpec(specJsonPath), true);
+    }
+
+    public void run(final SimulatorSpec simulatorSpec, final boolean startClient) throws IOException {
         final Broker broker = new Broker(this.getConfig(simulatorSpec));
         broker.start();
         try {
@@ -46,8 +51,10 @@ public class Simulator {
         } catch (final InterruptedException e) {
             LOG.warn("Interrupted sleep", e);
         }
-        final LnaClient lnaClient = new LnaClient(simulatorSpec);
-        lnaClient.start();
+        if (startClient) {
+            final LnaClient lnaClient = new LnaClient(simulatorSpec);
+            lnaClient.start();
+        }
     }
 
     private MemoryConfig getConfig(final SimulatorSpec simulatorSpec) {

@@ -14,6 +14,17 @@ public class Message {
     private String payload;
     private long pauseMillis;
 
+    public Message() {
+
+    }
+
+    public Message(final String topic, final String payload, final long pauseMillis) {
+        super();
+        this.topic = topic;
+        this.payload = payload;
+        this.pauseMillis = pauseMillis;
+    }
+
     public String getTopic() {
         return this.topic;
     }
