@@ -10,23 +10,24 @@ package org.opensmartgridplatform.domain.core.specifications;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.data.jpa.domain.Specification;
-
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.Event;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
-import org.opensmartgridplatform.domain.core.exceptions.ArgumentNullOrEmptyException;
 import org.opensmartgridplatform.domain.core.valueobjects.EventType;
+import org.springframework.data.jpa.domain.Specification;
 
 public interface EventSpecifications {
-    Specification<Event> isCreatedAfter(final Date dateFrom) throws ArgumentNullOrEmptyException;
+    Specification<Event> isCreatedAfter(final Date dateFrom);
 
-    Specification<Event> isCreatedBefore(final Date dateUntil) throws ArgumentNullOrEmptyException;
+    Specification<Event> isCreatedBefore(final Date dateUntil);
 
-    Specification<Event> isFromDevice(final Device device) throws ArgumentNullOrEmptyException;
+    Specification<Event> isFromDevice(final Device device);
 
-    Specification<Event> isAuthorized(final Organisation organisation) throws ArgumentNullOrEmptyException;
+    Specification<Event> isAuthorized(final Organisation organisation);
 
-    Specification<Event> hasEventTypes(final List<EventType> eventTypes) throws ArgumentNullOrEmptyException;
+    Specification<Event> hasEventTypes(final List<EventType> eventTypes);
 
+    Specification<Event> withDescription(final String description);
+
+    Specification<Event> startsWithDescription(final String descriptionStartsWith);
 }

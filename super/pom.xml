@@ -135,6 +135,7 @@
     <kafka.version>2.4.1</kafka.version>
     <avro.version>1.9.2</avro.version>
     <spring.kafka.version>2.4.6.RELEASE</spring.kafka.version>
+    <lombok.version>1.18.12</lombok.version>
   </properties>
 
   <dependencyManagement>
@@ -885,6 +886,15 @@
         <artifactId>javax.xml.soap-api</artifactId>
         <version>${javax.xml.soap-api.version}</version>
       </dependency>
+      
+      <!-- Lombok -->
+      <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <version>${lombok.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      
     </dependencies>
   </dependencyManagement>
 

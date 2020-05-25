@@ -21,7 +21,6 @@ import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
 import org.opensmartgridplatform.domain.core.entities.Event;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
-import org.opensmartgridplatform.domain.core.exceptions.ArgumentNullOrEmptyException;
 import org.opensmartgridplatform.domain.core.specifications.EventSpecifications;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup;
 import org.opensmartgridplatform.domain.core.valueobjects.EventType;
@@ -30,41 +29,44 @@ import org.springframework.data.jpa.domain.Specification;
 public class JpaEventSpecifications implements EventSpecifications {
 
     private static final String DEVICE = "device";
+    private static final String DESCRIPTION = "description";
+    private static final Specification<Event> NO_FILTER = (deviceRoot, query, cb) -> cb.and();
 
     @Override
-    public Specification<Event> isCreatedAfter(final Date dateFrom) throws ArgumentNullOrEmptyException {
+    public Specification<Event> isCreatedAfter(final Date dateFrom) {
 
         if (dateFrom == null) {
-            throw new ArgumentNullOrEmptyException("dateFrom");
+            return NO_FILTER;
         }
 
         return ((eventRoot, query, cb) -> cb.greaterThanOrEqualTo(eventRoot.<Date> get("dateTime"), dateFrom));
     }
 
     @Override
-    public Specification<Event> isCreatedBefore(final Date dateUntil) throws ArgumentNullOrEmptyException {
+    public Specification<Event> isCreatedBefore(final Date dateUntil) {
 
         if (dateUntil == null) {
-            throw new ArgumentNullOrEmptyException("dateUntil");
+            return NO_FILTER;
         }
 
         return ((eventRoot, query, cb) -> cb.lessThanOrEqualTo(eventRoot.<Date> get("dateTime"), dateUntil));
     }
 
     @Override
-    public Specification<Event> isFromDevice(final Device device) throws ArgumentNullOrEmptyException {
+    public Specification<Event> isFromDevice(final Device device) {
+
         if (device == null) {
-            throw new ArgumentNullOrEmptyException(DEVICE);
+            return NO_FILTER;
         }
 
         return ((eventRoot, query, cb) -> cb.equal(eventRoot.<Integer> get(DEVICE), device.getId()));
     }
 
     @Override
-    public Specification<Event> isAuthorized(final Organisation organisation) throws ArgumentNullOrEmptyException {
+    public Specification<Event> isAuthorized(final Organisation organisation) {
 
         if (organisation == null) {
-            throw new ArgumentNullOrEmptyException("organisation");
+            return NO_FILTER;
         }
 
         return ((eventRoot, query, cb) -> this.createPredicateForIsAuthorized(eventRoot, query, cb, organisation));
@@ -84,9 +86,9 @@ public class JpaEventSpecifications implements EventSpecifications {
     }
 
     @Override
-    public Specification<Event> hasEventTypes(final List<EventType> eventTypes) throws ArgumentNullOrEmptyException {
+    public Specification<Event> hasEventTypes(final List<EventType> eventTypes) {
         if (eventTypes == null || eventTypes.isEmpty()) {
-            throw new ArgumentNullOrEmptyException("eventTypes");
+            return NO_FILTER;
         }
 
         return ((eventRoot, query, cb) -> this.createPredicateForHasEventTypes(eventRoot, eventTypes));
@@ -97,5 +99,23 @@ public class JpaEventSpecifications implements EventSpecifications {
         final Path<Event> eventType = eventRoot.<Event> get("eventType");
 
         return eventType.in(eventTypes);
+    }
+
+    @Override
+    public Specification<Event> withDescription(final String description) {
+        if (description == null) {
+            return NO_FILTER;
+        }
+
+        return ((eventRoot, query, cb) -> cb.equal(eventRoot.<String> get(DESCRIPTION), description));
+    }
+
+    @Override
+    public Specification<Event> startsWithDescription(final String descriptionStartsWith) {
+        if (descriptionStartsWith == null) {
+            return NO_FILTER;
+        }
+
+        return ((eventRoot, query, cb) -> cb.like(eventRoot.<String> get(DESCRIPTION), descriptionStartsWith + "%"));
     }
 }
