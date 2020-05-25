@@ -125,7 +125,7 @@
     <jacoco.version>0.8.5</jacoco.version>
     <selenium.java.version>3.141.59</selenium.java.version>
     <SunriseSunsetCalculator.version>1.2</SunriseSunsetCalculator.version>
-    <ant.junit.version>1.10.7</ant.junit.version>
+    <ant.junit.version>1.10.8</ant.junit.version>
     <args4j.version>2.33</args4j.version>
     <cucumber.version>5.6.0</cucumber.version>
     <sun.httpserver.version>20070405</sun.httpserver.version>
