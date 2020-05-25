@@ -8,7 +8,6 @@
 package org.opensmartgridplatform.shared.application.config;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.TimeZone;
 
 import javax.naming.Context;
@@ -22,8 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-import ch.qos.logback.core.joran.spi.JoranException;
-import ch.qos.logback.ext.spring.LogbackConfigurer;
+import ch.qos.logback.classic.util.ContextInitializer;
 
 /**
  * Web application Java configuration class.
@@ -31,8 +29,8 @@ import ch.qos.logback.ext.spring.LogbackConfigurer;
 public abstract class AbstractApplicationInitializer {
 
     protected final Logger logger;
-    private Class<?> contextClass;
-    private String logConfig;
+    private final Class<?> contextClass;
+    private final String logConfig;
     protected AnnotationConfigWebApplicationContext rootContext;
 
     /**
@@ -82,10 +80,10 @@ public abstract class AbstractApplicationInitializer {
             // Load specific logback configuration, otherwise fallback to
             // classpath logback.xml
             if (new File(logLocation).exists()) {
-                LogbackConfigurer.initLogging(logLocation);
+                System.setProperty(ContextInitializer.CONFIG_FILE_PROPERTY, logLocation);
                 this.logger.info("Initialized logging using {}", this.logConfig);
             }
-        } catch (final NamingException | FileNotFoundException | JoranException e) {
+        } catch (final NamingException e) {
             this.logger.info("Failed to initialize logging using {}", this.logConfig, e);
             throw new ServletException(e);
         }
