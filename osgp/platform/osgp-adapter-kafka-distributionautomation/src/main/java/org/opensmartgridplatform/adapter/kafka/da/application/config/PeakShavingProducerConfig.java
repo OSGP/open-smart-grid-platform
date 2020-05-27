@@ -7,7 +7,6 @@
  */
 package org.opensmartgridplatform.adapter.kafka.da.application.config;
 
-import org.opensmartgridplatform.adapter.kafka.da.avro.MeterReading;
 import org.opensmartgridplatform.shared.application.config.kafka.AbstractKafkaProducerConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,18 +16,18 @@ import org.springframework.core.env.Environment;
 import org.springframework.kafka.core.KafkaTemplate;
 
 @Configuration
-public class KafkaProducerConfig extends AbstractKafkaProducerConfig<String, MeterReading> {
+public class PeakShavingProducerConfig extends AbstractKafkaProducerConfig<String, String> {
 
     @Autowired
-    public KafkaProducerConfig(final Environment environment,
-            @Value("${distributionautomation.kafka.common.properties.prefix}") final String propertiesPrefix,
-            @Value("${distributionautomation.kafka.topic}") final String topic) {
+    public PeakShavingProducerConfig(final Environment environment,
+            @Value("${peakshaving.kafka.common.properties.prefix}") final String propertiesPrefix,
+            @Value("${peakshaving.kafka.topic}") final String topic) {
         super(environment, propertiesPrefix, topic);
     }
 
-    @Bean("distributionAutomationKafkaTemplate")
+    @Bean("peakShavingKafkaTemplate")
     @Override
-    public KafkaTemplate<String, MeterReading> kafkaTemplate() {
+    public KafkaTemplate<String, String> kafkaTemplate() {
         return this.getKafkaTemplate();
     }
 }

@@ -47,12 +47,12 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 @TestPropertySource("classpath:osgp-adapter-kafka-distributionautomation-test.properties")
 @ExtendWith(MockitoExtension.class)
 @EmbeddedKafka(partitions = 1,
-        topics = { "${distributionautomation.kafka.producer.topic}" },
+        topics = { "${distributionautomation.kafka.topic}" },
         brokerProperties = { "listeners=PLAINTEXT://localhost:9092", "log.dirs=../kafka-logs/",
                 "auto.create.topics.enable=true" })
 class MeterReadingProducerTest {
 
-    @Value("${distributionautomation.kafka.producer.topic}")
+    @Value("${distributionautomation.kafka.topic}")
     private String topic;
 
     @Autowired

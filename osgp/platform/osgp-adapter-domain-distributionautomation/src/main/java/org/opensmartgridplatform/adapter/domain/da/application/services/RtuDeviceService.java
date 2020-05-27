@@ -72,8 +72,9 @@ public class RtuDeviceService {
 
     private void throwExceptionOnExistingDevice(final AddRtuDeviceRequest addRtuDeviceRequest)
             throws FunctionalException {
-        if (this.rtuDeviceRepository
-                .findByDeviceIdentification(addRtuDeviceRequest.getRtuDevice().getDeviceIdentification()) != null) {
+
+        final String newDeviceIdentification = addRtuDeviceRequest.getRtuDevice().getDeviceIdentification();
+        if (this.rtuDeviceRepository.findByDeviceIdentification(newDeviceIdentification).isPresent()) {
             throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICE,
                     ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION);
         }
