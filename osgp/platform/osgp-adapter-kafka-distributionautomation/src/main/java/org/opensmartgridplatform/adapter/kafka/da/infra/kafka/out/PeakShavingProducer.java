@@ -7,7 +7,6 @@
  */
 package org.opensmartgridplatform.adapter.kafka.da.infra.kafka.out;
 
-import org.opensmartgridplatform.adapter.kafka.da.application.mapping.DistributionAutomationMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +22,8 @@ public class PeakShavingProducer {
     private final KafkaTemplate<String, String> kafkaTemplate;
 
     @Autowired
-    public PeakShavingProducer(@Qualifier("peakShavingKafkaTemplate") final KafkaTemplate<String, String> kafkaTemplate,
-            final DistributionAutomationMapper mapper) {
+    public PeakShavingProducer(
+            @Qualifier("peakShavingKafkaTemplate") final KafkaTemplate<String, String> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 

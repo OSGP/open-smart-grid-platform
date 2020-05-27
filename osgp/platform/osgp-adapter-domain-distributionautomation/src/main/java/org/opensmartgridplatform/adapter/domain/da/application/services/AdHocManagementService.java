@@ -18,6 +18,7 @@ import org.opensmartgridplatform.dto.da.GetDeviceModelResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
@@ -100,9 +101,9 @@ public class AdHocManagementService extends BaseService {
         this.responseMessageRouter.send(responseMessage, messageType);
     }
 
-    public void handleGetDataResponse(final ResponseMessage response) {
-        LOGGER.info("Forward GET_DATA response {} for device: {}", response, response.getDeviceIdentification());
-        this.responseMessageRouter.send(response, "GET_DATA");
+    public void handleGetDataResponse(final ResponseMessage response, final MessageType messageType) {
+        LOGGER.info("Forward {} response {} for device: {}", messageType, response, response.getDeviceIdentification());
+        this.responseMessageRouter.send(response, messageType.toString());
     }
 
 }

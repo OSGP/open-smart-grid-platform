@@ -21,7 +21,7 @@ public class PeakShavingProducerConfig extends AbstractKafkaProducerConfig<Strin
     @Autowired
     public PeakShavingProducerConfig(final Environment environment,
             @Value("${peakshaving.kafka.common.properties.prefix}") final String propertiesPrefix,
-            @Value("${peakshaving.kafka.producer.topic}") final String topic) {
+            @Value("${peakshaving.kafka.topic}") final String topic) {
         super(environment, propertiesPrefix, topic);
     }
 

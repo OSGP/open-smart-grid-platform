@@ -7,7 +7,6 @@
  */
 package org.opensmartgridplatform.adapter.kafka.da.infra.jms.messageprocessors;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -17,7 +16,6 @@ import javax.jms.ObjectMessage;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -69,16 +67,11 @@ class DomainResponseMessageProcessorTest {
         when(this.receivedMessage.getStringProperty(Constants.RESULT)).thenReturn(resultType.toString());
         when(this.receivedMessage.getObject()).thenReturn(responseMessage);
 
-        final ArgumentCaptor<String> argumentCaptor = ArgumentCaptor.forClass(String.class);
-
         // Act
         this.domainResponseMessageProcessor.processMessage(this.receivedMessage);
 
         // Assert
-        verify(this.peakShavingProducer, times(1)).send(argumentCaptor.capture());
-
-        final String capturedArgument = argumentCaptor.getValue();
-        assertThat(capturedArgument).isEqualTo(payload);
+        verify(this.peakShavingProducer, times(1)).send(payload);
     }
 
 }

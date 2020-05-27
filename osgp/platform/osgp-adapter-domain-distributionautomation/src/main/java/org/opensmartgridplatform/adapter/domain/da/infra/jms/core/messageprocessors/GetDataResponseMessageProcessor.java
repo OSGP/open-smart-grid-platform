@@ -51,6 +51,16 @@ public class GetDataResponseMessageProcessor extends BaseNotificationMessageProc
 
     private Optional<ResponseMessage> getResponseValues(final ObjectMessage message) {
         try {
+            if (message.getObject() == null) {
+                LOGGER.error("UNRECOVERABLE ERROR, the message object is null, giving up.");
+                return Optional.empty();
+            }
+
+            if (!(message.getObject() instanceof ResponseMessage)) {
+                LOGGER.error("UNRECOVERABLE ERROR, the message object is not a ResponseMessage instance, giving up.");
+                return Optional.empty();
+            }
+
             return Optional.of((ResponseMessage) message.getObject());
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
@@ -60,7 +70,7 @@ public class GetDataResponseMessageProcessor extends BaseNotificationMessageProc
 
     private void processResponseValues(final ResponseMessage response) {
         try {
-            this.adHocManagementService.handleGetDataResponse(response);
+            this.adHocManagementService.handleGetDataResponse(response, GET_DATA);
         } catch (final RuntimeException e) {
             this.handleError(e, response.getCorrelationUid(), response.getOrganisationIdentification(),
                     response.getDeviceIdentification(), GET_DATA.toString());

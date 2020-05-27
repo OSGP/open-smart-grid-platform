@@ -7,7 +7,6 @@
  */
 package org.opensmartgridplatform.adapter.domain.da.infra.jms.core.messageprocessors;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -19,16 +18,15 @@ import javax.jms.ObjectMessage;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.opensmartgridplatform.adapter.domain.da.application.services.AdHocManagementService;
-import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 
-class GetDataResponseMessageProcessorTest {
+public class GetDataResponseMessageProcessorTest {
 
     @InjectMocks
     private GetDataResponseMessageProcessor getDataResponseMessageProcessor;
@@ -49,35 +47,25 @@ class GetDataResponseMessageProcessorTest {
     void handlesResponseMessageValuesTest() throws JMSException {
         // Arrange
         final String correlationUid = "CorrelationID-1";
-        final String messageType = "GET_DATA";
+        final MessageType messageType = MessageType.GET_DATA;
         final String organisationIdentification = "test-org";
         final String deviceIdentification = "device1";
 
         final ResponseMessage responseMessage = new ResponseMessage.Builder().withCorrelationUid(correlationUid)
-                .withMessageType(messageType)
+                .withMessageType(messageType.toString())
                 .withOrganisationIdentification(organisationIdentification)
                 .withDeviceIdentification(deviceIdentification)
                 .withResult(ResponseMessageResultType.OK)
                 .withDataObject("the payload")
                 .build();
 
-        when(this.receivedMessage.getJMSCorrelationID()).thenReturn(correlationUid);
-        when(this.receivedMessage.getJMSType()).thenReturn(messageType);
-        when(this.receivedMessage.getStringProperty(Constants.ORGANISATION_IDENTIFICATION))
-                .thenReturn(organisationIdentification);
-        when(this.receivedMessage.getStringProperty(Constants.DEVICE_IDENTIFICATION)).thenReturn(deviceIdentification);
         when(this.receivedMessage.getObject()).thenReturn(responseMessage);
-
-        final ArgumentCaptor<ResponseMessage> argumentCaptor = ArgumentCaptor.forClass(ResponseMessage.class);
 
         // Act
         this.getDataResponseMessageProcessor.processMessage(this.receivedMessage);
 
         // Assert
-        verify(this.adHocManagementService, times(1)).handleGetDataResponse(argumentCaptor.capture());
-
-        final ResponseMessage capturedArgument = argumentCaptor.getValue();
-        assertThat(capturedArgument).isEqualToComparingFieldByField(responseMessage);
+        verify(this.adHocManagementService, times(1)).handleGetDataResponse(responseMessage, messageType);
     }
 
     @Test
@@ -89,7 +77,7 @@ class GetDataResponseMessageProcessorTest {
         this.getDataResponseMessageProcessor.processMessage(this.receivedMessage);
 
         // Assert
-        verify(this.adHocManagementService, never()).handleGetDataResponse(any());
+        verify(this.adHocManagementService, never()).handleGetDataResponse(any(), any());
     }
 
 }

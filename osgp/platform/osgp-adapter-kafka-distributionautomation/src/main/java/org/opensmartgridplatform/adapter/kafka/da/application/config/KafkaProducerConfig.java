@@ -22,7 +22,7 @@ public class KafkaProducerConfig extends AbstractKafkaProducerConfig<String, Met
     @Autowired
     public KafkaProducerConfig(final Environment environment,
             @Value("${distributionautomation.kafka.common.properties.prefix}") final String propertiesPrefix,
-            @Value("${distributionautomation.kafka.producer.topic}") final String topic) {
+            @Value("${distributionautomation.kafka.topic}") final String topic) {
         super(environment, propertiesPrefix, topic);
     }
 
