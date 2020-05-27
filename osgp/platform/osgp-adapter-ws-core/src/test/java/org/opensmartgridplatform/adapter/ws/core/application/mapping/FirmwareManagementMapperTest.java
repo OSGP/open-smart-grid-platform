@@ -7,7 +7,8 @@
  */
 package org.opensmartgridplatform.adapter.ws.core.application.mapping;
 
-import org.assertj.core.api.Assertions;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FirmwareModuleDataBuilder;
@@ -29,8 +30,7 @@ public class FirmwareManagementMapperTest {
                 .build();
 
         final FirmwareModuleData mappedValue = this.map(source);
-        Assertions.assertThat(this.mapper.map(source, FirmwareModuleData.class))
-                .isEqualToComparingFieldByFieldRecursively(mappedValue);
+        assertThat(this.mapper.map(source, FirmwareModuleData.class)).usingRecursiveComparison().isEqualTo(mappedValue);
     }
 
     @BeforeEach

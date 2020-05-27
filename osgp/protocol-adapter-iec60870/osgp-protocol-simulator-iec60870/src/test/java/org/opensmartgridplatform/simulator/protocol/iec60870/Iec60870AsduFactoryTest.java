@@ -16,6 +16,7 @@ import org.openmuc.j60870.CauseOfTransmission;
 import org.openmuc.j60870.ie.IeQualifierOfInterrogation;
 import org.openmuc.j60870.ie.InformationElement;
 import org.openmuc.j60870.ie.InformationObject;
+import org.opensmartgridplatform.iec60870.Iec60870Server;
 import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870AsduFactory;
 
 /**
@@ -68,6 +69,11 @@ public class Iec60870AsduFactoryTest {
         public ASdu createInterrogationCommandResponseAsdu() {
             // we only test the default methods in this class
             return null;
+        }
+
+        @Override
+        public void setIec60870Server(final Iec60870Server iec60870Server) {
+            // we only test the default methods in this class
         }
 
     }

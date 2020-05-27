@@ -80,4 +80,8 @@ public class Iec60870MockServer {
         return new Iec60870Server(serverEventListener, this.port);
     }
 
+    public Iec60870Server getRtuSimulator() {
+        return this.rtuSimulator;
+    }
+
 }
