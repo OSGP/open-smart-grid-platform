@@ -116,7 +116,7 @@
     <jackson-databind.version>2.10.3</jackson-databind.version>
     <cxf.version>3.3.6</cxf.version>
     <quartz.version>2.3.2</quartz.version>
-    <hikaricp.version>3.4.3</hikaricp.version>
+    <hikaricp.version>3.4.5</hikaricp.version>
     <micrometer.version>1.5.0</micrometer.version>
     <protobuf.version>2.4.1</protobuf.version>
     <protobuf.maven.plugin>0.6.5</protobuf.maven.plugin>
