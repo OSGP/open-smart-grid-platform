@@ -106,12 +106,12 @@ INSERT INTO public.device(
             device_type, is_activated,                 
             protocol_info_id, network_address,  
             in_maintenance, technical_installation_date, 
-            device_model, device_lifecycle_status)
-    VALUES (now(), now(), 0, 'TST-1', 
+            device_model, device_lifecycle_status, integration_type)
+    VALUES (now(), now(), 0, 'TST-01', 
 	    'PSD', true, 
             (SELECT id FROM protocol_info WHERE protocol = 'MQTT'), '127.0.0.1', 
             false, now(), 
-            (SELECT id FROM device_model WHERE model_code = 'TSTMOD'), 'IN_USE'); 
+            (SELECT id FROM device_model WHERE model_code = 'TSTMOD'), 'IN_USE', 'KAFKA'); 
 ```
 
 These queries depend on the dummy device scripts. 
@@ -120,12 +120,12 @@ It may be needed to delete TST-1 or rename it before inserting the device using 
 ```
 INSERT INTO public.rtu_device(
             id, last_communication_time)
-    VALUES ((SELECT id FROM device WHERE device_identification = 'TST-1'), now());
+    VALUES ((SELECT id FROM device WHERE device_identification = 'TST-01'), now());
 
 INSERT INTO public.device_authorization(
             creation_time, modification_time, version, function_group, 
             device, organisation)
-    VALUES (now(), now(), 0, 0, (SELECT id FROM device WHERE device_identification = 'TST-1'), 
+    VALUES (now(), now(), 0, 0, (SELECT id FROM device WHERE device_identification = 'TST-01'), 
             (SELECT id FROM organisation WHERE organisation_identification = 'LianderNetManagement'));
 ```
 
