@@ -92,7 +92,7 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor extends DeviceReq
         final String ipAddress = unsignedOslpEnvelopeDto.getIpAddress();
         final int retryCount = unsignedOslpEnvelopeDto.getRetryCount();
         final boolean isScheduled = unsignedOslpEnvelopeDto.isScheduled();
-        final ScheduleMessageDataContainerDto scheduleMessageDataContainer = (ScheduleMessageDataContainerDto) unsignedOslpEnvelopeDto
+        final ScheduleMessageDataContainerDto dataContainer = (ScheduleMessageDataContainerDto) unsignedOslpEnvelopeDto
                 .getExtraData();
 
         final DeviceResponseHandler deviceResponseHandler = new DeviceResponseHandler() {
@@ -112,14 +112,25 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor extends DeviceReq
 
         };
 
-        final SetScheduleDeviceRequest deviceRequest = new SetScheduleDeviceRequest(organisationIdentification,
-                deviceIdentification, correlationUid, scheduleMessageDataContainer, RelayTypeDto.TARIFF, domain,
-                domainVersion, messageType, messagePriority, ipAddress, retryCount, isScheduled);
+        final DeviceRequest.Builder builder = DeviceRequest.newBuilder()
+                .organisationIdentification(organisationIdentification)
+                .deviceIdentification(deviceIdentification)
+                .correlationUid(correlationUid)
+                .domain(domain)
+                .domainVersion(domainVersion)
+                .messageType(messageType)
+                .messagePriority(messagePriority)
+                .ipAddress(ipAddress)
+                .retryCount(retryCount)
+                .isScheduled(isScheduled);
+
+        final SetScheduleDeviceRequest deviceRequest = new SetScheduleDeviceRequest(builder,
+                dataContainer, RelayTypeDto.TARIFF);
 
         try {
             this.deviceService.doSetSchedule(oslpEnvelope, deviceRequest, deviceResponseHandler, ipAddress, domain,
                     domainVersion, messageType, messagePriority, retryCount, isScheduled,
-                    scheduleMessageDataContainer.getPageInfo());
+                    dataContainer.getPageInfo());
         } catch (final IOException e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain, domainVersion,
                     messageType, messagePriority, retryCount);
