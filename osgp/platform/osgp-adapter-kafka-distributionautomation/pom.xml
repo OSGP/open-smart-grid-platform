@@ -176,6 +176,14 @@
       <groupId>org.springframework.kafka</groupId>
       <artifactId>spring-kafka-test</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.scala-lang</groupId>
+      <artifactId>scala-library</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.scala-lang</groupId>
+      <artifactId>scala-reflect</artifactId>
+    </dependency>
 
     <!-- Testing dependencies -->
     <dependency>
