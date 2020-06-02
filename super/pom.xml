@@ -380,6 +380,12 @@
         <groupId>org.springframework.data</groupId>
         <artifactId>spring-data-jpa</artifactId>
         <version>${spring.data.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.springframework.data</groupId>
@@ -409,6 +415,12 @@
         <groupId>org.springframework.ws</groupId>
         <artifactId>spring-ws-core</artifactId>
         <version>${spring.wscore.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.springframework.ws</groupId>
@@ -444,6 +456,16 @@
         <groupId>org.apache.ws.security</groupId>
         <artifactId>wss4j</artifactId>
         <version>${apache.wss4j.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.santuario</groupId>
+            <artifactId>xmlsec</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <!-- Servlet API 3.0 -->
@@ -483,6 +505,12 @@
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-rt-transports-http-hc</artifactId>
         <version>${cxf.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore-nio</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.cxf</groupId>
@@ -507,6 +535,12 @@
         <groupId>com.fasterxml.jackson.jaxrs</groupId>
         <artifactId>jackson-jaxrs-json-provider</artifactId>
         <version>${jackson.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
@@ -533,6 +567,12 @@
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-core</artifactId>
         <version>${hibernate.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.hibernate</groupId>
@@ -550,6 +590,12 @@
         <groupId>org.hibernate.validator</groupId>
         <artifactId>hibernate-validator</artifactId>
         <version>${hibernate.validator.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.fasterxml</groupId>
+            <artifactId>classmate</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <!-- Bean validation 2.0 / JSR 380 -->
@@ -603,6 +649,12 @@
         <groupId>org.apache.avro</groupId>
         <artifactId>avro</artifactId>
         <version>${avro.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.springframework.kafka</groupId>
@@ -663,6 +715,12 @@
         <groupId>org.apache.activemq</groupId>
         <artifactId>activemq-spring</artifactId>
         <version>${apache.activemq.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <dependency>
@@ -802,6 +860,20 @@
         <artifactId>spring-kafka-test</artifactId>
         <version>${spring.kafka.version}</version>
         <scope>test</scope>
+	    <exclusions>
+	      <exclusion>
+	        <groupId>com.fasterxml.jackson.core</groupId>
+	        <artifactId>jackson-annotations</artifactId>
+	      </exclusion>
+          <exclusion>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-reflect</artifactId>
+          </exclusion>
+	    </exclusions>
       </dependency>
 
       <!-- Cucumber Framework -->
