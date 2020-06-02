@@ -862,7 +862,7 @@
         <artifactId>spring-kafka-test</artifactId>
         <version>${spring.kafka.version}</version>
         <scope>test</scope>
-	    <exclusions>
+        <exclusions>
           <exclusion>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
