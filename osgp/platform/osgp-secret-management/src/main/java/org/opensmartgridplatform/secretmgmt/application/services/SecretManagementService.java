@@ -85,9 +85,4 @@ public class SecretManagementService implements SecretManagement {
             return null;
         }
     }
-
-    @Override
-    public TypedSecret generateSecret(final SecretType secretType) throws Exception {
-        return null;
-    }
 }
