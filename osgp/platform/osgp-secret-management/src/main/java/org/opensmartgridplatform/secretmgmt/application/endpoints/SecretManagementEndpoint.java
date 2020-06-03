@@ -6,7 +6,7 @@ import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.Osg
 import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.StoreSecretsRequest;
 import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.StoreSecretsResponse;
 import org.opensmartgridplatform.secretmgmt.application.domain.TypedSecret;
-import org.opensmartgridplatform.secretmgmt.application.services.SecretMangementService;
+import org.opensmartgridplatform.secretmgmt.application.services.SecretManagementService;
 import org.opensmartgridplatform.secretmgmt.application.services.encryption.providers.EncryptionProvider;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
@@ -20,10 +20,10 @@ import java.util.List;
 public class SecretManagementEndpoint {
     private static final String NAMESPACE_URI = "http://www.opensmartgridplatform.org/schemas/security/secretmanagement/2020/05";
 
-    private SecretMangementService secretManagementService;
+    private SecretManagementService secretManagementService;
     private EncryptionProvider jreEncryptionProvider;
 
-    public void SecretManagementEndpoint(SecretMangementService secretManagementService, EncryptionProvider soapSecretEncryptionProvider) {
+    public SecretManagementEndpoint(SecretManagementService secretManagementService, EncryptionProvider soapSecretEncryptionProvider) {
         this.secretManagementService = secretManagementService;
         this.jreEncryptionProvider = soapSecretEncryptionProvider;
     }

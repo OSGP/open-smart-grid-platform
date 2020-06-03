@@ -8,11 +8,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class SecretMangementService implements SecretManagement {
+public class SecretManagementService implements SecretManagement {
 
     private EncryptionDelegate encryptionDelegate;
 
-    public SecretMangementService(EncryptionDelegate encryptionDelegate) {
+    public SecretManagementService(EncryptionDelegate encryptionDelegate) {
         this.encryptionDelegate = encryptionDelegate;
     }
 
