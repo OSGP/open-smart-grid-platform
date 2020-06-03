@@ -1,7 +1,10 @@
 package org.opensmartgridplatform.secretmgmt.application.endpoints;
 
-import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.GetSecretsResponse;
 import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.GetSecretsRequest;
+import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.GetSecretsResponse;
+import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.OsgpResultType;
+import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.StoreSecretsRequest;
+import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.StoreSecretsResponse;
 import org.opensmartgridplatform.secretmgmt.application.services.SecretMangementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
@@ -24,9 +27,15 @@ public class SecretManagementEndpoint {
     @ResponsePayload
     public GetSecretsResponse getSecretsRequest(@RequestPayload GetSecretsRequest request) {
         GetSecretsResponse response = new GetSecretsResponse();
-
-        response.setName("Hello to " + request.getName());
+        response.setResult(OsgpResultType.OK);
         return response;
     }
 
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "storeSecretsRequest")
+    @ResponsePayload
+    public StoreSecretsResponse storeSecretsRequest(@RequestPayload StoreSecretsRequest request) {
+        StoreSecretsResponse response = new StoreSecretsResponse();
+        response.setResult(OsgpResultType.OK);
+        return response;
+    }
 }

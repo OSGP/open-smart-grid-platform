@@ -9,8 +9,8 @@ import org.springframework.ws.config.annotation.EnableWs;
 import org.springframework.ws.config.annotation.WsConfigurerAdapter;
 import org.springframework.ws.transport.http.MessageDispatcherServlet;
 import org.springframework.ws.wsdl.wsdl11.DefaultWsdl11Definition;
-import org.springframework.xml.xsd.SimpleXsdSchema;
-import org.springframework.xml.xsd.XsdSchema;
+import org.springframework.xml.xsd.XsdSchemaCollection;
+import org.springframework.xml.xsd.commons.CommonsXsdSchemaCollection;
 
 @EnableWs
 @Configuration
@@ -29,17 +29,19 @@ public class WebServiceConfig extends WsConfigurerAdapter {
      *    http://localhost:8080/ws/SecretManagement/secretManagement.wsdl
      */
     @Bean(name = "secretManagement")
-    public DefaultWsdl11Definition defaultWsdl11Definition(XsdSchema secretManagementSchema) {
+    public DefaultWsdl11Definition defaultWsdl11Definition(XsdSchemaCollection secretManagementSchemas) {
         DefaultWsdl11Definition wsdl11Definition = new DefaultWsdl11Definition();
         wsdl11Definition.setPortTypeName("SecretManagementPort");
         wsdl11Definition.setLocationUri("/ws/SecretManagement");
         wsdl11Definition.setTargetNamespace("http://www.opensmartgridplatform.org/schemas/security/secretmanagement/2020/05");
-        wsdl11Definition.setSchema(secretManagementSchema);
+        wsdl11Definition.setSchemaCollection(secretManagementSchemas);
         return wsdl11Definition;
     }
 
     @Bean
-    public XsdSchema secretManagementSchema() {
-        return new SimpleXsdSchema(new ClassPathResource("schemas/secretmgmt.xsd"));
+    public XsdSchemaCollection secretManagementSchemas() {
+        CommonsXsdSchemaCollection sc = new CommonsXsdSchemaCollection();
+        sc.setXsds(new ClassPathResource("schemas/secretmgmt.xsd"));
+        return sc;
     }
 }
