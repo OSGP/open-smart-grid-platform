@@ -1,5 +1,7 @@
 package org.opensmartgridplatform.secretmgmt.application.services.encryption.providers;
 
+import org.springframework.beans.factory.annotation.Value;
+
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
@@ -15,10 +17,12 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider implements
 
     private static final Logger LOGGER = Logger.getLogger(HsmEncryptionProvider.class.getName());
 
-    public static final String ALGORITHM = "AES/CBC/NoPadding";
-    public static final String PROVIDER = "nCipherKM";
-    public static final String TYPE = "ncipher.sworld";
-    public static final String KEYSTORENAME = "houston.keystore";
+    private static final String ALGORITHM = "AES/CBC/NoPadding";
+    private static final String PROVIDER = "nCipherKM";
+    private static final String TYPE = "ncipher.sworld";
+
+    @Value( "${hsm.keytore.file}" )
+    private static final String KEYSTORENAME = "houston.keystore";
 
     private static final byte[] IV = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
@@ -38,7 +42,6 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider implements
      * @throws Exception when keystore can not be accessed
      */
     protected Key getSecretEncryptionKey() throws Exception {
-
         KeyStore ks = KeyStore.getInstance(TYPE, PROVIDER);
         FileInputStream fIn = new FileInputStream(KEYSTORENAME);
         ks.load(fIn, null);

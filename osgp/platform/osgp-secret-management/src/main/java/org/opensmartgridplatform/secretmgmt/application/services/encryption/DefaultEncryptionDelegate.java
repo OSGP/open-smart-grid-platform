@@ -16,9 +16,9 @@ public class DefaultEncryptionDelegate implements EncryptionDelegate {
 
     private final List<EncryptionProvider> providers = new ArrayList<>();
 
-    public DefaultEncryptionDelegate() {
+    public DefaultEncryptionDelegate(String encodedJreKey) {
         providers.add(new HsmEncryptionProvider());
-        providers.add(new JreEncryptionProvider());
+        providers.add(new JreEncryptionProvider(encodedJreKey));
     }
 
     @Override

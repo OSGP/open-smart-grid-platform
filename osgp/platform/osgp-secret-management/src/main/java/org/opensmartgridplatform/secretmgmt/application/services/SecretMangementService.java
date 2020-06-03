@@ -10,9 +10,9 @@ import java.util.List;
 @Service
 public class SecretMangementService implements SecretManagement {
 
-    private final EncryptionDelegate encryptionDelegate;
+    private EncryptionDelegate encryptionDelegate;
 
-        public SecretMangementService(EncryptionDelegate encryptionDelegate) {
+    public SecretMangementService(EncryptionDelegate encryptionDelegate) {
         this.encryptionDelegate = encryptionDelegate;
     }
 
