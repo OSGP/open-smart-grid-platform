@@ -13,5 +13,6 @@ public interface DbEncryptionKeyRepository extends JpaRepository<DbEncryptionKey
     @Query("SELECT ekr FROM encryptionKeyReference ekr "+
             "WHERE ekr.validFrom < :date AND (ekr.validTo IS NULL OR ekr.validTo > :date) "+
             "ORDER BY ekr.validFrom DESC")
+    //TODO consider using native query/caching if performance not good enough
     Page<DbEncryptionKeyReference> findValidOrderedByValidFrom(@Param("date") Date validDate, Pageable pageable);
 }
