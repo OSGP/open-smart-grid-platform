@@ -64,7 +64,7 @@ public class SecretManagementService implements SecretManagement {
         final Secret secret = new Secret(secretBytes);
         try {
             final EncryptedSecret encryptedSecret = this.encryptionDelegate.encrypt(keyReference.getEncryptionProviderType(),
-                    secret);
+                    secret, "1" /*todo*/);
             final DbEncryptedSecret dbEncryptedSecret = new DbEncryptedSecret();
             dbEncryptedSecret.setDeviceIdentification(deviceIdentification);
             dbEncryptedSecret.setEncodedSecret(HexUtils.toHexString(encryptedSecret.getSecret()));
@@ -112,7 +112,7 @@ public class SecretManagementService implements SecretManagement {
             final EncryptedSecret encryptedSecret = new EncryptedSecret(
                     dbEncryptedSecret.getEncryptionKeyReference().getEncryptionProviderType(), secretBytes);
             try {
-                final Secret decryptedSecret = this.encryptionDelegate.decrypt(encryptedSecret);
+                final Secret decryptedSecret = this.encryptionDelegate.decrypt(encryptedSecret, "1" /*TODO*/);
                 final TypedSecret typedSecret = new TypedSecret();
                 typedSecret.setSecret(decryptedSecret.getSecret().toString()); //TODO check with Erik
                 typedSecret.setSecretType(dbEncryptedSecret.getSecretType());

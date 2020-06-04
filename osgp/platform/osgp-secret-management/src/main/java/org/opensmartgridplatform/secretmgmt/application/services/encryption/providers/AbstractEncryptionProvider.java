@@ -5,6 +5,7 @@ import org.opensmartgridplatform.secretmgmt.application.services.encryption.Secr
 
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
+import java.io.File;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -16,16 +17,22 @@ public abstract class AbstractEncryptionProvider {
 
     private static final Logger LOGGER = Logger.getLogger(AbstractEncryptionProvider.class.getName());
 
+    protected File keystore;
+
     public abstract EncryptionProviderType getType();
     protected abstract Cipher getCipher() throws NoSuchPaddingException, NoSuchAlgorithmException, NoSuchProviderException;
     protected abstract AlgorithmParameterSpec getAlgorithmParameterSpec();
-    protected abstract Key getSecretEncryptionKey() throws Exception;
+    protected abstract Key getSecretEncryptionKey(String keyReference) throws Exception;
     protected abstract int getIVLength();
 
-    public EncryptedSecret encrypt(Secret secret) throws Exception {
+    public void setKeystore(File keystore) {
+        this.keystore = keystore;
+    }
+
+    public EncryptedSecret encrypt(Secret secret, String keyReference) throws Exception {
         try {
             final Cipher cipher = this.getCipher();
-            cipher.init(Cipher.ENCRYPT_MODE, this.getSecretEncryptionKey(), this.getAlgorithmParameterSpec());
+            cipher.init(Cipher.ENCRYPT_MODE, this.getSecretEncryptionKey(keyReference), this.getAlgorithmParameterSpec());
             return new EncryptedSecret(this.getType(), cipher.doFinal(secret.getSecret()));
         } catch (Exception e) {
             //InvalidKeyException | IllegalBlockSizeException | BadPaddingException | InvalidAlgorithmParameterException |
@@ -35,15 +42,15 @@ public abstract class AbstractEncryptionProvider {
         }
     }
 
-    public Secret decrypt(EncryptedSecret secret) throws Exception {
+    public Secret decrypt(EncryptedSecret secret, String keyReference) throws Exception {
 
-        if (secret.getEncryptionProviderType() != this.getType()) {
-            throw new IllegalStateException("EncryptionProvider for type " + this.getType().name() + " cannot decrypt secrets of type " + secret.getEncryptionProviderType().name());
+        if (secret.getType() != this.getType()) {
+            throw new IllegalStateException("EncryptionProvider for type " + this.getType().name() + " cannot decrypt secrets of type " + secret.getType().name());
         }
 
         try {
             final Cipher cipher = this.getCipher();
-            cipher.init(Cipher.DECRYPT_MODE, this.getSecretEncryptionKey(), this.getAlgorithmParameterSpec());
+            cipher.init(Cipher.DECRYPT_MODE, this.getSecretEncryptionKey(keyReference), this.getAlgorithmParameterSpec());
             final byte[] decryptedData = cipher.doFinal(secret.getSecret());
 
             if (this.checkNullBytesPrepended(decryptedData)) {
