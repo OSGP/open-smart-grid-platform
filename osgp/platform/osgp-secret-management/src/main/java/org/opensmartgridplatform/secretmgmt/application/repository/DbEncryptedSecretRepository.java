@@ -17,6 +17,7 @@ public interface DbEncryptedSecretRepository extends JpaRepository<DbEncryptedSe
             "WHERE es.deviceIdentification = :deviceIdentification AND es.secretType = :secretType " +
             "AND ekr.validFrom < :date AND (ekr.validTo IS NULL OR ekr.validTo > :date)" +
             "ORDER BY keyReference.validFrom DESC")
+    //TODO find most recent instead of all (secrets table contains history)
     Page<DbEncryptedSecret> findValidOrderedByKeyValidFrom(@Param("deviceIdentification") String deviceIdentification,
             @Param("secretType") SecretType secretType, @Param("date") Date validDate, Pageable pageable);
 

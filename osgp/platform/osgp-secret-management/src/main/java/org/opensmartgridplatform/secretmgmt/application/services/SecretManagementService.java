@@ -1,11 +1,12 @@
 package org.opensmartgridplatform.secretmgmt.application.services;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.tomcat.util.buf.HexUtils;
 import org.opensmartgridplatform.secretmgmt.application.domain.DbEncryptedSecret;
 import org.opensmartgridplatform.secretmgmt.application.domain.DbEncryptionKeyReference;
 import org.opensmartgridplatform.secretmgmt.application.domain.SecretType;
@@ -46,6 +47,7 @@ public class SecretManagementService implements SecretManagement {
 
     private DbEncryptionKeyReference getKey(final TypedSecret typedSecret) {
         final Date now = new Date(); //TODO: UTC?
+        //TODO add configuration to determine encryption provider type
         final Page<DbEncryptionKeyReference> keyRefsPage = this.keyRepository.findValidOrderedByValidFrom(now,
                 Pageable.unpaged());
         if (keyRefsPage.getSize() > 1) {
@@ -58,13 +60,14 @@ public class SecretManagementService implements SecretManagement {
     private DbEncryptedSecret createEncrypted(final String deviceIdentification, final TypedSecret typedSecret,
             final DbEncryptionKeyReference keyReference) {
         final String secretString = typedSecret.getSecret();
-        final Secret secret = new Secret(secretString.getBytes()); //TODO check with Erik
+        final byte[] secretBytes = HexUtils.fromHexString(secretString);
+        final Secret secret = new Secret(secretBytes);
         try {
             final EncryptedSecret encryptedSecret = this.encryptionDelegate.encrypt(keyReference.getEncryptionProviderType(),
                     secret);
             final DbEncryptedSecret dbEncryptedSecret = new DbEncryptedSecret();
             dbEncryptedSecret.setDeviceIdentification(deviceIdentification);
-            dbEncryptedSecret.setEncodedSecret(encryptedSecret.toString());   //TODO check with Erik
+            dbEncryptedSecret.setEncodedSecret(HexUtils.toHexString(encryptedSecret.getSecret()));
             dbEncryptedSecret.setSecretType(typedSecret.getSecretType());
             dbEncryptedSecret.setEncryptionKeyReference(keyReference);
             return dbEncryptedSecret;
@@ -78,13 +81,12 @@ public class SecretManagementService implements SecretManagement {
             throws Exception {
         final Pageable pageable = Pageable.unpaged();
         final Date now = new Date(); //TODO: UTC?
+        final Map<SecretType,List<DbEncryptedSecret>> secretsByTypeMap = new HashMap<>();
+        for (final SecretType secretType : secretTypes) {
+            secretsByTypeMap.put(secretType, this.secretRepository.findValidOrderedByKeyValidFrom(deviceIdentification
+                                , secretType, now, pageable).toList());
+        }
         //@formatter:off
-        final Map<SecretType,List<DbEncryptedSecret>> secretsByTypeMap = secretTypes.stream()
-                .collect(
-                    Collectors.toMap(
-                        Function.identity(),
-                        secretType -> this.secretRepository.findValidOrderedByKeyValidFrom(deviceIdentification
-                                , secretType, now, pageable).toList()));
         return secretsByTypeMap.entrySet().stream()
                 .map(mapEntry -> this.getTypedSecretFromMapEntry(deviceIdentification, mapEntry))
                 .collect(Collectors.toList());

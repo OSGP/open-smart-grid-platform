@@ -1,5 +1,6 @@
 package org.opensmartgridplatform.secretmgmt.application.services.encryption;
 
+import lombok.Getter;
 import org.opensmartgridplatform.secretmgmt.application.services.encryption.providers.EncryptionProviderType;
 
 /**
@@ -7,20 +8,13 @@ import org.opensmartgridplatform.secretmgmt.application.services.encryption.prov
  * A secret contains the type of encryption provider that was used to encrypt it.
  * There is no encoding/decoding.
  */
+@Getter
 public class EncryptedSecret {
-    private byte[] secret;
-    private EncryptionProviderType type;
+    private final byte[] secret;
+    private final EncryptionProviderType type;
 
-    public EncryptedSecret(EncryptionProviderType type, byte[] secret) {
+    public EncryptedSecret(final EncryptionProviderType type, final byte[] secret) {
         this.type = type;
         this.secret = secret;
-    }
-
-    public byte[] getSecret() {
-        return secret;
-    }
-
-    public EncryptionProviderType getEncryptionProviderType() {
-        return type;
     }
 }

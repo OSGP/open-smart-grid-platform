@@ -9,14 +9,16 @@ import javax.persistence.Enumerated;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Encrypted secret.
+ * This an immutable object. Historic entries are saved in the DB.
+ */
 @Entity(name="EncryptedSecret")
 @Getter
 @Setter
 public class DbEncryptedSecret {
     Long id;
     Date creationTime;
-    Date modificationTime;
-    Long lockingVersion; //version used for optimistic locking
     String deviceIdentification;
     @Enumerated(EnumType.STRING)
     SecretType secretType;
