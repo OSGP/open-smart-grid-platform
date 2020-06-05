@@ -7,10 +7,7 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
 import javax.jms.ObjectMessage;
-import javax.jms.Session;
 
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
@@ -19,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Component;
 
 @Component(value = "protocolIec60870OutboundOsgpCoreRequestsMessageSender")
@@ -34,20 +30,14 @@ public class OsgpRequestMessageSender {
     public void send(final RequestMessage requestMessage, final String messageType) {
         LOGGER.info("Sending request message to OSGP.");
 
-        this.jmsTemplate.send(new MessageCreator() {
+        this.jmsTemplate.send(session -> {
+            final ObjectMessage objectMessage = session.createObjectMessage(requestMessage);
+            objectMessage.setJMSType(messageType);
+            objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
+                    requestMessage.getOrganisationIdentification());
+            objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION, requestMessage.getDeviceIdentification());
 
-            @Override
-            public Message createMessage(final Session session) throws JMSException {
-                final ObjectMessage objectMessage = session.createObjectMessage(requestMessage);
-                objectMessage.setJMSType(messageType);
-                objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
-                        requestMessage.getOrganisationIdentification());
-                objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
-                        requestMessage.getDeviceIdentification());
-
-                return objectMessage;
-            }
-
+            return objectMessage;
         });
     }
 
