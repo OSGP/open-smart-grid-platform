@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
+import java.io.File;
 import java.io.FileInputStream;
 import java.security.Key;
 import java.security.KeyStore;
@@ -35,17 +36,18 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider implements
     }
 
     /**
-     * This method reads the 'actual' encryption key (KEK) (from the database).
+     * This method reads the 'actual' encryption key (from the database).
      * Normally this is the key start isValidFrom(now) and isValidUntil(now).
      *
      * @return the key that must be used for encryption/decryption
      * @throws Exception when keystore can not be accessed
      */
-    protected Key getSecretEncryptionKey() throws Exception {
+    protected Key getSecretEncryptionKey(String keyReference) throws Exception {
+        //TODO add a cache (in base?)
         KeyStore ks = KeyStore.getInstance(TYPE, PROVIDER);
         FileInputStream fIn = new FileInputStream(KEYSTORENAME);
         ks.load(fIn, null);
-        Key key = ks.getKey(String.valueOf(1), null);
+        Key key = ks.getKey(keyReference, null);
         fIn.close();
 
         return key;

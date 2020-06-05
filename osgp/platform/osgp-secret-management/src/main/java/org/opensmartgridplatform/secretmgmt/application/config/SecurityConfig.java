@@ -31,11 +31,7 @@ public class SecurityConfig {
     public EncryptionDelegate getDefaultEncryptionDelegate() throws IllegalStateException {
 
         try {
-            byte[] key = Files.readAllBytes(Paths.get(this.databaseSecretResource.getFile().getAbsolutePath()));
-            String encodedKey = HexUtils.toHexString(key);
-
-            EncryptionDelegate encryptionDelegate = new DefaultEncryptionDelegate(encodedKey);
-
+            EncryptionDelegate encryptionDelegate = new DefaultEncryptionDelegate(databaseSecretResource.getFile());
             return encryptionDelegate;
         } catch (final IOException e) {
             final String errorMessage = String.format("Unexpected exception when reading keys. Key Path: %s",
@@ -50,9 +46,8 @@ public class SecurityConfig {
     public EncryptionProvider getSoapEncryptionProvider() throws IllegalStateException {
 
         try {
-            byte[] key = Files.readAllBytes(Paths.get(this.soapSecretResource.getFile().getAbsolutePath()));
-            String encodedKey = HexUtils.toHexString(key);
-            EncryptionProvider encryptionProvider = new JreEncryptionProvider(encodedKey);
+            EncryptionProvider encryptionProvider = new JreEncryptionProvider();
+            encryptionProvider.setKeystore(this.soapSecretResource.getFile());
             return encryptionProvider;
 
         } catch (final IOException e) {

@@ -27,6 +27,7 @@ import java.util.List;
 @Endpoint
 public class SecretManagementEndpoint {
     private static final String NAMESPACE_URI = "http://www.opensmartgridplatform.org/schemas/security/secretmanagement/2020/05";
+    private static final String KEY_REFERENCE = "1"; //only one key in use
 
     private SecretManagementService secretManagementService;
     private EncryptionProvider jreEncryptionProvider;
@@ -117,7 +118,7 @@ public class SecretManagementEndpoint {
         String encodedSecret = typedSecret.getSecret();
         byte[] rawSecret = HexUtils.fromHexString(encodedSecret);
         Secret secret = new Secret(rawSecret);
-        EncryptedSecret encryptedSecret = jreEncryptionProvider.encrypt(secret);
+        EncryptedSecret encryptedSecret = jreEncryptionProvider.encrypt(secret, KEY_REFERENCE);
         soapTypedSecret.setSecret(HexUtils.toHexString(encryptedSecret.getSecret()));
 
         SecretType secretType = typedSecret.getSecretType();
@@ -131,7 +132,7 @@ public class SecretManagementEndpoint {
 
         byte[] rawEncryptedSecret = HexUtils.fromHexString(soapTypedSecret.getSecret());
         EncryptedSecret encryptedSecret = new EncryptedSecret(EncryptionProviderType.JRE, rawEncryptedSecret);
-        Secret decryptedSecret = jreEncryptionProvider.decrypt(encryptedSecret);
+        Secret decryptedSecret = jreEncryptionProvider.decrypt(encryptedSecret, KEY_REFERENCE);
 
         typedSecret.setSecret(HexUtils.toHexString(decryptedSecret.getSecret()));
         typedSecret.setSecretType(convertToSecretType(soapTypedSecret.getType()));
