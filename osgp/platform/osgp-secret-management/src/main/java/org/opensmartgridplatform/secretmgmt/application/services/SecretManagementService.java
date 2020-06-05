@@ -1,10 +1,10 @@
 package org.opensmartgridplatform.secretmgmt.application.services;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apache.tomcat.util.buf.HexUtils;
 import org.opensmartgridplatform.secretmgmt.application.domain.DbEncryptedSecret;
@@ -49,8 +49,8 @@ public class SecretManagementService implements SecretManagement {
     private DbEncryptionKeyReference getKey(final TypedSecret typedSecret) {
         final Date now = new Date(); //TODO: UTC?
         final EncryptionProviderType ept = this.getConfiguredEncrpytionProviderType();
-        final Page<DbEncryptionKeyReference> keyRefsPage =
-                this.keyRepository.findByTypeAndValid(now, ept, Pageable.unpaged());
+        final Page<DbEncryptionKeyReference> keyRefsPage = this.keyRepository.findByTypeAndValid(now, ept,
+                Pageable.unpaged());
         if (keyRefsPage.getSize() > 1) {
             throw new IllegalStateException("Multiple encryption keys found that are valid at " + now);
         }
@@ -70,7 +70,7 @@ public class SecretManagementService implements SecretManagement {
         final Secret secret = new Secret(secretBytes);
         try {
             final EncryptedSecret encryptedSecret = this.encryptionDelegate.encrypt(
-                    keyReference.getEncryptionProviderType(), secret);
+                    keyReference.getEncryptionProviderType(), secret, this.dereferenceKey(keyReference));
             final DbEncryptedSecret dbEncryptedSecret = new DbEncryptedSecret();
             dbEncryptedSecret.setDeviceIdentification(deviceIdentification);
             dbEncryptedSecret.setEncodedSecret(HexUtils.toHexString(encryptedSecret.getSecret()));
@@ -82,52 +82,72 @@ public class SecretManagementService implements SecretManagement {
         }
     }
 
+    private String dereferenceKey(final DbEncryptionKeyReference keyReference) {
+        //TODO implement: not sure how (yet)
+        return null;
+    }
+
     @Override
     public List<TypedSecret> retrieveSecrets(final String deviceIdentification, final List<SecretType> secretTypes)
             throws Exception {
         final Pageable pageable = Pageable.unpaged();
         final Date now = new Date(); //TODO: UTC?
         final Map<SecretType, List<DbEncryptedSecret>> secretsByTypeMap = new HashMap<>();
-        for (final SecretType secretType : secretTypes) {
-            secretsByTypeMap.put(secretType,
-                    this.secretRepository.findValidOrderedByKeyValidFrom(deviceIdentification, secretType, now,
-                            pageable).toList());
+        try {
+            for (final SecretType secretType : secretTypes) {
+                secretsByTypeMap.put(secretType,
+                        this.secretRepository.findValidOrderedByKeyValidFrom(deviceIdentification, secretType, now,
+                                pageable).toList());
+            }
+            return this.getTypedSecretsFromDbEncryptedSecrets(secretsByTypeMap);
+        } catch (final Exception exc) {
+            throw new IllegalStateException(
+                    String.format("Something went wrong retrieving secrets for device %s", deviceIdentification), exc);
         }
-        //@formatter:off
-        return secretsByTypeMap.entrySet().stream()
-                .map(mapEntry -> this.getTypedSecretFromMapEntry(deviceIdentification, mapEntry))
-                .collect(Collectors.toList());
-        //@formatter:on
     }
 
-    private TypedSecret getTypedSecretFromMapEntry(final String deviceIdentification,
-            final Map.Entry<SecretType, List<DbEncryptedSecret>> mapEntry) {
-        final int nrSecretsForType = mapEntry.getValue().size();
-        if (nrSecretsForType != 1) {
-            throw new IllegalStateException(
-                    String.format("Illegal number of secrets found for device %s with type %s: %s",
-                            deviceIdentification, mapEntry.getKey(), nrSecretsForType));
+    private List<TypedSecret> getTypedSecretsFromDbEncryptedSecrets(
+            final Map<SecretType, List<DbEncryptedSecret>> secretsByTypeMap) {
+        final List<TypedSecret> typedSecrets = new ArrayList<>();
+        for (final SecretType secretType : secretsByTypeMap.keySet()) {
+            final List<DbEncryptedSecret> dbEncryptedSecrets = secretsByTypeMap.get(secretType);
+            final int nrSecretsForType = dbEncryptedSecrets.size();
+            if (nrSecretsForType != 1) {
+                throw new IllegalStateException(
+                        String.format("Illegal number of secrets found with type %s: %s", secretType,
+                                nrSecretsForType));
+            }
+            typedSecrets.add(this.getTypedSecret(dbEncryptedSecrets.get(0)));
         }
-        return this.getTypedSecret(mapEntry.getValue().get(0));
+        return typedSecrets;
     }
 
     private TypedSecret getTypedSecret(final DbEncryptedSecret dbEncryptedSecret) {
         if (dbEncryptedSecret != null) {
-            final byte[] secretBytes = HexUtils.fromHexString(dbEncryptedSecret.getEncodedSecret());
-            final EncryptedSecret encryptedSecret = new EncryptedSecret(
-                    dbEncryptedSecret.getEncryptionKeyReference().getEncryptionProviderType(), secretBytes);
-            try {
-                final Secret decryptedSecret = this.encryptionDelegate.decrypt(encryptedSecret);
-                final TypedSecret typedSecret = new TypedSecret();
-                typedSecret.setSecret(HexUtils.toHexString(decryptedSecret.getSecret()));
-                typedSecret.setSecretType(dbEncryptedSecret.getSecretType());
-                return typedSecret;
-            } catch (final Exception exc) {
-                throw new IllegalStateException(
-                        "Could not create encrypted secret (id: " + dbEncryptedSecret.getId() + ")", exc);
+            final DbEncryptionKeyReference keyReference = dbEncryptedSecret.getEncryptionKeyReference();
+            if (keyReference == null) {
+                throw new IllegalStateException("Could not create encrypted secret: secret has no key reference");
             }
-        } else {    //Should never happen because of stream mapping in retrieveSecret()
+            final byte[] secretBytes = HexUtils.fromHexString(dbEncryptedSecret.getEncodedSecret());
+            final EncryptedSecret encryptedSecret = new EncryptedSecret(keyReference.getEncryptionProviderType(),
+                    secretBytes);
+            return this.createTypedSecret(dbEncryptedSecret, keyReference, encryptedSecret);
+        } else {    //Should never happen because of stream mapping in retrieveSecrets()
             throw new IllegalStateException("Could not create encrypted secret for NULL secret");
+        }
+    }
+
+    private TypedSecret createTypedSecret(final DbEncryptedSecret dbEncryptedSecret, final DbEncryptionKeyReference keyReference,
+            final EncryptedSecret encryptedSecret) {
+        try {
+            final Secret decryptedSecret = this.encryptionDelegate.decrypt(encryptedSecret, this.dereferenceKey(keyReference));
+            final TypedSecret typedSecret = new TypedSecret();
+            typedSecret.setSecret(HexUtils.toHexString(decryptedSecret.getSecret()));
+            typedSecret.setSecretType(dbEncryptedSecret.getSecretType());
+            return typedSecret;
+        } catch (final Exception exc) {
+            throw new IllegalStateException("Could not create encrypted secret (id: " + dbEncryptedSecret.getId() + ")",
+                    exc);
         }
     }
 }
