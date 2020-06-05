@@ -16,6 +16,7 @@ import org.opensmartgridplatform.secretmgmt.application.repository.DbEncryptionK
 import org.opensmartgridplatform.secretmgmt.application.services.encryption.EncryptedSecret;
 import org.opensmartgridplatform.secretmgmt.application.services.encryption.EncryptionDelegate;
 import org.opensmartgridplatform.secretmgmt.application.services.encryption.Secret;
+import org.opensmartgridplatform.secretmgmt.application.services.encryption.providers.EncryptionProviderType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -47,14 +48,19 @@ public class SecretManagementService implements SecretManagement {
 
     private DbEncryptionKeyReference getKey(final TypedSecret typedSecret) {
         final Date now = new Date(); //TODO: UTC?
-        //TODO add configuration to determine encryption provider type
-        final Page<DbEncryptionKeyReference> keyRefsPage = this.keyRepository.findValidOrderedByValidFrom(now,
-                Pageable.unpaged());
+        final EncryptionProviderType ept = this.getConfiguredEncrpytionProviderType();
+        final Page<DbEncryptionKeyReference> keyRefsPage =
+                this.keyRepository.findByTypeAndValid(now, ept, Pageable.unpaged());
         if (keyRefsPage.getSize() > 1) {
             throw new IllegalStateException("Multiple encryption keys found that are valid at " + now);
         }
         return keyRefsPage.stream().findFirst().orElseThrow(
-                () -> new IllegalStateException("No encryption key found that are valid at "+now));
+                () -> new IllegalStateException("No encryption key found that are valid at " + now));
+    }
+
+    private EncryptionProviderType getConfiguredEncrpytionProviderType() {
+        //TODO add configuration to determine encryption provider type
+        return null;
     }
 
     private DbEncryptedSecret createEncrypted(final String deviceIdentification, final TypedSecret typedSecret,
@@ -63,8 +69,8 @@ public class SecretManagementService implements SecretManagement {
         final byte[] secretBytes = HexUtils.fromHexString(secretString);
         final Secret secret = new Secret(secretBytes);
         try {
-            final EncryptedSecret encryptedSecret = this.encryptionDelegate.encrypt(keyReference.getEncryptionProviderType(),
-                    secret);
+            final EncryptedSecret encryptedSecret = this.encryptionDelegate.encrypt(
+                    keyReference.getEncryptionProviderType(), secret);
             final DbEncryptedSecret dbEncryptedSecret = new DbEncryptedSecret();
             dbEncryptedSecret.setDeviceIdentification(deviceIdentification);
             dbEncryptedSecret.setEncodedSecret(HexUtils.toHexString(encryptedSecret.getSecret()));
@@ -81,10 +87,11 @@ public class SecretManagementService implements SecretManagement {
             throws Exception {
         final Pageable pageable = Pageable.unpaged();
         final Date now = new Date(); //TODO: UTC?
-        final Map<SecretType,List<DbEncryptedSecret>> secretsByTypeMap = new HashMap<>();
+        final Map<SecretType, List<DbEncryptedSecret>> secretsByTypeMap = new HashMap<>();
         for (final SecretType secretType : secretTypes) {
-            secretsByTypeMap.put(secretType, this.secretRepository.findValidOrderedByKeyValidFrom(deviceIdentification
-                                , secretType, now, pageable).toList());
+            secretsByTypeMap.put(secretType,
+                    this.secretRepository.findValidOrderedByKeyValidFrom(deviceIdentification, secretType, now,
+                            pageable).toList());
         }
         //@formatter:off
         return secretsByTypeMap.entrySet().stream()
@@ -96,25 +103,23 @@ public class SecretManagementService implements SecretManagement {
     private TypedSecret getTypedSecretFromMapEntry(final String deviceIdentification,
             final Map.Entry<SecretType, List<DbEncryptedSecret>> mapEntry) {
         final int nrSecretsForType = mapEntry.getValue().size();
-        if(nrSecretsForType!=1) {
+        if (nrSecretsForType != 1) {
             throw new IllegalStateException(
-                String.format("Illegal number of secrets found for device %s with type %s: %s",
-                       deviceIdentification,
-                       mapEntry.getKey(),
-                       nrSecretsForType));
+                    String.format("Illegal number of secrets found for device %s with type %s: %s",
+                            deviceIdentification, mapEntry.getKey(), nrSecretsForType));
         }
         return this.getTypedSecret(mapEntry.getValue().get(0));
     }
 
     private TypedSecret getTypedSecret(final DbEncryptedSecret dbEncryptedSecret) {
         if (dbEncryptedSecret != null) {
-            final byte[] secretBytes = dbEncryptedSecret.getEncodedSecret().getBytes(); //TODO check with Erik
+            final byte[] secretBytes = HexUtils.fromHexString(dbEncryptedSecret.getEncodedSecret());
             final EncryptedSecret encryptedSecret = new EncryptedSecret(
                     dbEncryptedSecret.getEncryptionKeyReference().getEncryptionProviderType(), secretBytes);
             try {
                 final Secret decryptedSecret = this.encryptionDelegate.decrypt(encryptedSecret);
                 final TypedSecret typedSecret = new TypedSecret();
-                typedSecret.setSecret(decryptedSecret.getSecret().toString()); //TODO check with Erik
+                typedSecret.setSecret(HexUtils.toHexString(decryptedSecret.getSecret()));
                 typedSecret.setSecretType(dbEncryptedSecret.getSecretType());
                 return typedSecret;
             } catch (final Exception exc) {
