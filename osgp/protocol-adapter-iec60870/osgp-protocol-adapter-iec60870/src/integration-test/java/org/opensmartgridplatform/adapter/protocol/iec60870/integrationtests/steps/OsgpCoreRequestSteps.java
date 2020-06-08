@@ -7,19 +7,34 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.steps;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.TestDefaults.DEFAULT_DEVICE_IDENTIFICATION;
 import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.TestDefaults.DEFAULT_MESSAGE_TYPE;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
+import org.mockito.ArgumentCaptor;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.DeviceRequestMessageListener;
+import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.OsgpRequestMessageSender;
 import org.opensmartgridplatform.dto.da.ConnectRequestDto;
 import org.opensmartgridplatform.dto.da.GetHealthStatusRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.EventNotificationDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ObjectMessageBuilder;
+import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
+import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
 public class OsgpCoreRequestSteps {
@@ -28,6 +43,10 @@ public class OsgpCoreRequestSteps {
 
     @Autowired
     private DeviceRequestMessageListener messageListener;
+
+    @Autowired
+    @Qualifier("protocolIec60870OutboundOsgpCoreRequestsMessageSender")
+    private OsgpRequestMessageSender osgpRequestMessageSenderMock;
 
     @When("I receive a request for the IEC60870 device")
     public void whenIReceiveRequestForIec60870Device() throws JMSException {
@@ -58,5 +77,26 @@ public class OsgpCoreRequestSteps {
                 .withObject(new ConnectRequestDto())
                 .build();
         this.messageListener.onMessage(message);
+    }
+
+    @Then("the protocol adapter should send a light measurement event to osgp core")
+    public void theProtocolAdapterShouldSendALightMeasurementEventToOsgpCore(final Map<String, String> eventData) {
+
+        final String expectedEventType = Objects.requireNonNull(eventData.get("event_type"));
+        final String expectedDeviceIdentification = Objects.requireNonNull(eventData.get("device_identification"));
+
+        final ArgumentCaptor<RequestMessage> requestMessageCaptor = ArgumentCaptor.forClass(RequestMessage.class);
+        verify(this.osgpRequestMessageSenderMock, times(1)).send(requestMessageCaptor.capture(),
+                eq(MessageType.ADD_EVENT_NOTIFICATION.name()));
+        final RequestMessage requestMessage = requestMessageCaptor.getValue();
+
+        assertThat(requestMessage.getDeviceIdentification()).isEqualTo(expectedDeviceIdentification);
+        final Serializable request = requestMessage.getRequest();
+        assertThat(request).isInstanceOf(List.class);
+        final List<?> eventNotifications = (List<?>) request;
+        assertThat(eventNotifications).hasSize(1);
+        assertThat(eventNotifications).hasOnlyElementsOfType(EventNotificationDto.class);
+        final EventNotificationDto eventNotification = (EventNotificationDto) eventNotifications.get(0);
+        assertThat(eventNotification.getEventType().name()).isEqualTo(expectedEventType);
     }
 }
