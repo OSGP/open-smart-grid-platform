@@ -70,7 +70,7 @@ public class SecretManagementService implements SecretManagement {
         final Secret secret = new Secret(secretBytes);
         try {
             final EncryptedSecret encryptedSecret = this.encryptionDelegate.encrypt(
-                    keyReference.getEncryptionProviderType(), secret, this.dereferenceKey(keyReference));
+                    keyReference.getEncryptionProviderType(), secret, this.getKeyAlias(keyReference));
             final DbEncryptedSecret dbEncryptedSecret = new DbEncryptedSecret();
             dbEncryptedSecret.setDeviceIdentification(deviceIdentification);
             dbEncryptedSecret.setEncodedSecret(HexUtils.toHexString(encryptedSecret.getSecret()));
@@ -82,7 +82,7 @@ public class SecretManagementService implements SecretManagement {
         }
     }
 
-    private String dereferenceKey(final DbEncryptionKeyReference keyReference) {
+    private String getKeyAlias(final DbEncryptionKeyReference keyReference) {
         //TODO implement: not sure how (yet)
         return null;
     }
@@ -140,7 +140,7 @@ public class SecretManagementService implements SecretManagement {
     private TypedSecret createTypedSecret(final DbEncryptedSecret dbEncryptedSecret, final DbEncryptionKeyReference keyReference,
             final EncryptedSecret encryptedSecret) {
         try {
-            final Secret decryptedSecret = this.encryptionDelegate.decrypt(encryptedSecret, this.dereferenceKey(keyReference));
+            final Secret decryptedSecret = this.encryptionDelegate.decrypt(encryptedSecret, this.getKeyAlias(keyReference));
             final TypedSecret typedSecret = new TypedSecret();
             typedSecret.setSecret(HexUtils.toHexString(decryptedSecret.getSecret()));
             typedSecret.setSecretType(dbEncryptedSecret.getSecretType());

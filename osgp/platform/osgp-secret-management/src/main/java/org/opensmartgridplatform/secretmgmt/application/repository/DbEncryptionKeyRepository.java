@@ -11,8 +11,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface DbEncryptionKeyRepository extends JpaRepository<DbEncryptionKeyReference, Long> {
-    @Query("SELECT ekr FROM encryptionKeyReference ekr " +
-            "WHERE ekr.encryptionProviderTye = :ept " +
+    @Query("SELECT ekr FROM DbEncryptionKeyReference ekr " +
+            "WHERE ekr.encryptionProviderType = :ept " +
             "AND ekr.validFrom < :date AND (ekr.validTo IS NULL OR ekr.validTo > :date) " +
             "ORDER BY ekr.validFrom DESC")
     //TODO consider using native query/caching if performance not good enough

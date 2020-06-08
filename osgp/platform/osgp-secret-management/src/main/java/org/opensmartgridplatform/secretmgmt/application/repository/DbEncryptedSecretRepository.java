@@ -13,10 +13,10 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DbEncryptedSecretRepository extends JpaRepository<DbEncryptedSecret, Long> {
-    @Query("SELECT es FROM DbEncryptedSecret es JOIN FETCH es.encryptionKeyReference ekr "+
+    @Query("SELECT es FROM DbEncryptedSecret es JOIN es.encryptionKeyReference ekr "+
             "WHERE es.deviceIdentification = :deviceIdentification AND es.secretType = :secretType " +
             "AND ekr.validFrom < :date AND (ekr.validTo IS NULL OR ekr.validTo > :date)" +
-            "ORDER BY keyReference.validFrom DESC")
+            "ORDER BY ekr.validFrom DESC")
     //TODO find most recent instead of all (secrets table contains history)
     Page<DbEncryptedSecret> findValidOrderedByKeyValidFrom(@Param("deviceIdentification") String deviceIdentification,
             @Param("secretType") SecretType secretType, @Param("date") Date validDate, Pageable pageable);
