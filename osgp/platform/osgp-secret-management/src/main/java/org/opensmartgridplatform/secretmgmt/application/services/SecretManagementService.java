@@ -18,6 +18,7 @@ import org.opensmartgridplatform.secretmgmt.application.services.encryption.Encr
 import org.opensmartgridplatform.secretmgmt.application.services.encryption.Secret;
 import org.opensmartgridplatform.secretmgmt.application.services.encryption.providers.EncryptionProviderType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,9 @@ public class SecretManagementService implements SecretManagement {
     private final EncryptionDelegate encryptionDelegate;
     private final DbEncryptedSecretRepository secretRepository;
     private final DbEncryptionKeyRepository keyRepository;
+
+    @Value("${encryption.provider.type}")
+    String encryptionProviderTypeName;
 
     @Autowired
     public SecretManagementService(final EncryptionDelegate encryptionDelegate,
@@ -48,7 +52,7 @@ public class SecretManagementService implements SecretManagement {
 
     private DbEncryptionKeyReference getKey(final TypedSecret typedSecret) {
         final Date now = new Date(); //TODO: UTC?
-        final EncryptionProviderType ept = this.getConfiguredEncrpytionProviderType();
+        final EncryptionProviderType ept = this.getConfiguredEncryptionProviderType();
         final Page<DbEncryptionKeyReference> keyRefsPage = this.keyRepository.findByTypeAndValid(now, ept,
                 Pageable.unpaged());
         if (keyRefsPage.getSize() > 1) {
@@ -58,9 +62,13 @@ public class SecretManagementService implements SecretManagement {
                 () -> new IllegalStateException("No encryption key found that are valid at " + now));
     }
 
-    private EncryptionProviderType getConfiguredEncrpytionProviderType() {
-        //TODO add configuration to determine encryption provider type
-        return null;
+    private EncryptionProviderType getConfiguredEncryptionProviderType() {
+        try {
+            return EncryptionProviderType.valueOf(this.encryptionProviderTypeName);
+        } catch (final Exception exc) {
+            throw new IllegalStateException(String.format("Could not determine encryption type; configured is '%s'",
+                    this.encryptionProviderTypeName), exc);
+        }
     }
 
     private DbEncryptedSecret createEncrypted(final String deviceIdentification, final TypedSecret typedSecret,
@@ -92,7 +100,7 @@ public class SecretManagementService implements SecretManagement {
             for (final SecretType secretType : secretTypes) {
                 secretsByTypeMap.put(secretType,
                         this.secretRepository.findValidOrderedByKeyValidFrom(deviceIdentification, secretType,
-                                this.getConfiguredEncrpytionProviderType(), now, pageable).toList());
+                                this.getConfiguredEncryptionProviderType(), now, pageable).toList());
             }
             return this.getTypedSecretsFromDbEncryptedSecrets(secretsByTypeMap);
         } catch (final Exception exc) {
