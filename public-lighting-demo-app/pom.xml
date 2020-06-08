@@ -14,7 +14,7 @@
 
   <artifactId>os-webapps</artifactId>
   <groupId>org.opensmartgridplatform</groupId>
-  <version>5.0.1</version>
+  <version>5.0.2-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <properties>
