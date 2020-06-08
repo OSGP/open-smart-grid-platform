@@ -20,7 +20,7 @@ public class DefaultEncryptionDelegate implements EncryptionDelegate {
     public DefaultEncryptionDelegate(File jreKeystore) {
         JreEncryptionProvider jreEncryptionProvider = new JreEncryptionProvider();
         jreEncryptionProvider.setKeystore(jreKeystore);
-        providers.add(new JreEncryptionProvider());
+        providers.add(jreEncryptionProvider);
 
         providers.add(new HsmEncryptionProvider());
     }

@@ -8,6 +8,8 @@ import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.Get
 import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.GetSecretsResponse;
 import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.SecretType;
 import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.SecretTypes;
+import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.TypedSecret;
+import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.TypedSecrets;
 import org.opensmartgridplatform.secretmgmt.application.domain.DbEncryptedSecret;
 import org.opensmartgridplatform.secretmgmt.application.domain.DbEncryptionKeyReference;
 import org.opensmartgridplatform.secretmgmt.application.services.SecretManagementService;
@@ -20,6 +22,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import java.util.Date;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest(showSql = false, excludeAutoConfiguration = FlywayAutoConfiguration.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -68,6 +72,13 @@ public class SecretManagementEndpointIT {
         request.setDeviceId(DEVICE_IDENTIFICATION);
 
         GetSecretsResponse response = secretManagementEndpoint.getSecretsRequest(request);
+
+        TypedSecrets typedSecrets = response.getTypedSecrets();
+
+        List<TypedSecret> listOfTypedSecrets = typedSecrets.getTypedSecret();
+
+        assertThat(listOfTypedSecrets.size()).isEqualTo(2);
+
     }
 
     public void createTestData() {

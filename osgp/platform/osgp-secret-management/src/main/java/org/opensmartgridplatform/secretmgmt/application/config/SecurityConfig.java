@@ -1,6 +1,5 @@
 package org.opensmartgridplatform.secretmgmt.application.config;
 
-import org.apache.tomcat.util.buf.HexUtils;
 import org.opensmartgridplatform.secretmgmt.application.services.encryption.DefaultEncryptionDelegate;
 import org.opensmartgridplatform.secretmgmt.application.services.encryption.EncryptionDelegate;
 import org.opensmartgridplatform.secretmgmt.application.services.encryption.providers.EncryptionProvider;
@@ -13,8 +12,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 @Configuration
 public class SecurityConfig {
@@ -27,7 +24,7 @@ public class SecurityConfig {
     @Value("${database.secret.resource}")
     private Resource databaseSecretResource;
 
-    @Bean(name = "DefaultEncryptionDelegate")
+    @Bean(name = "MyEncryptionDelegate")
     public EncryptionDelegate getDefaultEncryptionDelegate() throws IllegalStateException {
 
         try {
@@ -43,7 +40,7 @@ public class SecurityConfig {
     }
 
     @Bean(name = "SoapSecretEncryptionProvider")
-    public EncryptionProvider getSoapEncryptionProvider() throws IllegalStateException {
+    public EncryptionProvider getSoapSecretEncryptionProvider() throws IllegalStateException {
 
         try {
             EncryptionProvider encryptionProvider = new JreEncryptionProvider();

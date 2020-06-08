@@ -1,7 +1,5 @@
 package org.opensmartgridplatform.secretmgmt.application.services.encryption.providers;
 
-import org.apache.tomcat.util.buf.HexUtils;
-
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;

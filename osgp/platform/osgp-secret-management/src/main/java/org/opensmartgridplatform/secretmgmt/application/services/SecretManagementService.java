@@ -34,9 +34,9 @@ public class SecretManagementService implements SecretManagement {
     String encryptionProviderTypeName;
 
     @Autowired
-    public SecretManagementService(final EncryptionDelegate encryptionDelegate,
+    public SecretManagementService(final EncryptionDelegate myEncryptionDelegate,
             final DbEncryptedSecretRepository secretRepository, final DbEncryptionKeyRepository keyRepository) {
-        this.encryptionDelegate = encryptionDelegate;
+        this.encryptionDelegate = myEncryptionDelegate;
         this.secretRepository = secretRepository;
         this.keyRepository = keyRepository;
     }
