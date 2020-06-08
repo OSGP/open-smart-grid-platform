@@ -33,9 +33,9 @@ public class DbEncryptedSecretRepositoryIT {
     public void persistTestData() {
         DbEncryptionKeyReference encryptionKey = new DbEncryptionKeyReference();
         encryptionKey.setCreationTime(new Date());
-        encryptionKey.setEncryptionKeyVersion(1L);
+        encryptionKey.setReference("keyRef1");
         encryptionKey.setEncryptionProviderType(EncryptionProviderType.HSM);
-        encryptionKey.setValidFrom(new Date(System.currentTimeMillis()-60000));
+        encryptionKey.setValidFrom(new Date(System.currentTimeMillis() - 60000));
         encryptionKey.setVersion(1L);
         encryptionKey = this.entityManager.persist(encryptionKey);
         DbEncryptedSecret instance = new DbEncryptedSecret();
@@ -49,9 +49,8 @@ public class DbEncryptedSecretRepositoryIT {
 
     @Test
     public void find() {
-        final Page<DbEncryptedSecret> resultPage =
-                this.repository.findValidOrderedByKeyValidFrom(DEVICE_IDENTIFICATION,
-                        SecretType.E_METER_AUTHENTICATION_KEY, new Date(), Pageable.unpaged());
+        final Page<DbEncryptedSecret> resultPage = this.repository.findValidOrderedByKeyValidFrom(DEVICE_IDENTIFICATION,
+                SecretType.E_METER_AUTHENTICATION_KEY, EncryptionProviderType.HSM, new Date(), Pageable.unpaged());
         assertThat(resultPage.toList().size()).isEqualTo(1);
         final DbEncryptedSecret result = resultPage.toList().get(0);
         assertThat(result.getDeviceIdentification()).isEqualTo(DEVICE_IDENTIFICATION);

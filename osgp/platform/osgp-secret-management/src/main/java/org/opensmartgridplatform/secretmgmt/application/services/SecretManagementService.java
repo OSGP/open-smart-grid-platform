@@ -70,7 +70,7 @@ public class SecretManagementService implements SecretManagement {
         final Secret secret = new Secret(secretBytes);
         try {
             final EncryptedSecret encryptedSecret = this.encryptionDelegate.encrypt(
-                    keyReference.getEncryptionProviderType(), secret, this.getKeyAlias(keyReference));
+                    keyReference.getEncryptionProviderType(), secret, keyReference.getReference());
             final DbEncryptedSecret dbEncryptedSecret = new DbEncryptedSecret();
             dbEncryptedSecret.setDeviceIdentification(deviceIdentification);
             dbEncryptedSecret.setEncodedSecret(HexUtils.toHexString(encryptedSecret.getSecret()));
@@ -82,11 +82,6 @@ public class SecretManagementService implements SecretManagement {
         }
     }
 
-    private String getKeyAlias(final DbEncryptionKeyReference keyReference) {
-        //TODO implement: not sure how (yet)
-        return null;
-    }
-
     @Override
     public List<TypedSecret> retrieveSecrets(final String deviceIdentification, final List<SecretType> secretTypes)
             throws Exception {
@@ -96,8 +91,8 @@ public class SecretManagementService implements SecretManagement {
         try {
             for (final SecretType secretType : secretTypes) {
                 secretsByTypeMap.put(secretType,
-                        this.secretRepository.findValidOrderedByKeyValidFrom(deviceIdentification, secretType, now,
-                                pageable).toList());
+                        this.secretRepository.findValidOrderedByKeyValidFrom(deviceIdentification, secretType,
+                                this.getConfiguredEncrpytionProviderType(), now, pageable).toList());
             }
             return this.getTypedSecretsFromDbEncryptedSecrets(secretsByTypeMap);
         } catch (final Exception exc) {
@@ -137,10 +132,11 @@ public class SecretManagementService implements SecretManagement {
         }
     }
 
-    private TypedSecret createTypedSecret(final DbEncryptedSecret dbEncryptedSecret, final DbEncryptionKeyReference keyReference,
-            final EncryptedSecret encryptedSecret) {
+    private TypedSecret createTypedSecret(final DbEncryptedSecret dbEncryptedSecret,
+            final DbEncryptionKeyReference keyReference, final EncryptedSecret encryptedSecret) {
         try {
-            final Secret decryptedSecret = this.encryptionDelegate.decrypt(encryptedSecret, this.getKeyAlias(keyReference));
+            final Secret decryptedSecret = this.encryptionDelegate.decrypt(encryptedSecret,
+                    keyReference.getReference());
             final TypedSecret typedSecret = new TypedSecret();
             typedSecret.setSecret(HexUtils.toHexString(decryptedSecret.getSecret()));
             typedSecret.setSecretType(dbEncryptedSecret.getSecretType());
