@@ -26,10 +26,11 @@ public class DbEncryptionKeyReference {
     Long id;
     Date creationTime;
     Date modificationTime;
-    Long version;
+    Long version; //for optimistic locking
     @Enumerated(EnumType.STRING)
     EncryptionProviderType encryptionProviderType;
-    Long encryptionKeyVersion;
+    String reference;
     Date validFrom;
     Date validTo;
+    String modifiedBy;
 }

@@ -29,8 +29,8 @@ public class SecretManagementEndpoint {
     private static final String NAMESPACE_URI = "http://www.opensmartgridplatform.org/schemas/security/secretmanagement/2020/05";
     private static final String KEY_REFERENCE = "1"; //only one key in use
 
-    private SecretManagementService secretManagementService;
-    private EncryptionProvider jreEncryptionProvider;
+    private final SecretManagementService secretManagementService;
+    private final EncryptionProvider jreEncryptionProvider;
 
     public SecretManagementEndpoint(SecretManagementService secretManagementService, EncryptionProvider soapSecretEncryptionProvider) {
         this.secretManagementService = secretManagementService;
