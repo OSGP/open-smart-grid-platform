@@ -30,8 +30,6 @@ public class DeviceRegistrationMessageService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceRegistrationMessageService.class);
 
-    private static final String LOCAL_HOST = "127.0.0.1";
-
     @Autowired
     private DeviceRepository deviceRepository;
 
@@ -77,8 +75,7 @@ public class DeviceRegistrationMessageService {
             device = this.createNewDevice(deviceIdentification, deviceType);
         }
 
-        final InetAddress inetAddress = LOCAL_HOST.equals(ipAddress) ? InetAddress.getLoopbackAddress()
-                : InetAddress.getByName(ipAddress);
+        final InetAddress inetAddress = InetAddress.getByName(ipAddress);
         device.updateRegistrationData(inetAddress, deviceType);
         device.updateConnectionDetailsToSuccess();
 

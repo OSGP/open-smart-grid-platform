@@ -10,6 +10,7 @@ package org.opensmartgridplatform.core.application.services;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
@@ -29,6 +30,8 @@ import org.springframework.util.CollectionUtils;
 public class DeviceNetworkAddressCleanupService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceNetworkAddressCleanupService.class);
+
+    private static final InetAddress LOCALHOST = getLocalHost();
 
     private final boolean allowMultipleDevicesPerNetworkAddress;
     private final List<String> ipRangesAllowingMultipleDevicesPerAddress;
@@ -57,11 +60,21 @@ public class DeviceNetworkAddressCleanupService {
                     "DeviceNetworkAddressCleanupService initialized, network addresses will never be cleaned, as device.network.address.cleanup.never=true");
         } else if (this.ipRangesAllowingMultipleDevicesPerAddress.isEmpty()) {
             LOGGER.info(
-                    "DeviceNetworkAddressCleanupService initialized, duplicated network addresses will be cleaned, except for the loopback address (e.g. 127.0.0.1)");
+                    "DeviceNetworkAddressCleanupService initialized, duplicated network addresses will be cleaned, except for 127.0.0.1");
         } else {
             LOGGER.info(
-                    "DeviceNetworkAddressCleanupService initialized, duplicated network addresses will be cleaned, except for the loopback address (e.g. 127.0.0.1), or addresses configured as device.network.address.cleanup.duplicates.allowed: {}",
+                    "DeviceNetworkAddressCleanupService initialized, duplicated network addresses will be cleaned, except for 127.0.0.1, or addresses configured as device.network.address.cleanup.duplicates.allowed: {}",
                     this.ipRangesAllowingMultipleDevicesPerAddress);
+        }
+    }
+
+    public static InetAddress getLocalHost() {
+        final byte[] ipv4Localhost = new byte[] { 127, 0, 0, 1 };
+        try {
+            return InetAddress.getByAddress("localhost", ipv4Localhost);
+        } catch (final UnknownHostException e) {
+            throw new AssertionError("Should not happen as IP address has a valid value  ("
+                    + Arrays.toString(ipv4Localhost) + ") and length (" + ipv4Localhost.length + ")", e);
         }
     }
 
@@ -201,7 +214,7 @@ public class DeviceNetworkAddressCleanupService {
     }
 
     public boolean allowDuplicateEntries(final InetAddress inetAddress) {
-        return this.allowMultipleDevicesPerNetworkAddress || inetAddress == null || inetAddress.isLoopbackAddress()
+        return this.allowMultipleDevicesPerNetworkAddress || inetAddress == null || LOCALHOST.equals(inetAddress)
                 || this.duplicatesAllowedByConfiguration.test(inetAddress);
     }
 

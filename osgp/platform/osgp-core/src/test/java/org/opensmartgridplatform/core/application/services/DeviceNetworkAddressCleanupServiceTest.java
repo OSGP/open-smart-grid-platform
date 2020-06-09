@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -33,34 +32,50 @@ import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 @ExtendWith(MockitoExtension.class)
 public class DeviceNetworkAddressCleanupServiceTest {
 
+    private static final String DEVICE_IDENTIFICATION = "test-device";
+
+    private static final String LOCALHOST = "127.0.0.1";
+    private static final String IP_ADDRESS = "192.168.0.13";
+
     private DeviceRepository deviceRepository;
     private DeviceNetworkAddressCleanupService deviceNetworkAddressCleanupService;
+    private String host;
+    private InetAddress inetAddress;
 
-    @BeforeEach
-    public void setUp() {
+    private void withHostAndInetAddress(final String host) throws Exception {
+        this.host = host;
+        this.inetAddress = InetAddress.getByName(host);
+    }
+
+    private void setUpDeviceNetworkAddressCleanupService(final boolean allowMultipleDevicesPerNetworkAddress,
+            final List<String> ipRangesAllowingMultipleDevicesPerAddress) {
         this.deviceRepository = Mockito.mock(DeviceRepository.class);
-        final boolean allowMultipleDevicesPerNetworkAddress = false;
-        final List<String> ipRangesAllowingMultipleDevicesPerAddress = Collections.emptyList();
         this.deviceNetworkAddressCleanupService = new DeviceNetworkAddressCleanupService(this.deviceRepository,
                 allowMultipleDevicesPerNetworkAddress, ipRangesAllowingMultipleDevicesPerAddress);
         MockitoAnnotations.initMocks(this);
     }
 
-    @Test
-    public void duplicateAddressesAreAllowedForLoopbackAddresses() throws Exception {
-        assertThat(this.deviceNetworkAddressCleanupService.allowDuplicateEntries(InetAddress.getLoopbackAddress()))
-                .isTrue();
+    private void withConfigurationNotAllowingDuplicates() {
+        this.setUpDeviceNetworkAddressCleanupService(false, Collections.emptyList());
+    }
+
+    private void withConfigurationAllowingAllDuplicates() {
+        this.setUpDeviceNetworkAddressCleanupService(true, Collections.emptyList());
+    }
+
+    private void withConfigurationAllowingDuplicatesFor(final String... configuredRanges) {
+        this.setUpDeviceNetworkAddressCleanupService(false, Arrays.asList(configuredRanges));
     }
 
     @Test
-    public void noDevicesAreUpdatedWhenTheNetworkAddressIsNotUsed() throws Exception {
-        final String host = "192.168.0.13";
-        final InetAddress inetAddress = InetAddress.getByName(host);
-        this.theNetworkAddressIsNotUsed(inetAddress);
+    public void noDevicesAreCleanedWhenTheNetworkAddressIsNotUsed() throws Exception {
+        this.withConfigurationNotAllowingDuplicates();
+        this.withHostAndInetAddress(IP_ADDRESS);
+        this.theNetworkAddressIsNotUsed(this.inetAddress);
 
-        this.deviceNetworkAddressCleanupService.clearDuplicateAddresses("test-device", host);
+        this.deviceNetworkAddressCleanupService.clearDuplicateAddresses(DEVICE_IDENTIFICATION, this.host);
 
-        verify(this.deviceRepository, times(1)).findByNetworkAddress(inetAddress);
+        verify(this.deviceRepository, times(1)).findByNetworkAddress(this.inetAddress);
         verify(this.deviceRepository, never()).save(any(Device.class));
     }
 
@@ -69,90 +84,66 @@ public class DeviceNetworkAddressCleanupServiceTest {
     }
 
     @Test
-    public void noDevicesAreUpdatedWhenDuplicateAddressesAreAllowed() throws Exception {
-        final String host = "192.168.0.13";
-        final InetAddress inetAddress = InetAddress.getByName(host);
-        final boolean allowMultipleDevicesPerNetworkAddress = true;
-        final List<String> ipRangesAllowingMultipleDevicesPerAddress = Collections.emptyList();
-        this.deviceNetworkAddressCleanupService = new DeviceNetworkAddressCleanupService(this.deviceRepository,
-                allowMultipleDevicesPerNetworkAddress, ipRangesAllowingMultipleDevicesPerAddress);
+    public void noDevicesAreCleanedWhenDuplicateAddressesAreAllowed() throws Exception {
+        this.withConfigurationAllowingAllDuplicates();
+        this.withHostAndInetAddress(IP_ADDRESS);
 
-        this.deviceNetworkAddressCleanupService.clearDuplicateAddresses("test-device", host);
+        this.deviceNetworkAddressCleanupService.clearDuplicateAddresses(DEVICE_IDENTIFICATION, this.host);
 
-        verify(this.deviceRepository, never()).findByNetworkAddress(inetAddress);
+        verify(this.deviceRepository, never()).findByNetworkAddress(this.inetAddress);
         verify(this.deviceRepository, never()).save(any(Device.class));
     }
 
     @Test
-    public void noDevicesAreUpdatedWhenTheNetworkAddressIsExplicitlyAllowedWithDuplicates() throws Exception {
-        final String host = "192.168.0.13";
-        final InetAddress inetAddress = InetAddress.getByName(host);
-        final boolean allowMultipleDevicesPerNetworkAddress = false;
-        final List<String> ipRangesAllowingMultipleDevicesPerAddress = Collections.singletonList(host);
-        this.deviceNetworkAddressCleanupService = new DeviceNetworkAddressCleanupService(this.deviceRepository,
-                allowMultipleDevicesPerNetworkAddress, ipRangesAllowingMultipleDevicesPerAddress);
+    public void noDevicesAreCleanedWhenTheNetworkAddressIsExplicitlyAllowedWithDuplicates() throws Exception {
+        this.withHostAndInetAddress(IP_ADDRESS);
+        this.withConfigurationAllowingDuplicatesFor(this.host);
 
-        this.deviceNetworkAddressCleanupService.clearDuplicateAddresses("test-device", host);
+        this.deviceNetworkAddressCleanupService.clearDuplicateAddresses(DEVICE_IDENTIFICATION, this.host);
 
-        verify(this.deviceRepository, never()).findByNetworkAddress(inetAddress);
+        verify(this.deviceRepository, never()).findByNetworkAddress(this.inetAddress);
         verify(this.deviceRepository, never()).save(any(Device.class));
     }
 
     @Test
-    public void noDevicesAreUpdatedWhenTheNetworkAddressIsPartOfARangeAllowingDuplicates() throws Exception {
-        final String host = "192.168.0.13";
-        final InetAddress inetAddress = InetAddress.getByName(host);
-        final boolean allowMultipleDevicesPerNetworkAddress = false;
-        final List<String> ipRangesAllowingMultipleDevicesPerAddress = Arrays.asList("10.123.18.131",
-                "192.168.0.1-192.168.0.20", "172.16.0.0-172.31.255.255");
-        this.deviceNetworkAddressCleanupService = new DeviceNetworkAddressCleanupService(this.deviceRepository,
-                allowMultipleDevicesPerNetworkAddress, ipRangesAllowingMultipleDevicesPerAddress);
+    public void noDevicesAreCleanedWhenTheNetworkAddressIsPartOfARangeAllowingDuplicates() throws Exception {
+        final String ipAddress = "172.16.138.27";
+        this.withHostAndInetAddress(ipAddress);
+        final String rangeContainingIpAddress = "172.16.130.0-172.16.139.255";
+        this.withConfigurationAllowingDuplicatesFor("10.1.1.111", rangeContainingIpAddress,
+                "192.168.0.0-192.168.255.255");
 
-        this.deviceNetworkAddressCleanupService.clearDuplicateAddresses("test-device", host);
+        this.deviceNetworkAddressCleanupService.clearDuplicateAddresses(DEVICE_IDENTIFICATION, this.host);
 
-        verify(this.deviceRepository, never()).findByNetworkAddress(inetAddress);
+        verify(this.deviceRepository, never()).findByNetworkAddress(this.inetAddress);
         verify(this.deviceRepository, never()).save(any(Device.class));
     }
 
     @Test
-    public void loopbackAddressesAreAlwaysAllowedToHaveDuplicates() throws Exception {
-        final InetAddress loopbackAddress = InetAddress.getLoopbackAddress();
-        final String host = loopbackAddress.getHostAddress();
-        final boolean allowMultipleDevicesPerNetworkAddress = false;
-        final List<String> ipRangesAllowingMultipleDevicesPerAddress = Collections.emptyList();
-        this.deviceNetworkAddressCleanupService = new DeviceNetworkAddressCleanupService(this.deviceRepository,
-                allowMultipleDevicesPerNetworkAddress, ipRangesAllowingMultipleDevicesPerAddress);
+    public void localhostIsAlwaysAllowedToHaveDuplicates() throws Exception {
+        this.withConfigurationNotAllowingDuplicates();
+        this.withHostAndInetAddress(LOCALHOST);
 
-        this.deviceNetworkAddressCleanupService.clearDuplicateAddresses("test-device", host);
+        this.deviceNetworkAddressCleanupService.clearDuplicateAddresses(DEVICE_IDENTIFICATION, this.host);
 
-        verify(this.deviceRepository, never()).findByNetworkAddress(loopbackAddress);
+        verify(this.deviceRepository, never()).findByNetworkAddress(this.inetAddress);
         verify(this.deviceRepository, never()).save(any(Device.class));
     }
 
     @Test
-    public void devicesAreUpdatedWhenTheNetworkAddressIsNotAllowedToHaveDuplicates() throws Exception {
-        final String host = "192.168.0.13";
-        final InetAddress inetAddress = InetAddress.getByName(host);
-        this.theNetworkAddressIsUsedBy(inetAddress, "device1", "device2");
-        final boolean allowMultipleDevicesPerNetworkAddress = false;
-        final List<String> ipRangesAllowingMultipleDevicesPerAddress = Collections.emptyList();
-        this.deviceNetworkAddressCleanupService = new DeviceNetworkAddressCleanupService(this.deviceRepository,
-                allowMultipleDevicesPerNetworkAddress, ipRangesAllowingMultipleDevicesPerAddress);
+    public void devicesAreCleanedWhenTheNetworkAddressIsNotAllowedToHaveDuplicates() throws Exception {
+        this.withConfigurationNotAllowingDuplicates();
+        this.withHostAndInetAddress(IP_ADDRESS);
+        this.theNetworkAddressIsUsedBy(this.inetAddress, "device1", "device2");
 
-        this.deviceNetworkAddressCleanupService.clearDuplicateAddresses("test-device", host);
+        this.deviceNetworkAddressCleanupService.clearDuplicateAddresses(DEVICE_IDENTIFICATION, this.host);
 
-        verify(this.deviceRepository, times(1)).findByNetworkAddress(inetAddress);
+        verify(this.deviceRepository, times(1)).findByNetworkAddress(this.inetAddress);
         final ArgumentCaptor<Device> deviceCaptor = ArgumentCaptor.forClass(Device.class);
         verify(this.deviceRepository, times(2)).save(deviceCaptor.capture());
         final List<Device> savedDevices = deviceCaptor.getAllValues();
-        final boolean device1IsSavedWithClearedNetworkAddress = savedDevices.stream()
-                .anyMatch(device -> "device1".equals(device.getDeviceIdentification())
-                        && device.getNetworkAddress() == null);
-        assertThat(device1IsSavedWithClearedNetworkAddress).as("device1 is saved without network address").isTrue();
-        final boolean device2IsSavedWithClearedNetworkAddress = savedDevices.stream()
-                .anyMatch(device -> "device2".equals(device.getDeviceIdentification())
-                        && device.getNetworkAddress() == null);
-        assertThat(device2IsSavedWithClearedNetworkAddress).as("device2 is saved without network address").isTrue();
+        this.deviceIsSavedWithCleanedNetworkAddress("device1", savedDevices);
+        this.deviceIsSavedWithCleanedNetworkAddress("device2", savedDevices);
     }
 
     private void theNetworkAddressIsUsedBy(final InetAddress inetAddress, final String... deviceIdentifications) {
@@ -164,5 +155,16 @@ public class DeviceNetworkAddressCleanupServiceTest {
                 })
                 .collect(Collectors.toList());
         when(this.deviceRepository.findByNetworkAddress(inetAddress)).thenReturn(devicesWithSameNetworkAddress);
+    }
+
+    private void deviceIsSavedWithCleanedNetworkAddress(final String deviceIdentification,
+            final List<Device> savedDevices) {
+
+        final boolean deviceIsSavedWithCleanedNetworkAddress = savedDevices.stream()
+                .anyMatch(device -> deviceIdentification.equals(device.getDeviceIdentification())
+                        && device.getNetworkAddress() == null);
+        assertThat(deviceIsSavedWithCleanedNetworkAddress)
+                .as(deviceIdentification + " is saved without network address")
+                .isTrue();
     }
 }
