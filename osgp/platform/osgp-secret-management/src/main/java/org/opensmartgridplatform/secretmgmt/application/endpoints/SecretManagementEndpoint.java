@@ -8,9 +8,9 @@ import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.Sto
 import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.StoreSecretsResponse;
 import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.TechnicalFault;
 import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.TypedSecrets;
-import org.opensmartgridplatform.secretmgmt.application.config.ApplicationConfig;
 import org.opensmartgridplatform.secretmgmt.application.domain.SecretType;
 import org.opensmartgridplatform.secretmgmt.application.domain.TypedSecret;
+import org.opensmartgridplatform.secretmgmt.application.exception.TechnicalServiceFaultException;
 import org.opensmartgridplatform.secretmgmt.application.services.SecretManagementService;
 import org.opensmartgridplatform.secretmgmt.application.services.encryption.EncryptedSecret;
 import org.opensmartgridplatform.secretmgmt.application.services.encryption.Secret;
@@ -23,6 +23,8 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.opensmartgridplatform.secretmgmt.application.config.ApplicationConfig.COMPONENT_NAME;
 
 @Endpoint
 public class SecretManagementEndpoint {
@@ -64,12 +66,9 @@ public class SecretManagementEndpoint {
 
             response.setTypedSecrets(soapTypedSecrets);
             response.setResult(OsgpResultType.OK);
-        } catch (Exception e) {
-            response.setResult(OsgpResultType.NOT_OK);
-            TechnicalFault fault = new TechnicalFault();
-            fault.setMessage(e.getMessage());
-            fault.setComponent(ApplicationConfig.COMPONENT_NAME);
-            response.setTechnicalFault(fault);
+        }
+        catch (Exception e) {
+            throw new TechnicalServiceFaultException(e.getMessage(), e, createTechnicalFaultFromException(e));
         }
 
         return response;
@@ -92,12 +91,9 @@ public class SecretManagementEndpoint {
 
             secretManagementService.storeSecrets(request.getDeviceId(), typedSecrets);
             response.setResult(OsgpResultType.OK);
-        } catch (Exception e) {
-            response.setResult(OsgpResultType.NOT_OK);
-            TechnicalFault fault = new TechnicalFault();
-            fault.setMessage(e.getMessage());
-            fault.setComponent(ApplicationConfig.COMPONENT_NAME);
-            response.setTechnicalFault(fault);
+        }
+        catch (Exception e) {
+            throw new TechnicalServiceFaultException(e.getMessage(), e, createTechnicalFaultFromException(e));
         }
 
         return response;
@@ -141,5 +137,15 @@ public class SecretManagementEndpoint {
         return typedSecret;
     }
 
+    private TechnicalFault createTechnicalFaultFromException(Exception e) {
+        TechnicalFault fault = new TechnicalFault();
+        fault.setMessage(e.getMessage());
+        fault.setComponent(COMPONENT_NAME);
+        if (e.getCause() != null) {
+            fault.setInnerException(e.getCause().toString());
+            fault.setInnerMessage(e.getCause().getMessage());
+        }
+        return fault;
+    }
 
 }
