@@ -41,17 +41,17 @@ public class SecretManagementEndpoint {
     @ResponsePayload
     public GetSecretsResponse getSecretsRequest(@RequestPayload GetSecretsRequest request) {
 
-        List<org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.SecretType> soapSecretTypeList = request.getSecretTypes().getSecretType();
-        List<SecretType> secretTypeList = new ArrayList<>();
-
-        for (org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.SecretType soapSecretType: soapSecretTypeList) {
-            SecretType secretType = convertToSecretType(soapSecretType);
-            secretTypeList.add(secretType);
-        }
-
         GetSecretsResponse response = new GetSecretsResponse();
 
         try {
+            List<org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.SecretType> soapSecretTypeList = request.getSecretTypes().getSecretType();
+            List<SecretType> secretTypeList = new ArrayList<>();
+
+            for (org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.SecretType soapSecretType: soapSecretTypeList) {
+                SecretType secretType = convertToSecretType(soapSecretType);
+                secretTypeList.add(secretType);
+            }
+
             List<TypedSecret> typedSecrets = secretManagementService.retrieveSecrets(request.getDeviceId(), secretTypeList);
             TypedSecrets soapTypedSecrets = new TypedSecrets();
 
@@ -77,18 +77,19 @@ public class SecretManagementEndpoint {
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "storeSecretsRequest")
     @ResponsePayload
-    public StoreSecretsResponse storeSecretsRequest(@RequestPayload StoreSecretsRequest request) throws Exception {
-
-        List<org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.TypedSecret> soapTypedSecrets = request.getTypedSecrets().getTypedSecret();
-        List<TypedSecret> typedSecrets = new ArrayList<>();
+    public StoreSecretsResponse storeSecretsRequest(@RequestPayload StoreSecretsRequest request) {
 
         StoreSecretsResponse response = new StoreSecretsResponse();
 
-        for (org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.TypedSecret soapTypedSecret : soapTypedSecrets) {
-            typedSecrets.add(decryptAndConvertSoapTypedSecret(soapTypedSecret));
-        }
-
         try {
+
+            List<org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.TypedSecret> soapTypedSecrets = request.getTypedSecrets().getTypedSecret();
+            List<TypedSecret> typedSecrets = new ArrayList<>();
+
+            for (org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.TypedSecret soapTypedSecret : soapTypedSecrets) {
+                typedSecrets.add(decryptAndConvertSoapTypedSecret(soapTypedSecret));
+            }
+
             secretManagementService.storeSecrets(request.getDeviceId(), typedSecrets);
             response.setResult(OsgpResultType.OK);
         } catch (Exception e) {
