@@ -1,4 +1,4 @@
-package org.opensmartgridplatform.secretmgmt.application.endpoints;
+package org.opensmartgridplatform.secretmgmt.application;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,22 +14,24 @@ import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.Typ
 import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.TypedSecrets;
 import org.opensmartgridplatform.secretmgmt.application.domain.DbEncryptedSecret;
 import org.opensmartgridplatform.secretmgmt.application.domain.DbEncryptionKeyReference;
+import org.opensmartgridplatform.secretmgmt.application.endpoints.SecretManagementEndpoint;
 import org.opensmartgridplatform.secretmgmt.application.services.SecretManagementService;
 import org.opensmartgridplatform.secretmgmt.application.services.encryption.providers.EncryptionProvider;
 import org.opensmartgridplatform.secretmgmt.application.services.encryption.providers.EncryptionProviderType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Date;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest(showSql = false, excludeAutoConfiguration = FlywayAutoConfiguration.class)
+@SpringBootTest
+@AutoConfigureTestEntityManager
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class SecretManagementEndpointIT {
+public class SecretManagementIT {
 
     private static final String DEVICE_IDENTIFICATION="E0054002019112319";
 
