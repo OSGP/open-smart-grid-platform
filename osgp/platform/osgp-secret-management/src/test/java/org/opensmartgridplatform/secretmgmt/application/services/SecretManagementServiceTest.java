@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -13,6 +14,7 @@ import java.util.List;
 import org.apache.tomcat.util.buf.HexUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -117,12 +119,22 @@ public class SecretManagementServiceTest {
         keyReference.setEncryptionProviderType(EncryptionProviderType.JRE);
         keyReference.setReference("keyReferenceString");
         final EncryptedSecret encryptedSecret = new EncryptedSecret(EncryptionProviderType.JRE, "$3cr3t".getBytes());
+        final DbEncryptedSecret dbEncryptedSecret = new DbEncryptedSecret();
 
         //WHEN
         when(this.keyRepository.findByTypeAndValid(any(), any(), any())).thenReturn(
                 new PageImpl<>(Arrays.asList(keyReference)));
         when(this.encryptionDelegate.encrypt(any(), any(), anyString())).thenReturn(encryptedSecret);
         this.service.storeSecrets("SOME_DEVICE", Arrays.asList(typedSecret));
+        //THEN
+        final ArgumentCaptor<DbEncryptedSecret> secretArgumentCaptor = ArgumentCaptor.forClass(DbEncryptedSecret.class);
+        verify(this.secretRepository).save(secretArgumentCaptor.capture());
+        final DbEncryptedSecret savedSecret = secretArgumentCaptor.getValue();
+        assertThat(savedSecret).isNotNull();
+        assertThat(savedSecret.getDeviceIdentification()).isEqualTo("SOME_DEVICE");
+        assertThat(savedSecret.getSecretType()).isEqualTo(typedSecret.getSecretType());
+        assertThat(savedSecret.getEncodedSecret()).isEqualTo(HexUtils.toHexString(encryptedSecret.getSecret()));
+        assertThat(savedSecret.getEncryptionKeyReference()).isEqualTo(keyReference);
     }
 
     @Test

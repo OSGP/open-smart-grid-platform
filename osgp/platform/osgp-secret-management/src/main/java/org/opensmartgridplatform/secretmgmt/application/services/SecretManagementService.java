@@ -58,7 +58,7 @@ public class SecretManagementService implements SecretManagement {
             throw new IllegalStateException("Multiple encryption keys found that are valid at " + now);
         }
         return keyRefsPage.stream().findFirst().orElseThrow(
-                () -> new IllegalStateException("No encryption key found that are valid at " + now));
+                () -> new IllegalStateException("No encryption key found that is valid at " + now));
     }
 
     private TypedSecret validateSecret(final TypedSecret secret) {
