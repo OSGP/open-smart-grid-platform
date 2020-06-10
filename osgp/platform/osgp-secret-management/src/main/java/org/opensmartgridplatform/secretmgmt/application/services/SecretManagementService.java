@@ -123,7 +123,7 @@ public class SecretManagementService implements SecretManagement {
     private TypedSecret getTypedSecretFromDbEncryptedSecrets(final List<DbEncryptedSecret> dbEncryptedSecrets) {
         final int nrSecretsForType = dbEncryptedSecrets.size();
         if (nrSecretsForType == 0) {
-            throw new IllegalStateException("No secret found");
+            throw new IllegalStateException("No secret found with a valid key");
         } else if (nrSecretsForType > 1) {
             throw new IllegalStateException(String.format("Illegal number of secrets found: %s", nrSecretsForType));
         }
