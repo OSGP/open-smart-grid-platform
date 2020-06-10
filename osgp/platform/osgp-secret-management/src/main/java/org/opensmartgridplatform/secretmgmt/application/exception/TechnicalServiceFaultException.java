@@ -5,6 +5,13 @@ import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.Tec
 public class TechnicalServiceFaultException extends RuntimeException {
     private TechnicalFault technicalFault;
 
+    public TechnicalServiceFaultException(String message) {
+        super(message);
+
+        technicalFault = new TechnicalFault();
+        technicalFault.setMessage(message);
+    }
+
     public TechnicalServiceFaultException(String message, TechnicalFault technicalFault) {
         super(message);
         this.technicalFault = technicalFault;
