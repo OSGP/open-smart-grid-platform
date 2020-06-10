@@ -15,6 +15,7 @@ import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.Typ
 import org.opensmartgridplatform.secretmgmt.application.domain.DbEncryptedSecret;
 import org.opensmartgridplatform.secretmgmt.application.domain.DbEncryptionKeyReference;
 import org.opensmartgridplatform.secretmgmt.application.endpoints.SecretManagementEndpoint;
+import org.opensmartgridplatform.secretmgmt.application.exception.TechnicalServiceFaultException;
 import org.opensmartgridplatform.secretmgmt.application.services.SecretManagementService;
 import org.opensmartgridplatform.secretmgmt.application.services.encryption.providers.EncryptionProvider;
 import org.opensmartgridplatform.secretmgmt.application.services.encryption.providers.EncryptionProviderType;
@@ -22,13 +23,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @Transactional
@@ -111,8 +112,12 @@ public class SecretManagementIT {
     @Test
     public void tryGetSecretsBySoapCallWithException() {
         GetSecretsRequest request = new GetSecretsRequest();
-        GetSecretsResponse response = secretManagementEndpoint.getSecretsRequest(request);
-        assertThat(response.getResult()).isEqualTo(OsgpResultType.NOT_OK);
+
+        assertThrows(
+                TechnicalServiceFaultException.class,
+                () -> secretManagementEndpoint.getSecretsRequest(request),
+                "Expected getSecretsRequest() to throw TechnicalServiceFaultException, but it didn't"
+        );
     }
 
     /**
@@ -156,8 +161,11 @@ public class SecretManagementIT {
     @Test
     public void tryStoreSecretsBySoapCallWithException() {
         StoreSecretsRequest request = new StoreSecretsRequest();
-        StoreSecretsResponse response = secretManagementEndpoint.storeSecretsRequest(request);
-        assertThat(response.getResult()).isEqualTo(OsgpResultType.NOT_OK);
+
+        assertThrows(
+                TechnicalServiceFaultException.class,
+                () -> secretManagementEndpoint.storeSecretsRequest(request),
+                "Expected getSecretsRequest() to throw TechnicalServiceFaultException, but it didn't");
     }
 
     /**

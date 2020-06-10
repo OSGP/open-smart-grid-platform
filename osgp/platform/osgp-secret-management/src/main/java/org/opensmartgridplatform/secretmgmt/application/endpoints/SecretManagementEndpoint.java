@@ -4,6 +4,7 @@ import org.apache.tomcat.util.buf.HexUtils;
 import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.GetSecretsRequest;
 import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.GetSecretsResponse;
 import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.OsgpResultType;
+import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.SecretTypes;
 import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.StoreSecretsRequest;
 import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.StoreSecretsResponse;
 import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.TechnicalFault;
@@ -46,7 +47,13 @@ public class SecretManagementEndpoint {
         GetSecretsResponse response = new GetSecretsResponse();
 
         try {
-            List<org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.SecretType> soapSecretTypeList = request.getSecretTypes().getSecretType();
+            SecretTypes soapSecretTypes = request.getSecretTypes();
+            List<org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.SecretType> soapSecretTypeList = soapSecretTypes.getSecretType();
+
+            if (soapSecretTypes == null) {
+                throw new TechnicalServiceFaultException("Missing input: secret types");
+            }
+
             List<SecretType> secretTypeList = new ArrayList<>();
 
             for (org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.SecretType soapSecretType: soapSecretTypeList) {
@@ -66,12 +73,12 @@ public class SecretManagementEndpoint {
 
             response.setTypedSecrets(soapTypedSecrets);
             response.setResult(OsgpResultType.OK);
+
+            return response;
         }
         catch (Exception e) {
             throw new TechnicalServiceFaultException(e.getMessage(), e, createTechnicalFaultFromException(e));
         }
-
-        return response;
     }
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "storeSecretsRequest")
@@ -81,22 +88,27 @@ public class SecretManagementEndpoint {
         StoreSecretsResponse response = new StoreSecretsResponse();
 
         try {
+            TypedSecrets soapTypedSecrets = request.getTypedSecrets();
 
-            List<org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.TypedSecret> soapTypedSecrets = request.getTypedSecrets().getTypedSecret();
-            List<TypedSecret> typedSecrets = new ArrayList<>();
-
-            for (org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.TypedSecret soapTypedSecret : soapTypedSecrets) {
-                typedSecrets.add(decryptAndConvertSoapTypedSecret(soapTypedSecret));
+            if (soapTypedSecrets == null) {
+                throw new TechnicalServiceFaultException("Missing input: typed secrets");
             }
 
-            secretManagementService.storeSecrets(request.getDeviceId(), typedSecrets);
+            List<org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.TypedSecret> soapTypedSecretsList = soapTypedSecrets.getTypedSecret();
+            List<TypedSecret> typedSecretList = new ArrayList<>();
+
+            for (org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.TypedSecret soapTypedSecret : soapTypedSecretsList) {
+                typedSecretList.add(decryptAndConvertSoapTypedSecret(soapTypedSecret));
+            }
+
+            secretManagementService.storeSecrets(request.getDeviceId(), typedSecretList);
             response.setResult(OsgpResultType.OK);
+
+            return response;
         }
         catch (Exception e) {
             throw new TechnicalServiceFaultException(e.getMessage(), e, createTechnicalFaultFromException(e));
         }
-
-        return response;
     }
 
     private SecretType convertToSecretType(org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.SecretType soapSecretType) {
