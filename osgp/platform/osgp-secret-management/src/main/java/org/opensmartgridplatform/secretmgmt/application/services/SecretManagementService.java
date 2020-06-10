@@ -44,11 +44,9 @@ public class SecretManagementService implements SecretManagement {
     public void storeSecrets(final String deviceIdentification, final List<TypedSecret> secrets) throws Exception {
         //@formatter:off
         secrets.stream()
+                .map(this::validateSecret)
                 .map(s -> this.createEncrypted(deviceIdentification, s, this.getKey(s)))
-                .forEach(e -> {
-                    this.validateSecret(e);
-                    this.secretRepository.save(e);
-                });
+                .forEach(this.secretRepository::save);
         //@formatter:on
     }
 
@@ -63,8 +61,13 @@ public class SecretManagementService implements SecretManagement {
                 () -> new IllegalStateException("No encryption key found that are valid at " + now));
     }
 
-    private void validateSecret(final DbEncryptedSecret secret) {
-        //TODO pre-save validation
+    private TypedSecret validateSecret(final TypedSecret secret) {
+        if(secret.getSecret()==null) {
+            throw new IllegalArgumentException("No secret string set");
+        } else if(secret.getSecretType()==null) {
+            throw new IllegalArgumentException("No secret type set");
+        }
+        return secret;
     }
 
     public void storeKey(final DbEncryptionKeyReference keyReference) {
@@ -138,7 +141,7 @@ public class SecretManagementService implements SecretManagement {
                     secretBytes);
             return this.createTypedSecret(dbEncryptedSecret, keyReference, encryptedSecret);
         } else {    //Should never happen because of stream mapping in retrieveSecrets()
-            throw new IllegalStateException("Could not create encrypted secret for NULL secret");
+            throw new IllegalStateException("Could not create typed secret for NULL secret");
         }
     }
 
@@ -152,7 +155,7 @@ public class SecretManagementService implements SecretManagement {
             typedSecret.setSecretType(dbEncryptedSecret.getSecretType());
             return typedSecret;
         } catch (final Exception exc) {
-            throw new IllegalStateException("Could not create encrypted secret (id: " + dbEncryptedSecret.getId() + ")",
+            throw new IllegalStateException("Could not decrypt secret (id: " + dbEncryptedSecret.getId() + ")",
                     exc);
         }
     }
