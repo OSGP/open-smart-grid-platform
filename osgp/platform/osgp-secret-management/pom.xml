@@ -150,5 +150,10 @@
             <artifactId>h2</artifactId>
             <!-- TODO scope>test</scope-->
         </dependency>
+        <dependency>
+            <groupId>org.springframework.ws</groupId>
+            <artifactId>spring-ws-test</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>
