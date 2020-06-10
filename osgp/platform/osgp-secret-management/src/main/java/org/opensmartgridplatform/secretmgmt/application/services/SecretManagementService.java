@@ -1,10 +1,10 @@
 package org.opensmartgridplatform.secretmgmt.application.services;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.tomcat.util.buf.HexUtils;
 import org.opensmartgridplatform.secretmgmt.application.domain.DbEncryptedSecret;
@@ -18,7 +18,6 @@ import org.opensmartgridplatform.secretmgmt.application.services.encryption.Encr
 import org.opensmartgridplatform.secretmgmt.application.services.encryption.Secret;
 import org.opensmartgridplatform.secretmgmt.application.services.encryption.providers.EncryptionProviderType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -27,16 +26,16 @@ import org.springframework.stereotype.Service;
 public class SecretManagementService implements SecretManagement {
 
     private final EncryptionDelegate encryptionDelegate;
+    private final EncryptionProviderType encryptionProviderType;
     private final DbEncryptedSecretRepository secretRepository;
     private final DbEncryptionKeyRepository keyRepository;
 
-    @Value("${encryption.provider.type}")
-    String encryptionProviderTypeName;
-
     @Autowired
     public SecretManagementService(final EncryptionDelegate myEncryptionDelegate,
-            final DbEncryptedSecretRepository secretRepository, final DbEncryptionKeyRepository keyRepository) {
+            final EncryptionProviderType encryptionProviderType, final DbEncryptedSecretRepository secretRepository,
+            final DbEncryptionKeyRepository keyRepository) {
         this.encryptionDelegate = myEncryptionDelegate;
+        this.encryptionProviderType = encryptionProviderType;
         this.secretRepository = secretRepository;
         this.keyRepository = keyRepository;
     }
@@ -46,15 +45,17 @@ public class SecretManagementService implements SecretManagement {
         //@formatter:off
         secrets.stream()
                 .map(s -> this.createEncrypted(deviceIdentification, s, this.getKey(s)))
-                .forEach(e -> this.secretRepository.save(e));
+                .forEach(e -> {
+                    this.validateSecret(e);
+                    this.secretRepository.save(e);
+                });
         //@formatter:on
     }
 
     private DbEncryptionKeyReference getKey(final TypedSecret typedSecret) {
         final Date now = new Date(); //TODO: UTC?
-        final EncryptionProviderType ept = this.getConfiguredEncryptionProviderType();
-        final Page<DbEncryptionKeyReference> keyRefsPage = this.keyRepository.findByTypeAndValid(now, ept,
-                Pageable.unpaged());
+        final Page<DbEncryptionKeyReference> keyRefsPage = this.keyRepository.findByTypeAndValid(now,
+                this.encryptionProviderType, Pageable.unpaged());
         if (keyRefsPage.getSize() > 1) {
             throw new IllegalStateException("Multiple encryption keys found that are valid at " + now);
         }
@@ -62,13 +63,18 @@ public class SecretManagementService implements SecretManagement {
                 () -> new IllegalStateException("No encryption key found that are valid at " + now));
     }
 
-    private EncryptionProviderType getConfiguredEncryptionProviderType() {
-        try {
-            return EncryptionProviderType.valueOf(this.encryptionProviderTypeName);
-        } catch (final Exception exc) {
-            throw new IllegalStateException(String.format("Could not determine encryption type; configured is '%s'",
-                    this.encryptionProviderTypeName), exc);
-        }
+    private void validateSecret(final DbEncryptedSecret secret) {
+        //TODO pre-save validation
+    }
+
+    public void storeKey(final DbEncryptionKeyReference keyReference) {
+        //TODO has to be implemented after MVP
+        //validateKeyReference(keyReference);
+        //this.keyRepository.save(keyReference);
+    }
+
+    private void validateKeyReference(final DbEncryptionKeyReference keyReference) {
+        //TODO pre-save validation (check on valid range, ...)
     }
 
     private DbEncryptedSecret createEncrypted(final String deviceIdentification, final TypedSecret typedSecret,
@@ -97,32 +103,28 @@ public class SecretManagementService implements SecretManagement {
         final Date now = new Date(); //TODO: UTC?
         final Map<SecretType, List<DbEncryptedSecret>> secretsByTypeMap = new HashMap<>();
         try {
-            for (final SecretType secretType : secretTypes) {
-                secretsByTypeMap.put(secretType,
-                        this.secretRepository.findValidOrderedByKeyValidFrom(deviceIdentification, secretType,
-                                this.getConfiguredEncryptionProviderType(), now, pageable).toList());
-            }
-            return this.getTypedSecretsFromDbEncryptedSecrets(secretsByTypeMap);
+            //@formatter:off
+            return secretTypes.stream()
+                    .map(secretType ->
+                            this.secretRepository.findValidOrderedByKeyValidFrom(deviceIdentification,secretType,
+                                    this.encryptionProviderType, now, pageable))
+                    .map(resultPage -> this.getTypedSecretFromDbEncryptedSecrets(resultPage.toList()))
+                    .collect(Collectors.toList());
+            //@formatter:on
         } catch (final Exception exc) {
             throw new IllegalStateException(
                     String.format("Something went wrong retrieving secrets for device %s", deviceIdentification), exc);
         }
     }
 
-    private List<TypedSecret> getTypedSecretsFromDbEncryptedSecrets(
-            final Map<SecretType, List<DbEncryptedSecret>> secretsByTypeMap) {
-        final List<TypedSecret> typedSecrets = new ArrayList<>();
-        for (final SecretType secretType : secretsByTypeMap.keySet()) {
-            final List<DbEncryptedSecret> dbEncryptedSecrets = secretsByTypeMap.get(secretType);
-            final int nrSecretsForType = dbEncryptedSecrets.size();
-            if (nrSecretsForType != 1) {
-                throw new IllegalStateException(
-                        String.format("Illegal number of secrets found with type %s: %s", secretType,
-                                nrSecretsForType));
-            }
-            typedSecrets.add(this.getTypedSecret(dbEncryptedSecrets.get(0)));
+    private TypedSecret getTypedSecretFromDbEncryptedSecrets(final List<DbEncryptedSecret> dbEncryptedSecrets) {
+        final int nrSecretsForType = dbEncryptedSecrets.size();
+        if (nrSecretsForType == 0) {
+            throw new IllegalStateException("No secret found");
+        } else if (nrSecretsForType > 1) {
+            throw new IllegalStateException(String.format("Illegal number of secrets found: %s", nrSecretsForType));
         }
-        return typedSecrets;
+        return this.getTypedSecret(dbEncryptedSecrets.get(0));
     }
 
     private TypedSecret getTypedSecret(final DbEncryptedSecret dbEncryptedSecret) {

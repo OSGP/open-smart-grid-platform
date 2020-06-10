@@ -1,8 +1,11 @@
 package org.opensmartgridplatform.secretmgmt.application.config;
 
+import java.io.IOException;
+
 import org.opensmartgridplatform.secretmgmt.application.services.encryption.DefaultEncryptionDelegate;
 import org.opensmartgridplatform.secretmgmt.application.services.encryption.EncryptionDelegate;
 import org.opensmartgridplatform.secretmgmt.application.services.encryption.providers.EncryptionProvider;
+import org.opensmartgridplatform.secretmgmt.application.services.encryption.providers.EncryptionProviderType;
 import org.opensmartgridplatform.secretmgmt.application.services.encryption.providers.JreEncryptionProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,8 +13,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
-
-import java.io.IOException;
 
 @Configuration
 public class SecurityConfig {
@@ -24,11 +25,14 @@ public class SecurityConfig {
     @Value("${database.secret.resource}")
     private Resource databaseSecretResource;
 
+    @Value("${encryption.provider.type}")
+    private String encryptionProviderTypeName;
+
     @Bean(name = "MyEncryptionDelegate")
     public EncryptionDelegate getDefaultEncryptionDelegate() throws IllegalStateException {
 
         try {
-            EncryptionDelegate encryptionDelegate = new DefaultEncryptionDelegate(databaseSecretResource.getFile());
+            final EncryptionDelegate encryptionDelegate = new DefaultEncryptionDelegate(this.databaseSecretResource.getFile());
             return encryptionDelegate;
         } catch (final IOException e) {
             final String errorMessage = String.format("Unexpected exception when reading keys. Key Path: %s",
@@ -43,7 +47,7 @@ public class SecurityConfig {
     public EncryptionProvider getSoapSecretEncryptionProvider() throws IllegalStateException {
 
         try {
-            EncryptionProvider encryptionProvider = new JreEncryptionProvider();
+            final EncryptionProvider encryptionProvider = new JreEncryptionProvider();
             encryptionProvider.setKeystore(this.soapSecretResource.getFile());
             return encryptionProvider;
 
@@ -53,6 +57,16 @@ public class SecurityConfig {
             LOGGER.error(errorMessage);
 
             throw new IllegalStateException(errorMessage, e);
+        }
+    }
+
+    @Bean
+    public EncryptionProviderType getEncryptionProviderType() {
+        try {
+            return EncryptionProviderType.valueOf(this.encryptionProviderTypeName);
+        } catch(final IllegalArgumentException iae) {
+            throw new IllegalStateException(String.format("Unknown encryption provider type '%s'",
+                    this.encryptionProviderTypeName), iae);
         }
     }
 }

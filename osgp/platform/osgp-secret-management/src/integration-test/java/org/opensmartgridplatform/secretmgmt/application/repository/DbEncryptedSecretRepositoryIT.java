@@ -58,5 +58,4 @@ public class DbEncryptedSecretRepositoryIT {
         final DbEncryptionKeyReference keyReference = result.getEncryptionKeyReference();
         assertThat(keyReference.getEncryptionProviderType()).isEqualTo(EncryptionProviderType.HSM);
     }
-
 }
