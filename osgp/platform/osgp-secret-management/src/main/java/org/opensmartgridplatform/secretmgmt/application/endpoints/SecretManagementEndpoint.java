@@ -48,12 +48,12 @@ public class SecretManagementEndpoint {
 
         try {
             SecretTypes soapSecretTypes = request.getSecretTypes();
-            List<org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.SecretType> soapSecretTypeList = soapSecretTypes.getSecretType();
 
             if (soapSecretTypes == null) {
                 throw new TechnicalServiceFaultException("Missing input: secret types");
             }
 
+            List<org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.SecretType> soapSecretTypeList = soapSecretTypes.getSecretType();
             List<SecretType> secretTypeList = new ArrayList<>();
 
             for (org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.SecretType soapSecretType: soapSecretTypeList) {
