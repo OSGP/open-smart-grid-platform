@@ -58,8 +58,6 @@ public class SecretManagementIT {
     @Autowired
     private TestEntityManager entityManager;
 
-    //@BeforeAll
-
     @BeforeEach
     public void beforeEachTest() {
         secretManagementEndpoint = new SecretManagementEndpoint(secretManagementService, soapSecretEncryptionProvider);

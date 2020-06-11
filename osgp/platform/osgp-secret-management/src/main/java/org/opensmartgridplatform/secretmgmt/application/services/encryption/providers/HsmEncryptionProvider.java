@@ -1,7 +1,5 @@
 package org.opensmartgridplatform.secretmgmt.application.services.encryption.providers;
 
-import org.springframework.beans.factory.annotation.Value;
-
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
@@ -12,23 +10,26 @@ import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.spec.AlgorithmParameterSpec;
-import java.util.logging.Logger;
 
 public class HsmEncryptionProvider extends AbstractEncryptionProvider implements EncryptionProvider {
-
-    private static final Logger LOGGER = Logger.getLogger(HsmEncryptionProvider.class.getName());
 
     private static final String ALGORITHM = "AES/CBC/NoPadding";
     private static final String PROVIDER = "nCipherKM";
     private static final String TYPE = "ncipher.sworld";
-
-    @Value( "${hsm.keytore.file}" )
-    private static final String KEYSTORENAME = "houston.keystore";
-
     private static final byte[] IV = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+    private KeyStore keyStore;
 
     protected int getIVLength() {
         return IV.length;
+    }
+
+    @Override
+    public void setKeyFile(File keyStoreFile) throws Exception {
+        super.setKeyFile(keyStoreFile);
+        this.keyStore = KeyStore.getInstance(TYPE, PROVIDER);
+        FileInputStream fIn = new FileInputStream(keyStoreFile);
+        this.keyStore.load(fIn, null);
     }
 
     protected Cipher getCipher() throws NoSuchPaddingException, NoSuchAlgorithmException, NoSuchProviderException {
@@ -43,14 +44,7 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider implements
      * @throws Exception when keystore can not be accessed
      */
     protected Key getSecretEncryptionKey(String keyReference) throws Exception {
-        //TODO add a cache (in base?)
-        KeyStore ks = KeyStore.getInstance(TYPE, PROVIDER);
-        FileInputStream fIn = new FileInputStream(KEYSTORENAME);
-        ks.load(fIn, null);
-        Key key = ks.getKey(keyReference, null);
-        fIn.close();
-
-        return key;
+        return this.keyStore.getKey(keyReference, null);
     }
 
     protected AlgorithmParameterSpec getAlgorithmParameterSpec() {
