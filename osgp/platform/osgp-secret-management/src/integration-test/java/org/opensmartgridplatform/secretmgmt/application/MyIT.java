@@ -7,7 +7,10 @@ import java.util.Date;
 
 import org.apache.tomcat.util.buf.HexUtils;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.opensmartgridplatform.secretmgmt.application.domain.DbEncryptedSecret;
 import org.opensmartgridplatform.secretmgmt.application.domain.DbEncryptionKeyReference;
 import org.opensmartgridplatform.secretmgmt.application.domain.SecretType;
@@ -19,15 +22,17 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEnti
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ws.test.server.MockWebServiceClient;
 import org.springframework.ws.test.server.ResponseMatchers;
-import org.springframework.xml.transform.StringSource;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest
 @Transactional
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class MyIT {
     @Autowired
     private ApplicationContext applicationContext;
@@ -36,10 +41,17 @@ public class MyIT {
     private DbEncryptedSecretRepository secretRepository;
 
     @Autowired
-    TestEntityManager testEntityManager;
+    private TestEntityManager testEntityManager;
 
-    @Test
-    public void testStuff() {
+    private MockWebServiceClient mockWebServiceClient;
+
+    @BeforeAll
+    public void setupClient() {
+        this.mockWebServiceClient = MockWebServiceClient.createClient(this.applicationContext);
+    }
+
+    @BeforeEach
+    public void createTestData() {
         DbEncryptionKeyReference keyReference = new DbEncryptionKeyReference();
         keyReference.setReference("1");
         keyReference.setEncryptionProviderType(EncryptionProviderType.JRE);
@@ -53,18 +65,14 @@ public class MyIT {
         secret.setEncodedSecret(HexUtils.toHexString("janDik4President".getBytes()));
         secret = this.testEntityManager.persist(secret);
         this.testEntityManager.flush();
+    }
+
+    @Test
+    public void getSecrets() {
         assertThat(this.secretRepository.count()).isEqualTo(1);
-        final String namespace = "http://www.opensmartgridplatform.org/schemas/security/secretmanagement/2020/05";
-        final String soapRequest = "<ns:getSecretsRequest xmlns:ns=\""+namespace+"\">\n"
-                + "         <ns:DeviceId>E0054002019112319</ns:DeviceId>\n"
-                + "         <ns:SecretTypes>\n"
-                + "            <ns:SecretType>E_METER_AUTHENTICATION_KEY</ns:SecretType>\n"
-                + "         </ns:SecretTypes>\n"
-                + "      </ns:getSecretsRequest>";
+        final Resource message = new ClassPathResource("getSecrets.xml");
         try {
-            final StringSource requestSource = new StringSource(soapRequest);
-            final MockWebServiceClient mockWebServiceClient = MockWebServiceClient.createClient(this.applicationContext);
-            mockWebServiceClient.sendRequest(withPayload(requestSource)).andExpect(ResponseMatchers.noFault());
+            this.mockWebServiceClient.sendRequest(withPayload(message)).andExpect(ResponseMatchers.noFault());
             //System.out.println(String.format("Response = '%s'",response));
         } catch(final Exception exc) {
             Assertions.fail("Error", exc);
