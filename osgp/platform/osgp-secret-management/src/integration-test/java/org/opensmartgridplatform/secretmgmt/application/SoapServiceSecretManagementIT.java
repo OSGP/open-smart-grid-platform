@@ -117,6 +117,42 @@ public class SoapServiceSecretManagementIT {
         assertThat(this.secretRepository.count()).isEqualTo(4);
     }
 
+    @Test
+    public void testInvalidGetSecretsRequest() {
+
+        /**
+         * Note that the output depends, besides the value of the keys, also on both the db key and the soap key.
+         */
+        assertThat(this.secretRepository.count()).isEqualTo(2);
+
+        final Resource request = new ClassPathResource("test-requests/invalidGetSecrets.xml");
+
+        try {
+            this.mockWebServiceClient.sendRequest(withPayload(request))
+                    .andExpect(ResponseMatchers.serverOrReceiverFault("Missing input: secret types"));
+        } catch(final Exception exc) {
+            Assertions.fail("Error", exc);
+        }
+    }
+
+    @Test
+    public void testInvalidSetSecretsRequest() {
+
+        /**
+         * Note that the output depends, besides the value of the keys, also on both the db key and the soap key.
+         */
+        assertThat(this.secretRepository.count()).isEqualTo(2);
+
+        final Resource request = new ClassPathResource("test-requests/invalidStoreSecrets.xml");
+
+        try {
+            this.mockWebServiceClient.sendRequest(withPayload(request))
+                    .andExpect(ResponseMatchers.serverOrReceiverFault("Missing input: typed secrets"));
+        } catch(final Exception exc) {
+            Assertions.fail("Error", exc);
+        }
+    }
+
     /**
      * Create test data for encrypted secrets and related encryptionkey reference(s).
      * So that the EncryptionService can encrypt and decrypt, using the JRE encryption provider.
