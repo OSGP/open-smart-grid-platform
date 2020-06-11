@@ -33,10 +33,24 @@ import static org.springframework.ws.test.server.RequestCreators.withPayload;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class SoapServiceSecretManagementIT {
 
-    private static final String E_METER_AUTHENTICATION_KEY_ENCRYPTED_FOR_SOAP = "74efc062231e81c9e006bb56c5dec38631210c5073511606a203ba748fcdc794";
-    private static final String E_METER_AUTHENTICATION_KEY_ENCRYPTED_FOR_DB   = "35c6d2af323bd3c4a588692dfcf4235fd20c2bd39bcf8672b6e65d515940150f";
+    /**
+     * The AES keys must be configured with the following values:
+     * db key: hex:1cb340f6edab9d9b3f2912877c9ed161
+     * soap key: hex:8ff36ab298aa8c240d1bb1185a138fe1
+     *
+     * The plantext secrets for meter 'E0054002019112319' are:
+     *
+     *   hex: 72b8fc276644a60ccefdf219fbee1a49 (E_METER_AUTHENTICATION)
+     *   hex: a3d5883fe56cf12b1a7cb5a686da6064 (E_METER_ENCRYPTION_KEY_UNICAST)
+     *
+     * The db-encrypted secrets are: hex:35c6d2af323bd3c4a588692dfcf4235fd20c2bd39bcf8672b6e65d515940150f (E_METER_AUTHENTICATION)
+     *                               hex:7c737a402bdef7a0819f47ae9b625e2d8531e6c5d7603c4e4982c45175c4e063 (E_METER_ENCRYPTION_KEY_UNICAST)
+     *
+     * The soap-encrypted secrets are: hex:74efc062231e81c9e006bb56c5dec38631210c5073511606a203ba748fcdc794 (E_METER_AUTHENTICATION)
+     *                                 hex:3dca51832c70e372460796ca01acbab769fd330c9b936246a01d4e97f8c5bc26 (E_METER_ENCRYPTION_KEY_UNICAST)
+     */
 
-    private static final String E_METER_ENCRYPTION_KEY_UNICAST_ENCRYPTED_FOR_SOAP = "3dca51832c70e372460796ca01acbab769fd330c9b936246a01d4e97f8c5bc26";
+    private static final String E_METER_AUTHENTICATION_KEY_ENCRYPTED_FOR_DB   = "35c6d2af323bd3c4a588692dfcf4235fd20c2bd39bcf8672b6e65d515940150f";
     private static final String E_METER_ENCRYPTION_KEY_UNICAST_ENCRYPTED_FOR_DB   = "7c737a402bdef7a0819f47ae9b625e2d8531e6c5d7603c4e4982c45175c4e063";
 
     private static final String DEVICE_IDENTIFICATION="E0054002019112319";
@@ -65,6 +79,9 @@ public class SoapServiceSecretManagementIT {
     @Test
     public void testGetSecretsRequest() {
 
+        /**
+         * Note that the output depends, besides the value of the keys, also on both the db key and the soap key.
+         */
         assertThat(this.secretRepository.count()).isEqualTo(2);
 
         final Resource request = new ClassPathResource("test-requests/getSecrets.xml");
@@ -76,6 +93,28 @@ public class SoapServiceSecretManagementIT {
         } catch(final Exception exc) {
             Assertions.fail("Error", exc);
         }
+    }
+
+    @Test
+    public void testStoreSecretsRequest() {
+
+        /**
+         * Note that the output depends, besides the value of the keys, also on both the db key and the soap key.
+         */
+        assertThat(this.secretRepository.count()).isEqualTo(2);
+
+        final Resource request = new ClassPathResource("test-requests/storeSecrets.xml");
+        final Resource expectedResponse = new ClassPathResource("test-responses/storeSecrets.xml");
+        try {
+            this.mockWebServiceClient.sendRequest(withPayload(request))
+                    .andExpect(ResponseMatchers.noFault())
+                    .andExpect(ResponseMatchers.payload(expectedResponse));
+        } catch(final Exception exc) {
+            Assertions.fail("Error", exc);
+        }
+
+        //test the effects by looking in the repositories
+        assertThat(this.secretRepository.count()).isEqualTo(4);
     }
 
     /**
