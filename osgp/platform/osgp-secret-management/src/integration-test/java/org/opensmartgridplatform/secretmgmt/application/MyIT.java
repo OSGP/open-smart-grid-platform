@@ -70,10 +70,12 @@ public class MyIT {
     @Test
     public void getSecrets() {
         assertThat(this.secretRepository.count()).isEqualTo(1);
-        final Resource message = new ClassPathResource("getSecrets.xml");
+        final Resource request = new ClassPathResource("test-requests/getSecrets.xml");
+        final Resource expectedResponse = new ClassPathResource("test-responses/getSecrets.xml");
         try {
-            this.mockWebServiceClient.sendRequest(withPayload(message)).andExpect(ResponseMatchers.noFault());
-            //System.out.println(String.format("Response = '%s'",response));
+            this.mockWebServiceClient.sendRequest(withPayload(request))
+                    .andExpect(ResponseMatchers.noFault())
+                    .andExpect(ResponseMatchers.payload(expectedResponse));
         } catch(final Exception exc) {
             Assertions.fail("Error", exc);
         }

@@ -71,13 +71,13 @@ public class SecretManagementService implements SecretManagement {
     }
 
     public void storeKey(final DbEncryptionKeyReference keyReference) {
-        //TODO has to be implemented after MVP
-        //validateKeyReference(keyReference);
-        //this.keyRepository.save(keyReference);
+        //Not implemented yet: has to be implemented after MVP
+        /*validateKeyReference(keyReference);
+        this.keyRepository.save(keyReference);*/
     }
 
     private void validateKeyReference(final DbEncryptionKeyReference keyReference) {
-        //TODO pre-save validation (check on valid range, ...)
+        //Not implemented yet: implement after MVP; pre-save validation (check on valid range, ...)
     }
 
     private DbEncryptedSecret createEncrypted(final String deviceIdentification, final TypedSecret typedSecret,
