@@ -1,33 +1,34 @@
 package org.opensmartgridplatform.secretmgmt.application;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.GetSecretsRequest;
-import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.GetSecretsResponse;
-import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.SecretType;
-import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.SecretTypes;
 import org.opensmartgridplatform.secretmgmt.application.domain.DbEncryptedSecret;
 import org.opensmartgridplatform.secretmgmt.application.domain.DbEncryptionKeyReference;
+import org.opensmartgridplatform.secretmgmt.application.repository.DbEncryptedSecretRepository;
 import org.opensmartgridplatform.secretmgmt.application.services.encryption.providers.EncryptionProviderType;
-import org.opensmartgridplatform.secretmgmt.serviceclient.SoapConnector;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.ws.test.client.MockWebServiceServer;
-import org.springframework.xml.transform.StringSource;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ws.test.server.MockWebServiceClient;
+import org.springframework.ws.test.server.ResponseMatchers;
 
-import javax.xml.transform.Source;
 import java.util.Date;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.ws.test.client.RequestMatchers.payload;
-import static org.springframework.ws.test.client.ResponseCreators.withPayload;
+import static org.springframework.ws.test.server.RequestCreators.withPayload;
 
-//@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT) //needed to get a running webserver
 @SpringBootTest
+@Transactional
+@AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class SoapServiceSecretManagementIT {
@@ -41,83 +42,40 @@ public class SoapServiceSecretManagementIT {
     private static final String DEVICE_IDENTIFICATION="E0054002019112319";
 
     @Autowired
-    private TestEntityManager entityManager;
+    private ApplicationContext applicationContext;
 
     @Autowired
-    private SoapConnector soapClient;
+    private DbEncryptedSecretRepository secretRepository;
 
-    private MockWebServiceServer mockServer;
+    @Autowired
+    private TestEntityManager testEntityManager;
 
-    @BeforeEach
-    public void createData() {
-        createTestData();
-        mockServer = MockWebServiceServer.createServer(soapClient);
+    private MockWebServiceClient mockWebServiceClient;
+
+    @BeforeAll
+    public void setupClient() {
+        this.mockWebServiceClient = MockWebServiceClient.createClient(this.applicationContext);
     }
 
-    //@Test
-    public void testGetSecretsRequest() {
-        GetSecretsRequest request = createGetSecretsRequest();
-
-        try {
-            GetSecretsResponse response = (GetSecretsResponse) soapClient.callWebService("http://localhost:8080/ws/SecretManagement", request);
-            assertThat(response).isNotNull();
-        }
-        catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-
+    @BeforeEach
+    public void beforeEachCreateTestData() {
+        createTestData();
     }
 
     @Test
-    public void testGetSecretsWithMockServer() {
+    public void testGetSecretsRequest() {
 
-        GetSecretsRequest request = new GetSecretsRequest();
+        assertThat(this.secretRepository.count()).isEqualTo(2);
 
-        request.setDeviceId(DEVICE_IDENTIFICATION);
-
-        Source expectedRequestPayload =
-                new StringSource(
-                        "<ns2:getSecretsRequest xmlns:ns2='http://www.opensmartgridplatform.org/schemas/security/secretmanagement/2020/05'>"+
-                                            "<DeviceId>E0054002019112319</DeviceId>"+
-                                            "<SecretTypes>"+
-                                                "<SecretType>E_METER_AUTHENTICATION_KEY</SecretType>"+
-                                                "<SecretType>E_METER_ENCRYPTION_KEY_UNICAST</SecretType>"+
-                                            "</SecretTypes>"+
-                                          "</ns2:getSecretsRequest>"
-                );
-
-        Source responsePayload = new StringSource("<getSecretsResponse>"+
-                                                        "</getSecretsResponse>");
-
-        mockServer.expect(payload(expectedRequestPayload)).andRespond(withPayload(responsePayload));
-
+        final Resource request = new ClassPathResource("test-requests/getSecrets.xml");
+        final Resource expectedResponse = new ClassPathResource("test-responses/getSecrets.xml");
         try {
-            GetSecretsResponse response = (GetSecretsResponse) soapClient.callWebService("http://localhost:8080/ws/SecretManagement", request);
+            this.mockWebServiceClient.sendRequest(withPayload(request))
+                    .andExpect(ResponseMatchers.noFault())
+                    .andExpect(ResponseMatchers.payload(expectedResponse));
+        } catch(final Exception exc) {
+            Assertions.fail("Error", exc);
         }
-        catch (Exception e) {
-            System.out.println(e.toString());
-        }
-
-        mockServer.verify();
-
-    }
-
-    private GetSecretsRequest createGetSecretsRequest() {
-        GetSecretsRequest request = new GetSecretsRequest();
-
-        //build request message structure
-        SecretTypes secretTypesToGet = new SecretTypes();
-        List<SecretType> secretTypeList = secretTypesToGet.getSecretType();
-        request.setSecretTypes(secretTypesToGet);
-
-        //add test details
-        request.setDeviceId(DEVICE_IDENTIFICATION);
-
-        //add key types to get
-        secretTypeList.add(SecretType.E_METER_AUTHENTICATION_KEY);
-        secretTypeList.add(SecretType.E_METER_ENCRYPTION_KEY_UNICAST);
-
-        return request;
     }
 
     /**
@@ -126,14 +84,14 @@ public class SoapServiceSecretManagementIT {
      *
      * Two secrets (for two types of meter key secrets) and one reference key (valid as of now-1minute) is created.
      */
-    public void createTestData() {
+    private void createTestData() {
         DbEncryptionKeyReference encryptionKey = new DbEncryptionKeyReference();
         encryptionKey.setCreationTime(new Date());
         encryptionKey.setReference("1");
         encryptionKey.setEncryptionProviderType(EncryptionProviderType.JRE);
         encryptionKey.setValidFrom(new Date(System.currentTimeMillis()-60000));
         encryptionKey.setVersion(1L);
-        //encryptionKey = this.entityManager.persist(encryptionKey);
+        this.testEntityManager.persist(encryptionKey);
 
         DbEncryptedSecret encryptedSecret = new DbEncryptedSecret();
         encryptedSecret.setDeviceIdentification(DEVICE_IDENTIFICATION);
@@ -141,7 +99,7 @@ public class SoapServiceSecretManagementIT {
         encryptedSecret.setEncodedSecret(E_METER_AUTHENTICATION_KEY_ENCRYPTED_FOR_DB);
         encryptedSecret.setEncryptionKeyReference(encryptionKey);
 
-        //encryptedSecret = this.entityManager.persist(encryptedSecret);
+        this.testEntityManager.persist(encryptedSecret);
 
         DbEncryptedSecret encryptedSecret2 = new DbEncryptedSecret();
         encryptedSecret2.setDeviceIdentification(DEVICE_IDENTIFICATION);
@@ -149,10 +107,8 @@ public class SoapServiceSecretManagementIT {
         encryptedSecret2.setEncodedSecret(E_METER_ENCRYPTION_KEY_UNICAST_ENCRYPTED_FOR_DB);
         encryptedSecret2.setEncryptionKeyReference(encryptionKey);
 
-        //encryptedSecret2 = this.entityManager.persist(encryptedSecret2);
+        this.testEntityManager.persist(encryptedSecret2);
 
-        //this.entityManager.flush();
-
-
+        this.testEntityManager.flush();
     }
 }
