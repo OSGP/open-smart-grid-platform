@@ -17,12 +17,21 @@ public class DefaultEncryptionDelegate implements EncryptionDelegate {
 
     private final List<EncryptionProvider> providers = new ArrayList<>();
 
-    public DefaultEncryptionDelegate(File jreKeystore) {
+    public DefaultEncryptionDelegate(File jreKeyFile) throws Exception {
+        this(jreKeyFile, null);
+    }
+
+    public DefaultEncryptionDelegate(File jreKeyFile, File hsmKeyStoreFile) throws Exception {
         JreEncryptionProvider jreEncryptionProvider = new JreEncryptionProvider();
-        jreEncryptionProvider.setKeystore(jreKeystore);
+        jreEncryptionProvider.setKeyFile(jreKeyFile);
+
         providers.add(jreEncryptionProvider);
 
-        providers.add(new HsmEncryptionProvider());
+        if (hsmKeyStoreFile != null) {
+            HsmEncryptionProvider hsmEncryptionProvider = new HsmEncryptionProvider();
+            hsmEncryptionProvider.setKeyFile(hsmKeyStoreFile);
+            providers.add(hsmEncryptionProvider);
+        }
     }
 
     @Override

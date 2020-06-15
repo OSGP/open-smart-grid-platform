@@ -17,7 +17,7 @@ public abstract class AbstractEncryptionProvider {
 
     private static final Logger LOGGER = Logger.getLogger(AbstractEncryptionProvider.class.getName());
 
-    protected File keystore;
+    protected File keyFile;
 
     public abstract EncryptionProviderType getType();
     protected abstract Cipher getCipher() throws NoSuchPaddingException, NoSuchAlgorithmException, NoSuchProviderException;
@@ -25,8 +25,8 @@ public abstract class AbstractEncryptionProvider {
     protected abstract Key getSecretEncryptionKey(String keyReference) throws Exception;
     protected abstract int getIVLength();
 
-    public void setKeystore(File keystore) {
-        this.keystore = keystore;
+    public void setKeyFile(File keyFile) throws Exception {
+        this.keyFile = keyFile;
     }
 
     public EncryptedSecret encrypt(Secret secret, String keyReference) throws Exception {

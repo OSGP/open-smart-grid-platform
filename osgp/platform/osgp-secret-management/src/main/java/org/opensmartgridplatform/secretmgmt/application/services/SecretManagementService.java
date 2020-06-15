@@ -31,10 +31,10 @@ public class SecretManagementService implements SecretManagement {
     private final DbEncryptionKeyRepository keyRepository;
 
     @Autowired
-    public SecretManagementService(final EncryptionDelegate myEncryptionDelegate,
+    public SecretManagementService(final EncryptionDelegate osgpEncryptionDelegate,
             final EncryptionProviderType encryptionProviderType, final DbEncryptedSecretRepository secretRepository,
             final DbEncryptionKeyRepository keyRepository) {
-        this.encryptionDelegate = myEncryptionDelegate;
+        this.encryptionDelegate = osgpEncryptionDelegate;
         this.encryptionProviderType = encryptionProviderType;
         this.secretRepository = secretRepository;
         this.keyRepository = keyRepository;

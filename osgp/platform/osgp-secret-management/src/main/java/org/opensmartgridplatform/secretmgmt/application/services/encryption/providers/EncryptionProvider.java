@@ -8,7 +8,7 @@ import java.io.File;
 public interface EncryptionProvider {
     EncryptedSecret encrypt(Secret secret, String keyReference) throws Exception;
     Secret  decrypt(EncryptedSecret secret, String keyReference) throws Exception;
-    void    setKeystore(File keystoreResource);
+    void    setKeyFile(File keystore) throws Exception;
     EncryptionProviderType getType();
 }
 
