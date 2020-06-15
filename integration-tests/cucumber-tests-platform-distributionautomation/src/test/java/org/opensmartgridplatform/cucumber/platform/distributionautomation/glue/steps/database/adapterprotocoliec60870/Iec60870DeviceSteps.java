@@ -45,6 +45,7 @@ public class Iec60870DeviceSteps {
         settingsMap.put(PlatformKeys.KEY_DEVICE_TYPE, DEFAULT_DEVICE_TYPE);
         settingsMap.put(PlatformKeys.KEY_PROTOCOL, DEFAULT_PROTOCOL);
         settingsMap.put(PlatformKeys.KEY_PROTOCOL_VERSION, DEFAULT_PROTOCOL_VERSION);
+        settingsMap.put(PlatformDistributionAutomationKeys.PROFILE, PlatformDistributionAutomationDefaults.PROFILE);
 
         RTU_60870_DEFAULT_SETTINGS = Collections.unmodifiableMap(settingsMap);
     }
@@ -67,6 +68,10 @@ public class Iec60870DeviceSteps {
         ScenarioContext.current()
                 .put(PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION);
         final Map<String, String> rtuSettings = SettingsHelper.addAsDefaults(settings, RTU_60870_DEFAULT_SETTINGS);
+        ScenarioContext.current()
+                .put(PlatformDistributionAutomationKeys.PROFILE,
+                        rtuSettings.get(PlatformDistributionAutomationKeys.PROFILE));
+
         rtuSettings.put(PlatformKeys.KEY_NETWORKADDRESS, this.mockServerConfig.iec60870MockNetworkAddress());
 
         this.rtuDeviceSteps.anRtuDevice(rtuSettings);

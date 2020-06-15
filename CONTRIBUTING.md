@@ -10,7 +10,7 @@ Please comply with the [code of conduct](http://documentation.opensmartgridplatf
  
 3. Make sure the automated test suite succeeds. They will show-up in the pull request.
  
-4. Sign the CLA using [cla-assistant](http://cla.opensmartgridplatform.org) (a comment by CLAAdmin will appear for your pull request to help you out).
+4. Sign the CLA using [EasyCLA](https://lfcla.com/).
 
 5. Assign a maintainer to accept/evaluate your pull request. The current maintainer can be found in the [documentation](http://documentation.opensmartgridplatform.org/Opensourcecommunity/Governance.html).
 

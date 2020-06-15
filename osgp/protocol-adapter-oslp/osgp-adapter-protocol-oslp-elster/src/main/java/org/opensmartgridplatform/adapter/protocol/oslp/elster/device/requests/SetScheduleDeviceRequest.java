@@ -24,18 +24,6 @@ public class SetScheduleDeviceRequest extends DeviceRequest {
         this.relayType = relayType;
     }
 
-    public SetScheduleDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final ScheduleMessageDataContainerDto scheduleMessageDataContainer,
-            final RelayTypeDto relayType, final String domain, final String domainVersion, final String messageType,
-            final int messagePriority, final String ipAddress, final int retryCount, final boolean isScheduled) {
-        super(DeviceRequest.newBuilder().organisationIdentification(organisationIdentification)
-                .deviceIdentification(deviceIdentification).correlationUid(correlationUid).domain(domain)
-                .domainVersion(domainVersion).messageType(messageType).messagePriority(messagePriority)
-                .ipAddress(ipAddress).retryCount(retryCount).isScheduled(isScheduled));
-        this.scheduleMessageDataContainer = scheduleMessageDataContainer;
-        this.relayType = relayType;
-    }
-
     public SetScheduleDeviceRequest(final Builder deviceRequestBuilder,
             final ScheduleMessageDataContainerDto scheduleMessageDataContainer, final RelayTypeDto relayType) {
         super(deviceRequestBuilder);

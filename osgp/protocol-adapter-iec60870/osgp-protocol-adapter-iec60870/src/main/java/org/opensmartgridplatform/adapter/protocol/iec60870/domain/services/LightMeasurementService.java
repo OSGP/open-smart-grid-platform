@@ -8,9 +8,9 @@
 package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services;
 
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseMetadata;
+import org.opensmartgridplatform.dto.valueobjects.EventNotificationDto;
 import org.opensmartgridplatform.dto.valueobjects.LightSensorStatusDto;
 
-@FunctionalInterface
 public interface LightMeasurementService {
     /**
      * Send a measurement report.
@@ -20,5 +20,15 @@ public interface LightMeasurementService {
      * @param responseMetadata
      *            The {@link ResponseMetadata} instance.
      */
-    void send(LightSensorStatusDto lightSensorStatusDto, ResponseMetadata responseMetadata);
+    void sendSensorStatus(LightSensorStatusDto lightSensorStatusDto, ResponseMetadata responseMetadata);
+
+    /**
+     * Send a notification about a light measurement device event.
+     *
+     * @param eventNotificationDto
+     *            The {@link EventNotificationDto} instance to send.
+     * @param responseMetadata
+     *            The {@link ResponseMetadata} instance.
+     */
+    void sendEventNotification(EventNotificationDto eventNotificationDto, ResponseMetadata responseMetadata);
 }

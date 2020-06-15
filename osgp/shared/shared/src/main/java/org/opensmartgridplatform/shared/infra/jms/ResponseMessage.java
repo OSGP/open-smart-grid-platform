@@ -47,6 +47,21 @@ public class ResponseMessage implements Serializable {
         this.retryHeader = builder.retryHeader;
     }
 
+    @Override
+    public String toString() {
+        return "ResponseMessage [messageType=" + this.messageType + ", result=" + this.result + ", osgpException="
+                + this.osgpException + ", dataObject=" + this.serializableToString(this.dataObject) + "]";
+    }
+
+    private String serializableToString(final Serializable dataObject) {
+        if (dataObject == null) {
+            return "";
+        } else {
+            final String stringValue = dataObject.toString();
+            return stringValue.substring(0, Math.min(stringValue.length(), 40));
+        }
+    }
+
     public static class Builder {
 
         private String messageType = null;

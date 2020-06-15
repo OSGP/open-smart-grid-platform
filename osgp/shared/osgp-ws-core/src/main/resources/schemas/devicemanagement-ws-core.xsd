@@ -93,6 +93,26 @@
       <xsd:sequence>
         <xsd:element name="DeviceIdentification" type="common:Identification"
           minOccurs="0" />
+        <xsd:element name="Description" type="xsd:string" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation>
+              Filters events with exactly the description as
+              given here. If used in
+              combination with DescriptionStartsWith an
+              or clause will be used for combining the two criteria.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="DescriptionStartsWith" type="xsd:string" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation>
+              Filters events on the start of the description as
+              given here. If used in
+              combination with Description an
+              or clause will be used for combining the two criteria.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
         <xsd:element name="From" type="xsd:dateTime"
           minOccurs="0" />
         <xsd:element name="Until" type="xsd:dateTime"

@@ -84,7 +84,7 @@ public class DeviceManagementMapperTest {
         final org.opensmartgridplatform.domain.core.valueobjects.DeviceFilter result = this.mapper.map(deviceFilter,
                 org.opensmartgridplatform.domain.core.valueobjects.DeviceFilter.class);
 
-        assertThat(result).isEqualToComparingFieldByFieldRecursively(this.expectedMapped(deviceFilter));
+        assertThat(result).usingRecursiveComparison().isEqualTo(this.expectedMapped(deviceFilter));
     }
 
     @BeforeEach
