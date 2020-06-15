@@ -1,6 +1,7 @@
 package org.opensmartgridplatform.secretmgmt.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
@@ -9,7 +10,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.apache.tomcat.util.buf.HexUtils;
 import org.junit.jupiter.api.Test;
@@ -52,8 +55,37 @@ public class SecretManagementServiceTest {
         final Secret decryptedSecret = new Secret("secret".getBytes());
 
         //WHEN
-        when(this.secretRepository.findValidOrderedByKeyValidFrom(anyString(), any(), any(), any(), any())).thenReturn(
+        when(this.secretRepository.findValidOrderedByCreationTime(anyString(), any(), any(), any(), any())).thenReturn(
                 new PageImpl<>(Arrays.asList(secret)));
+        when(this.encryptionDelegate.decrypt(any(), any())).thenReturn(decryptedSecret);
+        final List<TypedSecret> typedSecrets = this.service.retrieveSecrets("SOME_DEVICE",
+                Arrays.asList(SecretType.E_METER_MASTER_KEY));
+
+        //THEN
+        assertThat(typedSecrets).isNotNull();
+        assertThat(typedSecrets.size()).isEqualTo(1);
+        final TypedSecret typedSecret = typedSecrets.get(0);
+        assertThat(typedSecret.getSecret()).isEqualTo(HexUtils.toHexString("secret".getBytes()));
+        assertThat(typedSecret.getSecretType()).isEqualTo(SecretType.E_METER_MASTER_KEY);
+    }
+
+    @Test
+    public void retrieveSecrets_multipleSecretsForDeviceAndType() throws Exception {
+        //GIVEN
+        final DbEncryptionKeyReference keyReference = new DbEncryptionKeyReference();
+        final DbEncryptedSecret secret = new DbEncryptedSecret();
+        secret.setSecretType(SecretType.E_METER_MASTER_KEY);
+        secret.setEncryptionKeyReference(keyReference);
+        secret.setCreationTime(new Date(System.currentTimeMillis() - 60000));
+        final DbEncryptedSecret secret2 = new DbEncryptedSecret();
+        secret2.setSecretType(SecretType.E_METER_MASTER_KEY);
+        secret2.setEncryptionKeyReference(keyReference);
+        secret2.setCreationTime(new Date(System.currentTimeMillis()));
+        final Secret decryptedSecret = new Secret("secret".getBytes());
+
+        //WHEN
+        when(this.secretRepository.findValidOrderedByCreationTime(anyString(), any(), any(), any(), any())).thenReturn(
+                new PageImpl<>(Arrays.asList(secret2, secret)));
         when(this.encryptionDelegate.decrypt(any(), any())).thenReturn(decryptedSecret);
         final List<TypedSecret> typedSecrets = this.service.retrieveSecrets("SOME_DEVICE",
                 Arrays.asList(SecretType.E_METER_MASTER_KEY));
@@ -75,7 +107,7 @@ public class SecretManagementServiceTest {
         secret.setEncryptionKeyReference(keyReference);
 
         //WHEN
-        when(this.secretRepository.findValidOrderedByKeyValidFrom(anyString(), any(), any(), any(), any())).thenReturn(
+        when(this.secretRepository.findValidOrderedByCreationTime(anyString(), any(), any(), any(), any())).thenReturn(
                 new PageImpl<>(Arrays.asList(secret)));
         when(this.encryptionDelegate.decrypt(any(), any())).thenThrow(new RuntimeException("Decryption error"));
 
@@ -87,7 +119,7 @@ public class SecretManagementServiceTest {
     @Test
     public void retrieveSecrets_secretWithoutKey() throws Exception {
         final DbEncryptedSecret secret = new DbEncryptedSecret();
-        when(this.secretRepository.findValidOrderedByKeyValidFrom(anyString(), any(), any(), any(), any())).thenReturn(
+        when(this.secretRepository.findValidOrderedByCreationTime(anyString(), any(), any(), any(), any())).thenReturn(
                 new PageImpl<>(Arrays.asList(secret)));
         assertThatIllegalStateException().isThrownBy(
                 () -> this.service.retrieveSecrets("SOME_DEVICE", Arrays.asList(SecretType.E_METER_MASTER_KEY)));
@@ -95,7 +127,7 @@ public class SecretManagementServiceTest {
 
     @Test
     public void retrieveSecrets_noSecrets() throws Exception {
-        when(this.secretRepository.findValidOrderedByKeyValidFrom(anyString(), any(), any(), any(), any())).thenReturn(
+        when(this.secretRepository.findValidOrderedByCreationTime(anyString(), any(), any(), any(), any())).thenReturn(
                 Page.empty());
         assertThatIllegalStateException().isThrownBy(
                 () -> this.service.retrieveSecrets("SOME_DEVICE", Arrays.asList(SecretType.E_METER_MASTER_KEY)));
@@ -103,7 +135,7 @@ public class SecretManagementServiceTest {
 
     @Test
     public void retrieveSecrets_multipleSecrets() throws Exception {
-        when(this.secretRepository.findValidOrderedByKeyValidFrom(anyString(), any(), any(), any(), any())).thenReturn(
+        when(this.secretRepository.findValidOrderedByCreationTime(anyString(), any(), any(), any(), any())).thenReturn(
                 new PageImpl<>(Arrays.asList(new DbEncryptedSecret(), new DbEncryptedSecret())));
         assertThatIllegalStateException().isThrownBy(
                 () -> this.service.retrieveSecrets("SOME_DEVICE", Arrays.asList(SecretType.E_METER_MASTER_KEY)));
@@ -122,6 +154,8 @@ public class SecretManagementServiceTest {
         final DbEncryptedSecret dbEncryptedSecret = new DbEncryptedSecret();
 
         //WHEN
+        when(this.secretRepository.findValidOrderedByCreationTime(anyString(), any(), any(), any(), any())).thenThrow(
+                new NoSuchElementException("No current secret"));
         when(this.keyRepository.findByTypeAndValid(any(), any(), any())).thenReturn(
                 new PageImpl<>(Arrays.asList(keyReference)));
         when(this.encryptionDelegate.encrypt(any(), any(), anyString())).thenReturn(encryptedSecret);
@@ -171,9 +205,11 @@ public class SecretManagementServiceTest {
         typedSecret.setSecretType(SecretType.E_METER_MASTER_KEY);
         typedSecret.setSecret(HexUtils.toHexString("$3cr3t".getBytes()));
         //WHEN
+        when(this.secretRepository.findValidOrderedByCreationTime(anyString(), any(), any(), any(), any())).thenThrow(
+                new NoSuchElementException("No current secret"));
         when(this.keyRepository.findByTypeAndValid(any(), any(), any())).thenReturn(Page.empty());
         //THEN
-        assertThatIllegalStateException().isThrownBy(
+        assertThatExceptionOfType(NoSuchElementException.class).isThrownBy(
                 () -> this.service.storeSecrets("SOME_DEVICE", Arrays.asList(typedSecret)));
 
     }
@@ -185,6 +221,8 @@ public class SecretManagementServiceTest {
         typedSecret.setSecretType(SecretType.E_METER_MASTER_KEY);
         typedSecret.setSecret(HexUtils.toHexString("$3cr3t".getBytes()));
         //WHEN
+        when(this.secretRepository.findValidOrderedByCreationTime(anyString(), any(), any(), any(), any())).thenThrow(
+                new NoSuchElementException("No current secret"));
         when(this.keyRepository.findByTypeAndValid(any(), any(), any())).thenReturn(
                 new PageImpl<>(Arrays.asList(new DbEncryptionKeyReference(), new DbEncryptionKeyReference())));
         //THEN
@@ -204,6 +242,8 @@ public class SecretManagementServiceTest {
         keyReference.setReference("keyReferenceString");
 
         //WHEN
+        when(this.secretRepository.findValidOrderedByCreationTime(anyString(), any(), any(), any(), any())).thenThrow(
+                new NoSuchElementException("No current secret"));
         when(this.keyRepository.findByTypeAndValid(any(), any(), any())).thenReturn(
                 new PageImpl<>(Arrays.asList(keyReference)));
         when(this.encryptionDelegate.encrypt(any(), any(), anyString())).thenThrow(
@@ -214,4 +254,71 @@ public class SecretManagementServiceTest {
 
     }
 
+    @Test
+    public void storeSecrets_existingSecret() throws Exception {
+        //GIVEN
+        final TypedSecret typedSecret = new TypedSecret();
+        typedSecret.setSecretType(SecretType.E_METER_MASTER_KEY);
+        typedSecret.setSecret(HexUtils.toHexString("$3cr3t".getBytes()));
+        final DbEncryptionKeyReference keyReference = new DbEncryptionKeyReference();
+        keyReference.setEncryptionProviderType(EncryptionProviderType.JRE);
+        keyReference.setReference("keyReferenceString");
+        final EncryptedSecret encryptedSecret = new EncryptedSecret(EncryptionProviderType.JRE, "$3cr3t".getBytes());
+        final DbEncryptedSecret existingDbSecret = new DbEncryptedSecret();
+        existingDbSecret.setCreationTime(new Date());
+        existingDbSecret.setSecretType(SecretType.E_METER_MASTER_KEY);
+        existingDbSecret.setEncodedSecret("1234567890ABCDEF");
+        existingDbSecret.setDeviceIdentification("SOME_DEVICE");
+        existingDbSecret.setEncryptionKeyReference(keyReference);
+
+        //WHEN
+        when(this.secretRepository.findValidOrderedByCreationTime(anyString(), any(), any(), any(), any())).thenReturn(
+                new PageImpl<>(Arrays.asList(existingDbSecret)));
+        when(this.keyRepository.findByTypeAndValid(any(), any(), any())).thenReturn(
+                new PageImpl<>(Arrays.asList(keyReference)));
+        when(this.encryptionDelegate.decrypt(any(), any())).thenReturn(
+                new Secret(existingDbSecret.getEncodedSecret().getBytes()));    //decrypt existing DB secret
+        when(this.encryptionDelegate.encrypt(any(), any(), anyString())).thenReturn(
+                encryptedSecret);   //encrypt new DB secret
+        this.service.storeSecrets("SOME_DEVICE", Arrays.asList(typedSecret));
+        //THEN
+        final ArgumentCaptor<DbEncryptedSecret> secretArgumentCaptor = ArgumentCaptor.forClass(DbEncryptedSecret.class);
+        verify(this.secretRepository).save(secretArgumentCaptor.capture());
+        final DbEncryptedSecret savedSecret = secretArgumentCaptor.getValue();
+        assertThat(savedSecret).isNotNull();
+        assertThat(savedSecret.getDeviceIdentification()).isEqualTo("SOME_DEVICE");
+        assertThat(savedSecret.getSecretType()).isEqualTo(typedSecret.getSecretType());
+        assertThat(savedSecret.getEncodedSecret()).isEqualTo(HexUtils.toHexString(encryptedSecret.getSecret()));
+        assertThat(savedSecret.getEncryptionKeyReference()).isEqualTo(keyReference);
+        assertThat(savedSecret.getCreationTime()).isNotNull();
+    }
+
+    @Test
+    public void storeSecrets_existingIdenticalSecret() throws Exception {
+        //GIVEN
+        final TypedSecret newTypedSecret = new TypedSecret();
+        newTypedSecret.setSecretType(SecretType.E_METER_MASTER_KEY);
+        newTypedSecret.setSecret(HexUtils.toHexString("$3cr3t".getBytes()));
+        final DbEncryptionKeyReference keyReference = new DbEncryptionKeyReference();
+        keyReference.setEncryptionProviderType(EncryptionProviderType.JRE);
+        keyReference.setReference("keyReferenceString");
+        final EncryptedSecret newEncryptedSecret = new EncryptedSecret(EncryptionProviderType.JRE, "$3cr3t".getBytes());
+        final DbEncryptedSecret existingDbSecret = new DbEncryptedSecret();
+        existingDbSecret.setCreationTime(new Date());
+        existingDbSecret.setSecretType(SecretType.E_METER_MASTER_KEY);
+        existingDbSecret.setEncodedSecret("1234567890ABCDEF");  //value doesnt matter because of decryption mock
+        existingDbSecret.setDeviceIdentification("SOME_DEVICE");
+        existingDbSecret.setEncryptionKeyReference(keyReference);
+
+        //WHEN
+        when(this.secretRepository.findValidOrderedByCreationTime(anyString(), any(), any(), any(), any())).thenReturn(
+                new PageImpl<>(Arrays.asList(existingDbSecret)));
+        when(this.encryptionDelegate.decrypt(any(), any())).thenReturn(
+                new Secret(HexUtils.fromHexString(newTypedSecret.getSecret())));    //identical secrets
+
+        //THEN
+        assertThatIllegalArgumentException().isThrownBy(
+                () -> this.service.storeSecrets("SOME_DEVICE", Arrays.asList(newTypedSecret))).withMessageContaining(
+                "identical to current");
+    }
 }

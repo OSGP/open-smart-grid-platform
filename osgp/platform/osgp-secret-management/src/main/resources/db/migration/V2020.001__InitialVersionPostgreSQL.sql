@@ -53,8 +53,7 @@ $$
                         CONSTRAINT encryption_key_reference_fk FOREIGN KEY (encryption_key_reference_id)
                             REFERENCES public.encryption_key_reference (id) MATCH SIMPLE
                             ON UPDATE NO ACTION
-                            ON DELETE NO ACTION,
-                        UNIQUE (device_identification, secret_type, encoded_secret, encryption_key_reference_id)
+                            ON DELETE NO ACTION
                     );
                     ALTER TABLE "encrypted_secret" OWNER TO osp_admin;
                     CREATE SEQUENCE encrypted_secret_id_seq

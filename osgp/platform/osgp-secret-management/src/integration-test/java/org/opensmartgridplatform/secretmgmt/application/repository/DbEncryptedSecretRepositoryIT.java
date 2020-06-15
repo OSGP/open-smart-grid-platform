@@ -40,7 +40,7 @@ public class DbEncryptedSecretRepositoryIT extends AbstractRepositoryIT {
 
     @Test
     public void find() {
-        final Page<DbEncryptedSecret> resultPage = this.repository.findValidOrderedByKeyValidFrom(DEVICE_IDENTIFICATION,
+        final Page<DbEncryptedSecret> resultPage = this.repository.findValidOrderedByCreationTime(DEVICE_IDENTIFICATION,
                 SecretType.E_METER_AUTHENTICATION_KEY, EncryptionProviderType.HSM, new Date(), Pageable.unpaged());
         assertThat(resultPage.toList().size()).isEqualTo(1);
         final DbEncryptedSecret result = resultPage.toList().get(0);

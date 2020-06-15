@@ -139,11 +139,13 @@ public class SecretManagementIT {
         final List<TypedSecret> typedSecretList = typedSecrets.getTypedSecret();
 
         final TypedSecret typedSecret1 = new TypedSecret();
-        typedSecret1.setType(SecretType.E_METER_AUTHENTICATION_KEY);
+        //Swap secrets from 2 types to set different secret (cannot set identical secret)
+        typedSecret1.setType(SecretType.E_METER_ENCRYPTION_KEY_BROADCAST);
         typedSecret1.setSecret(E_METER_AUTHENTICATION_KEY_ENCRYPTED_FOR_SOAP);
 
         final TypedSecret typedSecret2 = new TypedSecret();
-        typedSecret2.setType(SecretType.E_METER_ENCRYPTION_KEY_BROADCAST);
+        //Swap secrets from 2 types to set different secret (cannot set identical secret)
+        typedSecret2.setType(SecretType.E_METER_AUTHENTICATION_KEY);    //swap secrets to set different secret
         typedSecret2.setSecret(E_METER_ENCRYPTION_KEY_UNICAST_ENCRYPTED_FOR_SOAP);
 
         typedSecretList.add(typedSecret1);

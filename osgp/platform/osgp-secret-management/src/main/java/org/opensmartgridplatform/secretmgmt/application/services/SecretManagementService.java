@@ -1,9 +1,8 @@
 package org.opensmartgridplatform.secretmgmt.application.services;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import org.apache.tomcat.util.buf.HexUtils;
@@ -19,12 +18,13 @@ import org.opensmartgridplatform.secretmgmt.application.services.encryption.Secr
 import org.opensmartgridplatform.secretmgmt.application.services.encryption.providers.EncryptionProviderType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
 public class SecretManagementService implements SecretManagement {
-
+    private final static int FIRST_PAGE = 0;
     private final EncryptionDelegate encryptionDelegate;
     private final EncryptionProviderType encryptionProviderType;
     private final DbEncryptedSecretRepository secretRepository;
@@ -44,7 +44,7 @@ public class SecretManagementService implements SecretManagement {
     public void storeSecrets(final String deviceIdentification, final List<TypedSecret> secrets) throws Exception {
         //@formatter:off
         secrets.stream()
-                .map(this::validateSecret)
+                .map(t -> this.validateSecret(deviceIdentification, t))
                 .map(s -> this.createEncrypted(deviceIdentification, s, this.getKey(s)))
                 .forEach(this.secretRepository::save);
         //@formatter:on
@@ -58,16 +58,29 @@ public class SecretManagementService implements SecretManagement {
             throw new IllegalStateException("Multiple encryption keys found that are valid at " + now);
         }
         return keyRefsPage.stream().findFirst().orElseThrow(
-                () -> new IllegalStateException("No encryption key found that is valid at " + now));
+                () -> new NoSuchElementException("No encryption key found that is valid at " + now));
     }
 
-    private TypedSecret validateSecret(final TypedSecret secret) {
-        if(secret.getSecret()==null) {
+    private TypedSecret validateSecret(final String deviceIdentification, final TypedSecret secret) {
+        if (secret.getSecret() == null) {
             throw new IllegalArgumentException("No secret string set");
-        } else if(secret.getSecretType()==null) {
+        } else if (secret.getSecretType() == null) {
             throw new IllegalArgumentException("No secret type set");
+        } else if (this.isIdenticalToCurrent(deviceIdentification, secret)) {
+            throw new IllegalArgumentException(String.format("Secret is identical to current secret (%s, %s)",
+                    deviceIdentification, secret.getSecretType().name()));
         }
         return secret;
+    }
+
+    private boolean isIdenticalToCurrent(final String deviceIdentification, final TypedSecret secret) {
+        try {
+            final TypedSecret current = this.retrieveSecret(deviceIdentification, secret.getSecretType());
+            return current.getSecret().equals(secret.getSecret());
+        } catch(final NoSuchElementException nsee) {
+            //there is no current secret
+            return false;
+        }
     }
 
     public void storeKey(final DbEncryptionKeyReference keyReference) {
@@ -103,16 +116,10 @@ public class SecretManagementService implements SecretManagement {
     @Override
     public List<TypedSecret> retrieveSecrets(final String deviceIdentification, final List<SecretType> secretTypes)
             throws Exception {
-        final Pageable pageable = Pageable.unpaged();
-        final Date now = new Date(); //TODO: UTC?
-        final Map<SecretType, List<DbEncryptedSecret>> secretsByTypeMap = new HashMap<>();
         try {
             //@formatter:off
             return secretTypes.stream()
-                    .map(secretType ->
-                            this.secretRepository.findValidOrderedByKeyValidFrom(deviceIdentification,secretType,
-                                    this.encryptionProviderType, now, pageable))
-                    .map(resultPage -> this.getTypedSecretFromDbEncryptedSecrets(resultPage.toList()))
+                    .map(secretType -> this.retrieveSecret(deviceIdentification,secretType))
                     .collect(Collectors.toList());
             //@formatter:on
         } catch (final Exception exc) {
@@ -121,12 +128,18 @@ public class SecretManagementService implements SecretManagement {
         }
     }
 
+    public TypedSecret retrieveSecret(final String deviceIdentification, final SecretType secretType) {
+        final Pageable pageable = PageRequest.of(FIRST_PAGE,1);
+        final Date now = new Date(); //TODO: UTC?
+        final Page<DbEncryptedSecret> page = this.secretRepository.findValidOrderedByCreationTime(deviceIdentification,
+                secretType, this.encryptionProviderType, now, pageable);
+        return this.getTypedSecretFromDbEncryptedSecrets(page.toList());
+    }
+
     private TypedSecret getTypedSecretFromDbEncryptedSecrets(final List<DbEncryptedSecret> dbEncryptedSecrets) {
         final int nrSecretsForType = dbEncryptedSecrets.size();
         if (nrSecretsForType == 0) {
-            throw new IllegalStateException("No secret found with a valid key");
-        } else if (nrSecretsForType > 1) {
-            throw new IllegalStateException(String.format("Illegal number of secrets found: %s", nrSecretsForType));
+            throw new NoSuchElementException("No secret found with a valid key");
         }
         return this.getTypedSecret(dbEncryptedSecrets.get(0));
     }
@@ -156,8 +169,7 @@ public class SecretManagementService implements SecretManagement {
             typedSecret.setSecretType(dbEncryptedSecret.getSecretType());
             return typedSecret;
         } catch (final Exception exc) {
-            throw new IllegalStateException("Could not decrypt secret (id: " + dbEncryptedSecret.getId() + ")",
-                    exc);
+            throw new IllegalStateException("Could not decrypt secret (id: " + dbEncryptedSecret.getId() + ")", exc);
         }
     }
 }
