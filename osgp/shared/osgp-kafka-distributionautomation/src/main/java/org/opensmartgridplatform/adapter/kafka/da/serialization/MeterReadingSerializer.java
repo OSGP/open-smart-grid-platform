@@ -1,4 +1,11 @@
-package org.opensmartgridplatform.adapter.kafka.da.infra.kafka.out;
+/**
+ * Copyright 2020 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
+package org.opensmartgridplatform.adapter.kafka.da.serialization;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -8,8 +15,8 @@ import org.opensmartgridplatform.adapter.kafka.da.avro.MeterReading;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// TODO - Rename and update for correct Avro message format.
 public class MeterReadingSerializer implements Serializer<MeterReading> {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(MeterReadingSerializer.class);
 
     @Override

@@ -249,6 +249,16 @@
       </dependency>
       <dependency>
         <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-kafka-distributionautomation</artifactId>
+        <version>${osgp.shared.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-kafka-logger</artifactId>
+        <version>${osgp.shared.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>jasper-interface</artifactId>
         <version>${osgp.jasper-interface.version}</version>
       </dependency>
@@ -968,7 +978,7 @@
         <artifactId>javax.xml.soap-api</artifactId>
         <version>${javax.xml.soap-api.version}</version>
       </dependency>
-      
+
       <!-- Lombok -->
       <dependency>
         <groupId>org.projectlombok</groupId>
@@ -976,7 +986,7 @@
         <version>${lombok.version}</version>
         <scope>provided</scope>
       </dependency>
-      
+
     </dependencies>
   </dependencyManagement>
 

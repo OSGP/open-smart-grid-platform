@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.kafka.da.infra.kafka.out;
+package org.opensmartgridplatform.adapter.kafka.da.serialization;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
