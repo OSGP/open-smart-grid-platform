@@ -16,12 +16,13 @@ import lombok.Setter;
 import org.opensmartgridplatform.secretmgmt.application.services.encryption.providers.EncryptionProviderType;
 
 @Entity
-@Table(name = "EncryptionKeyReference")
+@Table(name = "encryption_key_reference")
 @Getter
 @Setter
 public class DbEncryptionKeyReference {
     @Id
-    @SequenceGenerator(name = "encryption_key_seq_gen", sequenceName = "encryption_key_id_seq", allocationSize = 1)
+    @SequenceGenerator(name = "encryption_key_seq_gen", sequenceName = "encryption_key_reference_id_seq",
+            allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "encryption_key_seq_gen")
     Long id;
     Date creationTime;

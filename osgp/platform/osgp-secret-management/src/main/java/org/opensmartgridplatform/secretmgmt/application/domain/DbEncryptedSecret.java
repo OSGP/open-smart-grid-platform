@@ -20,7 +20,7 @@ import lombok.Setter;
  * This is an immutable object. Historic entries are saved in the DB.
  */
 @Entity
-@Table(name = "EncryptedSecret")
+@Table(name = "encrypted_secret")
 @Getter
 @Setter
 public class DbEncryptedSecret {
