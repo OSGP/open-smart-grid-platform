@@ -11,6 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
+import com.google.common.primitives.UnsignedInteger;
 import org.apache.commons.lang3.StringUtils;
 import org.openmuc.jdlms.AuthenticationMechanism;
 import org.openmuc.jdlms.DlmsConnection;
@@ -141,9 +142,12 @@ public class Hls5Connector extends SecureDlmsConnector {
             manufacturerId = device.getManufacturerId();
         }
         tcpConnectionBuilder.setSystemTitle(manufacturerId, device.getDeviceId());
-        tcpConnectionBuilder.setFrameCounter(device.getInvocationCounter());
-        LOGGER.debug("Framecounter for device {} set to {}", device.getDeviceIdentification(),
-                device.getInvocationCounter());
+
+        UnsignedInteger i = UnsignedInteger.valueOf(device.getInvocationCounter());
+
+        tcpConnectionBuilder.setFrameCounter(i.intValue());
+        LOGGER.debug("Framecounter for device {} set to {}", device.getDeviceIdentification(), i);
+
     }
 
     private void validateKeys(final byte[] encryptionKey, final byte[] authenticationKey) throws FunctionalException {

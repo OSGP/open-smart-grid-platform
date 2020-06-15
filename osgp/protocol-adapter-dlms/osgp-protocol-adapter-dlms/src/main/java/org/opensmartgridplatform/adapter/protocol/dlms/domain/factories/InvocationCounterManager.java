@@ -67,7 +67,7 @@ public class InvocationCounterManager {
     }
 
     @SuppressWarnings("squid:S1905") // Casting to Number is necessary here.
-    private int getInvocationCounter(final DlmsConnectionManager connectionManager) throws FunctionalException {
+    private long getInvocationCounter(final DlmsConnectionManager connectionManager) throws FunctionalException {
         return ((Number) this.dlmsHelper
                 .getAttributeValue(connectionManager, ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE).getValue())
                 .intValue();

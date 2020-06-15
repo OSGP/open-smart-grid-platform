@@ -59,8 +59,9 @@ public class InvocationCounterManagerTest {
         when(this.connectionFactory.getPublicClientConnection(device, null)).thenReturn(connectionManager);
 
         final DataObject dataObject = DataObject.newInteger32Data(123);
-        when(this.dlmsHelper.getAttributeValue(eq(connectionManager),
-                refEq(ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE))).thenReturn(dataObject);
+        when(this.dlmsHelper
+                .getAttributeValue(eq(connectionManager), refEq(ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE)))
+                .thenReturn(dataObject);
 
         try {
             this.manager.initializeInvocationCounter(device);
@@ -69,14 +70,14 @@ public class InvocationCounterManagerTest {
             // expected
         }
 
-        assertThat(device.getInvocationCounter()).isEqualTo(dataObject.getValue());
+        assertThat(device.getInvocationCounter()).isEqualTo(Long.valueOf(dataObject.getValue().toString()));
         verify(this.deviceRepository).save(device);
         verify(connectionManager).close();
     }
 
     @Test
     public void resetsInvocationCounter() {
-        final DlmsDevice device = new DlmsDeviceBuilder().withInvocationCounter(123).build();
+        final DlmsDevice device = new DlmsDeviceBuilder().withInvocationCounter(123L).build();
 
         this.manager.resetInvocationCounter(device);
 
