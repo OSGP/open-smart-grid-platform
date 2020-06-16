@@ -80,7 +80,6 @@ public class Hls5Connector extends SecureDlmsConnector {
             LOGGER.error(msg);
             throw new ConnectionException(msg, e);
         } catch (final EncrypterException e) {
-            LOGGER.error("decryption on security keys went wrong for device: {}", device.getDeviceIdentification(), e);
             throw new FunctionalException(FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT, ComponentType.PROTOCOL_DLMS,
                     e);
         }
@@ -143,10 +142,10 @@ public class Hls5Connector extends SecureDlmsConnector {
         }
         tcpConnectionBuilder.setSystemTitle(manufacturerId, device.getDeviceId());
 
-        UnsignedInteger i = UnsignedInteger.valueOf(device.getInvocationCounter());
+        UnsignedInteger frameCounter = UnsignedInteger.valueOf(device.getInvocationCounter());
 
-        tcpConnectionBuilder.setFrameCounter(i.intValue());
-        LOGGER.debug("Framecounter for device {} set to {}", device.getDeviceIdentification(), i);
+        tcpConnectionBuilder.setFrameCounter(frameCounter.intValue());
+        LOGGER.debug("Framecounter for device {} set to {}", device.getDeviceIdentification(), frameCounter);
 
     }
 
