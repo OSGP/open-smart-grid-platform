@@ -135,6 +135,7 @@ public class SecretManagementServiceTest {
         assertThat(savedSecret.getSecretType()).isEqualTo(typedSecret.getSecretType());
         assertThat(savedSecret.getEncodedSecret()).isEqualTo(HexUtils.toHexString(encryptedSecret.getSecret()));
         assertThat(savedSecret.getEncryptionKeyReference()).isEqualTo(keyReference);
+        assertThat(savedSecret.getCreationTime()).isNotNull();
     }
 
     @Test

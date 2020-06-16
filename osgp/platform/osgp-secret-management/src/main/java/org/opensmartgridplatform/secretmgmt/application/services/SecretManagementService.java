@@ -93,6 +93,7 @@ public class SecretManagementService implements SecretManagement {
             dbEncryptedSecret.setEncodedSecret(HexUtils.toHexString(encryptedSecret.getSecret()));
             dbEncryptedSecret.setSecretType(typedSecret.getSecretType());
             dbEncryptedSecret.setEncryptionKeyReference(keyReference);
+            dbEncryptedSecret.setCreationTime(new Date());
             return dbEncryptedSecret;
         } catch (final Exception exc) {
             throw new IllegalStateException("Could not create encrypted secret", exc);

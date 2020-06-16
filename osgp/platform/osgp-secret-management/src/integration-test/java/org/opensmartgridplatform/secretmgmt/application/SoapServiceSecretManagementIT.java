@@ -1,5 +1,12 @@
 package org.opensmartgridplatform.secretmgmt.application;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.ws.test.server.RequestCreators.withPayload;
+
+import java.util.Date;
+
+import javax.persistence.EntityManager;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,9 +17,10 @@ import org.opensmartgridplatform.secretmgmt.application.domain.DbEncryptionKeyRe
 import org.opensmartgridplatform.secretmgmt.application.repository.DbEncryptedSecretRepository;
 import org.opensmartgridplatform.secretmgmt.application.services.encryption.providers.EncryptionProviderType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.ClassPathResource;
@@ -21,13 +29,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ws.test.server.MockWebServiceClient;
 import org.springframework.ws.test.server.ResponseMatchers;
 
-import java.util.Date;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.ws.test.server.RequestCreators.withPayload;
-
 @SpringBootTest
 @Transactional
+@EnableAutoConfiguration(exclude = FlywayAutoConfiguration.class)
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -62,7 +66,7 @@ public class SoapServiceSecretManagementIT {
     private DbEncryptedSecretRepository secretRepository;
 
     @Autowired
-    private TestEntityManager testEntityManager;
+    private EntityManager testEntityManager;
 
     private MockWebServiceClient mockWebServiceClient;
 
@@ -73,7 +77,7 @@ public class SoapServiceSecretManagementIT {
 
     @BeforeEach
     public void beforeEachCreateTestData() {
-        createTestData();
+        this.createTestData();
     }
 
     @Test
@@ -160,15 +164,14 @@ public class SoapServiceSecretManagementIT {
      * Two secrets (for two types of meter key secrets) and one reference key (valid as of now-1minute) is created.
      */
     private void createTestData() {
-        DbEncryptionKeyReference encryptionKey = new DbEncryptionKeyReference();
+        final DbEncryptionKeyReference encryptionKey = new DbEncryptionKeyReference();
         encryptionKey.setCreationTime(new Date());
         encryptionKey.setReference("1");
         encryptionKey.setEncryptionProviderType(EncryptionProviderType.JRE);
         encryptionKey.setValidFrom(new Date(System.currentTimeMillis()-60000));
         encryptionKey.setVersion(1L);
         this.testEntityManager.persist(encryptionKey);
-
-        DbEncryptedSecret encryptedSecret = new DbEncryptedSecret();
+        final DbEncryptedSecret encryptedSecret = new DbEncryptedSecret();
         encryptedSecret.setDeviceIdentification(DEVICE_IDENTIFICATION);
         encryptedSecret.setSecretType(org.opensmartgridplatform.secretmgmt.application.domain.SecretType.E_METER_AUTHENTICATION_KEY);
         encryptedSecret.setEncodedSecret(E_METER_AUTHENTICATION_KEY_ENCRYPTED_FOR_DB);
@@ -176,7 +179,7 @@ public class SoapServiceSecretManagementIT {
 
         this.testEntityManager.persist(encryptedSecret);
 
-        DbEncryptedSecret encryptedSecret2 = new DbEncryptedSecret();
+        final DbEncryptedSecret encryptedSecret2 = new DbEncryptedSecret();
         encryptedSecret2.setDeviceIdentification(DEVICE_IDENTIFICATION);
         encryptedSecret2.setSecretType(org.opensmartgridplatform.secretmgmt.application.domain.SecretType.E_METER_ENCRYPTION_KEY_UNICAST);
         encryptedSecret2.setEncodedSecret(E_METER_ENCRYPTION_KEY_UNICAST_ENCRYPTED_FOR_DB);

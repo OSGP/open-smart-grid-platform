@@ -1,5 +1,11 @@
 package org.opensmartgridplatform.secretmgmt.application;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.util.Date;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -20,20 +26,16 @@ import org.opensmartgridplatform.secretmgmt.application.services.SecretManagemen
 import org.opensmartgridplatform.secretmgmt.application.services.encryption.providers.EncryptionProvider;
 import org.opensmartgridplatform.secretmgmt.application.services.encryption.providers.EncryptionProviderType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 @SpringBootTest
 @Transactional
+@EnableAutoConfiguration(exclude = FlywayAutoConfiguration.class)
 @AutoConfigureTestEntityManager
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class SecretManagementIT {
@@ -60,8 +62,9 @@ public class SecretManagementIT {
 
     @BeforeEach
     public void beforeEachTest() {
-        secretManagementEndpoint = new SecretManagementEndpoint(secretManagementService, soapSecretEncryptionProvider);
-        createTestData();
+        this.secretManagementEndpoint = new SecretManagementEndpoint(this.secretManagementService,
+                this.soapSecretEncryptionProvider);
+        this.createTestData();
     }
 
     /**
@@ -73,11 +76,11 @@ public class SecretManagementIT {
     @Test
     public void getSecretsBySoapCall() {
 
-        GetSecretsRequest request = new GetSecretsRequest();
+        final GetSecretsRequest request = new GetSecretsRequest();
 
         //build request message structure
-        SecretTypes secretTypesToGet = new SecretTypes();
-        List<SecretType> secretTypeList = secretTypesToGet.getSecretType();
+        final SecretTypes secretTypesToGet = new SecretTypes();
+        final List<SecretType> secretTypeList = secretTypesToGet.getSecretType();
         request.setSecretTypes(secretTypesToGet);
 
         //add test details
@@ -88,13 +91,13 @@ public class SecretManagementIT {
         secretTypeList.add(SecretType.E_METER_ENCRYPTION_KEY_UNICAST);
 
         //call the service endpoint
-        GetSecretsResponse response = secretManagementEndpoint.getSecretsRequest(request);
+        final GetSecretsResponse response = this.secretManagementEndpoint.getSecretsRequest(request);
 
         //verify the results
         assertThat(response.getResult()).isEqualTo(OsgpResultType.OK);
-        TypedSecrets typedSecrets = response.getTypedSecrets();
+        final TypedSecrets typedSecrets = response.getTypedSecrets();
 
-        List<TypedSecret> listOfTypedSecrets = typedSecrets.getTypedSecret();
+        final List<TypedSecret> listOfTypedSecrets = typedSecrets.getTypedSecret();
 
         assertThat(listOfTypedSecrets.size()).isEqualTo(2);
 
@@ -110,11 +113,11 @@ public class SecretManagementIT {
      */
     @Test
     public void tryGetSecretsBySoapCallWithException() {
-        GetSecretsRequest request = new GetSecretsRequest();
+        final GetSecretsRequest request = new GetSecretsRequest();
 
         assertThrows(
                 TechnicalServiceFaultException.class,
-                () -> secretManagementEndpoint.getSecretsRequest(request),
+                () -> this.secretManagementEndpoint.getSecretsRequest(request),
                 "Expected getSecretsRequest() to throw TechnicalServiceFaultException, but it didn't"
         );
     }
@@ -128,18 +131,18 @@ public class SecretManagementIT {
     @Test
     public void storeSecretsRequestBySoapCall() {
 
-        StoreSecretsRequest request = new StoreSecretsRequest();
+        final StoreSecretsRequest request = new StoreSecretsRequest();
 
         request.setDeviceId(DEVICE_IDENTIFICATION);
 
-        TypedSecrets typedSecrets = new TypedSecrets();
-        List<TypedSecret> typedSecretList = typedSecrets.getTypedSecret();
+        final TypedSecrets typedSecrets = new TypedSecrets();
+        final List<TypedSecret> typedSecretList = typedSecrets.getTypedSecret();
 
-        TypedSecret typedSecret1 = new TypedSecret();
+        final TypedSecret typedSecret1 = new TypedSecret();
         typedSecret1.setType(SecretType.E_METER_AUTHENTICATION_KEY);
         typedSecret1.setSecret(E_METER_AUTHENTICATION_KEY_ENCRYPTED_FOR_SOAP);
 
-        TypedSecret typedSecret2 = new TypedSecret();
+        final TypedSecret typedSecret2 = new TypedSecret();
         typedSecret2.setType(SecretType.E_METER_ENCRYPTION_KEY_BROADCAST);
         typedSecret2.setSecret(E_METER_ENCRYPTION_KEY_UNICAST_ENCRYPTED_FOR_SOAP);
 
@@ -148,7 +151,7 @@ public class SecretManagementIT {
         
         request.setTypedSecrets(typedSecrets);
         
-        StoreSecretsResponse response = secretManagementEndpoint.storeSecretsRequest(request);
+        final StoreSecretsResponse response = this.secretManagementEndpoint.storeSecretsRequest(request);
 
         assertThat(response.getResult()).isEqualTo(OsgpResultType.OK);
 
@@ -159,11 +162,11 @@ public class SecretManagementIT {
      */
     @Test
     public void tryStoreSecretsBySoapCallWithException() {
-        StoreSecretsRequest request = new StoreSecretsRequest();
+        final StoreSecretsRequest request = new StoreSecretsRequest();
 
         assertThrows(
                 TechnicalServiceFaultException.class,
-                () -> secretManagementEndpoint.storeSecretsRequest(request),
+                () -> this.secretManagementEndpoint.storeSecretsRequest(request),
                 "Expected getSecretsRequest() to throw TechnicalServiceFaultException, but it didn't");
     }
 

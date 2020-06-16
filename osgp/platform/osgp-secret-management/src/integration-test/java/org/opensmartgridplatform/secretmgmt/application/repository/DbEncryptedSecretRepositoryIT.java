@@ -11,19 +11,10 @@ import org.opensmartgridplatform.secretmgmt.application.domain.DbEncryptionKeyRe
 import org.opensmartgridplatform.secretmgmt.application.domain.SecretType;
 import org.opensmartgridplatform.secretmgmt.application.services.encryption.providers.EncryptionProviderType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.context.TestPropertySource;
 
-@DataJpaTest(showSql = false, excludeAutoConfiguration = FlywayAutoConfiguration.class)
-@TestPropertySource(properties = { "spring.jpa.hibernate.ddl-auto=update", "spring.main.banner-mode=off" })
-public class DbEncryptedSecretRepositoryIT {
-    @Autowired
-    private TestEntityManager entityManager;
-
+public class DbEncryptedSecretRepositoryIT extends AbstractRepositoryIT {
     @Autowired
     private DbEncryptedSecretRepository repository;
 
