@@ -75,7 +75,7 @@ public class DlmsConnectionHelperTest {
     @Test
     public void createsConnectionForDeviceThatNeedsInvocationCounterWithInvocationCounterInitialized()
             throws Exception {
-        final DlmsDevice device = new DlmsDeviceBuilder().withHls5Active(true).withInvocationCounter(123).build();
+        final DlmsDevice device = new DlmsDeviceBuilder().withHls5Active(true).withInvocationCounter(123L).build();
         final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 
         final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
@@ -92,7 +92,7 @@ public class DlmsConnectionHelperTest {
     public void resetsInvocationCounterWhenInvocationCounterIsOutOfSyncForIskraDevice() throws Exception {
         final DlmsDevice device = new DlmsDeviceBuilder().withHls5Active(true)
                 .withProtocol("SMR")
-                .withInvocationCounter(123)
+                .withInvocationCounter(123L)
                 .build();
         final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 
@@ -116,7 +116,7 @@ public class DlmsConnectionHelperTest {
     public void resetsInvocationCounterWhenInvocationCounterIsOutOfSyncForLAndGDevice() throws Exception {
         final DlmsDevice device = new DlmsDeviceBuilder().withHls5Active(true)
                 .withProtocol("SMR")
-                .withInvocationCounter(123)
+                .withInvocationCounter(123L)
                 .build();
         final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 
@@ -140,7 +140,7 @@ public class DlmsConnectionHelperTest {
             throws Exception {
         final DlmsDevice device = new DlmsDeviceBuilder().withHls5Active(true)
                 .withProtocol("DSMR")
-                .withInvocationCounter(123)
+                .withInvocationCounter(123L)
                 .build();
         final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 
