@@ -48,7 +48,7 @@ $$
                         device_identification   CHARACTER VARYING(32)   NOT NULL,
                         secret_type             CHARACTER VARYING(32)   NOT NULL,
                         encoded_secret          CHARACTER VARYING(64)   NOT NULL,
-                        creation_time           timestamp without time zone NOT NULL,
+                        creation_time           timestamp without time zone NOT NULL DEFAULT now(),
                         encryption_key_reference_id BIGINT              NOT NULL,
                         CONSTRAINT encryption_key_reference_fk FOREIGN KEY (encryption_key_reference_id)
                             REFERENCES public.encryption_key_reference (id) MATCH SIMPLE
@@ -67,6 +67,7 @@ $$
   				    ALTER SEQUENCE public.encrypted_secret_id_seq OWNED BY encrypted_secret.id;
   				    CREATE INDEX encrypted_secret_ix_device_identification ON encrypted_secret (device_identification);
                     CREATE INDEX encrypted_secret_ix_secret_type ON encrypted_secret (secret_type);
+                    CREATE INDEX encrypted_secret_ix_creation_time ON encrypted_secret (creation_time);
          END IF;
     END;
 $$

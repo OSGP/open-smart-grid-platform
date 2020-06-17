@@ -18,11 +18,12 @@ import org.opensmartgridplatform.secretmgmt.application.services.encryption.Secr
 import org.opensmartgridplatform.secretmgmt.application.services.encryption.providers.EncryptionProviderType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class SecretManagementService implements SecretManagement {
     private final static int FIRST_PAGE = 0;
     private final EncryptionDelegate encryptionDelegate;
@@ -129,19 +130,13 @@ public class SecretManagementService implements SecretManagement {
     }
 
     public TypedSecret retrieveSecret(final String deviceIdentification, final SecretType secretType) {
-        final Pageable pageable = PageRequest.of(FIRST_PAGE,1);
-        final Date now = new Date(); //TODO: UTC?
-        final Page<DbEncryptedSecret> page = this.secretRepository.findValidOrderedByCreationTime(deviceIdentification,
-                secretType, this.encryptionProviderType, now, pageable);
-        return this.getTypedSecretFromDbEncryptedSecrets(page.toList());
-    }
-
-    private TypedSecret getTypedSecretFromDbEncryptedSecrets(final List<DbEncryptedSecret> dbEncryptedSecrets) {
-        final int nrSecretsForType = dbEncryptedSecrets.size();
-        if (nrSecretsForType == 0) {
+        final Date now = new Date();
+        final Long secretId = this.secretRepository.findIdOfValidMostRecent(deviceIdentification,
+                secretType.name(), this.encryptionProviderType.name(), now);
+        if(secretId==null) {
             throw new NoSuchElementException("No secret found with a valid key");
         }
-        return this.getTypedSecret(dbEncryptedSecrets.get(0));
+        return this.getTypedSecret(this.secretRepository.findById(secretId).get());
     }
 
     private TypedSecret getTypedSecret(final DbEncryptedSecret dbEncryptedSecret) {

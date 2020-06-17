@@ -8,7 +8,6 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.GetSecretsRequest;
 import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.GetSecretsResponse;
 import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.OsgpResultType;
@@ -37,7 +36,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @EnableAutoConfiguration(exclude = FlywayAutoConfiguration.class)
 @AutoConfigureTestEntityManager
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class SecretManagementIT {
 
     private static final String DEVICE_IDENTIFICATION="E0054002019112319";
@@ -188,6 +186,7 @@ public class SecretManagementIT {
         encryptionKey = this.entityManager.persist(encryptionKey);
 
         DbEncryptedSecret encryptedSecret = new DbEncryptedSecret();
+        encryptedSecret.setCreationTime(new Date());
         encryptedSecret.setDeviceIdentification(DEVICE_IDENTIFICATION);
         encryptedSecret.setSecretType(org.opensmartgridplatform.secretmgmt.application.domain.SecretType.E_METER_AUTHENTICATION_KEY);
         encryptedSecret.setEncodedSecret(E_METER_AUTHENTICATION_KEY_ENCRYPTED_FOR_DB);
@@ -196,6 +195,7 @@ public class SecretManagementIT {
         encryptedSecret = this.entityManager.persist(encryptedSecret);
 
         DbEncryptedSecret encryptedSecret2 = new DbEncryptedSecret();
+        encryptedSecret2.setCreationTime(new Date());
         encryptedSecret2.setDeviceIdentification(DEVICE_IDENTIFICATION);
         encryptedSecret2.setSecretType(org.opensmartgridplatform.secretmgmt.application.domain.SecretType.E_METER_ENCRYPTION_KEY_UNICAST);
         encryptedSecret2.setEncodedSecret(E_METER_ENCRYPTION_KEY_UNICAST_ENCRYPTED_FOR_DB);
