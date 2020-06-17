@@ -49,7 +49,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service(value = "dlmsSecurityKeyService")
 @Transactional(value = "transactionManager")
-public class SecurityKeyService {
+public class SecurityKeyService implements ISecurityKeyService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SecurityKeyService.class);
 

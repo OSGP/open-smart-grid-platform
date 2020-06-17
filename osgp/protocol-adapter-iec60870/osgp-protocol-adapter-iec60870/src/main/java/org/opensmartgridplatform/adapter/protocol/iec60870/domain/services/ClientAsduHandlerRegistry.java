@@ -12,7 +12,7 @@ import java.util.Map;
 
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.ASduType;
-import org.opensmartgridplatform.iec60870.Iec60870AsduHandlerNotFoundException;
+import org.opensmartgridplatform.iec60870.exceptions.Iec60870AsduHandlerNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

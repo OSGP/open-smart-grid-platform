@@ -104,6 +104,11 @@ public class ConnectionSteps {
                 new DeviceConnection(this.connection, this.connectionParameters));
     }
 
+    @Given("an active connection with the light measurement gateway {string}")
+    public void anActiveConnectionWithTheControlledStation(final String deviceIdentification) throws Exception {
+        this.givenIec60870DeviceIsConnected(deviceIdentification, DeviceType.LIGHT_MEASUREMENT_GATEWAY);
+    }
+
     @When("I connect to IEC60870 device {string}")
     public void whenIConnectToIEC60870Device(final String deviceIdentification) throws Exception {
         LOGGER.debug("When I connect to IEC60870 device {}", deviceIdentification);

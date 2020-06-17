@@ -17,7 +17,6 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatcher;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -29,6 +28,7 @@ import org.openmuc.j60870.ie.IeQualifierOfInterrogation;
 import org.openmuc.j60870.ie.InformationElement;
 import org.openmuc.j60870.ie.InformationObject;
 import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870AsduFactory;
+import org.opensmartgridplatform.simulator.protocol.iec60870.server.AsduTypeArgumentMatcher;
 
 @ExtendWith(MockitoExtension.class)
 class Iec60870InterrogationCommandAsduHandlerTest {
@@ -75,30 +75,4 @@ class Iec60870InterrogationCommandAsduHandlerTest {
                 new InformationObject(0, new InformationElement[][] { { new IeQualifierOfInterrogation(20) } }) };
     }
 
-    private class AsduTypeArgumentMatcher implements ArgumentMatcher<ASdu> {
-
-        private final ASduType type;
-
-        private CauseOfTransmission causeOfTransmission;
-
-        public AsduTypeArgumentMatcher(final ASduType type) {
-            this.type = type;
-        }
-
-        public AsduTypeArgumentMatcher(final ASduType type, final CauseOfTransmission causeOfTransmission) {
-            super();
-            this.type = type;
-            this.causeOfTransmission = causeOfTransmission;
-        }
-
-        @Override
-        public boolean matches(final ASdu argument) {
-            if (this.causeOfTransmission == null) {
-                return argument.getTypeIdentification() == this.type;
-            }
-            return argument.getTypeIdentification() == this.type
-                    && argument.getCauseOfTransmission() == this.causeOfTransmission;
-        }
-
-    }
 }
