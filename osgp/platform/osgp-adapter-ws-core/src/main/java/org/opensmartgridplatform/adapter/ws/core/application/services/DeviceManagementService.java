@@ -193,8 +193,7 @@ public class DeviceManagementService {
 
 		final String organisationIdentification = criteria.getOrganisationIdentification();
 		final String deviceIdentification = criteria.getDeviceIdentification();
-		LOGGER.debug("findEvents called for organisation {} and device {}", organisationIdentification,
-				deviceIdentification);
+		LOGGER.debug("findEvents called for organisation {} and device {}", organisationIdentification, deviceIdentification);
 
 		final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
 
@@ -391,8 +390,8 @@ public class DeviceManagementService {
 			Specification<Device> specification) throws ArgumentNullOrEmptyException {
 		if (deviceFilter.getDeviceIdentificationsToExclude() != null
 				&& !deviceFilter.getDeviceIdentificationsToExclude().isEmpty()) {
-			specification = specification.and(
-					this.deviceSpecifications.excludeDeviceIdentificationList(deviceFilter.getDeviceIdentificationsToExclude()));
+			specification = specification
+					.and(this.deviceSpecifications.excludeDeviceIdentificationList(deviceFilter.getDeviceIdentificationsToExclude()));
 
 		}
 		return specification;
@@ -400,10 +399,9 @@ public class DeviceManagementService {
 
 	private Specification<Device> doFilterOnDeviceIdentificationsToUse(final DeviceFilter deviceFilter,
 			Specification<Device> specification) throws ArgumentNullOrEmptyException {
-		if (deviceFilter.getDeviceIdentificationsToUse() != null
-				&& !deviceFilter.getDeviceIdentificationsToUse().isEmpty()) {
-			specification = specification.and(
-					this.deviceSpecifications.existsInDeviceIdentificationList(deviceFilter.getDeviceIdentificationsToUse()));
+		if (deviceFilter.getDeviceIdentificationsToUse() != null && !deviceFilter.getDeviceIdentificationsToUse().isEmpty()) {
+			specification = specification
+					.and(this.deviceSpecifications.existsInDeviceIdentificationList(deviceFilter.getDeviceIdentificationsToUse()));
 
 		}
 		return specification;
@@ -471,12 +469,11 @@ public class DeviceManagementService {
 		return specification;
 	}
 
-	private Specification<Device> doFilterOnActivated(final DeviceFilter deviceFilter,
-			Specification<Device> specification) throws ArgumentNullOrEmptyException {
+	private Specification<Device> doFilterOnActivated(final DeviceFilter deviceFilter, Specification<Device> specification)
+			throws ArgumentNullOrEmptyException {
 		if (deviceFilter.getDeviceActivated() != null
 				&& !DeviceActivatedFilterType.BOTH.equals(deviceFilter.getDeviceActivated())) {
-			specification = specification
-					.and(this.deviceSpecifications.isActived(deviceFilter.getDeviceActivated().getValue()));
+			specification = specification.and(this.deviceSpecifications.isActived(deviceFilter.getDeviceActivated().getValue()));
 		}
 		return specification;
 	}
@@ -498,8 +495,8 @@ public class DeviceManagementService {
 					.and(this.deviceSpecifications.hasCity(deviceFilter.getCity().replaceAll(WILDCARD_ALL, "%") + "%"));
 		}
 		if (!StringUtils.isEmpty(deviceFilter.getPostalCode())) {
-			specification = specification.and(
-					this.deviceSpecifications.hasPostalCode(deviceFilter.getPostalCode().replaceAll(WILDCARD_ALL, "%") + "%"));
+			specification = specification
+					.and(this.deviceSpecifications.hasPostalCode(deviceFilter.getPostalCode().replaceAll(WILDCARD_ALL, "%") + "%"));
 		}
 		if (!StringUtils.isEmpty(deviceFilter.getStreet())) {
 			specification = specification
@@ -510,8 +507,8 @@ public class DeviceManagementService {
 					.and(this.deviceSpecifications.hasNumber(deviceFilter.getNumber().replaceAll(WILDCARD_ALL, "%") + "%"));
 		}
 		if (!StringUtils.isEmpty(deviceFilter.getMunicipality())) {
-			specification = specification.and(this.deviceSpecifications
-					.hasMunicipality(deviceFilter.getMunicipality().replaceAll(WILDCARD_ALL, "%") + "%"));
+			specification = specification.and(
+					this.deviceSpecifications.hasMunicipality(deviceFilter.getMunicipality().replaceAll(WILDCARD_ALL, "%") + "%"));
 		}
 		return specification;
 	}
@@ -775,8 +772,7 @@ public class DeviceManagementService {
 				deviceIdentification);
 
 		final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-				organisationIdentification, correlationUid, MessageType.UPDATE_DEVICE_SSL_CERTIFICATION.name(),
-				messagePriority);
+				organisationIdentification, correlationUid, MessageType.UPDATE_DEVICE_SSL_CERTIFICATION.name(), messagePriority);
 
 		final CommonRequestMessage message = new CommonRequestMessage.Builder().deviceMessageMetadata(deviceMessageMetadata)
 				.request(certification).build();
