@@ -14,6 +14,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.QueryException;
 import org.joda.time.DateTime;
@@ -85,8 +86,11 @@ public class DeviceManagementService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementService.class);
 
 	// The wildcard, used for filtering.
-	private static final String WILDCARD_ALL = "\\*";
-	private static final String WILDCARD_SINGLE = "\\?";
+	private static final String ESCAPE = "\\";
+	private static final String WILDCARD_ALL = "*";
+	private static final String WILDCARD_SINGLE = "?";
+	private static final String WILDCARD_ALL_REPLACEMENT = "%";
+	private static final String WILDCARD_SINGLE_REPLACEMENT = "_";
 
 	@Autowired
 	private PagingSettings pagingSettings;
@@ -890,7 +894,17 @@ public class DeviceManagementService {
 		return this.commonResponseMessageFinder.findMessage(correlationUid);
 	}
 	
+	/**
+	 * This method replaces normal wilcards for Postgres wildcards and escapes Postgres wildcards that were already present.
+	 * @param input String
+	 * @return an output String containing the correct wildcards.
+	 */
 	private String replaceWildcards(String input) {
-		return input.replaceAll(WILDCARD_ALL, "%").replaceAll(WILDCARD_SINGLE, "_");
+		return input.replace(ESCAPE, ESCAPE + ESCAPE)
+                .replace(WILDCARD_ALL_REPLACEMENT, ESCAPE + WILDCARD_ALL_REPLACEMENT)
+                .replace(WILDCARD_SINGLE_REPLACEMENT, ESCAPE + WILDCARD_SINGLE_REPLACEMENT)
+                .replace(WILDCARD_ALL, WILDCARD_ALL_REPLACEMENT)
+                .replace(WILDCARD_SINGLE, WILDCARD_SINGLE_REPLACEMENT)
+                .toUpperCase();
 	}
 }
