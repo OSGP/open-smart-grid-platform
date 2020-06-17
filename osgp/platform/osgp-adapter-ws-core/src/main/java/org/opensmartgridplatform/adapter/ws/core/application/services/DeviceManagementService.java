@@ -181,8 +181,7 @@ public class DeviceManagementService {
 		if (this.netManagementOrganisation.equals(organisationIdentification)) {
 			return this.organisationRepository.findAll();
 		} else {
-			final Organisation org = this.organisationRepository
-					.findByOrganisationIdentification(organisationIdentification);
+			final Organisation org = this.organisationRepository.findByOrganisationIdentification(organisationIdentification);
 			final List<Organisation> organisations = new ArrayList<>();
 			organisations.add(org);
 			return organisations;
@@ -201,8 +200,8 @@ public class DeviceManagementService {
 
 		this.pagingSettings.updatePagingSettings(criteria.getPageSpecifier());
 
-		final PageRequest request = PageRequest.of(this.pagingSettings.getPageNumber(),
-				this.pagingSettings.getPageSize(), Sort.Direction.DESC, "dateTime");
+		final PageRequest request = PageRequest.of(this.pagingSettings.getPageNumber(), this.pagingSettings.getPageSize(),
+				Sort.Direction.DESC, "dateTime");
 
 		Specification<Event> specification;
 
@@ -284,8 +283,8 @@ public class DeviceManagementService {
 			}
 		}
 
-		final PageRequest request = PageRequest.of(this.pagingSettings.getPageNumber(),
-				this.pagingSettings.getPageSize(), sortDir, sortedBy);
+		final PageRequest request = PageRequest.of(this.pagingSettings.getPageNumber(), this.pagingSettings.getPageSize(),
+				sortDir, sortedBy);
 
 		final Page<Device> devices = this.findDevices(organisationIdentification, deviceFilter, organisation, request);
 
@@ -392,8 +391,8 @@ public class DeviceManagementService {
 			Specification<Device> specification) throws ArgumentNullOrEmptyException {
 		if (deviceFilter.getDeviceIdentificationsToExclude() != null
 				&& !deviceFilter.getDeviceIdentificationsToExclude().isEmpty()) {
-			specification = specification.and(this.deviceSpecifications
-					.excludeDeviceIdentificationList(deviceFilter.getDeviceIdentificationsToExclude()));
+			specification = specification.and(
+					this.deviceSpecifications.excludeDeviceIdentificationList(deviceFilter.getDeviceIdentificationsToExclude()));
 
 		}
 		return specification;
@@ -403,8 +402,8 @@ public class DeviceManagementService {
 			Specification<Device> specification) throws ArgumentNullOrEmptyException {
 		if (deviceFilter.getDeviceIdentificationsToUse() != null
 				&& !deviceFilter.getDeviceIdentificationsToUse().isEmpty()) {
-			specification = specification.and(this.deviceSpecifications
-					.existsInDeviceIdentificationList(deviceFilter.getDeviceIdentificationsToUse()));
+			specification = specification.and(
+					this.deviceSpecifications.existsInDeviceIdentificationList(deviceFilter.getDeviceIdentificationsToUse()));
 
 		}
 		return specification;
@@ -413,9 +412,8 @@ public class DeviceManagementService {
 	private Specification<Device> doFilterOnFirmwareModuleVersion(final DeviceFilter deviceFilter,
 			Specification<Device> specification) throws ArgumentNullOrEmptyException {
 		if (!StringUtils.isEmpty(deviceFilter.getFirmwareModuleVersion())) {
-			specification = specification
-					.and(this.deviceSpecifications.forFirmwareModuleVersion(deviceFilter.getFirmwareModuleType(),
-							replaceWildcards(deviceFilter.getFirmwareModuleVersion())));
+			specification = specification.and(this.deviceSpecifications.forFirmwareModuleVersion(
+					deviceFilter.getFirmwareModuleType(), replaceWildcards(deviceFilter.getFirmwareModuleVersion())));
 		}
 		return specification;
 	}
@@ -423,8 +421,7 @@ public class DeviceManagementService {
 	private Specification<Device> doFilterOnManufacturer(final DeviceFilter deviceFilter,
 			Specification<Device> specification) throws ArgumentNullOrEmptyException {
 		if (!StringUtils.isEmpty(deviceFilter.getManufacturer())) {
-			final Manufacturer manufacturer = this.firmwareManagementService
-					.findManufacturer(deviceFilter.getManufacturer());
+			final Manufacturer manufacturer = this.firmwareManagementService.findManufacturer(deviceFilter.getManufacturer());
 			specification = specification.and(this.deviceSpecifications.forManufacturer(manufacturer));
 		}
 		return specification;
@@ -442,8 +439,8 @@ public class DeviceManagementService {
 	private Specification<Device> doFilterOnDeviceType(final DeviceFilter deviceFilter,
 			Specification<Device> specification) throws ArgumentNullOrEmptyException {
 		if (!StringUtils.isEmpty(deviceFilter.getDeviceType())) {
-			specification = specification.and(
-					this.deviceSpecifications.forDeviceType(replaceWildcards(deviceFilter.getDeviceType())));
+			specification = specification
+					.and(this.deviceSpecifications.forDeviceType(replaceWildcards(deviceFilter.getDeviceType())));
 		}
 		return specification;
 	}
@@ -451,8 +448,7 @@ public class DeviceManagementService {
 	private Specification<Device> doFilterOnOwner(final DeviceFilter deviceFilter, Specification<Device> specification)
 			throws ArgumentNullOrEmptyException {
 		if (!StringUtils.isEmpty(deviceFilter.getOwner())) {
-			specification = specification
-					.and(this.deviceSpecifications.forOwner(replaceWildcards(deviceFilter.getOwner())));
+			specification = specification.and(this.deviceSpecifications.forOwner(replaceWildcards(deviceFilter.getOwner())));
 		}
 		return specification;
 	}
@@ -489,21 +485,21 @@ public class DeviceManagementService {
 			Specification<Device> specification) throws ArgumentNullOrEmptyException {
 		if (deviceFilter.getDeviceExternalManaged() != null
 				&& !DeviceExternalManagedFilterType.BOTH.equals(deviceFilter.getDeviceExternalManaged())) {
-			specification = specification.and(
-					this.deviceSpecifications.isManagedExternally(deviceFilter.getDeviceExternalManaged().getValue()));
+			specification = specification
+					.and(this.deviceSpecifications.isManagedExternally(deviceFilter.getDeviceExternalManaged().getValue()));
 		}
 		return specification;
 	}
 
-	private Specification<Device> doFilterOnAddress(final DeviceFilter deviceFilter,
-			Specification<Device> specification) throws ArgumentNullOrEmptyException {
+	private Specification<Device> doFilterOnAddress(final DeviceFilter deviceFilter, Specification<Device> specification)
+			throws ArgumentNullOrEmptyException {
 		if (!StringUtils.isEmpty(deviceFilter.getCity())) {
 			specification = specification
 					.and(this.deviceSpecifications.hasCity(deviceFilter.getCity().replaceAll(WILDCARD_ALL, "%") + "%"));
 		}
 		if (!StringUtils.isEmpty(deviceFilter.getPostalCode())) {
-			specification = specification.and(this.deviceSpecifications
-					.hasPostalCode(deviceFilter.getPostalCode().replaceAll(WILDCARD_ALL, "%") + "%"));
+			specification = specification.and(
+					this.deviceSpecifications.hasPostalCode(deviceFilter.getPostalCode().replaceAll(WILDCARD_ALL, "%") + "%"));
 		}
 		if (!StringUtils.isEmpty(deviceFilter.getStreet())) {
 			specification = specification
@@ -548,8 +544,7 @@ public class DeviceManagementService {
 			final Organisation organisation) throws FunctionalException, ArgumentNullOrEmptyException {
 		Specification<Device> specification;
 		if (!StringUtils.isEmpty(deviceFilter.getOrganisationIdentification())) {
-			final Organisation org = this.domainHelperService
-					.findOrganisation(deviceFilter.getOrganisationIdentification());
+			final Organisation org = this.domainHelperService.findOrganisation(deviceFilter.getOrganisationIdentification());
 			specification = where(this.deviceSpecifications.forOrganisation(org));
 		} else {
 			// dummy for 'not initialized'
@@ -580,11 +575,10 @@ public class DeviceManagementService {
 				eventNotifications);
 
 		final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-				organisationIdentification, correlationUid, MessageType.SET_EVENT_NOTIFICATIONS.name(),
-				messagePriority);
+				organisationIdentification, correlationUid, MessageType.SET_EVENT_NOTIFICATIONS.name(), messagePriority);
 
-		final CommonRequestMessage message = new CommonRequestMessage.Builder()
-				.deviceMessageMetadata(deviceMessageMetadata).request(eventNotificationMessageDataContainer).build();
+		final CommonRequestMessage message = new CommonRequestMessage.Builder().deviceMessageMetadata(deviceMessageMetadata)
+				.request(eventNotificationMessageDataContainer).build();
 
 		this.commonRequestMessageSender.send(message);
 
@@ -660,8 +654,8 @@ public class DeviceManagementService {
 			existingDevice.setTechnicalInstallationDate(updateDevice.getTechnicalInstallationDate());
 		}
 
-		final Ssld ssld = this.writableSsldRepository.findById(existingDevice.getId()).orElseThrow(
-				() -> new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.WS_CORE));
+		final Ssld ssld = this.writableSsldRepository.findById(existingDevice.getId())
+				.orElseThrow(() -> new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.WS_CORE));
 		ssld.updateOutputSettings(updateDevice.receiveOutputSettings());
 		ssld.setEans(updateDevice.getEans());
 
@@ -673,9 +667,8 @@ public class DeviceManagementService {
 	}
 
 	@Transactional(value = "writableTransactionManager")
-	public void setDeviceAlias(@Identification final String organisationIdentification,
-			final String deviceIdentification, final String deviceAlias,
-			final List<DeviceOutputSetting> newDeviceOutputSettings) throws FunctionalException {
+	public void setDeviceAlias(@Identification final String organisationIdentification, final String deviceIdentification,
+			final String deviceAlias, final List<DeviceOutputSetting> newDeviceOutputSettings) throws FunctionalException {
 
 		final Ssld existingSsld = this.writableSsldRepository.findByDeviceIdentification(deviceIdentification);
 
@@ -710,8 +703,7 @@ public class DeviceManagementService {
 
 		if (currentOutputSettings == null || currentOutputSettings.isEmpty()) {
 			LOGGER.info("Trying to set relay alias(es) for a device without output settings");
-			throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE_OUTPUT_SETTINGS,
-					ComponentType.WS_CORE);
+			throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE_OUTPUT_SETTINGS, ComponentType.WS_CORE);
 		}
 
 		for (final DeviceOutputSetting newSetting : newDeviceOutputSettings) {
@@ -723,10 +715,9 @@ public class DeviceManagementService {
 				}
 			}
 			if (!outputSettingFound) {
-				LOGGER.info("Trying to set alias {} for internal relay {}, which has no output settings",
-						newSetting.getAlias(), newSetting.getInternalId());
-				throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE_OUTPUT_SETTINGS,
-						ComponentType.WS_CORE);
+				LOGGER.info("Trying to set alias {} for internal relay {}, which has no output settings", newSetting.getAlias(),
+						newSetting.getInternalId());
+				throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE_OUTPUT_SETTINGS, ComponentType.WS_CORE);
 			}
 		}
 
@@ -787,16 +778,15 @@ public class DeviceManagementService {
 				organisationIdentification, correlationUid, MessageType.UPDATE_DEVICE_SSL_CERTIFICATION.name(),
 				messagePriority);
 
-		final CommonRequestMessage message = new CommonRequestMessage.Builder()
-				.deviceMessageMetadata(deviceMessageMetadata).request(certification).build();
+		final CommonRequestMessage message = new CommonRequestMessage.Builder().deviceMessageMetadata(deviceMessageMetadata)
+				.request(certification).build();
 
 		this.commonRequestMessageSender.send(message);
 
 		return correlationUid;
 	}
 
-	public ResponseMessage dequeueUpdateDeviceSslCertificationResponse(final String correlationUid)
-			throws OsgpException {
+	public ResponseMessage dequeueUpdateDeviceSslCertificationResponse(final String correlationUid) throws OsgpException {
 		return this.commonResponseMessageFinder.findMessage(correlationUid);
 	}
 
@@ -816,11 +806,10 @@ public class DeviceManagementService {
 				deviceIdentification);
 
 		final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-				organisationIdentification, correlationUid, MessageType.SET_DEVICE_VERIFICATION_KEY.name(),
-				messagePriority);
+				organisationIdentification, correlationUid, MessageType.SET_DEVICE_VERIFICATION_KEY.name(), messagePriority);
 
-		final CommonRequestMessage message = new CommonRequestMessage.Builder()
-				.deviceMessageMetadata(deviceMessageMetadata).request(verificationKey).build();
+		final CommonRequestMessage message = new CommonRequestMessage.Builder().deviceMessageMetadata(deviceMessageMetadata)
+				.request(verificationKey).build();
 
 		this.commonRequestMessageSender.send(message);
 
@@ -832,8 +821,7 @@ public class DeviceManagementService {
 	}
 
 	public String enqueueSetDeviceLifecycleStatusRequest(final String organisationIdentification,
-			final String deviceIdentification, final DeviceLifecycleStatus deviceLifecycleStatus)
-			throws FunctionalException {
+			final String deviceIdentification, final DeviceLifecycleStatus deviceLifecycleStatus) throws FunctionalException {
 
 		final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
 		final Device device = this.deviceDomainService.searchDevice(deviceIdentification);
@@ -853,8 +841,8 @@ public class DeviceManagementService {
 		final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
 				organisationIdentification, correlationUid, MessageType.SET_DEVICE_LIFECYCLE_STATUS.name());
 
-		final CommonRequestMessage message = new CommonRequestMessage.Builder()
-				.deviceMessageMetadata(deviceMessageMetadata).request(newDeviceLifecycleStatus).build();
+		final CommonRequestMessage message = new CommonRequestMessage.Builder().deviceMessageMetadata(deviceMessageMetadata)
+				.request(newDeviceLifecycleStatus).build();
 
 		this.commonRequestMessageSender.send(message);
 
@@ -872,8 +860,7 @@ public class DeviceManagementService {
 
 		this.domainHelperService.isAllowed(organisation, device, DeviceFunction.UPDATE_DEVICE_CDMA_SETTINGS);
 
-		LOGGER.debug(
-				"enqueueUpdateDeviceCdmaSettingsRequest called with organisation {}, deviceIdentification {}, and {}",
+		LOGGER.debug("enqueueUpdateDeviceCdmaSettingsRequest called with organisation {}, deviceIdentification {}, and {}",
 				organisationIdentification, deviceIdentification, cdmaSettings);
 
 		final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
@@ -882,8 +869,8 @@ public class DeviceManagementService {
 		final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
 				organisationIdentification, correlationUid, MessageType.UPDATE_DEVICE_CDMA_SETTINGS.name());
 
-		final CommonRequestMessage message = new CommonRequestMessage.Builder()
-				.deviceMessageMetadata(deviceMessageMetadata).request(cdmaSettings).build();
+		final CommonRequestMessage message = new CommonRequestMessage.Builder().deviceMessageMetadata(deviceMessageMetadata)
+				.request(cdmaSettings).build();
 
 		this.commonRequestMessageSender.send(message);
 
@@ -893,18 +880,18 @@ public class DeviceManagementService {
 	public ResponseMessage dequeueUpdateDeviceCdmaSettingsResponse(final String correlationUid) throws OsgpException {
 		return this.commonResponseMessageFinder.findMessage(correlationUid);
 	}
-	
+
 	/**
-	 * This method replaces normal wilcards for Postgres wildcards and escapes Postgres wildcards that were already present.
+	 * This method replaces normal wilcards for Postgres wildcards and escapes
+	 * Postgres wildcards that were already present.
+	 * 
 	 * @param input String
 	 * @return an output String containing the correct wildcards.
 	 */
 	private String replaceWildcards(String input) {
-		return input.replace(ESCAPE, ESCAPE + ESCAPE)
-                .replace(WILDCARD_ALL_REPLACEMENT, ESCAPE + WILDCARD_ALL_REPLACEMENT)
-                .replace(WILDCARD_SINGLE_REPLACEMENT, ESCAPE + WILDCARD_SINGLE_REPLACEMENT)
-                .replace(WILDCARD_ALL, WILDCARD_ALL_REPLACEMENT)
-                .replace(WILDCARD_SINGLE, WILDCARD_SINGLE_REPLACEMENT)
-                .toUpperCase();
+		return input.replace(ESCAPE, ESCAPE + ESCAPE).replace(WILDCARD_ALL_REPLACEMENT, ESCAPE + WILDCARD_ALL_REPLACEMENT)
+				.replace(WILDCARD_SINGLE_REPLACEMENT, ESCAPE + WILDCARD_SINGLE_REPLACEMENT)
+				.replace(WILDCARD_ALL, WILDCARD_ALL_REPLACEMENT).replace(WILDCARD_SINGLE, WILDCARD_SINGLE_REPLACEMENT)
+				.toUpperCase();
 	}
 }
