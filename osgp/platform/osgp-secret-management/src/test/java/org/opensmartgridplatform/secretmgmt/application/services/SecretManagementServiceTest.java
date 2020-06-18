@@ -62,8 +62,7 @@ public class SecretManagementServiceTest {
         final Secret decryptedSecret = new Secret("secret".getBytes());
 
         //WHEN
-        when(this.secretRepository.findIdOfValidMostRecent(anyString(), anyString(),
-                anyString(), any())).thenReturn(1L);
+        when(this.secretRepository.findIdOfValidMostRecent(any(), any(), any())).thenReturn(1L);
         when(this.secretRepository.findById(any())).thenReturn(Optional.of(secret));
         when(this.encryptionDelegate.decrypt(any(), any())).thenReturn(decryptedSecret);
         final List<TypedSecret> typedSecrets = this.service.retrieveSecrets("SOME_DEVICE",
@@ -86,7 +85,7 @@ public class SecretManagementServiceTest {
         secret.setEncryptionKeyReference(keyReference);
 
         //WHEN
-        when(this.secretRepository.findIdOfValidMostRecent(anyString(), any(), any(), any())).thenReturn(1L);
+        when(this.secretRepository.findIdOfValidMostRecent(any(), any(), any())).thenReturn(1L);
         when(this.secretRepository.findById(1L)).thenReturn(Optional.of(secret));
         when(this.encryptionDelegate.decrypt(any(), any())).thenThrow(new RuntimeException("Decryption error"));
 
@@ -98,7 +97,7 @@ public class SecretManagementServiceTest {
     @Test
     public void retrieveSecrets_secretWithoutKey() throws Exception {
         final DbEncryptedSecret secret = new DbEncryptedSecret();
-        when(this.secretRepository.findIdOfValidMostRecent(anyString(), any(), any(), any())).thenReturn(1L);
+        when(this.secretRepository.findIdOfValidMostRecent(any(), any(), any())).thenReturn(1L);
         when(this.secretRepository.findById(1L)).thenReturn(Optional.of(secret));
         assertThatIllegalStateException().isThrownBy(
                 () -> this.service.retrieveSecrets("SOME_DEVICE", Arrays.asList(SecretType.E_METER_MASTER_KEY)));
@@ -106,7 +105,7 @@ public class SecretManagementServiceTest {
 
     @Test
     public void retrieveSecrets_noSecrets() throws Exception {
-        when(this.secretRepository.findIdOfValidMostRecent(anyString(), any(), any(), any())).thenReturn(null);
+        when(this.secretRepository.findIdOfValidMostRecent(any(), any(), any())).thenReturn(null);
         assertThatIllegalStateException().isThrownBy(
                 () -> this.service.retrieveSecrets("SOME_DEVICE", Arrays.asList(SecretType.E_METER_MASTER_KEY)));
     }
@@ -124,7 +123,7 @@ public class SecretManagementServiceTest {
         final DbEncryptedSecret dbEncryptedSecret = new DbEncryptedSecret();
 
         //WHEN
-        when(this.secretRepository.findIdOfValidMostRecent(anyString(), any(), any(), any())).thenReturn(null);
+        when(this.secretRepository.findIdOfValidMostRecent(any(), any(), any())).thenReturn(null);
         when(this.keyRepository.findByTypeAndValid(any(), any(), any())).thenReturn(
                 new PageImpl<>(Arrays.asList(keyReference)));
         when(this.encryptionDelegate.encrypt(any(), any(), anyString())).thenReturn(encryptedSecret);
@@ -174,7 +173,7 @@ public class SecretManagementServiceTest {
         typedSecret.setSecretType(SecretType.E_METER_MASTER_KEY);
         typedSecret.setSecret(HexUtils.toHexString("$3cr3t".getBytes()));
         //WHEN
-        when(this.secretRepository.findIdOfValidMostRecent(anyString(), any(), any(), any())).thenReturn(null);
+        when(this.secretRepository.findIdOfValidMostRecent(any(), any(), any())).thenReturn(null);
         when(this.keyRepository.findByTypeAndValid(any(), any(), any())).thenReturn(Page.empty());
         //THEN
         assertThatExceptionOfType(NoSuchElementException.class).isThrownBy(
@@ -189,7 +188,7 @@ public class SecretManagementServiceTest {
         typedSecret.setSecretType(SecretType.E_METER_MASTER_KEY);
         typedSecret.setSecret(HexUtils.toHexString("$3cr3t".getBytes()));
         //WHEN
-        when(this.secretRepository.findIdOfValidMostRecent(anyString(), any(), any(), any())).thenReturn(null);
+        when(this.secretRepository.findIdOfValidMostRecent(any(), any(), any())).thenReturn(null);
         when(this.keyRepository.findByTypeAndValid(any(), any(), any())).thenReturn(
                 new PageImpl<>(Arrays.asList(new DbEncryptionKeyReference(), new DbEncryptionKeyReference())));
         //THEN
@@ -214,7 +213,7 @@ public class SecretManagementServiceTest {
         keyReference.setReference("keyReferenceString");
 
         //WHEN
-        when(this.secretRepository.findIdOfValidMostRecent(anyString(), any(), any(), any())).thenReturn(null);
+        when(this.secretRepository.findIdOfValidMostRecent(any(), any(), any())).thenReturn(null);
         when(this.keyRepository.findByTypeAndValid(any(), any(), any())).thenReturn(
                 new PageImpl<>(Arrays.asList(keyReference)));
         when(this.encryptionDelegate.encrypt(any(), any(), anyString())).thenThrow(
@@ -243,7 +242,7 @@ public class SecretManagementServiceTest {
         existingDbSecret.setEncryptionKeyReference(keyReference);
 
         //WHEN
-        when(this.secretRepository.findIdOfValidMostRecent(anyString(), any(), any(), any())).thenReturn(1L);
+        when(this.secretRepository.findIdOfValidMostRecent(any(), any(), any())).thenReturn(1L);
         when(this.secretRepository.findById(1L)).thenReturn(Optional.of(existingDbSecret));
         when(this.keyRepository.findByTypeAndValid(any(), any(), any())).thenReturn(
                 new PageImpl<>(Arrays.asList(keyReference)));
@@ -282,7 +281,7 @@ public class SecretManagementServiceTest {
         existingDbSecret.setEncryptionKeyReference(keyReference);
 
         //WHEN
-        when(this.secretRepository.findIdOfValidMostRecent(anyString(), any(), any(), any())).thenReturn(1L);
+        when(this.secretRepository.findIdOfValidMostRecent(any(), any(), any())).thenReturn(1L);
         when(this.secretRepository.findById(1L)).thenReturn(Optional.of(existingDbSecret));
         when(this.encryptionDelegate.decrypt(any(), any())).thenReturn(
                 new Secret(HexUtils.fromHexString(newTypedSecret.getSecret())));    //identical secrets

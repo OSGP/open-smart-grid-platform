@@ -40,25 +40,11 @@ public class DbEncryptedSecretRepositoryIT extends AbstractRepositoryIT {
         this.entityManager.flush();
     }
 
-    /*@Test
-    public void find() {
-        final Page<DbEncryptedSecret> resultPage = this.repository.findValidOrderedByCreationTime(DEVICE_IDENTIFICATION,
-                SecretType.E_METER_AUTHENTICATION_KEY, EncryptionProviderType.HSM, new Date(), Pageable.unpaged());
-        assertThat(resultPage.toList().size()).isEqualTo(1);
-        final DbEncryptedSecret result = resultPage.toList().get(0);
-        assertThat(result.getDeviceIdentification()).isEqualTo(this.dbEncryptedSecret.getDeviceIdentification());
-        assertThat(result.getEncryptionKeyReference()).isNotNull();
-        final DbEncryptionKeyReference keyReference = result.getEncryptionKeyReference();
-        assertThat(keyReference.getEncryptionProviderType()).isEqualTo(this.dbEncryptedSecret
-        .getEncryptionKeyReference().getEncryptionProviderType());
-    }*/
-
     @Test
     public void findIdOfValidMostRecent() {
         assertThat(this.repository.count()).isEqualTo(1);
-        final Long id = this.repository.findIdOfValidMostRecent(
-                this.dbEncryptedSecret.getDeviceIdentification(), this.dbEncryptedSecret.getSecretType().name(),
-                this.dbEncryptedSecret.getEncryptionKeyReference().getEncryptionProviderType().name(), new Date());
+        final Long id = this.repository.findIdOfValidMostRecent(this.dbEncryptedSecret.getDeviceIdentification(),
+                this.dbEncryptedSecret.getSecretType().name(), new Date());
         assertThat(id).isEqualTo(this.dbEncryptedSecret.getId());
     }
 }
