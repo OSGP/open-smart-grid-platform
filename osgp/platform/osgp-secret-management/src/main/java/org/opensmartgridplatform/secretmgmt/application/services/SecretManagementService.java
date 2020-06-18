@@ -129,11 +129,8 @@ public class SecretManagementService implements SecretManagement {
 
     public TypedSecret retrieveSecret(final String deviceIdentification, final SecretType secretType) {
         final Date now = new Date();
-        //this.secretRepository.findAll().forEach((s)-> System.out.println(String.format("%s,%s,%s,%s",
-        //        s.getId().toString(),s.getCreationTime().toString(),s.getDeviceIdentification(),
-        //        s.getSecretType().name())));
         final Long secretId = this.secretRepository.findIdOfValidMostRecent(deviceIdentification,
-                secretType.name(), this.encryptionProviderType.name(), now);
+                secretType.name(), now);
         if(secretId==null) {
             throw new NoSuchElementException("No secret found with a valid key");
         }
