@@ -124,10 +124,17 @@ public class CommonSetConfigurationRequestMessageProcessor extends DeviceRequest
                 .createSetRebootDeviceResponseHandler(domain, domainVersion, messageType, retryCount, isScheduled);
 
         final DeviceRequest setRebootDeviceRequest = DeviceRequest.newBuilder()
-                .organisationIdentification(organisationIdentification).deviceIdentification(deviceIdentification)
-                .correlationUid(correlationUid).messagePriority(messagePriority)
-                .messageType(MessageType.SET_REBOOT.name()).domain(domain).domainVersion(domainVersion)
-                .isScheduled(isScheduled).retryCount(retryCount).build();
+                .organisationIdentification(organisationIdentification)
+                .deviceIdentification(deviceIdentification)
+                .correlationUid(correlationUid)
+                .messagePriority(messagePriority)
+                .messageType(MessageType.SET_REBOOT.name())
+                .domain(domain)
+                .domainVersion(domainVersion)
+                .ipAddress(ipAddress)
+                .isScheduled(isScheduled)
+                .retryCount(retryCount)
+                .build();
 
         try {
             this.deviceService.doSetConfiguration(oslpEnvelope, setConfigurationDeviceRequest, setRebootDeviceRequest,

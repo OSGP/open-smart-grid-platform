@@ -1978,6 +1978,10 @@ public class OslpDeviceService implements DeviceService {
     }
 
     private InetSocketAddress createAddress(final String ipAddress) throws UnknownHostException {
+        if (StringUtils.isEmpty(ipAddress)) {
+            throw new UnknownHostException("IP address is emtpy!");
+        }
+
         final InetAddress inetAddress = InetAddress.getByName(ipAddress);
 
         return this.createAddress(inetAddress);
