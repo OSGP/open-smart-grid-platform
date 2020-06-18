@@ -136,7 +136,7 @@ public class SecretManagementService implements SecurityKeyService {
         TypedSecrets typedSecrets = response.getTypedSecrets();
         List<TypedSecret> typedSecretList = typedSecrets.getTypedSecret();
 
-        return typedSecretList.stream().filter(typedSecret -> typedSecret.getType() == SecretType.E_METER_AUTHENTICATION_KEY).findFirst();
+        return typedSecretList.stream().filter(typedSecret -> typedSecret.getType() == secretType).findFirst();
     }
 
     private GetSecretsRequest getSoapRequestForKey(String deviceIdentification, SecretType secretType) {
