@@ -11,6 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
+import com.google.common.primitives.UnsignedInteger;
 import org.apache.commons.lang3.StringUtils;
 import org.openmuc.jdlms.AuthenticationMechanism;
 import org.openmuc.jdlms.DlmsConnection;
@@ -81,7 +82,6 @@ public class Hls5Connector extends SecureDlmsConnector {
             LOGGER.error(msg);
             throw new ConnectionException(msg, e);
         } catch (final EncrypterException e) {
-            LOGGER.error("decryption on security keys went wrong for device: {}", device.getDeviceIdentification(), e);
             throw new FunctionalException(FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT, ComponentType.PROTOCOL_DLMS,
                     e);
         }
@@ -143,9 +143,12 @@ public class Hls5Connector extends SecureDlmsConnector {
             manufacturerId = device.getManufacturerId();
         }
         tcpConnectionBuilder.setSystemTitle(manufacturerId, device.getDeviceId());
-        tcpConnectionBuilder.setFrameCounter(device.getInvocationCounter());
-        LOGGER.debug("Framecounter for device {} set to {}", device.getDeviceIdentification(),
-                device.getInvocationCounter());
+
+        UnsignedInteger frameCounter = UnsignedInteger.valueOf(device.getInvocationCounter());
+
+        tcpConnectionBuilder.setFrameCounter(frameCounter.intValue());
+        LOGGER.debug("Framecounter for device {} set to {}", device.getDeviceIdentification(), frameCounter);
+
     }
 
     private void validateKeys(final byte[] encryptionKey, final byte[] authenticationKey) throws FunctionalException {

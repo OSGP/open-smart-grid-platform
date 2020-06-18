@@ -1,9 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.entities;
 
@@ -112,7 +113,7 @@ public class DlmsDevice extends AbstractEntity {
     // This value is initialized by reading the invocation counter from the device using the public client.
     // After each session with the device it is incremented with the number of invocations in the session.
     @Column
-    private Integer invocationCounter = 0;
+    private Long invocationCounter = 0L;
 
     public DlmsDevice() {
         // Default constructor
@@ -133,14 +134,15 @@ public class DlmsDevice extends AbstractEntity {
 
     @Override
     public String toString() {
-        return String.format(
-                "DlmsDevice[deviceId=%s, lls1=%b, hls3=%b, hls4=%b, hls5=%b, ipAddress=%s, port=%s, logicalId=%s, clientId=%s, "
-                        + "debug=%b, hdlc=%b, sn=%b, mbusIdentification=%s, mbusManufacturer=%s, protocolName=%s, "
-                        + "protocolVersion=%s]",
-                this.deviceIdentification, this.lls1Active, this.hls3Active, this.hls4Active, this.hls5Active,
-                this.ipAddress, this.port, this.logicalId, this.clientId, this.inDebugMode, this.useHdlc, this.useSn,
-                this.mbusIdentificationNumber, this.mbusManufacturerIdentification, this.protocolName,
-                this.protocolVersion);
+        return String
+                .format("DlmsDevice[deviceId=%s, lls1=%b, hls3=%b, hls4=%b, hls5=%b, ipAddress=%s, port=%s, "
+                                + "logicalId=%s, clientId=%s, "
+                                + "debug=%b, hdlc=%b, sn=%b, mbusIdentification=%s, mbusManufacturer=%s, "
+                                + "protocolName=%s, "
+                                + "protocolVersion=%s]", this.deviceIdentification, this.lls1Active, this.hls3Active,
+                        this.hls4Active, this.hls5Active, this.ipAddress, this.port, this.logicalId, this.clientId,
+                        this.inDebugMode, this.useHdlc, this.useSn, this.mbusIdentificationNumber,
+                        this.mbusManufacturerIdentification, this.protocolName, this.protocolVersion);
     }
 
     @Override
@@ -370,7 +372,7 @@ public class DlmsDevice extends AbstractEntity {
     /**
      * The starting value of the invocation counter for a new Hls5 connection.
      */
-    public int getInvocationCounter() {
+    public Long getInvocationCounter() {
         return this.invocationCounter;
     }
 
@@ -378,7 +380,7 @@ public class DlmsDevice extends AbstractEntity {
         return this.invocationCounter != null;
     }
 
-    public void setInvocationCounter(final Integer invocationCounter) {
+    public void setInvocationCounter(final Long invocationCounter) {
         this.invocationCounter = invocationCounter;
     }
 
