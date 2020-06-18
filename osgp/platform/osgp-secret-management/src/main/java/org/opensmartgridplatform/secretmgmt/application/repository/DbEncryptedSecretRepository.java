@@ -11,13 +11,13 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DbEncryptedSecretRepository extends JpaRepository<DbEncryptedSecret, Long> {
     @Query(value = "SELECT es.id FROM encrypted_secret es " +
-            "WHERE es.creation_time = (" +
-            "   SELECT MAX(es2.creation_time) FROM encrypted_secret es2 " +
-            "   LEFT JOIN encryption_key_reference ekr ON es2.encryption_key_reference_id = ekr.id " +
-            "   WHERE es2.device_identification = :deviceIdentification " +
-            "   AND es2.secret_type = :secretType " +
-            "   AND ekr.encryption_provider_type = :encryptionType " +
-            "   AND ekr.valid_from < :date AND (ekr.valid_to IS NULL OR ekr.valid_to > :date))",
+            "LEFT JOIN encryption_key_reference ekr ON es.encryption_key_reference_id = ekr.id " +
+            "WHERE es.device_identification = :deviceIdentification " +
+            "AND es.secret_type = :secretType " +
+            "AND ekr.encryption_provider_type = :encryptionType " +
+            "AND ekr.valid_from < :date AND (ekr.valid_to IS NULL OR ekr.valid_to > :date) " +
+            "ORDER BY es.creation_time DESC, es.id DESC " +
+            "LIMIT 1",
             nativeQuery = true)
     Long findIdOfValidMostRecent(@Param("deviceIdentification") String deviceIdentification,
             @Param("secretType") String secretType,

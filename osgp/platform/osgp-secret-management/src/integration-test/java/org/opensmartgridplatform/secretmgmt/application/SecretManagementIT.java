@@ -27,6 +27,7 @@ import org.opensmartgridplatform.secretmgmt.application.services.encryption.prov
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -35,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 @Transactional
 @EnableAutoConfiguration(exclude = FlywayAutoConfiguration.class)
+@AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager
 public class SecretManagementIT {
 

@@ -20,10 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 public class SecretManagementService implements SecretManagement {
     private final static int FIRST_PAGE = 0;
     private final EncryptionDelegate encryptionDelegate;
@@ -131,6 +129,9 @@ public class SecretManagementService implements SecretManagement {
 
     public TypedSecret retrieveSecret(final String deviceIdentification, final SecretType secretType) {
         final Date now = new Date();
+        //this.secretRepository.findAll().forEach((s)-> System.out.println(String.format("%s,%s,%s,%s",
+        //        s.getId().toString(),s.getCreationTime().toString(),s.getDeviceIdentification(),
+        //        s.getSecretType().name())));
         final Long secretId = this.secretRepository.findIdOfValidMostRecent(deviceIdentification,
                 secretType.name(), this.encryptionProviderType.name(), now);
         if(secretId==null) {
