@@ -28,12 +28,14 @@ import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 public class Lls1Connector extends SecureDlmsConnector {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Lls1Connector.class);
 
     @Autowired
+    @Qualifier("secretMangementService")
     private SecurityKeyService securityKeyService;
 
     public Lls1Connector(final int responseTimeout, final int logicalDeviceAddress,

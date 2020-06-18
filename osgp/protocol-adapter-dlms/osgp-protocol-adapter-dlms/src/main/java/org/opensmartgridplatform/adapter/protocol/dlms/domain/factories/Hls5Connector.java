@@ -31,6 +31,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -43,6 +44,7 @@ public class Hls5Connector extends SecureDlmsConnector {
     private final RecoverKeyProcessInitiator recoverKeyProcessInitiator;
 
     @Autowired
+    @Qualifier("secretMangementService")
     private SecurityKeyService securityKeyService;
 
     public Hls5Connector(final RecoverKeyProcessInitiator recoverKeyProcessInitiator, final int responseTimeout,
