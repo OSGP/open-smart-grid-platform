@@ -31,6 +31,7 @@ import org.opensmartgridplatform.adapter.kafka.da.avro.IntervalBlock;
 import org.opensmartgridplatform.adapter.kafka.da.avro.MeterReading;
 import org.opensmartgridplatform.adapter.kafka.da.avro.UsagePoint;
 import org.opensmartgridplatform.adapter.kafka.da.avro.ValuesInterval;
+import org.opensmartgridplatform.adapter.kafka.da.serialization.MeterReadingDeserializer;
 import org.opensmartgridplatform.domain.da.measurements.MeasurementReport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

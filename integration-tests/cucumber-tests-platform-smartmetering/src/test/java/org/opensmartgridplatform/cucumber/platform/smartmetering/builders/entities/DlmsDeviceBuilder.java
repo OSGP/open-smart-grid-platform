@@ -355,7 +355,7 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
         dlmsDevice.setMbusIdentificationNumber(this.mbusIdentificationNumber);
         dlmsDevice.setMbusManufacturerIdentification(this.mbusManufacturerIdentification);
         dlmsDevice.setProtocol(this.protocolName, this.protocolVersion);
-        dlmsDevice.setInvocationCounter(0);
+        dlmsDevice.setInvocationCounter(0L);
 
         /**
          * It is not ideal that the build() method for security keys is called

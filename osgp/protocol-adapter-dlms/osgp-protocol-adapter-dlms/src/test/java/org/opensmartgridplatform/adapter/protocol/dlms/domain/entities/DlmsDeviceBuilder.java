@@ -17,14 +17,14 @@ import org.opensmartgridplatform.shared.test.DefaultValue;
  * Creates new instances, for testing purposes only.
  */
 public class DlmsDeviceBuilder {
-    private static int counter = 0;
+    private static long counter = 0L;
 
     private DefaultValue<Boolean> lls1Active = notSet();
     private DefaultValue<Boolean> hls3Active = notSet();
     private DefaultValue<Boolean> hls4Active = notSet();
     private DefaultValue<Boolean> hls5Active = notSet();
     private DefaultValue<String> protocol = notSet();
-    private DefaultValue<Integer> invocationCounter = notSet();
+    private DefaultValue<Long> invocationCounter = notSet();
 
     public DlmsDevice build() {
         counter += 1;
@@ -34,7 +34,7 @@ public class DlmsDeviceBuilder {
         device.setHls4Active(this.hls4Active.orElse(false));
         device.setHls5Active(this.hls5Active.orElse(false));
         device.setProtocol(this.protocol.orElse("protocol" + counter), "protocolVersion" + counter);
-        device.setInvocationCounter(this.invocationCounter.orElse(100 + counter));
+        device.setInvocationCounter(this.invocationCounter.orElse(100L + counter));
         return device;
     }
 
@@ -63,7 +63,7 @@ public class DlmsDeviceBuilder {
         return this;
     }
 
-    public DlmsDeviceBuilder withInvocationCounter(final Integer invocationCounter) {
+    public DlmsDeviceBuilder withInvocationCounter(final Long invocationCounter) {
         this.invocationCounter = setTo(invocationCounter);
         return this;
     }
