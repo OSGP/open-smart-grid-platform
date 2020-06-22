@@ -17,12 +17,11 @@ import java.io.FileNotFoundException;
 public class SecretManagementInitializer implements WebApplicationInitializer {
 
     private static final String LOG_CONFIG = "java:comp/env/osgp/SecretManagement/log-config";
-    private Logger logger;
 
     @Override
     public void onStartup(final ServletContext servletContext) throws ServletException {
 
-        this.logger = LoggerFactory.getLogger(SecretManagementInitializer.class);
+        Logger logger = LoggerFactory.getLogger(SecretManagementInitializer.class);
         Context initialContext;
         try {
             initialContext = new InitialContext();
@@ -32,10 +31,10 @@ public class SecretManagementInitializer implements WebApplicationInitializer {
             // classpath logback.xml
             if (new File(logLocation).exists()) {
                 LogbackConfigurer.initLogging(logLocation);
-                this.logger.info("Initialized logging using {}", this.LOG_CONFIG);
+                logger.info("Initialized logging using {}", LOG_CONFIG);
             }
         } catch (final NamingException | FileNotFoundException | JoranException e) {
-            this.logger.info("Failed to initialize logging using {}", this.LOG_CONFIG, e);
+            logger.info("Failed to initialize logging using {}", LOG_CONFIG, e);
             throw new ServletException(e);
         }
     }
