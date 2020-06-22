@@ -8,6 +8,10 @@ public class WildcardUtil {
     private static final String WILDCARD_SINGLE = "?";
     private static final String WILDCARD_ALL_REPLACEMENT = "%";
     private static final String WILDCARD_SINGLE_REPLACEMENT = "_";
+    
+    private WildcardUtil() {
+        throw new IllegalStateException("static Utility class not to be instantiated");
+    }
 
     /**
      * Replaces normal wildcards by SQL wildcards and escapes SQL wildcards that
