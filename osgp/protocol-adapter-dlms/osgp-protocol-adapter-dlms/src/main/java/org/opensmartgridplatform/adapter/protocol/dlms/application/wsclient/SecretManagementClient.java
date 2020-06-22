@@ -5,7 +5,8 @@ import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.Get
 import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.GetSecretsResponse;
 import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.StoreSecretsRequest;
 import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.StoreSecretsResponse;
-import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
@@ -15,22 +16,20 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 @Component
 public class SecretManagementClient {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(SecretManagementClient.class);
+
     private final WebServiceTemplate webServiceTemplate;
 
-    SecretManagementClient() {
-
-        Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-        // this package must match the package in the <generatePackage> specified in
-        // pom.xml
-        marshaller.setContextPath("org.opensmartgridplatform.schemas.security.secretmanagement._2020._05");
-
-        this.webServiceTemplate = new WebServiceTemplate(marshaller);
+    SecretManagementClient(WebServiceTemplate webServiceTemplate) {
+        this.webServiceTemplate = webServiceTemplate;
     }
 
     public GetSecretsResponse getSecretsRequest(GetSecretsRequest request) {
 
+        LOGGER.info("Calling SecretManagement.getSecretsRequest over SOAP for device {}", request.getDeviceId());
+
         return (GetSecretsResponse) this.webServiceTemplate
-                .marshalSendAndReceive("http://localhost:8080/osgp-secret-management/ws/SecretManagement", request);
+                .marshalSendAndReceive(request);
 
     }
 

@@ -164,5 +164,10 @@
             <artifactId>spring-ws-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.logback-extensions</groupId>
+            <artifactId>logback-ext-spring</artifactId>
+            <version>0.1.5</version>
+        </dependency>
     </dependencies>
 </project>
