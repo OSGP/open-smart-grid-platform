@@ -17,6 +17,8 @@ import org.opensmartgridplatform.secretmgmt.application.services.encryption.Encr
 import org.opensmartgridplatform.secretmgmt.application.services.encryption.Secret;
 import org.opensmartgridplatform.secretmgmt.application.services.encryption.providers.EncryptionProvider;
 import org.opensmartgridplatform.secretmgmt.application.services.encryption.providers.EncryptionProviderType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
@@ -29,6 +31,9 @@ import static org.opensmartgridplatform.secretmgmt.application.config.Applicatio
 
 @Endpoint
 public class SecretManagementEndpoint {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SecretManagementEndpoint.class);
+
     private static final String NAMESPACE_URI = "http://www.opensmartgridplatform.org/schemas/security/secretmanagement/2020/05";
     private static final String KEY_REFERENCE = "1"; //only one key in use
 
@@ -43,6 +48,8 @@ public class SecretManagementEndpoint {
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "getSecretsRequest")
     @ResponsePayload
     public GetSecretsResponse getSecretsRequest(@RequestPayload GetSecretsRequest request) {
+
+        LOGGER.info("Handling incoming SOAP request 'getSecretsRequest' for device {}", request.getDeviceId());
 
         GetSecretsResponse response = new GetSecretsResponse();
 
@@ -84,6 +91,8 @@ public class SecretManagementEndpoint {
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "storeSecretsRequest")
     @ResponsePayload
     public StoreSecretsResponse storeSecretsRequest(@RequestPayload StoreSecretsRequest request) {
+
+        LOGGER.info("Handling incoming SOAP request 'storeSecretsRequest' for device {}", request.getDeviceId());
 
         StoreSecretsResponse response = new StoreSecretsResponse();
 
