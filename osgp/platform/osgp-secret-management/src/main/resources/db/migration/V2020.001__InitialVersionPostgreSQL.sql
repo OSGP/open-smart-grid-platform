@@ -34,9 +34,6 @@ $$
                         ON public.encryption_key_reference USING btree
                         (valid_to DESC)
                         TABLESPACE pg_default;
-
-                 --INSERT INTO "encryption_key_reference" (id, ...)
-                 --   VALUES ( nextval('encryption_key_reference_id_seq'), ...);
          END IF;
 
          IF NOT EXISTS(
