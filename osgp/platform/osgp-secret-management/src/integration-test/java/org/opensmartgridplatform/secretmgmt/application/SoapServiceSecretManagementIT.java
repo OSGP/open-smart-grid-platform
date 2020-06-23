@@ -88,9 +88,7 @@ public class SoapServiceSecretManagementIT {
         final Resource request = new ClassPathResource("test-requests/getSecrets.xml");
         final Resource expectedResponse = new ClassPathResource("test-responses/getSecrets.xml");
         try {
-            this.mockWebServiceClient.sendRequest(withPayload(request))/*.andExpect
-            (ResponseMatchers
-            .noFault())*/
+            this.mockWebServiceClient.sendRequest(withPayload(request))
             .andExpect(
                     ResponseMatchers.payload(expectedResponse));
         } catch (final Exception exc) {

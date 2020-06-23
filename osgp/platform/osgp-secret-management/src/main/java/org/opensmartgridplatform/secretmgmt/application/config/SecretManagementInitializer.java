@@ -34,9 +34,7 @@ public class SecretManagementInitializer implements WebApplicationInitializer {
                 logger.info("Initialized logging using {}", LOG_CONFIG);
             }
         } catch (final NamingException | FileNotFoundException | JoranException e) {
-            logger.info("Failed to initialize logging using {}", LOG_CONFIG, e);
-            throw new ServletException(e);
+            throw new ServletException("Failed to initialize logging using " + LOG_CONFIG, e);
         }
     }
-
 }
