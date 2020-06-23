@@ -1,3 +1,6 @@
+/**
+ * Copyright 2020 Smart Society Services B.V.
+ */
 package org.opensmartgridplatform.adapter.ws.core.application.utility;
 
 public class WildcardUtil {

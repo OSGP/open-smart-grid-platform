@@ -8,6 +8,8 @@
 package org.opensmartgridplatform.adapter.ws.core.application.services;
 
 import static org.springframework.data.jpa.domain.Specification.where;
+import static org.opensmartgridplatform.adapter.ws.core.application.utility.WildcardUtil.replaceWildcards;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +20,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.QueryException;
 import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.ws.core.application.criteria.SearchEventsCriteria;
-import org.opensmartgridplatform.adapter.ws.core.application.utility.WildcardUtil;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessage;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessageSender;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonResponseMessageFinder;
@@ -410,7 +411,7 @@ public class DeviceManagementService {
             Specification<Device> specification) throws ArgumentNullOrEmptyException {
         if (!StringUtils.isEmpty(deviceFilter.getFirmwareModuleVersion())) {
             specification = specification.and(this.deviceSpecifications.forFirmwareModuleVersion(
-                    deviceFilter.getFirmwareModuleType(), WildcardUtil.replaceWildcards(deviceFilter.getFirmwareModuleVersion())));
+                    deviceFilter.getFirmwareModuleType(), replaceWildcards(deviceFilter.getFirmwareModuleVersion())));
         }
         return specification;
     }
@@ -429,7 +430,7 @@ public class DeviceManagementService {
             Specification<Device> specification) throws ArgumentNullOrEmptyException {
         if (!StringUtils.isEmpty(deviceFilter.getModel())) {
             specification = specification
-                    .and(this.deviceSpecifications.forDeviceModel(WildcardUtil.replaceWildcards(deviceFilter.getModel())));
+                    .and(this.deviceSpecifications.forDeviceModel(replaceWildcards(deviceFilter.getModel())));
         }
         return specification;
     }
@@ -438,7 +439,7 @@ public class DeviceManagementService {
             Specification<Device> specification) throws ArgumentNullOrEmptyException {
         if (!StringUtils.isEmpty(deviceFilter.getDeviceType())) {
             specification = specification
-                    .and(this.deviceSpecifications.forDeviceType(WildcardUtil.replaceWildcards(deviceFilter.getDeviceType())));
+                    .and(this.deviceSpecifications.forDeviceType(replaceWildcards(deviceFilter.getDeviceType())));
         }
         return specification;
     }
@@ -447,7 +448,7 @@ public class DeviceManagementService {
             throws ArgumentNullOrEmptyException {
         if (!StringUtils.isEmpty(deviceFilter.getOwner())) {
             specification = specification
-                    .and(this.deviceSpecifications.forOwner(WildcardUtil.replaceWildcards(deviceFilter.getOwner())));
+                    .and(this.deviceSpecifications.forOwner(replaceWildcards(deviceFilter.getOwner())));
         }
         return specification;
     }
@@ -494,23 +495,23 @@ public class DeviceManagementService {
             Specification<Device> specification) throws ArgumentNullOrEmptyException {
         if (!StringUtils.isEmpty(deviceFilter.getCity())) {
             specification = specification
-                    .and(this.deviceSpecifications.hasCity(WildcardUtil.replaceWildcards(deviceFilter.getCity())));
+                    .and(this.deviceSpecifications.hasCity(replaceWildcards(deviceFilter.getCity())));
         }
         if (!StringUtils.isEmpty(deviceFilter.getPostalCode())) {
             specification = specification.and(this.deviceSpecifications
-                    .hasPostalCode(WildcardUtil.replaceWildcards(deviceFilter.getPostalCode())));
+                    .hasPostalCode(replaceWildcards(deviceFilter.getPostalCode())));
         }
         if (!StringUtils.isEmpty(deviceFilter.getStreet())) {
             specification = specification.and(
-                    this.deviceSpecifications.hasStreet(WildcardUtil.replaceWildcards(deviceFilter.getStreet())));
+                    this.deviceSpecifications.hasStreet(replaceWildcards(deviceFilter.getStreet())));
         }
         if (!StringUtils.isEmpty(deviceFilter.getNumber())) {
             specification = specification.and(
-                    this.deviceSpecifications.hasNumber(WildcardUtil.replaceWildcards(deviceFilter.getNumber())));
+                    this.deviceSpecifications.hasNumber(replaceWildcards(deviceFilter.getNumber())));
         }
         if (!StringUtils.isEmpty(deviceFilter.getMunicipality())) {
             specification = specification.and(this.deviceSpecifications
-                    .hasMunicipality(WildcardUtil.replaceWildcards(deviceFilter.getMunicipality())));
+                    .hasMunicipality(replaceWildcards(deviceFilter.getMunicipality())));
         }
         return specification;
     }
@@ -519,7 +520,7 @@ public class DeviceManagementService {
             Specification<Device> specification) throws ArgumentNullOrEmptyException {
         if (!StringUtils.isEmpty(deviceFilter.getAlias())) {
             specification = specification.and(
-                    this.deviceSpecifications.hasAlias(WildcardUtil.replaceWildcards(deviceFilter.getAlias())));
+                    this.deviceSpecifications.hasAlias(replaceWildcards(deviceFilter.getAlias())));
         }
         return specification;
     }
@@ -530,7 +531,7 @@ public class DeviceManagementService {
             String searchString = deviceFilter.getDeviceIdentification();
 
             if (!deviceFilter.isExactMatch()) {
-                searchString = WildcardUtil.replaceWildcards(searchString);
+                searchString = replaceWildcards(searchString);
             }
 
             specification = specification
