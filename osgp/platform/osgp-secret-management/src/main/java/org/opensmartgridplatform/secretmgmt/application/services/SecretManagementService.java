@@ -3,7 +3,6 @@ package org.opensmartgridplatform.secretmgmt.application.services;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.tomcat.util.buf.HexUtils;
@@ -117,20 +116,15 @@ public class SecretManagementService implements SecretManagement {
         }
     }
 
+    @java.lang.SuppressWarnings("squid:S3655")
     public TypedSecret retrieveSecret(final String deviceIdentification, final SecretType secretType) {
         final Date now = new Date();
         final Long secretId = this.secretRepository.findIdOfValidMostRecent(deviceIdentification,
                 secretType.name(), now);
         if(secretId==null) {
-            throw new IllegalStateException("No secret found with a valid key");
+            throw new NoSuchElementException("No secret found with a valid key");
         }
-        Optional<DbEncryptedSecret> optionallyFoundSecret = this.secretRepository.findById(secretId);
-
-        if (optionallyFoundSecret.isPresent()) {
-            return this.getTypedSecret(optionallyFoundSecret.get());
-        } else {
-            throw new IllegalStateException("No secret found");
-        }
+        return this.getTypedSecret(this.secretRepository.findById(secretId).get());
     }
 
     private TypedSecret getTypedSecret(final DbEncryptedSecret dbEncryptedSecret) {
