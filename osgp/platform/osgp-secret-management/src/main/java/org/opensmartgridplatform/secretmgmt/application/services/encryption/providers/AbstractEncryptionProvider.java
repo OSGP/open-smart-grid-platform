@@ -1,5 +1,6 @@
 package org.opensmartgridplatform.secretmgmt.application.services.encryption.providers;
 
+import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.secretmgmt.application.services.encryption.EncryptedSecret;
 import org.opensmartgridplatform.secretmgmt.application.services.encryption.Secret;
 
@@ -11,25 +12,23 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.spec.AlgorithmParameterSpec;
 import java.util.Arrays;
-import java.util.logging.Logger;
 
+@Slf4j
 public abstract class AbstractEncryptionProvider {
-
-    private static final Logger LOGGER = Logger.getLogger(AbstractEncryptionProvider.class.getName());
 
     protected File keyFile;
 
     public abstract EncryptionProviderType getType();
     protected abstract Cipher getCipher() throws NoSuchPaddingException, NoSuchAlgorithmException, NoSuchProviderException;
     protected abstract AlgorithmParameterSpec getAlgorithmParameterSpec();
-    protected abstract Key getSecretEncryptionKey(String keyReference) throws Exception;
+    protected abstract Key getSecretEncryptionKey(String keyReference);
     protected abstract int getIVLength();
 
-    public void setKeyFile(File keyFile) throws Exception {
+    public void setKeyFile(File keyFile) {
         this.keyFile = keyFile;
     }
 
-    public EncryptedSecret encrypt(Secret secret, String keyReference) throws Exception {
+    public EncryptedSecret encrypt(Secret secret, String keyReference) {
         try {
             final Cipher cipher = this.getCipher();
             cipher.init(Cipher.ENCRYPT_MODE, this.getSecretEncryptionKey(keyReference), this.getAlgorithmParameterSpec());
@@ -37,12 +36,11 @@ public abstract class AbstractEncryptionProvider {
         } catch (Exception e) {
             //InvalidKeyException | IllegalBlockSizeException | BadPaddingException | InvalidAlgorithmParameterException |
             //NoSuchPaddingException | NoSuchAlgorithmException | NoSuchProviderException
-            LOGGER.warning(e.getMessage());
-            throw e;
+            throw new IllegalStateException("Could not encrypt secret with keyReference "+ keyReference, e);
         }
     }
 
-    public Secret decrypt(EncryptedSecret secret, String keyReference) throws Exception {
+    public Secret decrypt(EncryptedSecret secret, String keyReference) {
 
         if (secret.getType() != this.getType()) {
             throw new IllegalStateException("EncryptionProvider for type " + this.getType().name() + " cannot decrypt secrets of type " + secret.getType().name());
@@ -61,8 +59,7 @@ public abstract class AbstractEncryptionProvider {
         } catch (Exception e) {
             //InvalidKeyException | IllegalBlockSizeException | BadPaddingException | InvalidAlgorithmParameterException |
             //NoSuchPaddingException | NoSuchAlgorithmException | NoSuchProviderException
-            LOGGER.warning(e.getMessage());
-            throw e;
+            throw new IllegalStateException("Could not decrypt secret with keyReference " + keyReference, e);
         }
     }
 

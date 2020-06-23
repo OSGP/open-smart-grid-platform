@@ -5,10 +5,10 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.Key;
-import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.spec.AlgorithmParameterSpec;
@@ -32,9 +32,13 @@ public class JreEncryptionProvider extends AbstractEncryptionProvider implements
     }
 
     @Override
-    public void setKeyFile(File keyStoreFile) throws Exception {
-        super.setKeyFile(keyStoreFile);
-        this.key = Files.readAllBytes(Paths.get(keyStoreFile.getAbsolutePath()));
+    public void setKeyFile(File keyStoreFile) {
+        try {
+            super.setKeyFile(keyStoreFile);
+            this.key = Files.readAllBytes(Paths.get(keyStoreFile.getAbsolutePath()));
+        } catch (IOException e) {
+            throw new IllegalStateException("Could not read keystore");
+        }
     }
 
     protected Key getSecretEncryptionKey(String keyReference) {

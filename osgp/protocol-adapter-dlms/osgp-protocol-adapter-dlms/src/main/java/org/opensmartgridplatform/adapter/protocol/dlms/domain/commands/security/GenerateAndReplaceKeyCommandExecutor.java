@@ -36,7 +36,7 @@ public class GenerateAndReplaceKeyCommandExecutor extends AbstractCommandExecuto
     private ReplaceKeyCommandExecutor replaceKeyCommandExecutor;
 
     @Autowired
-    @Qualifier("secretMangementService")
+    @Qualifier("secretManagementService")
     private SecurityKeyService securityKeyService;
 
     public GenerateAndReplaceKeyCommandExecutor() {

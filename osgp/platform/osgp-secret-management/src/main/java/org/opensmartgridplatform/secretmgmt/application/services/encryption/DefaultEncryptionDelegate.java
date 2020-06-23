@@ -17,11 +17,11 @@ public class DefaultEncryptionDelegate implements EncryptionDelegate {
 
     private final List<EncryptionProvider> providers = new ArrayList<>();
 
-    public DefaultEncryptionDelegate(File jreKeyFile) throws Exception {
+    public DefaultEncryptionDelegate(File jreKeyFile) {
         this(jreKeyFile, null);
     }
 
-    public DefaultEncryptionDelegate(File jreKeyFile, File hsmKeyStoreFile) throws Exception {
+    public DefaultEncryptionDelegate(File jreKeyFile, File hsmKeyStoreFile) {
         JreEncryptionProvider jreEncryptionProvider = new JreEncryptionProvider();
         jreEncryptionProvider.setKeyFile(jreKeyFile);
 
@@ -35,13 +35,13 @@ public class DefaultEncryptionDelegate implements EncryptionDelegate {
     }
 
     @Override
-    public EncryptedSecret encrypt(EncryptionProviderType encType, Secret secret, String keyReference) throws Exception {
-        Optional<EncryptionProvider> oep = providers.stream().filter(ep -> ep.getType().equals(encType)).findFirst();
+    public EncryptedSecret encrypt(EncryptionProviderType encryptionProviderType, Secret secret, String keyReference) {
+        Optional<EncryptionProvider> oep = providers.stream().filter(ep -> ep.getType().equals(encryptionProviderType)).findFirst();
         return oep.isPresent()?oep.get().encrypt(secret, keyReference):null;
     }
 
     @Override
-    public Secret decrypt(EncryptedSecret secret, String keyReference) throws Exception {
+    public Secret decrypt(EncryptedSecret secret, String keyReference) {
         EncryptionProviderType encType = secret.getType();
         Optional<EncryptionProvider> oep = providers.stream().filter(ep -> ep.getType().equals(encType)).findFirst();
         return oep.isPresent()?oep.get().decrypt(secret, keyReference):null;

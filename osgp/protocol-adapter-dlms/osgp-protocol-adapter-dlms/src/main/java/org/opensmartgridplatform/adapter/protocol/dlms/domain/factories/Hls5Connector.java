@@ -45,7 +45,7 @@ public class Hls5Connector extends SecureDlmsConnector {
     private final RecoverKeyProcessInitiator recoverKeyProcessInitiator;
 
     @Autowired
-    @Qualifier("secretMangementService")
+    @Qualifier("secretManagementService")
     private SecurityKeyService securityKeyService;
 
     public Hls5Connector(final RecoverKeyProcessInitiator recoverKeyProcessInitiator, final int responseTimeout,

@@ -6,9 +6,9 @@ import org.opensmartgridplatform.secretmgmt.application.services.encryption.Secr
 import java.io.File;
 
 public interface EncryptionProvider {
-    EncryptedSecret encrypt(Secret secret, String keyReference) throws Exception;
-    Secret  decrypt(EncryptedSecret secret, String keyReference) throws Exception;
-    void    setKeyFile(File keystore) throws Exception;
+    EncryptedSecret encrypt(Secret secret, String keyReference);
+    Secret  decrypt(EncryptedSecret secret, String keyReference);
+    void    setKeyFile(File keystore);
     EncryptionProviderType getType();
 }
 

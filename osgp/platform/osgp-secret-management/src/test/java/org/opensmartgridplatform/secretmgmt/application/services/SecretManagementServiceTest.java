@@ -174,9 +174,9 @@ public class SecretManagementServiceTest {
         typedSecret.setSecret(HexUtils.toHexString("$3cr3t".getBytes()));
         //WHEN
         when(this.secretRepository.findIdOfValidMostRecent(any(), any(), any())).thenReturn(null);
-        when(this.keyRepository.findByTypeAndValid(any(), any(), any())).thenReturn(Page.empty());
+        //when(this.keyRepository.findByTypeAndValid(any(), any(), any())).thenReturn(Page.empty());
         //THEN
-        assertThatExceptionOfType(NoSuchElementException.class).isThrownBy(
+        assertThatExceptionOfType(IllegalStateException.class).isThrownBy(
                 () -> this.service.storeSecrets("SOME_DEVICE", Arrays.asList(typedSecret)));
 
     }
@@ -189,16 +189,16 @@ public class SecretManagementServiceTest {
         typedSecret.setSecret(HexUtils.toHexString("$3cr3t".getBytes()));
         //WHEN
         when(this.secretRepository.findIdOfValidMostRecent(any(), any(), any())).thenReturn(null);
-        when(this.keyRepository.findByTypeAndValid(any(), any(), any())).thenReturn(
-                new PageImpl<>(Arrays.asList(new DbEncryptionKeyReference(), new DbEncryptionKeyReference())));
+        //when(this.keyRepository.findByTypeAndValid(any(), any(), any())).thenReturn(
+        //        new PageImpl<>(Arrays.asList(new DbEncryptionKeyReference(), new DbEncryptionKeyReference())));
         //THEN
         try {
             this.service.storeSecrets("SOME_DEVICE", Arrays.asList(typedSecret));
         } catch(final Exception exc) {
 
         }
-        //assertThatIllegalStateException().isThrownBy(
-        //        () -> this.service.storeSecrets("SOME_DEVICE", Arrays.asList(typedSecret)));
+        assertThatIllegalStateException().isThrownBy(
+                () -> this.service.storeSecrets("SOME_DEVICE", Arrays.asList(typedSecret)));
 
     }
 
@@ -214,10 +214,10 @@ public class SecretManagementServiceTest {
 
         //WHEN
         when(this.secretRepository.findIdOfValidMostRecent(any(), any(), any())).thenReturn(null);
-        when(this.keyRepository.findByTypeAndValid(any(), any(), any())).thenReturn(
-                new PageImpl<>(Arrays.asList(keyReference)));
-        when(this.encryptionDelegate.encrypt(any(), any(), anyString())).thenThrow(
-                new RuntimeException("Encryption error"));
+        //when(this.keyRepository.findByTypeAndValid(any(), any(), any())).thenReturn(
+        //        new PageImpl<>(Arrays.asList(keyReference)));
+        //when(this.encryptionDelegate.encrypt(any(), any(), anyString())).thenThrow(
+        //        new RuntimeException("Encryption error"));
         //THEN
         assertThatIllegalStateException().isThrownBy(
                 () -> this.service.storeSecrets("SOME_DEVICE", Arrays.asList(typedSecret)));

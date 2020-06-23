@@ -40,7 +40,7 @@ public class InstallationService {
     private InstallationMapper installationMapper;
 
     @Autowired
-    @Qualifier("secretMangementService")
+    @Qualifier("secretManagementService")
     private SecurityKeyService securityKeyService;
 
     @Autowired

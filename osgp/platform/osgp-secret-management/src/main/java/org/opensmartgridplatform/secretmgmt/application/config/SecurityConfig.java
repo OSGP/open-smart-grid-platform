@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 
+import java.io.IOException;
 import java.util.Optional;
 
 @Configuration
@@ -28,23 +29,31 @@ public class SecurityConfig {
     private String encryptionProviderTypeName;
 
     @Bean(name = "osgpEncryptionDelegate")
-    public EncryptionDelegate getDefaultEncryptionDelegate() throws Exception {
+    public EncryptionDelegate getDefaultEncryptionDelegate() {
         EncryptionDelegate encryptionDelegate;
 
-        if (this.hsmKeystoreResource.isPresent()) {
-            encryptionDelegate = new DefaultEncryptionDelegate(this.databaseSecretResource.getFile(), this.hsmKeystoreResource.get().getFile());
-        } else {
-            encryptionDelegate = new DefaultEncryptionDelegate(this.databaseSecretResource.getFile());
+        try {
+            if (this.hsmKeystoreResource.isPresent()) {
+                encryptionDelegate = new DefaultEncryptionDelegate(this.databaseSecretResource.getFile(), this.hsmKeystoreResource.get().getFile());
+            } else {
+                encryptionDelegate = new DefaultEncryptionDelegate(this.databaseSecretResource.getFile());
+            }
+            return encryptionDelegate;
+        } catch (Exception e) {
+            throw new IllegalStateException("Could not read database secret resource", e);
         }
-        return encryptionDelegate;
 
     }
 
     @Bean(name = "SoapSecretEncryptionProvider")
-    public EncryptionProvider getSoapSecretEncryptionProvider() throws Exception {
-        final EncryptionProvider encryptionProvider = new JreEncryptionProvider();
-        encryptionProvider.setKeyFile(this.soapSecretResource.getFile());
-        return encryptionProvider;
+    public EncryptionProvider getSoapSecretEncryptionProvider() {
+        try {
+            final EncryptionProvider encryptionProvider = new JreEncryptionProvider();
+            encryptionProvider.setKeyFile(this.soapSecretResource.getFile());
+            return encryptionProvider;
+        } catch (IOException e) {
+            throw new IllegalStateException("Could not instantiate JreEncryptionProvider. (Could not read soap secret resource?)", e);
+        }
     }
 
     @Bean

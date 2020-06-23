@@ -19,10 +19,18 @@ public class DetailSoapFaultMappingExceptionResolver extends SoapFaultMappingExc
         if (ex instanceof TechnicalServiceFaultException) {
             TechnicalFault technicalFault = ((TechnicalServiceFaultException) ex).getTechnicalFault();
             SoapFaultDetail detail = fault.addFaultDetail();
-            if (technicalFault.getMessage() != null) detail.addFaultDetailElement(MESSAGE).addText(technicalFault.getMessage());
-            if (technicalFault.getComponent() != null) detail.addFaultDetailElement(COMPONENT).addText(technicalFault.getComponent());
-            if (technicalFault.getInnerMessage() != null) detail.addFaultDetailElement(INNER_MESSAGE).addText(technicalFault.getInnerMessage());
-            if (technicalFault.getInnerException() != null) detail.addFaultDetailElement(INNER_EXCEPTION).addText(technicalFault.getInnerException());
+            if (technicalFault.getMessage() != null) {
+                detail.addFaultDetailElement(MESSAGE).addText(technicalFault.getMessage());
+            }
+            if (technicalFault.getComponent() != null) {
+                detail.addFaultDetailElement(COMPONENT).addText(technicalFault.getComponent());
+            }
+            if (technicalFault.getInnerMessage() != null) {
+                detail.addFaultDetailElement(INNER_MESSAGE).addText(technicalFault.getInnerMessage());
+            }
+            if (technicalFault.getInnerException() != null) {
+                detail.addFaultDetailElement(INNER_EXCEPTION).addText(technicalFault.getInnerException());
+            }
         }
     }
 }

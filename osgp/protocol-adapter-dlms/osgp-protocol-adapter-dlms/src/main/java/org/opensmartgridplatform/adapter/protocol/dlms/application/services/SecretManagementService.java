@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-@Service(value = "secretMangementService")
+@Service(value = "secretManagementService")
 @Transactional(value = "transactionManager")
 public class SecretManagementService implements SecurityKeyService {
 

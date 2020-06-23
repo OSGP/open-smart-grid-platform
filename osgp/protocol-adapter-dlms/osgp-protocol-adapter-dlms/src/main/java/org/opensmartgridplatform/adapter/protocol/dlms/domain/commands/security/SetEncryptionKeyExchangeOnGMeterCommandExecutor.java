@@ -58,7 +58,7 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor
     }
 
     @Autowired
-    @Qualifier("secretMangementService")
+    @Qualifier("secretManagementService")
     private SecurityKeyService securityKeyService;
 
     @Autowired
@@ -125,10 +125,8 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor
 
             return MethodResultCode.SUCCESS;
         } catch (final IOException e) {
-            LOGGER.error("Unexpected exception while connecting with device", e);
             throw new ConnectionException(e);
         } catch (final EncrypterException e) {
-            LOGGER.error("Unexpected exception during decryption of security keys", e);
             throw new ProtocolAdapterException(
                     "Unexpected exception during decryption of security keys, reason = " + e.getMessage());
         }

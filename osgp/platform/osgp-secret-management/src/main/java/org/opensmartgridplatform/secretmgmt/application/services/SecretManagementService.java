@@ -3,6 +3,7 @@ package org.opensmartgridplatform.secretmgmt.application.services;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.tomcat.util.buf.HexUtils;
@@ -23,7 +24,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class SecretManagementService implements SecretManagement {
-    private final static int FIRST_PAGE = 0;
     private final EncryptionDelegate encryptionDelegate;
     private final EncryptionProviderType encryptionProviderType;
     private final DbEncryptedSecretRepository secretRepository;
@@ -44,13 +44,13 @@ public class SecretManagementService implements SecretManagement {
         //@formatter:off
         secrets.stream()
                 .map(t -> this.validateSecret(deviceIdentification, t))
-                .map(s -> this.createEncrypted(deviceIdentification, s, this.getKey(s)))
+                .map(s -> this.createEncrypted(deviceIdentification, s, this.getKey()))
                 .forEach(this.secretRepository::save);
         //@formatter:on
     }
 
-    private DbEncryptionKeyReference getKey(final TypedSecret typedSecret) {
-        final Date now = new Date(); //TODO: UTC?
+    private DbEncryptionKeyReference getKey() {
+        final Date now = new Date();
         final Page<DbEncryptionKeyReference> keyRefsPage = this.keyRepository.findByTypeAndValid(now,
                 this.encryptionProviderType, Pageable.unpaged());
         if (keyRefsPage.getSize() > 1) {
@@ -80,16 +80,6 @@ public class SecretManagementService implements SecretManagement {
             //there is no current secret
             return false;
         }
-    }
-
-    public void storeKey(final DbEncryptionKeyReference keyReference) {
-        //Not implemented yet: has to be implemented after MVP
-        /*validateKeyReference(keyReference);
-        this.keyRepository.save(keyReference);*/
-    }
-
-    private void validateKeyReference(final DbEncryptionKeyReference keyReference) {
-        //Not implemented yet: implement after MVP; pre-save validation (check on valid range, ...)
     }
 
     private DbEncryptedSecret createEncrypted(final String deviceIdentification, final TypedSecret typedSecret,
@@ -132,9 +122,15 @@ public class SecretManagementService implements SecretManagement {
         final Long secretId = this.secretRepository.findIdOfValidMostRecent(deviceIdentification,
                 secretType.name(), now);
         if(secretId==null) {
-            throw new NoSuchElementException("No secret found with a valid key");
+            throw new IllegalStateException("No secret found with a valid key");
         }
-        return this.getTypedSecret(this.secretRepository.findById(secretId).get());
+        Optional<DbEncryptedSecret> optionallyFoundSecret = this.secretRepository.findById(secretId);
+
+        if (optionallyFoundSecret.isPresent()) {
+            return this.getTypedSecret(optionallyFoundSecret.get());
+        } else {
+            throw new IllegalStateException("No secret found");
+        }
     }
 
     private TypedSecret getTypedSecret(final DbEncryptedSecret dbEncryptedSecret) {
