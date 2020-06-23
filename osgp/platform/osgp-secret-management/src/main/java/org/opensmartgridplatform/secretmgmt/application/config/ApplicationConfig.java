@@ -5,10 +5,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
 @Configuration
-@PropertySource("classpath:secret-management.properties")
+@PropertySource("classpath:osgp-secret-management.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/SecretManagement/config}", ignoreResourceNotFound = true)
 public class ApplicationConfig {
+
+    private ApplicationConfig() {
+    }
+
     @Value("${component.name}")
-    public final static String COMPONENT_NAME = "OSGP-SECRET-MANAGEMENT";
+    public static final String COMPONENT_NAME = "OSGP-SECRET-MANAGEMENT";
 }

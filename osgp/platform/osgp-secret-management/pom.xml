@@ -20,12 +20,16 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.2.2.RELEASE</version>
+        <version>2.2.6.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
     <properties>
         <java.version>1.8</java.version>
+        <jaxb.plugin.version>2.5.0</jaxb.plugin.version>
+        <build.helper.maven.plugin.version>3.0.0</build.helper.maven.plugin.version>
+        <apache.ws.xlmschema.version>2.0.1</apache.ws.xlmschema.version>
+        <logback.spring.extensions.version>0.1.5</logback.spring.extensions.version>
     </properties>
 
     <build>
@@ -37,7 +41,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jaxb2-maven-plugin</artifactId>
-                <version>2.5.0</version>
+                <version>${jaxb.plugin.version}</version>
                 <executions>
                     <execution>
                         <id>xjc</id>
@@ -55,7 +59,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>${build.helper.maven.plugin.version}</version>
                 <executions>
                     <execution>
                         <id>add-integration-test-source</id>
@@ -126,7 +130,7 @@
         <dependency>
             <groupId>org.apache.ws.xmlschema</groupId>
             <artifactId>xmlschema-core</artifactId>
-            <version>2.0.1</version>
+            <version>${apache.ws.xlmschema.version}</version>
         </dependency>
 
         <dependency>
@@ -163,6 +167,11 @@
             <groupId>org.springframework.ws</groupId>
             <artifactId>spring-ws-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.logback-extensions</groupId>
+            <artifactId>logback-ext-spring</artifactId>
+            <version>${logback.spring.extensions.version}</version>
         </dependency>
     </dependencies>
 </project>

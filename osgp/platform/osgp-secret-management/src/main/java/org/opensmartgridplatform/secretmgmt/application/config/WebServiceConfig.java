@@ -21,12 +21,19 @@ import java.util.Properties;
 @EnableWs
 @Configuration
 public class WebServiceConfig extends WsConfigurerAdapter {
+
+    public static final String SECRET_MANAGEMENT_WS_BASE_PATH="/ws/SecretManagement/*";
+    public static final String SECRET_MANAGEMENT_PORT="SecretManagementPort";
+    public static final String SECRET_MANAGEMENT_URI="/ws/SecretManagement";
+    public static final String SECRET_MANAGEMENT_NS="http://www.opensmartgridplatform.org/schemas/security/secretmanagement/2020/05";
+    public static final String SECRET_MANAGEMENT_SCHEMA_LOC="schemas/secretmgmt.xsd";
+
     @Bean
-    public ServletRegistrationBean messageDispatcherServlet(ApplicationContext applicationContext) {
+    public ServletRegistrationBean<MessageDispatcherServlet> messageDispatcherServlet(ApplicationContext applicationContext) {
         MessageDispatcherServlet servlet = new MessageDispatcherServlet();
         servlet.setApplicationContext(applicationContext);
         servlet.setTransformWsdlLocations(true);
-        return new ServletRegistrationBean(servlet, "/ws/SecretManagement/*");
+        return new ServletRegistrationBean<>(servlet, SECRET_MANAGEMENT_WS_BASE_PATH);
     }
 
     /**
@@ -37,9 +44,9 @@ public class WebServiceConfig extends WsConfigurerAdapter {
     @Bean(name = "secretManagement")
     public DefaultWsdl11Definition defaultWsdl11Definition(XsdSchemaCollection secretManagementSchemas) {
         DefaultWsdl11Definition wsdl11Definition = new DefaultWsdl11Definition();
-        wsdl11Definition.setPortTypeName("SecretManagementPort");
-        wsdl11Definition.setLocationUri("/ws/SecretManagement");
-        wsdl11Definition.setTargetNamespace("http://www.opensmartgridplatform.org/schemas/security/secretmanagement/2020/05");
+        wsdl11Definition.setPortTypeName(SECRET_MANAGEMENT_PORT);
+        wsdl11Definition.setLocationUri(SECRET_MANAGEMENT_URI);
+        wsdl11Definition.setTargetNamespace(SECRET_MANAGEMENT_NS);
         wsdl11Definition.setSchemaCollection(secretManagementSchemas);
         return wsdl11Definition;
     }
@@ -47,7 +54,7 @@ public class WebServiceConfig extends WsConfigurerAdapter {
     @Bean
     public XsdSchemaCollection secretManagementSchemas() {
         CommonsXsdSchemaCollection sc = new CommonsXsdSchemaCollection();
-        sc.setXsds(new ClassPathResource("schemas/secretmgmt.xsd"));
+        sc.setXsds(new ClassPathResource(SECRET_MANAGEMENT_SCHEMA_LOC));
         return sc;
     }
 
