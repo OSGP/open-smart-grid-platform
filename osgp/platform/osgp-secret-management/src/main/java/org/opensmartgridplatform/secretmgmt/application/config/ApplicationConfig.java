@@ -9,10 +9,6 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/SecretManagement/config}", ignoreResourceNotFound = true)
 public class ApplicationConfig {
-
-    private ApplicationConfig() {
-    }
-
     @Value("${component.name}")
     public static final String COMPONENT_NAME = "OSGP-SECRET-MANAGEMENT";
 }
