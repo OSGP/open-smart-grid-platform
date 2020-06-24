@@ -8,6 +8,8 @@
 package org.opensmartgridplatform.adapter.ws.core.application.services;
 
 import static org.springframework.data.jpa.domain.Specification.where;
+import static org.opensmartgridplatform.adapter.ws.core.application.utility.WildcardUtil.replaceWildcards;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,9 +85,6 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public class DeviceManagementService {
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementService.class);
-
-    // The wildcard, used for filtering.
-    private static final String WILDCARD = "\\*";
 
     @Autowired
     private PagingSettings pagingSettings;
@@ -411,9 +410,8 @@ public class DeviceManagementService {
     private Specification<Device> doFilterOnFirmwareModuleVersion(final DeviceFilter deviceFilter,
             Specification<Device> specification) throws ArgumentNullOrEmptyException {
         if (!StringUtils.isEmpty(deviceFilter.getFirmwareModuleVersion())) {
-            specification = specification
-                    .and(this.deviceSpecifications.forFirmwareModuleVersion(deviceFilter.getFirmwareModuleType(),
-                            deviceFilter.getFirmwareModuleVersion().replaceAll(WILDCARD, "%") + "%"));
+            specification = specification.and(this.deviceSpecifications.forFirmwareModuleVersion(
+                    deviceFilter.getFirmwareModuleType(), replaceWildcards(deviceFilter.getFirmwareModuleVersion())));
         }
         return specification;
     }
@@ -431,8 +429,8 @@ public class DeviceManagementService {
     private Specification<Device> doFilterOnDeviceModel(final DeviceFilter deviceFilter,
             Specification<Device> specification) throws ArgumentNullOrEmptyException {
         if (!StringUtils.isEmpty(deviceFilter.getModel())) {
-            specification = specification.and(
-                    this.deviceSpecifications.forDeviceModel(deviceFilter.getModel().replaceAll(WILDCARD, "%") + "%"));
+            specification = specification
+                    .and(this.deviceSpecifications.forDeviceModel(replaceWildcards(deviceFilter.getModel())));
         }
         return specification;
     }
@@ -440,8 +438,8 @@ public class DeviceManagementService {
     private Specification<Device> doFilterOnDeviceType(final DeviceFilter deviceFilter,
             Specification<Device> specification) throws ArgumentNullOrEmptyException {
         if (!StringUtils.isEmpty(deviceFilter.getDeviceType())) {
-            specification = specification.and(this.deviceSpecifications
-                    .forDeviceType(deviceFilter.getDeviceType().replaceAll(WILDCARD, "%") + "%"));
+            specification = specification
+                    .and(this.deviceSpecifications.forDeviceType(replaceWildcards(deviceFilter.getDeviceType())));
         }
         return specification;
     }
@@ -450,7 +448,7 @@ public class DeviceManagementService {
             throws ArgumentNullOrEmptyException {
         if (!StringUtils.isEmpty(deviceFilter.getOwner())) {
             specification = specification
-                    .and(this.deviceSpecifications.forOwner(deviceFilter.getOwner().replaceAll(WILDCARD, "%") + "%"));
+                    .and(this.deviceSpecifications.forOwner(replaceWildcards(deviceFilter.getOwner())));
         }
         return specification;
     }
@@ -497,23 +495,23 @@ public class DeviceManagementService {
             Specification<Device> specification) throws ArgumentNullOrEmptyException {
         if (!StringUtils.isEmpty(deviceFilter.getCity())) {
             specification = specification
-                    .and(this.deviceSpecifications.hasCity(deviceFilter.getCity().replaceAll(WILDCARD, "%") + "%"));
+                    .and(this.deviceSpecifications.hasCity(replaceWildcards(deviceFilter.getCity())));
         }
         if (!StringUtils.isEmpty(deviceFilter.getPostalCode())) {
             specification = specification.and(this.deviceSpecifications
-                    .hasPostalCode(deviceFilter.getPostalCode().replaceAll(WILDCARD, "%") + "%"));
+                    .hasPostalCode(replaceWildcards(deviceFilter.getPostalCode())));
         }
         if (!StringUtils.isEmpty(deviceFilter.getStreet())) {
-            specification = specification
-                    .and(this.deviceSpecifications.hasStreet(deviceFilter.getStreet().replaceAll(WILDCARD, "%") + "%"));
+            specification = specification.and(
+                    this.deviceSpecifications.hasStreet(replaceWildcards(deviceFilter.getStreet())));
         }
         if (!StringUtils.isEmpty(deviceFilter.getNumber())) {
-            specification = specification
-                    .and(this.deviceSpecifications.hasNumber(deviceFilter.getNumber().replaceAll(WILDCARD, "%") + "%"));
+            specification = specification.and(
+                    this.deviceSpecifications.hasNumber(replaceWildcards(deviceFilter.getNumber())));
         }
         if (!StringUtils.isEmpty(deviceFilter.getMunicipality())) {
             specification = specification.and(this.deviceSpecifications
-                    .hasMunicipality(deviceFilter.getMunicipality().replaceAll(WILDCARD, "%") + "%"));
+                    .hasMunicipality(replaceWildcards(deviceFilter.getMunicipality())));
         }
         return specification;
     }
@@ -521,8 +519,8 @@ public class DeviceManagementService {
     private Specification<Device> doFilterOnDeviceAlias(final DeviceFilter deviceFilter,
             Specification<Device> specification) throws ArgumentNullOrEmptyException {
         if (!StringUtils.isEmpty(deviceFilter.getAlias())) {
-            specification = specification
-                    .and(this.deviceSpecifications.hasAlias(deviceFilter.getAlias().replaceAll(WILDCARD, "%") + "%"));
+            specification = specification.and(
+                    this.deviceSpecifications.hasAlias(replaceWildcards(deviceFilter.getAlias())));
         }
         return specification;
     }
@@ -533,7 +531,7 @@ public class DeviceManagementService {
             String searchString = deviceFilter.getDeviceIdentification();
 
             if (!deviceFilter.isExactMatch()) {
-                searchString = searchString.replaceAll(WILDCARD, "%") + "%";
+                searchString = replaceWildcards(searchString);
             }
 
             specification = specification
