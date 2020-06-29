@@ -7,9 +7,8 @@
  */
 package org.opensmartgridplatform.adapter.ws.core.application.services;
 
-import static org.springframework.data.jpa.domain.Specification.where;
 import static org.opensmartgridplatform.adapter.ws.core.application.utility.WildcardUtil.replaceWildcards;
-
+import static org.springframework.data.jpa.domain.Specification.where;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -173,7 +172,7 @@ public class DeviceManagementService {
         this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_ORGANISATIONS);
 
         if (this.netManagementOrganisation.equals(organisationIdentification)) {
-            return this.organisationRepository.findAll();
+            return this.organisationRepository.findByOrderByOrganisationIdentification();
         } else {
             final Organisation org = this.organisationRepository
                     .findByOrganisationIdentification(organisationIdentification);
@@ -498,20 +497,20 @@ public class DeviceManagementService {
                     .and(this.deviceSpecifications.hasCity(replaceWildcards(deviceFilter.getCity())));
         }
         if (!StringUtils.isEmpty(deviceFilter.getPostalCode())) {
-            specification = specification.and(this.deviceSpecifications
-                    .hasPostalCode(replaceWildcards(deviceFilter.getPostalCode())));
+            specification = specification
+                    .and(this.deviceSpecifications.hasPostalCode(replaceWildcards(deviceFilter.getPostalCode())));
         }
         if (!StringUtils.isEmpty(deviceFilter.getStreet())) {
-            specification = specification.and(
-                    this.deviceSpecifications.hasStreet(replaceWildcards(deviceFilter.getStreet())));
+            specification = specification
+                    .and(this.deviceSpecifications.hasStreet(replaceWildcards(deviceFilter.getStreet())));
         }
         if (!StringUtils.isEmpty(deviceFilter.getNumber())) {
-            specification = specification.and(
-                    this.deviceSpecifications.hasNumber(replaceWildcards(deviceFilter.getNumber())));
+            specification = specification
+                    .and(this.deviceSpecifications.hasNumber(replaceWildcards(deviceFilter.getNumber())));
         }
         if (!StringUtils.isEmpty(deviceFilter.getMunicipality())) {
-            specification = specification.and(this.deviceSpecifications
-                    .hasMunicipality(replaceWildcards(deviceFilter.getMunicipality())));
+            specification = specification
+                    .and(this.deviceSpecifications.hasMunicipality(replaceWildcards(deviceFilter.getMunicipality())));
         }
         return specification;
     }
@@ -519,8 +518,8 @@ public class DeviceManagementService {
     private Specification<Device> doFilterOnDeviceAlias(final DeviceFilter deviceFilter,
             Specification<Device> specification) throws ArgumentNullOrEmptyException {
         if (!StringUtils.isEmpty(deviceFilter.getAlias())) {
-            specification = specification.and(
-                    this.deviceSpecifications.hasAlias(replaceWildcards(deviceFilter.getAlias())));
+            specification = specification
+                    .and(this.deviceSpecifications.hasAlias(replaceWildcards(deviceFilter.getAlias())));
         }
         return specification;
     }
