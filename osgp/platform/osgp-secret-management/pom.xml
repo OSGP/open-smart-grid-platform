@@ -18,18 +18,23 @@
     <description>Secret management module.</description>
 
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.2.6.RELEASE</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>parent-platform</artifactId>
+        <version>5.1.0-SNAPSHOT</version>
+        <relativePath>../parent-platform/pom.xml</relativePath>
     </parent>
 
     <properties>
         <java.version>1.8</java.version>
+        <spring.boot.version>2.2.2.RELEASE</spring.boot.version>
         <jaxb.plugin.version>2.5.0</jaxb.plugin.version>
         <build.helper.maven.plugin.version>3.0.0</build.helper.maven.plugin.version>
         <apache.ws.xlmschema.version>2.0.1</apache.ws.xlmschema.version>
         <logback.spring.extensions.version>0.1.5</logback.spring.extensions.version>
+        <wsdl4j.version>1.6.3</wsdl4j.version>
+        <maven.failsafe.plugin.version>3.0.0-M4</maven.failsafe.plugin.version>
+        <spring.boot.maven.plugin.version>2.2.2.RELEASE</spring.boot.maven.plugin.version>
+        <failOnMissingWebXml>false</failOnMissingWebXml>
     </properties>
 
     <build>
@@ -37,6 +42,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring.boot.maven.plugin.version}</version>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -92,6 +98,7 @@
 
             <plugin>
                 <artifactId>maven-failsafe-plugin</artifactId>
+                <version>${maven.failsafe.plugin.version}</version>
                 <executions>
                     <execution>
                         <goals>
@@ -109,14 +116,17 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <version>${spring.boot.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web-services</artifactId>
+            <version>${spring.boot.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <version>${spring.boot.version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -125,6 +135,7 @@
         <dependency>
             <groupId>wsdl4j</groupId>
             <artifactId>wsdl4j</artifactId>
+            <version>${wsdl4j.version}</version>
         </dependency>
 
         <dependency>
@@ -136,6 +147,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <version>${spring.boot.version}</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
@@ -157,6 +169,7 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
+            <version>1.4.200</version>
             <scope>test</scope>
         </dependency>
         <dependency>
