@@ -33,12 +33,14 @@ import static org.opensmartgridplatform.secretmanagement.application.config.Appl
 @Slf4j
 public class SecretManagementEndpoint {
 
-    private static final String NAMESPACE_URI = "http://www.opensmartgridplatform.org/schemas/security/secretmanagement/2020/05";
+    private static final String NAMESPACE_URI = "http://www.opensmartgridplatform"
+            + ".org/schemas/security/secretmanagement/2020/05";
 
     private final SecretManagementService secretManagementService;
     private final SoapEndpointDataTypeConverter converter;
 
-    public SecretManagementEndpoint(SecretManagementService secretManagementService, SoapEndpointDataTypeConverter converter) {
+    public SecretManagementEndpoint(SecretManagementService secretManagementService,
+            SoapEndpointDataTypeConverter converter) {
         this.secretManagementService = secretManagementService;
         this.converter = converter;
     }
@@ -53,7 +55,8 @@ public class SecretManagementEndpoint {
             GetSecretsResponse response = new GetSecretsResponse();
 
             List<SecretType> secretTypeList = converter.convertToSecretTypes(request.getSecretTypes());
-            List<TypedSecret> typedSecrets = secretManagementService.retrieveSecrets(request.getDeviceId(), secretTypeList);
+            List<TypedSecret> typedSecrets = secretManagementService.retrieveSecrets(request.getDeviceId(),
+                    secretTypeList);
 
             TypedSecrets soapTypedSecrets = converter.convertToSoapTypedSecrets(typedSecrets);
 
@@ -61,8 +64,7 @@ public class SecretManagementEndpoint {
             response.setResult(OsgpResultType.OK);
 
             return response;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new TechnicalServiceFaultException(e.getMessage(), e, createTechnicalFaultFromException(e));
         }
     }
@@ -83,8 +85,7 @@ public class SecretManagementEndpoint {
             response.setResult(OsgpResultType.OK);
 
             return response;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new TechnicalServiceFaultException(e.getMessage(), e, createTechnicalFaultFromException(e));
         }
     }

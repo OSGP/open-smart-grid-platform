@@ -10,5 +10,6 @@ package org.opensmartgridplatform.secretmanagement.application.services.encrypti
 
 public interface EncryptionDelegate {
     EncryptedSecret encrypt(EncryptionProviderType encryptionProviderType, Secret secret, String keyReference);
+
     Secret decrypt(EncryptedSecret secret, String keyReference);
 }

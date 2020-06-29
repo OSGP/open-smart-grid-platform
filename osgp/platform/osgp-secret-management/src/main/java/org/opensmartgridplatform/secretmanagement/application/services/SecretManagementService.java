@@ -38,7 +38,8 @@ public class SecretManagementService implements SecretManagement {
     private final DbEncryptionKeyRepository keyRepository;
 
     @Autowired
-    public SecretManagementService(@Qualifier("DefaultEncryptionDelegate") final EncryptionDelegate defaultEncryptionDelegate,
+    public SecretManagementService(
+            @Qualifier("DefaultEncryptionDelegate") final EncryptionDelegate defaultEncryptionDelegate,
             final EncryptionProviderType encryptionProviderType, final DbEncryptedSecretRepository secretRepository,
             final DbEncryptionKeyRepository keyRepository) {
         this.encryptionDelegate = defaultEncryptionDelegate;
@@ -74,8 +75,9 @@ public class SecretManagementService implements SecretManagement {
         } else if (secret.getSecretType() == null) {
             throw new IllegalArgumentException("No secret type set");
         } else if (this.isIdenticalToCurrent(deviceIdentification, secret)) {
-            throw new IllegalArgumentException(String.format("Secret is identical to current secret (%s, %s)",
-                    deviceIdentification, secret.getSecretType().name()));
+            throw new IllegalArgumentException(
+                    String.format("Secret is identical to current secret (%s, %s)", deviceIdentification,
+                            secret.getSecretType().name()));
         }
         return secret;
     }
@@ -84,7 +86,7 @@ public class SecretManagementService implements SecretManagement {
         try {
             final TypedSecret current = this.retrieveSecret(deviceIdentification, secret.getSecretType());
             return current.getSecret().equals(secret.getSecret());
-        } catch(final NoSuchElementException nsee) {
+        } catch (final NoSuchElementException nsee) {
             //there is no current secret
             return false;
         }
@@ -128,9 +130,9 @@ public class SecretManagementService implements SecretManagement {
     @java.lang.SuppressWarnings("squid:S3655")
     public TypedSecret retrieveSecret(final String deviceIdentification, final SecretType secretType) {
         final Date now = new Date();
-        final Long secretId = this.secretRepository.findIdOfValidMostRecent(deviceIdentification,
-                secretType.name(), now);
-        if(secretId==null) {
+        final Long secretId = this.secretRepository.findIdOfValidMostRecent(deviceIdentification, secretType.name(),
+                now);
+        if (secretId == null) {
             throw new NoSuchElementException("No secret found with a valid key");
         }
         return this.getTypedSecret(this.secretRepository.findById(secretId).get());

@@ -20,5 +20,4 @@ public class ApplicationConfig {
     @Value("${component.name}")
     public static final String COMPONENT_NAME = "OSGP-SECRET-MANAGEMENT";
 
-
 }

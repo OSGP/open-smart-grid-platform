@@ -54,8 +54,8 @@ public class DbEncryptionKeyRepositoryIT extends AbstractRepositoryIT {
 
     @Test
     public void find_noValidTo() {
-        final Page<DbEncryptionKeyReference> resultPage = this.repository.findByTypeAndValid(new Date(), EncryptionProviderType.HSM,
-                Pageable.unpaged());
+        final Page<DbEncryptionKeyReference> resultPage = this.repository.findByTypeAndValid(new Date(),
+                EncryptionProviderType.HSM, Pageable.unpaged());
         assertThat(resultPage.getSize()).isEqualTo(1);
         final DbEncryptionKeyReference keyReference = resultPage.toList().get(0);
         assertThat(keyReference).isNotNull();
@@ -67,8 +67,7 @@ public class DbEncryptionKeyRepositoryIT extends AbstractRepositoryIT {
     @Test
     public void find_validTo() {
         final Page<DbEncryptionKeyReference> resultPage = this.repository.findByTypeAndValid(new Date(),
-                EncryptionProviderType.JRE,
-                Pageable.unpaged());
+                EncryptionProviderType.JRE, Pageable.unpaged());
         assertThat(resultPage.getSize()).isEqualTo(1);
         final DbEncryptionKeyReference keyReference = resultPage.toList().get(0);
         assertThat(keyReference).isNotNull();

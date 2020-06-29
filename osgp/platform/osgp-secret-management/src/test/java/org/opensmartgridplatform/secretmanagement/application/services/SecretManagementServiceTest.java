@@ -202,7 +202,7 @@ public class SecretManagementServiceTest {
         //THEN
         try {
             this.service.storeSecrets("SOME_DEVICE", Arrays.asList(typedSecret));
-        } catch(final Exception exc) {
+        } catch (final Exception exc) {
 
         }
         assertThatIllegalStateException().isThrownBy(

@@ -96,8 +96,7 @@ public class SoapServiceSecretManagementIT {
         final Resource request = new ClassPathResource("test-requests/getSecrets.xml");
         final Resource expectedResponse = new ClassPathResource("test-responses/getSecrets.xml");
         try {
-            this.mockWebServiceClient.sendRequest(withPayload(request))
-            .andExpect(
+            this.mockWebServiceClient.sendRequest(withPayload(request)).andExpect(
                     ResponseMatchers.payload(expectedResponse));
         } catch (final Exception exc) {
             Assertions.fail("Error", exc);
@@ -172,13 +171,13 @@ public class SoapServiceSecretManagementIT {
         final Resource request = new ClassPathResource("test-requests/storeSecrets.xml");
         final Resource expectedResponse = new ClassPathResource("test-responses/storeSecrets.xml");
         //Store secrets
-        this.mockWebServiceClient.sendRequest(withPayload(request))
-                .andExpect(ResponseMatchers.noFault())
-                .andExpect(ResponseMatchers.payload(expectedResponse));
+        this.mockWebServiceClient.sendRequest(withPayload(request)).andExpect(ResponseMatchers.noFault()).andExpect(
+                ResponseMatchers.payload(expectedResponse));
         //Store identical secrets again
-        final String errorMessage = "Secret is identical to current secret (E0054002019112319, E_METER_AUTHENTICATION_KEY)";
+        final String errorMessage =
+                "Secret is identical to current secret (E0054002019112319, " + "E_METER_AUTHENTICATION_KEY)";
         this.mockWebServiceClient.sendRequest(withPayload(request)).andExpect(
-                    ResponseMatchers.serverOrReceiverFault(errorMessage));
+                ResponseMatchers.serverOrReceiverFault(errorMessage));
     }
 
     /**

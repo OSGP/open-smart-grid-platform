@@ -13,6 +13,7 @@ import org.opensmartgridplatform.secretmanagement.application.services.encryptio
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -38,7 +39,7 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider implements
         return IV.length;
     }
 
-   public HsmEncryptionProvider(File keyStoreFile) {
+    public HsmEncryptionProvider(File keyStoreFile) {
         try {
             super.setKeyFile(keyStoreFile);
             this.keyStore = KeyStore.getInstance(TYPE, PROVIDER);
@@ -58,13 +59,14 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider implements
      * Normally this is the key start isValidFrom(now) and isValidUntil(now).
      *
      * @return the key that must be used for encryption/decryption
-     * @throws Exception when keystore can not be accessed
+     *
+     * @throws Exception
+     *         when keystore can not be accessed
      */
     protected Key getSecretEncryptionKey(String keyReference) {
         try {
             return this.keyStore.getKey(keyReference, null);
-        }
-        catch (UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException e) {
+        } catch (UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException e) {
             throw new IllegalStateException("Could not get keystore from key", e);
         }
     }

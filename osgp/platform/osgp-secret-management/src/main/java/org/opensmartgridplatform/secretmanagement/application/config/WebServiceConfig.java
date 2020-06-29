@@ -30,14 +30,16 @@ import java.util.Properties;
 @Configuration
 public class WebServiceConfig extends WsConfigurerAdapter {
 
-    public static final String SECRET_MANAGEMENT_WS_BASE_PATH="/ws/SecretManagement/*";
-    public static final String SECRET_MANAGEMENT_PORT="SecretManagementPort";
-    public static final String SECRET_MANAGEMENT_URI="/ws/SecretManagement";
-    public static final String SECRET_MANAGEMENT_NS="http://www.opensmartgridplatform.org/schemas/security/secretmanagement/2020/05";
-    public static final String SECRET_MANAGEMENT_SCHEMA_LOC="schemas/secretmgmt.xsd";
+    public static final String SECRET_MANAGEMENT_WS_BASE_PATH = "/ws/SecretManagement/*";
+    public static final String SECRET_MANAGEMENT_PORT = "SecretManagementPort";
+    public static final String SECRET_MANAGEMENT_URI = "/ws/SecretManagement";
+    public static final String SECRET_MANAGEMENT_NS = "http://www.opensmartgridplatform"
+            + ".org/schemas/security/secretmanagement/2020/05";
+    public static final String SECRET_MANAGEMENT_SCHEMA_LOC = "schemas/secretmgmt.xsd";
 
     @Bean
-    public ServletRegistrationBean<MessageDispatcherServlet> messageDispatcherServlet(ApplicationContext applicationContext) {
+    public ServletRegistrationBean<MessageDispatcherServlet> messageDispatcherServlet(
+            ApplicationContext applicationContext) {
         MessageDispatcherServlet servlet = new MessageDispatcherServlet();
         servlet.setApplicationContext(applicationContext);
         servlet.setTransformWsdlLocations(true);
@@ -47,7 +49,7 @@ public class WebServiceConfig extends WsConfigurerAdapter {
     /**
      * url of the WSDL by this definition is:
      *
-     *    http://localhost:8080/ws/SecretManagement/secretManagement.wsdl
+     * http://localhost:8080/ws/SecretManagement/secretManagement.wsdl
      */
     @Bean(name = "secretManagement")
     public DefaultWsdl11Definition defaultWsdl11Definition(XsdSchemaCollection secretManagementSchemas) {
@@ -76,7 +78,8 @@ public class WebServiceConfig extends WsConfigurerAdapter {
 
         Properties errorMappings = new Properties();
         errorMappings.setProperty(Exception.class.getName(), SoapFaultDefinition.SERVER.toString());
-        errorMappings.setProperty(TechnicalServiceFaultException.class.getName(), SoapFaultDefinition.SERVER.toString());
+        errorMappings.setProperty(TechnicalServiceFaultException.class.getName(),
+                SoapFaultDefinition.SERVER.toString());
         exceptionResolver.setExceptionMappings(errorMappings);
         exceptionResolver.setOrder(1);
 

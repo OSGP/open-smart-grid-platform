@@ -17,8 +17,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class TypedSecret {
-    SecretType  secretType;
-    String      secret;
+    SecretType secretType;
+    String secret;
 }
 
 

@@ -14,7 +14,7 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"org.opensmartgridplatform.secretmanagement"})
+@ComponentScan(basePackages = { "org.opensmartgridplatform.secretmanagement" })
 public class Main extends SpringBootServletInitializer {
     public static void main(final String[] args) {
         SpringApplication.run(Main.class, args);

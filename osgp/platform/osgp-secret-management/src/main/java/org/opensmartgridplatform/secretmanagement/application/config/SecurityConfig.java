@@ -48,19 +48,20 @@ public class SecurityConfig {
         List<EncryptionProvider> encryptionProviderList = new ArrayList<>();
 
         try {
-            JreEncryptionProvider jreEncryptionProvider = new JreEncryptionProvider(this.databaseSecretResource.getFile());
+            JreEncryptionProvider jreEncryptionProvider = new JreEncryptionProvider(
+                    this.databaseSecretResource.getFile());
 
             encryptionProviderList.add(jreEncryptionProvider);
 
             if (this.hsmKeystoreResource.isPresent()) {
-                HsmEncryptionProvider hsmEncryptionProvider = new HsmEncryptionProvider(this.hsmKeystoreResource.get().getFile());
+                HsmEncryptionProvider hsmEncryptionProvider = new HsmEncryptionProvider(
+                        this.hsmKeystoreResource.get().getFile());
                 encryptionProviderList.add(hsmEncryptionProvider);
             }
 
             EncryptionProvider[] encryptionProviderArray = new EncryptionProvider[encryptionProviderList.size()];
             return encryptionProviderList.toArray(encryptionProviderArray);
-        }
-        catch(IOException e) {
+        } catch (IOException e) {
             throw new IllegalStateException("Error creating default encryption providers", e);
         }
     }

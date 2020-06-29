@@ -29,7 +29,8 @@ public class DefaultEncryptionDelegate implements EncryptionDelegate {
 
     @Override
     public EncryptedSecret encrypt(EncryptionProviderType encryptionProviderType, Secret secret, String keyReference) {
-        Optional<EncryptionProvider> oep = providers.stream().filter(ep -> ep.getType().equals(encryptionProviderType)).findFirst();
+        Optional<EncryptionProvider> oep = providers.stream().filter(
+                ep -> ep.getType().equals(encryptionProviderType)).findFirst();
 
         if (oep.isPresent()) {
             return oep.get().encrypt(secret, keyReference);

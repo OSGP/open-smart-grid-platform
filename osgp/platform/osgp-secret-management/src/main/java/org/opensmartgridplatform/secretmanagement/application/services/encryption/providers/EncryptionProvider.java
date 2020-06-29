@@ -16,8 +16,11 @@ import java.io.File;
 
 public interface EncryptionProvider {
     EncryptedSecret encrypt(Secret secret, String keyReference);
-    Secret  decrypt(EncryptedSecret secret, String keyReference);
-    void    setKeyFile(File keystore);
+
+    Secret decrypt(EncryptedSecret secret, String keyReference);
+
+    void setKeyFile(File keystore);
+
     EncryptionProviderType getType();
 }
 

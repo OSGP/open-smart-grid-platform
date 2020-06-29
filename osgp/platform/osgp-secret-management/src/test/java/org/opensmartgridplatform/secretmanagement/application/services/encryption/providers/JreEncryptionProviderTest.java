@@ -35,10 +35,7 @@ public class JreEncryptionProviderTest {
 
         EncryptedSecret encryptedSecret = new EncryptedSecret(jreEncryptionProvider.getType(), secret);
 
-        assertThrows(
-                IllegalStateException.class,
-                () -> jreEncryptionProvider.decrypt(encryptedSecret, "1"),
-                "Expected decrypt() to throw javax.crypto.BadPaddingException, but it didn't"
-        );
+        assertThrows(IllegalStateException.class, () -> jreEncryptionProvider.decrypt(encryptedSecret, "1"),
+                "Expected decrypt() to throw javax.crypto.BadPaddingException, but it didn't");
     }
 }
