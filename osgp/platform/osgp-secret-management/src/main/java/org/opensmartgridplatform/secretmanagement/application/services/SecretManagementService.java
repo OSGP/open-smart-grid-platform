@@ -31,7 +31,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SecretManagementService implements SecretManagement {
+public class SecretManagementService {
     private final EncryptionDelegate encryptionDelegate;
     private final EncryptionProviderType encryptionProviderType;
     private final DbEncryptedSecretRepository secretRepository;
@@ -48,7 +48,6 @@ public class SecretManagementService implements SecretManagement {
         this.keyRepository = keyRepository;
     }
 
-    @Override
     public void storeSecrets(final String deviceIdentification, final List<TypedSecret> secrets) throws Exception {
         //@formatter:off
         secrets.stream()
@@ -112,7 +111,6 @@ public class SecretManagementService implements SecretManagement {
         }
     }
 
-    @Override
     public List<TypedSecret> retrieveSecrets(final String deviceIdentification, final List<SecretType> secretTypes)
             throws Exception {
         try {

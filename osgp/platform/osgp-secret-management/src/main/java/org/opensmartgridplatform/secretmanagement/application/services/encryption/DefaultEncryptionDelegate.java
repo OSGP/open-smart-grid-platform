@@ -8,12 +8,12 @@
  */
 package org.opensmartgridplatform.secretmanagement.application.services.encryption;
 
-import org.opensmartgridplatform.secretmanagement.application.services.encryption.providers.EncryptionProvider;
-import org.springframework.stereotype.Component;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+
+import org.opensmartgridplatform.secretmanagement.application.services.encryption.providers.EncryptionProvider;
+import org.springframework.stereotype.Component;
 
 /**
  * This class is used to encrypt/decrypt typed secrets by either the HardwareSecurityModule or by the JRE
@@ -21,17 +21,19 @@ import java.util.Optional;
 @Component
 public class DefaultEncryptionDelegate implements EncryptionDelegate {
 
-    private List<EncryptionProvider> providers;
+    private final List<EncryptionProvider> providers;
 
-    public DefaultEncryptionDelegate(EncryptionProvider[] encryptionProviders) {
+    public DefaultEncryptionDelegate(final EncryptionProvider[] encryptionProviders) {
         this.providers = Arrays.asList(encryptionProviders);
     }
 
     @Override
-    public EncryptedSecret encrypt(EncryptionProviderType encryptionProviderType, Secret secret, String keyReference) {
-        Optional<EncryptionProvider> oep = providers.stream().filter(
+    public EncryptedSecret encrypt(
+            final EncryptionProviderType encryptionProviderType, final Secret secret, final String keyReference) {
+        final Optional<EncryptionProvider> oep = this.providers.stream().filter(
                 ep -> ep.getType().equals(encryptionProviderType)).findFirst();
 
+        //oep.orElseThrow(()->new IllegalStateException("Could not find a provider")).encrypt(secret,keyReference);
         if (oep.isPresent()) {
             return oep.get().encrypt(secret, keyReference);
         } else {
@@ -40,9 +42,9 @@ public class DefaultEncryptionDelegate implements EncryptionDelegate {
     }
 
     @Override
-    public Secret decrypt(EncryptedSecret secret, String keyReference) {
-        EncryptionProviderType encType = secret.getType();
-        Optional<EncryptionProvider> oep = providers.stream().filter(ep -> ep.getType().equals(encType)).findFirst();
+    public Secret decrypt(final EncryptedSecret secret, final String keyReference) {
+        final EncryptionProviderType encType = secret.getType();
+        final Optional<EncryptionProvider> oep = this.providers.stream().filter(ep -> ep.getType().equals(encType)).findFirst();
 
         if (oep.isPresent()) {
             return oep.get().decrypt(secret, keyReference);

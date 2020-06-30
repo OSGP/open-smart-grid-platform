@@ -24,8 +24,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Encrypted secret.
- * This is an immutable object. Historic entries are saved in the DB.
+ * Encrypted secret, which should not be mutated, because modifications should result in a new version (record in the
+ * DB). Historic entries remain in the DB table and the current secret should be determined via a query on creationTime.
  */
 @Entity
 @Table(name = "encrypted_secret")
