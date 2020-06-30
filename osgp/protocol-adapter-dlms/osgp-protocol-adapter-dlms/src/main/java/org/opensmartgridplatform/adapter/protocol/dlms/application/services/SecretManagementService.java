@@ -16,7 +16,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.security.EncryptionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,20 +24,18 @@ import java.util.List;
 import java.util.Optional;
 
 @Service(value = "secretManagementService")
-@Transactional(value = "transactionManager")
+@Transactional
 public class SecretManagementService implements SecurityKeyService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SecretManagementService.class);
+    private EncryptionService soapSecretEncryptionService;
+    private SecretManagementClient secretManagementClient;
 
-    @Autowired
-    EncryptionService soapSecretEncryptionService;
-
-    @Autowired
-    SecretManagementClient secretManagementClient;
-
-    @Autowired
-    @Qualifier("dlmsSecurityKeyService")
-    DlmsSecurityKeyService dlmsSecurityKeyService;
+    public SecretManagementService(EncryptionService soapSecretEncryptionService, SecretManagementClient secretManagementClient)
+    {
+        this.soapSecretEncryptionService = soapSecretEncryptionService;
+        this.secretManagementClient = secretManagementClient;
+    }
 
     @Override
     public byte[] reEncryptKey(byte[] externallyEncryptedKey, SecurityKeyType keyType) throws FunctionalException {
@@ -68,7 +65,8 @@ public class SecretManagementService implements SecurityKeyService {
             GetSecretsResponse response = secretManagementClient.getSecretsRequest(request);
             Optional<TypedSecret> optionalTypedSecret = getTypedSecretFromSoapResponse(response, SecretType.E_METER_AUTHENTICATION_KEY);
 
-            return decryptOptionalSoapSecret(deviceIdentification, optionalTypedSecret);
+            return decryptSoapSecret(deviceIdentification,
+                    optionalTypedSecret.orElseThrow(()->new IllegalStateException("Secret not found:" + deviceIdentification)));
         }
         catch(Exception e) {
             LOGGER.error("Error while retrieving authentication key", e);
@@ -84,7 +82,8 @@ public class SecretManagementService implements SecurityKeyService {
             GetSecretsResponse response = secretManagementClient.getSecretsRequest(request);
             Optional<TypedSecret> optionalTypedSecret = getTypedSecretFromSoapResponse(response, SecretType.E_METER_ENCRYPTION_KEY_UNICAST);
 
-            return decryptOptionalSoapSecret(deviceIdentification, optionalTypedSecret);
+            return decryptSoapSecret(deviceIdentification,
+                    optionalTypedSecret.orElseThrow(()->new IllegalStateException("Secret not found:" + deviceIdentification)));
         }
         catch(Exception e) {
             LOGGER.error("Error while retrieving encryption key", e);
@@ -148,17 +147,12 @@ public class SecretManagementService implements SecurityKeyService {
         return request;
     }
 
-    private byte[] decryptOptionalSoapSecret(String deviceIdentification, Optional<TypedSecret>optionalTypedSecret) {
-
-        if (optionalTypedSecret.isPresent()) {
-            try {
-                byte[] encryptedSoapSecret = Hex.decodeHex(optionalTypedSecret.get().getSecret());
-                return soapSecretEncryptionService.decrypt(encryptedSoapSecret);
-            }
-            catch (Exception e) {
-                LOGGER.error("decrypting key for device {}", deviceIdentification);
-            }
+    private byte[] decryptSoapSecret(String deviceIdentification, TypedSecret typedSecret) {
+        try {
+            byte[] encryptedSoapSecret = Hex.decodeHex(typedSecret.getSecret());
+            return soapSecretEncryptionService.decrypt(encryptedSoapSecret);
+        } catch (Exception e) {
+            throw new IllegalStateException("Decrypting key for device: " + deviceIdentification, e);
         }
-        return new byte[0];
     }
 }

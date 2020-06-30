@@ -33,12 +33,7 @@ public class DefaultEncryptionDelegate implements EncryptionDelegate {
         final Optional<EncryptionProvider> oep = this.providers.stream().filter(
                 ep -> ep.getType().equals(encryptionProviderType)).findFirst();
 
-        //oep.orElseThrow(()->new IllegalStateException("Could not find a provider")).encrypt(secret,keyReference);
-        if (oep.isPresent()) {
-            return oep.get().encrypt(secret, keyReference);
-        } else {
-            throw new IllegalStateException("Could not find a provider");
-        }
+        return oep.orElseThrow(()->new IllegalStateException("Could not find a provider")).encrypt(secret, keyReference);
     }
 
     @Override
@@ -46,11 +41,7 @@ public class DefaultEncryptionDelegate implements EncryptionDelegate {
         final EncryptionProviderType encType = secret.getType();
         final Optional<EncryptionProvider> oep = this.providers.stream().filter(ep -> ep.getType().equals(encType)).findFirst();
 
-        if (oep.isPresent()) {
-            return oep.get().decrypt(secret, keyReference);
-        } else {
-            throw new IllegalStateException("Could not find a provider");
-        }
+        return oep.orElseThrow(()->new IllegalStateException("Could not find a provider")).decrypt(secret, keyReference);
     }
 }
 

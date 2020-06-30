@@ -51,7 +51,7 @@ public class SoapClientConfig {
         webServiceTemplate.setUnmarshaller(soapClientJaxb2Marshaller());
         webServiceTemplate.setDefaultUri(defaultUri);
 
-        if (Boolean.getBoolean(useClientAuth)) {
+        if (Boolean.parseBoolean(useClientAuth)) {
             webServiceTemplate.setMessageSender(httpsUrlConnectionMessageSender());
         }
 

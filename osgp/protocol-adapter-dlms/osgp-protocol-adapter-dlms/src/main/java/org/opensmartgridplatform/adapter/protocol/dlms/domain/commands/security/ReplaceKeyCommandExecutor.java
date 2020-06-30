@@ -177,7 +177,7 @@ public class ReplaceKeyCommandExecutor
             throw new ConnectionException(e);
         } catch (final EncrypterException e) {
             throw new ProtocolAdapterException(
-                    "Unexpected exception during decryption of security keys, reason = " + e.getMessage());
+                    "Unexpected exception during decryption of security keys, reason = " + e.getMessage(), e);
         }
     }
 }
