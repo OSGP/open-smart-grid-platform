@@ -85,7 +85,7 @@ public class SecretManagementServiceTest {
     }
 
     @Test
-    public void retrieveSecrets_decryptionError() throws Exception {
+    public void retrieveSecrets_decryptionError() {
         //GIVEN
         final DbEncryptionKeyReference keyReference = new DbEncryptionKeyReference();
         final DbEncryptedSecret secret = new DbEncryptedSecret();
@@ -103,7 +103,7 @@ public class SecretManagementServiceTest {
     }
 
     @Test
-    public void retrieveSecrets_secretWithoutKey() throws Exception {
+    public void retrieveSecrets_secretWithoutKey() {
         final DbEncryptedSecret secret = new DbEncryptedSecret();
         when(this.secretRepository.findIdOfValidMostRecent(any(), any(), any())).thenReturn(1L);
         when(this.secretRepository.findById(1L)).thenReturn(Optional.of(secret));
@@ -112,7 +112,7 @@ public class SecretManagementServiceTest {
     }
 
     @Test
-    public void retrieveSecrets_noSecrets() throws Exception {
+    public void retrieveSecrets_noSecrets() {
         when(this.secretRepository.findIdOfValidMostRecent(any(), any(), any())).thenReturn(null);
         assertThatIllegalStateException().isThrownBy(
                 () -> this.service.retrieveSecrets("SOME_DEVICE", Arrays.asList(SecretType.E_METER_MASTER_KEY)));
@@ -149,7 +149,7 @@ public class SecretManagementServiceTest {
     }
 
     @Test
-    public void storeSecrets_secretNull() throws Exception {
+    public void storeSecrets_secretNull() {
         //GIVEN
         final TypedSecret typedSecret = new TypedSecret();
         typedSecret.setSecretType(SecretType.E_METER_MASTER_KEY);
@@ -162,7 +162,7 @@ public class SecretManagementServiceTest {
     }
 
     @Test
-    public void storeSecrets_secretTypeNull() throws Exception {
+    public void storeSecrets_secretTypeNull() {
         //GIVEN
         final TypedSecret typedSecret = new TypedSecret();
         typedSecret.setSecret(HexUtils.toHexString("$3cr3t".getBytes()));
@@ -175,7 +175,7 @@ public class SecretManagementServiceTest {
     }
 
     @Test
-    public void storeSecrets_noKey() throws Exception {
+    public void storeSecrets_noKey() {
         //GIVEN
         final TypedSecret typedSecret = new TypedSecret();
         typedSecret.setSecretType(SecretType.E_METER_MASTER_KEY);
@@ -190,7 +190,7 @@ public class SecretManagementServiceTest {
     }
 
     @Test
-    public void storeSecrets_multipleKeys() throws Exception {
+    public void storeSecrets_multipleKeys() {
         //GIVEN
         final TypedSecret typedSecret = new TypedSecret();
         typedSecret.setSecretType(SecretType.E_METER_MASTER_KEY);
@@ -211,7 +211,7 @@ public class SecretManagementServiceTest {
     }
 
     @Test
-    public void storeSecrets_encryptionError() throws Exception {
+    public void storeSecrets_encryptionError() {
         //GIVEN
         final TypedSecret typedSecret = new TypedSecret();
         typedSecret.setSecretType(SecretType.E_METER_MASTER_KEY);
@@ -272,7 +272,7 @@ public class SecretManagementServiceTest {
     }
 
     @Test
-    public void storeSecrets_existingIdenticalSecret() throws Exception {
+    public void storeSecrets_existingIdenticalSecret() {
         //GIVEN
         final TypedSecret newTypedSecret = new TypedSecret();
         newTypedSecret.setSecretType(SecretType.E_METER_MASTER_KEY);

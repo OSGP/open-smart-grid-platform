@@ -12,7 +12,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * TypedSecret stores HexEncoded secrets
+ * TypedSecret stores a secret (not necessarily an encrypted secret), along with it's type.
  */
 @Getter
 @Setter

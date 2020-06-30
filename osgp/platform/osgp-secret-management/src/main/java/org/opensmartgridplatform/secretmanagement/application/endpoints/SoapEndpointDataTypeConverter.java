@@ -28,11 +28,11 @@ import java.util.List;
 public class SoapEndpointDataTypeConverter {
 
     private static final String KEY_REFERENCE = "1"; //only one key in use
-    private EncryptionProvider jreEncryptionProvider;
+    private EncryptionProvider encryptionProvider;
 
     public SoapEndpointDataTypeConverter(
             @Qualifier("SoapSecretEncryptionProvider") EncryptionProvider jreEncryptionProvider) {
-        this.jreEncryptionProvider = jreEncryptionProvider;
+        this.encryptionProvider = jreEncryptionProvider;
     }
 
     public List<SecretType> convertToSecretTypes(SecretTypes soapSecretTypes) {
@@ -107,7 +107,7 @@ public class SoapEndpointDataTypeConverter {
         String encodedSecret = typedSecret.getSecret();
         byte[] rawSecret = HexUtils.fromHexString(encodedSecret);
         Secret secret = new Secret(rawSecret);
-        EncryptedSecret encryptedSecret = jreEncryptionProvider.encrypt(secret, KEY_REFERENCE);
+        EncryptedSecret encryptedSecret = encryptionProvider.encrypt(secret, KEY_REFERENCE);
         soapTypedSecret.setSecret(HexUtils.toHexString(encryptedSecret.getSecret()));
 
         SecretType secretType = typedSecret.getSecretType();
@@ -122,7 +122,7 @@ public class SoapEndpointDataTypeConverter {
 
         byte[] rawEncryptedSecret = HexUtils.fromHexString(soapTypedSecret.getSecret());
         EncryptedSecret encryptedSecret = new EncryptedSecret(EncryptionProviderType.JRE, rawEncryptedSecret);
-        Secret decryptedSecret = jreEncryptionProvider.decrypt(encryptedSecret, KEY_REFERENCE);
+        Secret decryptedSecret = encryptionProvider.decrypt(encryptedSecret, KEY_REFERENCE);
 
         typedSecret.setSecret(HexUtils.toHexString(decryptedSecret.getSecret()));
         typedSecret.setSecretType(convertToSecretType(soapTypedSecret.getType()));

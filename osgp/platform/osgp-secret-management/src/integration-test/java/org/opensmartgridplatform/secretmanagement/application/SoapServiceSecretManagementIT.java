@@ -48,26 +48,30 @@ public class SoapServiceSecretManagementIT {
      * db key: hex:1cb340f6edab9d9b3f2912877c9ed161
      * soap key: hex:8ff36ab298aa8c240d1bb1185a138fe1
      *
-     * The plantext secrets for meter 'E0054002019112319' are:
+     * The plaintext secrets for meter 'E0000000000000000' are:
      *
-     * hex: 72b8fc276644a60ccefdf219fbee1a49 (E_METER_AUTHENTICATION)
-     * hex: a3d5883fe56cf12b1a7cb5a686da6064 (E_METER_ENCRYPTION_KEY_UNICAST)
+     * hex: 4b2a8fe42b9a211f557d4f1cc2f03f11 (E_METER_AUTHENTICATION, not a real key)
+     * hex: 7f3a2c8b9d65f32aaa74fbee752b8c5a (E_METER_ENCRYPTION_KEY_UNICAST, not a real key)
      *
-     * The db-encrypted secrets are: hex:35c6d2af323bd3c4a588692dfcf4235fd20c2bd39bcf8672b6e65d515940150f
-     * (E_METER_AUTHENTICATION)
-     * hex:7c737a402bdef7a0819f47ae9b625e2d8531e6c5d7603c4e4982c45175c4e063 (E_METER_ENCRYPTION_KEY_UNICAST)
+     * The db-encrypted secrets are:
+     *      hex:e4e6fe6af967f5ca2b523f5917425a802a488c9d73fa3ae0a8d3151e4a6a1a44
+     *          (E_METER_AUTHENTICATION)
+     *      hex:f1f3113322acc27bc5454fcf7765a5996930fccef67d7d6fdf90f882c7b98a1d
+     *          (E_METER_ENCRYPTION_KEY_UNICAST)
      *
-     * The soap-encrypted secrets are: hex:74efc062231e81c9e006bb56c5dec38631210c5073511606a203ba748fcdc794
-     * (E_METER_AUTHENTICATION)
-     * hex:3dca51832c70e372460796ca01acbab769fd330c9b936246a01d4e97f8c5bc26 (E_METER_ENCRYPTION_KEY_UNICAST)
+     * The soap-encrypted secrets are:
+     *      hex:863d92d1176312adab58714361f00e998c5c0bd6bdf5a406611a44e5323e251f
+     *          (E_METER_AUTHENTICATION)
+     *      hex:006a607aaa8ad3b37a6e5a41d93b06434d30032dd42b9412ff93e51980f66328
+     *          (E_METER_ENCRYPTION_KEY_UNICAST)
      */
 
     private static final String E_METER_AUTHENTICATION_KEY_ENCRYPTED_FOR_DB =
-            "35c6d2af323bd3c4a588692dfcf4235fd20c2bd39bcf8672b6e65d515940150f";
+            "e4e6fe6af967f5ca2b523f5917425a802a488c9d73fa3ae0a8d3151e4a6a1a44";
     private static final String E_METER_ENCRYPTION_KEY_UNICAST_ENCRYPTED_FOR_DB =
-            "7c737a402bdef7a0819f47ae9b625e2d8531e6c5d7603c4e4982c45175c4e063";
+            "f1f3113322acc27bc5454fcf7765a5996930fccef67d7d6fdf90f882c7b98a1d";
 
-    private static final String DEVICE_IDENTIFICATION = "E0054002019112319";
+    private static final String DEVICE_IDENTIFICATION = "E0000000000000000";
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -174,8 +178,8 @@ public class SoapServiceSecretManagementIT {
         this.mockWebServiceClient.sendRequest(withPayload(request)).andExpect(ResponseMatchers.noFault()).andExpect(
                 ResponseMatchers.payload(expectedResponse));
         //Store identical secrets again
-        final String errorMessage =
-                "Secret is identical to current secret (E0054002019112319, " + "E_METER_AUTHENTICATION_KEY)";
+        final String errorMessage = "Secret is identical to current secret (" + DEVICE_IDENTIFICATION + ", "
+                + "E_METER_AUTHENTICATION_KEY)";
         this.mockWebServiceClient.sendRequest(withPayload(request)).andExpect(
                 ResponseMatchers.serverOrReceiverFault(errorMessage));
     }
@@ -194,6 +198,7 @@ public class SoapServiceSecretManagementIT {
         encryptionKey.setValidFrom(new Date(System.currentTimeMillis() - 60000));
         encryptionKey.setVersion(1L);
         this.testEntityManager.persist(encryptionKey);
+
         final DbEncryptedSecret encryptedSecret = new DbEncryptedSecret();
         encryptedSecret.setCreationTime(new Date());
         encryptedSecret.setDeviceIdentification(DEVICE_IDENTIFICATION);
