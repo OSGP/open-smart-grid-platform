@@ -35,10 +35,6 @@ public class JreEncryptionProvider extends AbstractEncryptionProvider implements
 
     private byte[] key;
 
-    protected int getIVLength() {
-        return IV.length;
-    }
-
     protected Cipher getCipher() throws NoSuchPaddingException, NoSuchAlgorithmException, NoSuchProviderException {
         return Cipher.getInstance(ALGORITHM, PROVIDER);
     }
@@ -52,7 +48,7 @@ public class JreEncryptionProvider extends AbstractEncryptionProvider implements
         }
     }
 
-    protected Key getSecretEncryptionKey(String keyReference) {
+    protected Key getSecretEncryptionKey(String keyReference, int cipherMode) {
 
         if (!keyReference.equals(DEFAULT_SINGLE_KEY_REFERENCE)) {
             throw new IllegalStateException("Only keyReference '1' is valid in this implementation.");

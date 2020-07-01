@@ -12,15 +12,9 @@ import org.opensmartgridplatform.secretmanagement.application.services.encryptio
 import org.opensmartgridplatform.secretmanagement.application.services.encryption.EncryptionProviderType;
 import org.opensmartgridplatform.secretmanagement.application.services.encryption.Secret;
 
-import java.io.File;
-
 public interface EncryptionProvider {
     EncryptedSecret encrypt(Secret secret, String keyReference);
-
     Secret decrypt(EncryptedSecret secret, String keyReference);
-
-    void setKeyFile(File keystore);
-
     EncryptionProviderType getType();
 }
 

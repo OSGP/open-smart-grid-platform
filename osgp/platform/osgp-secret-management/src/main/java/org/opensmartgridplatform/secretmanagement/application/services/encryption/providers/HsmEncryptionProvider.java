@@ -35,10 +35,6 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider implements
 
     private KeyStore keyStore;
 
-    protected int getIVLength() {
-        return IV.length;
-    }
-
     public HsmEncryptionProvider(File keyStoreFile) {
         try {
             super.setKeyFile(keyStoreFile);
@@ -59,11 +55,8 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider implements
      * Normally this is the key start isValidFrom(now) and isValidUntil(now).
      *
      * @return the key that must be used for encryption/decryption
-     *
-     * @throws Exception
-     *         when keystore can not be accessed
      */
-    protected Key getSecretEncryptionKey(String keyReference) {
+    protected Key getSecretEncryptionKey(String keyReference, int cipherMode) {
         try {
             return this.keyStore.getKey(keyReference, null);
         } catch (UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException e) {

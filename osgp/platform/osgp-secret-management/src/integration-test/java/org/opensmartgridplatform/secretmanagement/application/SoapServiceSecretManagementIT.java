@@ -11,7 +11,9 @@ package org.opensmartgridplatform.secretmanagement.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.ws.test.server.RequestCreators.withPayload;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Date;
 
 import javax.persistence.EntityManager;
@@ -100,8 +102,16 @@ public class SoapServiceSecretManagementIT {
         final Resource request = new ClassPathResource("test-requests/getSecrets.xml");
         final Resource expectedResponse = new ClassPathResource("test-responses/getSecrets.xml");
         try {
-            this.mockWebServiceClient.sendRequest(withPayload(request)).andExpect(
-                    ResponseMatchers.payload(expectedResponse));
+           this.mockWebServiceClient.sendRequest(withPayload(request)).andExpect(
+                   (request2, response) -> {
+                       OutputStream outStream = new ByteArrayOutputStream();
+                       response.writeTo(outStream);
+                       String outputString = outStream.toString();
+                       assertThat(outputString.contains("<ns2:Result>OK</ns2:Result>")).isTrue();
+                       assertThat(outputString.contains("E_METER_AUTHENTICATION")).isTrue();
+                       assertThat(outputString.contains("E_METER_ENCRYPTION_KEY_UNICAST")).isTrue();
+
+                   });
         } catch (final Exception exc) {
             Assertions.fail("Error", exc);
         }

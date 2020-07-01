@@ -26,6 +26,8 @@ import java.util.Arrays;
 @Slf4j
 public abstract class AbstractEncryptionProvider {
 
+    private static final int BLOCK_SIZE=16;
+
     protected File keyFile;
 
     public abstract EncryptionProviderType getType();
@@ -35,9 +37,7 @@ public abstract class AbstractEncryptionProvider {
 
     protected abstract AlgorithmParameterSpec getAlgorithmParameterSpec();
 
-    protected abstract Key getSecretEncryptionKey(String keyReference);
-
-    protected abstract int getIVLength();
+    protected abstract Key getSecretEncryptionKey(String keyReference, int cipherMode);
 
     public void setKeyFile(File keyFile) {
         this.keyFile = keyFile;
@@ -46,7 +46,7 @@ public abstract class AbstractEncryptionProvider {
     public EncryptedSecret encrypt(Secret secret, String keyReference) {
         try {
             final Cipher cipher = this.getCipher();
-            cipher.init(Cipher.ENCRYPT_MODE, this.getSecretEncryptionKey(keyReference),
+            cipher.init(Cipher.ENCRYPT_MODE, this.getSecretEncryptionKey(keyReference, Cipher.ENCRYPT_MODE),
                     this.getAlgorithmParameterSpec());
             return new EncryptedSecret(this.getType(), cipher.doFinal(secret.getSecret()));
         } catch (Exception e) {
@@ -67,12 +67,12 @@ public abstract class AbstractEncryptionProvider {
 
         try {
             final Cipher cipher = this.getCipher();
-            cipher.init(Cipher.DECRYPT_MODE, this.getSecretEncryptionKey(keyReference),
+            cipher.init(Cipher.DECRYPT_MODE, this.getSecretEncryptionKey(keyReference, Cipher.DECRYPT_MODE),
                     this.getAlgorithmParameterSpec());
             final byte[] decryptedData = cipher.doFinal(secret.getSecret());
 
             if (this.checkNullBytesPrepended(decryptedData)) {
-                return new Secret(Arrays.copyOfRange(decryptedData, this.getIVLength(), decryptedData.length));
+                return new Secret(Arrays.copyOfRange(decryptedData, BLOCK_SIZE, decryptedData.length));
             } else {
                 return new Secret(decryptedData);
             }
@@ -84,31 +84,14 @@ public abstract class AbstractEncryptionProvider {
         }
     }
 
-    /**
-     * - When aes decrypting data (both Java / bouncy castle and openssl) sometimes 16 0 bytes are prepended.
-     * - Possibly this has to do with padding during encryption
-     * - openssl as well as Java / bouncy castle don't prefix iv bytes when aes encrypting data (seen in junit test
-     * and commandline)
-     * - makeSimulatorKey.sh (device simulator) assumes decrypted data are prepended with 0 bytes, at present this is
-     * correct
-     *
-     * @param bytes
-     *         the array to check
-     *
-     * @return true if the array is prepended with 0 bytes, false otherwise
-     */
     private boolean checkNullBytesPrepended(final byte[] bytes) {
-        int l = this.getIVLength();
-        if (bytes.length > l) {
-            boolean nullBytesPrepended = false;
-            for (short s = 0; s < l; s++) {
-                if (bytes[s] == 0) {
-                    nullBytesPrepended = true;
-                } else {
+        if (bytes.length > BLOCK_SIZE) {
+            for (short s = 0; s < BLOCK_SIZE; s++) {
+                if (bytes[s] != 0) {
                     return false;
                 }
             }
-            return nullBytesPrepended;
+            return true;
         } else {
             return false;
         }

@@ -13,11 +13,13 @@ import org.opensmartgridplatform.secretmanagement.application.services.encryptio
 import org.opensmartgridplatform.secretmanagement.application.services.encryption.providers.EncryptionProvider;
 import org.opensmartgridplatform.secretmanagement.application.services.encryption.providers.HsmEncryptionProvider;
 import org.opensmartgridplatform.secretmanagement.application.services.encryption.providers.JreEncryptionProvider;
+import org.opensmartgridplatform.secretmanagement.application.services.encryption.providers.RsaEncryptionProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,8 +28,11 @@ import java.util.Optional;
 @Configuration
 public class SecurityConfig {
 
-    @Value("${soap.secret.resource}")
-    private Resource soapSecretResource;
+    @Value("${soap.public.key.resource:#{null}}")
+    private Optional<Resource> soapPublicKeyResource;
+
+    @Value("${soap.private.key.resource:#{null}}")
+    private Optional<Resource> soapPrivateKeyResource;
 
     @Value("${database.secret.resource}")
     private Resource databaseSecretResource;
@@ -53,6 +58,16 @@ public class SecurityConfig {
 
             encryptionProviderList.add(jreEncryptionProvider);
 
+            File privateKeyStoreFile = this.soapPrivateKeyResource.isPresent() ?
+                    this.soapPrivateKeyResource.get().getFile() : null;
+            File publicKeyStoreFile = this.soapPublicKeyResource.isPresent() ?
+                    this.soapPublicKeyResource.get().getFile() : null;
+
+            RsaEncryptionProvider rsaEncryptionProvider = new RsaEncryptionProvider(privateKeyStoreFile,
+                    publicKeyStoreFile);
+
+            encryptionProviderList.add(rsaEncryptionProvider);
+
             if (this.hsmKeystoreResource.isPresent()) {
                 HsmEncryptionProvider hsmEncryptionProvider = new HsmEncryptionProvider(
                         this.hsmKeystoreResource.get().getFile());
@@ -63,15 +78,6 @@ public class SecurityConfig {
             return encryptionProviderList.toArray(encryptionProviderArray);
         } catch (IOException e) {
             throw new IllegalStateException("Error creating default encryption providers", e);
-        }
-    }
-
-    @Bean("SoapSecretEncryptionProvider")
-    public EncryptionProvider getSoapSecretEncryptionProvider() {
-        try {
-            return new JreEncryptionProvider(this.soapSecretResource.getFile());
-        } catch (IOException e) {
-            throw new IllegalStateException("Could not instantiate JreEncryptionProvider.", e);
         }
     }
 

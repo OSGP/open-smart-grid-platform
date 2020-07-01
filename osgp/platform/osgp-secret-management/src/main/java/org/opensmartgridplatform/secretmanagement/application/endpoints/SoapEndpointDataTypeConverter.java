@@ -15,9 +15,9 @@ import org.opensmartgridplatform.secretmanagement.application.domain.SecretType;
 import org.opensmartgridplatform.secretmanagement.application.domain.TypedSecret;
 import org.opensmartgridplatform.secretmanagement.application.exception.TechnicalServiceFaultException;
 import org.opensmartgridplatform.secretmanagement.application.services.encryption.EncryptedSecret;
+import org.opensmartgridplatform.secretmanagement.application.services.encryption.EncryptionDelegate;
 import org.opensmartgridplatform.secretmanagement.application.services.encryption.EncryptionProviderType;
 import org.opensmartgridplatform.secretmanagement.application.services.encryption.Secret;
-import org.opensmartgridplatform.secretmanagement.application.services.encryption.providers.EncryptionProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -28,11 +28,11 @@ import java.util.List;
 public class SoapEndpointDataTypeConverter {
 
     private static final String KEY_REFERENCE = "1"; //only one key in use
-    private EncryptionProvider encryptionProvider;
+    private EncryptionDelegate encryptionDelegate;
 
     public SoapEndpointDataTypeConverter(
-            @Qualifier("SoapSecretEncryptionProvider") EncryptionProvider jreEncryptionProvider) {
-        this.encryptionProvider = jreEncryptionProvider;
+            @Qualifier("DefaultEncryptionDelegate") final EncryptionDelegate defaultEncryptionDelegate) {
+        this.encryptionDelegate = defaultEncryptionDelegate;
     }
 
     public List<SecretType> convertToSecretTypes(SecretTypes soapSecretTypes) {
@@ -107,7 +107,7 @@ public class SoapEndpointDataTypeConverter {
         String encodedSecret = typedSecret.getSecret();
         byte[] rawSecret = HexUtils.fromHexString(encodedSecret);
         Secret secret = new Secret(rawSecret);
-        EncryptedSecret encryptedSecret = encryptionProvider.encrypt(secret, KEY_REFERENCE);
+        EncryptedSecret encryptedSecret = encryptionDelegate.encrypt(EncryptionProviderType.RSA, secret, KEY_REFERENCE);
         soapTypedSecret.setSecret(HexUtils.toHexString(encryptedSecret.getSecret()));
 
         SecretType secretType = typedSecret.getSecretType();
@@ -121,8 +121,8 @@ public class SoapEndpointDataTypeConverter {
         TypedSecret typedSecret = new TypedSecret();
 
         byte[] rawEncryptedSecret = HexUtils.fromHexString(soapTypedSecret.getSecret());
-        EncryptedSecret encryptedSecret = new EncryptedSecret(EncryptionProviderType.JRE, rawEncryptedSecret);
-        Secret decryptedSecret = encryptionProvider.decrypt(encryptedSecret, KEY_REFERENCE);
+        EncryptedSecret encryptedSecret = new EncryptedSecret(EncryptionProviderType.RSA, rawEncryptedSecret);
+        Secret decryptedSecret = encryptionDelegate.decrypt(encryptedSecret, KEY_REFERENCE);
 
         typedSecret.setSecret(HexUtils.toHexString(decryptedSecret.getSecret()));
         typedSecret.setSecretType(convertToSecretType(soapTypedSecret.getType()));
