@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.adapter.ws.admin.application.services;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
@@ -319,7 +320,8 @@ public class DeviceManagementService {
     }
 
     public Slice<DeviceLogItem> findDeviceMessages(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, @Min(value = 0) final int pageNumber)
+            @Identification final String deviceIdentification, @Min(value = 0) final int pageNumber,
+            @Identification final String organisationIdentificationFilter, final Date startTime, final Date endTime)
             throws FunctionalException {
 
         LOGGER.debug("findDeviceMessages called with organisation {}, device {} and pagenumber {}",

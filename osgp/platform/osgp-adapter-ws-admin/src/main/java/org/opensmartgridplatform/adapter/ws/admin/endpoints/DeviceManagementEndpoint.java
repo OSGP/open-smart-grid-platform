@@ -222,7 +222,9 @@ public class DeviceManagementEndpoint {
 
         try {
             final Slice<DeviceLogItem> page = this.deviceManagementService.findDeviceMessages(
-                    organisationIdentification, request.getDeviceIdentification(), request.getPage());
+                    organisationIdentification, request.getDeviceIdentification(), request.getPage(),
+                    request.getOrganisationIdentification(), request.getStartTime().toGregorianCalendar().getTime(),
+                    request.getEndTime().toGregorianCalendar().getTime());
 
             // Map to output
             final MessageLogPage logPage = new MessageLogPage();
@@ -335,8 +337,9 @@ public class DeviceManagementEndpoint {
             final List<org.opensmartgridplatform.domain.core.entities.Device> devicesWithoutOwner = this.deviceManagementService
                     .findDevicesWhichHaveNoOwner(organisationIdentification);
 
-            response.getDevices().addAll(this.deviceManagementMapper.mapAsList(devicesWithoutOwner,
-                    org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.Device.class));
+            response.getDevices()
+                    .addAll(this.deviceManagementMapper.mapAsList(devicesWithoutOwner,
+                            org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.Device.class));
         } catch (final ConstraintViolationException e) {
             LOGGER.error("Exception find device with no owner: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_TYPE_WS_ADMIN,
@@ -446,8 +449,9 @@ public class DeviceManagementEndpoint {
         try {
             final List<org.opensmartgridplatform.domain.core.entities.ProtocolInfo> protocolInfos = this.deviceManagementService
                     .getProtocolInfos(organisationIdentification);
-            getProtocolInfosResponse.getProtocolInfos().addAll(this.deviceManagementMapper.mapAsList(protocolInfos,
-                    org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.ProtocolInfo.class));
+            getProtocolInfosResponse.getProtocolInfos()
+                    .addAll(this.deviceManagementMapper.mapAsList(protocolInfos,
+                            org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.ProtocolInfo.class));
         } catch (final ConstraintViolationException e) {
             LOGGER.error(EXCEPTION_OCCURRED, e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_TYPE_WS_ADMIN,
