@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.secretmanagement.application.domain.DbEncryptedSecret;
 import org.opensmartgridplatform.secretmanagement.application.domain.DbEncryptionKeyReference;
 import org.opensmartgridplatform.secretmanagement.application.repository.DbEncryptedSecretRepository;
-import org.opensmartgridplatform.secretmanagement.application.services.encryption.EncryptionProviderType;
+import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
@@ -39,10 +39,10 @@ import org.springframework.ws.test.server.MockWebServiceClient;
 import org.springframework.ws.test.server.ResponseMatchers;
 
 @SpringBootTest
-@Transactional
 @EnableAutoConfiguration(exclude = FlywayAutoConfiguration.class)
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager
+@Transactional
 public class SoapServiceSecretManagementIT {
 
     /**

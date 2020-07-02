@@ -6,11 +6,11 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.secretmanagement.application.services.encryption.providers;
+package org.opensmartgridplatform.shared.security.providers;
 
-import org.opensmartgridplatform.secretmanagement.application.services.encryption.EncryptedSecret;
-import org.opensmartgridplatform.secretmanagement.application.services.encryption.EncryptionProviderType;
-import org.opensmartgridplatform.secretmanagement.application.services.encryption.Secret;
+import org.opensmartgridplatform.shared.security.EncryptedSecret;
+import org.opensmartgridplatform.shared.security.EncryptionProviderType;
+import org.opensmartgridplatform.shared.security.Secret;
 
 public interface EncryptionProvider {
     EncryptedSecret encrypt(Secret secret, String keyReference);

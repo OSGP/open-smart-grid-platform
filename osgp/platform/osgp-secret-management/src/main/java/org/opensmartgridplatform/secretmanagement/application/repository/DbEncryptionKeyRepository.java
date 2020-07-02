@@ -11,7 +11,7 @@ package org.opensmartgridplatform.secretmanagement.application.repository;
 import java.util.Date;
 
 import org.opensmartgridplatform.secretmanagement.application.domain.DbEncryptionKeyReference;
-import org.opensmartgridplatform.secretmanagement.application.services.encryption.EncryptionProviderType;
+import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

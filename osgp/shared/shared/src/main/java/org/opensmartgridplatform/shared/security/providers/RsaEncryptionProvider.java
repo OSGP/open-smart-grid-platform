@@ -1,4 +1,4 @@
-package org.opensmartgridplatform.secretmanagement.application.services.encryption.providers;
+package org.opensmartgridplatform.shared.security.providers;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -11,7 +11,7 @@ import java.security.spec.X509EncodedKeySpec;
 
 import javax.crypto.Cipher;
 
-import org.opensmartgridplatform.secretmanagement.application.services.encryption.EncryptionProviderType;
+import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 
 public class RsaEncryptionProvider extends AbstractEncryptionProvider implements EncryptionProvider {
 

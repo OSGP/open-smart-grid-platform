@@ -6,15 +6,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.secretmanagement.application.services.encryption.providers;
-
-import lombok.extern.slf4j.Slf4j;
-import org.opensmartgridplatform.secretmanagement.application.services.encryption.EncryptedSecret;
-import org.opensmartgridplatform.secretmanagement.application.services.encryption.EncryptionProviderType;
-import org.opensmartgridplatform.secretmanagement.application.services.encryption.Secret;
-
-import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
+package org.opensmartgridplatform.shared.security.providers;
 
 import java.io.File;
 import java.security.Key;
@@ -23,7 +15,13 @@ import java.security.NoSuchProviderException;
 import java.security.spec.AlgorithmParameterSpec;
 import java.util.Arrays;
 
-@Slf4j
+import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
+
+import org.opensmartgridplatform.shared.security.EncryptedSecret;
+import org.opensmartgridplatform.shared.security.EncryptionProviderType;
+import org.opensmartgridplatform.shared.security.Secret;
+
 public abstract class AbstractEncryptionProvider {
 
     private static final int BLOCK_SIZE=16;

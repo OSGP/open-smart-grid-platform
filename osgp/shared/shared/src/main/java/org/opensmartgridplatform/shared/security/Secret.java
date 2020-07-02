@@ -6,20 +6,21 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.secretmanagement.application.services.encryption;
-
-import lombok.Getter;
+package org.opensmartgridplatform.shared.security;
 
 /**
  * Secret class to stores any readable secret as binary data. This can be a password or a key or anything else.
  * There is no encoding/decoding.
  */
-@Getter
 public class Secret {
 
     private final byte[] secret;
 
     public Secret(final byte[] secret) {
         this.secret = secret;
+    }
+
+    public byte[] getSecret() {
+        return secret;
     }
 }

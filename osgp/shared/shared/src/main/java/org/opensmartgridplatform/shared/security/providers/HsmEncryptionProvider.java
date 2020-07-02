@@ -6,13 +6,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.secretmanagement.application.services.encryption.providers;
-
-import org.opensmartgridplatform.secretmanagement.application.services.encryption.EncryptionProviderType;
-
-import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.IvParameterSpec;
+package org.opensmartgridplatform.shared.security.providers;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,6 +19,12 @@ import java.security.NoSuchProviderException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.spec.AlgorithmParameterSpec;
+
+import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.IvParameterSpec;
+
+import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 
 public class HsmEncryptionProvider extends AbstractEncryptionProvider implements EncryptionProvider {
 

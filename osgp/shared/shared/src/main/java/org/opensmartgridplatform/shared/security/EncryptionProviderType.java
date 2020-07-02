@@ -6,7 +6,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.secretmanagement.application.services.encryption;
+package org.opensmartgridplatform.shared.security;
 
 /**
  * Specifies which encryption/decryption provider is to be used.

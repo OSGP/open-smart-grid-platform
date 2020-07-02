@@ -17,8 +17,9 @@ import org.apache.tomcat.util.buf.HexUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.opensmartgridplatform.secretmanagement.application.services.encryption.EncryptedSecret;
-import org.opensmartgridplatform.secretmanagement.application.services.encryption.Secret;
+import org.opensmartgridplatform.shared.security.EncryptedSecret;
+import org.opensmartgridplatform.shared.security.Secret;
+import org.opensmartgridplatform.shared.security.providers.JreEncryptionProvider;
 
 @ExtendWith(MockitoExtension.class)
 public class JreEncryptionProviderTest {

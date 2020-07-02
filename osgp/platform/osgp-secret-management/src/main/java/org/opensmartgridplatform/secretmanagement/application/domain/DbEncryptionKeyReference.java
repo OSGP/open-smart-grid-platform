@@ -21,7 +21,7 @@ import javax.persistence.Table;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.opensmartgridplatform.secretmanagement.application.services.encryption.EncryptionProviderType;
+import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 
 @Entity
 @Table(name = "encryption_key_reference")

@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.secretmanagement.application.domain.DbEncryptedSecret;
 import org.opensmartgridplatform.secretmanagement.application.domain.DbEncryptionKeyReference;
 import org.opensmartgridplatform.secretmanagement.application.domain.SecretType;
-import org.opensmartgridplatform.secretmanagement.application.services.encryption.EncryptionProviderType;
+import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class DbEncryptedSecretRepositoryIT extends AbstractRepositoryIT {

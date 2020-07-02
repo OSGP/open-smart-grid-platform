@@ -6,16 +6,13 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.secretmanagement.application.services.encryption;
-
-import lombok.Getter;
+package org.opensmartgridplatform.shared.security;
 
 /**
  * Secret class to store any binary encrypted secret. The secret can be anything.
  * A secret contains the type of encryption provider that was used to encrypt it.
  * There is no encoding/decoding.
  */
-@Getter
 public class EncryptedSecret {
     private final byte[] secret;
     private final EncryptionProviderType type;
@@ -23,5 +20,13 @@ public class EncryptedSecret {
     public EncryptedSecret(final EncryptionProviderType type, final byte[] secret) {
         this.type = type;
         this.secret = secret;
+    }
+
+    public EncryptionProviderType getType() {
+        return this.type;
+    }
+
+    public byte[] getSecret() {
+        return this.secret;
     }
 }

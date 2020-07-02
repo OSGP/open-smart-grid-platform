@@ -8,22 +8,22 @@
  */
 package org.opensmartgridplatform.secretmanagement.application.config;
 
-import org.opensmartgridplatform.secretmanagement.application.services.encryption.DefaultEncryptionDelegate;
-import org.opensmartgridplatform.secretmanagement.application.services.encryption.EncryptionProviderType;
-import org.opensmartgridplatform.secretmanagement.application.services.encryption.providers.EncryptionProvider;
-import org.opensmartgridplatform.secretmanagement.application.services.encryption.providers.HsmEncryptionProvider;
-import org.opensmartgridplatform.secretmanagement.application.services.encryption.providers.JreEncryptionProvider;
-import org.opensmartgridplatform.secretmanagement.application.services.encryption.providers.RsaEncryptionProvider;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.Resource;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import org.opensmartgridplatform.shared.security.DefaultEncryptionDelegate;
+import org.opensmartgridplatform.shared.security.EncryptionProviderType;
+import org.opensmartgridplatform.shared.security.providers.EncryptionProvider;
+import org.opensmartgridplatform.shared.security.providers.HsmEncryptionProvider;
+import org.opensmartgridplatform.shared.security.providers.JreEncryptionProvider;
+import org.opensmartgridplatform.shared.security.providers.RsaEncryptionProvider;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.Resource;
 
 @Configuration
 public class SecurityConfig {

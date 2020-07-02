@@ -14,10 +14,10 @@ import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.Typ
 import org.opensmartgridplatform.secretmanagement.application.domain.SecretType;
 import org.opensmartgridplatform.secretmanagement.application.domain.TypedSecret;
 import org.opensmartgridplatform.secretmanagement.application.exception.TechnicalServiceFaultException;
-import org.opensmartgridplatform.secretmanagement.application.services.encryption.EncryptedSecret;
-import org.opensmartgridplatform.secretmanagement.application.services.encryption.EncryptionDelegate;
-import org.opensmartgridplatform.secretmanagement.application.services.encryption.EncryptionProviderType;
-import org.opensmartgridplatform.secretmanagement.application.services.encryption.Secret;
+import org.opensmartgridplatform.shared.security.EncryptedSecret;
+import org.opensmartgridplatform.shared.security.EncryptionDelegate;
+import org.opensmartgridplatform.shared.security.EncryptionProviderType;
+import org.opensmartgridplatform.shared.security.Secret;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 

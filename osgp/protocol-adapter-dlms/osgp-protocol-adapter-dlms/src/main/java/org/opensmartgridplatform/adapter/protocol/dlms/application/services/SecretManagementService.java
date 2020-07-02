@@ -1,5 +1,8 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.NotImplementedException;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.wsclient.SecretManagementClient;
@@ -16,12 +19,8 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.security.EncryptionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service(value = "secretManagementService")
 @Transactional

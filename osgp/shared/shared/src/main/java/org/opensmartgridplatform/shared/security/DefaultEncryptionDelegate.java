@@ -6,13 +6,13 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.secretmanagement.application.services.encryption;
+package org.opensmartgridplatform.shared.security;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import org.opensmartgridplatform.secretmanagement.application.services.encryption.providers.EncryptionProvider;
+import org.opensmartgridplatform.shared.security.providers.EncryptionProvider;
 import org.springframework.stereotype.Component;
 
 /**
