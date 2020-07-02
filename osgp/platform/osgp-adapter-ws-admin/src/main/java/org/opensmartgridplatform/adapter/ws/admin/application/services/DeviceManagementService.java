@@ -15,6 +15,7 @@ import javax.persistence.PersistenceException;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.opensmartgridplatform.adapter.ws.admin.infra.jms.AdminRequestMessage;
 import org.opensmartgridplatform.adapter.ws.admin.infra.jms.AdminRequestMessageSender;
@@ -321,7 +322,7 @@ public class DeviceManagementService {
 
     public Slice<DeviceLogItem> findDeviceMessages(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Min(value = 0) final int pageNumber,
-            @Identification final String organisationIdentificationFilter, final Date startTime, final Date endTime)
+            @Identification final String organisationIdentificationFilter, final XMLGregorianCalendar startTime, final XMLGregorianCalendar endTime)
             throws FunctionalException {
 
         LOGGER.debug("findDeviceMessages called with organisation {}, device {} and pagenumber {}",

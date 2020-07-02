@@ -223,8 +223,8 @@ public class DeviceManagementEndpoint {
         try {
             final Slice<DeviceLogItem> page = this.deviceManagementService.findDeviceMessages(
                     organisationIdentification, request.getDeviceIdentification(), request.getPage(),
-                    request.getOrganisationIdentification(), request.getStartTime().toGregorianCalendar().getTime(),
-                    request.getEndTime().toGregorianCalendar().getTime());
+                    request.getOrganisationIdentification(), request.getStartTime(),
+                    request.getEndTime());
 
             // Map to output
             final MessageLogPage logPage = new MessageLogPage();
