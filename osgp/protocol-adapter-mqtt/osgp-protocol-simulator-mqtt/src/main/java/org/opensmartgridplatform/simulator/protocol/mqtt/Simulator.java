@@ -27,8 +27,9 @@ public class Simulator {
 
     public static void main(final String[] args) throws IOException {
         final String spec = getFirstArgOrNull(args);
+        final boolean startClient = getSecondArgOrTrue(args);
         final Simulator app = new Simulator();
-        app.run(spec);
+        app.run(spec, startClient);
     }
 
     private static String getFirstArgOrNull(final String[] args) {
@@ -39,8 +40,15 @@ public class Simulator {
         return result;
     }
 
-    public void run(final String specJsonPath) throws IOException {
-        this.run(this.getSimulatorSpec(specJsonPath), true);
+    private static boolean getSecondArgOrTrue(final String[] args) {
+        if (args.length < 2) {
+            return true;
+        }
+        return Boolean.parseBoolean(args[1]);
+    }
+
+    public void run(final String specJsonPath, final boolean startClient) throws IOException {
+        this.run(this.getSimulatorSpec(specJsonPath), startClient);
     }
 
     public void run(final SimulatorSpec simulatorSpec, final boolean startClient) throws IOException {
@@ -50,10 +58,11 @@ public class Simulator {
             Thread.sleep(simulatorSpec.getStartupPauseMillis());
         } catch (final InterruptedException e) {
             LOG.warn("Interrupted sleep", e);
+            Thread.currentThread().interrupt();
         }
         if (startClient) {
-            final LnaClient lnaClient = new LnaClient(simulatorSpec);
-            lnaClient.start();
+            final SimulatorSpecPublishingClient publishingClient = new SimulatorSpecPublishingClient(simulatorSpec);
+            publishingClient.start();
         }
     }
 

@@ -17,5 +17,6 @@ public class PlatformDistributionAutomationKeys {
     public static final String INFORMATION_OBJECT_ADDRESS = "InformationObjectAddress";
     public static final String INFORMATION_OBJECT_TYPE = "InformationObjectType";
     public static final String INFORMATION_ELEMENT_VALUE = "InformationElementValue";
+    public static final String PAYLOAD = "payload";
 
 }

@@ -10,7 +10,8 @@ package org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.
 import java.io.IOException;
 import java.util.Map;
 
-import org.opensmartgridplatform.simulator.protocol.mqtt.LnaClient;
+import org.opensmartgridplatform.cucumber.platform.distributionautomation.PlatformDistributionAutomationKeys;
+import org.opensmartgridplatform.simulator.protocol.mqtt.SimulatorSpecPublishingClient;
 import org.opensmartgridplatform.simulator.protocol.mqtt.Simulator;
 import org.opensmartgridplatform.simulator.protocol.mqtt.spec.Message;
 import org.opensmartgridplatform.simulator.protocol.mqtt.spec.SimulatorSpec;
@@ -18,22 +19,24 @@ import org.opensmartgridplatform.simulator.protocol.mqtt.spec.SimulatorSpec;
 import io.cucumber.java.en.When;
 
 public class MqttDeviceSteps {
-    @When("the mqtt device sends a measurement report")
-    public void theDeviceSendsAMeasurementReport(final Map<String, String> parameters) throws IOException {
+
+    @When("MQTT device {string} sends a measurement report")
+    public void theDeviceSendsAMeasurementReport(final String deviceIdentification,
+            final Map<String, String> parameters) throws IOException {
 
         final String host = "0.0.0.0";
         final int port = 8883;
-        final String topic = "topic";
+        final String topic = deviceIdentification + "/measurement";
 
         final SimulatorSpec spec = new SimulatorSpec(host, port);
         spec.setStartupPauseMillis(2000);
-        final Message message = new Message(topic, parameters.get("payload"), 10000);
+        final Message message = new Message(topic, parameters.get(PlatformDistributionAutomationKeys.PAYLOAD), 10000);
         final Message[] messages = { message };
         spec.setMessages(messages);
         final Simulator simulator = new Simulator();
         simulator.run(spec, false);
-        final LnaClient lnaClient = new LnaClient(spec);
-        lnaClient.run();
+        final SimulatorSpecPublishingClient publishingClient = new SimulatorSpecPublishingClient(spec);
+        publishingClient.run();
 
     }
 }
