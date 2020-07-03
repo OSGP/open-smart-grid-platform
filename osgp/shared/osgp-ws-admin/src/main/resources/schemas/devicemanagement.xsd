@@ -74,10 +74,10 @@
       <xsd:sequence>
         <xsd:element minOccurs="0" name="DeviceIdentification"
           type="common:Identification" />
-        <xsd:element name="Page" type="xsd:int" />
         <xsd:element minOccurs="0" name="OrganisationIdentification" type="common:Identification" />
         <xsd:element minOccurs="0" name="StartTime" type="xsd:dateTime" />
         <xsd:element minOccurs="0" name="EndTime" type="xsd:dateTime" />
+		<xsd:element name="Page" type="xsd:int" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
