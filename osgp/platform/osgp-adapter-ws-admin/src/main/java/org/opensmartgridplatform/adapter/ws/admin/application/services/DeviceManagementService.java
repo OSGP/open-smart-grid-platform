@@ -322,7 +322,7 @@ public class DeviceManagementService {
 
     public Slice<DeviceLogItem> findDeviceMessages(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Min(value = 0) final int pageNumber,
-            @Identification final String organisationIdentificationFilter, final XMLGregorianCalendar startTime, final XMLGregorianCalendar endTime)
+            @Identification final String organisationIdentificationFilter, final XMLGregorianCalendar startCalendar, final XMLGregorianCalendar endCalendar)
             throws FunctionalException {
 
         LOGGER.debug("findDeviceMessages called with organisation {}, device {} and pagenumber {}",
@@ -333,12 +333,34 @@ public class DeviceManagementService {
 
         final PageRequest request = PageRequest.of(pageNumber, this.pagingSettings.getMaximumPageSize(),
                 Sort.Direction.DESC, "modificationTime");
+        
+        final boolean devIdEmpty = StringUtils.isEmpty(deviceIdentification);
+        final boolean orgIdEmpty = StringUtils.isEmpty(organisationIdentificationFilter);
+        final boolean startNull = startCalendar == null;
+        final boolean endNull = endCalendar == null;
 
-        if (!StringUtils.isEmpty(deviceIdentification)) {
+        if (!startNull && !endNull) {
+            Date startDate = startCalendar.toGregorianCalendar().getTime();
+            Date endDate = endCalendar.toGregorianCalendar().getTime();
+            
+            if(!devIdEmpty && !orgIdEmpty) {
+                return this.logItemRepository.findByDeviceIdentificationAndOrganisationIdentificationAndCreationTimeBetween(deviceIdentification, organisationIdentificationFilter, startDate, endDate, request);
+            }else if(!devIdEmpty) {
+                return this.logItemRepository.findByDeviceIdentificationAndCreationTimeBetween(deviceIdentification, startDate, endDate, request);
+            }else if(!orgIdEmpty) {
+                return this.logItemRepository.findByOrganisationIdentificationAndCreationTimeBetween(organisationIdentificationFilter, startDate, endDate, request);
+            }else {
+                return this.logItemRepository.findByCreationTimeBetween(startDate, endDate, request);
+            }
+        }else if(!devIdEmpty && !orgIdEmpty) {
+            return this.logItemRepository.findByDeviceIdentificationAndOrganisationIdentification(deviceIdentification, organisationIdentificationFilter, request);
+        }else if(!devIdEmpty) {
             return this.logItemRepository.findByDeviceIdentification(deviceIdentification, request);
-        }
-
-        return this.logItemRepository.findAllBy(request);
+        }else if(!orgIdEmpty) {
+            return this.logItemRepository.findByOrganisationIdentification(organisationIdentificationFilter, request);
+        }else{
+            return this.logItemRepository.findAllBy(request);
+        }        
     }
 
     // === REMOVE DEVICE ===

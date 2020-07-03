@@ -18,8 +18,20 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DeviceLogItemSlicingRepository extends JpaRepository<DeviceLogItem, Long> {
     Slice<DeviceLogItem> findByDeviceIdentification(String deviceIdentification, Pageable pagable);
-
+    
+    Slice<DeviceLogItem> findByDeviceIdentificationAndOrganisationIdentification(String deviceIdentification, String organisationIdentification, Pageable pagable);
+    
+    Slice<DeviceLogItem> findByDeviceIdentificationAndCreationTimeBetween(String deviceIdentification, Date startDate, Date endDate, Pageable pagable);
+    
+    Slice<DeviceLogItem> findByOrganisationIdentification(String organisationIdentification, Pageable pagable);
+    
+    Slice<DeviceLogItem> findByOrganisationIdentificationAndCreationTimeBetween(String organisationIdentification, Date startDate, Date endDate, Pageable pagable);
+    
+    Slice<DeviceLogItem> findByDeviceIdentificationAndOrganisationIdentificationAndCreationTimeBetween(String deviceIdentification, String organisationIdentification, Date startDate, Date endDate, Pageable pagable);
+    
     Slice<DeviceLogItem> findAllBy(Pageable pageable);
 
     Slice<DeviceLogItem> findByCreationTimeBefore(Date date, Pageable pageable);
+    
+    Slice<DeviceLogItem> findByCreationTimeBetween(Date startDate, Date endDate, Pageable pageable);
 }
