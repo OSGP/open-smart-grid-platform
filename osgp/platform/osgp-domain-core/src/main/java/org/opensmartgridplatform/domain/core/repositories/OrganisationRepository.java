@@ -9,19 +9,20 @@ package org.opensmartgridplatform.domain.core.repositories;
 
 import java.util.List;
 
+import org.opensmartgridplatform.domain.core.entities.Organisation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
-import org.opensmartgridplatform.domain.core.entities.Organisation;
 
 /**
  * Organization repository interface
  */
 @Repository
 public interface OrganisationRepository extends JpaRepository<Organisation, Long> {
-	Organisation findByOrganisationIdentification(String organisationIdentification);
+    Organisation findByOrganisationIdentification(String organisationIdentification);
 
-	Organisation findByName(String name);
+    Organisation findByName(String name);
 
-	List<Organisation> findByEnabled(boolean enabled);
+    List<Organisation> findByOrderByOrganisationIdentification();
+
+    List<Organisation> findByEnabled(boolean enabled);
 }
