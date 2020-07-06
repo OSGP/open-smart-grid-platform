@@ -76,7 +76,7 @@ Feature: Filter DeviceLogItem
   Scenario Outline: Filter DeviceLogItem on start or end date
     When receiving a filter message log request
       | <TimeFilter> | <Time> |
-    Then the messages response contains <Amount> correct messages
+    Then the messages response contains <Amount> correct messages with date filter
 
     Examples: 
       | TimeFilter        | Time         | Amount |

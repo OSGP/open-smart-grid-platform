@@ -56,13 +56,10 @@ public class FilterMessageLogsSteps {
         ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.client.findMessageLogs(request));
     }
 
-    @Then("^the messages response contains (\\d++) correct messages$")
-    public void theGetMessageLogDevIdIsSuccesfull(final int amount, final Map<String, String> requestParameters)
+    @Then("^the messages response contains (\\d+) correct messages$")
+    public void theGetMessageLogsFilterSuccesful(final int amount, final Map<String, String> requestParameters)
             throws Throwable {
-        Object response = ScenarioContext.current().get(PlatformCommonKeys.RESPONSE);
-        assertThat(response instanceof FindMessageLogsResponse).isTrue();
-        FindMessageLogsResponse messageResponse = (FindMessageLogsResponse) response;
-        List<MessageLog> messageLogs = messageResponse.getMessageLogPage().getMessageLogs();
+        List<MessageLog> messageLogs = getMessageLogs();
         assertThat(messageLogs.size() == amount);
         for (MessageLog log : messageLogs) {
             if (requestParameters.containsKey(PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION)) {
@@ -74,6 +71,19 @@ public class FilterMessageLogsSteps {
                         .isEqualTo(requestParameters.get(PlatformCommonKeys.KEY_ORGANIZATION_IDENTIFICATION));
             }
         }
+    }
+
+    @Then("^the messages response contains (\\d+) correct messages with date filter$")
+    public void theGetMessageLogsDateFilterSuccessFul(final int amount) throws Throwable {
+        List<MessageLog> messageLogs = getMessageLogs();
+        assertThat(messageLogs.size() == amount);
+    }
+
+    private List<MessageLog> getMessageLogs() {
+        Object response = ScenarioContext.current().get(PlatformCommonKeys.RESPONSE);
+        assertThat(response instanceof FindMessageLogsResponse).isTrue();
+        FindMessageLogsResponse messageResponse = (FindMessageLogsResponse) response;
+        return messageResponse.getMessageLogPage().getMessageLogs();
     }
 
 }
