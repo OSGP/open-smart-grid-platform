@@ -11,7 +11,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.ws.publiclighting.application.mapping.AdHocManagementMapper;
-import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.Device;
+import org.opensmartgridplatform.domain.core.entities.Device;
+import org.opensmartgridplatform.domain.core.entities.Ssld;
 import org.opensmartgridplatform.domain.core.valueobjects.Address;
 import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
 
@@ -29,8 +30,7 @@ class DeviceMappingTest {
 
     @Test
     void testConvertToCore() {
-        final org.opensmartgridplatform.domain.core.entities.Device device = mapper.map(this.adhocManagementDevice(),
-                org.opensmartgridplatform.domain.core.entities.Device.class);
+        final Device device = mapper.map(this.adhocManagementDevice(), Device.class);
 
         assertThat(device).usingRecursiveComparison()
                 .ignoringFields("creationTime", "modificationTime")
@@ -39,7 +39,8 @@ class DeviceMappingTest {
 
     @Test
     void testConvertToAdHocMananagement() {
-        final Device device = mapper.map(this.coreDevice(),
+        final org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.Device device = mapper.map(
+                this.coreDevice(),
                 org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.Device.class);
 
         assertThat(device).usingRecursiveComparison()
@@ -47,8 +48,18 @@ class DeviceMappingTest {
                 .isEqualTo(this.adhocManagementDevice());
     }
 
-    private Device adhocManagementDevice() {
-        final Device device = new Device();
+    @Test
+    void testConvertSsldToAdHocMananagement() {
+        final org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.Device device = mapper.map(
+                this.ssld(), org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.Device.class);
+
+        assertThat(device).usingRecursiveComparison()
+                .ignoringFields("deviceUid")
+                .isEqualTo(this.adhocManagementDevice());
+    }
+
+    private org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.Device adhocManagementDevice() {
+        final org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.Device device = new org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.Device();
         device.setDeviceIdentification(DEVICE_IDENTIFICATION);
         device.setContainerPostalCode(CONTAINER_POSTAL_CODE);
         device.setContainerCity(CONTAINER_CITY);
@@ -62,14 +73,23 @@ class DeviceMappingTest {
         return device;
     }
 
-    private org.opensmartgridplatform.domain.core.entities.Device coreDevice() {
-        final Address containerAddress = new Address(CONTAINER_CITY, CONTAINER_POSTAL_CODE, CONTAINER_STREET,
-                CONTAINER_NUMBER, "", "");
-        final GpsCoordinates gpsCoordinates = new GpsCoordinates(GPS_LATITUDE, GPS_LONGITUDE);
-
-        final org.opensmartgridplatform.domain.core.entities.Device device = new org.opensmartgridplatform.domain.core.entities.Device(
-                DEVICE_IDENTIFICATION, "", containerAddress, gpsCoordinates, null);
+    private Device coreDevice() {
+        final Device device = new Device(DEVICE_IDENTIFICATION, "", this.address(), this.gpsCoordinates(), null);
         device.updateRegistrationData(null, DEVICE_TYPE);
         return device;
+    }
+
+    private GpsCoordinates gpsCoordinates() {
+        return new GpsCoordinates(GPS_LATITUDE, GPS_LONGITUDE);
+    }
+
+    private Address address() {
+        return new Address(CONTAINER_CITY, CONTAINER_POSTAL_CODE, CONTAINER_STREET, CONTAINER_NUMBER, "", "");
+    }
+
+    private Ssld ssld() {
+        final Ssld ssld = new Ssld(DEVICE_IDENTIFICATION, "", this.address(), this.gpsCoordinates(), null);
+        ssld.updateRegistrationData(null, DEVICE_TYPE);
+        return ssld;
     }
 }

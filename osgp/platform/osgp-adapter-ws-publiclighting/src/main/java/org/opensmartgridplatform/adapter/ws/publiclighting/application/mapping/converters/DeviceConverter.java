@@ -29,13 +29,17 @@ public class DeviceConverter
         device.setDeviceUid(Base64.encodeBase64String(deviceIdentification.getBytes(StandardCharsets.US_ASCII)));
         device.setDeviceIdentification(deviceIdentification);
         final Address containerAddress = source.getContainerAddress();
-        device.setContainerPostalCode(containerAddress.getPostalCode());
-        device.setContainerCity(containerAddress.getCity());
-        device.setContainerStreet(containerAddress.getStreet());
-        device.setContainerNumber(containerAddress.getNumber().toString());
+        if (containerAddress != null) {
+            device.setContainerPostalCode(containerAddress.getPostalCode());
+            device.setContainerCity(containerAddress.getCity());
+            device.setContainerStreet(containerAddress.getStreet());
+            device.setContainerNumber(containerAddress.getNumber().toString());
+        }
         final GpsCoordinates gpsCoordinates = source.getGpsCoordinates();
-        device.setGpsLatitude(gpsCoordinates.getLatitude());
-        device.setGpsLongitude(gpsCoordinates.getLongitude());
+        if (gpsCoordinates != null) {
+            device.setGpsLatitude(gpsCoordinates.getLatitude());
+            device.setGpsLongitude(gpsCoordinates.getLongitude());
+        }
         device.setDeviceType(source.getDeviceType());
         device.setActivated(source.isActivated());
 
@@ -55,6 +59,12 @@ public class DeviceConverter
                 deviceIdentification, "", containerAddress, gpsCoordinates, null);
         device.updateRegistrationData(null, source.getDeviceType());
         return device;
+    }
+
+    @Override
+    public boolean canConvert(final Type<?> sourceType, final Type<?> destinationType) {
+        return super.canConvert(sourceType, destinationType)
+                || super.canConvert(sourceType.getSuperType(), destinationType);
     }
 
 }
