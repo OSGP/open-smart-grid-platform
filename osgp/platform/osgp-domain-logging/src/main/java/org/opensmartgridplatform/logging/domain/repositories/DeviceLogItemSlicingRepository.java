@@ -29,9 +29,23 @@ public interface DeviceLogItemSlicingRepository extends JpaRepository<DeviceLogI
     
     Slice<DeviceLogItem> findByDeviceIdentificationAndOrganisationIdentificationAndCreationTimeBetween(String deviceIdentification, String organisationIdentification, Date startDate, Date endDate, Pageable pagable);
     
-    Slice<DeviceLogItem> findAllBy(Pageable pageable);
+    Slice<DeviceLogItem> findByDeviceIdentificationAndOrganisationIdentificationAndCreationTimeAfter(String deviceIdentification, String organisationIdentification, Date startDate, Pageable pageable);
+    
+    Slice<DeviceLogItem> findByDeviceIdentificationAndOrganisationIdentificationAndCreationTimeBefore(String deviceIdentification, String organisationIdentification, Date endDate, Pageable pageable);
+    
+    Slice<DeviceLogItem> findByDeviceIdentificationAndCreationTimeAfter(String deviceIdentification, Date startDate, Pageable pagable);
+    
+    Slice<DeviceLogItem> findByDeviceIdentificationAndCreationTimeBefore(String deviceIdentification, Date endDate, Pageable pagable);
+    
+    Slice<DeviceLogItem> findByOrganisationIdentificationAndCreationTimeAfter(String organisationIdentification, Date startDate, Pageable pagable);
+    
+    Slice<DeviceLogItem> findByOrganisationIdentificationAndCreationTimeBefore(String organisationIdentification, Date endDate, Pageable pagable);
 
-    Slice<DeviceLogItem> findByCreationTimeBefore(Date date, Pageable pageable);
+    Slice<DeviceLogItem> findByCreationTimeAfter(Date startDate, Pageable pageable);
+    
+    Slice<DeviceLogItem> findByCreationTimeBefore(Date endDate, Pageable pageable);
     
     Slice<DeviceLogItem> findByCreationTimeBetween(Date startDate, Date endDate, Pageable pageable);
+    
+    Slice<DeviceLogItem> findAllBy(Pageable pageable);
 }
