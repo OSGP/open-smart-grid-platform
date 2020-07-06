@@ -56,7 +56,7 @@ public class FilterMessageLogsSteps {
         ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.client.findMessageLogs(request));
     }
 
-    @Then("^the messages response contains (\\d+) correct messages$")
+    @Then("the messages response contains {int} correct messages")
     public void theGetMessageLogsFilterSuccesful(final int amount, final Map<String, String> requestParameters)
             throws Throwable {
         List<MessageLog> messageLogs = getMessageLogs();
@@ -73,7 +73,7 @@ public class FilterMessageLogsSteps {
         }
     }
 
-    @Then("^the messages response contains (\\d+) correct messages with date filter$")
+    @Then("the messages response contains {int} correct messages with date filter")
     public void theGetMessageLogsDateFilterSuccessFul(final int amount) throws Throwable {
         List<MessageLog> messageLogs = getMessageLogs();
         assertThat(messageLogs.size() == amount);
