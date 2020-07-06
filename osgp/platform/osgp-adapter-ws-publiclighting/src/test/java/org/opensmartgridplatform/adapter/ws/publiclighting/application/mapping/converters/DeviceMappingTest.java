@@ -74,7 +74,7 @@ class DeviceMappingTest {
     }
 
     private Device coreDevice() {
-        final Device device = new Device(DEVICE_IDENTIFICATION, "", this.address(), this.gpsCoordinates(), null);
+        final Device device = new Device(DEVICE_IDENTIFICATION, null, this.address(), this.gpsCoordinates(), null);
         device.updateRegistrationData(null, DEVICE_TYPE);
         return device;
     }
@@ -84,11 +84,11 @@ class DeviceMappingTest {
     }
 
     private Address address() {
-        return new Address(CONTAINER_CITY, CONTAINER_POSTAL_CODE, CONTAINER_STREET, CONTAINER_NUMBER, "", "");
+        return new Address(CONTAINER_CITY, CONTAINER_POSTAL_CODE, CONTAINER_STREET, CONTAINER_NUMBER, null, null);
     }
 
     private Ssld ssld() {
-        final Ssld ssld = new Ssld(DEVICE_IDENTIFICATION, "", this.address(), this.gpsCoordinates(), null);
+        final Ssld ssld = new Ssld(DEVICE_IDENTIFICATION, null, this.address(), this.gpsCoordinates(), null);
         ssld.updateRegistrationData(null, DEVICE_TYPE);
         return ssld;
     }

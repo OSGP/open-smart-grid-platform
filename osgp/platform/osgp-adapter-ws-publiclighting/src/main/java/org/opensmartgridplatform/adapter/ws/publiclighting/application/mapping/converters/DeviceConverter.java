@@ -53,10 +53,10 @@ public class DeviceConverter
 
         final String deviceIdentification = source.getDeviceIdentification();
         final Address containerAddress = new Address(source.getContainerCity(), source.getContainerPostalCode(),
-                source.getContainerStreet(), Integer.valueOf(source.getContainerNumber()), "", "");
+                source.getContainerStreet(), Integer.valueOf(source.getContainerNumber()), null, null);
         final GpsCoordinates gpsCoordinates = new GpsCoordinates(source.getGpsLatitude(), source.getGpsLongitude());
         final org.opensmartgridplatform.domain.core.entities.Device device = new org.opensmartgridplatform.domain.core.entities.Device(
-                deviceIdentification, "", containerAddress, gpsCoordinates, null);
+                deviceIdentification, null, containerAddress, gpsCoordinates, null);
         device.updateRegistrationData(null, source.getDeviceType());
         return device;
     }
