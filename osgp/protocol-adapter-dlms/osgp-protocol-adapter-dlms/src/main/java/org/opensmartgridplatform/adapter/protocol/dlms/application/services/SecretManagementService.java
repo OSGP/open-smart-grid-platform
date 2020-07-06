@@ -16,7 +16,10 @@ import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.Sec
 import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.TypedSecret;
 import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.TypedSecrets;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
-import org.opensmartgridplatform.shared.security.EncryptionService;
+import org.opensmartgridplatform.shared.security.EncryptedSecret;
+import org.opensmartgridplatform.shared.security.EncryptionProviderType;
+import org.opensmartgridplatform.shared.security.Secret;
+import org.opensmartgridplatform.shared.security.providers.RsaEncryptionProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -27,12 +30,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class SecretManagementService implements SecurityKeyService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SecretManagementService.class);
-    private EncryptionService soapSecretEncryptionService;
+    private RsaEncryptionProvider rsaEncryptionProvider;
     private SecretManagementClient secretManagementClient;
 
-    public SecretManagementService(EncryptionService soapSecretEncryptionService, SecretManagementClient secretManagementClient)
+    public SecretManagementService(RsaEncryptionProvider rsaEncryptionProvider, SecretManagementClient secretManagementClient)
     {
-        this.soapSecretEncryptionService = soapSecretEncryptionService;
+        this.rsaEncryptionProvider = rsaEncryptionProvider;
         this.secretManagementClient = secretManagementClient;
     }
 
@@ -148,8 +151,11 @@ public class SecretManagementService implements SecurityKeyService {
 
     private byte[] decryptSoapSecret(String deviceIdentification, TypedSecret typedSecret) {
         try {
-            byte[] encryptedSoapSecret = Hex.decodeHex(typedSecret.getSecret());
-            return soapSecretEncryptionService.decrypt(encryptedSoapSecret);
+            byte[] encryptedDecodedSoapSecret = Hex.decodeHex(typedSecret.getSecret());
+            EncryptedSecret encryptedSoapSecret = new EncryptedSecret(EncryptionProviderType.RSA,
+                    encryptedDecodedSoapSecret);
+            Secret decryptedSecret = rsaEncryptionProvider.decrypt(encryptedSoapSecret, "1");
+            return decryptedSecret.getSecret();
         } catch (Exception e) {
             throw new IllegalStateException("Decrypting key for device: " + deviceIdentification, e);
         }

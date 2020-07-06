@@ -1,5 +1,9 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.application.config;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.opensmartgridplatform.shared.security.providers.RsaEncryptionProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,6 +40,9 @@ public class SoapClientConfig {
 
     @Value("${soapclient.ssl.key-password}")
     private String keyPassword;
+
+    @Value("${encryption.soap.rsa.private.key.resource}")
+    private Resource soapRsaPrivateKeyResource;
 
     @Bean
     Jaxb2Marshaller soapClientJaxb2Marshaller() {
@@ -104,5 +111,16 @@ public class SoapClientConfig {
         keyManagersFactoryBean.setPassword(keyPassword);
 
         return keyManagersFactoryBean;
+    }
+
+    @Bean
+    public RsaEncryptionProvider rsaEncryptionProvider() {
+        try {
+            File privateRsaKeyFile = this.soapRsaPrivateKeyResource.getFile();
+            return new RsaEncryptionProvider(privateRsaKeyFile, null);
+        }
+        catch(IOException e) {
+            throw new IllegalStateException("Could not initialize RsaEncryptionProvider");
+        }
     }
 }
