@@ -11,6 +11,7 @@ import java.security.spec.X509EncodedKeySpec;
 
 import javax.crypto.Cipher;
 
+import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 
 public class RsaEncryptionProvider extends AbstractEncryptionProvider implements EncryptionProvider {
@@ -37,7 +38,8 @@ public class RsaEncryptionProvider extends AbstractEncryptionProvider implements
                 publicKey = keyFactory.generatePublic(publicKeySpec);
             }
         } catch (Exception e) {
-            throw new IllegalStateException("Something went wrong during construction of RsaEncryptionProvider", e);
+            throw new EncrypterException("Something went wrong during construction of "
+                    + "RsaEncryptionProvider", e);
         }
     }
 
@@ -48,16 +50,16 @@ public class RsaEncryptionProvider extends AbstractEncryptionProvider implements
     protected Key getSecretEncryptionKey(String key, int cipherMode) {
         if (cipherMode == Cipher.ENCRYPT_MODE) {
             if (publicKey == null) {
-                throw new IllegalStateException("Cannot RSA encrypt because no public key is defined.");
+                throw new EncrypterException("Cannot RSA encrypt because no public key is defined.");
             }
             return publicKey;
         } else if (cipherMode == Cipher.DECRYPT_MODE) {
             if (privateKey == null) {
-                throw new IllegalStateException("Cannot RSA encrypt because no private key is defined.");
+                throw new EncrypterException("Cannot RSA encrypt because no private key is defined.");
             }
             return privateKey;
         }
-        throw new IllegalStateException("Invalid cipher mode specified.");
+        throw new EncrypterException("Invalid cipher mode specified.");
     }
 
     protected AlgorithmParameterSpec getAlgorithmParameterSpec() {

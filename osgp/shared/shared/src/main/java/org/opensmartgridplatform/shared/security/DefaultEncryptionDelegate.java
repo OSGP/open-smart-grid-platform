@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 import org.opensmartgridplatform.shared.security.providers.EncryptionProvider;
 import org.springframework.stereotype.Component;
 
@@ -33,7 +34,7 @@ public class DefaultEncryptionDelegate implements EncryptionDelegate {
         final Optional<EncryptionProvider> oep = this.providers.stream().filter(
                 ep -> ep.getType().equals(encryptionProviderType)).findFirst();
 
-        return oep.orElseThrow(()->new IllegalStateException("Could not find a provider")).encrypt(secret, keyReference);
+        return oep.orElseThrow(()->new EncrypterException("Could not find a provider")).encrypt(secret, keyReference);
     }
 
     @Override
@@ -41,7 +42,7 @@ public class DefaultEncryptionDelegate implements EncryptionDelegate {
         final EncryptionProviderType encType = secret.getType();
         final Optional<EncryptionProvider> oep = this.providers.stream().filter(ep -> ep.getType().equals(encType)).findFirst();
 
-        return oep.orElseThrow(()->new IllegalStateException("Could not find a provider")).decrypt(secret, keyReference);
+        return oep.orElseThrow(()->new EncrypterException("Could not find a provider")).decrypt(secret, keyReference);
     }
 }
 

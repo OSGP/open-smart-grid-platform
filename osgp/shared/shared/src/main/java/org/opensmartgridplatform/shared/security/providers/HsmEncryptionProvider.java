@@ -24,6 +24,7 @@ import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 
+import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 
 public class HsmEncryptionProvider extends AbstractEncryptionProvider implements EncryptionProvider {
@@ -42,7 +43,7 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider implements
             FileInputStream fIn = new FileInputStream(keyStoreFile);
             this.keyStore.load(fIn, null);
         } catch (CertificateException | NoSuchAlgorithmException | NoSuchProviderException | IOException | KeyStoreException e) {
-            throw new IllegalStateException("Could not read keystore");
+            throw new EncrypterException("Could not read keystore");
         }
     }
 
@@ -60,7 +61,7 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider implements
         try {
             return this.keyStore.getKey(keyReference, null);
         } catch (UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException e) {
-            throw new IllegalStateException("Could not get keystore from key", e);
+            throw new EncrypterException("Could not get keystore from key", e);
         }
     }
 

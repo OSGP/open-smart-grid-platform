@@ -8,26 +8,25 @@
  */
 package org.opensmartgridplatform.secretmanagement.application.endpoints;
 
+import java.util.List;
+
 import lombok.extern.slf4j.Slf4j;
-import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.GetSecretsRequest;
-import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.GetSecretsResponse;
-import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.OsgpResultType;
-import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.StoreSecretsRequest;
-import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.StoreSecretsResponse;
-import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.TechnicalFault;
-import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.TypedSecrets;
+import org.opensmartgridplatform.ws.schema.core.secret.management.GetSecretsRequest;
+import org.opensmartgridplatform.ws.schema.core.secret.management.GetSecretsResponse;
+import org.opensmartgridplatform.ws.schema.core.secret.management.OsgpResultType;
+import org.opensmartgridplatform.ws.schema.core.secret.management.StoreSecretsRequest;
+import org.opensmartgridplatform.ws.schema.core.secret.management.StoreSecretsResponse;
+import org.opensmartgridplatform.ws.schema.core.secret.management.TypedSecrets;
 import org.opensmartgridplatform.secretmanagement.application.domain.SecretType;
 import org.opensmartgridplatform.secretmanagement.application.domain.TypedSecret;
-import org.opensmartgridplatform.secretmanagement.application.exception.TechnicalServiceFaultException;
 import org.opensmartgridplatform.secretmanagement.application.services.SecretManagementService;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
+import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
-
-import java.util.List;
-
-import static org.opensmartgridplatform.secretmanagement.application.config.ApplicationConfig.COMPONENT_NAME;
 
 @Endpoint
 @Slf4j
@@ -47,9 +46,11 @@ public class SecretManagementEndpoint {
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "getSecretsRequest")
     @ResponsePayload
-    public GetSecretsResponse getSecretsRequest(@RequestPayload GetSecretsRequest request) {
+    public GetSecretsResponse getSecretsRequest(@RequestPayload GetSecretsRequest request) throws OsgpException {
 
         log.info("Handling incoming SOAP request 'getSecretsRequest' for device {}", request.getDeviceId());
+
+        log.trace(request.toString());
 
         try {
             GetSecretsResponse response = new GetSecretsResponse();
@@ -63,17 +64,20 @@ public class SecretManagementEndpoint {
             response.setTypedSecrets(soapTypedSecrets);
             response.setResult(OsgpResultType.OK);
 
+            log.trace(response.toString());
+
             return response;
         } catch (Exception e) {
-            throw new TechnicalServiceFaultException(e.getMessage(), e, createTechnicalFaultFromException(e));
+            throw new TechnicalException(ComponentType.SHARED, e.getMessage());
         }
     }
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "storeSecretsRequest")
     @ResponsePayload
-    public StoreSecretsResponse storeSecretsRequest(@RequestPayload StoreSecretsRequest request) throws Exception {
+    public StoreSecretsResponse storeSecretsRequest(@RequestPayload StoreSecretsRequest request) throws OsgpException {
 
         log.info("Handling incoming SOAP request 'storeSecretsRequest' for device {}", request.getDeviceId());
+        log.trace(request.toString());
 
         StoreSecretsResponse response = new StoreSecretsResponse();
 
@@ -84,21 +88,12 @@ public class SecretManagementEndpoint {
 
             response.setResult(OsgpResultType.OK);
 
+            log.trace(response.toString());
+
             return response;
         } catch (Exception e) {
-            throw new TechnicalServiceFaultException(e.getMessage(), e, createTechnicalFaultFromException(e));
+            throw new TechnicalException(ComponentType.SHARED, e.getMessage());
         }
-    }
-
-    private TechnicalFault createTechnicalFaultFromException(Exception e) {
-        TechnicalFault fault = new TechnicalFault();
-        fault.setMessage(e.getMessage());
-        fault.setComponent(COMPONENT_NAME);
-        if (e.getCause() != null) {
-            fault.setInnerException(e.getCause().toString());
-            fault.setInnerMessage(e.getCause().getMessage());
-        }
-        return fault;
     }
 
 }

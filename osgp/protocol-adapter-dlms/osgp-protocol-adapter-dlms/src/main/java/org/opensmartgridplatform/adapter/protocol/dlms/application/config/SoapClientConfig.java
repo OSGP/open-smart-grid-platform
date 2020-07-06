@@ -18,7 +18,7 @@ import org.springframework.ws.transport.http.HttpsUrlConnectionMessageSender;
 @Configuration
 public class SoapClientConfig {
 
-    private static final String XSD_SCHEMA_PACKAGE = "org.opensmartgridplatform.schemas.security.secretmanagement._2020._05";
+    private static final String XSD_SCHEMA_PACKAGE = "org.opensmartgridplatform.ws.schema.core.secret.management";
 
     @Value("${soapclient.use.client.auth:false}")
     private String useClientAuth;

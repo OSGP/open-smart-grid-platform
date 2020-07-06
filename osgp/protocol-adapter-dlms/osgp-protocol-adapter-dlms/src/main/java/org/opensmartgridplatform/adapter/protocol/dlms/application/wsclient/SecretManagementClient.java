@@ -1,10 +1,10 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.application.wsclient;
 
 import org.apache.commons.lang3.NotImplementedException;
-import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.GetSecretsRequest;
-import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.GetSecretsResponse;
-import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.StoreSecretsRequest;
-import org.opensmartgridplatform.schemas.security.secretmanagement._2020._05.StoreSecretsResponse;
+import org.opensmartgridplatform.ws.schema.core.secret.management.GetSecretsRequest;
+import org.opensmartgridplatform.ws.schema.core.secret.management.GetSecretsResponse;
+import org.opensmartgridplatform.ws.schema.core.secret.management.StoreSecretsRequest;
+import org.opensmartgridplatform.ws.schema.core.secret.management.StoreSecretsResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

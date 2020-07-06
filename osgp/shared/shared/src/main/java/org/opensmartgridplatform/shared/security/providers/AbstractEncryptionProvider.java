@@ -18,6 +18,7 @@ import java.util.Arrays;
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 
+import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 import org.opensmartgridplatform.shared.security.EncryptedSecret;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 import org.opensmartgridplatform.shared.security.Secret;
@@ -51,14 +52,14 @@ public abstract class AbstractEncryptionProvider {
             //InvalidKeyException | IllegalBlockSizeException | BadPaddingException |
             // InvalidAlgorithmParameterException |
             //NoSuchPaddingException | NoSuchAlgorithmException | NoSuchProviderException
-            throw new IllegalStateException("Could not encrypt secret with keyReference " + keyReference, e);
+            throw new EncrypterException("Could not encrypt secret with keyReference " + keyReference, e);
         }
     }
 
     public Secret decrypt(EncryptedSecret secret, String keyReference) {
 
         if (secret.getType() != this.getType()) {
-            throw new IllegalStateException(
+            throw new EncrypterException(
                     "EncryptionProvider for type " + this.getType().name() + " cannot decrypt secrets of type "
                             + secret.getType().name());
         }
@@ -78,7 +79,7 @@ public abstract class AbstractEncryptionProvider {
             //InvalidKeyException | IllegalBlockSizeException | BadPaddingException |
             // InvalidAlgorithmParameterException |
             //NoSuchPaddingException | NoSuchAlgorithmException | NoSuchProviderException
-            throw new IllegalStateException("Could not decrypt secret with keyReference " + keyReference, e);
+            throw new EncrypterException("Could not decrypt secret with keyReference " + keyReference, e);
         }
     }
 

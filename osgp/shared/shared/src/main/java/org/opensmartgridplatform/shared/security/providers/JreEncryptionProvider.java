@@ -22,6 +22,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 
+import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 
 public class JreEncryptionProvider extends AbstractEncryptionProvider implements EncryptionProvider {
@@ -44,14 +45,14 @@ public class JreEncryptionProvider extends AbstractEncryptionProvider implements
             super.setKeyFile(keyStoreFile);
             this.key = Files.readAllBytes(Paths.get(keyStoreFile.getAbsolutePath()));
         } catch (IOException e) {
-            throw new IllegalStateException("Could not read keystore");
+            throw new EncrypterException("Could not read keystore");
         }
     }
 
     protected Key getSecretEncryptionKey(String keyReference, int cipherMode) {
 
         if (!keyReference.equals(DEFAULT_SINGLE_KEY_REFERENCE)) {
-            throw new IllegalStateException("Only keyReference '1' is valid in this implementation.");
+            throw new EncrypterException("Only keyReference '1' is valid in this implementation.");
         }
 
         return new SecretKey() {

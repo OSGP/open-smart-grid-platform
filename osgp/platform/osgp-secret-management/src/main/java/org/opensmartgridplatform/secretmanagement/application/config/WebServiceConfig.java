@@ -9,7 +9,7 @@
 package org.opensmartgridplatform.secretmanagement.application.config;
 
 import org.opensmartgridplatform.secretmanagement.application.exception.DetailSoapFaultMappingExceptionResolver;
-import org.opensmartgridplatform.secretmanagement.application.exception.TechnicalServiceFaultException;
+import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -35,7 +35,7 @@ public class WebServiceConfig extends WsConfigurerAdapter {
     public static final String SECRET_MANAGEMENT_URI = "/ws/SecretManagement";
     public static final String SECRET_MANAGEMENT_NS = "http://www.opensmartgridplatform"
             + ".org/schemas/security/secretmanagement/2020/05";
-    public static final String SECRET_MANAGEMENT_SCHEMA_LOC = "schemas/secretmgmt.xsd";
+    public static final String SECRET_MANAGEMENT_SCHEMA_LOC = "schemas/secret-management.xsd";
 
     @Bean
     public ServletRegistrationBean<MessageDispatcherServlet> messageDispatcherServlet(
@@ -78,7 +78,7 @@ public class WebServiceConfig extends WsConfigurerAdapter {
 
         Properties errorMappings = new Properties();
         errorMappings.setProperty(Exception.class.getName(), SoapFaultDefinition.SERVER.toString());
-        errorMappings.setProperty(TechnicalServiceFaultException.class.getName(),
+        errorMappings.setProperty(TechnicalException.class.getName(),
                 SoapFaultDefinition.SERVER.toString());
         exceptionResolver.setExceptionMappings(errorMappings);
         exceptionResolver.setOrder(1);
