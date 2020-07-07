@@ -10,27 +10,30 @@ package org.opensmartgridplatform.secretmanagement.application.endpoints;
 
 import java.util.List;
 
-import lombok.extern.slf4j.Slf4j;
-import org.opensmartgridplatform.ws.schema.core.secret.management.GetSecretsRequest;
-import org.opensmartgridplatform.ws.schema.core.secret.management.GetSecretsResponse;
-import org.opensmartgridplatform.ws.schema.core.secret.management.OsgpResultType;
-import org.opensmartgridplatform.ws.schema.core.secret.management.StoreSecretsRequest;
-import org.opensmartgridplatform.ws.schema.core.secret.management.StoreSecretsResponse;
-import org.opensmartgridplatform.ws.schema.core.secret.management.TypedSecrets;
+import org.opensmartgridplatform.secretmanagement.application.config.SecretManagementInitializer;
 import org.opensmartgridplatform.secretmanagement.application.domain.SecretType;
 import org.opensmartgridplatform.secretmanagement.application.domain.TypedSecret;
 import org.opensmartgridplatform.secretmanagement.application.services.SecretManagementService;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
+import org.opensmartgridplatform.ws.schema.core.secret.management.GetSecretsRequest;
+import org.opensmartgridplatform.ws.schema.core.secret.management.GetSecretsResponse;
+import org.opensmartgridplatform.ws.schema.core.secret.management.OsgpResultType;
+import org.opensmartgridplatform.ws.schema.core.secret.management.StoreSecretsRequest;
+import org.opensmartgridplatform.ws.schema.core.secret.management.StoreSecretsResponse;
+import org.opensmartgridplatform.ws.schema.core.secret.management.TypedSecrets;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 @Endpoint
-@Slf4j
 public class SecretManagementEndpoint {
+
+    Logger logger = LoggerFactory.getLogger(SecretManagementInitializer.class);
 
     private static final String NAMESPACE_URI = "http://www.opensmartgridplatform"
             + ".org/schemas/security/secretmanagement/2020/05";
@@ -48,9 +51,9 @@ public class SecretManagementEndpoint {
     @ResponsePayload
     public GetSecretsResponse getSecretsRequest(@RequestPayload GetSecretsRequest request) throws OsgpException {
 
-        log.info("Handling incoming SOAP request 'getSecretsRequest' for device {}", request.getDeviceId());
+        logger.info("Handling incoming SOAP request 'getSecretsRequest' for device {}", request.getDeviceId());
 
-        log.trace(request.toString());
+        logger.trace(request.toString());
 
         try {
             GetSecretsResponse response = new GetSecretsResponse();
@@ -64,7 +67,7 @@ public class SecretManagementEndpoint {
             response.setTypedSecrets(soapTypedSecrets);
             response.setResult(OsgpResultType.OK);
 
-            log.trace(response.toString());
+            logger.trace(response.toString());
 
             return response;
         } catch (Exception e) {
@@ -76,8 +79,8 @@ public class SecretManagementEndpoint {
     @ResponsePayload
     public StoreSecretsResponse storeSecretsRequest(@RequestPayload StoreSecretsRequest request) throws OsgpException {
 
-        log.info("Handling incoming SOAP request 'storeSecretsRequest' for device {}", request.getDeviceId());
-        log.trace(request.toString());
+        logger.info("Handling incoming SOAP request 'storeSecretsRequest' for device {}", request.getDeviceId());
+        logger.trace(request.toString());
 
         StoreSecretsResponse response = new StoreSecretsResponse();
 
@@ -88,7 +91,7 @@ public class SecretManagementEndpoint {
 
             response.setResult(OsgpResultType.OK);
 
-            log.trace(response.toString());
+            logger.trace(response.toString());
 
             return response;
         } catch (Exception e) {

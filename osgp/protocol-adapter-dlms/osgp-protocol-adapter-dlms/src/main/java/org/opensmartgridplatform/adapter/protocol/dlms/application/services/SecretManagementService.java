@@ -9,17 +9,18 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.wsclient.Secr
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.security.EncryptedSecret;
+import org.opensmartgridplatform.shared.security.EncryptionProviderType;
+import org.opensmartgridplatform.shared.security.Secret;
+import org.opensmartgridplatform.shared.security.providers.RsaEncryptionProvider;
 import org.opensmartgridplatform.ws.schema.core.secret.management.GetSecretsRequest;
 import org.opensmartgridplatform.ws.schema.core.secret.management.GetSecretsResponse;
 import org.opensmartgridplatform.ws.schema.core.secret.management.SecretType;
 import org.opensmartgridplatform.ws.schema.core.secret.management.SecretTypes;
 import org.opensmartgridplatform.ws.schema.core.secret.management.TypedSecret;
 import org.opensmartgridplatform.ws.schema.core.secret.management.TypedSecrets;
-import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
-import org.opensmartgridplatform.shared.security.EncryptedSecret;
-import org.opensmartgridplatform.shared.security.EncryptionProviderType;
-import org.opensmartgridplatform.shared.security.Secret;
-import org.opensmartgridplatform.shared.security.providers.RsaEncryptionProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -60,7 +61,7 @@ public class SecretManagementService implements SecurityKeyService {
     }
 
     @Override
-    public byte[] getDlmsAuthenticationKey(String deviceIdentification) {
+    public byte[] getDlmsAuthenticationKey(String deviceIdentification) throws EncrypterException {
 
         try {
             GetSecretsRequest request = getSoapRequestForKey(deviceIdentification, SecretType.E_METER_AUTHENTICATION_KEY);
@@ -71,9 +72,8 @@ public class SecretManagementService implements SecurityKeyService {
                     optionalTypedSecret.orElseThrow(()->new IllegalStateException("Secret not found:" + deviceIdentification)));
         }
         catch(Exception e) {
-            LOGGER.error("Error while retrieving authentication key", e);
+            throw new EncrypterException("Error while retrieving authentication key", e);
         }
-        return new byte[0];
     }
 
     @Override

@@ -10,10 +10,11 @@ package org.opensmartgridplatform.secretmanagement.application;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.ComponentScan;
 
-@SpringBootApplication
+@SpringBootApplication(exclude = { SecurityAutoConfiguration.class })
 @ComponentScan(basePackages = { "org.opensmartgridplatform.secretmanagement" })
 public class Main extends SpringBootServletInitializer {
     public static void main(final String[] args) {
