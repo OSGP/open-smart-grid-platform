@@ -7,36 +7,55 @@
  */
 package org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.steps;
 
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
+
 import java.io.IOException;
 import java.util.Map;
 
+import org.opensmartgridplatform.adapter.protocol.mqtt.domain.entities.MqttDevice;
+import org.opensmartgridplatform.adapter.protocol.mqtt.domain.repositories.MqttDeviceRepository;
 import org.opensmartgridplatform.cucumber.platform.distributionautomation.PlatformDistributionAutomationKeys;
+import org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.kafka.in.PeakShavingConsumer;
 import org.opensmartgridplatform.simulator.protocol.mqtt.SimulatorSpecPublishingClient;
-import org.opensmartgridplatform.simulator.protocol.mqtt.Simulator;
 import org.opensmartgridplatform.simulator.protocol.mqtt.spec.Message;
 import org.opensmartgridplatform.simulator.protocol.mqtt.spec.SimulatorSpec;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
 public class MqttDeviceSteps {
+
+    @Autowired
+    private MqttDeviceRepository mqttDeviceRepository;
+
+    @Autowired
+    private PeakShavingConsumer consumer;
 
     @When("MQTT device {string} sends a measurement report")
     public void theDeviceSendsAMeasurementReport(final String deviceIdentification,
             final Map<String, String> parameters) throws IOException {
 
-        final String host = "0.0.0.0";
-        final int port = 8883;
-        final String topic = deviceIdentification + "/measurement";
+        final MqttDevice device = this.mqttDeviceRepository.findByDeviceIdentification(deviceIdentification);
+        final String host = device.getHost();
+        final int port = device.getPort();
+        final String topic = device.getTopics();
 
         final SimulatorSpec spec = new SimulatorSpec(host, port);
         spec.setStartupPauseMillis(2000);
-        final Message message = new Message(topic, parameters.get(PlatformDistributionAutomationKeys.PAYLOAD), 10000);
+        final String payload = parameters.get(PlatformDistributionAutomationKeys.PAYLOAD);
+        final Message message = new Message(topic, payload, 10000);
         final Message[] messages = { message };
         spec.setMessages(messages);
-        final Simulator simulator = new Simulator();
-        simulator.run(spec, false);
         final SimulatorSpecPublishingClient publishingClient = new SimulatorSpecPublishingClient(spec);
-        publishingClient.run();
-
+        publishingClient.start();
     }
+
+    @Then("a message is published to Kafka")
+    public void aMessageIsPublishedToKafka(final Map<String, String> parameters) {
+        final String expectedMessage = getString(parameters, PlatformDistributionAutomationKeys.MESSAGE);
+
+        this.consumer.checkKafkaOutput(expectedMessage);
+    }
+
 }

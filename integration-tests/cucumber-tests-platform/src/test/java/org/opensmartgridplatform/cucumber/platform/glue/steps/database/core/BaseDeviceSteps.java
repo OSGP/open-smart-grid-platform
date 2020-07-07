@@ -43,6 +43,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.CdmaSettings;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
+import org.opensmartgridplatform.domain.core.valueobjects.IntegrationType;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class BaseDeviceSteps {
@@ -151,6 +152,9 @@ public abstract class BaseDeviceSteps {
                                         : null));
 
         device.setActivated(getBoolean(settings, PlatformKeys.KEY_ACTIVATED, PlatformDefaults.DEFAULT_ACTIVATED));
+        final String integrationType = getString(settings, PlatformKeys.KEY_INTEGRATION_TYPE,
+                PlatformDefaults.DEFAULT_INTEGRATION_TYPE).toUpperCase();
+        device.setIntegrationType(IntegrationType.valueOf(integrationType));
 
         device = this.deviceRepository.save(device);
 
