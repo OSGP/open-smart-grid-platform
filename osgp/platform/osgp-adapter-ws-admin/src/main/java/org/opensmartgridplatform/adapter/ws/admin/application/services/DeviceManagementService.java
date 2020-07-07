@@ -7,6 +7,11 @@
  */
 package org.opensmartgridplatform.adapter.ws.admin.application.services;
 
+import static org.opensmartgridplatform.adapter.ws.admin.application.services.DeviceLogItemSpecifications.hasDeviceIdentification;
+import static org.opensmartgridplatform.adapter.ws.admin.application.services.DeviceLogItemSpecifications.hasEndDate;
+import static org.opensmartgridplatform.adapter.ws.admin.application.services.DeviceLogItemSpecifications.hasOrganisationIdentification;
+import static org.opensmartgridplatform.adapter.ws.admin.application.services.DeviceLogItemSpecifications.hasStartDate;
+
 import java.util.Date;
 import java.util.List;
 
@@ -62,6 +67,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -333,70 +339,61 @@ public class DeviceManagementService {
 
         final PageRequest request = PageRequest.of(pageNumber, this.pagingSettings.getMaximumPageSize(),
                 Sort.Direction.DESC, "modificationTime");
-        
-        final boolean devIdEmpty = StringUtils.isEmpty(deviceIdentification);
-        final boolean orgIdEmpty = StringUtils.isEmpty(organisationIdentificationFilter);
-        final boolean startNull = startCalendar == null;
-        final boolean endNull = endCalendar == null;
 
-        if (!startNull && !endNull) {
-            Date startDate = startCalendar.toGregorianCalendar().getTime();
-            Date endDate = endCalendar.toGregorianCalendar().getTime();
+        final Specification<DeviceLogItem> specification = this.applyFilter(deviceIdentification,
+                organisationIdentificationFilter, startCalendar, endCalendar);
 
-            if (!devIdEmpty && !orgIdEmpty) {
-                return this.logItemRepository
-                        .findByDeviceIdentificationAndOrganisationIdentificationAndCreationTimeBetween(
-                                deviceIdentification, organisationIdentificationFilter, startDate, endDate, request);
-            } else if (!devIdEmpty) {
-                return this.logItemRepository.findByDeviceIdentificationAndCreationTimeBetween(deviceIdentification,
-                        startDate, endDate, request);
-            } else if (!orgIdEmpty) {
-                return this.logItemRepository.findByOrganisationIdentificationAndCreationTimeBetween(
-                        organisationIdentificationFilter, startDate, endDate, request);
-            } else {
-                return this.logItemRepository.findByCreationTimeBetween(startDate, endDate, request);
-            }
-        } else if (!startNull) {
-            Date startDate = startCalendar.toGregorianCalendar().getTime();
-            if (!devIdEmpty && !orgIdEmpty) {
-                return this.logItemRepository
-                        .findByDeviceIdentificationAndOrganisationIdentificationAndCreationTimeAfter(
-                                deviceIdentification, organisationIdentificationFilter, startDate, request);
-            } else if (!devIdEmpty) {
-                return this.logItemRepository.findByDeviceIdentificationAndCreationTimeAfter(deviceIdentification,
-                        startDate, request);
-            } else if (!orgIdEmpty) {
-                return this.logItemRepository.findByOrganisationIdentificationAndCreationTimeAfter(
-                        organisationIdentificationFilter, startDate, request);
-            } else {
-                return this.logItemRepository.findByCreationTimeAfter(startDate, request);
-            }
-        } else if (!endNull) {
-            Date endDate = endCalendar.toGregorianCalendar().getTime();
-            if (!devIdEmpty && !orgIdEmpty) {
-                return this.logItemRepository
-                        .findByDeviceIdentificationAndOrganisationIdentificationAndCreationTimeBefore(
-                                deviceIdentification, organisationIdentificationFilter, endDate, request);
-            } else if (!devIdEmpty) {
-                return this.logItemRepository.findByDeviceIdentificationAndCreationTimeBefore(deviceIdentification,
-                        endDate, request);
-            } else if (!orgIdEmpty) {
-                return this.logItemRepository.findByOrganisationIdentificationAndCreationTimeBefore(
-                        organisationIdentificationFilter, endDate, request);
-            } else {
-                return this.logItemRepository.findByCreationTimeBefore(endDate, request);
-            }
+        return this.logItemRepository.findAll(specification, request);
+    }
 
-        } else if (!devIdEmpty && !orgIdEmpty) {
-            return this.logItemRepository.findByDeviceIdentificationAndOrganisationIdentification(deviceIdentification,
-                    organisationIdentificationFilter, request);
-        } else if (!devIdEmpty) {
-            return this.logItemRepository.findByDeviceIdentification(deviceIdentification, request);
-        } else if (!orgIdEmpty) {
-            return this.logItemRepository.findByOrganisationIdentification(organisationIdentificationFilter, request);
-        } else {
-            return this.logItemRepository.findAllBy(request);
+    private Specification<DeviceLogItem> applyFilter(final String deviceIdentification, final String organisationFilter,
+            final XMLGregorianCalendar startCalendar, final XMLGregorianCalendar endCalendar) {
+
+        Specification<DeviceLogItem> specification = DeviceLogItemSpecifications.NONE;
+        specification = this.doFilterDeviceId(deviceIdentification, specification);
+        specification = this.doFilterOrganisationId(organisationFilter, specification);
+        specification = this.doFilterStartDate(startCalendar, specification);
+        specification = this.doFilterEndDate(endCalendar, specification);
+
+        // If nothing is filled return all
+        if (specification.equals(DeviceLogItemSpecifications.NONE)) {
+            specification = DeviceLogItemSpecifications.ALL;
         }
+        return specification;
+    }
+
+    private Specification<DeviceLogItem> doFilterDeviceId(final String deviceIdentification,
+            Specification<DeviceLogItem> specification) {
+        if (!StringUtils.isEmpty(deviceIdentification)) {
+            specification = specification.and(hasDeviceIdentification(deviceIdentification));
+        }
+        return specification;
+    }
+
+    private Specification<DeviceLogItem> doFilterOrganisationId(final String organisationFilter,
+            Specification<DeviceLogItem> specification) {
+        if (!StringUtils.isEmpty(organisationFilter)) {
+            specification = specification.and(hasOrganisationIdentification(organisationFilter));
+        }
+        return specification;
+    }
+
+    private Specification<DeviceLogItem> doFilterStartDate(final XMLGregorianCalendar startCalendar,
+            Specification<DeviceLogItem> specification) {
+        if (startCalendar != null && startCalendar.isValid()) {
+            final Date startDate = startCalendar.toGregorianCalendar().getTime();
+            specification = specification.and(hasStartDate(startDate));
+        }
+        return specification;
+    }
+
+    private Specification<DeviceLogItem> doFilterEndDate(final XMLGregorianCalendar endCalendar,
+            Specification<DeviceLogItem> specification) {
+        if (endCalendar != null && endCalendar.isValid()) {
+            final Date endDate = endCalendar.toGregorianCalendar().getTime();
+            specification = specification.and(hasEndDate(endDate));
+        }
+        return specification;
     }
 
     // === REMOVE DEVICE ===

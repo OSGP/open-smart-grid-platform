@@ -12,6 +12,10 @@ Feature: Filter DeviceLogItem
       | DeviceIdentification       | DEV-2   |
       | OrganisationIdentification | Liander |
 
+	Scenario: No filters set so getting all the messages
+	    When receiving a message log request without a filter
+	    Then the messages response contains 110 correct messages with date filter or no filter
+	
   Scenario: Filter DeviceLogItem only on device identification
     When receiving a filter message log request
       | DeviceIdentification | DEV-1 |
@@ -76,7 +80,7 @@ Feature: Filter DeviceLogItem
   Scenario Outline: Filter DeviceLogItem on start or end date
     When receiving a filter message log request
       | <TimeFilter> | <Time> |
-    Then the messages response contains <Amount> correct messages with date filter
+    Then the messages response contains <Amount> correct messages with date filter or no filter
 
     Examples: 
       | TimeFilter        | Time         | Amount |

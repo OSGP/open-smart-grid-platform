@@ -13,39 +13,12 @@ import org.opensmartgridplatform.logging.domain.entities.DeviceLogItem;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface DeviceLogItemSlicingRepository extends JpaRepository<DeviceLogItem, Long> {
-    Slice<DeviceLogItem> findByDeviceIdentification(String deviceIdentification, Pageable pagable);
-    
-    Slice<DeviceLogItem> findByDeviceIdentificationAndOrganisationIdentification(String deviceIdentification, String organisationIdentification, Pageable pagable);
-    
-    Slice<DeviceLogItem> findByDeviceIdentificationAndCreationTimeBetween(String deviceIdentification, Date startDate, Date endDate, Pageable pagable);
-    
-    Slice<DeviceLogItem> findByOrganisationIdentification(String organisationIdentification, Pageable pagable);
-    
-    Slice<DeviceLogItem> findByOrganisationIdentificationAndCreationTimeBetween(String organisationIdentification, Date startDate, Date endDate, Pageable pagable);
-    
-    Slice<DeviceLogItem> findByDeviceIdentificationAndOrganisationIdentificationAndCreationTimeBetween(String deviceIdentification, String organisationIdentification, Date startDate, Date endDate, Pageable pagable);
-    
-    Slice<DeviceLogItem> findByDeviceIdentificationAndOrganisationIdentificationAndCreationTimeAfter(String deviceIdentification, String organisationIdentification, Date startDate, Pageable pageable);
-    
-    Slice<DeviceLogItem> findByDeviceIdentificationAndOrganisationIdentificationAndCreationTimeBefore(String deviceIdentification, String organisationIdentification, Date endDate, Pageable pageable);
-    
-    Slice<DeviceLogItem> findByDeviceIdentificationAndCreationTimeAfter(String deviceIdentification, Date startDate, Pageable pagable);
-    
-    Slice<DeviceLogItem> findByDeviceIdentificationAndCreationTimeBefore(String deviceIdentification, Date endDate, Pageable pagable);
-    
-    Slice<DeviceLogItem> findByOrganisationIdentificationAndCreationTimeAfter(String organisationIdentification, Date startDate, Pageable pagable);
-    
-    Slice<DeviceLogItem> findByOrganisationIdentificationAndCreationTimeBefore(String organisationIdentification, Date endDate, Pageable pagable);
-
-    Slice<DeviceLogItem> findByCreationTimeAfter(Date startDate, Pageable pageable);
-    
+public interface DeviceLogItemSlicingRepository
+        extends JpaRepository<DeviceLogItem, Long>, JpaSpecificationExecutor<DeviceLogItem> {
     Slice<DeviceLogItem> findByCreationTimeBefore(Date endDate, Pageable pageable);
-    
-    Slice<DeviceLogItem> findByCreationTimeBetween(Date startDate, Date endDate, Pageable pageable);
-    
-    Slice<DeviceLogItem> findAllBy(Pageable pageable);
+
 }
