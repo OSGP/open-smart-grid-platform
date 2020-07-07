@@ -34,8 +34,8 @@ public class SecurityConfig {
     @Value("${soap.private.key.resource:#{null}}")
     private Optional<Resource> soapPrivateKeyResource;
 
-    @Value("${database.secret.resource}")
-    private Resource databaseSecretResource;
+    @Value("${jre.encryption.key.resource}")
+    private Resource jreEncryptionKeyResource;
 
     @Value("${hsm.keystore.resource:#{null}}")
     private Optional<Resource> hsmKeystoreResource;
@@ -54,7 +54,7 @@ public class SecurityConfig {
 
         try {
             JreEncryptionProvider jreEncryptionProvider = new JreEncryptionProvider(
-                    this.databaseSecretResource.getFile());
+                    this.jreEncryptionKeyResource.getFile());
 
             encryptionProviderList.add(jreEncryptionProvider);
 
