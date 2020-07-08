@@ -349,7 +349,7 @@ public class DeviceManagementService {
     private Specification<DeviceLogItem> applyFilter(final String deviceIdentification, final String organisationFilter,
             final XMLGregorianCalendar startCalendar, final XMLGregorianCalendar endCalendar) {
 
-        Specification<DeviceLogItem> specification = DeviceLogItemSpecifications.NONE;
+        Specification<DeviceLogItem> specification = DeviceLogItemSpecifications.ALL;
         specification = this.doFilterDeviceId(deviceIdentification, specification);
         specification = this.doFilterOrganisationId(organisationFilter, specification);
         specification = this.doFilterStartDate(startCalendar, specification);
