@@ -6,14 +6,14 @@ Feature: Filter DeviceLogItem
 
   Background: 
     Given I have 6 device log items
-      | DeviceIdentification       | DEV-1   |
-      | OrganisationIdentification | Liander |
+      | DeviceIdentification | DEV-1   |
+      | Organization         | Liander |
     And I have 5 device log items
-      | DeviceIdentification       | DEV-2   |
-      | OrganisationIdentification | Liander |
+      | DeviceIdentification | DEV-2   |
+      | Organization         | Liander |
     And I have 4 device log items
-      | DeviceIdentification       | DEV-11 |
-      | OrganisationIdentification | TEST   |
+      | DeviceIdentification | DEV-11 |
+      | Organization         | TEST   |
 
   Scenario: No filters set so getting all the messages
     When receiving a message log request without a filter
@@ -28,76 +28,83 @@ Feature: Filter DeviceLogItem
   Scenario: wildcard filter Device Identification
     When receiving a filter message log request
       | DeviceIdentification | DEV-1* |
-    Then the messages response contains 10 correct messages
-      | DeviceIdentification | DEV-1  |
-      | DeviceIdentification | DEV-11 |
+    Then the messages response contains 10 correct messages for devices
+      | DEV-1  |
+      | DEV-11 |
 
-	@Jelle
+  Scenario: wildcard filter Organisation Identification
+    When receiving a filter message log request
+      | OrganizationIdentification | Li?nder |
+    Then the messages response contains 11 correct messages for devices
+      | DEV-1 |
+      | DEV-2 |
+
   Scenario: Filter DeviceLogItem only on organisation identification
     When receiving a filter message log request
-      | OrganisationIdentification | Liander |
+      | OrganizationIdentification | Liander |
     Then the messages response contains 11 correct messages
-      | OrganisationIdentification | Liander |
+      | OrganizationIdentification | Liander |
 
   Scenario: Filter DeviceLogItem on organisation identification and device identification
     When receiving a filter message log request
       | DeviceIdentification       | DEV-2   |
-      | OrganisationIdentification | Liander |
+      | OrganizationIdentification | Liander |
     Then the messages response contains 5 correct messages
       | DeviceIdentification       | DEV-2   |
-      | OrganisationIdentification | Liander |
+      | OrganizationIdentification | Liander |
 
   Scenario Outline: Filter DeviceLogItem only on device identification within two dates
     When receiving a filter message log request
       | DeviceIdentification | DEV-1       |
-      | SetpointStartTime    | <StartTime> |
-      | SetpointEndTime      | <EndTime>   |
+      | SetPointStartTime    | <StartTime> |
+      | SetPointEndTime      | <EndTime>   |
     Then the messages response contains <Amount> correct messages
       | DeviceIdentification | DEV-1 |
 
     Examples: 
-      | StartTime    | EndTime      | Amount |
-      | "2020-01-01" | "2020-01-02" |      0 |
-      | "1970-01-01" | "2025-01-01" |      6 |
+      | StartTime            | EndTime              | Amount |
+      | 2020-01-01T00:00:00Z | 2020-01-02T00:00:00Z |      0 |
+      | 1970-01-01T00:00:00Z | 2025-01-01T00:00:00Z |      6 |
+
 
   Scenario Outline: Filter DeviceLogItem only on organisation Identification within two dates
     When receiving a filter message log request
-      | OrganisationIdentification | Liander     |
-      | SetpointStartTime          | <StartTime> |
-      | SetpointEndTime            | <EndTime>   |
+      | OrganizationIdentification | Liander     |
+      | SetPointStartTime          | <StartTime> |
+      | SetPointEndTime            | <EndTime>   |
     Then the messages response contains <Amount> correct messages
-      | OrganisationIdentification | Liander |
+      | OrganizationIdentification | Liander |
 
     Examples: 
-      | StartTime    | EndTime      | Amount |
-      | "2020-01-01" | "2020-01-02" |      0 |
-      | "1970-01-01" | "2025-01-01" |     11 |
+      | StartTime            | EndTime              | Amount |
+      | 2020-01-01T00:00:00Z | 2020-01-02T00:00:00Z |      0 |
+      | 1970-01-01T00:00:00Z | 2025-01-01T00:00:00Z |     11 |
 
   Scenario Outline: Filter DeviceLogItem on organisation Identification and device identification within two dates
     When receiving a filter message log request
-      | OrganisationIdentification | Liander     |
+      | OrganizationIdentification | Liander     |
       | DeviceIdentification       | DEV-2       |
-      | SetpointStartTime          | <StartTime> |
-      | SetpointEndTime            | <EndTime>   |
+      | SetPointStartTime          | <StartTime> |
+      | SetPointEndTime            | <EndTime>   |
     Then the messages response contains <Amount> correct messages
-      | OrganisationIdentification | Liander |
+      | OrganizationIdentification | Liander |
       | DeviceIdentification       | DEV-2   |
 
     Examples: 
-      | StartTime    | EndTime      | Amount |
-      | "2020-01-01" | "2020-01-02" |      0 |
-      | "1970-01-01" | "2025-01-01" |      5 |
+      | StartTime            | EndTime              | Amount |
+      | 2020-01-01T00:00:00Z | 2020-01-02T00:00:00Z |      0 |
+      | 1970-01-01T00:00:00Z | 2025-01-01T00:00:00Z |      5 |
 
   Scenario Outline: Filter DeviceLogItem within two dates
     When receiving a filter message log request
-      | SetpointStartTime | <StartTime> |
-      | SetpointEndTime   | <EndTime>   |
+      | SetPointStartTime | <StartTime> |
+      | SetPointEndTime   | <EndTime>   |
     Then the messages response contains <Amount> correct messages with date filter or no filter
 
     Examples: 
-      | StartTime    | EndTime      | Amount |
-      | "2020-01-01" | "2020-01-02" |      0 |
-      | "1970-01-01" | "2025-01-01" |     15 |
+      | StartTime            | EndTime              | Amount |
+      | 2020-01-01T00:00:00Z | 2020-01-02T00:00:00Z |      0 |
+      | 1970-01-01T00:00:00Z | 2025-01-01T00:00:00Z |     15 |
 
   Scenario Outline: Filter DeviceLogItem on start or end date
     When receiving a filter message log request
@@ -105,11 +112,11 @@ Feature: Filter DeviceLogItem
     Then the messages response contains <Amount> correct messages with date filter or no filter
 
     Examples: 
-      | TimeFilter        | Time         | Amount |
-      | SetpointStartTime | "2025-01-01" |      0 |
-      | SetpointStartTime | "1970-01-01" |     15 |
-      | SetpointEndTime   | "2025-01-01" |     15 |
-      | SetpointEndTime   | "1970-01-01" |      0 |
+      | TimeFilter        | Time                 | Amount |
+      | SetPointStartTime | 2025-01-01T00:00:00Z |      0 |
+      | SetPointStartTime | 1970-01-01T00:00:00Z |     15 |
+      | SetPointEndTime   | 2025-01-01T00:00:00Z |     15 |
+      | SetPointEndTime   | 1970-01-01T00:00:00Z |      0 |
 
   Scenario Outline: Filter DeviceLogItem on DeviceIdentification and start date or end date
     When receiving a filter message log request
@@ -119,8 +126,8 @@ Feature: Filter DeviceLogItem
       | DeviceIdentification | DEV-1 |
 
     Examples: 
-      | TimeFilter        | Time         | Amount |
-      | SetpointStartTime | "2025-01-01" |      0 |
-      | SetpointStartTime | "1970-01-01" |      6 |
-      | SetpointEndTime   | "2025-01-01" |      6 |
-      | SetpointEndTime   | "1970-01-01" |      0 |
+      | TimeFilter        | Time                 | Amount |
+      | SetPointStartTime | 2025-01-01T00:00:00Z |      0 |
+      | SetPointStartTime | 1970-01-01T00:00:00Z |      6 |
+      | SetPointEndTime   | 2025-01-01T00:00:00Z |      6 |
+      | SetPointEndTime   | 1970-01-01T00:00:00Z |      0 |

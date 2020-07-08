@@ -7,7 +7,6 @@
  */
 package org.opensmartgridplatform.adapter.ws.admin.application.services;
 
-import static org.opensmartgridplatform.shared.utils.WildcardUtil.hasWildcards;
 import static org.opensmartgridplatform.shared.utils.WildcardUtil.replaceWildcards;
 
 import java.util.Date;
@@ -40,31 +39,14 @@ public final class DeviceLogItemSpecifications {
             final CriteriaBuilder cb) -> cb.and();
 
     public static Specification<DeviceLogItem> hasDeviceIdentification(final String deviceIdentification) {
-        if (hasWildcards(deviceIdentification)) {
-            LOGGER.info("Device identification contains wildcards");
-            return (final Root<DeviceLogItem> r, final CriteriaQuery<?> q, final CriteriaBuilder cb) -> cb.like(
-                    cb.upper(r.<String> get(DEVICE_IDENTIFICATION)),
-                    replaceWildcards(deviceIdentification.toUpperCase()));
-        } else {
-            LOGGER.info("Device identification does not contain wildcards");
-            return (final Root<DeviceLogItem> r, final CriteriaQuery<?> q, final CriteriaBuilder cb) -> cb.equal(
-                    cb.upper(r.<String> get(DEVICE_IDENTIFICATION)),
-                    replaceWildcards(deviceIdentification.toUpperCase()));
-        }
+        return (final Root<DeviceLogItem> r, final CriteriaQuery<?> q, final CriteriaBuilder cb) -> cb.like(
+                cb.upper(r.<String> get(DEVICE_IDENTIFICATION)), replaceWildcards(deviceIdentification.toUpperCase()));
     }
 
     public static Specification<DeviceLogItem> hasOrganisationIdentification(final String organisationIdentification) {
-        if (hasWildcards(organisationIdentification)) {
-            LOGGER.info("Organisation identification contains wildcards");
-            return (final Root<DeviceLogItem> r, final CriteriaQuery<?> q, final CriteriaBuilder cb) -> cb.like(
-                    cb.upper(r.<String> get(ORGANISATION_IDENTIFICATION)),
-                    replaceWildcards(organisationIdentification.toUpperCase()));
-        } else {
-            LOGGER.info("Organisation identification does not contain wildcards");
-            return (final Root<DeviceLogItem> r, final CriteriaQuery<?> q, final CriteriaBuilder cb) -> cb.equal(
-                    cb.upper(r.<String> get(ORGANISATION_IDENTIFICATION)),
-                    replaceWildcards(organisationIdentification.toUpperCase()));
-        }
+        return (final Root<DeviceLogItem> r, final CriteriaQuery<?> q, final CriteriaBuilder cb) -> cb.like(
+                cb.upper(r.<String> get(ORGANISATION_IDENTIFICATION)),
+                replaceWildcards(organisationIdentification.toUpperCase()));
 
     }
 

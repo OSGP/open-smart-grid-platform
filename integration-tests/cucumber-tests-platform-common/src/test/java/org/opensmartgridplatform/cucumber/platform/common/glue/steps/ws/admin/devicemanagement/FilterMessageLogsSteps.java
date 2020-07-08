@@ -55,7 +55,7 @@ public class FilterMessageLogsSteps {
                     PlatformCommonKeys.KEY_SETPOINT_START_TIME, PlatformCommonDefaults.DEFAULT_BEGIN_DATE)));
         }
         if (requestParameters.containsKey(PlatformCommonKeys.KEY_SETPOINT_END_TIME)) {
-            request.setStartTime(XmlGregorianCalendarInputParser.parse(getString(requestParameters,
+            request.setEndTime(XmlGregorianCalendarInputParser.parse(getString(requestParameters,
                     PlatformCommonKeys.KEY_SETPOINT_END_TIME, PlatformCommonDefaults.DEFAULT_END_DATE)));
         }
 
@@ -73,16 +73,25 @@ public class FilterMessageLogsSteps {
                         .isEqualTo(requestParameters.get(PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION));
             }
             if (requestParameters.containsKey(PlatformCommonKeys.KEY_ORGANIZATION_IDENTIFICATION)) {
-                assertThat(log.getDeviceIdentification())
+                assertThat(log.getOrganisationIdentification())
                         .isEqualTo(requestParameters.get(PlatformCommonKeys.KEY_ORGANIZATION_IDENTIFICATION));
             }
+        }
+    }
+
+    @Then("the messages response contains {int} correct messages for devices")
+    public void theGetMessageLogsDeviceWildcardFeatureSuccesful(final int amount, final List<String> ids) {
+        final List<MessageLog> messageLogs = this.getMessageLogs();
+        assertThat(messageLogs.size()).isEqualTo(amount);
+        for (final MessageLog log : messageLogs) {
+            assertThat(ids).contains(log.getDeviceIdentification());
         }
     }
 
     @Then("the messages response contains {int} correct messages with date filter or no filter")
     public void theGetMessageLogsDateFilterSuccessFul(final int amount) throws Throwable {
         final List<MessageLog> messageLogs = this.getMessageLogs();
-        assertThat(messageLogs.size() == amount);
+        assertThat(messageLogs.size()).isEqualTo(amount);
     }
 
     private List<MessageLog> getMessageLogs() {
