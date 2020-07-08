@@ -1,5 +1,7 @@
 package org.opensmartgridplatform.adapter.ws.admin.application.services;
 
+import static org.opensmartgridplatform.shared.utils.WildcardUtil.replaceWildcards;
+
 import java.util.Date;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -22,13 +24,14 @@ public class DeviceLogItemSpecifications {
             final CriteriaBuilder cb) -> cb.and();
 
     public static Specification<DeviceLogItem> hasDeviceIdentification(final String deviceIdentification) {
-        return (final Root<DeviceLogItem> r, final CriteriaQuery<?> q, final CriteriaBuilder cb) -> cb
-                .like(cb.upper(r.<String> get(DEVICE_IDENTIFICATION)), deviceIdentification.toUpperCase());
+        return (final Root<DeviceLogItem> r, final CriteriaQuery<?> q, final CriteriaBuilder cb) -> cb.like(
+                cb.upper(r.<String> get(DEVICE_IDENTIFICATION)), replaceWildcards(deviceIdentification.toUpperCase()));
     }
 
     public static Specification<DeviceLogItem> hasOrganisationIdentification(final String organisationIdentification) {
-        return (final Root<DeviceLogItem> r, final CriteriaQuery<?> q, final CriteriaBuilder cb) -> cb
-                .like(cb.upper(r.<String> get(ORGANISATION_IDENTIFICATION)), organisationIdentification.toUpperCase());
+        return (final Root<DeviceLogItem> r, final CriteriaQuery<?> q, final CriteriaBuilder cb) -> cb.like(
+                cb.upper(r.<String> get(ORGANISATION_IDENTIFICATION)),
+                replaceWildcards(organisationIdentification.toUpperCase()));
     }
 
     public static Specification<DeviceLogItem> hasStartDate(final Date startDate) {
