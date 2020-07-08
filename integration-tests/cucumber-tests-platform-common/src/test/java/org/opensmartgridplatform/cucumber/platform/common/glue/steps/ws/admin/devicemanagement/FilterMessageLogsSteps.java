@@ -66,7 +66,7 @@ public class FilterMessageLogsSteps {
     public void theGetMessageLogsFilterSuccesful(final int amount, final Map<String, String> requestParameters)
             throws Throwable {
         final List<MessageLog> messageLogs = this.getMessageLogs();
-        assertThat(messageLogs.size() == amount);
+        assertThat(messageLogs.size()).isEqualTo(amount);
         for (final MessageLog log : messageLogs) {
             if (requestParameters.containsKey(PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION)) {
                 assertThat(log.getDeviceIdentification())
