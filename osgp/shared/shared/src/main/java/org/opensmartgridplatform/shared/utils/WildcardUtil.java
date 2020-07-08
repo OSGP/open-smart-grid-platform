@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.ws.core.application.utility;
+package org.opensmartgridplatform.shared.utils;
 
 public class WildcardUtil {
 

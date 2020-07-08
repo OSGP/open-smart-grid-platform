@@ -7,7 +7,7 @@
  */
 package org.opensmartgridplatform.adapter.ws.core.application.services;
 
-import static org.opensmartgridplatform.adapter.ws.core.application.utility.WildcardUtil.replaceWildcards;
+import static org.opensmartgridplatform.shared.utils.WildcardUtil.replaceWildcards;
 import static org.springframework.data.jpa.domain.Specification.where;
 
 import java.util.ArrayList;
