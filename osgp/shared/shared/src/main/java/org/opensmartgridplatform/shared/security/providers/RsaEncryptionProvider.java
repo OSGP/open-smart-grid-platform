@@ -1,11 +1,13 @@
 package org.opensmartgridplatform.shared.security.providers;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.security.Key;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.AlgorithmParameterSpec;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
@@ -16,31 +18,25 @@ import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 
 public class RsaEncryptionProvider extends AbstractEncryptionProvider implements EncryptionProvider {
 
-    public static final String ALG = "RSA";
-    public static final String ALGORITHM = "RSA/ECB/PKCS1Padding";
+    private static final String ALG = "RSA";
+    private static final String ALGORITHM = "RSA/ECB/PKCS1Padding";
 
     private Key publicKey;
     private Key privateKey;
 
-    public RsaEncryptionProvider(File privateKeyStoreFile, File publicKeyStoreFile) {
-        try {
-            KeyFactory keyFactory = KeyFactory.getInstance(ALG);
+    public void setPrivateKeyStore(File privateKeyStoreFile)
+            throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+        byte[] keyData = Files.readAllBytes(privateKeyStoreFile.toPath());
+        PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(keyData);
+        privateKey = KeyFactory.getInstance(ALG).generatePrivate(privateKeySpec);
+        super.setKeyFile(privateKeyStoreFile);
+    }
 
-            if (privateKeyStoreFile != null) {
-                byte[] keyData = Files.readAllBytes(privateKeyStoreFile.toPath());
-                PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(keyData);
-                privateKey = keyFactory.generatePrivate(privateKeySpec);
-                super.setKeyFile(privateKeyStoreFile);
-            }
-            if (publicKeyStoreFile != null) {
-                byte[] keyData = Files.readAllBytes(publicKeyStoreFile.toPath());
-                X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(keyData);
-                publicKey = keyFactory.generatePublic(publicKeySpec);
-            }
-        } catch (Exception e) {
-            throw new EncrypterException("Something went wrong during construction of "
-                    + "RsaEncryptionProvider", e);
-        }
+    public void setPublicKeyStore(File publicKeyStoreFile)
+            throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+        byte[] keyData = Files.readAllBytes(publicKeyStoreFile.toPath());
+        X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(keyData);
+        publicKey = KeyFactory.getInstance(ALG).generatePublic(publicKeySpec);
     }
 
     protected Cipher getCipher() throws javax.crypto.NoSuchPaddingException, NoSuchAlgorithmException {
@@ -48,18 +44,7 @@ public class RsaEncryptionProvider extends AbstractEncryptionProvider implements
     }
 
     protected Key getSecretEncryptionKey(String key, int cipherMode) {
-        if (cipherMode == Cipher.ENCRYPT_MODE) {
-            if (publicKey == null) {
-                throw new EncrypterException("Cannot RSA encrypt because no public key is defined.");
-            }
-            return publicKey;
-        } else if (cipherMode == Cipher.DECRYPT_MODE) {
-            if (privateKey == null) {
-                throw new EncrypterException("Cannot RSA encrypt because no private key is defined.");
-            }
-            return privateKey;
-        }
-        throw new EncrypterException("Invalid cipher mode specified.");
+        return cipherMode == Cipher.ENCRYPT_MODE ? publicKey : privateKey;
     }
 
     protected AlgorithmParameterSpec getAlgorithmParameterSpec() {

@@ -8,8 +8,9 @@
  */
 package org.opensmartgridplatform.secretmanagement.application.config;
 
-import java.io.File;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -48,7 +49,8 @@ public class SecurityConfig {
         return new DefaultEncryptionDelegate(getDefaultEncryptionProviders());
     }
 
-    private EncryptionProvider[] getDefaultEncryptionProviders() {
+    @Bean
+    public List<EncryptionProvider> getDefaultEncryptionProviders() {
 
         List<EncryptionProvider> encryptionProviderList = new ArrayList<>();
 
@@ -58,13 +60,25 @@ public class SecurityConfig {
 
             encryptionProviderList.add(jreEncryptionProvider);
 
-            File privateKeyStoreFile = this.soapPrivateKeyResource.isPresent() ?
-                    this.soapPrivateKeyResource.get().getFile() : null;
-            File publicKeyStoreFile = this.soapPublicKeyResource.isPresent() ?
-                    this.soapPublicKeyResource.get().getFile() : null;
+            RsaEncryptionProvider rsaEncryptionProvider = new RsaEncryptionProvider();
 
-            RsaEncryptionProvider rsaEncryptionProvider = new RsaEncryptionProvider(privateKeyStoreFile,
-                    publicKeyStoreFile);
+            this.soapPrivateKeyResource.ifPresent((res)-> {
+                try {
+                    rsaEncryptionProvider.setPrivateKeyStore(res.getFile());
+                }
+                catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException e) {
+                    throw new IllegalStateException("Could not load private key resource.", e);
+                }
+            });
+
+            this.soapPublicKeyResource.ifPresent((res)-> {
+                try {
+                    rsaEncryptionProvider.setPublicKeyStore(res.getFile());
+                }
+                catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException e) {
+                    throw new IllegalStateException("Could not load public key resource.", e);
+                }
+            });
 
             encryptionProviderList.add(rsaEncryptionProvider);
 
@@ -74,8 +88,8 @@ public class SecurityConfig {
                 encryptionProviderList.add(hsmEncryptionProvider);
             }
 
-            EncryptionProvider[] encryptionProviderArray = new EncryptionProvider[encryptionProviderList.size()];
-            return encryptionProviderList.toArray(encryptionProviderArray);
+            return encryptionProviderList;
+
         } catch (IOException e) {
             throw new IllegalStateException("Error creating default encryption providers", e);
         }

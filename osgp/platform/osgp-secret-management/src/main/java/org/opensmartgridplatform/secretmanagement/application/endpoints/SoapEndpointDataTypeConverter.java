@@ -29,7 +29,7 @@ import java.util.List;
 public class SoapEndpointDataTypeConverter {
 
     private static final String KEY_REFERENCE = "1"; //only one key in use
-    private EncryptionDelegate encryptionDelegate;
+    private final EncryptionDelegate encryptionDelegate;
 
     public SoapEndpointDataTypeConverter(
             @Qualifier("DefaultEncryptionDelegate") final EncryptionDelegate defaultEncryptionDelegate) {
@@ -37,10 +37,6 @@ public class SoapEndpointDataTypeConverter {
     }
 
     public List<SecretType> convertToSecretTypes(SecretTypes soapSecretTypes) throws OsgpException {
-
-        if (soapSecretTypes == null) {
-            throw new TechnicalException("Missing input: secret types");
-        }
 
         List<org.opensmartgridplatform.ws.schema.core.secret.management.SecretType> soapSecretTypeList =
                 soapSecretTypes.getSecretType();

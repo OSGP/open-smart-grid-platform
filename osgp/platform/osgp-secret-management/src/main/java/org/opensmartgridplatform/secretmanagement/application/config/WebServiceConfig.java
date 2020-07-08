@@ -30,12 +30,12 @@ import java.util.Properties;
 @Configuration
 public class WebServiceConfig extends WsConfigurerAdapter {
 
-    public static final String SECRET_MANAGEMENT_WS_BASE_PATH = "/ws/SecretManagement/*";
-    public static final String SECRET_MANAGEMENT_PORT = "SecretManagementPort";
-    public static final String SECRET_MANAGEMENT_URI = "/ws/SecretManagement";
-    public static final String SECRET_MANAGEMENT_NS = "http://www.opensmartgridplatform"
+    private static final String SECRET_MANAGEMENT_WS_BASE_PATH = "/ws/SecretManagement/*";
+    private static final String SECRET_MANAGEMENT_PORT = "SecretManagementPort";
+    private static final String SECRET_MANAGEMENT_URI = "/ws/SecretManagement";
+    private static final String SECRET_MANAGEMENT_NS = "http://www.opensmartgridplatform"
             + ".org/schemas/security/secretmanagement/2020/05";
-    public static final String SECRET_MANAGEMENT_SCHEMA_LOC = "schemas/secret-management.xsd";
+    private static final String SECRET_MANAGEMENT_SCHEMA_LOC = "schemas/secret-management.xsd";
 
     @Bean
     public ServletRegistrationBean<MessageDispatcherServlet> messageDispatcherServlet(

@@ -38,7 +38,6 @@ public class SecretManagementService {
     private final DbEncryptedSecretRepository secretRepository;
     private final DbEncryptionKeyRepository keyRepository;
 
-    @Autowired
     public SecretManagementService(
             @Qualifier("DefaultEncryptionDelegate") final EncryptionDelegate defaultEncryptionDelegate,
             final EncryptionProviderType encryptionProviderType, final DbEncryptedSecretRepository secretRepository,

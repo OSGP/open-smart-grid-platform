@@ -12,8 +12,8 @@ package org.opensmartgridplatform.secretmanagement.application.domain;
  * TypedSecret stores a secret (not necessarily an encrypted secret), along with it's type.
  */
 public class TypedSecret {
-    SecretType secretType;
-    String secret;
+    private SecretType secretType;
+    private String secret;
 
     public String getSecret() {
         return secret;

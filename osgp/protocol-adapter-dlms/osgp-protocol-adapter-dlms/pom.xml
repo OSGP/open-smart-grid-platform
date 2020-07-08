@@ -27,7 +27,7 @@
 
   <properties>
     <display.version>${project.version}-${BUILD_TAG}</display.version>
-    <osgp-ws-secret-management-version>5.2.0-SNAPSHOT</osgp-ws-secret-management-version>
+    <osgp-ws-secret-management-version>${project.version}</osgp-ws-secret-management-version>
     <skipITs>true</skipITs>
   </properties>
 
@@ -307,6 +307,11 @@
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 </project>

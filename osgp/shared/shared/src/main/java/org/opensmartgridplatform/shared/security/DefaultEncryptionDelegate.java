@@ -22,27 +22,24 @@ import org.springframework.stereotype.Component;
 @Component
 public class DefaultEncryptionDelegate implements EncryptionDelegate {
 
+    private static final String ERROR_NO_PROVIDER = "Could not find a provider";
     private final List<EncryptionProvider> providers;
 
-    public DefaultEncryptionDelegate(final EncryptionProvider[] encryptionProviders) {
-        this.providers = Arrays.asList(encryptionProviders);
+    public DefaultEncryptionDelegate(final List<EncryptionProvider> encryptionProviders) {
+        this.providers = encryptionProviders;
     }
 
     @Override
-    public EncryptedSecret encrypt(
-            final EncryptionProviderType encryptionProviderType, final Secret secret, final String keyReference) {
-        final Optional<EncryptionProvider> oep = this.providers.stream().filter(
-                ep -> ep.getType().equals(encryptionProviderType)).findFirst();
-
-        return oep.orElseThrow(()->new EncrypterException("Could not find a provider")).encrypt(secret, keyReference);
+    public EncryptedSecret encrypt(final EncryptionProviderType encryptionProviderType, final Secret secret,
+            final String keyReference) {
+        return this.providers.stream().filter(ep -> ep.getType().equals(encryptionProviderType)).findFirst().orElseThrow(
+                () -> new EncrypterException(ERROR_NO_PROVIDER)).encrypt(secret, keyReference);
     }
 
     @Override
     public Secret decrypt(final EncryptedSecret secret, final String keyReference) {
-        final EncryptionProviderType encType = secret.getType();
-        final Optional<EncryptionProvider> oep = this.providers.stream().filter(ep -> ep.getType().equals(encType)).findFirst();
-
-        return oep.orElseThrow(()->new EncrypterException("Could not find a provider")).decrypt(secret, keyReference);
+        return this.providers.stream().filter(ep -> ep.getType().equals(secret.getType())).findFirst().orElseThrow(
+                () -> new EncrypterException(ERROR_NO_PROVIDER)).decrypt(secret, keyReference);
     }
 }
 

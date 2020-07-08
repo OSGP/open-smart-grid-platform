@@ -14,12 +14,12 @@ package org.opensmartgridplatform.shared.security;
  * There is no encoding/decoding.
  */
 public class EncryptedSecret {
-    private final byte[] secret;
+    private final Secret secret;
     private final EncryptionProviderType type;
 
-    public EncryptedSecret(final EncryptionProviderType type, final byte[] secret) {
+    public EncryptedSecret(final EncryptionProviderType type, final byte[] secretBytes) {
         this.type = type;
-        this.secret = secret;
+        this.secret = new Secret(secretBytes);
     }
 
     public EncryptionProviderType getType() {
@@ -27,6 +27,6 @@ public class EncryptedSecret {
     }
 
     public byte[] getSecret() {
-        return this.secret;
+        return this.secret.getSecret();
     }
 }
