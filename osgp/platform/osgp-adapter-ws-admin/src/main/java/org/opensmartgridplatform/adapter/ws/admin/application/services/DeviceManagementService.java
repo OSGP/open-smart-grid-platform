@@ -355,10 +355,6 @@ public class DeviceManagementService {
         specification = this.doFilterStartDate(startCalendar, specification);
         specification = this.doFilterEndDate(endCalendar, specification);
 
-        // If nothing is filled return all
-        if (specification.equals(DeviceLogItemSpecifications.NONE)) {
-            specification = DeviceLogItemSpecifications.ALL;
-        }
         return specification;
     }
 
