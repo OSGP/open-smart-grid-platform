@@ -36,7 +36,7 @@ public class PeakShavingConsumer {
 
         final long startTime = System.currentTimeMillis();
         long remaining = this.waitFailMillis;
-        while (remaining > 0 || this.consumerRecord != null) {
+        while (remaining > 0 && this.consumerRecord == null) {
             final long elapsed = System.currentTimeMillis() - startTime;
             remaining = this.waitFailMillis - elapsed;
         }
