@@ -77,6 +77,8 @@
         <xsd:element minOccurs="0" name="OrganisationIdentification" type="common:Identification" />
         <xsd:element minOccurs="0" name="StartTime" type="xsd:dateTime" />
         <xsd:element minOccurs="0" name="EndTime" type="xsd:dateTime" />
+		<xsd:element minOccurs="0" name="SortBy" />
+		<xsd:element minOccurs="0" name="SortDirection" type="tns:SortDirectionEnum" />
 		<xsd:element name="Page" type="xsd:int" />
       </xsd:sequence>
     </xsd:complexType>
@@ -370,4 +372,11 @@
         minOccurs="0" />
     </xsd:sequence>
   </xsd:complexType>
+
+  <xsd:simpleType name="SortDirectionEnum">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="ASC" />
+      <xsd:enumeration value="DESC" />
+    </xsd:restriction>
+  </xsd:simpleType>
 </xsd:schema>
