@@ -21,7 +21,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ObisCodeValues;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileRequest;
 
 public class GetPowerQualityProfileRequestMappingTest {
@@ -33,7 +32,7 @@ public class GetPowerQualityProfileRequestMappingTest {
 
     @Test
     public void convertGetPowerQualityProfileRequestData() {
-        final GetPowerQualityProfileRequestData source = this.makeRequest();
+        final org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileRequest source = this.makeRequest();
         final Object result = this.mapper.map(source, GetPowerQualityProfileRequest.class);
 
         assertThat(result).as("mapping GetPowerQualityProfileRequestData should not return null").isNotNull();
@@ -69,8 +68,8 @@ public class GetPowerQualityProfileRequestMappingTest {
         return result;
     }
 
-    private GetPowerQualityProfileRequestData makeRequest() {
-        final GetPowerQualityProfileRequestData result = new GetPowerQualityProfileRequestData();
+    private org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileRequest makeRequest() {
+        final org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileRequest result = new org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileRequest();
         result.setProfileType("PRIVATE");
         result.setDeviceIdentification(DEVICE_NAME);
         result.setBeginDate(this.makeGregorianCalendar());

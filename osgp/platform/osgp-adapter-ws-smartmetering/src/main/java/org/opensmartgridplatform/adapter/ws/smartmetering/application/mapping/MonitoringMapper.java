@@ -55,7 +55,7 @@ public class MonitoringMapper extends ConfigurableMapper {
          * "selectedValues" in the rest of the code and vice versa.
          */
         mapperFactory.classMap(
-                org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileRequestData.class,
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileRequest.class,
                 org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileRequest.class)
                      .fieldAToB(SELECTED_VALUES_CAPTURE_OBJECT, SELECTED_VALUES)
                      .fieldBToA(SELECTED_VALUES, SELECTED_VALUES_CAPTURE_OBJECT).byDefault().register();
