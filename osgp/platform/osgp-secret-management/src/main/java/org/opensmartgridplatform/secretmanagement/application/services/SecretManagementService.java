@@ -12,6 +12,7 @@ package org.opensmartgridplatform.secretmanagement.application.services;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.tomcat.util.buf.HexUtils;
@@ -25,7 +26,6 @@ import org.opensmartgridplatform.shared.security.EncryptedSecret;
 import org.opensmartgridplatform.shared.security.EncryptionDelegate;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 import org.opensmartgridplatform.shared.security.Secret;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,7 +38,6 @@ public class SecretManagementService {
     private final DbEncryptedSecretRepository secretRepository;
     private final DbEncryptionKeyRepository keyRepository;
 
-    @Autowired
     public SecretManagementService(
             @Qualifier("DefaultEncryptionDelegate") final EncryptionDelegate defaultEncryptionDelegate,
             final EncryptionProviderType encryptionProviderType, final DbEncryptedSecretRepository secretRepository,
@@ -83,13 +82,8 @@ public class SecretManagementService {
     }
 
     private boolean isIdenticalToCurrent(final String deviceIdentification, final TypedSecret secret) {
-        try {
-            final TypedSecret current = this.retrieveSecret(deviceIdentification, secret.getSecretType());
-            return current.getSecret().equals(secret.getSecret());
-        } catch (final NoSuchElementException nsee) {
-            //there is no current secret
-            return false;
-        }
+        final Optional<TypedSecret> current = this.retrieveSecret(deviceIdentification, secret.getSecretType());
+        return current.isPresent() ? current.get().getSecret().equals(secret.getSecret()) : false;
     }
 
     private DbEncryptedSecret createEncrypted(final String deviceIdentification, final TypedSecret typedSecret,
@@ -118,6 +112,7 @@ public class SecretManagementService {
             //@formatter:off
             return secretTypes.stream()
                     .map(secretType -> this.retrieveSecret(deviceIdentification,secretType))
+                    .map(Optional::get)
                     .collect(Collectors.toList());
             //@formatter:on
         } catch (final Exception exc) {
@@ -126,27 +121,28 @@ public class SecretManagementService {
         }
     }
 
-    @java.lang.SuppressWarnings("squid:S3655")
-    public TypedSecret retrieveSecret(final String deviceIdentification, final SecretType secretType) {
+    public Optional<TypedSecret> retrieveSecret(final String deviceIdentification, final SecretType secretType) {
         final Date now = new Date();
         final Long secretId = this.secretRepository.findIdOfValidMostRecent(deviceIdentification, secretType.name(),
                 now);
         if (secretId == null) {
-            throw new NoSuchElementException("No secret found with a valid key");
+            return Optional.empty();
         }
-        return this.getTypedSecret(this.secretRepository.findById(secretId).get());
+        final TypedSecret typedSecret = this.getTypedSecret(this.secretRepository.findById(secretId));
+        return Optional.of(typedSecret);
     }
 
-    private TypedSecret getTypedSecret(final DbEncryptedSecret dbEncryptedSecret) {
-        if (dbEncryptedSecret != null) {
-            final DbEncryptionKeyReference keyReference = dbEncryptedSecret.getEncryptionKeyReference();
+    private TypedSecret getTypedSecret(final Optional<DbEncryptedSecret> dbEncryptedSecret) {
+        if (dbEncryptedSecret.isPresent()) {
+            final DbEncryptedSecret secret = dbEncryptedSecret.get();
+            final DbEncryptionKeyReference keyReference = secret.getEncryptionKeyReference();
             if (keyReference == null) {
                 throw new IllegalStateException("Could not create encrypted secret: secret has no key reference");
             }
-            final byte[] secretBytes = HexUtils.fromHexString(dbEncryptedSecret.getEncodedSecret());
+            final byte[] secretBytes = HexUtils.fromHexString(secret.getEncodedSecret());
             final EncryptedSecret encryptedSecret = new EncryptedSecret(keyReference.getEncryptionProviderType(),
                     secretBytes);
-            return this.createTypedSecret(dbEncryptedSecret, keyReference, encryptedSecret);
+            return this.createTypedSecret(secret, keyReference, encryptedSecret);
         } else {    //Should never happen because of stream mapping in retrieveSecrets()
             throw new IllegalStateException("Could not create typed secret for NULL secret");
         }

@@ -32,14 +32,14 @@ public class DbEncryptionKeyReference {
     @SequenceGenerator(name = "encryption_key_seq_gen", sequenceName = "encryption_key_reference_id_seq",
             allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "encryption_key_seq_gen")
-    Long id;
-    Date creationTime;
-    Date modificationTime;
-    Long version; //for optimistic locking
+    private Long id;
+    private Date creationTime;
+    private Date modificationTime;
+    private Long version; //for optimistic locking
     @Enumerated(EnumType.STRING)
-    EncryptionProviderType encryptionProviderType;
-    String reference;
-    Date validFrom;
-    Date validTo;
-    String modifiedBy;
+    private EncryptionProviderType encryptionProviderType;
+    private String reference;
+    private Date validFrom;
+    private Date validTo;
+    private String modifiedBy;
 }

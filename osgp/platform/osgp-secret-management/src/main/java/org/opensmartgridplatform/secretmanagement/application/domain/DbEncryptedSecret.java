@@ -35,12 +35,12 @@ public class DbEncryptedSecret {
     @Id
     @SequenceGenerator(name = "encrypted_secret_seq_gen", sequenceName = "encrypted_secret_id_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "encrypted_secret_seq_gen")
-    Long id;
-    Date creationTime;
-    String deviceIdentification;
+    private Long id;
+    private Date creationTime;
+    private String deviceIdentification;
     @Enumerated(EnumType.STRING)
-    SecretType secretType;
-    String encodedSecret;
+    private SecretType secretType;
+    private String encodedSecret;
     @ManyToOne
-    DbEncryptionKeyReference encryptionKeyReference;
+    private DbEncryptionKeyReference encryptionKeyReference;
 }
