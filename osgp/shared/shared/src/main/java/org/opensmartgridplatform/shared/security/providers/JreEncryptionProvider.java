@@ -27,26 +27,26 @@ import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 
 public class JreEncryptionProvider extends AbstractEncryptionProvider implements EncryptionProvider {
 
-    public static final String DEFAULT_SINGLE_KEY_REFERENCE = "1";
-    public static final String ALG = "AES";
-    public static final String ALGORITHM = "AES/CBC/PKCS5PADDING";
-    public static final String PROVIDER = "SunJCE";
-    public static final String FORMAT = "RAW";
+    private static final String DEFAULT_SINGLE_KEY_REFERENCE = "1";
+    private static final String ALG = "AES";
+    private static final String ALGORITHM = "AES/CBC/PKCS5PADDING";
+    private static final String PROVIDER = "SunJCE";
+    private static final String FORMAT = "RAW";
     private static final byte[] IV = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
 
-    private byte[] key;
-
-    protected Cipher getCipher() throws NoSuchPaddingException, NoSuchAlgorithmException, NoSuchProviderException {
-        return Cipher.getInstance(ALGORITHM, PROVIDER);
-    }
+    private final byte[] key;
 
     public JreEncryptionProvider(File keyStoreFile) {
         try {
             super.setKeyFile(keyStoreFile);
             this.key = Files.readAllBytes(Paths.get(keyStoreFile.getAbsolutePath()));
         } catch (IOException e) {
-            throw new EncrypterException("Could not read keystore");
+            throw new EncrypterException("Could not read keystore", e);
         }
+    }
+
+    protected Cipher getCipher() throws NoSuchPaddingException, NoSuchAlgorithmException, NoSuchProviderException {
+        return Cipher.getInstance(ALGORITHM, PROVIDER);
     }
 
     protected Key getSecretEncryptionKey(String keyReference, int cipherMode) {

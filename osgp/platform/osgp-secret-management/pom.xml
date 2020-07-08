@@ -29,12 +29,14 @@
         <jaxb.plugin.version>2.5.0</jaxb.plugin.version>
         <build.helper.maven.plugin.version>3.0.0</build.helper.maven.plugin.version>
         <apache.ws.xlmschema.version>2.0.1</apache.ws.xlmschema.version>
+        <apache.jms.api.version>2.0.1</apache.jms.api.version>
         <logback.spring.extensions.version>0.1.5</logback.spring.extensions.version>
         <wsdl4j.version>1.6.3</wsdl4j.version>
         <maven.failsafe.plugin.version>3.0.0-M4</maven.failsafe.plugin.version>
         <spring.boot.maven.plugin.version>2.2.2.RELEASE</spring.boot.maven.plugin.version>
+        <osgp-ws-secret-management-version>${parent.version}</osgp-ws-secret-management-version>
+        <com.h2database>1.4.200</com.h2database>
         <failOnMissingWebXml>false</failOnMissingWebXml>
-        <osgp-ws-secret-management-version>5.2.0-SNAPSHOT</osgp-ws-secret-management-version>
     </properties>
 
     <build>
@@ -137,7 +139,7 @@
         <dependency>
             <groupId>javax.jms</groupId>
             <artifactId>javax.jms-api</artifactId>
-            <version>2.0.1</version>
+            <version>${apache.jms.api.version}</version>
         </dependency>
 
         <dependency>
@@ -165,7 +167,7 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <version>1.4.200</version>
+            <version>${com.h2database}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

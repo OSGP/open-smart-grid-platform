@@ -14,13 +14,13 @@ package org.opensmartgridplatform.shared.security;
  */
 public class Secret {
 
-    private final byte[] secret;
+    private final byte[] secretBytes;
 
-    public Secret(final byte[] secret) {
-        this.secret = secret;
+    public Secret(final byte[] secretBytes) {
+        this.secretBytes = secretBytes;
     }
 
     public byte[] getSecret() {
-        return secret;
+        return secretBytes;
     }
 }

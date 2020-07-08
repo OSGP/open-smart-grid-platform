@@ -45,14 +45,17 @@ import org.springframework.data.domain.PageImpl;
 
 @ExtendWith(MockitoExtension.class)
 public class SecretManagementServiceTest {
-    SecretManagementService service;
+
+    private static final String SOME_DEVICE = "SOME_DEVICE";
+
+    private SecretManagementService service;
 
     @Mock
-    EncryptionDelegate encryptionDelegate;
+    private EncryptionDelegate encryptionDelegate;
     @Mock
-    DbEncryptedSecretRepository secretRepository;
+    private DbEncryptedSecretRepository secretRepository;
     @Mock
-    DbEncryptionKeyRepository keyRepository;
+    private DbEncryptionKeyRepository keyRepository;
 
     @BeforeEach
     public void setHsmEncryption() {
@@ -73,7 +76,7 @@ public class SecretManagementServiceTest {
         when(this.secretRepository.findIdOfValidMostRecent(any(), any(), any())).thenReturn(1L);
         when(this.secretRepository.findById(any())).thenReturn(Optional.of(secret));
         when(this.encryptionDelegate.decrypt(any(), any())).thenReturn(decryptedSecret);
-        final List<TypedSecret> typedSecrets = this.service.retrieveSecrets("SOME_DEVICE",
+        final List<TypedSecret> typedSecrets = this.service.retrieveSecrets(SOME_DEVICE,
                 Arrays.asList(SecretType.E_METER_MASTER_KEY));
 
         //THEN

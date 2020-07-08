@@ -34,7 +34,7 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider implements
     private static final String TYPE = "ncipher.sworld";
     private static final byte[] IV = new byte[16];
 
-    private KeyStore keyStore;
+    private final KeyStore keyStore;
 
     public HsmEncryptionProvider(File keyStoreFile) {
         try {

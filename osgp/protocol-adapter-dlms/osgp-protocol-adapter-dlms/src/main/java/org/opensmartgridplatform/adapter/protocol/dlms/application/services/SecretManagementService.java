@@ -26,16 +26,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service(value = "secretManagementService")
+@Service
 @Transactional
 public class SecretManagementService implements SecurityKeyService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SecretManagementService.class);
-    private RsaEncryptionProvider rsaEncryptionProvider;
-    private SecretManagementClient secretManagementClient;
+    private final RsaEncryptionProvider rsaEncryptionProvider;
+    private final SecretManagementClient secretManagementClient;
 
-    public SecretManagementService(RsaEncryptionProvider rsaEncryptionProvider, SecretManagementClient secretManagementClient)
-    {
+    public SecretManagementService(RsaEncryptionProvider rsaEncryptionProvider,
+            SecretManagementClient secretManagementClient) {
         this.rsaEncryptionProvider = rsaEncryptionProvider;
         this.secretManagementClient = secretManagementClient;
     }
@@ -64,14 +64,15 @@ public class SecretManagementService implements SecurityKeyService {
     public byte[] getDlmsAuthenticationKey(String deviceIdentification) throws EncrypterException {
 
         try {
-            GetSecretsRequest request = getSoapRequestForKey(deviceIdentification, SecretType.E_METER_AUTHENTICATION_KEY);
+            GetSecretsRequest request = getSoapRequestForKey(deviceIdentification,
+                    SecretType.E_METER_AUTHENTICATION_KEY);
             GetSecretsResponse response = secretManagementClient.getSecretsRequest(request);
-            Optional<TypedSecret> optionalTypedSecret = getTypedSecretFromSoapResponse(response, SecretType.E_METER_AUTHENTICATION_KEY);
+            Optional<TypedSecret> optionalTypedSecret = getTypedSecretFromSoapResponse(response,
+                    SecretType.E_METER_AUTHENTICATION_KEY);
 
-            return decryptSoapSecret(deviceIdentification,
-                    optionalTypedSecret.orElseThrow(()->new IllegalStateException("Secret not found:" + deviceIdentification)));
-        }
-        catch(Exception e) {
+            return decryptSoapSecret(deviceIdentification, optionalTypedSecret.orElseThrow(
+                    () -> new IllegalStateException("Secret not found:" + deviceIdentification)));
+        } catch (Exception e) {
             throw new EncrypterException("Error while retrieving authentication key", e);
         }
     }
@@ -80,14 +81,15 @@ public class SecretManagementService implements SecurityKeyService {
     public byte[] getDlmsGlobalUnicastEncryptionKey(String deviceIdentification) {
 
         try {
-            GetSecretsRequest request = getSoapRequestForKey(deviceIdentification, SecretType.E_METER_ENCRYPTION_KEY_UNICAST);
+            GetSecretsRequest request = getSoapRequestForKey(deviceIdentification,
+                    SecretType.E_METER_ENCRYPTION_KEY_UNICAST);
             GetSecretsResponse response = secretManagementClient.getSecretsRequest(request);
-            Optional<TypedSecret> optionalTypedSecret = getTypedSecretFromSoapResponse(response, SecretType.E_METER_ENCRYPTION_KEY_UNICAST);
+            Optional<TypedSecret> optionalTypedSecret = getTypedSecretFromSoapResponse(response,
+                    SecretType.E_METER_ENCRYPTION_KEY_UNICAST);
 
-            return decryptSoapSecret(deviceIdentification,
-                    optionalTypedSecret.orElseThrow(()->new IllegalStateException("Secret not found:" + deviceIdentification)));
-        }
-        catch(Exception e) {
+            return decryptSoapSecret(deviceIdentification, optionalTypedSecret.orElseThrow(
+                    () -> new IllegalStateException("Secret not found:" + deviceIdentification)));
+        } catch (Exception e) {
             LOGGER.error("Error while retrieving encryption key", e);
         }
         return new byte[0];

@@ -13,8 +13,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.PropertySource;
 
 @SpringBootApplication(exclude = { SecurityAutoConfiguration.class })
+@PropertySource("classpath:osgp-secret-management.properties")
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/SecretManagement/config}", ignoreResourceNotFound = true)
 @ComponentScan(basePackages = { "org.opensmartgridplatform.secretmanagement" })
 public class Main extends SpringBootServletInitializer {
     public static void main(final String[] args) {
