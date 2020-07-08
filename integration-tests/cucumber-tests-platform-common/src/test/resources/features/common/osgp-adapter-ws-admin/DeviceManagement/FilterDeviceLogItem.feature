@@ -53,6 +53,15 @@ Feature: Filter DeviceLogItem
       | DeviceIdentification       | DEV-2   |
       | OrganizationIdentification | Liander |
 
+  Scenario: Sort DeviceLogItem
+    When receiving a filter message log request
+      | SortDir  | DESC                 |
+      | SortedBy | deviceIdentification |
+    Then the messages response contains 15 correct messages with order
+      | DEV-2  |
+      | DEV-11 |
+      | DEV-1  |
+
   Scenario Outline: Filter DeviceLogItem only on device identification within two dates
     When receiving a filter message log request
       | DeviceIdentification | DEV-1       |
@@ -65,7 +74,6 @@ Feature: Filter DeviceLogItem
       | StartTime            | EndTime              | Amount |
       | 2020-01-01T00:00:00Z | 2020-01-02T00:00:00Z |      0 |
       | 1970-01-01T00:00:00Z | 2025-01-01T00:00:00Z |      6 |
-
 
   Scenario Outline: Filter DeviceLogItem only on organisation Identification within two dates
     When receiving a filter message log request

@@ -8,12 +8,14 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStri
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.FindMessageLogsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.FindMessageLogsResponse;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.MessageLog;
+import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.SortDirectionEnum;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonDefaults;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonKeys;
@@ -37,8 +39,7 @@ public class FilterMessageLogsSteps {
     }
 
     @When("^receiving a filter message log request$")
-    public void getMessageLogFilter(final Map<String, String> requestParameters)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+    public void getMessageLogFilter(final Map<String, String> requestParameters) throws IllegalArgumentException {
         final FindMessageLogsRequest request = new FindMessageLogsRequest();
 
         if (requestParameters.containsKey(PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION)) {
@@ -58,8 +59,26 @@ public class FilterMessageLogsSteps {
             request.setEndTime(XmlGregorianCalendarInputParser.parse(getString(requestParameters,
                     PlatformCommonKeys.KEY_SETPOINT_END_TIME, PlatformCommonDefaults.DEFAULT_END_DATE)));
         }
+        if (requestParameters.containsKey(PlatformCommonKeys.KEY_SORT_DIR)) {
 
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.client.findMessageLogs(request));
+            if ((requestParameters.get(PlatformCommonKeys.KEY_SORT_DIR)).equals("ASC")) {
+                request.setSortDirection(SortDirectionEnum.ASC);
+            } else if ((requestParameters.get(PlatformCommonKeys.KEY_SORT_DIR)).equals("DESC")) {
+                request.setSortDirection(SortDirectionEnum.DESC);
+            } else {
+                throw new IllegalArgumentException("Sort direction not properly set");
+            }
+
+        }
+        if (requestParameters.containsKey(PlatformCommonKeys.KEY_SORTED_BY)) {
+            request.setSortBy(requestParameters.get(PlatformCommonKeys.KEY_SORTED_BY));
+        }
+
+        try {
+            ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.client.findMessageLogs(request));
+        } catch (final WebServiceSecurityException e) {
+            e.printStackTrace();
+        }
     }
 
     @Then("the messages response contains {int} correct messages")
@@ -92,6 +111,19 @@ public class FilterMessageLogsSteps {
     public void theGetMessageLogsDateFilterSuccessFul(final int amount) throws Throwable {
         final List<MessageLog> messageLogs = this.getMessageLogs();
         assertThat(messageLogs.size()).isEqualTo(amount);
+    }
+
+    @Then("the messages response contains {int} correct messages with order")
+    public void theGetMessageLogsInOrder(final int amount, final List<String> ids) {
+        final List<MessageLog> messageLogs = this.getMessageLogs();
+        assertThat(messageLogs.size()).isEqualTo(amount);
+        final List<String> actualIds = new ArrayList<>();
+        for (final MessageLog log : messageLogs) {
+            if (!actualIds.contains(log.getDeviceIdentification())) {
+                actualIds.add(log.getDeviceIdentification());
+            }
+        }
+        assertThat(actualIds).isEqualTo(ids);
     }
 
     private List<MessageLog> getMessageLogs() {
