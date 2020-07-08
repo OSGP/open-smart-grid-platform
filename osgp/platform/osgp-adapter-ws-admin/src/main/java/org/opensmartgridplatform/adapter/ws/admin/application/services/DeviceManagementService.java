@@ -18,13 +18,13 @@ import java.util.List;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceException;
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.opensmartgridplatform.adapter.ws.admin.infra.jms.AdminRequestMessage;
 import org.opensmartgridplatform.adapter.ws.admin.infra.jms.AdminRequestMessageSender;
 import org.opensmartgridplatform.adapter.ws.admin.infra.jms.AdminResponseMessageFinder;
+import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.FindMessageLogsRequest;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
 import org.opensmartgridplatform.domain.core.entities.Event;
@@ -327,33 +327,34 @@ public class DeviceManagementService {
     }
 
     public Slice<DeviceLogItem> findDeviceMessages(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, @Min(value = 0) final int pageNumber,
-            @Identification final String organisationIdentificationFilter, final XMLGregorianCalendar startCalendar,
-            final XMLGregorianCalendar endCalendar) throws FunctionalException {
+            final FindMessageLogsRequest request) throws FunctionalException {
 
         LOGGER.debug("findDeviceMessages called with organisation {}, device {} and pagenumber {}",
-                organisationIdentification, deviceIdentification, pageNumber);
+                organisationIdentification, request.getDeviceIdentification(), request.getPage());
 
         final Organisation organisation = this.findOrganisation(organisationIdentification);
         this.isAllowed(organisation, PlatformFunction.GET_MESSAGES);
 
-        final PageRequest request = PageRequest.of(pageNumber, this.pagingSettings.getMaximumPageSize(),
-                Sort.Direction.DESC, "modificationTime");
+        PageRequest pageRequest;
+        if (request.getSortDirection() != null && !StringUtils.isEmpty(request.getSortBy())) {
+            pageRequest = PageRequest.of(request.getPage(), this.pagingSettings.getMaximumPageSize(),
+                    Sort.Direction.valueOf(request.getSortDirection().toString()), request.getSortBy());
+        } else {
+            pageRequest = PageRequest.of(request.getPage(), this.pagingSettings.getMaximumPageSize(),
+                    Sort.Direction.DESC, "modificationTime");
+        }
+        final Specification<DeviceLogItem> specification = this.applyFilter(request);
 
-        final Specification<DeviceLogItem> specification = this.applyFilter(deviceIdentification,
-                organisationIdentificationFilter, startCalendar, endCalendar);
-
-        return this.logItemRepository.findAll(specification, request);
+        return this.logItemRepository.findAll(specification, pageRequest);
     }
 
-    private Specification<DeviceLogItem> applyFilter(final String deviceIdentification, final String organisationFilter,
-            final XMLGregorianCalendar startCalendar, final XMLGregorianCalendar endCalendar) {
+    private Specification<DeviceLogItem> applyFilter(final FindMessageLogsRequest request) {
 
         Specification<DeviceLogItem> specification = DeviceLogItemSpecifications.ALL;
-        specification = this.doFilterDeviceId(deviceIdentification, specification);
-        specification = this.doFilterOrganisationId(organisationFilter, specification);
-        specification = this.doFilterStartDate(startCalendar, specification);
-        specification = this.doFilterEndDate(endCalendar, specification);
+        specification = this.doFilterDeviceId(request.getDeviceIdentification(), specification);
+        specification = this.doFilterOrganisationId(request.getOrganisationIdentification(), specification);
+        specification = this.doFilterStartDate(request.getStartTime(), specification);
+        specification = this.doFilterEndDate(request.getEndTime(), specification);
 
         return specification;
     }
