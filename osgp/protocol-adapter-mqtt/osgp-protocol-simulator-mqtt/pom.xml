@@ -65,10 +65,10 @@ http://www.apache.org/licenses/LICENSE-2.0
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter</artifactId>
       <exclusions>
-          <exclusion>
-              <groupId>ch.qos.logback</groupId>
-              <artifactId>logback-classic</artifactId>
-          </exclusion>
+        <exclusion>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-classic</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
 
