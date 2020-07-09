@@ -4,13 +4,15 @@
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.admin.devicemanagement;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.FindMessageLogsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.FindMessageLogsResponse;
@@ -39,51 +41,44 @@ public class FilterMessageLogsSteps {
     }
 
     @When("^receiving a filter message log request$")
-    public void getMessageLogFilter(final Map<String, String> requestParameters) throws IllegalArgumentException {
+    public void getMessageLogFilter(final Map<String, String> requestParameters)
+            throws IllegalArgumentException, WebServiceSecurityException {
         final FindMessageLogsRequest request = new FindMessageLogsRequest();
 
         if (requestParameters.containsKey(PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION)) {
             request.setDeviceIdentification(getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION,
                     PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
         }
+
         if (requestParameters.containsKey(PlatformCommonKeys.KEY_ORGANIZATION_IDENTIFICATION)) {
             request.setOrganisationIdentification(
                     getString(requestParameters, PlatformCommonKeys.KEY_ORGANIZATION_IDENTIFICATION,
                             PlatformCommonDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
         }
-        if (requestParameters.containsKey(PlatformCommonKeys.KEY_SETPOINT_START_TIME)) {
+
+        if (requestParameters.containsKey(PlatformCommonKeys.START_TIME)) {
             request.setStartTime(XmlGregorianCalendarInputParser.parse(getString(requestParameters,
-                    PlatformCommonKeys.KEY_SETPOINT_START_TIME, PlatformCommonDefaults.DEFAULT_BEGIN_DATE)));
+                    PlatformCommonKeys.START_TIME, PlatformCommonDefaults.DEFAULT_BEGIN_DATE)));
         }
-        if (requestParameters.containsKey(PlatformCommonKeys.KEY_SETPOINT_END_TIME)) {
+
+        if (requestParameters.containsKey(PlatformCommonKeys.END_TIME)) {
             request.setEndTime(XmlGregorianCalendarInputParser.parse(getString(requestParameters,
-                    PlatformCommonKeys.KEY_SETPOINT_END_TIME, PlatformCommonDefaults.DEFAULT_END_DATE)));
+                    PlatformCommonKeys.END_TIME, PlatformCommonDefaults.DEFAULT_END_DATE)));
         }
-        if (requestParameters.containsKey(PlatformCommonKeys.KEY_SORT_DIR)) {
 
-            if ((requestParameters.get(PlatformCommonKeys.KEY_SORT_DIR)).equals("ASC")) {
-                request.setSortDirection(SortDirectionEnum.ASC);
-            } else if ((requestParameters.get(PlatformCommonKeys.KEY_SORT_DIR)).equals("DESC")) {
-                request.setSortDirection(SortDirectionEnum.DESC);
-            } else {
-                throw new IllegalArgumentException("Sort direction not properly set");
-            }
+        final SortDirectionEnum sortDirection = getEnum(requestParameters, PlatformCommonKeys.KEY_SORT_DIR,
+                SortDirectionEnum.class);
+        request.setSortDirection(sortDirection);
 
-        }
         if (requestParameters.containsKey(PlatformCommonKeys.KEY_SORTED_BY)) {
             request.setSortBy(requestParameters.get(PlatformCommonKeys.KEY_SORTED_BY));
         }
 
-        try {
-            ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.client.findMessageLogs(request));
-        } catch (final WebServiceSecurityException e) {
-            e.printStackTrace();
-        }
+        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.client.findMessageLogs(request));
     }
 
     @Then("the messages response contains {int} correct messages")
-    public void theGetMessageLogsFilterSuccesful(final int amount, final Map<String, String> requestParameters)
-            throws Throwable {
+    public void theGetMessageLogsFilterSuccesful(final int amount, final Map<String, String> requestParameters) {
         final List<MessageLog> messageLogs = this.getMessageLogs();
         assertThat(messageLogs.size()).isEqualTo(amount);
         for (final MessageLog log : messageLogs) {
@@ -91,6 +86,7 @@ public class FilterMessageLogsSteps {
                 assertThat(log.getDeviceIdentification())
                         .isEqualTo(requestParameters.get(PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION));
             }
+
             if (requestParameters.containsKey(PlatformCommonKeys.KEY_ORGANIZATION_IDENTIFICATION)) {
                 assertThat(log.getOrganisationIdentification())
                         .isEqualTo(requestParameters.get(PlatformCommonKeys.KEY_ORGANIZATION_IDENTIFICATION));
@@ -102,6 +98,7 @@ public class FilterMessageLogsSteps {
     public void theGetMessageLogsDeviceWildcardFeatureSuccesful(final int amount, final List<String> ids) {
         final List<MessageLog> messageLogs = this.getMessageLogs();
         assertThat(messageLogs.size()).isEqualTo(amount);
+
         for (final MessageLog log : messageLogs) {
             assertThat(ids).contains(log.getDeviceIdentification());
         }
@@ -113,17 +110,17 @@ public class FilterMessageLogsSteps {
         assertThat(messageLogs.size()).isEqualTo(amount);
     }
 
-    @Then("the messages response contains {int} correct messages with order")
-    public void theGetMessageLogsInOrder(final int amount, final List<String> ids) {
+    @Then("the messages response contains {int} messages ordered descending by device identification")
+    public void theGetMessageLogsInOrder(final int amount) {
         final List<MessageLog> messageLogs = this.getMessageLogs();
         assertThat(messageLogs.size()).isEqualTo(amount);
-        final List<String> actualIds = new ArrayList<>();
-        for (final MessageLog log : messageLogs) {
-            if (!actualIds.contains(log.getDeviceIdentification())) {
-                actualIds.add(log.getDeviceIdentification());
-            }
-        }
-        assertThat(actualIds).isEqualTo(ids);
+
+        final List<String> deviceIdentifications = messageLogs.stream()
+                .map(MessageLog::getDeviceIdentification)
+                .collect(Collectors.toList());
+        Collections.reverse(deviceIdentifications);
+
+        assertThat(deviceIdentifications).isSorted();
     }
 
     private List<MessageLog> getMessageLogs() {
