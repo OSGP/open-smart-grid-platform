@@ -1,3 +1,4 @@
+@DistributionAutomation @Platform @PeakShaving
 Feature: Peak shaving
 
   Scenario: Get data from MQTT device
