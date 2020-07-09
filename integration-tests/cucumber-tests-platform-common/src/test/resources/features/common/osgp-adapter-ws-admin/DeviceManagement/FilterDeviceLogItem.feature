@@ -19,6 +19,7 @@ Feature: Filter device messages
     When receiving a message log request without a filter
     Then the messages response contains 15 correct messages with date filter or no filter
 
+  @NightlyBuildOnly
   Scenario: Filter messages only on device identification
     When receiving a filter message log request
       | DeviceIdentification | DEV-1 |
@@ -32,6 +33,7 @@ Feature: Filter device messages
       | DEV-1  |
       | DEV-11 |
 
+  @NightlyBuildOnly
   Scenario: Use wildcard filter for Organisation Identification
     When receiving a filter message log request
       | OrganizationIdentification | Li?nder |
@@ -39,13 +41,14 @@ Feature: Filter device messages
       | DEV-1 |
       | DEV-2 |
 
-  Scenario: Filter messages only on organisation identification
+  @NightlyBuildOnly
+  Scenario: Filter messages only on Organisation Identification
     When receiving a filter message log request
       | OrganizationIdentification | Liander |
     Then the messages response contains 11 correct messages
       | OrganizationIdentification | Liander |
 
-  Scenario: Filter messages on organisation identification and device identification
+  Scenario: Filter messages on Organisation Identification and Device Identification
     When receiving a filter message log request
       | DeviceIdentification       | DEV-2   |
       | OrganizationIdentification | Liander |
@@ -53,7 +56,7 @@ Feature: Filter device messages
       | DeviceIdentification       | DEV-2   |
       | OrganizationIdentification | Liander |
 
-  Scenario: Sort messages
+  Scenario: Sort messages by Device Identification
     When receiving a filter message log request
       | SortDir  | DESC                 |
       | SortedBy | deviceIdentification |
@@ -72,6 +75,7 @@ Feature: Filter device messages
       | 2020-01-01T00:00:00Z | 2020-01-02T00:00:00Z |      0 |
       | 1970-01-01T00:00:00Z | 2025-01-01T00:00:00Z |      6 |
 
+  @NightlyBuildOnly
   Scenario Outline: Filter messages on Organisation Identification and within two dates
     When receiving a filter message log request
       | OrganizationIdentification | Liander     |
@@ -100,6 +104,7 @@ Feature: Filter device messages
       | 2020-01-01T00:00:00Z | 2020-01-02T00:00:00Z |      0 |
       | 1970-01-01T00:00:00Z | 2025-01-01T00:00:00Z |      5 |
 
+  @NightlyBuildOnly
   Scenario Outline: Filter messages within two dates
     When receiving a filter message log request
       | StartTime | <StartTime> |
@@ -111,6 +116,7 @@ Feature: Filter device messages
       | 2020-01-01T00:00:00Z | 2020-01-02T00:00:00Z |      0 |
       | 1970-01-01T00:00:00Z | 2025-01-01T00:00:00Z |     15 |
 
+  @NightlyBuildOnly
   Scenario Outline: Filter messages on Start or End Date
     When receiving a filter message log request
       | <TimeFilter> | <Time> |
@@ -123,6 +129,7 @@ Feature: Filter device messages
       | EndTime    | 2025-01-01T00:00:00Z |     15 |
       | EndTime    | 1970-01-01T00:00:00Z |      0 |
 
+  @NightlyBuildOnly
   Scenario Outline: Filter messages on Device Identification and Start Date or End Date
     When receiving a filter message log request
       | <TimeFilter>         | <Time> |
