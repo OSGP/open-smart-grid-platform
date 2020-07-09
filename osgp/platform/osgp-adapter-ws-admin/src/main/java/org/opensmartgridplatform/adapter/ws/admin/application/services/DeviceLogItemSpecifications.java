@@ -16,27 +16,23 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import org.opensmartgridplatform.logging.domain.entities.DeviceLogItem;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.domain.Specification;
 
 public final class DeviceLogItemSpecifications {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceLogItemSpecifications.class);
-
     private static final String DEVICE_IDENTIFICATION = "deviceIdentification";
     private static final String ORGANISATION_IDENTIFICATION = "organisationIdentification";
     private static final String MODIFICATION_TIME = "modificationTime";
-
-    private DeviceLogItemSpecifications() {
-        // Prevents creation of DeviceLogItemSpecifications objects
-    }
 
     public static final Specification<DeviceLogItem> NONE = (final Root<DeviceLogItem> r, final CriteriaQuery<?> q,
             final CriteriaBuilder cb) -> cb.or();
 
     public static final Specification<DeviceLogItem> ALL = (final Root<DeviceLogItem> r, final CriteriaQuery<?> q,
             final CriteriaBuilder cb) -> cb.and();
+
+    private DeviceLogItemSpecifications() {
+        // Prevents creation of DeviceLogItemSpecifications objects
+    }
 
     public static Specification<DeviceLogItem> hasDeviceIdentification(final String deviceIdentification) {
         return (final Root<DeviceLogItem> r, final CriteriaQuery<?> q, final CriteriaBuilder cb) -> cb.like(
