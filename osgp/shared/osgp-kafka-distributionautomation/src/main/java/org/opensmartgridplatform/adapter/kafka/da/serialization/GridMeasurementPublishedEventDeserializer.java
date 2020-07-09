@@ -11,14 +11,14 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import org.apache.kafka.common.serialization.Deserializer;
-import org.opensmartgridplatform.adapter.kafka.da.avro.MeterReading;
+import org.opensmartgridplatform.adapter.kafka.da.avro.GridMeasurementPublishedEvent;
 
-public class MeterReadingDeserializer implements Deserializer<MeterReading> {
+public class GridMeasurementPublishedEventDeserializer implements Deserializer<GridMeasurementPublishedEvent> {
 
     @Override
-    public MeterReading deserialize(final String topic, final byte[] data) {
+    public GridMeasurementPublishedEvent deserialize(final String topic, final byte[] data) {
         try {
-            return MeterReading.fromByteBuffer(ByteBuffer.wrap(data));
+            return GridMeasurementPublishedEvent.fromByteBuffer(ByteBuffer.wrap(data));
         } catch (final IOException e) {
             throw new RuntimeException(e);
         }

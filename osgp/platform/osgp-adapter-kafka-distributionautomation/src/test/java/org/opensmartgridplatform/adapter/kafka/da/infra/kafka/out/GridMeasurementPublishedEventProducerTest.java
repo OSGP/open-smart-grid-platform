@@ -27,11 +27,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.adapter.kafka.da.application.config.KafkaProducerConfig;
 import org.opensmartgridplatform.adapter.kafka.da.application.mapping.DistributionAutomationMapper;
-import org.opensmartgridplatform.adapter.kafka.da.avro.IntervalBlock;
-import org.opensmartgridplatform.adapter.kafka.da.avro.MeterReading;
-import org.opensmartgridplatform.adapter.kafka.da.avro.UsagePoint;
-import org.opensmartgridplatform.adapter.kafka.da.avro.ValuesInterval;
-import org.opensmartgridplatform.adapter.kafka.da.serialization.MeterReadingDeserializer;
+import org.opensmartgridplatform.adapter.kafka.da.avro.GridMeasurementPublishedEvent;
+import org.opensmartgridplatform.adapter.kafka.da.avro.Measurement;
+import org.opensmartgridplatform.adapter.kafka.da.avro.Name;
+import org.opensmartgridplatform.adapter.kafka.da.avro.PowerSystemResource;
+import org.opensmartgridplatform.adapter.kafka.da.serialization.GridMeasurementPublishedEventDeserializer;
 import org.opensmartgridplatform.domain.da.measurements.MeasurementReport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,7 +51,7 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
         topics = { "${distributionautomation.kafka.topic}" },
         brokerProperties = { "listeners=PLAINTEXT://localhost:9092", "log.dirs=../kafka-logs/",
                 "auto.create.topics.enable=true" })
-class MeterReadingProducerTest {
+class GridMeasurementPublishedEventProducerTest {
 
     @Value("${distributionautomation.kafka.topic}")
     private String topic;
@@ -63,17 +63,17 @@ class MeterReadingProducerTest {
     private DistributionAutomationMapper mapper;
 
     @Autowired
-    private KafkaTemplate<String, MeterReading> template;
+    private KafkaTemplate<String, GridMeasurementPublishedEvent> template;
 
-    private MeterReadingProducer producer;
-    private MeterReading message;
+    private GridMeasurementPublishedEventProducer producer;
+    private GridMeasurementPublishedEvent message;
 
     @BeforeEach
     @SuppressWarnings("unchecked")
     public void setup() {
         this.message = this.createMessage();
         when(this.mapper.map(any(MeasurementReport.class), any(Class.class))).thenReturn(this.message);
-        this.producer = new MeterReadingProducer(this.template, this.mapper);
+        this.producer = new GridMeasurementPublishedEventProducer(this.template, this.mapper);
     }
 
     @Test
@@ -85,21 +85,26 @@ class MeterReadingProducerTest {
         // consume the message with embeddedKafka
         final Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("testGroup", "true", this.embeddedKafka);
         consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        final ConsumerFactory<String, MeterReading> consumerFactory = new DefaultKafkaConsumerFactory<>(consumerProps,
-                new StringDeserializer(), new MeterReadingDeserializer());
-        final Consumer<String, MeterReading> consumer = consumerFactory.createConsumer();
+        final ConsumerFactory<String, GridMeasurementPublishedEvent> consumerFactory = new DefaultKafkaConsumerFactory<>(
+                consumerProps, new StringDeserializer(), new GridMeasurementPublishedEventDeserializer());
+        final Consumer<String, GridMeasurementPublishedEvent> consumer = consumerFactory.createConsumer();
         this.embeddedKafka.consumeFromAnEmbeddedTopic(consumer, this.topic);
-        final ConsumerRecord<String, MeterReading> received = KafkaTestUtils.getSingleRecord(consumer, this.topic);
+        final ConsumerRecord<String, GridMeasurementPublishedEvent> received = KafkaTestUtils.getSingleRecord(consumer,
+                this.topic);
 
         // check the consumed message
         assertThat(received).has(value(this.message));
     }
 
-    private MeterReading createMessage() {
-        final ValuesInterval valuesInterval = new ValuesInterval(0l, 1000l);
+    private GridMeasurementPublishedEvent createMessage() {
+        final long createdDateTime = System.currentTimeMillis();
+        final String description = "description";
         final String mRid = "mRid";
-        final UsagePoint usagePoint = new UsagePoint(mRid);
-        final List<IntervalBlock> intervalBlocks = new ArrayList<>();
-        return new MeterReading(valuesInterval, mRid, "name", usagePoint, intervalBlocks);
+        final String kind = "GridMeasurementPublishedEvent";
+        final List<Measurement> measurements = new ArrayList<>();
+        final List<Name> names = new ArrayList<>();
+        final PowerSystemResource powerSystemResource = new PowerSystemResource(description, mRid, names);
+        return new GridMeasurementPublishedEvent(createdDateTime, description, mRid, kind, measurements, names,
+                powerSystemResource);
     }
 }

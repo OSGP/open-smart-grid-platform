@@ -1,0 +1,480 @@
+{
+  "type": "record",
+  "name": "GridMeasurementPublishedEvent",
+  "namespace" : "org.opensmartgridplatform.adapter.kafka.da.avro",
+  "fields": [
+    {
+      "name": "createdDateTime",
+      "type": [
+        "null",
+        "long"
+      ],
+      "doc": "Date and time this activity record has been created (different from the 'status.dateTime', which is the time of a status change of the associated object, if applicable)."
+    },
+    {
+      "name": "description",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "The description is a free human readable text describing or naming the object. It may be non unique and may not correlate to a naming hierarchy."
+    },
+    {
+      "name": "mRID",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Master resource identifier issued by a model authority. The mRID is unique within an exchange context. Global uniqueness is easily achieved by using a UUID,  as specified in RFC 4122, for the mRID. The use of UUID is strongly recommended.For CIMXML data files in RDF syntax conforming to IEC 61970-552 Edition 1, the mRID is mapped to rdf:ID or rdf:about attributes that identify CIM object elements."
+    },
+    {
+      "name": "kind",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Kind of event."
+    },
+    {
+      "name": "Measurements",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": {
+            "type": "record",
+            "name": "Measurement",
+            "doc": "A Measurement represents any measured, calculated or non-measured non-calculated quantity. Any piece of equipment may contain Measurements, e.g. a substation may have temperature measurements and door open indications, a transformer may have oil temperature and tank pressure measurements, a bay may contain a number of power flow measurements and a Breaker may contain a switch status measurement. The PSR - Measurement association is intended to capture this use of Measurement and is included in the naming hierarchy based on EquipmentContainer. The naming hierarchy typically has Measurements as leafs, e.g. Substation-VoltageLevel-Bay-Switch-Measurement.Some Measurements represent quantities related to a particular sensor location in the network, e.g. a voltage transformer (PT) at a busbar or a current transformer (CT) at the bar between a breaker and an isolator. The sensing position is not captured in the PSR - Measurement association. Instead it is captured by the Measurement - Terminal association that is used to define the sensing location in the network topology. The location is defined by the connection of the Terminal to ConductingEquipment. If both a Terminal and PSR are associated, and the PSR is of type ConductingEquipment, the associated Terminal should belong to that ConductingEquipment instance.When the sensor location is needed both Measurement-PSR and Measurement-Terminal are used. The Measurement-Terminal association is never used alone.",
+            "fields": [
+              {
+                "name": "description",
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "doc": "The description is a free human readable text describing or naming the object. It may be non unique and may not correlate to a naming hierarchy."
+              },
+              {
+                "name": "mRID",
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "doc": "Master resource identifier issued by a model authority. The mRID is unique within an exchange context. Global uniqueness is easily achieved by using a UUID,  as specified in RFC 4122, for the mRID. The use of UUID is strongly recommended.For CIMXML data files in RDF syntax conforming to IEC 61970-552 Edition 1, the mRID is mapped to rdf:ID or rdf:about attributes that identify CIM object elements."
+              },
+              {
+                "name": "accumulation",
+                "type": [
+                  "null",
+                  {
+                    "type": "enum",
+                    "name": "AccumulationKind",
+                    "symbols": [
+                      "average",
+                      "boundedQuantity",
+                      "bulkQuantity",
+                      "continuousCumulative",
+                      "cumulative",
+                      "deltaData",
+                      "indicating",
+                      "instantaneous",
+                      "latchingQuantity",
+                      "none",
+                      "summation",
+                      "timeDelay"
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "measuringPeriod",
+                "type": [
+                  "null",
+                  {
+                    "type": "enum",
+                    "name": "MeasuringPeriodKind",
+                    "symbols": [
+                      "fifteenMinute",
+                      "fiveMinute",
+                      "fixedBlock10Min",
+                      "fixedBlock15Min",
+                      "fixedBlock1Min",
+                      "fixedBlock20Min",
+                      "fixedBlock30Min",
+                      "fixedBlock5Min",
+                      "fixedBlock60Min",
+                      "none",
+                      "oneMinute",
+                      "present",
+                      "previous",
+                      "rollingBlock10MinIntvl1MinSubIntvl",
+                      "rollingBlock10MinIntvl2MinSubIntvl",
+                      "rollingBlock10MinIntvl5MinSubIntvl",
+                      "rollingBlock15MinIntvl1MinSubIntvl",
+                      "rollingBlock15MinIntvl3MinSubIntvl",
+                      "rollingBlock15MinIntvl5MinSubIntvl",
+                      "rollingBlock30MinIntvl10MinSubIntvl",
+                      "rollingBlock30MinIntvl15MinSubIntvl",
+                      "rollingBlock30MinIntvl2MinSubIntvl",
+                      "rollingBlock30MinIntvl3MinSubIntvl",
+                      "rollingBlock30MinIntvl5MinSubIntvl",
+                      "rollingBlock30MinIntvl6MinSubIntvl",
+                      "rollingBlock5MinIntvl1MinSubIntvl",
+                      "rollingBlock60MinIntvl10MinSubIntvl",
+                      "rollingBlock60MinIntvl12MinSubIntvl",
+                      "rollingBlock60MinIntvl15MinSubIntvl",
+                      "rollingBlock60MinIntvl20MinSubIntvl",
+                      "rollingBlock60MinIntvl30MinSubIntvl",
+                      "rollingBlock60MinIntvl4MinSubIntvl",
+                      "rollingBlock60MinIntvl5MinSubIntvl",
+                      "rollingBlock60MinIntvl6MinSubIntvl",
+                      "sixtyMinute",
+                      "tenMinute",
+                      "thirtyMinute",
+                      "threeMinute",
+                      "twentyfourHour",
+                      "twentyMinute",
+                      "twoMinute"
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "phases",
+                "type": [
+                  "null",
+                  {
+                    "type": "enum",
+                    "name": "PhaseCode",
+                    "symbols": [
+                      "A",
+                      "AB",
+                      "ABC",
+                      "ABCN",
+                      "ABN",
+                      "AC",
+                      "ACN",
+                      "AN",
+                      "B",
+                      "BC",
+                      "BCN",
+                      "BN",
+                      "C",
+                      "CN",
+                      "N",
+                      "none",
+                      "s1",
+                      "s12",
+                      "s12N",
+                      "s1N",
+                      "s2",
+                      "s2N",
+                      "X",
+                      "XN",
+                      "XY",
+                      "XYN"
+                    ]
+                  }
+                ],
+                "doc": "Indicates to which phases the measurement applies and avoids the need to use 'measurementType' to also encode phase information (which would explode the types). The phase information in Measurement, along with 'measurementType' and 'phases' uniquely defines a Measurement for a device, based on normal network phase. Their meaning will not change when the computed energizing phasing is changed due to jumpers or other reasons.If the attribute is missing three phases (ABC) shall be assumed."
+              },
+              {
+                "name": "unitMultiplier",
+                "type": [
+                  "null",
+                  {
+                    "type": "enum",
+                    "name": "UnitMultiplier",
+                    "symbols": [
+                      "a",
+                      "c",
+                      "d",
+                      "da",
+                      "E",
+                      "f",
+                      "G",
+                      "h",
+                      "k",
+                      "M",
+                      "m",
+                      "micro",
+                      "n",
+                      "none",
+                      "p",
+                      "P",
+                      "T",
+                      "y",
+                      "Y",
+                      "Z",
+                      "z"
+                    ]
+                  }
+                ],
+                "doc": "The unit multiplier of the measured quantity."
+              },
+              {
+                "name": "unitSymbol",
+                "type": [
+                  "null",
+                  {
+                    "type": "enum",
+                    "name": "UnitSymbol",
+                    "symbols": [
+                      "A",
+                      "A2",
+                      "A2h",
+                      "A2s",
+                      "Ah",
+                      "anglemin",
+                      "anglesec",
+                      "APerA",
+                      "APerm",
+                      "As",
+                      "bar",
+                      "Bq",
+                      "Btu",
+                      "C",
+                      "cd",
+                      "character",
+                      "charPers",
+                      "cosPhi",
+                      "count",
+                      "CPerkg",
+                      "CPerm2",
+                      "CPerm3",
+                      "d",
+                      "dB",
+                      "dBm",
+                      "deg",
+                      "degC",
+                      "F",
+                      "FPerm",
+                      "ft3",
+                      "G",
+                      "gal",
+                      "gPerg",
+                      "Gy",
+                      "GyPers",
+                      "H",
+                      "h",
+                      "ha",
+                      "HPerm",
+                      "Hz",
+                      "HzPerHz",
+                      "HzPers",
+                      "J",
+                      "JPerK",
+                      "JPerkg",
+                      "JPerkgK",
+                      "JPerm2",
+                      "JPerm3",
+                      "JPermol",
+                      "JPermolK",
+                      "JPers",
+                      "K",
+                      "kat",
+                      "katPerm3",
+                      "kg",
+                      "kgm",
+                      "kgm2",
+                      "kgPerJ",
+                      "kgPerm3",
+                      "kn",
+                      "KPers",
+                      "l",
+                      "lm",
+                      "lPerh",
+                      "lPerl",
+                      "lPers",
+                      "lx",
+                      "m",
+                      "M",
+                      "m2",
+                      "m2Pers",
+                      "m3",
+                      "m3Compensated",
+                      "m3Perh",
+                      "m3Perkg",
+                      "m3Pers",
+                      "m3Uncompensated",
+                      "min",
+                      "mmHg",
+                      "mol",
+                      "molPerkg",
+                      "molPerm3",
+                      "molPermol",
+                      "mPerm3",
+                      "mPers",
+                      "mPers2",
+                      "Mx",
+                      "N",
+                      "Nm",
+                      "none",
+                      "NPerm",
+                      "Oe",
+                      "ohm",
+                      "ohmm",
+                      "ohmPerm",
+                      "onePerHz",
+                      "onePerm",
+                      "Pa",
+                      "PaPers",
+                      "Pas",
+                      "PerCent",
+                      "ppm",
+                      "Q",
+                      "Qh",
+                      "rad",
+                      "radPers",
+                      "radPers2",
+                      "rev",
+                      "rotPers",
+                      "s",
+                      "S",
+                      "SPerm",
+                      "sPers",
+                      "sr",
+                      "Sv",
+                      "T",
+                      "therm",
+                      "tonne",
+                      "V",
+                      "V2",
+                      "V2h",
+                      "VA",
+                      "VAh",
+                      "VAr",
+                      "VArh",
+                      "Vh",
+                      "VPerHz",
+                      "VPerm",
+                      "VPerV",
+                      "VPerVA",
+                      "VPerVAr",
+                      "Vs",
+                      "W",
+                      "Wb",
+                      "Wh",
+                      "WPerA",
+                      "WPerm2",
+                      "WPerm2sr",
+                      "WPermK",
+                      "WPers",
+                      "WPersr",
+                      "WPerW"
+                    ]
+                  }
+                ],
+                "doc": "The unit of measure of the measured quantity."
+              },
+              {
+                "name": "Names",
+                "type": [
+                  "null",
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "record",
+                      "name": "Name",
+                      "doc": "The Name class provides the means to define any number of human readable  names for an object. A name is <b>not</b> to be used for defining inter-object relationships. For inter-object relationships instead use the object identification 'mRID'.",
+                      "fields": [
+                        {
+                          "name": "name",
+                          "type": [
+                            "null",
+                            "string"
+                          ],
+                          "doc": "Any free text that name the object."
+                        },
+                        {
+                          "name": "NameType",
+                          "type": {
+                            "type": "record",
+                            "name": "NameType",
+                            "doc": "Type of name. Possible values for attribute 'name' are implementation dependent but standard profiles may specify types. An enterprise may have multiple IT systems each having its own local name for the same object, e.g. a planning system may have different names from an EMS. An object may also have different names within the same IT system, e.g. localName as defined in CIM version 14. The definition from CIM14 is:The localName is a human readable name of the object. It is a free text name local to a node in a naming hierarchy similar to a file directory structure. A power system related naming hierarchy may be: Substation, VoltageLevel, Equipment etc. Children of the same parent in such a hierarchy have names that typically are unique among them.",
+                            "fields": [
+                              {
+                                "name": "description",
+                                "type": [
+                                  "null",
+                                  "string"
+                                ],
+                                "doc": "Description of the name type."
+                              },
+                              {
+                                "name": "name",
+                                "type": [
+                                  "null",
+                                  "string"
+                                ],
+                                "doc": "Name of the name type."
+                              }
+                            ]
+                          },
+                          "doc": "Type of this name."
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "doc": "All names of this identified object."
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Names",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "Name"
+        }
+      ],
+      "doc": "All names of this identified object."
+    },
+    {
+      "name": "PowerSystemResource",
+      "type": [
+        "null",
+        {
+          "type": "record",
+          "name": "PowerSystemResource",
+          "doc": "A power system resource can be an item of equipment such as a switch, an equipment container containing many individual items of equipment such as a substation, or an organisational entity such as sub-control area. Power system resources can have measurements associated.",
+          "fields": [
+            {
+              "name": "description",
+              "type": [
+                "null",
+                "string"
+              ],
+              "doc": "The description is a free human readable text describing or naming the object. It may be non unique and may not correlate to a naming hierarchy."
+            },
+            {
+              "name": "mRID",
+              "type": [
+                "null",
+                "string"
+              ],
+              "doc": "Master resource identifier issued by a model authority. The mRID is unique within an exchange context. Global uniqueness is easily achieved by using a UUID,  as specified in RFC 4122, for the mRID. The use of UUID is strongly recommended.For CIMXML data files in RDF syntax conforming to IEC 61970-552 Edition 1, the mRID is mapped to rdf:ID or rdf:about attributes that identify CIM object elements."
+            },
+            {
+              "name": "Names",
+              "type": [
+                "null",
+                {
+                  "type": "array",
+                  "items": "Name"
+                }
+              ],
+              "doc": "All names of this identified object."
+            }
+          ]
+        }
+      ],
+      "doc": "Power system resource that generated this event."
+    }
+  ]
+}
