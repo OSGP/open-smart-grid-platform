@@ -28,7 +28,7 @@ public class PeakShavingConsumer {
 
     @KafkaListener(containerFactory = "peakShavingKafkaListenerContainerFactory", topics = "${peakshaving.kafka.topic}")
     public void listen(final ConsumerRecord<String, String> consumerRecord) {
-        LOGGER.info("recevied consumerRecord");
+        LOGGER.info("received consumerRecord");
         this.consumerRecord = consumerRecord;
     }
 
