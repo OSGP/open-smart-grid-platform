@@ -13,13 +13,14 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import java.io.IOException;
 import java.util.Collections;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.moquette.broker.Server;
 import io.moquette.broker.config.IConfig;
 import io.moquette.interception.AbstractInterceptHandler;
 import io.moquette.interception.messages.InterceptPublishMessage;
 import io.netty.buffer.ByteBuf;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public final class Broker {
 
@@ -43,12 +44,12 @@ public final class Broker {
             return;
         }
         final Server server = new Server();
-        this.startServer(server);
+        startServer(server, this.config);
         handleShutdown(server);
     }
 
-    private void startServer(final Server server) throws IOException {
-        server.startServer(this.config, Collections.singletonList(new AbstractInterceptHandler() {
+    private static void startServer(final Server server, final IConfig config) throws IOException {
+        server.startServer(config, Collections.singletonList(new AbstractInterceptHandler() {
             @Override
             public String getID() {
                 return LISTENER_ID;

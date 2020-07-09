@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.steps.database.adapterprotocoliec60870;
+package org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.steps.database;
 
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getInteger;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;

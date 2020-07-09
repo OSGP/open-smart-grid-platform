@@ -24,6 +24,14 @@ public class SimulatorSpec {
         this.brokerPort = brokerPort;
     }
 
+    public void setStartupPauseMillis(final int startupPauseMillis) {
+        this.startupPauseMillis = startupPauseMillis;
+    }
+
+    public void setMessages(final Message[] messages) {
+        this.messages = messages;
+    }
+
     public String getBrokerHost() {
         return this.brokerHost;
     }
