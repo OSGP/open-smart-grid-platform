@@ -41,16 +41,16 @@ public class GridMeasurementPublishedEventMapping
 
         final List<org.opensmartgridplatform.adapter.kafka.da.avro.Measurement> measurements = new ArrayList<>();
         for (final MeasurementGroup measurementGroup : source.getMeasurementGroups()) {
-            final String mRid = UUID.randomUUID().toString();
             measurements.add(new org.opensmartgridplatform.adapter.kafka.da.avro.Measurement(
-                    measurementGroup.getIdentification(), mRid, AccumulationKind.none, MeasuringPeriodKind.none,
-                    PhaseCode.none, UnitMultiplier.none, UnitSymbol.none, new ArrayList<Name>()));
+                    measurementGroup.getIdentification(), UUID.randomUUID().toString(), AccumulationKind.none,
+                    MeasuringPeriodKind.none, PhaseCode.none, UnitMultiplier.none, UnitSymbol.none,
+                    new ArrayList<Name>()));
         }
 
         final PowerSystemResource powerSystemResource = new PowerSystemResource(identification, identification,
                 new ArrayList<Name>());
         final long createdDateTime = System.currentTimeMillis();
-        return new GridMeasurementPublishedEvent(createdDateTime, identification, identification,
+        return new GridMeasurementPublishedEvent(createdDateTime, identification, UUID.randomUUID().toString(),
                 "GridMeasurementPublishedEvent", measurements, new ArrayList<Name>(), powerSystemResource);
     }
 
