@@ -125,8 +125,8 @@ public class DeviceInstallationService {
 
         final Organisation ownerOrganisation = this.domainHelperService
                 .findOrganisation(ownerOrganisationIdentification);
+        ssld = this.writableSsldRepository.save(ssld);
         final DeviceAuthorization authorization = ssld.addAuthorization(ownerOrganisation, DeviceFunctionGroup.OWNER);
-        this.writableSsldRepository.save(ssld);
         this.writableAuthorizationRepository.save(authorization);
         LOGGER.info("Created new device {} with owner {}", newDevice.getDeviceIdentification(),
                 ownerOrganisationIdentification);
