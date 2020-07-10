@@ -156,11 +156,12 @@ public abstract class BaseDeviceSteps {
 
         device = this.deviceRepository.save(device);
 
-        if (!Objects.equals(getString(settings, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
-                PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION), "null")) {
+        final String organizationIdentification = getString(settings, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
+                PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
+        if (StringUtils.isNotBlank(organizationIdentification)
+                && !"null".equalsIgnoreCase(organizationIdentification)) {
             final Organisation organization = this.organizationRepository
-                    .findByOrganisationIdentification(getString(settings, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
-                            PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+                    .findByOrganisationIdentification(organizationIdentification);
             final DeviceFunctionGroup functionGroup = getEnum(settings, PlatformKeys.KEY_DEVICE_FUNCTION_GROUP,
                     DeviceFunctionGroup.class, DeviceFunctionGroup.OWNER);
             final DeviceAuthorization authorization = device.addAuthorization(organization, functionGroup);
