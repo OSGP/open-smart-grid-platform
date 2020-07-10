@@ -11,8 +11,11 @@ package org.opensmartgridplatform.adapter.kafka.da.application.mapping;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.opensmartgridplatform.adapter.kafka.da.avro.AccumulationKind;
+import org.opensmartgridplatform.adapter.kafka.da.avro.Analog;
+import org.opensmartgridplatform.adapter.kafka.da.avro.AnalogValue;
 import org.opensmartgridplatform.adapter.kafka.da.avro.GridMeasurementPublishedEvent;
 import org.opensmartgridplatform.adapter.kafka.da.avro.MeasuringPeriodKind;
 import org.opensmartgridplatform.adapter.kafka.da.avro.Name;
@@ -20,8 +23,12 @@ import org.opensmartgridplatform.adapter.kafka.da.avro.PhaseCode;
 import org.opensmartgridplatform.adapter.kafka.da.avro.PowerSystemResource;
 import org.opensmartgridplatform.adapter.kafka.da.avro.UnitMultiplier;
 import org.opensmartgridplatform.adapter.kafka.da.avro.UnitSymbol;
+import org.opensmartgridplatform.domain.da.measurements.Measurement;
+import org.opensmartgridplatform.domain.da.measurements.MeasurementElement;
 import org.opensmartgridplatform.domain.da.measurements.MeasurementGroup;
 import org.opensmartgridplatform.domain.da.measurements.MeasurementReport;
+import org.opensmartgridplatform.domain.da.measurements.elements.FloatMeasurementElement;
+import org.opensmartgridplatform.domain.da.measurements.elements.TimestampMeasurementElement;
 
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MappingContext;
@@ -39,19 +46,36 @@ public class GridMeasurementPublishedEventMapping
 
         final String identification = source.getMeasurementGroups().get(0).getIdentification();
 
-        final List<org.opensmartgridplatform.adapter.kafka.da.avro.Measurement> measurements = new ArrayList<>();
+        final List<Analog> measurements = new ArrayList<>();
         for (final MeasurementGroup measurementGroup : source.getMeasurementGroups()) {
-            measurements.add(new org.opensmartgridplatform.adapter.kafka.da.avro.Measurement(
-                    measurementGroup.getIdentification(), UUID.randomUUID().toString(), AccumulationKind.none,
-                    MeasuringPeriodKind.none, PhaseCode.none, UnitMultiplier.none, UnitSymbol.none,
-                    new ArrayList<Name>()));
+            final List<AnalogValue> values = new ArrayList<>();
+
+            final List<MeasurementElement> measurementElements = measurementGroup.getMeasurements()
+                    .stream()
+                    .map(Measurement::getMeasurementElements)
+                    .flatMap(List::stream)
+                    .collect(Collectors.toList());
+            for (final MeasurementElement element : measurementElements) {
+                if (element instanceof TimestampMeasurementElement) {
+                    final TimestampMeasurementElement timestampElement = (TimestampMeasurementElement) element;
+                    values.add(new AnalogValue(null, timestampElement.getValue(), null));
+                }
+                if (element instanceof FloatMeasurementElement) {
+                    final FloatMeasurementElement floatMeasurementElement = (FloatMeasurementElement) element;
+                    values.add(new AnalogValue(floatMeasurementElement.getValue(), null, null));
+                }
+            }
+
+            measurements.add(new Analog(measurementGroup.getIdentification(), UUID.randomUUID().toString(),
+                    AccumulationKind.none, MeasuringPeriodKind.none, PhaseCode.none, UnitMultiplier.none,
+                    UnitSymbol.none, new ArrayList<Name>(), values));
         }
 
         final PowerSystemResource powerSystemResource = new PowerSystemResource(identification, identification,
                 new ArrayList<Name>());
         final long createdDateTime = System.currentTimeMillis();
         return new GridMeasurementPublishedEvent(createdDateTime, identification, UUID.randomUUID().toString(),
-                "GridMeasurementPublishedEvent", measurements, new ArrayList<Name>(), powerSystemResource);
+                "GridMeasurementPublishedEvent", new ArrayList<Name>(), powerSystemResource, measurements);
     }
 
 }

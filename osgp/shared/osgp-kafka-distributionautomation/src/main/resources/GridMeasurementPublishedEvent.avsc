@@ -36,6 +36,99 @@
       "doc": "Kind of event."
     },
     {
+      "name": "Names",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": {
+            "type": "record",
+            "name": "Name",
+            "doc": "The Name class provides the means to define any number of human readable  names for an object. A name is <b>not</b> to be used for defining inter-object relationships. For inter-object relationships instead use the object identification 'mRID'.",
+            "fields": [
+              {
+                "name": "name",
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "doc": "Any free text that name the object."
+              },
+              {
+                "name": "NameType",
+                "type": {
+                  "type": "record",
+                  "name": "NameType",
+                  "doc": "Type of name. Possible values for attribute 'name' are implementation dependent but standard profiles may specify types. An enterprise may have multiple IT systems each having its own local name for the same object, e.g. a planning system may have different names from an EMS. An object may also have different names within the same IT system, e.g. localName as defined in CIM version 14. The definition from CIM14 is:The localName is a human readable name of the object. It is a free text name local to a node in a naming hierarchy similar to a file directory structure. A power system related naming hierarchy may be: Substation, VoltageLevel, Equipment etc. Children of the same parent in such a hierarchy have names that typically are unique among them.",
+                  "fields": [
+                    {
+                      "name": "description",
+                      "type": [
+                        "null",
+                        "string"
+                      ],
+                      "doc": "Description of the name type."
+                    },
+                    {
+                      "name": "name",
+                      "type": [
+                        "null",
+                        "string"
+                      ],
+                      "doc": "Name of the name type."
+                    }
+                  ]
+                },
+                "doc": "Type of this name."
+              }
+            ]
+          }
+        }
+      ],
+      "doc": "All names of this identified object."
+    },
+    {
+      "name": "PowerSystemResource",
+      "type": [
+        "null",
+        {
+          "type": "record",
+          "name": "PowerSystemResource",
+          "doc": "A power system resource can be an item of equipment such as a switch, an equipment container containing many individual items of equipment such as a substation, or an organisational entity such as sub-control area. Power system resources can have measurements associated.",
+          "fields": [
+            {
+              "name": "description",
+              "type": [
+                "null",
+                "string"
+              ],
+              "doc": "The description is a free human readable text describing or naming the object. It may be non unique and may not correlate to a naming hierarchy."
+            },
+            {
+              "name": "mRID",
+              "type": [
+                "null",
+                "string"
+              ],
+              "doc": "Master resource identifier issued by a model authority. The mRID is unique within an exchange context. Global uniqueness is easily achieved by using a UUID,  as specified in RFC 4122, for the mRID. The use of UUID is strongly recommended.For CIMXML data files in RDF syntax conforming to IEC 61970-552 Edition 1, the mRID is mapped to rdf:ID or rdf:about attributes that identify CIM object elements."
+            },
+            {
+              "name": "Names",
+              "type": [
+                "null",
+                {
+                  "type": "array",
+                  "items": "Name"
+                }
+              ],
+              "doc": "All names of this identified object."
+            }
+          ]
+        }
+      ],
+      "doc": "Power system resource that generated this event."
+    },
+    {
       "name": "Measurements",
       "type": [
         "null",
@@ -43,8 +136,8 @@
           "type": "array",
           "items": {
             "type": "record",
-            "name": "Measurement",
-            "doc": "A Measurement represents any measured, calculated or non-measured non-calculated quantity. Any piece of equipment may contain Measurements, e.g. a substation may have temperature measurements and door open indications, a transformer may have oil temperature and tank pressure measurements, a bay may contain a number of power flow measurements and a Breaker may contain a switch status measurement. The PSR - Measurement association is intended to capture this use of Measurement and is included in the naming hierarchy based on EquipmentContainer. The naming hierarchy typically has Measurements as leafs, e.g. Substation-VoltageLevel-Bay-Switch-Measurement.Some Measurements represent quantities related to a particular sensor location in the network, e.g. a voltage transformer (PT) at a busbar or a current transformer (CT) at the bar between a breaker and an isolator. The sensing position is not captured in the PSR - Measurement association. Instead it is captured by the Measurement - Terminal association that is used to define the sensing location in the network topology. The location is defined by the connection of the Terminal to ConductingEquipment. If both a Terminal and PSR are associated, and the PSR is of type ConductingEquipment, the associated Terminal should belong to that ConductingEquipment instance.When the sensor location is needed both Measurement-PSR and Measurement-Terminal are used. The Measurement-Terminal association is never used alone.",
+            "name": "Analog",
+            "doc": "Analog represents an analog Measurement.",
             "fields": [
               {
                 "name": "description",
@@ -373,108 +466,61 @@
                   "null",
                   {
                     "type": "array",
+                    "items": "Name"
+                  }
+                ],
+                "doc": "All names of this identified object."
+              },
+              {
+                "name": "AnalogValues",
+                "type": [
+                  "null",
+                  {
+                    "type": "array",
                     "items": {
                       "type": "record",
-                      "name": "Name",
-                      "doc": "The Name class provides the means to define any number of human readable  names for an object. A name is <b>not</b> to be used for defining inter-object relationships. For inter-object relationships instead use the object identification 'mRID'.",
+                      "name": "AnalogValue",
+                      "doc": "AnalogValue represents an analog MeasurementValue.",
                       "fields": [
                         {
-                          "name": "name",
+                          "name": "value",
                           "type": [
                             "null",
-                            "string"
+                            "float"
                           ],
-                          "doc": "Any free text that name the object."
+                          "doc": "The value to supervise."
                         },
                         {
-                          "name": "NameType",
-                          "type": {
-                            "type": "record",
-                            "name": "NameType",
-                            "doc": "Type of name. Possible values for attribute 'name' are implementation dependent but standard profiles may specify types. An enterprise may have multiple IT systems each having its own local name for the same object, e.g. a planning system may have different names from an EMS. An object may also have different names within the same IT system, e.g. localName as defined in CIM version 14. The definition from CIM14 is:The localName is a human readable name of the object. It is a free text name local to a node in a naming hierarchy similar to a file directory structure. A power system related naming hierarchy may be: Substation, VoltageLevel, Equipment etc. Children of the same parent in such a hierarchy have names that typically are unique among them.",
-                            "fields": [
-                              {
-                                "name": "description",
-                                "type": [
-                                  "null",
-                                  "string"
-                                ],
-                                "doc": "Description of the name type."
-                              },
-                              {
-                                "name": "name",
-                                "type": [
-                                  "null",
-                                  "string"
-                                ],
-                                "doc": "Name of the name type."
-                              }
-                            ]
-                          },
-                          "doc": "Type of this name."
+                          "name": "timeStamp",
+                          "type": [
+                            "null",
+                            "long"
+                          ],
+                          "doc": "The time when the value was last updated"
+                        },
+                        {
+                          "name": "MeasurementValueQuality",
+                          "type": [
+                            "null",
+                            {
+                              "type": "record",
+                              "name": "MeasurementValueQuality",
+                              "doc": "Measurement quality flags. Bits 0-10 are defined for substation automation in draft IEC 61850 part 7-3. Bits 11-15 are reserved for future expansion by that document. Bits 16-31 are reserved for EMS applications.",
+                              "fields": []
+                            }
+                          ],
+                          "doc": "A MeasurementValue has a MeasurementValueQuality associated with it."
                         }
                       ]
                     }
                   }
                 ],
-                "doc": "All names of this identified object."
+                "doc": "The values connected to this measurement."
               }
             ]
           }
         }
       ]
-    },
-    {
-      "name": "Names",
-      "type": [
-        "null",
-        {
-          "type": "array",
-          "items": "Name"
-        }
-      ],
-      "doc": "All names of this identified object."
-    },
-    {
-      "name": "PowerSystemResource",
-      "type": [
-        "null",
-        {
-          "type": "record",
-          "name": "PowerSystemResource",
-          "doc": "A power system resource can be an item of equipment such as a switch, an equipment container containing many individual items of equipment such as a substation, or an organisational entity such as sub-control area. Power system resources can have measurements associated.",
-          "fields": [
-            {
-              "name": "description",
-              "type": [
-                "null",
-                "string"
-              ],
-              "doc": "The description is a free human readable text describing or naming the object. It may be non unique and may not correlate to a naming hierarchy."
-            },
-            {
-              "name": "mRID",
-              "type": [
-                "null",
-                "string"
-              ],
-              "doc": "Master resource identifier issued by a model authority. The mRID is unique within an exchange context. Global uniqueness is easily achieved by using a UUID,  as specified in RFC 4122, for the mRID. The use of UUID is strongly recommended.For CIMXML data files in RDF syntax conforming to IEC 61970-552 Edition 1, the mRID is mapped to rdf:ID or rdf:about attributes that identify CIM object elements."
-            },
-            {
-              "name": "Names",
-              "type": [
-                "null",
-                {
-                  "type": "array",
-                  "items": "Name"
-                }
-              ],
-              "doc": "All names of this identified object."
-            }
-          ]
-        }
-      ],
-      "doc": "Power system resource that generated this event."
     }
   ]
 }

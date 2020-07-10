@@ -27,8 +27,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.adapter.kafka.da.application.config.KafkaProducerConfig;
 import org.opensmartgridplatform.adapter.kafka.da.application.mapping.DistributionAutomationMapper;
+import org.opensmartgridplatform.adapter.kafka.da.avro.Analog;
 import org.opensmartgridplatform.adapter.kafka.da.avro.GridMeasurementPublishedEvent;
-import org.opensmartgridplatform.adapter.kafka.da.avro.Measurement;
 import org.opensmartgridplatform.adapter.kafka.da.avro.Name;
 import org.opensmartgridplatform.adapter.kafka.da.avro.PowerSystemResource;
 import org.opensmartgridplatform.adapter.kafka.da.serialization.GridMeasurementPublishedEventDeserializer;
@@ -101,10 +101,10 @@ class GridMeasurementPublishedEventProducerTest {
         final String description = "description";
         final String mRid = "mRid";
         final String kind = "GridMeasurementPublishedEvent";
-        final List<Measurement> measurements = new ArrayList<>();
+        final List<Analog> measurements = new ArrayList<>();
         final List<Name> names = new ArrayList<>();
         final PowerSystemResource powerSystemResource = new PowerSystemResource(description, mRid, names);
-        return new GridMeasurementPublishedEvent(createdDateTime, description, mRid, kind, measurements, names,
-                powerSystemResource);
+        return new GridMeasurementPublishedEvent(createdDateTime, description, mRid, kind, names, powerSystemResource,
+                measurements);
     }
 }
