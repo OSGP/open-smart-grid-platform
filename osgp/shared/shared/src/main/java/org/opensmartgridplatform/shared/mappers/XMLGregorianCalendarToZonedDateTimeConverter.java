@@ -7,7 +7,6 @@
  */
 package org.opensmartgridplatform.shared.mappers;
 
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.GregorianCalendar;
 import java.util.Objects;
@@ -51,8 +50,7 @@ public class XMLGregorianCalendarToZonedDateTimeConverter
             return null;
         }
 
-        final ZoneId zoneId = ZoneId.of("UTC");
-        return source.toGregorianCalendar().toZonedDateTime().toLocalDateTime().atZone(zoneId);
+        return source.toGregorianCalendar().toZonedDateTime();
     }
 
     @Override

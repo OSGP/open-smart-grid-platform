@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.FindMessageLogsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.FindMessageLogsResponse;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.MessageLog;
+import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.MessageLogFilter;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.SortDirectionEnum;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonDefaults;
@@ -37,6 +38,7 @@ public class FilterMessageLogsSteps {
     @When("receiving a message log request without a filter")
     public void getMessageLogNoFilter() throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final FindMessageLogsRequest request = new FindMessageLogsRequest();
+        request.setMessageLogFilter(new MessageLogFilter());
         ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.client.findMessageLogs(request));
     }
 
@@ -44,35 +46,38 @@ public class FilterMessageLogsSteps {
     public void getMessageLogFilter(final Map<String, String> requestParameters)
             throws IllegalArgumentException, WebServiceSecurityException {
         final FindMessageLogsRequest request = new FindMessageLogsRequest();
+        final MessageLogFilter filter = new MessageLogFilter();
 
         if (requestParameters.containsKey(PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION)) {
-            request.setDeviceIdentification(getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION,
+            filter.setDeviceIdentification(getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION,
                     PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
         }
 
         if (requestParameters.containsKey(PlatformCommonKeys.KEY_ORGANIZATION_IDENTIFICATION)) {
-            request.setOrganisationIdentification(
+            filter.setOrganisationIdentification(
                     getString(requestParameters, PlatformCommonKeys.KEY_ORGANIZATION_IDENTIFICATION,
                             PlatformCommonDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
         }
 
         if (requestParameters.containsKey(PlatformCommonKeys.START_TIME)) {
-            request.setStartTime(XmlGregorianCalendarInputParser.parse(getString(requestParameters,
+            filter.setStartTime(XmlGregorianCalendarInputParser.parse(getString(requestParameters,
                     PlatformCommonKeys.START_TIME, PlatformCommonDefaults.DEFAULT_BEGIN_DATE)));
         }
 
         if (requestParameters.containsKey(PlatformCommonKeys.END_TIME)) {
-            request.setEndTime(XmlGregorianCalendarInputParser.parse(getString(requestParameters,
+            filter.setEndTime(XmlGregorianCalendarInputParser.parse(getString(requestParameters,
                     PlatformCommonKeys.END_TIME, PlatformCommonDefaults.DEFAULT_END_DATE)));
         }
 
         final SortDirectionEnum sortDirection = getEnum(requestParameters, PlatformCommonKeys.KEY_SORT_DIR,
                 SortDirectionEnum.class);
-        request.setSortDirection(sortDirection);
+        filter.setSortDirection(sortDirection);
 
         if (requestParameters.containsKey(PlatformCommonKeys.KEY_SORTED_BY)) {
-            request.setSortBy(requestParameters.get(PlatformCommonKeys.KEY_SORTED_BY));
+            filter.setSortBy(requestParameters.get(PlatformCommonKeys.KEY_SORTED_BY));
         }
+
+        request.setMessageLogFilter(filter);
 
         ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.client.findMessageLogs(request));
     }

@@ -29,6 +29,7 @@ import ma.glasnost.orika.impl.DefaultMapperFactory;
 public class XMLGregorianCalendarToZonedDateTimeConverterTest {
 
     public static final ZoneId UTC = ZoneId.of("UTC");
+    public static final ZoneId EUROPE_PARIS = ZoneId.of("Europe/Paris");
 
     private final MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
     private MapperFacade mapper;
@@ -47,7 +48,18 @@ public class XMLGregorianCalendarToZonedDateTimeConverterTest {
     @Test
     public void mapXMLGregorianCalenderWithTimeZoneToZonedDateTime() throws DatatypeConfigurationException {
         final String withTimeZone = "2010-06-30T01:20:30+02:00";
-        final ZonedDateTime dateTime = ZonedDateTime.parse(withTimeZone).toLocalDateTime().atZone(UTC);
+        final ZonedDateTime dateTime = ZonedDateTime.parse(withTimeZone);
+        final XMLGregorianCalendar xmlGregorianCalendar = DatatypeFactory.newInstance()
+                .newXMLGregorianCalendar(withTimeZone);
+
+        final ZonedDateTime mappedZonedDateTime = this.mapper.map(xmlGregorianCalendar, ZonedDateTime.class);
+        assertThat(mappedZonedDateTime).isEqualTo(dateTime);
+    }
+
+    @Test
+    public void mapXMLGregorianCalenderWithEuropeParisTimeZoneToZonedDateTime() throws DatatypeConfigurationException {
+        final String withTimeZone = "2010-06-30T01:20:30+02:00";
+        final ZonedDateTime dateTime = ZonedDateTime.parse(withTimeZone);
         final XMLGregorianCalendar xmlGregorianCalendar = DatatypeFactory.newInstance()
                 .newXMLGregorianCalendar(withTimeZone);
 
@@ -59,7 +71,8 @@ public class XMLGregorianCalendarToZonedDateTimeConverterTest {
     public void mapXMLGregorianWithoutTimeZoneCalenderToZonedDateTime() throws DatatypeConfigurationException {
         final String withoutTimeZone = "2010-06-30T01:20:30";
         final LocalDateTime localDate = LocalDateTime.parse(withoutTimeZone);
-        final ZonedDateTime dateTime = localDate.atZone(UTC);
+        final ZoneId defaultZone = ZoneId.systemDefault();
+        final ZonedDateTime dateTime = localDate.atZone(defaultZone);
         final XMLGregorianCalendar xmlGregorianCalendar = DatatypeFactory.newInstance()
                 .newXMLGregorianCalendar(withoutTimeZone);
 
@@ -78,4 +91,5 @@ public class XMLGregorianCalendarToZonedDateTimeConverterTest {
         assertThat(mappedXMLGregorianCalendar).isEqualTo(xmlGregorianCalendar);
 
     }
+
 }

@@ -12,19 +12,18 @@ import static org.opensmartgridplatform.adapter.ws.admin.application.services.De
 import static org.opensmartgridplatform.adapter.ws.admin.application.services.DeviceLogItemSpecifications.hasOrganisationIdentification;
 import static org.opensmartgridplatform.adapter.ws.admin.application.services.DeviceLogItemSpecifications.hasStartDate;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.apache.commons.lang3.StringUtils;
+import org.opensmartgridplatform.adapter.ws.admin.application.valueobjects.WsMessageLogFilter;
 import org.opensmartgridplatform.adapter.ws.admin.infra.jms.AdminRequestMessage;
 import org.opensmartgridplatform.adapter.ws.admin.infra.jms.AdminRequestMessageSender;
 import org.opensmartgridplatform.adapter.ws.admin.infra.jms.AdminResponseMessageFinder;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.FindMessageLogsRequest;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
 import org.opensmartgridplatform.domain.core.entities.Event;
@@ -71,7 +70,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 
 @Service(value = "wsAdminDeviceManagementService")
@@ -327,70 +325,31 @@ public class DeviceManagementService {
     }
 
     public Slice<DeviceLogItem> findDeviceMessages(@Identification final String organisationIdentification,
-            final FindMessageLogsRequest request) throws FunctionalException {
+            final WsMessageLogFilter filter) throws FunctionalException {
 
-        LOGGER.debug("findDeviceMessages called with organisation {}, device {} and pagenumber {}",
-                organisationIdentification, request.getDeviceIdentification(), request.getPage());
+        LOGGER.info("findDeviceMessages called with organisation {} for filter {}", organisationIdentification, filter);
 
         final Organisation organisation = this.findOrganisation(organisationIdentification);
         this.isAllowed(organisation, PlatformFunction.GET_MESSAGES);
 
         PageRequest pageRequest;
-        if (request.getSortDirection() != null && !StringUtils.isEmpty(request.getSortBy())) {
-            pageRequest = PageRequest.of(request.getPage(), this.pagingSettings.getMaximumPageSize(),
-                    Sort.Direction.valueOf(request.getSortDirection().toString()), request.getSortBy());
+        if (!StringUtils.isBlank(filter.getSortDirection()) && !StringUtils.isBlank(filter.getSortBy())) {
+            pageRequest = PageRequest.of(filter.getPageRequested(), this.pagingSettings.getMaximumPageSize(),
+                    Sort.Direction.valueOf(filter.getSortDirection()), filter.getSortBy());
         } else {
-            pageRequest = PageRequest.of(request.getPage(), this.pagingSettings.getMaximumPageSize(),
+            pageRequest = PageRequest.of(filter.getPageRequested(), this.pagingSettings.getMaximumPageSize(),
                     Sort.Direction.DESC, "modificationTime");
         }
-        final Specification<DeviceLogItem> specification = this.applyFilter(request);
+        final Specification<DeviceLogItem> specification = this.applyFilter(filter);
 
         return this.logItemRepository.findAll(specification, pageRequest);
     }
 
-    private Specification<DeviceLogItem> applyFilter(final FindMessageLogsRequest request) {
-
-        Specification<DeviceLogItem> specification = DeviceLogItemSpecifications.ALL;
-        specification = this.doFilterDeviceId(request.getDeviceIdentification(), specification);
-        specification = this.doFilterOrganisationId(request.getOrganisationIdentification(), specification);
-        specification = this.doFilterStartDate(request.getStartTime(), specification);
-        specification = this.doFilterEndDate(request.getEndTime(), specification);
-
-        return specification;
-    }
-
-    private Specification<DeviceLogItem> doFilterDeviceId(final String deviceIdentification,
-            Specification<DeviceLogItem> specification) {
-        if (!StringUtils.isEmpty(deviceIdentification)) {
-            specification = specification.and(hasDeviceIdentification(deviceIdentification));
-        }
-        return specification;
-    }
-
-    private Specification<DeviceLogItem> doFilterOrganisationId(final String organisationFilter,
-            Specification<DeviceLogItem> specification) {
-        if (!StringUtils.isEmpty(organisationFilter)) {
-            specification = specification.and(hasOrganisationIdentification(organisationFilter));
-        }
-        return specification;
-    }
-
-    private Specification<DeviceLogItem> doFilterStartDate(final XMLGregorianCalendar startCalendar,
-            Specification<DeviceLogItem> specification) {
-        if (startCalendar != null && startCalendar.isValid()) {
-            final Date startDate = startCalendar.toGregorianCalendar().getTime();
-            specification = specification.and(hasStartDate(startDate));
-        }
-        return specification;
-    }
-
-    private Specification<DeviceLogItem> doFilterEndDate(final XMLGregorianCalendar endCalendar,
-            Specification<DeviceLogItem> specification) {
-        if (endCalendar != null && endCalendar.isValid()) {
-            final Date endDate = endCalendar.toGregorianCalendar().getTime();
-            specification = specification.and(hasEndDate(endDate));
-        }
-        return specification;
+    private Specification<DeviceLogItem> applyFilter(final WsMessageLogFilter filter) {
+        return hasDeviceIdentification(filter.getDeviceIdentification())
+                .and(hasOrganisationIdentification(filter.getOrganisationIdentification()))
+                .and(hasStartDate(filter.getStartTime()))
+                .and(hasEndDate(filter.getEndTime()));
     }
 
     // === REMOVE DEVICE ===

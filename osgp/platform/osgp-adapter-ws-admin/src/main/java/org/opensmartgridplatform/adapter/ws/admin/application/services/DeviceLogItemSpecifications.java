@@ -9,12 +9,14 @@ package org.opensmartgridplatform.adapter.ws.admin.application.services;
 
 import static org.opensmartgridplatform.shared.utils.WildcardUtil.replaceWildcards;
 
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
+import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.logging.domain.entities.DeviceLogItem;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -24,10 +26,7 @@ public final class DeviceLogItemSpecifications {
     private static final String ORGANISATION_IDENTIFICATION = "organisationIdentification";
     private static final String MODIFICATION_TIME = "modificationTime";
 
-    public static final Specification<DeviceLogItem> NONE = (final Root<DeviceLogItem> r, final CriteriaQuery<?> q,
-            final CriteriaBuilder cb) -> cb.or();
-
-    public static final Specification<DeviceLogItem> ALL = (final Root<DeviceLogItem> r, final CriteriaQuery<?> q,
+    private static final Specification<DeviceLogItem> ALL = (final Root<DeviceLogItem> r, final CriteriaQuery<?> q,
             final CriteriaBuilder cb) -> cb.and();
 
     private DeviceLogItemSpecifications() {
@@ -35,25 +34,41 @@ public final class DeviceLogItemSpecifications {
     }
 
     public static Specification<DeviceLogItem> hasDeviceIdentification(final String deviceIdentification) {
-        return (final Root<DeviceLogItem> r, final CriteriaQuery<?> q, final CriteriaBuilder cb) -> cb.like(
-                cb.upper(r.<String> get(DEVICE_IDENTIFICATION)), replaceWildcards(deviceIdentification.toUpperCase()));
+        if (StringUtils.isAllBlank(deviceIdentification)) {
+            return ALL;
+        } else {
+            return (final Root<DeviceLogItem> r, final CriteriaQuery<?> q, final CriteriaBuilder cb) -> cb.like(
+                    cb.upper(r.<String> get(DEVICE_IDENTIFICATION)),
+                    replaceWildcards(deviceIdentification.toUpperCase()));
+        }
     }
 
     public static Specification<DeviceLogItem> hasOrganisationIdentification(final String organisationIdentification) {
-        return (final Root<DeviceLogItem> r, final CriteriaQuery<?> q, final CriteriaBuilder cb) -> cb.like(
-                cb.upper(r.<String> get(ORGANISATION_IDENTIFICATION)),
-                replaceWildcards(organisationIdentification.toUpperCase()));
-
+        if (StringUtils.isAllBlank(organisationIdentification)) {
+            return ALL;
+        } else {
+            return (final Root<DeviceLogItem> r, final CriteriaQuery<?> q, final CriteriaBuilder cb) -> cb.like(
+                    cb.upper(r.<String> get(ORGANISATION_IDENTIFICATION)),
+                    replaceWildcards(organisationIdentification.toUpperCase()));
+        }
     }
 
-    public static Specification<DeviceLogItem> hasStartDate(final Date startDate) {
-        return (final Root<DeviceLogItem> r, final CriteriaQuery<?> q, final CriteriaBuilder cb) -> cb
-                .greaterThanOrEqualTo(r.<Date> get(MODIFICATION_TIME), startDate);
+    public static Specification<DeviceLogItem> hasStartDate(final ZonedDateTime startDate) {
+        if (startDate == null) {
+            return ALL;
+        } else {
+            return (final Root<DeviceLogItem> r, final CriteriaQuery<?> q, final CriteriaBuilder cb) -> cb
+                    .greaterThanOrEqualTo(r.<Date> get(MODIFICATION_TIME), Date.from(startDate.toInstant()));
+        }
     }
 
-    public static Specification<DeviceLogItem> hasEndDate(final Date endDate) {
-        return (final Root<DeviceLogItem> r, final CriteriaQuery<?> q, final CriteriaBuilder cb) -> cb
-                .lessThanOrEqualTo(r.<Date> get(MODIFICATION_TIME), endDate);
+    public static Specification<DeviceLogItem> hasEndDate(final ZonedDateTime endDate) {
+        if (endDate == null) {
+            return ALL;
+        } else {
+            return (final Root<DeviceLogItem> r, final CriteriaQuery<?> q, final CriteriaBuilder cb) -> cb
+                    .lessThanOrEqualTo(r.<Date> get(MODIFICATION_TIME), Date.from(endDate.toInstant()));
+        }
     }
 
 }

@@ -14,6 +14,7 @@ import javax.validation.ConstraintViolationException;
 
 import org.opensmartgridplatform.adapter.ws.admin.application.mapping.DeviceManagementMapper;
 import org.opensmartgridplatform.adapter.ws.admin.application.services.DeviceManagementService;
+import org.opensmartgridplatform.adapter.ws.admin.application.valueobjects.WsMessageLogFilter;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.ActivateOrganisationRequest;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.ActivateOrganisationResponse;
@@ -215,14 +216,16 @@ public class DeviceManagementEndpoint {
     public FindMessageLogsResponse findMessageLogs(@OrganisationIdentification final String organisationIdentification,
             @RequestPayload final FindMessageLogsRequest request) throws OsgpException {
 
-        LOGGER.info("Find message logs of device '{}' for organisation: {}.", request.getDeviceIdentification(),
-                organisationIdentification);
+        final WsMessageLogFilter filter = this.deviceManagementMapper.map(request.getMessageLogFilter(),
+                WsMessageLogFilter.class);
+
+        LOGGER.info("Find message logs of filter {} for organisation: {}.", filter, organisationIdentification);
 
         final FindMessageLogsResponse response = new FindMessageLogsResponse();
 
         try {
             final Slice<DeviceLogItem> page = this.deviceManagementService
-                    .findDeviceMessages(organisationIdentification, request);
+                    .findDeviceMessages(organisationIdentification, filter);
 
             // Map to output
             final MessageLogPage logPage = new MessageLogPage();
@@ -491,6 +494,7 @@ public class DeviceManagementEndpoint {
         if (e instanceof OsgpException) {
             throw (OsgpException) e;
         } else {
+            LOGGER.error("An unknown error occurred", e);
             throw new TechnicalException(COMPONENT_TYPE_WS_ADMIN, e);
         }
     }

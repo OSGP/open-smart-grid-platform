@@ -8,6 +8,7 @@
 package org.opensmartgridplatform.adapter.ws.admin.application.mapping;
 
 import org.opensmartgridplatform.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
+import org.opensmartgridplatform.shared.mappers.XMLGregorianCalendarToZonedDateTimeConverter;
 import org.springframework.stereotype.Component;
 
 import ma.glasnost.orika.MapperFactory;
@@ -43,6 +44,14 @@ public class DeviceManagementMapper extends ConfigurableMapper {
                 .byDefault()
                 .toClassMap());
 
+        mapperFactory.registerClassMap(mapperFactory
+                .classMap(org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.MessageLogFilter.class,
+                        org.opensmartgridplatform.adapter.ws.admin.application.valueobjects.WsMessageLogFilter.class)
+                .field("page", "pageRequested")
+                .byDefault()
+                .toClassMap());
+
         mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
+        mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToZonedDateTimeConverter());
     }
 }

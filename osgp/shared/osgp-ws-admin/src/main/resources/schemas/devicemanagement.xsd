@@ -72,14 +72,7 @@
   <xsd:element name="FindMessageLogsRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element minOccurs="0" name="DeviceIdentification"
-          type="common:Identification" />
-        <xsd:element minOccurs="0" name="OrganisationIdentification" type="common:Identification" />
-        <xsd:element minOccurs="0" name="StartTime" type="xsd:dateTime" />
-        <xsd:element minOccurs="0" name="EndTime" type="xsd:dateTime" />
-		<xsd:element minOccurs="0" name="SortBy" type="xsd:string" />
-		<xsd:element minOccurs="0" name="SortDirection" type="tns:SortDirectionEnum" />
-		<xsd:element name="Page" type="xsd:int" />
+		<xsd:element name="MessageLogFilter" type="tns:MessageLogFilter" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -330,6 +323,18 @@
       <xsd:element minOccurs="1" name="NextPageAvailable" type="xsd:boolean" />
       <xsd:element maxOccurs="unbounded" name="MessageLogs"
         type="tns:MessageLog" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="MessageLogFilter">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="DeviceIdentification" type="common:Identification" />
+      <xsd:element minOccurs="0" name="OrganisationIdentification" type="common:Identification" />
+      <xsd:element minOccurs="0" name="StartTime" type="xsd:dateTime" />
+      <xsd:element minOccurs="0" name="EndTime" type="xsd:dateTime" />
+      <xsd:element minOccurs="0" name="SortBy" type="xsd:string" />
+      <xsd:element minOccurs="0" name="SortDirection" type="tns:SortDirectionEnum" />
+      <xsd:element name="Page" type="xsd:int" />
     </xsd:sequence>
   </xsd:complexType>
 
