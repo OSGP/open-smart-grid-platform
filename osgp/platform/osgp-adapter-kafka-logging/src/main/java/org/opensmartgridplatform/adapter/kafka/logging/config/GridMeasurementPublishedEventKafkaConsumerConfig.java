@@ -19,10 +19,10 @@ import org.springframework.kafka.core.ConsumerFactory;
 
 @Configuration
 @Conditional(PeakShavingLoggingEnabled.class)
-public class GridMeasurementPublishedEventConsumerConfig
+public class GridMeasurementPublishedEventKafkaConsumerConfig
         extends AbstractKafkaConsumerConfig<String, GridMeasurementPublishedEvent> {
 
-    public GridMeasurementPublishedEventConsumerConfig(final Environment environment,
+    public GridMeasurementPublishedEventKafkaConsumerConfig(final Environment environment,
             @Value("${grid.measurement.published.event.kafka.common.properties.prefix}") final String propertiesPrefix,
             @Value("${grid.measurement.published.event.kafka.topic}") final String topic,
             @Value("${grid.measurement.published.event.kafka.consumer.concurrency}") final int concurrency,

@@ -17,10 +17,10 @@ import org.springframework.core.env.Environment;
 import org.springframework.kafka.core.KafkaTemplate;
 
 @Configuration
-public class KafkaProducerConfig extends AbstractKafkaProducerConfig<String, GridMeasurementPublishedEvent> {
+public class GridMeasurementKafkaProducerConfig extends AbstractKafkaProducerConfig<String, GridMeasurementPublishedEvent> {
 
     @Autowired
-    public KafkaProducerConfig(final Environment environment,
+    public GridMeasurementKafkaProducerConfig(final Environment environment,
             @Value("${distributionautomation.kafka.common.properties.prefix}") final String propertiesPrefix,
             @Value("${distributionautomation.kafka.topic}") final String topic) {
         super(environment, propertiesPrefix, topic);

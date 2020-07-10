@@ -9,6 +9,7 @@ package org.opensmartgridplatform.adapter.kafka.da.infra.kafka.out;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.kafka.test.assertj.KafkaConditions.value;
 
@@ -25,14 +26,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.opensmartgridplatform.adapter.kafka.da.application.config.KafkaProducerConfig;
+import org.opensmartgridplatform.adapter.kafka.da.application.config.GridMeasurementKafkaProducerConfig;
 import org.opensmartgridplatform.adapter.kafka.da.application.mapping.DistributionAutomationMapper;
 import org.opensmartgridplatform.adapter.kafka.da.avro.Analog;
 import org.opensmartgridplatform.adapter.kafka.da.avro.GridMeasurementPublishedEvent;
 import org.opensmartgridplatform.adapter.kafka.da.avro.Name;
 import org.opensmartgridplatform.adapter.kafka.da.avro.PowerSystemResource;
 import org.opensmartgridplatform.adapter.kafka.da.serialization.GridMeasurementPublishedEventDeserializer;
-import org.opensmartgridplatform.domain.da.measurements.MeasurementReport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.ConsumerFactory;
@@ -44,7 +44,7 @@ import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
-@SpringJUnitConfig(KafkaProducerConfig.class)
+@SpringJUnitConfig(GridMeasurementKafkaProducerConfig.class)
 @TestPropertySource("classpath:osgp-adapter-kafka-distributionautomation-test.properties")
 @ExtendWith(MockitoExtension.class)
 @EmbeddedKafka(partitions = 1,
@@ -72,7 +72,7 @@ class GridMeasurementPublishedEventProducerTest {
     @SuppressWarnings("unchecked")
     public void setup() {
         this.message = this.createMessage();
-        when(this.mapper.map(any(MeasurementReport.class), any(Class.class))).thenReturn(this.message);
+        when(this.mapper.map(anyString(), any(Class.class))).thenReturn(this.message);
         this.producer = new GridMeasurementPublishedEventProducer(this.template, this.mapper);
     }
 
@@ -80,7 +80,7 @@ class GridMeasurementPublishedEventProducerTest {
     void sendTest() {
 
         // send a message to the kafka bus
-        this.producer.send(new MeasurementReport.Builder().build());
+        this.producer.send("TST-01; 220.1; 220.2; 220.3; 5.1; 5.2; 5.3; 7.1; 7.2; 7.3;");
 
         // consume the message with embeddedKafka
         final Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("testGroup", "true", this.embeddedKafka);

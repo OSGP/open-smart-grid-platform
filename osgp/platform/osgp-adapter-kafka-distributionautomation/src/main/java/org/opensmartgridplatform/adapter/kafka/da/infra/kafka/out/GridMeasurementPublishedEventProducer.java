@@ -9,7 +9,6 @@ package org.opensmartgridplatform.adapter.kafka.da.infra.kafka.out;
 
 import org.opensmartgridplatform.adapter.kafka.da.application.mapping.DistributionAutomationMapper;
 import org.opensmartgridplatform.adapter.kafka.da.avro.GridMeasurementPublishedEvent;
-import org.opensmartgridplatform.domain.da.measurements.MeasurementReport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -30,7 +29,7 @@ public class GridMeasurementPublishedEventProducer {
         this.mapper = mapper;
     }
 
-    public void send(final MeasurementReport measurementReport) {
+    public void send(final String measurementReport) {
 
         final GridMeasurementPublishedEvent meterReading = this.mapper.map(measurementReport,
                 GridMeasurementPublishedEvent.class);

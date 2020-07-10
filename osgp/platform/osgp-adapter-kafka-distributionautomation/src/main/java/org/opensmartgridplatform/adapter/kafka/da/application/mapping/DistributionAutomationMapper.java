@@ -20,7 +20,7 @@ public class DistributionAutomationMapper extends ConfigurableMapper {
     @Override
     public void configure(final MapperFactory mapperFactory) {
         mapperFactory.getConverterFactory().registerConverter(new PassThroughConverter(DateTime.class));
-        mapperFactory.getConverterFactory().registerConverter(new GridMeasurementPublishedEventMapping());
+        mapperFactory.getConverterFactory().registerConverter(new GridMeasurementPublishedEventConverter());
 
     }
 }
