@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.kafka.da.serialization;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import org.apache.avro.AvroRuntimeException;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.opensmartgridplatform.adapter.kafka.da.avro.GridMeasurementPublishedEvent;
 
@@ -20,7 +21,7 @@ public class GridMeasurementPublishedEventDeserializer implements Deserializer<G
         try {
             return GridMeasurementPublishedEvent.fromByteBuffer(ByteBuffer.wrap(data));
         } catch (final IOException e) {
-            throw new RuntimeException(e);
+            throw new AvroRuntimeException(e);
         }
     }
 
