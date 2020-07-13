@@ -139,14 +139,12 @@ public abstract class BaseDeviceSteps {
                 getString(settings, PlatformKeys.KEY_NUMBER_ADDITION,
                         PlatformDefaults.DEFAULT_CONTAINER_NUMBER_ADDITION),
                 getString(settings, PlatformKeys.KEY_MUNICIPALITY, PlatformDefaults.DEFAULT_CONTAINER_MUNICIPALITY)),
-                new GpsCoordinates(
-                        (settings.containsKey(PlatformKeys.KEY_LATITUDE)
-                                && StringUtils.isNotBlank(settings.get(PlatformKeys.KEY_LATITUDE)))
-                                        ? getFloat(settings, PlatformKeys.KEY_LATITUDE,
-                                                PlatformDefaults.DEFAULT_LATITUDE)
-                                        : null,
-                        (settings.containsKey(PlatformKeys.KEY_LONGITUDE)
-                                && StringUtils.isNotBlank(settings.get(PlatformKeys.KEY_LONGITUDE)))
+                new GpsCoordinates(settings.containsKey(PlatformKeys.KEY_LATITUDE)
+                        && StringUtils.isNotBlank(settings.get(PlatformKeys.KEY_LATITUDE))
+                                ? getFloat(settings, PlatformKeys.KEY_LATITUDE, PlatformDefaults.DEFAULT_LATITUDE)
+                                : null,
+                        settings.containsKey(PlatformKeys.KEY_LONGITUDE)
+                                && StringUtils.isNotBlank(settings.get(PlatformKeys.KEY_LONGITUDE))
                                         ? getFloat(settings, PlatformKeys.KEY_LONGITUDE,
                                                 PlatformDefaults.DEFAULT_LONGITUDE)
                                         : null));
@@ -158,11 +156,12 @@ public abstract class BaseDeviceSteps {
 
         device = this.deviceRepository.save(device);
 
-        if (!Objects.equals(getString(settings, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
-                PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION), "null")) {
+        final String organizationIdentification = getString(settings, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
+                PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
+        if (StringUtils.isNotBlank(organizationIdentification)
+                && !"null".equalsIgnoreCase(organizationIdentification)) {
             final Organisation organization = this.organizationRepository
-                    .findByOrganisationIdentification(getString(settings, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
-                            PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+                    .findByOrganisationIdentification(organizationIdentification);
             final DeviceFunctionGroup functionGroup = getEnum(settings, PlatformKeys.KEY_DEVICE_FUNCTION_GROUP,
                     DeviceFunctionGroup.class, DeviceFunctionGroup.OWNER);
             final DeviceAuthorization authorization = device.addAuthorization(organization, functionGroup);
@@ -181,7 +180,7 @@ public abstract class BaseDeviceSteps {
         final Short batchNumber = getShort(settings, PlatformKeys.KEY_CDMA_BATCH_NUMBER,
                 PlatformDefaults.DEFAULT_CDMA_BATCH_NUMBER);
 
-        final CdmaSettings cdmaSettings = (mastSegment == null && batchNumber == null) ? null
+        final CdmaSettings cdmaSettings = mastSegment == null && batchNumber == null ? null
                 : new CdmaSettings(mastSegment, batchNumber);
         device.updateCdmaSettings(cdmaSettings);
 
@@ -214,11 +213,14 @@ public abstract class BaseDeviceSteps {
         return this.updateDevice(device, settings);
     }
 
-    public DeviceAuthorization setDefaultDeviceAuthorizationForDevice(final Device device) {
+    public DeviceAuthorization setDefaultDeviceAuthorizationForDevice(Device device) {
         device.addOrganisation(PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
 
         final Organisation organization = this.organizationRepository
                 .findByOrganisationIdentification(PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
+
+        device = this.deviceRepository.save(device);
+
         final DeviceAuthorization deviceAuthorization = device.addAuthorization(organization,
                 DeviceFunctionGroup.OWNER);
 
