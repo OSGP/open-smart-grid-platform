@@ -23,11 +23,6 @@ import org.springframework.context.annotation.PropertySource;
  * An application context Java configuration class.
  */
 @Configuration
-@ComponentScan(basePackageClasses = { PersistenceConfig.class, LoggingMessageListener.class,
-        InboundLoggingRequestsMessagingConfig.class })
-@PropertySource("classpath:osgp-logging.properties")
-@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
-@PropertySource(value = "file:${osgp/Logging/config}", ignoreResourceNotFound = true)
 @Import(value = { InboundLoggingRequestsMessagingConfig.class, InboundProtocolLogItemRequestsMessagingConfig.class })
 public class ApplicationContext extends AbstractConfig {
 
