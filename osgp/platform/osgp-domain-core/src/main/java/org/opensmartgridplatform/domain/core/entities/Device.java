@@ -126,10 +126,7 @@ public class Device extends AbstractEntity {
      * this device. More that one organisation can be authorized to use one ore
      * more { @see DeviceFunctionGroup.class }.
      */
-    @OneToMany(mappedBy = "device",
-            targetEntity = DeviceAuthorization.class,
-            fetch = FetchType.EAGER,
-            cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "device", targetEntity = DeviceAuthorization.class, fetch = FetchType.EAGER)
     private final List<DeviceAuthorization> authorizations = new ArrayList<>();
 
     /**
