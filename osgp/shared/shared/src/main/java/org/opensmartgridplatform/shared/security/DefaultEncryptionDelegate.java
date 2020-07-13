@@ -8,9 +8,7 @@
  */
 package org.opensmartgridplatform.shared.security;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 import org.opensmartgridplatform.shared.security.providers.EncryptionProvider;

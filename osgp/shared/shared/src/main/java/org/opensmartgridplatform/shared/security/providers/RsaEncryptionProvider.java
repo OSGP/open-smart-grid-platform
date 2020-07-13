@@ -12,6 +12,7 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
 import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
 
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
@@ -32,15 +33,23 @@ public class RsaEncryptionProvider extends AbstractEncryptionProvider implements
         super.setKeyFile(privateKeyStoreFile);
     }
 
-    public void setPublicKeyStore(File publicKeyStoreFile)
-            throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
-        byte[] keyData = Files.readAllBytes(publicKeyStoreFile.toPath());
-        X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(keyData);
-        publicKey = KeyFactory.getInstance(ALG).generatePublic(publicKeySpec);
+    public void setPublicKeyStore(File publicKeyStoreFile) throws EncrypterException {
+        try {
+            byte[] keyData = Files.readAllBytes(publicKeyStoreFile.toPath());
+            X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(keyData);
+            publicKey = KeyFactory.getInstance(ALG).generatePublic(publicKeySpec);
+        }
+        catch (NoSuchAlgorithmException | IOException | InvalidKeySpecException e) {
+            throw new EncrypterException("Could not set public keystore", e);
+        }
     }
 
-    protected Cipher getCipher() throws javax.crypto.NoSuchPaddingException, NoSuchAlgorithmException {
-        return Cipher.getInstance(ALGORITHM);
+    protected Cipher getCipher() throws EncrypterException {
+        try {
+            return Cipher.getInstance(ALGORITHM);
+        } catch (NoSuchPaddingException | NoSuchAlgorithmException e) {
+            throw new EncrypterException("Could not get cipher", e);
+        }
     }
 
     protected Key getSecretEncryptionKey(String key, int cipherMode) {

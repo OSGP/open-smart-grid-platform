@@ -34,7 +34,7 @@ public class WebServiceConfig extends WsConfigurerAdapter {
     private static final String SECRET_MANAGEMENT_PORT = "SecretManagementPort";
     private static final String SECRET_MANAGEMENT_URI = "/ws/SecretManagement";
     private static final String SECRET_MANAGEMENT_NS = "http://www.opensmartgridplatform"
-            + ".org/schemas/security/secretmanagement/2020/05";
+            + ".org/schemas/security/secretmanagement";
     private static final String SECRET_MANAGEMENT_SCHEMA_LOC = "schemas/secret-management.xsd";
 
     @Bean

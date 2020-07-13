@@ -34,7 +34,7 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 public class SecretManagementEndpoint {
 
     private static final String NAMESPACE_URI = "http://www.opensmartgridplatform"
-            + ".org/schemas/security/secretmanagement/2020/05";
+            + ".org/schemas/security/secretmanagement";
 
     private final SecretManagementService secretManagementService;
     private final SoapEndpointDataTypeConverter converter;

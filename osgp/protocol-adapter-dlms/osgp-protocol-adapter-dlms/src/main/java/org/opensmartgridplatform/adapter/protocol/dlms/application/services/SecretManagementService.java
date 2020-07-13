@@ -3,6 +3,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 import java.util.List;
 import java.util.Optional;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.NotImplementedException;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.wsclient.SecretManagementClient;
@@ -24,10 +25,9 @@ import org.opensmartgridplatform.ws.schema.core.secret.management.TypedSecrets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
+@Slf4j
 public class SecretManagementService implements SecurityKeyService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SecretManagementService.class);
@@ -61,7 +61,7 @@ public class SecretManagementService implements SecurityKeyService {
     }
 
     @Override
-    public byte[] getDlmsAuthenticationKey(String deviceIdentification) throws EncrypterException {
+    public byte[] getDlmsAuthenticationKey(String deviceIdentification) {
 
         try {
             GetSecretsRequest request = getSoapRequestForKey(deviceIdentification,
@@ -70,8 +70,12 @@ public class SecretManagementService implements SecurityKeyService {
             Optional<TypedSecret> optionalTypedSecret = getTypedSecretFromSoapResponse(response,
                     SecretType.E_METER_AUTHENTICATION_KEY);
 
-            return decryptSoapSecret(deviceIdentification, optionalTypedSecret.orElseThrow(
+            byte[] decryptedKey = decryptSoapSecret(deviceIdentification, optionalTypedSecret.orElseThrow(
                     () -> new IllegalStateException("Secret not found:" + deviceIdentification)));
+
+            log.trace("DlmsAuthenticationKey for device " + deviceIdentification + " is " + Hex.encodeHexString(decryptedKey));
+
+            return decryptedKey;
         } catch (Exception e) {
             throw new EncrypterException("Error while retrieving authentication key", e);
         }
@@ -87,8 +91,13 @@ public class SecretManagementService implements SecurityKeyService {
             Optional<TypedSecret> optionalTypedSecret = getTypedSecretFromSoapResponse(response,
                     SecretType.E_METER_ENCRYPTION_KEY_UNICAST);
 
-            return decryptSoapSecret(deviceIdentification, optionalTypedSecret.orElseThrow(
+            byte[] decryptedKey = decryptSoapSecret(deviceIdentification, optionalTypedSecret.orElseThrow(
                     () -> new IllegalStateException("Secret not found:" + deviceIdentification)));
+
+            log.trace("DlmsGlobalUnicastEncryptionKey for device " + deviceIdentification + " is " + Hex.encodeHexString(decryptedKey));
+
+            return decryptedKey;
+
         } catch (Exception e) {
             LOGGER.error("Error while retrieving encryption key", e);
         }

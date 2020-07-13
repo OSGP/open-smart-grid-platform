@@ -8,9 +8,10 @@
  */
 package org.opensmartgridplatform.secretmanagement.application.endpoints;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.apache.tomcat.util.buf.HexUtils;
-import org.opensmartgridplatform.ws.schema.core.secret.management.SecretTypes;
-import org.opensmartgridplatform.ws.schema.core.secret.management.TypedSecrets;
 import org.opensmartgridplatform.secretmanagement.application.domain.SecretType;
 import org.opensmartgridplatform.secretmanagement.application.domain.TypedSecret;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
@@ -19,11 +20,10 @@ import org.opensmartgridplatform.shared.security.EncryptedSecret;
 import org.opensmartgridplatform.shared.security.EncryptionDelegate;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 import org.opensmartgridplatform.shared.security.Secret;
+import org.opensmartgridplatform.ws.schema.core.secret.management.SecretTypes;
+import org.opensmartgridplatform.ws.schema.core.secret.management.TypedSecrets;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Component
 public class SoapEndpointDataTypeConverter {
@@ -38,17 +38,10 @@ public class SoapEndpointDataTypeConverter {
 
     public List<SecretType> convertToSecretTypes(SecretTypes soapSecretTypes) throws OsgpException {
 
-        List<org.opensmartgridplatform.ws.schema.core.secret.management.SecretType> soapSecretTypeList =
-                soapSecretTypes.getSecretType();
-        List<SecretType> secretTypeList = new ArrayList<>();
+        List<org.opensmartgridplatform.ws.schema.core.secret.management.SecretType> soapSecretTypeList = soapSecretTypes.getSecretType();
 
-        for (org.opensmartgridplatform.ws.schema.core.secret.management.SecretType soapSecretType :
-                soapSecretTypeList) {
-            SecretType secretType = convertToSecretType(soapSecretType);
-            secretTypeList.add(secretType);
-        }
-
-        return secretTypeList;
+        return soapSecretTypeList.stream().map((soapSecretType) -> convertToSecretType(soapSecretType)).collect(
+                Collectors.toList());
     }
 
     public List<TypedSecret> convertToTypedSecrets(TypedSecrets soapTypedSecrets) throws OsgpException {
@@ -57,16 +50,11 @@ public class SoapEndpointDataTypeConverter {
             throw new TechnicalException("Missing input: typed secrets");
         }
 
-        List<org.opensmartgridplatform.ws.schema.core.secret.management.TypedSecret> soapTypedSecretsList
-                = soapTypedSecrets.getTypedSecret();
-        List<TypedSecret> typedSecretList = new ArrayList<>();
+        List<org.opensmartgridplatform.ws.schema.core.secret.management.TypedSecret> soapTypedSecretsList =
+                soapTypedSecrets.getTypedSecret();
 
-        for (org.opensmartgridplatform.ws.schema.core.secret.management.TypedSecret soapTypedSecret :
-                soapTypedSecretsList) {
-            typedSecretList.add(decryptAndConvertSoapTypedSecret(soapTypedSecret));
-        }
-
-        return typedSecretList;
+        return soapTypedSecretsList.stream().map(
+                (soapTypedSecret) -> decryptAndConvertSoapTypedSecret(soapTypedSecret)).collect(Collectors.toList());
     }
 
     public TypedSecrets convertToSoapTypedSecrets(List<TypedSecret> typedSecrets) {
@@ -92,8 +80,7 @@ public class SoapEndpointDataTypeConverter {
 
     private org.opensmartgridplatform.ws.schema.core.secret.management.SecretType convertToSoapSecretType(
             SecretType secretType) {
-        return org.opensmartgridplatform.ws.schema.core.secret.management.SecretType.fromValue(
-                secretType.name());
+        return org.opensmartgridplatform.ws.schema.core.secret.management.SecretType.fromValue(secretType.name());
     }
 
     private org.opensmartgridplatform.ws.schema.core.secret.management.TypedSecret encryptAndConvertSoapTypedSecret(

@@ -31,14 +31,13 @@ public abstract class AbstractEncryptionProvider {
 
     public abstract EncryptionProviderType getType();
 
-    protected abstract Cipher getCipher()
-            throws NoSuchPaddingException, NoSuchAlgorithmException, NoSuchProviderException;
+    protected abstract Cipher getCipher() throws EncrypterException;
 
     protected abstract AlgorithmParameterSpec getAlgorithmParameterSpec();
 
     protected abstract Key getSecretEncryptionKey(String keyReference, int cipherMode);
 
-    public void setKeyFile(File keyFile) {
+    protected void setKeyFile(File keyFile) {
         this.keyFile = keyFile;
     }
 
@@ -49,9 +48,6 @@ public abstract class AbstractEncryptionProvider {
                     this.getAlgorithmParameterSpec());
             return new EncryptedSecret(this.getType(), cipher.doFinal(secret.getSecret()));
         } catch (Exception e) {
-            //InvalidKeyException | IllegalBlockSizeException | BadPaddingException |
-            // InvalidAlgorithmParameterException |
-            //NoSuchPaddingException | NoSuchAlgorithmException | NoSuchProviderException
             throw new EncrypterException("Could not encrypt secret with keyReference " + keyReference, e);
         }
     }
@@ -76,9 +72,6 @@ public abstract class AbstractEncryptionProvider {
                 return new Secret(decryptedData);
             }
         } catch (Exception e) {
-            //InvalidKeyException | IllegalBlockSizeException | BadPaddingException |
-            // InvalidAlgorithmParameterException |
-            //NoSuchPaddingException | NoSuchAlgorithmException | NoSuchProviderException
             throw new EncrypterException("Could not decrypt secret with keyReference " + keyReference, e);
         }
     }
@@ -91,8 +84,7 @@ public abstract class AbstractEncryptionProvider {
                 }
             }
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 }

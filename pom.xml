@@ -117,6 +117,8 @@
     <module>osgp/platform/osgp-core</module>
     <module>osgp/platform/osgp-logging</module>
 
+    <module>osgp/platform/osgp-secret-management</module>
+
     <!-- integration tests -->
     <module>integration-tests/parent-integration-tests</module>
     <module>integration-tests/cucumber-tests-core</module>

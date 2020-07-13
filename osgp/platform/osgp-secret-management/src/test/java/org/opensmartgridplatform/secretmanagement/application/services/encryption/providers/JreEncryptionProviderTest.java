@@ -17,6 +17,7 @@ import org.apache.tomcat.util.buf.HexUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 import org.opensmartgridplatform.shared.security.EncryptedSecret;
 import org.opensmartgridplatform.shared.security.Secret;
 import org.opensmartgridplatform.shared.security.providers.JreEncryptionProvider;
@@ -29,7 +30,7 @@ public class JreEncryptionProviderTest {
     @Test
     public void identityTest() {
 
-        String path = "src/test/resources/secret-mgmt-db.key";
+        String path = "src/test/resources/osgp-secret-management-db.key";
         File keyFile = new File(path);
 
         jreEncryptionProvider = new JreEncryptionProvider(keyFile);
@@ -53,7 +54,7 @@ public class JreEncryptionProviderTest {
     @Test
     public void doErrorTest() {
 
-        String path = "src/test/resources/secret-mgmt-db.key";
+        String path = "src/test/resources/osgp-secret-management-db.key";
         File keyFile = new File(path);
 
         jreEncryptionProvider = new JreEncryptionProvider(keyFile);
@@ -62,7 +63,7 @@ public class JreEncryptionProviderTest {
 
         EncryptedSecret encryptedSecret = new EncryptedSecret(jreEncryptionProvider.getType(), secret);
 
-        assertThrows(IllegalStateException.class, () -> jreEncryptionProvider.decrypt(encryptedSecret, "1"),
+        assertThrows(EncrypterException.class, () -> jreEncryptionProvider.decrypt(encryptedSecret, "1"),
                 "Expected decrypt() to throw javax.crypto.BadPaddingException, but it didn't");
     }
 

@@ -75,7 +75,7 @@ public class SecurityConfig {
                 try {
                     rsaEncryptionProvider.setPublicKeyStore(res.getFile());
                 }
-                catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException e) {
+                catch (IOException e) {
                     throw new IllegalStateException("Could not load public key resource.", e);
                 }
             });

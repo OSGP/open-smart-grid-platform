@@ -20,41 +20,20 @@ public class DetailSoapFaultMappingExceptionResolver extends SoapFaultMappingExc
 
     private static final QName MESSAGE = new QName("Message");
     private static final QName COMPONENT = new QName("Component");
-    private static final QName INNER_MESSAGE = new QName("InnerMessage");
-    private static final QName INNER_EXCEPTION = new QName("InnerException");
 
     @Override
     protected void customizeFault(Object endpoint, Exception ex, SoapFault fault) {
+        SoapFaultDetail detail = fault.addFaultDetail();
+
+        if (ex.getMessage() != null) {
+            detail.addFaultDetailElement(MESSAGE).addText(ex.getMessage());
+        }
+
         if (ex instanceof TechnicalException) {
-            TechnicalFault technicalFault = convert((TechnicalException) ex);
-            SoapFaultDetail detail = fault.addFaultDetail();
-            if (technicalFault.getMessage() != null) {
-                detail.addFaultDetailElement(MESSAGE).addText(technicalFault.getMessage());
-            }
-            if (technicalFault.getComponent() != null) {
-                detail.addFaultDetailElement(COMPONENT).addText(technicalFault.getComponent());
-            }
-            if (technicalFault.getInnerMessage() != null) {
-                detail.addFaultDetailElement(INNER_MESSAGE).addText(technicalFault.getInnerMessage());
-            }
-            if (technicalFault.getInnerException() != null) {
-                detail.addFaultDetailElement(INNER_EXCEPTION).addText(technicalFault.getInnerException());
+            if (((TechnicalException) ex).getComponentType().name() != null) {
+                detail.addFaultDetailElement(COMPONENT).addText(((TechnicalException) ex).getComponentType().name());
             }
         }
     }
 
-    private TechnicalFault convert(final TechnicalException ex) {
-        if (ex == null) {
-            return null;
-        }
-        final TechnicalFault destination = new TechnicalFault();
-        destination.setComponent(ex.getComponentType().name());
-        destination.setMessage(ex.getMessage());
-        if (ex.getCause() != null) {
-            destination.setInnerException(ex.getCause().getClass().getName());
-            destination.setInnerMessage(ex.getCause().getMessage());
-        }
-
-        return destination;
-    }
 }

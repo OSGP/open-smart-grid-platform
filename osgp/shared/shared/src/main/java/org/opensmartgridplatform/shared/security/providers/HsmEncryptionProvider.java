@@ -6,7 +6,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.shared.security.providers;
+    package org.opensmartgridplatform.shared.security.providers;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,20 +19,29 @@ import java.security.NoSuchProviderException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.spec.AlgorithmParameterSpec;
+import java.util.Arrays;
 
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 
+import org.apache.commons.codec.binary.Hex;
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
+import org.opensmartgridplatform.shared.security.EncryptedSecret;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
+import org.opensmartgridplatform.shared.security.Secret;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HsmEncryptionProvider extends AbstractEncryptionProvider implements EncryptionProvider {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(HsmEncryptionProvider.class);
+
+    private static final int KEY_LENGTH = 16;
     private static final String ALGORITHM = "AES/CBC/NoPadding";
     private static final String PROVIDER = "nCipherKM";
     private static final String TYPE = "ncipher.sworld";
-    private static final byte[] IV = new byte[16];
+    private static final byte[] IV = new byte[KEY_LENGTH];
 
     private final KeyStore keyStore;
 
@@ -43,12 +52,36 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider implements
             FileInputStream fIn = new FileInputStream(keyStoreFile);
             this.keyStore.load(fIn, null);
         } catch (CertificateException | NoSuchAlgorithmException | NoSuchProviderException | IOException | KeyStoreException e) {
-            throw new EncrypterException("Could not read keystore");
+            throw new EncrypterException("Could not read keystore", e);
         }
     }
 
-    protected Cipher getCipher() throws NoSuchPaddingException, NoSuchAlgorithmException, NoSuchProviderException {
-        return Cipher.getInstance(ALGORITHM, PROVIDER);
+    public Secret decrypt(EncryptedSecret secret, String keyReference) {
+
+        Secret decryptedSecret = super.decrypt(secret, keyReference);
+
+        byte[] decryptedSecretBytes = decryptedSecret.getSecret();
+
+        if (decryptedSecretBytes.length > KEY_LENGTH) {
+
+            byte[] truncatedDecryptedSecretBytes = Arrays.copyOfRange(decryptedSecretBytes,
+                    decryptedSecretBytes.length-16, decryptedSecretBytes.length);
+
+            LOGGER.trace("Truncating decrypted key from " + Hex.encodeHexString(decryptedSecretBytes) + " to " +
+                            Hex.encodeHexString(truncatedDecryptedSecretBytes));
+
+            decryptedSecret = new Secret(truncatedDecryptedSecretBytes);
+        }
+
+        return decryptedSecret;
+    }
+
+    protected Cipher getCipher() throws EncrypterException {
+        try {
+            return Cipher.getInstance(ALGORITHM, PROVIDER);
+        } catch (NoSuchPaddingException | NoSuchAlgorithmException | NoSuchProviderException e) {
+            throw new EncrypterException("Could not get cipher", e);
+        }
     }
 
     /**
