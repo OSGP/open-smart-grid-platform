@@ -1,38 +1,31 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.ws.core.application.config;
-
-import javax.annotation.Resource;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.adapter.ws.infra.specifications.JpaDeviceSpecifications;
 import org.opensmartgridplatform.adapter.ws.infra.specifications.JpaEventSpecifications;
-import org.opensmartgridplatform.adapter.ws.shared.db.application.config.WritablePersistenceConfig;
 import org.opensmartgridplatform.domain.core.specifications.DeviceSpecifications;
 import org.opensmartgridplatform.domain.core.specifications.EventSpecifications;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareLocation;
-import org.opensmartgridplatform.logging.domain.config.ReadOnlyLoggingConfig;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.application.config.PagingSettings;
-import org.opensmartgridplatform.ws.core.config.CoreWebServiceConfig;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.ImportResource;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
+
+import javax.annotation.Resource;
 
 /**
  * An application context Java configuration class.
@@ -120,7 +113,7 @@ public class ApplicationContext extends AbstractConfig {
     @Bean
     public LocalValidatorFactoryBean validator() {
         final LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
-        final org.springframework.core.io.Resource[] resources = { new ClassPathResource("constraint-mappings.xml") };
+        final org.springframework.core.io.Resource[] resources = {new ClassPathResource("constraint-mappings.xml")};
         localValidatorFactoryBean.setMappingLocations(resources);
         return localValidatorFactoryBean;
     }
