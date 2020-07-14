@@ -11,7 +11,6 @@ package org.opensmartgridplatform.secretmanagement.application.exception;
 import javax.xml.namespace.QName;
 
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
-import org.opensmartgridplatform.ws.schema.core.secret.management.TechnicalFault;
 import org.springframework.ws.soap.SoapFault;
 import org.springframework.ws.soap.SoapFaultDetail;
 import org.springframework.ws.soap.server.endpoint.SoapFaultMappingExceptionResolver;

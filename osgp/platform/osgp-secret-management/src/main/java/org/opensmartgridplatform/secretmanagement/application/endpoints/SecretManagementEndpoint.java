@@ -8,7 +8,12 @@
  */
 package org.opensmartgridplatform.secretmanagement.application.endpoints;
 
+import java.io.ByteArrayOutputStream;
 import java.util.List;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.secretmanagement.application.domain.SecretType;
@@ -51,7 +56,9 @@ public class SecretManagementEndpoint {
 
         log.info("Handling incoming SOAP request 'getSecretsRequest' for device {}", request.getDeviceId());
 
-        log.trace(request.toString());
+        if (log.isTraceEnabled()) {
+            log.trace(getSecretsRequestToString(request));
+        }
 
         try {
             GetSecretsResponse response = new GetSecretsResponse();
@@ -74,6 +81,7 @@ public class SecretManagementEndpoint {
             log.trace(response.toString());
 
             return response;
+
         } catch (Exception e) {
             throw new TechnicalException(ComponentType.SHARED, e.getMessage());
         }
@@ -109,4 +117,19 @@ public class SecretManagementEndpoint {
         }
     }
 
+    private String getSecretsRequestToString(GetSecretsRequest request) {
+        try {
+            JAXBContext ctx = JAXBContext.newInstance(GetSecretsRequest.class);
+            Marshaller marshaller = ctx.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            marshaller.marshal(request, baos);
+
+            return baos.toString();
+        }
+        catch(JAXBException e) {
+            throw new IllegalStateException("Could not serialize GetSecretsRequest");
+        }
+    }
 }
