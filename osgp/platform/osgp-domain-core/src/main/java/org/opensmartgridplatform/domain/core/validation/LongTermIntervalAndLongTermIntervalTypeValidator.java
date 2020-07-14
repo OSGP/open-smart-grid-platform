@@ -48,7 +48,6 @@ public class LongTermIntervalAndLongTermIntervalTypeValidator
             break;
         default:
             throw new ValidationException("unknown LongTermHistoryIntervalType");
-            return false;
         }
 
         // Check lower limit:
