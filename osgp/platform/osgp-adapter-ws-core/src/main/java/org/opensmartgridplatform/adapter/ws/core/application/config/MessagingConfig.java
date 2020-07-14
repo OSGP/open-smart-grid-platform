@@ -19,9 +19,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 
 @Configuration
-@PropertySource("classpath:osgp-adapter-ws-core.properties")
-@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
-@PropertySource(value = "file:${osgp/AdapterWsCore/config}", ignoreResourceNotFound = true)
 @Import({ InboundDomainRequestsMessagingConfig.class, InboundDomainResponsesMessagingConfig.class,
         OutboundDomainRequestsMessagingConfig.class, OutboundLoggingRequestsMessagingConfig.class })
 public class MessagingConfig extends AbstractConfig {

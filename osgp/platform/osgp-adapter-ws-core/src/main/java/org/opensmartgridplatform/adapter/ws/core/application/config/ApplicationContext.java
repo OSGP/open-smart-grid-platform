@@ -38,15 +38,6 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
  * An application context Java configuration class.
  */
 @Configuration
-@ComponentScan(basePackages = { "org.opensmartgridplatform.shared.domain.services",
-        "org.opensmartgridplatform.domain.core", "org.opensmartgridplatform.adapter.ws.core",
-        "org.opensmartgridplatform.domain.logging" })
-@ImportResource("classpath:applicationContext.xml")
-@Import({ PersistenceConfig.class, WritablePersistenceConfig.class, ReadOnlyLoggingConfig.class, WebServiceConfig.class,
-        CoreWebServiceConfig.class })
-@PropertySource("classpath:osgp-adapter-ws-core.properties")
-@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
-@PropertySource(value = "file:${osgp/AdapterWsCore/config}", ignoreResourceNotFound = true)
 public class ApplicationContext extends AbstractConfig {
 
     private static final String PROPERTY_NAME_DEFAULT_PROTOCOL = "default.protocol";

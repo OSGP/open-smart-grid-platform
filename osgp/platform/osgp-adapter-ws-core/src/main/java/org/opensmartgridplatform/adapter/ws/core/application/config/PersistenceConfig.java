@@ -11,6 +11,7 @@ package org.opensmartgridplatform.adapter.ws.core.application.config;
 import javax.sql.DataSource;
 
 import com.zaxxer.hikari.HikariDataSource;
+import org.opensmartgridplatform.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceModelRepository;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.shared.application.config.AbstractPersistenceConfig;
 import org.opensmartgridplatform.shared.infra.db.DefaultConnectionPoolFactory;
@@ -22,11 +23,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
-@EnableJpaRepositories(basePackageClasses = { DeviceRepository.class })
+@EnableJpaRepositories(basePackageClasses = { DeviceRepository.class, WritableDeviceModelRepository.class })
 @Configuration
-@PropertySource("classpath:osgp-adapter-ws-core.properties")
-@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
-@PropertySource(value = "file:${osgp/AdapterWsCore/config}", ignoreResourceNotFound = true)
 public class PersistenceConfig extends AbstractPersistenceConfig {
 
     @Value("${db.readonly.username}")
