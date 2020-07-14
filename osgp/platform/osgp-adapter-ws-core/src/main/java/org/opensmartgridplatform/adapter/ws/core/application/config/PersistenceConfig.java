@@ -23,7 +23,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
-@EnableJpaRepositories(basePackageClasses = { DeviceRepository.class, WritableDeviceModelRepository.class })
+@EnableJpaRepositories(basePackageClasses = { DeviceRepository.class })
 @Configuration
 public class PersistenceConfig extends AbstractPersistenceConfig {
 

@@ -4,18 +4,23 @@ import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.ext.spring.LogbackConfigurer;
 import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.ws.core.application.config.PersistenceConfig;
+import org.opensmartgridplatform.adapter.ws.core.application.config.WebServiceConfig;
+import org.opensmartgridplatform.adapter.ws.shared.db.application.config.WritablePersistenceConfig;
+import org.opensmartgridplatform.logging.domain.config.ReadOnlyLoggingConfig;
+import org.opensmartgridplatform.ws.core.config.CoreWebServiceConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.ImportResource;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.ws.transport.http.MessageDispatcherServlet;
 
@@ -29,10 +34,12 @@ import java.io.FileNotFoundException;
 import java.util.TimeZone;
 
 @Slf4j
-@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class, QuartzAutoConfiguration.class, FlywayAutoConfiguration.class})
-@ComponentScan(basePackages = { "org.opensmartgridplatform.shared.domain.services",
+@SpringBootApplication(exclude = {SecurityAutoConfiguration.class, DataSourceAutoConfiguration.class, QuartzAutoConfiguration.class, FlywayAutoConfiguration.class})
+@ComponentScan(basePackages = {"org.opensmartgridplatform.shared.domain.services",
         "org.opensmartgridplatform.domain.core", "org.opensmartgridplatform.adapter.ws.core",
-        "org.opensmartgridplatform.domain.logging" })
+        "org.opensmartgridplatform.domain.logging"})
+@Import({PersistenceConfig.class, WritablePersistenceConfig.class, ReadOnlyLoggingConfig.class, WebServiceConfig.class,
+        CoreWebServiceConfig.class})
 @PropertySource("classpath:osgp-adapter-ws-core.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/AdapterWsCore/config}", ignoreResourceNotFound = true)
