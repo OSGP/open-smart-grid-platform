@@ -83,6 +83,9 @@ public class SecretManagementEndpoint {
             return response;
 
         } catch (Exception e) {
+            if (log.isDebugEnabled()) {
+                e.printStackTrace();
+            }
             throw new TechnicalException(ComponentType.SHARED, e.getMessage());
         }
     }

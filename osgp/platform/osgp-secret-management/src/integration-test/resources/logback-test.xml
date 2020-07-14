@@ -25,6 +25,6 @@
     <appender-ref ref="FILE"/>
   </root>
 
-  <logger name="org.opensmartgridplatform.secretmanagement.application.endpoints.SecretManagementEndpoint" level="TRACE"/>
+  <logger name="org.opensmartgridplatform.secretmanagement.application" level="DEBUG"/>
 
 </configuration>

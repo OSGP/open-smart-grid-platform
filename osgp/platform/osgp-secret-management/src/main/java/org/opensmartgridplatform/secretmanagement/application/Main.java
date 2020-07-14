@@ -22,6 +22,7 @@ import org.springframework.context.annotation.PropertySource;
 @ComponentScan(basePackages = { "org.opensmartgridplatform.secretmanagement" })
 public class Main extends SpringBootServletInitializer {
     public static void main(final String[] args) {
+        //command line startup method (not used when app is started in application server)
         SpringApplication.run(Main.class, args);
     }
 }
