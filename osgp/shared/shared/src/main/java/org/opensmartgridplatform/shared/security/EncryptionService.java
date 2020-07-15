@@ -57,7 +57,7 @@ public class EncryptionService {
      */
     public static final String PROVIDER = "SunJCE";
 
-    @Value("${encryption.key.path}")
+    @Value("${encryption.key.path:#{null}}}")
     private String keyPath;
     private SecretKey key;
 
