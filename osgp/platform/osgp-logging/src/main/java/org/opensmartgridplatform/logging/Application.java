@@ -7,9 +7,11 @@ import org.opensmartgridplatform.logging.application.config.PersistenceConfig;
 import org.opensmartgridplatform.logging.application.config.messaging.InboundLoggingRequestsMessagingConfig;
 import org.opensmartgridplatform.logging.infra.jms.LoggingMessageListener;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.actuate.autoconfigure.metrics.LogbackMetricsAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
@@ -29,7 +31,7 @@ import java.io.FileNotFoundException;
 import java.util.TimeZone;
 
 @Slf4j
-@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class, QuartzAutoConfiguration.class})
+@SpringBootApplication(exclude = {SecurityAutoConfiguration.class, DataSourceAutoConfiguration.class, QuartzAutoConfiguration.class})
 @ComponentScan(basePackageClasses = {PersistenceConfig.class, LoggingMessageListener.class,
         InboundLoggingRequestsMessagingConfig.class})
 @PropertySource("classpath:osgp-logging.properties")
@@ -59,12 +61,13 @@ public class Application extends SpringBootServletInitializer {
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-        initializeLogging(LOG_CONFIG);
         super.onStartup(servletContext);
+        initializeLogging(LOG_CONFIG);
     }
 
     @Override
     protected SpringApplicationBuilder configure(final SpringApplicationBuilder builder) {
+        builder.application().setDefaultProperties();
         return builder.sources(Application.class);
     }
 
