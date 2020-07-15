@@ -1,14 +1,6 @@
 package org.opensmartgridplatform.logging;
 
-import java.util.Properties;
-import java.util.TimeZone;
-
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-
+import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.logging.application.config.PersistenceConfig;
 import org.opensmartgridplatform.logging.application.config.messaging.InboundLoggingRequestsMessagingConfig;
 import org.opensmartgridplatform.logging.infra.jms.LoggingMessageListener;
@@ -16,7 +8,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
@@ -26,13 +18,19 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.ws.transport.http.MessageDispatcherServlet;
 
-import lombok.extern.slf4j.Slf4j;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import java.util.Properties;
+import java.util.TimeZone;
 
 @Slf4j
 @SpringBootApplication(
-        exclude = { SecurityAutoConfiguration.class, DataSourceAutoConfiguration.class, QuartzAutoConfiguration.class })
-@ComponentScan(basePackageClasses = { PersistenceConfig.class, LoggingMessageListener.class,
-        InboundLoggingRequestsMessagingConfig.class })
+        exclude = {UserDetailsServiceAutoConfiguration.class, DataSourceAutoConfiguration.class, QuartzAutoConfiguration.class})
+@ComponentScan(basePackageClasses = {PersistenceConfig.class, LoggingMessageListener.class,
+        InboundLoggingRequestsMessagingConfig.class})
 @PropertySource("classpath:osgp-logging.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/Logging/config}", ignoreResourceNotFound = true)
