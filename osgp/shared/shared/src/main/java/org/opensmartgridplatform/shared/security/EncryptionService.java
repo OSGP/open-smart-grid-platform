@@ -90,6 +90,11 @@ public class EncryptionService {
 
     @PostConstruct
     private void initEncryption() throws FunctionalException {
+        if (key == null) {
+            LOGGER.info("This EncryptionService not initialized since secret is not specified.");
+            return;
+        }
+
         try {
             this.key = new SecretKeySpec(Files.readAllBytes(new File(this.keyPath).toPath()), SECRET_KEY_SPEC);
         } catch (final IOException e) {

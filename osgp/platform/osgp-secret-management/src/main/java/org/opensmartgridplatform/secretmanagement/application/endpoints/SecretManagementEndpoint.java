@@ -56,8 +56,8 @@ public class SecretManagementEndpoint {
 
         log.info("Handling incoming SOAP request 'getSecretsRequest' for device {}", request.getDeviceId());
 
-        if (log.isTraceEnabled()) {
-            log.trace(getSecretsRequestToString(request));
+        if (log.isDebugEnabled()) {
+            log.debug(getSecretsRequestToString(request));
         }
 
         try {
@@ -83,7 +83,7 @@ public class SecretManagementEndpoint {
             return response;
 
         } catch (Exception e) {
-            if (log.isDebugEnabled()) {
+            if (log.isTraceEnabled()) {
                 e.printStackTrace();
             }
             throw new TechnicalException(ComponentType.SHARED, e.getMessage());
