@@ -8,11 +8,8 @@
  */
 package org.opensmartgridplatform.secretmanagement.application.config;
 
-import ch.qos.logback.core.joran.spi.JoranException;
-import ch.qos.logback.ext.spring.LogbackConfigurer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.web.WebApplicationInitializer;
+import java.io.File;
+import java.io.FileNotFoundException;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -20,8 +17,11 @@ import javax.naming.NamingException;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import ch.qos.logback.core.joran.spi.JoranException;
+import ch.qos.logback.ext.spring.LogbackConfigurer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.WebApplicationInitializer;
 
 /* The responsibility of this class is to configure logback logging using a context property
  * provided by the application server (context.xml).
@@ -44,9 +44,12 @@ public class SecretManagementInitializer implements WebApplicationInitializer {
             if (new File(logLocation).exists()) {
                 LogbackConfigurer.initLogging(logLocation);
                 logger.info("Initialized logging using {}", LOG_CONFIG);
+            } else {
+                logger.warn("Log configuration file not found: " + logLocation);
             }
         } catch (final NamingException | FileNotFoundException | JoranException e) {
             throw new ServletException("Failed to initialize logging using " + LOG_CONFIG, e);
         }
     }
+
 }

@@ -20,9 +20,11 @@
     </encoder>
   </appender>
 
-  <root level="INFO" additivity="false">
+  <root level="WARN" additivity="false">
     <appender-ref ref="CONSOLE"/>
     <appender-ref ref="FILE"/>
   </root>
+
+  <logger name="org.opensmartgridplatform.secretmanagement.application" level="DEBUG"/>
 
 </configuration>
