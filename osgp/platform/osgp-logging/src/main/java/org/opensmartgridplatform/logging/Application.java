@@ -16,6 +16,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
@@ -28,16 +29,14 @@ import org.springframework.ws.transport.http.MessageDispatcherServlet;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@SpringBootApplication(exclude = { DataSourceAutoConfiguration.class, QuartzAutoConfiguration.class })
+@SpringBootApplication(
+        exclude = { SecurityAutoConfiguration.class, DataSourceAutoConfiguration.class, QuartzAutoConfiguration.class })
 @ComponentScan(basePackageClasses = { PersistenceConfig.class, LoggingMessageListener.class,
         InboundLoggingRequestsMessagingConfig.class })
 @PropertySource("classpath:osgp-logging.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/Logging/config}", ignoreResourceNotFound = true)
 public class Application extends SpringBootServletInitializer {
-
-    // private static final Logger LOGGER =
-    // LoggerFactory.getLogger(Application.class);
 
     private static final String DISPATCHER_SERVLET_NAME = "spring-ws";
     private static final String DISPATCHER_SERVLET_MAPPING = "/ws/*";
@@ -68,7 +67,7 @@ public class Application extends SpringBootServletInitializer {
     protected SpringApplicationBuilder configure(final SpringApplicationBuilder builder) {
         final String logPropertiesLocation = this.getLogbackConfigurationLocation();
 
-        log.info("RL - locatie: {}", logPropertiesLocation);
+        log.info("Location for properties: {}", logPropertiesLocation);
 
         final Properties props = new Properties();
         props.setProperty("logging.config", logPropertiesLocation);

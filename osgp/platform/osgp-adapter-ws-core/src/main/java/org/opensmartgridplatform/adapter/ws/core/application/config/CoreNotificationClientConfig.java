@@ -16,9 +16,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
 @Configuration
-@PropertySource("classpath:osgp-adapter-ws-core.properties")
-@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
-@PropertySource(value = "file:${osgp/AdapterWsCore/config}", ignoreResourceNotFound = true)
 public class CoreNotificationClientConfig extends NotificationClientConfigBase {
 
     @Bean

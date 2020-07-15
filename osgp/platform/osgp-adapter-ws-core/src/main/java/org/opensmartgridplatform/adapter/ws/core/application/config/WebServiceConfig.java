@@ -7,10 +7,6 @@
  */
 package org.opensmartgridplatform.adapter.ws.core.application.config;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-
 import org.opensmartgridplatform.adapter.ws.core.application.exceptionhandling.DetailSoapFaultMappingExceptionResolver;
 import org.opensmartgridplatform.adapter.ws.core.application.exceptionhandling.SoapFaultMapper;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.AnnotationMethodArgumentResolver;
@@ -27,17 +23,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.server.endpoint.adapter.DefaultMethodEndpointAdapter;
 import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadMethodProcessor;
 import org.springframework.ws.server.endpoint.adapter.method.MethodArgumentResolver;
 import org.springframework.ws.server.endpoint.adapter.method.MethodReturnValueHandler;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
 @Configuration
-@PropertySource("classpath:osgp-adapter-ws-core.properties")
-@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
-@PropertySource(value = "file:${osgp/AdapterWsCore/config}", ignoreResourceNotFound = true)
 public class WebServiceConfig extends AbstractConfig {
 
     private static final String PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_DEVICE_INSTALLATION = "jaxb2.marshaller.context.path.deviceinstallation";
