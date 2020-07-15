@@ -61,13 +61,12 @@ public class Application extends SpringBootServletInitializer {
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-        super.onStartup(servletContext);
         initializeLogging(LOG_CONFIG);
+        super.onStartup(servletContext);
     }
 
     @Override
     protected SpringApplicationBuilder configure(final SpringApplicationBuilder builder) {
-        builder.application().setDefaultProperties();
         return builder.sources(Application.class);
     }
 
