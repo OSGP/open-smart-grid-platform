@@ -27,7 +27,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.server.endpoint.adapter.DefaultMethodEndpointAdapter;
@@ -36,9 +35,6 @@ import org.springframework.ws.server.endpoint.adapter.method.MethodArgumentResol
 import org.springframework.ws.server.endpoint.adapter.method.MethodReturnValueHandler;
 
 @Configuration
-@PropertySource("classpath:osgp-adapter-ws-admin.properties")
-@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
-@PropertySource(value = "file:${osgp/AdapterWsAdmin/config}", ignoreResourceNotFound = true)
 public class WebServiceConfig extends AbstractConfig {
     private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceConfig.class);
 

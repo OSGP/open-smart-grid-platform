@@ -15,12 +15,8 @@ import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsC
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.PropertySource;
 
 @Configuration
-@PropertySource("classpath:osgp-adapter-ws-admin.properties")
-@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
-@PropertySource(value = "file:${osgp/AdapterWsAdmin/config}", ignoreResourceNotFound = true)
 @Import({ OutboundDomainRequestsMessagingConfig.class, InboundDomainResponsesMessagingConfig.class,
         OutboundLoggingRequestsMessagingConfig.class })
 public class MessagingConfig extends AbstractConfig {

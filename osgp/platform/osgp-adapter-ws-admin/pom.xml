@@ -68,6 +68,18 @@
           </dependency>
         </dependencies>
       </plugin>
+      <plugin>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-maven-plugin</artifactId>
+		<version>2.2.2.RELEASE</version>
+		<executions>
+			<execution>
+				<goals>
+					<goal>repackage</goal>
+				</goals>
+			</execution>
+		</executions>
+	  </plugin>
     </plugins>
   </build>
 
@@ -126,6 +138,12 @@
       <artifactId>spring-boot-starter-data-jpa</artifactId>
       <version>2.2.2.RELEASE</version>
     </dependency>
+    <dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-tomcat</artifactId>
+		<scope>provided</scope>
+		<version>2.2.2.RELEASE</version>
+	</dependency>
 
     <!-- Spring Framework -->
 <!--     <dependency>
@@ -174,8 +192,8 @@
     </dependency>
     <dependency>
       <groupId>org.springframework.ws</groupId>
-      <artifactId>spring-ws-support</artifactId> -->
-    </dependency>
+      <artifactId>spring-ws-support</artifactId> 
+    </dependency> -->
 
     <!-- Joda Time (Date/Time util) -->
     <dependency>
@@ -258,6 +276,13 @@
     <dependency>
       <groupId>org.apache.activemq</groupId>
       <artifactId>activemq-spring</artifactId>
+    </dependency>
+    
+   <!-- Lombok -->
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <scope>provided</scope>
     </dependency>
 
   </dependencies>
