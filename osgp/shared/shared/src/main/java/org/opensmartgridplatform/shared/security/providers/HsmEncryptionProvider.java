@@ -6,7 +6,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-    package org.opensmartgridplatform.shared.security.providers;
+package org.opensmartgridplatform.shared.security.providers;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -64,8 +64,8 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider implements
 
         if (decryptedSecretBytes.length > KEY_LENGTH) {
 
-            byte[] truncatedDecryptedSecretBytes = Arrays.copyOfRange(decryptedSecretBytes,
-                    decryptedSecretBytes.length-16, decryptedSecretBytes.length);
+            byte[] truncatedDecryptedSecretBytes = Arrays.copyOfRange(decryptedSecretBytes, 0,
+                    decryptedSecretBytes.length-16);
 
             LOGGER.trace("Truncating decrypted key from " + Hex.encodeHexString(decryptedSecretBytes) + " to " +
                             Hex.encodeHexString(truncatedDecryptedSecretBytes));
