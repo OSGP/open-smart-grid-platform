@@ -121,16 +121,10 @@
       <artifactId>spring-boot-starter-web-services</artifactId>
       <version>2.2.2.RELEASE</version>
     </dependency>
+    <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-data-jpa</artifactId>
       <version>2.2.2.RELEASE</version>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-orm</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-tx</artifactId>
     </dependency>
 
     <!-- Spring Framework -->
@@ -164,13 +158,13 @@
     </dependency> -->
 
     <!-- Spring Data -->
-    <dependency>
+    <!-- <dependency>
       <groupId>org.springframework.data</groupId>
       <artifactId>spring-data-jpa</artifactId>
-    </dependency>
+    </dependency> -->
 
     <!-- Spring WS -->
-    <dependency>
+    <!-- <dependency>
       <groupId>org.springframework.ws</groupId>
       <artifactId>spring-ws-core</artifactId>
     </dependency>
@@ -180,7 +174,7 @@
     </dependency>
     <dependency>
       <groupId>org.springframework.ws</groupId>
-      <artifactId>spring-ws-support</artifactId>
+      <artifactId>spring-ws-support</artifactId> -->
     </dependency>
 
     <!-- Joda Time (Date/Time util) -->
@@ -190,26 +184,26 @@
     </dependency>
 
     <!-- Hikari connection pooling -->
-    <dependency>
+    <!-- <dependency>
       <groupId>com.zaxxer</groupId>
       <artifactId>HikariCP</artifactId>
-    </dependency>
+    </dependency> -->
 
     <!-- Hibernate -->
-    <dependency>
+    <!-- <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
     </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-entitymanager</artifactId>
-    </dependency>
+    </dependency> -->
 
     <!-- Hibernate validator -->
-    <dependency>
+    <!-- <dependency>
       <groupId>org.hibernate.validator</groupId>
       <artifactId>hibernate-validator</artifactId>
-    </dependency>
+    </dependency> -->
 
     <!-- Logging -->
     <dependency>
