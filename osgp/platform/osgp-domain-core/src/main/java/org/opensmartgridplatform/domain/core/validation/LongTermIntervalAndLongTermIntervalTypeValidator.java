@@ -23,39 +23,40 @@ public class LongTermIntervalAndLongTermIntervalTypeValidator
 
     @Override
     public boolean isValid(final Configuration value, final ConstraintValidatorContext context) {
-        if (value == null)
+        if (value == null) {
             return true;
-
-        // LongTermHistoryInterval and LongTermHistoryIntervalType must
-        // either be: BOTH PRESENT or BOTH NOT PRESENT
-        // Using the exclusive or operator this becomes
-        if (value.getLongTermHistoryInterval() == null ^ value.getLongTermHistoryIntervalType() == null)
-            return false;
-
+        }
+        // If LongTermHistoryInterval or LongTermHistoryIntervalType is not
+        // present, the other must be not present as well.
+        if (value.getLongTermHistoryInterval() == null && value.getLongTermHistoryIntervalType() == null) {
+            return true;
+        }
         // And, the value of long term history interval must be among the
-        // permitted values
-        // First check upper limit depending on interval type:
-        // - maximal 30 for long term history interval type DAYS.
-        // - maximal 12 for long term history interval type MONTHS.
+        // permitted values, defined by the ranges:
+        // - from 1 to 30 for long term history interval type DAYS.
+        // - from 1 to 12 for long term history interval type MONTHS.
+        return this.checkRanges(value);
+    }
+
+    protected boolean checkRanges(final Configuration value) {
+        final int interval = value.getLongTermHistoryInterval();
+
         switch (value.getLongTermHistoryIntervalType()) {
         case DAYS:
-            if (value.getLongTermHistoryInterval() > 30)
-                return false;
+            if (interval >= 1 && interval <= 30) {
+                return true;
+            }
             break;
         case MONTHS:
-            if (value.getLongTermHistoryInterval() > 12)
-                return false;
+            if (interval >= 1 && interval <= 12) {
+                return true;
+            }
             break;
         default:
             throw new ValidationException("unknown LongTermHistoryIntervalType");
+
         }
 
-        // Check lower limit:
-        // - minimal 1
-        if (value.getLongTermHistoryInterval() < 1)
-            return false;
-
-        // All validation tests passed correctly
-        return true;
+        return false;
     }
 }
