@@ -129,6 +129,9 @@
     <!-- Core -->
     <module>osgp-logging</module>
     <module>osgp-core</module>
+
+    <!-- Other -->
+    <module>osgp-secret-management</module>
   </modules>
 
 </project>

@@ -49,6 +49,7 @@
     <module>osgp/shared/osgp-ws-publiclighting</module>
     <module>osgp/shared/osgp-ws-tariffswitching</module>
     <module>osgp/shared/osgp-ws-smartmetering</module>
+    <module>osgp/shared/osgp-ws-secret-management</module>
 
     <!-- protocol-adapter-iec61850 -->
     <module>osgp/protocol-adapter-iec61850/parent-pa-iec61850</module>
@@ -115,6 +116,8 @@
 
     <module>osgp/platform/osgp-core</module>
     <module>osgp/platform/osgp-logging</module>
+
+    <module>osgp/platform/osgp-secret-management</module>
 
     <!-- integration tests -->
     <module>integration-tests/parent-integration-tests</module>
