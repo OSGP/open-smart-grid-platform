@@ -108,17 +108,15 @@ public class SecretManagementEndpoint {
     }
 
     private String getSecretsRequestToString(GetSecretsRequest request) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
             JAXBContext ctx = JAXBContext.newInstance(GetSecretsRequest.class);
             Marshaller marshaller = ctx.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
             marshaller.marshal(request, baos);
-
-            return baos.toString();
         } catch (JAXBException e) {
-            throw new IllegalStateException("Could not serialize GetSecretsRequest");
+            log.error("Could not serialize GetSecretsRequest");
         }
+        return baos.toString();
     }
 }
