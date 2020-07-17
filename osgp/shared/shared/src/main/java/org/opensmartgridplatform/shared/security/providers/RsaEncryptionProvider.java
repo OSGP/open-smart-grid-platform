@@ -1,5 +1,10 @@
 package org.opensmartgridplatform.shared.security.providers;
 
+import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
+import org.opensmartgridplatform.shared.security.EncryptionProviderType;
+
+import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -11,12 +16,6 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
-import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
-
-import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
-import org.opensmartgridplatform.shared.security.EncryptionProviderType;
-
 public class RsaEncryptionProvider extends AbstractEncryptionProvider implements EncryptionProvider {
 
     private static final String ALG = "RSA";
@@ -25,11 +24,14 @@ public class RsaEncryptionProvider extends AbstractEncryptionProvider implements
     private Key publicKey;
     private Key privateKey;
 
-    public void setPrivateKeyStore(File privateKeyStoreFile)
-            throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+    public void setPrivateKeyStore(File privateKeyStoreFile) {
+        try {
         byte[] keyData = Files.readAllBytes(privateKeyStoreFile.toPath());
         PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(keyData);
         privateKey = KeyFactory.getInstance(ALG).generatePrivate(privateKeySpec);
+        } catch (NoSuchAlgorithmException | IOException | InvalidKeySpecException e) {
+            throw new EncrypterException("Could not get cipher", e);
+        }
         super.setKeyFile(privateKeyStoreFile);
     }
 

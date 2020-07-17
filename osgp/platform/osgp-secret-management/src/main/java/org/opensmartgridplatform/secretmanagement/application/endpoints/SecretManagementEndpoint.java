@@ -1,9 +1,9 @@
 /**
  * Copyright 2020 Smart Society Services B.V.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.secretmanagement.application.endpoints;
@@ -19,7 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.secretmanagement.application.domain.SecretType;
 import org.opensmartgridplatform.secretmanagement.application.domain.TypedSecret;
 import org.opensmartgridplatform.secretmanagement.application.services.SecretManagementService;
-import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.ws.schema.core.secret.management.GetSecretsRequest;
@@ -45,7 +44,7 @@ public class SecretManagementEndpoint {
     private final SoapEndpointDataTypeConverter converter;
 
     public SecretManagementEndpoint(SecretManagementService secretManagementService,
-            SoapEndpointDataTypeConverter converter) {
+                                    SoapEndpointDataTypeConverter converter) {
         this.secretManagementService = secretManagementService;
         this.converter = converter;
     }
@@ -60,34 +59,26 @@ public class SecretManagementEndpoint {
             log.debug(getSecretsRequestToString(request));
         }
 
-        try {
-            GetSecretsResponse response = new GetSecretsResponse();
+        GetSecretsResponse response = new GetSecretsResponse();
 
-            SecretTypes soapSecretTypes = request.getSecretTypes();
+        SecretTypes soapSecretTypes = request.getSecretTypes();
 
-            if (soapSecretTypes == null) {
-                throw new TechnicalException("Missing input: secret types");
-            }
-
-            List<SecretType> secretTypeList = converter.convertToSecretTypes(soapSecretTypes);
-            List<TypedSecret> typedSecrets = secretManagementService.retrieveSecrets(request.getDeviceId(),
-                    secretTypeList);
-
-            TypedSecrets soapTypedSecrets = converter.convertToSoapTypedSecrets(typedSecrets);
-
-            response.setTypedSecrets(soapTypedSecrets);
-            response.setResult(OsgpResultType.OK);
-
-            log.trace(response.toString());
-
-            return response;
-
-        } catch (Exception e) {
-            if (log.isTraceEnabled()) {
-                e.printStackTrace();
-            }
-            throw new TechnicalException(ComponentType.SHARED, e.getMessage());
+        if (soapSecretTypes == null) {
+            throw new TechnicalException("Missing input: secret types");
         }
+
+        List<SecretType> secretTypeList = converter.convertToSecretTypes(soapSecretTypes);
+        List<TypedSecret> typedSecrets = secretManagementService.retrieveSecrets(request.getDeviceId(),
+                secretTypeList);
+
+        TypedSecrets soapTypedSecrets = converter.convertToSoapTypedSecrets(typedSecrets);
+
+        response.setTypedSecrets(soapTypedSecrets);
+        response.setResult(OsgpResultType.OK);
+
+        log.trace(response.toString());
+
+        return response;
     }
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "storeSecretsRequest")
@@ -99,25 +90,21 @@ public class SecretManagementEndpoint {
 
         StoreSecretsResponse response = new StoreSecretsResponse();
 
-        try {
-            TypedSecrets soapTypedSecrets = request.getTypedSecrets();
+        TypedSecrets soapTypedSecrets = request.getTypedSecrets();
 
-            if (soapTypedSecrets == null) {
-                throw new TechnicalException("Missing input: typed secrets");
-            }
-
-            List<TypedSecret> typedSecretList = converter.convertToTypedSecrets(request.getTypedSecrets());
-
-            secretManagementService.storeSecrets(request.getDeviceId(), typedSecretList);
-
-            response.setResult(OsgpResultType.OK);
-
-            log.trace(response.toString());
-
-            return response;
-        } catch (Exception e) {
-            throw new TechnicalException(ComponentType.SHARED, e.getMessage());
+        if (soapTypedSecrets == null) {
+            throw new TechnicalException("Missing input: typed secrets");
         }
+
+        List<TypedSecret> typedSecretList = converter.convertToTypedSecrets(request.getTypedSecrets());
+
+        secretManagementService.storeSecrets(request.getDeviceId(), typedSecretList);
+
+        response.setResult(OsgpResultType.OK);
+
+        log.trace(response.toString());
+
+        return response;
     }
 
     private String getSecretsRequestToString(GetSecretsRequest request) {
@@ -130,8 +117,7 @@ public class SecretManagementEndpoint {
             marshaller.marshal(request, baos);
 
             return baos.toString();
-        }
-        catch(JAXBException e) {
+        } catch (JAXBException e) {
             throw new IllegalStateException("Could not serialize GetSecretsRequest");
         }
     }
