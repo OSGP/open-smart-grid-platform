@@ -118,17 +118,17 @@
       <type>pom</type>
       <scope>import</scope>
     </dependency>
-    <dependency>
+    <!-- <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
       <version>2.2.2.RELEASE</version>
-    </dependency>
+    </dependency> -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-actuator</artifactId>
       <version>2.2.2.RELEASE</version>
     </dependency>
-    <dependency>
+    <!-- <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web-services</artifactId>
       <version>2.2.2.RELEASE</version>
@@ -143,7 +143,20 @@
 		<artifactId>spring-boot-starter-tomcat</artifactId>
 		<scope>provided</scope>
 		<version>2.2.2.RELEASE</version>
-	</dependency>
+	</dependency> -->
+   	
+   	<!-- PostgreSQL -->
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-util</artifactId>
+      <version>2.2.2.RELEASE</version>
+    </dependency>
+   	
 
     <!-- Spring Framework -->
 <!--     <dependency>
