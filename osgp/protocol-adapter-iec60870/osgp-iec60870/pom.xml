@@ -11,23 +11,28 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>osgp-iec60870</artifactId>
-  <name>osgp-iec60870</name>
-  <packaging>jar</packaging>
-  <description>OSGP IEC60870 Library.</description>
-
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-pa-iec60870</artifactId>
-    <version>5.0.2</version>
+    <version>5.1.0</version>
     <relativePath>../parent-pa-iec60870/pom.xml</relativePath>
   </parent>
+
+  <artifactId>osgp-iec60870</artifactId>
+  <packaging>jar</packaging>
+  <name>osgp-iec60870</name>
+  <description>OSGP IEC60870 Library.</description>
 
   <properties>
     <display.version>${project.version}-${BUILD_TAG}</display.version>
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>javax.annotation</groupId>
+      <artifactId>javax.annotation-api</artifactId>
+    </dependency>
+
     <!-- Spring Framework -->
     <dependency>
       <groupId>org.springframework</groupId>
@@ -89,7 +94,7 @@
       <groupId>org.openmuc</groupId>
       <artifactId>j60870</artifactId>
     </dependency>
-    
+
     <!-- Testing dependencies -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
@@ -118,9 +123,8 @@
       <groupId>net.bytebuddy</groupId>
       <artifactId>byte-buddy</artifactId>
     </dependency>
-
   </dependencies>
-  
+
   <build>
     <plugins>
       <plugin>
@@ -142,18 +146,7 @@
           </excludes>
         </configuration>
       </plugin>
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>${maven.surefire.plugin.version}</version>
-        <dependencies>
-          <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit.version}</version>
-          </dependency>
-        </dependencies>
-      </plugin>
     </plugins>
   </build>
-  
+
 </project>

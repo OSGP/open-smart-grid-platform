@@ -9,6 +9,7 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.application.mapping;
 
 import org.opensmartgridplatform.adapter.protocol.iec60870.application.mapping.informationelements.IeQualityConverter;
 import org.opensmartgridplatform.adapter.protocol.iec60870.application.mapping.informationelements.IeShortFloatConverter;
+import org.opensmartgridplatform.adapter.protocol.iec60870.application.mapping.informationelements.IeSinglePointWithQualityConverter;
 import org.opensmartgridplatform.adapter.protocol.iec60870.application.mapping.informationelements.IeTime56Converter;
 
 import ma.glasnost.orika.MapperFactory;
@@ -20,6 +21,7 @@ public class Iec60870Mapper extends ConfigurableMapper {
     protected void configure(final MapperFactory factory) {
         factory.getConverterFactory().registerConverter(new IeShortFloatConverter());
         factory.getConverterFactory().registerConverter(new IeQualityConverter());
+        factory.getConverterFactory().registerConverter(new IeSinglePointWithQualityConverter());
         factory.getConverterFactory().registerConverter(new IeTime56Converter());
         factory.getConverterFactory().registerConverter(new Iec60870InformationObjectConverter());
         factory.getConverterFactory().registerConverter(new Iec60870AsduConverter());

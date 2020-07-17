@@ -18,11 +18,11 @@
       <jxb:package name="org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring"></jxb:package>
     </jxb:schemaBindings>
 
-    <jxb:bindings node="//xs:complexType[@name='ProfileGenericData']//xs:element[@name='CaptureObjects']">
+    <jxb:bindings node="//xs:complexType[@name='PowerQualityProfileData']//xs:element[@name='CaptureObjects']">
       <jxb:property name="captureObjectList" />
     </jxb:bindings>
 
-    <jxb:bindings node="//xs:complexType[@name='ProfileGenericData']//xs:element[@name='ProfileEntries']">
+    <jxb:bindings node="//xs:complexType[@name='PowerQualityProfileData']//xs:element[@name='ProfileEntries']">
       <jxb:property name="profileEntryList" />
     </jxb:bindings>
 

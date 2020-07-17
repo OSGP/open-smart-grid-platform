@@ -12,18 +12,19 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
+  <parent>
+    <groupId>org.opensmartgridplatform</groupId>
+    <artifactId>super-osgp</artifactId>
+    <version>5.1.0</version>
+    <relativePath>../../../super/pom.xml</relativePath>
+  </parent>
+
   <artifactId>parent-platform</artifactId>
   <packaging>pom</packaging>
   <name>parent-platform</name>
   <!-- Description, Organization, Licences, URL and Distribution Management 
     elements are needed for the maven-jxr-plugin to generate a maven site -->
   <description>Parent module.</description>
-  <parent>
-    <groupId>org.opensmartgridplatform</groupId>
-    <artifactId>super-osgp</artifactId>
-    <version>5.0.2</version>
-    <relativePath>../../../super/pom.xml</relativePath>
-  </parent>
   <distributionManagement>
     <site>
       <id>platform</id>

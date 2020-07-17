@@ -10,9 +10,8 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.application.confi
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
-import org.springframework.web.WebApplicationInitializer;
-
 import org.opensmartgridplatform.shared.application.config.AbstractApplicationInitializer;
+import org.springframework.web.WebApplicationInitializer;
 
 /**
  * Web application Java configuration class.

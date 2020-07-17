@@ -131,11 +131,14 @@ public class FirmwareFileSteps {
         } else {
             file = null;
         }
-        FirmwareFile firmwareFile = new FirmwareFile(identification, filename,
-                getString(settings, PlatformKeys.FIRMWARE_DESCRIPTION, PlatformDefaults.FIRMWARE_DESCRIPTION),
-                getBoolean(settings, PlatformKeys.FIRMWARE_PUSH_TO_NEW_DEVICES,
-                        PlatformDefaults.FIRMWARE_PUSH_TO_NEW_DEVICE),
-                file, null);
+        FirmwareFile firmwareFile = new FirmwareFile.Builder().withIdentification(identification)
+                .withFilename(filename)
+                .withDescription(
+                        getString(settings, PlatformKeys.FIRMWARE_DESCRIPTION, PlatformDefaults.FIRMWARE_DESCRIPTION))
+                .withPushToNewDevices(getBoolean(settings, PlatformKeys.FIRMWARE_PUSH_TO_NEW_DEVICES,
+                        PlatformDefaults.FIRMWARE_PUSH_TO_NEW_DEVICE))
+                .withFile(file)
+                .build();
 
         if (!isForSmartMeters) {
             // Create file on disk

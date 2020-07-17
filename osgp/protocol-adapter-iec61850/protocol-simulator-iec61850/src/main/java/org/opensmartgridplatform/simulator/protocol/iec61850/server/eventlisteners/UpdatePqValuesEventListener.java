@@ -10,9 +10,9 @@ package org.opensmartgridplatform.simulator.protocol.iec61850.server.eventlisten
 import org.opensmartgridplatform.simulator.protocol.iec61850.server.events.ServerSapEvent;
 import org.opensmartgridplatform.simulator.protocol.iec61850.server.logicaldevices.substation.Iec61850ServerHelper;
 import org.opensmartgridplatform.simulator.protocol.iec61850.server.logicaldevices.substation.Node;
-import org.openmuc.openiec61850.BasicDataAttribute;
-import org.openmuc.openiec61850.ServerModel;
-import org.openmuc.openiec61850.ServerSap;
+import com.beanit.openiec61850.BasicDataAttribute;
+import com.beanit.openiec61850.ServerModel;
+import com.beanit.openiec61850.ServerSap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;

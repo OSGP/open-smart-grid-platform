@@ -19,7 +19,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>super-osgp</artifactId>
-    <version>5.0.2</version>
+    <version>5.1.0</version>
     <relativePath>../../super/pom.xml</relativePath>
   </parent>
   <distributionManagement>
@@ -139,21 +139,6 @@
   <build>
     <pluginManagement>
       <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-checkstyle-plugin</artifactId>
-          <version>${checkstyle.version}</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-pmd-plugin</artifactId>
-          <version>${pmd.version}</version>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>findbugs-maven-plugin</artifactId>
-          <version>${findbug.version}</version>
-        </plugin>
 
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>

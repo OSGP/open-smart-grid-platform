@@ -1,9 +1,10 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.responses.from.core.processors;
 
@@ -29,6 +30,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.FirmwareService;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDeviceBuilder;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHelper;
@@ -68,6 +70,9 @@ public class GetFirmwareFileResponseMessageProcessorTest {
     @Mock
     private DlmsConnectionManager dlmsConnectionManagerMock;
 
+    @Mock
+    private ThrottlingService throttlingService;
+
     private DlmsDevice dlmsDevice;
 
     @InjectMocks
@@ -85,8 +90,7 @@ public class GetFirmwareFileResponseMessageProcessorTest {
         final FirmwareFileDto firmwareFileDto = this.setupFirmwareFileDto();
         final ResponseMessage responseMessage = this.setupResponseMessage(firmwareFileDto);
         final ObjectMessage message = new ObjectMessageBuilder().withMessageType(MessageType.GET_FIRMWARE_FILE.name())
-                .withObject(responseMessage)
-                .build();
+                                                                .withObject(responseMessage).build();
         final UpdateFirmwareResponseDto updateFirmwareResponseDto = new UpdateFirmwareResponseDto(
                 firmwareFileDto.getFirmwareIdentification(), new LinkedList<>());
 
@@ -95,8 +99,9 @@ public class GetFirmwareFileResponseMessageProcessorTest {
 
         when(this.domainHelperService.findDlmsDevice(any(MessageMetadata.class))).thenReturn(this.dlmsDevice);
         when(this.dlmsConnectionManagerMock.getDlmsMessageListener()).thenReturn(this.dlmsMessageListenerMock);
-        when(this.connectionHelper.createConnectionForDevice(same(this.dlmsDevice),
-                nullable(DlmsMessageListener.class))).thenReturn(this.dlmsConnectionManagerMock);
+        when(this.connectionHelper
+                .createConnectionForDevice(same(this.dlmsDevice), nullable(DlmsMessageListener.class)))
+                .thenReturn(this.dlmsConnectionManagerMock);
         when(this.firmwareService.updateFirmware(this.dlmsConnectionManagerMock, this.dlmsDevice, firmwareFileDto))
                 .thenReturn(updateFirmwareResponseDto);
 
@@ -117,12 +122,12 @@ public class GetFirmwareFileResponseMessageProcessorTest {
         final ResponseMessage responseMessage = this.setupResponseMessage(firmwareFileDto);
 
         // act
-        this.getFirmwareFileResponseMessageProcessor.handleMessage(this.dlmsConnectionManagerMock, this.dlmsDevice,
-                responseMessage);
+        this.getFirmwareFileResponseMessageProcessor
+                .handleMessage(this.dlmsConnectionManagerMock, this.dlmsDevice, responseMessage);
 
         // assert
-        verify(this.firmwareService, times(1)).updateFirmware(this.dlmsConnectionManagerMock, this.dlmsDevice,
-                firmwareFileDto);
+        verify(this.firmwareService, times(1))
+                .updateFirmware(this.dlmsConnectionManagerMock, this.dlmsDevice, firmwareFileDto);
     }
 
     private FirmwareFileDto setupFirmwareFileDto() {
@@ -130,12 +135,8 @@ public class GetFirmwareFileResponseMessageProcessorTest {
     }
 
     private ResponseMessage setupResponseMessage(final FirmwareFileDto firmwareFileDto) {
-        return ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid("corr-uid-1")
-                .withOrganisationIdentification("test-org")
-                .withDeviceIdentification("dvc-01")
-                .withResult(ResponseMessageResultType.OK)
-                .withDataObject(firmwareFileDto)
-                .build();
+        return ResponseMessage.newResponseMessageBuilder().withCorrelationUid("corr-uid-1")
+                              .withOrganisationIdentification("test-org").withDeviceIdentification("dvc-01")
+                              .withResult(ResponseMessageResultType.OK).withDataObject(firmwareFileDto).build();
     }
 }

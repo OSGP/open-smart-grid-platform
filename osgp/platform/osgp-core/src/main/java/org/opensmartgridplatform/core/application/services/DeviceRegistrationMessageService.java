@@ -10,7 +10,6 @@ package org.opensmartgridplatform.core.application.services;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.List;
 
 import org.opensmartgridplatform.core.domain.model.domain.DomainRequestService;
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -31,8 +30,6 @@ public class DeviceRegistrationMessageService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceRegistrationMessageService.class);
 
-    private static final String LOCAL_HOST = "127.0.0.1";
-
     @Autowired
     private DeviceRepository deviceRepository;
 
@@ -41,6 +38,9 @@ public class DeviceRegistrationMessageService {
 
     @Autowired
     private DomainRequestService domainRequestService;
+
+    @Autowired
+    private DeviceNetworkAddressCleanupService deviceNetworkAddressCleanupService;
 
     /**
      * Update device registration data (IP address, etc). Device is added
@@ -66,23 +66,17 @@ public class DeviceRegistrationMessageService {
         LOGGER.info("updateRegistrationData called for device: {} ipAddress: {}, deviceType: {} hasSchedule: {}.",
                 deviceIdentification, ipAddress, deviceType, hasSchedule);
 
-        // Convert the IP address from String to InetAddress.
-        final InetAddress address = LOCAL_HOST.equals(ipAddress) ? InetAddress.getLoopbackAddress()
-                : InetAddress.getByName(ipAddress);
-
-        // Lookup device
-        Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-
         // Check for existing IP addresses
-        this.clearDuplicateAddresses(deviceIdentification, address);
+        this.deviceNetworkAddressCleanupService.clearDuplicateAddresses(deviceIdentification, ipAddress);
 
+        Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
         if (device == null) {
             // Device does not exist yet, create without an owner.
             device = this.createNewDevice(deviceIdentification, deviceType);
         }
 
-        // Device already exists, update registration data
-        device.updateRegistrationData(address, deviceType);
+        final InetAddress inetAddress = InetAddress.getByName(ipAddress);
+        device.updateRegistrationData(inetAddress, deviceType);
         device.updateConnectionDetailsToSuccess();
 
         return this.deviceRepository.save(device);
@@ -96,18 +90,6 @@ public class DeviceRegistrationMessageService {
             device = new Device(deviceIdentification);
         }
         return device;
-    }
-
-    private void clearDuplicateAddresses(final String deviceIdentification, final InetAddress address) {
-        final List<Device> devices = this.deviceRepository.findByNetworkAddress(address);
-
-        for (final Device device : devices) {
-            if (!LOCAL_HOST.equals(device.getIpAddress())
-                    && !device.getDeviceIdentification().equals(deviceIdentification)) {
-                device.clearNetworkAddress();
-                this.deviceRepository.save(device);
-            }
-        }
     }
 
     public void sendRequestMessageToDomainCore(final String deviceIdentification,

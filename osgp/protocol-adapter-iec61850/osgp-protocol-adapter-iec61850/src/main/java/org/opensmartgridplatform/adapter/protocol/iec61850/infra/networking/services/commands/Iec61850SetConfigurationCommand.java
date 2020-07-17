@@ -10,8 +10,8 @@ package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.ser
 import java.util.List;
 
 import org.joda.time.DateTime;
-import org.openmuc.openiec61850.BdaInt8;
-import org.openmuc.openiec61850.Fc;
+import com.beanit.openiec61850.BdaInt8;
+import com.beanit.openiec61850.Fc;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DaylightSavingTimeTransition;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;

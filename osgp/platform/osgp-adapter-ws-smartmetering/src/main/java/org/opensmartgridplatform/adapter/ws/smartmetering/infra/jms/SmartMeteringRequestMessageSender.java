@@ -1,16 +1,14 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
 import javax.jms.ObjectMessage;
-import javax.jms.Session;
 
 import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
@@ -19,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Component;
 
 /**
@@ -73,25 +70,20 @@ public class SmartMeteringRequestMessageSender {
     private void sendMessage(final SmartMeteringRequestMessage requestMessage) {
         LOGGER.info("Sending message to the smart metering requests queue");
 
-        this.jmsTemplate.send(new MessageCreator() {
+        this.jmsTemplate.send(session -> {
+            final ObjectMessage objectMessage = session.createObjectMessage(requestMessage.getRequest());
+            objectMessage.setJMSCorrelationID(requestMessage.getCorrelationUid());
+            objectMessage.setJMSType(requestMessage.getMessageType());
+            objectMessage.setJMSPriority(requestMessage.getMessagePriority());
+            objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
+                    requestMessage.getOrganisationIdentification());
+            objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION, requestMessage.getDeviceIdentification());
+            objectMessage.setBooleanProperty(Constants.BYPASS_RETRY, requestMessage.bypassRetry());
 
-            @Override
-            public Message createMessage(final Session session) throws JMSException {
-                final ObjectMessage objectMessage = session.createObjectMessage(requestMessage.getRequest());
-                objectMessage.setJMSCorrelationID(requestMessage.getCorrelationUid());
-                objectMessage.setJMSType(requestMessage.getMessageType());
-                objectMessage.setJMSPriority(requestMessage.getMessagePriority());
-                objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
-                        requestMessage.getOrganisationIdentification());
-                objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
-                        requestMessage.getDeviceIdentification());
-                objectMessage.setBooleanProperty(Constants.BYPASS_RETRY, requestMessage.bypassRetry());
-
-                if (requestMessage.getScheduleTime() != null) {
-                    objectMessage.setLongProperty(Constants.SCHEDULE_TIME, requestMessage.getScheduleTime());
-                }
-                return objectMessage;
+            if (requestMessage.getScheduleTime() != null) {
+                objectMessage.setLongProperty(Constants.SCHEDULE_TIME, requestMessage.getScheduleTime());
             }
+            return objectMessage;
         });
     }
 }

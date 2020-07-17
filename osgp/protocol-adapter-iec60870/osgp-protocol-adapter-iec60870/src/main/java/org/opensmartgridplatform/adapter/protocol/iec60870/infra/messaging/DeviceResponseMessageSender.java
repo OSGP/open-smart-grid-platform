@@ -12,10 +12,10 @@ import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
-import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionService;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
+import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessageValidator;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
 import org.slf4j.Logger;
@@ -35,8 +35,6 @@ public class DeviceResponseMessageSender implements ResponseMessageSender {
 
     private static final String LOG_MESSAGE_RESPONSE_MESSAGE_OF_WRONG_TYPE = "Only ProtocolResponseMessage type is expected for DeviceResponseMessageSender, received responseMessage of type {}.";
     private static final String LOG_MESSAGE_JMS_EXCEPTION = "JMS Exception, closing all connections.";
-    private static final String LOG_MESSAGE_BLANK_FIELD = "{} is blank.";
-    private static final String LOG_MESSAGE_NULL_FIELD = "{} is null.";
 
     @Autowired
     @Qualifier("protocolIec60870OutboundOsgpCoreResponsesJmsTemplate")
@@ -57,7 +55,7 @@ public class DeviceResponseMessageSender implements ResponseMessageSender {
 
         final ProtocolResponseMessage msg = (ProtocolResponseMessage) responseMessage;
 
-        if (!checkMessage(msg)) {
+        if (!ProtocolResponseMessageValidator.isValid(msg, LOGGER)) {
             return;
         }
 
@@ -76,37 +74,6 @@ public class DeviceResponseMessageSender implements ResponseMessageSender {
             }
             throw e;
         }
-    }
-
-    private static boolean checkMessage(final ProtocolResponseMessage msg) {
-        boolean result = true;
-
-        if (StringUtils.isBlank(msg.getOrganisationIdentification())) {
-            LOGGER.error(LOG_MESSAGE_BLANK_FIELD, "OrganisationIdentification");
-            result = false;
-        }
-        if (StringUtils.isBlank(msg.getDeviceIdentification())) {
-            LOGGER.error(LOG_MESSAGE_BLANK_FIELD, "DeviceIdentification");
-            result = false;
-        }
-        if (StringUtils.isBlank(msg.getCorrelationUid())) {
-            LOGGER.error(LOG_MESSAGE_BLANK_FIELD, "CorrelationUid");
-            result = false;
-        }
-        if (msg.getResult() == null) {
-            LOGGER.error(LOG_MESSAGE_NULL_FIELD, "Result");
-            result = false;
-        }
-        if (StringUtils.isBlank(msg.getDomain())) {
-            LOGGER.error(LOG_MESSAGE_BLANK_FIELD, "Domain");
-            result = false;
-        }
-        if (StringUtils.isBlank(msg.getMessageType())) {
-            LOGGER.error(LOG_MESSAGE_BLANK_FIELD, "MessageType");
-            result = false;
-        }
-
-        return result;
     }
 
     private void sendMessage(final ProtocolResponseMessage responseMessage) {

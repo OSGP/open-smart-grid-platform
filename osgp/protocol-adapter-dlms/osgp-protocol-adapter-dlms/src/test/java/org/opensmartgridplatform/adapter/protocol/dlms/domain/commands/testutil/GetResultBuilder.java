@@ -19,4 +19,5 @@ public class GetResultBuilder {
         counter += 1;
         return new GetResultImpl(DataObject.newInteger32Data(100 + counter));
     }
+
 }

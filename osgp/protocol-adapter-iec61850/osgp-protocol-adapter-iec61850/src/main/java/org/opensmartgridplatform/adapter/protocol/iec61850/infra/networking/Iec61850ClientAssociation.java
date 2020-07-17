@@ -7,7 +7,7 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking;
 
-import org.openmuc.openiec61850.ClientAssociation;
+import com.beanit.openiec61850.ClientAssociation;
 
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.reporting.Iec61850ClientBaseEventListener;
 

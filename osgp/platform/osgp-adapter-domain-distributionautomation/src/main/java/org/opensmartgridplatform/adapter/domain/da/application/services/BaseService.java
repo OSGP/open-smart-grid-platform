@@ -5,18 +5,19 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.da.application.services;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import javax.persistence.OptimisticLockException;
 
 import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.domain.da.application.mapping.DomainDistributionAutomationMapper;
+import org.opensmartgridplatform.adapter.domain.da.application.routing.ResponseMessageRouter;
 import org.opensmartgridplatform.adapter.domain.da.infra.jms.core.OsgpCoreRequestMessageSender;
-import org.opensmartgridplatform.adapter.domain.da.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
 import org.opensmartgridplatform.domain.core.entities.RtuDevice;
@@ -35,6 +36,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 public class BaseService {
 
+    private static final ComponentType COMPONENT_TYPE = ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION;
+
     @Autowired
     protected DeviceDomainService deviceDomainService;
 
@@ -52,8 +55,7 @@ public class BaseService {
     protected DomainDistributionAutomationMapper domainCoreMapper;
 
     @Autowired
-    @Qualifier(value = "domainDistributionAutomationOutboundWebServiceResponsesMessageSender")
-    protected WebServiceResponseMessageSender webServiceResponseMessageSender;
+    protected ResponseMessageRouter responseMessageRouter;
 
     @Autowired
     private Integer lastCommunicationUpdateInterval;
@@ -64,7 +66,7 @@ public class BaseService {
     }
 
     protected Organisation findOrganisation(final String organisationIdentification) throws FunctionalException {
-        Organisation organisation;
+        final Organisation organisation;
         try {
             organisation = this.organisationDomainService.searchOrganisation(organisationIdentification);
         } catch (final UnknownEntityException e) {
@@ -72,6 +74,10 @@ public class BaseService {
                     ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION, e);
         }
         return organisation;
+    }
+
+    protected Optional<RtuDevice> findRtuDeviceForDevice(final Device device) {
+        return this.rtuDeviceRepository.findById(device.getId());
     }
 
     protected OsgpException ensureOsgpException(final Throwable t, final String defaultMessage) {
@@ -82,9 +88,12 @@ public class BaseService {
         return new TechnicalException(ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION, defaultMessage, t);
     }
 
-    protected void handleResponseMessageReceived(final Logger logger, final String deviceIdentification) {
+    protected void handleResponseMessageReceived(final Logger logger, final String deviceIdentification)
+            throws FunctionalException {
         try {
-            final RtuDevice device = this.rtuDeviceRepository.findByDeviceIdentification(deviceIdentification);
+            final RtuDevice device = this.rtuDeviceRepository.findByDeviceIdentification(deviceIdentification)
+                    .orElseThrow(() -> new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, COMPONENT_TYPE,
+                            new UnknownEntityException(RtuDevice.class, deviceIdentification)));
             if (this.shouldUpdateCommunicationTime(device, this.lastCommunicationUpdateInterval)) {
                 device.messageReceived();
                 this.rtuDeviceRepository.save(device);

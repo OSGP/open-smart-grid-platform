@@ -321,8 +321,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AdministrativeStatusType dataRequest =
                 this.configurationMapper.map(
-                request.getEnabled(),
-                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AdministrativeStatusType.class);
+                        request.getEnabled(),
+                        org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AdministrativeStatusType.class);
 
         final String correlationUid = this.configurationService.requestSetAdministrativeStatus(
                 organisationIdentification, request.getDeviceIdentification(), dataRequest,
@@ -416,7 +416,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecialDaysRequest dataRequest =
                 this.configurationMapper.map(
-                request, org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecialDaysRequest.class);
+                        request, org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecialDaysRequest.class);
 
         final String correlationUid = this.configurationService.enqueueSetSpecialDaysRequest(organisationIdentification,
                 dataRequest.getDeviceIdentification(), dataRequest,
@@ -680,8 +680,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupAlarm pushSetupAlarm =
                 this.configurationMapper.map(
-                requestData.getPushSetupAlarm(),
-                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupAlarm.class);
+                        requestData.getPushSetupAlarm(),
+                        org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupAlarm.class);
 
         final String correlationUid = this.configurationService.enqueueSetPushSetupAlarmRequest(
                 organisationIdentification, deviceIdentification, pushSetupAlarm,
@@ -737,8 +737,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupSms pushSetupSms =
                 this.configurationMapper.map(
-                requestData.getPushSetupSms(),
-                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupSms.class);
+                        requestData.getPushSetupSms(),
+                        org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupSms.class);
 
         final String correlationUid = this.configurationService.enqueueSetPushSetupSmsRequest(
                 organisationIdentification, deviceIdentification, pushSetupSms,
@@ -906,8 +906,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         try {
             final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeysRequestData keySet =
                     this.configurationMapper.map(
-                    request.getSetKeysRequestData(),
-                    org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeysRequestData.class);
+                            request.getSetKeysRequestData(),
+                            org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeysRequestData.class);
 
             final String correlationUid = this.configurationService.enqueueReplaceKeysRequest(
                     organisationIdentification, request.getDeviceIdentification(), keySet,

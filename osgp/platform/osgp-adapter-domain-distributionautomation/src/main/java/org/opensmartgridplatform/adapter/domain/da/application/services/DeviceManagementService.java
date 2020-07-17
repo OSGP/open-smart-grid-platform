@@ -5,27 +5,28 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.da.application.services;
 
 import org.opensmartgridplatform.adapter.domain.da.application.mapping.DomainDistributionAutomationMapper;
+import org.opensmartgridplatform.domain.core.entities.Device;
+import org.opensmartgridplatform.domain.core.valueobjects.AddRtuDeviceRequest;
 import org.opensmartgridplatform.domain.da.valueobjects.GetHealthStatusRequest;
 import org.opensmartgridplatform.domain.da.valueobjects.GetHealthStatusResponse;
 import org.opensmartgridplatform.dto.da.GetHealthStatusRequestDto;
 import org.opensmartgridplatform.dto.da.GetHealthStatusResponseDto;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import org.opensmartgridplatform.domain.core.entities.Device;
-import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
-import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 
 @Service(value = "domainDistributionAutomationDeviceManagementService")
 @Transactional(value = "transactionManager")
@@ -35,6 +36,8 @@ public class DeviceManagementService extends BaseService {
 
     @Autowired
     private DomainDistributionAutomationMapper mapper;
+    @Autowired
+    private RtuDeviceService rtuDeviceService;
 
     /**
      * Constructor
@@ -86,10 +89,24 @@ public class DeviceManagementService extends BaseService {
             exception = this.ensureOsgpException(e, "Exception occurred while getting Health Status Response Data");
         }
 
-        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
-                .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(exception)
-                .withDataObject(getHealthStatusResponse).build();
-        this.webServiceResponseMessageSender.send(responseMessage, messageType);
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(correlationUid)
+                .withOrganisationIdentification(organisationIdentification)
+                .withDeviceIdentification(deviceIdentification)
+                .withResult(result)
+                .withOsgpException(exception)
+                .withDataObject(getHealthStatusResponse)
+                .build();
+        this.responseMessageRouter.send(responseMessage, messageType);
     }
+
+    public void addDevice(final DeviceMessageMetadata deviceMessageMetadata,
+            final AddRtuDeviceRequest addRtuDeviceRequest) throws FunctionalException {
+        final String organisationIdentification = deviceMessageMetadata.getOrganisationIdentification();
+        final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
+        LOGGER.debug("addDevice for organisationIdentification: {} for deviceIdentification: {}",
+                organisationIdentification, deviceIdentification);
+        this.rtuDeviceService.storeRtuDevice(organisationIdentification, addRtuDeviceRequest);
+    }
+
 }

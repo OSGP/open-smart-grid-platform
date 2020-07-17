@@ -21,7 +21,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-pa-oslp</artifactId>
-    <version>5.0.2</version>
+    <version>5.1.0</version>
     <relativePath>../parent-pa-oslp/pom.xml</relativePath>
   </parent>
 
@@ -105,17 +105,6 @@
         <configuration>
           <cleanOutputFolder>false</cleanOutputFolder>
         </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>${maven.surefire.plugin.version}</version>
-        <dependencies>
-          <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit.version}</version>
-          </dependency>
-        </dependencies>
       </plugin>
     </plugins>
   </build>

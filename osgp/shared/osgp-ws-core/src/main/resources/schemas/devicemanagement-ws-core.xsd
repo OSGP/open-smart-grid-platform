@@ -93,6 +93,26 @@
       <xsd:sequence>
         <xsd:element name="DeviceIdentification" type="common:Identification"
           minOccurs="0" />
+        <xsd:element name="Description" type="xsd:string" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation>
+              Filters events with exactly the description as
+              given here. If used in
+              combination with DescriptionStartsWith an
+              or clause will be used for combining the two criteria.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="DescriptionStartsWith" type="xsd:string" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation>
+              Filters events on the start of the description as
+              given here. If used in
+              combination with Description an
+              or clause will be used for combining the two criteria.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
         <xsd:element name="From" type="xsd:dateTime"
           minOccurs="0" />
         <xsd:element name="Until" type="xsd:dateTime"
@@ -389,59 +409,41 @@
 
   <xsd:complexType name="Device">
     <xsd:sequence>
-      <xsd:element name="DeviceUid" type="xsd:string"
-        minOccurs="0" />
+      <xsd:element name="DeviceUid" type="xsd:string" minOccurs="0" />
       <xsd:element name="DeviceIdentification" type="common:Identification" />
       <xsd:element name="Alias" type="xsd:string" minOccurs="0" />
       <xsd:element name="Owner" type="xsd:string" minOccurs="0" />
       <xsd:element name="ContainerAddress" type="common:Address" minOccurs="0" />
-      <xsd:element name="GpsLatitude" type="xsd:string"
-        minOccurs="0" />
-      <xsd:element name="GpsLongitude" type="xsd:string"
-        minOccurs="0" />
-      <xsd:element name="NetworkAddress" type="tns:IPType"
-        minOccurs="0" />
-      <xsd:element name="DeviceType" type="xsd:string"
-        minOccurs="0" />
-      <xsd:element name="Activated" type="xsd:boolean"
-        minOccurs="0" />
-      <xsd:element name="HasSchedule" type="xsd:boolean"
-        minOccurs="0" />
-      <xsd:element name="PublicKeyPresent" type="xsd:boolean"
-        minOccurs="0" />
-      <xsd:element name="Organisations" type="xsd:string"
-        minOccurs="0" maxOccurs="unbounded" />
-      <xsd:element name="OutputSettings" type="tns:DeviceOutputSetting"
-        minOccurs="0" maxOccurs="unbounded" />
-      <xsd:element name="Eans" type="tns:Ean" minOccurs="0"
-        maxOccurs="unbounded" />
-      <xsd:element name="RelayStatuses" type="tns:RelayStatus"
-        minOccurs="0" maxOccurs="unbounded" />
-      <xsd:element name="DeviceAuthorizations" type="tns:DeviceAuthorization"
-        minOccurs="0" maxOccurs="unbounded" />
-      <xsd:element name="InMaintenance" type="xsd:boolean"
-        minOccurs="0" />
-      <xsd:element name="TechnicalInstallationDate" type="xsd:dateTime"
-        minOccurs="0" />
-      <xsd:element name="DeviceModel" type="tns:DeviceModel"
-        minOccurs="0" />
-      <xsd:element name="LightMeasurementDevice" type="tns:LightMeasurementDevice"
-        minOccurs="0" />
-      <xsd:element name="DeviceLifecycleStatus" type="tns:DeviceLifecycleStatus"
-        minOccurs="0" />
+      <xsd:element name="GpsLatitude" type="xsd:string" minOccurs="0" />
+      <xsd:element name="GpsLongitude" type="xsd:string" minOccurs="0" />
+      <xsd:element name="NetworkAddress" type="tns:IPType" minOccurs="0" />
+      <xsd:element name="DeviceType" type="xsd:string" minOccurs="0" />
+      <xsd:element name="Activated" type="xsd:boolean" minOccurs="0" />
+      <xsd:element name="HasSchedule" type="xsd:boolean" minOccurs="0" />
+      <xsd:element name="PublicKeyPresent" type="xsd:boolean" minOccurs="0" />
+      <xsd:element name="Organisations" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="OutputSettings" type="tns:DeviceOutputSetting" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="Eans" type="tns:Ean" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="RelayStatuses" type="tns:RelayStatus" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="DeviceAuthorizations" type="tns:DeviceAuthorization" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="InMaintenance" type="xsd:boolean" minOccurs="0" />
+      <xsd:element name="TechnicalInstallationDate" type="xsd:dateTime" minOccurs="0" />
+      <xsd:element name="DeviceModel" type="tns:DeviceModel" minOccurs="0" />
+      <xsd:element name="LightMeasurementDevice" type="tns:LightMeasurementDevice" minOccurs="0" />
+      <xsd:element name="DeviceLifecycleStatus" type="tns:DeviceLifecycleStatus" minOccurs="0" />
+      <xsd:element name="LastCommunicationTime" type="xsd:dateTime" minOccurs="0" />
     </xsd:sequence>
   </xsd:complexType>
   
   <xsd:complexType name="LightMeasurementDevice">
     <xsd:complexContent>
       <xsd:extension base="tns:Device">
-      <xsd:sequence>
-        <xsd:element name="Description" type="xsd:string" minOccurs="0" />
-        <xsd:element name="Code" type="xsd:string" minOccurs="0" />
-        <xsd:element name="Color" type="xsd:string" minOccurs="0" />
-        <xsd:element name="DigitalInput" type="xsd:short" minOccurs="0" />
-        <xsd:element name="LastCommunicationTime" type="xsd:dateTime" minOccurs="0" />
-      </xsd:sequence>
+        <xsd:sequence>
+          <xsd:element name="Description" type="xsd:string" minOccurs="0" />
+          <xsd:element name="Code" type="xsd:string" minOccurs="0" />
+          <xsd:element name="Color" type="xsd:string" minOccurs="0" />
+          <xsd:element name="DigitalInput" type="xsd:short" minOccurs="0" />
+        </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>

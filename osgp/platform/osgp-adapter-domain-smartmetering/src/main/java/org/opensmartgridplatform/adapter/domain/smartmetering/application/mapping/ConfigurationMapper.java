@@ -7,8 +7,8 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping;
 
-import org.springframework.stereotype.Component;
-
+import ma.glasnost.orika.MapperFactory;
+import ma.glasnost.orika.impl.ConfigurableMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.AdministrativeStatusResponseConverter;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.CosemDateTimeConverter;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.CosemObisCodeConverter;
@@ -17,9 +17,7 @@ import org.opensmartgridplatform.adapter.domain.smartmetering.application.mappin
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.PushSetupAlarmDtoConverter;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.PushSetupSmsDtoConverter;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.WeekProfileConverter;
-
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.ConfigurableMapper;
+import org.springframework.stereotype.Component;
 
 @Component(value = "configurationMapper")
 public class ConfigurationMapper extends ConfigurableMapper {

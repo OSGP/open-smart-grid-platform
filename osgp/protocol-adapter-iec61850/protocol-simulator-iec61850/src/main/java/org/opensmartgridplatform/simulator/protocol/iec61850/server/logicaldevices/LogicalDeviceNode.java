@@ -7,8 +7,8 @@
  */
 package org.opensmartgridplatform.simulator.protocol.iec61850.server.logicaldevices;
 
-import org.openmuc.openiec61850.BdaType;
-import org.openmuc.openiec61850.Fc;
+import com.beanit.openiec61850.BdaType;
+import com.beanit.openiec61850.Fc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -12,9 +12,9 @@ import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
-import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
+import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessageValidator;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
 import org.slf4j.Logger;
@@ -36,6 +36,7 @@ public class DeviceResponseMessageSender implements ResponseMessageSender {
 
     @Override
     public void send(final ResponseMessage responseMessage) {
+
         if (!(responseMessage instanceof ProtocolResponseMessage)) {
             LOGGER.error("Only ProtocolResponseMessage type is expected for DeviceResponseMessageSender");
             return;
@@ -43,40 +44,11 @@ public class DeviceResponseMessageSender implements ResponseMessageSender {
 
         final ProtocolResponseMessage msg = (ProtocolResponseMessage) responseMessage;
 
-        if (!this.checkMessage(msg)) {
+        if (!ProtocolResponseMessageValidator.isValid(msg, LOGGER)) {
             return;
         }
 
         this.sendMessage(msg);
-    }
-
-    private boolean checkMessage(final ProtocolResponseMessage msg) {
-        if (StringUtils.isBlank(msg.getOrganisationIdentification())) {
-            LOGGER.error("OrganisationIdentification is blank");
-            return false;
-        }
-        if (StringUtils.isBlank(msg.getDeviceIdentification())) {
-            LOGGER.error("DeviceIdentification is blank");
-            return false;
-        }
-        if (StringUtils.isBlank(msg.getCorrelationUid())) {
-            LOGGER.error("CorrelationUid is blank");
-            return false;
-        }
-        if (msg.getResult() == null) {
-            LOGGER.error("Result is null");
-            return false;
-        }
-        if (StringUtils.isBlank(msg.getDomain())) {
-            LOGGER.error("Domain is blank");
-            return false;
-        }
-        if (StringUtils.isBlank(msg.getMessageType())) {
-            LOGGER.error("MessageType is blank");
-            return false;
-        }
-
-        return true;
     }
 
     private void sendMessage(final ProtocolResponseMessage responseMessage) {

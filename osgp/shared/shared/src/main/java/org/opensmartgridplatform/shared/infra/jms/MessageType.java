@@ -8,10 +8,12 @@
 package org.opensmartgridplatform.shared.infra.jms;
 
 public enum MessageType {
+    ADD_DEVICE,
     ADD_EVENT_NOTIFICATION,
     ADD_METER,
     CLEAR_ALARM_REGISTER,
     CONFIGURE_DEFINABLE_LOAD_PROFILE,
+    CONNECT,
     COUPLE_MBUS_DEVICE,
     COUPLE_MBUS_DEVICE_BY_CHANNEL,
     DE_COUPLE_MBUS_DEVICE,

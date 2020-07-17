@@ -1,9 +1,10 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
@@ -36,7 +37,6 @@ import org.opensmartgridplatform.shared.security.EncryptionService;
 import org.opensmartgridplatform.shared.security.RsaEncryptionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,14 +55,17 @@ public class SecurityKeyService {
 
     public static final int AES_GMC_128_KEY_SIZE = 128;
 
-    @Autowired
-    private DlmsDeviceRepository dlmsDeviceRepository;
+    private final DlmsDeviceRepository dlmsDeviceRepository;
+    private final EncryptionService encryptionService;
+    private final RsaEncryptionService rsaEncryptionService;
 
-    @Autowired
-    private EncryptionService encryptionService;
+    public SecurityKeyService(DlmsDeviceRepository dlmsDeviceRepository, EncryptionService encryptionService,
+            RsaEncryptionService rsaEncryptionService) {
 
-    @Autowired
-    private RsaEncryptionService rsaEncryptionService;
+        this.dlmsDeviceRepository = dlmsDeviceRepository;
+        this.encryptionService = encryptionService;
+        this.rsaEncryptionService = rsaEncryptionService;
+    }
 
     /**
      * Re-encrypts the given key with a secret known only inside this protocol
@@ -76,15 +79,17 @@ public class SecurityKeyService {
      * known outside this protocol adapter.
      *
      * @param externallyEncryptedKey
-     *            key encrypted with the externally known public key for OSGP
+     *         key encrypted with the externally known public key for OSGP
      * @param keyType
-     *            type of the key, for logging purposes
+     *         type of the key, for logging purposes
+     *
      * @return the key encrypted with the symmetrical secret key used only
      *         inside the DLMS protocol adapter, or an empty byte array if
      *         {@code externallyEncryptedKey == null}
+     *
      * @throws FunctionalException
-     *             in case of a encryption/decryption errors while handling the
-     *             key
+     *         in case of a encryption/decryption errors while handling the
+     *         key
      */
     public byte[] reEncryptKey(final byte[] externallyEncryptedKey, final SecurityKeyType keyType)
             throws FunctionalException {
@@ -129,10 +134,11 @@ public class SecurityKeyService {
      * required as part of the communication with a device.
      *
      * @param encryptedKey
-     *            key encrypted with the symmetrical key internal to the DLMS
-     *            protocol adapter.
+     *         key encrypted with the symmetrical key internal to the DLMS
+     *         protocol adapter.
      * @param keyType
-     *            type of the key, for logging purposes
+     *         type of the key, for logging purposes
+     *
      * @return the plain key, or an empty byte array if
      *         {@code encryptedKey == null}
      */
@@ -152,9 +158,10 @@ public class SecurityKeyService {
      * is internal to the DLMS protocol adapter.
      *
      * @param plainKey
-     *            plain key without encryption
+     *         plain key without encryption
      * @param keyType
-     *            type of the key, for logging purposes
+     *         type of the key, for logging purposes
+     *
      * @return the given key encrypted with the symmetrical key internal to the
      *         DLMS protocol adapter.
      */
@@ -177,11 +184,13 @@ public class SecurityKeyService {
      * required as part of the communication with a device.
      *
      * @param deviceIdentification
-     *            the identification of a DLMS device.
+     *         the identification of a DLMS device.
+     *
      * @return the key, possibly {@code null} if either the device is not found
      *         or it does not have a valid master key.
+     *
      * @throws EncrypterException
-     *             if there is an error decoding the key.
+     *         if there is an error decoding the key.
      */
     public byte[] getDlmsMasterKey(final String deviceIdentification) {
         LOGGER.info("Retrieving DLMS master key for device {}", deviceIdentification);
@@ -196,11 +205,13 @@ public class SecurityKeyService {
      * required as part of the communication with a device.
      *
      * @param deviceIdentification
-     *            the identification of a DLMS device.
+     *         the identification of a DLMS device.
+     *
      * @return the key, possibly {@code null} if either the device is not found
      *         or it does not have a valid authentication key.
+     *
      * @throws EncrypterException
-     *             if there is an error decoding the key.
+     *         if there is an error decoding the key.
      */
     public byte[] getDlmsAuthenticationKey(final String deviceIdentification) {
         LOGGER.info("Retrieving DLMS authentication key for device {}", deviceIdentification);
@@ -215,11 +226,13 @@ public class SecurityKeyService {
      * required as part of the communication with a device.
      *
      * @param deviceIdentification
-     *            the identification of a DLMS device.
+     *         the identification of a DLMS device.
+     *
      * @return the key, possibly an empty byte array if either the device is not
      *         found or it does not have a valid global unicast encryption key.
+     *
      * @throws EncrypterException
-     *             if there is an error decoding the key.
+     *         if there is an error decoding the key.
      */
     public byte[] getDlmsGlobalUnicastEncryptionKey(final String deviceIdentification) {
         LOGGER.info("Retrieving DLMS global unicast encryption key for device {}", deviceIdentification);
@@ -234,11 +247,13 @@ public class SecurityKeyService {
      * required as part of the communication with a DLMS gateway device.
      *
      * @param mbusDeviceIdentification
-     *            the identification of an M-Bus device.
+     *         the identification of an M-Bus device.
+     *
      * @return the key, possibly an empty byte array if either the device is not
      *         found or it does not have a valid M-Bus Default key.
+     *
      * @throws EncrypterException
-     *             if there is an error decoding the key.
+     *         if there is an error decoding the key.
      */
     public byte[] getMbusDefaultKey(final String mbusDeviceIdentification) {
         LOGGER.info("Retrieving M-Bus Default key for device {}", mbusDeviceIdentification);
@@ -253,12 +268,14 @@ public class SecurityKeyService {
      * required as part of the communication with a DLMS gateway device.
      *
      * @param mbusDeviceIdentification
-     *            the identification of an M-Bus device.
+     *         the identification of an M-Bus device.
+     *
      * @return the key, possibly an empty byte array if either the device is not
      *         found or it does not have a valid M-Bus User key.
+     *
      * @throws EncrypterException
-     *             if the key is found, but there is an error decoding or
-     *             decrypting the key.
+     *         if the key is found, but there is an error decoding or
+     *         decrypting the key.
      */
     public byte[] getMbusUserKey(final String mbusDeviceIdentification) {
         LOGGER.info("Retrieving M-Bus User key for device {}", mbusDeviceIdentification);
@@ -273,11 +290,13 @@ public class SecurityKeyService {
      * required as part of the communication with a device.
      *
      * @param deviceIdentification
-     *            the identification of a DLMS device.
+     *         the identification of a DLMS device.
+     *
      * @return the key, possibly an empty byte array if either the device is not
      *         found or it does not have a valid password.
+     *
      * @throws EncrypterException
-     *             if there is an error decoding the key.
+     *         if there is an error decoding the key.
      */
     public byte[] getDlmsPassword(final String deviceIdentification) {
         LOGGER.info("Retrieving DLMS LLS Password for device {}", deviceIdentification);
@@ -328,15 +347,17 @@ public class SecurityKeyService {
      * any previous key) by calling
      * {@link #validateNewKey(DlmsDevice, SecurityKeyType)}.
      *
-     * @see #validateNewKey(DlmsDevice, SecurityKeyType)
      * @param device
-     *            DLMS device
+     *         DLMS device
      * @param encryptedKey
-     *            key encrypted with the symmetrical key internal to the DLMS
-     *            protocol adapter.
+     *         key encrypted with the symmetrical key internal to the DLMS
+     *         protocol adapter.
      * @param keyType
-     *            type of key
+     *         type of key
+     *
      * @return saved device, with a new key of the given type
+     *
+     * @see #validateNewKey(DlmsDevice, SecurityKeyType)
      */
     public DlmsDevice storeNewKey(final DlmsDevice device, final byte[] encryptedKey, final SecurityKeyType keyType) {
         this.removeEarlierStoredNewKeyIfFound(device, keyType);
@@ -367,15 +388,17 @@ public class SecurityKeyService {
      * {@link #storeNewKey(DlmsDevice, byte[], SecurityKeyType)} after it has
      * been confirmed to be set on the device.
      *
-     * @see #storeNewKey(DlmsDevice, byte[], SecurityKeyType)
      * @param device
-     *            DLMS device
+     *         DLMS device
      * @param keyType
-     *            type of key
+     *         type of key
+     *
      * @return saved device, with a new security key that has become valid, and
      *         any previously valid security key marked as no longer valid
+     *
      * @throws ProtocolAdapterException
-     *             if no new key is stored with the given device
+     *         if no new key is stored with the given device
+     * @see #storeNewKey(DlmsDevice, byte[], SecurityKeyType)
      */
     public DlmsDevice validateNewKey(final DlmsDevice device, final SecurityKeyType keyType)
             throws ProtocolAdapterException {
@@ -430,8 +453,9 @@ public class SecurityKeyService {
      * immediately, and return it appropriately encrypted with the secret key
      * for the DLMS protocol adapter.
      *
-     * @see #generateKey()
      * @return a new encrypted key.
+     *
+     * @see #generateKey()
      */
     public byte[] generateAndEncryptKey() {
         try {
@@ -469,8 +493,7 @@ public class SecurityKeyService {
 
             return cipher.doFinal(mbusUserKey);
 
-        } catch (final NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
-                | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
+        } catch (final NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
             final String message = "Error encrypting M-Bus User key with M-Bus Default key for transfer.";
             LOGGER.error(message, e);
             throw new ProtocolAdapterException(message);

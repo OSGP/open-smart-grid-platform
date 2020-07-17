@@ -49,7 +49,8 @@ public class CommonGetStatusRequestMessageProcessor extends SsldDeviceRequestMes
             return;
         }
 
-        final RequestMessageData requestMessageData = RequestMessageData.newBuilder().messageMetadata(messageMetadata)
+        final RequestMessageData requestMessageData = RequestMessageData.newBuilder()
+                .messageMetadata(messageMetadata)
                 .build();
 
         this.printDomainInfo(requestMessageData);
@@ -65,9 +66,9 @@ public class CommonGetStatusRequestMessageProcessor extends SsldDeviceRequestMes
     @Override
     public void handleDeviceResponse(final DeviceResponse deviceResponse,
             final ResponseMessageSender responseMessageSender, final DomainInformation domainInformation,
-            final String messageType, final int retryCount) {
+            final String messageType, final int retryCount, final boolean isScheduled) {
         LOGGER.info("Override for handleDeviceResponse() by CommonGetStatusRequestMessageProcessor");
         this.handleGetStatusDeviceResponse(deviceResponse, responseMessageSender, domainInformation, messageType,
-                retryCount);
+                retryCount, isScheduled);
     }
 }

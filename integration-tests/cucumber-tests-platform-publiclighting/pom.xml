@@ -14,18 +14,13 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-integration-tests</artifactId>
-    <version>5.0.2</version>
+    <version>5.1.0</version>
     <relativePath>../parent-integration-tests/pom.xml</relativePath>
   </parent>
 
   <artifactId>cucumber-tests-platform-publiclighting</artifactId>
   <packaging>jar</packaging>
-
   <name>cucumber-tests-platform-publiclighting</name>
-
-  <prerequisites>
-    <maven>3.0.0</maven>
-  </prerequisites>
 
   <dependencies>
     <dependency>

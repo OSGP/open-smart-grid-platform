@@ -12,14 +12,16 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>super-osgp</artifactId>
   <groupId>org.opensmartgridplatform</groupId>
-  <version>5.0.2</version>
+  <artifactId>super-osgp</artifactId>
+  <version>5.1.0</version>
   <packaging>pom</packaging>
   <name>super-osgp</name>
   <!-- Description, Organization, Licences, URL and Distribution Management
     elements are needed for the maven-jxr-plugin to generate a maven site -->
   <description>Super pom for OSGP components.</description>
+  <!-- URL is passed in as a maven argument: -Dmaven.site.url=http://my/url/for/the/site -->
+  <url>${maven.site.url}</url>
   <organization>
     <name>OSGP</name>
     <url>http://opensmartgridplatform.org</url>
@@ -30,8 +32,6 @@
       <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
     </license>
   </licenses>
-  <!-- URL is passed in as a maven argument: -Dmaven.site.url=http://my/url/for/the/site -->
-  <url>${maven.site.url}</url>
   <distributionManagement>
     <site>
       <id>super-osgp</id>
@@ -46,120 +46,102 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <module.baseUri>${project.baseUri}/../</module.baseUri>
-    <osgp.version>5.0.2</osgp.version>
-    <osgp.dlms.version>5.0.2</osgp.dlms.version>
-    <osgp.shared.version>5.0.2</osgp.shared.version>
-    <osgp.jasper-interface.version>5.0.2</osgp.jasper-interface.version>
-    <spring.version>5.2.3.RELEASE</spring.version>
+    <osgp.version>5.1.0</osgp.version>
+    <osgp.dlms.version>5.1.0</osgp.dlms.version>
+    <osgp.shared.version>5.1.0</osgp.shared.version>
+    <osgp.jasper-interface.version>5.1.0</osgp.jasper-interface.version>
+    <spring.version>5.2.6.RELEASE</spring.version>
     <spring.data.version>2.2.3.RELEASE</spring.data.version>
     <spring.data.commons.version>2.2.3.RELEASE</spring.data.commons.version>
     <spring.security.version>4.2.14.RELEASE</spring.security.version>
-    <spring.wscore.version>3.0.8.RELEASE</spring.wscore.version>
-    <spring.wssecurity.version>3.0.8.RELEASE</spring.wssecurity.version>
-    <spring.wssupport.version>3.0.8.RELEASE</spring.wssupport.version>
-    <spring.ws.version>3.0.8.RELEASE</spring.ws.version>
-    <assertj.version>3.14.0</assertj.version>
+    <spring.wscore.version>3.0.9.RELEASE</spring.wscore.version>
+    <spring.wssecurity.version>3.0.9.RELEASE</spring.wssecurity.version>
+    <spring.wssupport.version>3.0.9.RELEASE</spring.wssupport.version>
+    <spring.ws.version>3.0.9.RELEASE</spring.ws.version>
+    <assertj.version>3.16.1</assertj.version>
     <xmlunit.version>1.6</xmlunit.version>
-    <mockito.core.version>3.2.4</mockito.core.version>
+    <mockito.core.version>3.3.3</mockito.core.version>
     <apache.wss4j.version>1.6.19</apache.wss4j.version>
     <servlet.version>3.0.1</servlet.version>
     <servlet.jstl.version>1.2</servlet.jstl.version>
-    <hibernate.version>5.4.10.Final</hibernate.version>
+    <hibernate.version>5.4.15.Final</hibernate.version>
     <hibernate.validator.version>5.4.3.Final</hibernate.validator.version>
     <hibernate.jpa.version>1.0.2.Final</hibernate.jpa.version>
     <javax.validation.api.version>2.0.1.Final</javax.validation.api.version>
-    <junit.version>5.6.0</junit.version>
-    <junit.platform.launcher.version>1.6.0-M1</junit.platform.launcher.version>
-    <byte.buddy.version>1.10.5</byte.buddy.version>
-    <joda.version>2.10.1</joda.version>
-    <flyway.version>6.2.3</flyway.version>
-    <slf4j.version>1.7.26</slf4j.version>
-    <apache.commons.lang.version>3.8.1</apache.commons.lang.version>
+    <junit.version>5.6.2</junit.version>
+    <junit.platform.launcher.version>1.6.2</junit.platform.launcher.version>
+    <byte.buddy.version>1.10.10</byte.buddy.version>
+    <joda.version>2.10.6</joda.version>
+    <flyway.version>6.4.1</flyway.version>
+    <slf4j.version>1.7.30</slf4j.version>
+    <apache.commons.lang.version>3.10</apache.commons.lang.version>
     <apache.commons.text.version>1.8</apache.commons.text.version>
-    <apache.httpcomponents.version>4.5.7</apache.httpcomponents.version>
+    <apache.httpcomponents.version>4.5.12</apache.httpcomponents.version>
     <apache.httpcomponents.httpcore.version>4.4.13</apache.httpcomponents.httpcore.version>
-    <commons.codec.version>1.12</commons.codec.version>
+    <commons.codec.version>1.14</commons.codec.version>
     <orika.version>1.5.4</orika.version>
     <jxr.version>3.0.0</jxr.version>
     <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
-    <maven.site.plugin>3.8.1</maven.site.plugin>
-    <maven.javadoc.version>3.1.1</maven.javadoc.version>
+    <maven.site.plugin>3.9.0</maven.site.plugin>
+    <maven.javadoc.version>3.2.0</maven.javadoc.version>
     <maven.jar.plugin.version>3.2.0</maven.jar.plugin.version>
     <maven.war.plugin.version>3.2.3</maven.war.plugin.version>
     <maven.surefire.plugin.version>3.0.0-M4</maven.surefire.plugin.version>
     <maven.failsafe.plugin.version>3.0.0-M4</maven.failsafe.plugin.version>
-    <maven.assembly.plugin.version>3.2.0</maven.assembly.plugin.version>
+    <maven.assembly.plugin.version>3.3.0</maven.assembly.plugin.version>
     <maven.eclipse.plugin.version>2.10</maven.eclipse.plugin.version>
     <maven.exec.plugin.version>1.6.0</maven.exec.plugin.version>
-    <jaxb2.maven.plugin.version>2.4</jaxb2.maven.plugin.version>
-    <apache.activemq.version>5.15.11</apache.activemq.version>
+    <maven.enforcer.plugin.version>3.0.0-M3</maven.enforcer.plugin.version>
+    <maven.enforcer.maven.version>3.0.0</maven.enforcer.maven.version>
+    <jaxb2.maven.plugin.version>2.5.0</jaxb2.maven.plugin.version>
+    <jaxb.api.version>2.3.1</jaxb.api.version>
+    <spotbugs.maven.plugin.version>4.0.0</spotbugs.maven.plugin.version>
+    <pmd.maven.plugin.version>3.13.0</pmd.maven.plugin.version>
+    <checkstyle.maven.plugin.version>3.1.1</checkstyle.maven.plugin.version>
+    <dependency-check.maven.plugin.version>5.3.2</dependency-check.maven.plugin.version>
+    <versions.maven.plugin.version>2.7</versions.maven.plugin.version>
+    <apache.activemq.version>5.15.12</apache.activemq.version>
     <logback.version>1.2.3</logback.version>
     <logback.ext.version>0.1.5</logback.ext.version>
-    <apache.commons.schema>2.2.4</apache.commons.schema>
+    <apache.commons.schema>2.2.5</apache.commons.schema>
     <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
-    <netty.version>4.1.44.Final</netty.version>
-    <openmuc.jdlms.version>1.6.0</openmuc.jdlms.version>
-    <openmuc.openiec61850.version>1.6.0</openmuc.openiec61850.version>
-    <openmuc.j60870.version>1.2.1</openmuc.j60870.version>
+    <netty.version>4.1.49.Final</netty.version>
+    <openmuc.jdlms.version>1.6.1</openmuc.jdlms.version>
+    <beanit.openiec61850.version>1.8.0</beanit.openiec61850.version>
+    <openmuc.j60870.version>1.3.1</openmuc.j60870.version>
     <javax.inject.version>1</javax.inject.version>
+    <javax.annotation.version>1.3.2</javax.annotation.version>
     <license.maven.plugin>3.0</license.maven.plugin>
-    <jackson.version>2.9.10</jackson.version>
-    <jackson-databind.version>2.9.10.1</jackson-databind.version>
-    <cxf.version>3.3.5</cxf.version>
+    <jackson.version>2.11.0</jackson.version>
+    <jackson-databind.version>2.10.3</jackson-databind.version>
+    <cxf.version>3.3.6</cxf.version>
     <quartz.version>2.3.2</quartz.version>
-    <hikaricp.version>3.4.1</hikaricp.version>
-    <micrometer.version>1.1.3</micrometer.version>
+    <hikaricp.version>3.4.5</hikaricp.version>
+    <micrometer.version>1.5.1</micrometer.version>
     <protobuf.version>2.4.1</protobuf.version>
     <protobuf.maven.plugin>0.6.5</protobuf.maven.plugin>
-    <guava.version>28.2-jre</guava.version>
-    <pmd.version>4.3</pmd.version>
-    <checkstyle.version>8.18</checkstyle.version>
+    <guava.version>29.0-jre</guava.version>
+    <spotbugs.version>4.0.4</spotbugs.version>
     <jacoco.version>0.8.5</jacoco.version>
     <selenium.java.version>3.141.59</selenium.java.version>
     <SunriseSunsetCalculator.version>1.2</SunriseSunsetCalculator.version>
-    <ant.junit.version>1.10.5</ant.junit.version>
+    <ant.junit.version>1.10.8</ant.junit.version>
     <args4j.version>2.33</args4j.version>
-    <cucumber.version>5.1.2</cucumber.version>
+    <cucumber.version>5.6.0</cucumber.version>
     <sun.httpserver.version>20070405</sun.httpserver.version>
-    <postgresql.version>42.2.9</postgresql.version>
+    <postgresql.version>42.2.12</postgresql.version>
+    <javax.xml.soap-api.version>1.4.0</javax.xml.soap-api.version>
+    <!-- to avoid conflicts with spring-kafka-test the older kafka version 2.4.1 is used-->
+    <kafka.version>2.4.1</kafka.version>
+    <avro.version>1.9.2</avro.version>
+    <spring.kafka.version>2.4.6.RELEASE</spring.kafka.version>
+    <!-- spring-kafka-test needs a 2.12 version of the scala libraries -->
+    <scala.lang.version>2.12.11</scala.lang.version>
+    <lombok.version>1.18.12</lombok.version>
   </properties>
-
-  <repositories>
-    <repository>
-      <id>fuse-repo</id>
-      <name>Fuse Source</name>
-      <url>http://repo.fusesource.com/nexus/content/groups/public/</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>oss-sonatype</id>
-      <name>oss-sonatype</name>
-      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>maven-repo1</id>
-      <name>Maven Repository</name>
-      <url>https://repo1.maven.org/maven2/</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
 
   <dependencyManagement>
     <dependencies>
-
       <!-- OSGP -->
       <dependency>
         <groupId>org.opensmartgridplatform</groupId>
@@ -263,6 +245,16 @@
       <dependency>
         <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-ws-distributionautomation</artifactId>
+        <version>${osgp.shared.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-kafka-distributionautomation</artifactId>
+        <version>${osgp.shared.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-kafka-logger</artifactId>
         <version>${osgp.shared.version}</version>
       </dependency>
       <dependency>
@@ -400,6 +392,12 @@
         <groupId>org.springframework.data</groupId>
         <artifactId>spring-data-jpa</artifactId>
         <version>${spring.data.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.springframework.data</groupId>
@@ -429,6 +427,12 @@
         <groupId>org.springframework.ws</groupId>
         <artifactId>spring-ws-core</artifactId>
         <version>${spring.wscore.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.springframework.ws</groupId>
@@ -453,11 +457,27 @@
         <version>${javax.inject.version}</version>
       </dependency>
 
+      <dependency>
+        <groupId>javax.annotation</groupId>
+        <artifactId>javax.annotation-api</artifactId>
+        <version>${javax.annotation.version}</version>
+      </dependency>
+
       <!-- ws support -->
       <dependency>
         <groupId>org.apache.ws.security</groupId>
         <artifactId>wss4j</artifactId>
         <version>${apache.wss4j.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.santuario</groupId>
+            <artifactId>xmlsec</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <!-- Servlet API 3.0 -->
@@ -471,6 +491,13 @@
         <groupId>javax.servlet</groupId>
         <artifactId>jstl</artifactId>
         <version>${servlet.jstl.version}</version>
+      </dependency>
+
+      <!--  Jaxb xml bind -->
+      <dependency>
+        <groupId>javax.xml.bind</groupId>
+        <artifactId>jaxb-api</artifactId>
+        <version>${jaxb.api.version}</version>
       </dependency>
 
       <!-- Joda Time (Date/Time functions) -->
@@ -490,6 +517,12 @@
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-rt-transports-http-hc</artifactId>
         <version>${cxf.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore-nio</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.cxf</groupId>
@@ -514,6 +547,12 @@
         <groupId>com.fasterxml.jackson.jaxrs</groupId>
         <artifactId>jackson-jaxrs-json-provider</artifactId>
         <version>${jackson.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
@@ -540,6 +579,12 @@
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-core</artifactId>
         <version>${hibernate.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.hibernate</groupId>
@@ -557,6 +602,12 @@
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-validator</artifactId>
         <version>${hibernate.validator.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.fasterxml</groupId>
+            <artifactId>classmate</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <!-- Bean validation 2.0 / JSR 380 -->
@@ -600,7 +651,30 @@
         <version>${apache.httpcomponents.httpcore.version}</version>
       </dependency>
 
-      <!-- Apache MQ client -->
+     <!-- Kafka, Avro -->
+      <dependency>
+        <groupId>org.apache.kafka</groupId>
+        <artifactId>kafka-clients</artifactId>
+        <version>${kafka.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.avro</groupId>
+        <artifactId>avro</artifactId>
+        <version>${avro.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.kafka</groupId>
+        <artifactId>spring-kafka</artifactId>
+        <version>${spring.kafka.version}</version>
+      </dependency>
+
+      <!-- Apache ActiveMQ client -->
       <dependency>
         <groupId>org.apache.activemq</groupId>
         <artifactId>activemq-client</artifactId>
@@ -653,6 +727,12 @@
         <groupId>org.apache.activemq</groupId>
         <artifactId>activemq-spring</artifactId>
         <version>${apache.activemq.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <dependency>
@@ -670,9 +750,9 @@
 
       <!-- OpenMUC -->
       <dependency>
-        <groupId>org.openmuc</groupId>
+        <groupId>com.beanit</groupId>
         <artifactId>openiec61850</artifactId>
-        <version>${openmuc.openiec61850.version}</version>
+        <version>${beanit.openiec61850.version}</version>
       </dependency>
       <dependency>
         <groupId>org.openmuc</groupId>
@@ -786,6 +866,36 @@
         <version>${apache.commons.text.version}</version>
       </dependency>
 
+      <!-- Spring Test -->
+      <dependency>
+        <groupId>org.springframework.kafka</groupId>
+        <artifactId>spring-kafka-test</artifactId>
+        <version>${spring.kafka.version}</version>
+        <scope>test</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-reflect</artifactId>
+          </exclusion>
+	    </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.scala-lang</groupId>
+        <artifactId>scala-library</artifactId>
+        <version>${scala.lang.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.scala-lang</groupId>
+        <artifactId>scala-reflect</artifactId>
+        <version>${scala.lang.version}</version>
+        <scope>test</scope>
+      </dependency>
+
       <!-- Cucumber Framework -->
       <dependency>
         <groupId>io.cucumber</groupId>
@@ -863,13 +973,59 @@
         <version>${sun.httpserver.version}</version>
       </dependency>
 
+      <dependency>
+        <groupId>javax.xml.soap</groupId>
+        <artifactId>javax.xml.soap-api</artifactId>
+        <version>${javax.xml.soap-api.version}</version>
+      </dependency>
+
+      <!-- Lombok -->
+      <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <version>${lombok.version}</version>
+        <scope>provided</scope>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
+
+  <repositories>
+    <repository>
+      <id>fuse-repo</id>
+      <name>Fuse Source</name>
+      <url>http://repo.fusesource.com/nexus/content/groups/public/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>oss-sonatype</id>
+      <name>oss-sonatype</name>
+      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>maven-repo1</id>
+      <name>Maven Repository</name>
+      <url>https://repo1.maven.org/maven2/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 
   <build>
     <pluginManagement>
       <plugins>
-
         <plugin>
           <groupId>external.atlassian.jgitflow</groupId>
           <artifactId>jgitflow-maven-plugin</artifactId>
@@ -913,6 +1069,50 @@
         </plugin>
 
         <plugin>
+          <groupId>com.github.spotbugs</groupId>
+          <artifactId>spotbugs-maven-plugin</artifactId>
+          <version>${spotbugs.maven.plugin.version}</version>
+          <dependencies>
+            <dependency>
+              <groupId>com.github.spotbugs</groupId>
+              <artifactId>spotbugs</artifactId>
+              <version>${spotbugs.version}</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-checkstyle-plugin</artifactId>
+          <version>${checkstyle.maven.plugin.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-pmd-plugin</artifactId>
+          <version>${pmd.maven.plugin.version}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.owasp</groupId>
+          <artifactId>dependency-check-maven</artifactId>
+          <version>${dependency-check.maven.plugin.version}</version>
+          <configuration>
+            <!-- Skip system scoped dependencies to prevent dependency-check errors:
+              Error generating dependency-check-maven:5.3.1:aggregate report: One or more
+              exceptions occurred during dependency-check analysis: One or more exceptions
+              occurred during analysis: Unable to resolve system scoped dependency: com.sun:tools:jar:1.8.0:system
+              An alternative would be to add com.sun:tools:jar:1.8.0:system as a system
+              scoped dependencies, but this would add tools.jar to all projects' build
+              dependencies. -->
+            <skipSystemScope>true</skipSystemScope>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>versions-maven-plugin</artifactId>
+          <version>${versions.maven.plugin.version}</version>
+        </plugin>
+
+        <plugin>
           <groupId>com.mycila</groupId>
           <artifactId>license-maven-plugin</artifactId>
           <version>${license.maven.plugin}</version>
@@ -933,6 +1133,45 @@
               <goals>
                 <goal>check</goal>
               </goals>
+            </execution>
+          </executions>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-enforcer-plugin</artifactId>
+          <version>${maven.enforcer.plugin.version}</version>
+          <executions>
+            <execution>
+              <id>enforce-maven</id>
+              <goals>
+                <goal>enforce</goal>
+              </goals>
+              <configuration>
+                <rules>
+                  <requireMavenVersion>
+                    <version>${maven.enforcer.maven.version}</version>
+                  </requireMavenVersion>
+                </rules>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.avro</groupId>
+          <artifactId>avro-maven-plugin</artifactId>
+          <version>${avro.version}</version>
+          <executions>
+            <execution>
+              <phase>generate-sources</phase>
+              <goals>
+                <goal>schema</goal>
+              </goals>
+              <configuration>
+                <sourceDirectory>${project.basedir}/src/main/resources/</sourceDirectory>
+                <outputDirectory>${project.basedir}/target/generated-sources/avro/</outputDirectory>
+              </configuration>
             </execution>
           </executions>
         </plugin>
@@ -968,6 +1207,33 @@
         <artifactId>maven-jxr-plugin</artifactId>
         <version>${jxr.version}</version>
       </plugin>
+      <plugin>
+        <groupId>org.owasp</groupId>
+        <artifactId>dependency-check-maven</artifactId>
+        <version>${dependency-check.maven.plugin.version}</version>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>aggregate</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>versions-maven-plugin</artifactId>
+        <version>${versions.maven.plugin.version}</version>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>dependency-updates-report</report>
+              <report>plugin-updates-report</report>
+              <report>property-updates-report</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
     </plugins>
   </reporting>
+
 </project>

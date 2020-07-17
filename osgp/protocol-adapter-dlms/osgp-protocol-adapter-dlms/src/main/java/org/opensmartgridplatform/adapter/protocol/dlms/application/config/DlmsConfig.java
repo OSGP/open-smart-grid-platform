@@ -46,10 +46,6 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 
-/**
- * An application context Java configuration class. The usage of Java
- * configuration requires Spring Framework 3.0
- */
 @Configuration
 @EnableTransactionManagement()
 @PropertySource("classpath:osgp-adapter-protocol-dlms.properties")
@@ -78,7 +74,6 @@ public class DlmsConfig extends AbstractConfig {
      */
     @Bean()
     public ServerBootstrap serverBootstrap() {
-        LOGGER.info("Initializing serverBootstrap bean.");
 
         final ServerBootstrap bootstrap = new ServerBootstrap();
         bootstrap.group(this.serverBossGroup(), this.serverWorkerGroup());
@@ -95,6 +90,8 @@ public class DlmsConfig extends AbstractConfig {
         bootstrap.childOption(ChannelOption.SO_KEEPALIVE, false);
 
         bootstrap.bind(new InetSocketAddress(this.dlmsPortServer()));
+
+        LOGGER.info("Initialized serverBootstrap bean.");
 
         return bootstrap;
     }

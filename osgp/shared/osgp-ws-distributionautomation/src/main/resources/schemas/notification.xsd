@@ -34,11 +34,13 @@
 
   <xsd:simpleType name="NotificationType">
     <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="ADD_DEVICE"/>
       <xsd:enumeration value="GET_DEVICE_MODEL"/>
       <xsd:enumeration value="GET_POWER_QUALITY_VALUES"/>
       <xsd:enumeration value="GET_POWER_QUALITY_VALUES_PERIODIC"/>
       <xsd:enumeration value="GET_HEALTH_STATUS"/>
       <xsd:enumeration value="GET_MEASUREMENT_REPORT"/>
+      <xsd:enumeration value="GET_DATA"/>
     </xsd:restriction>
   </xsd:simpleType>
 </xsd:schema>

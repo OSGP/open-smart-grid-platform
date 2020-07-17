@@ -12,6 +12,7 @@ import java.io.Serializable;
 
 import javax.jms.JMSException;
 
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
@@ -38,7 +39,7 @@ public abstract class DlmsConnectionMessageProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(DlmsConnectionMessageProcessor.class);
 
     @Autowired
-    protected DlmsConnectionHelper connectionHelper;
+    protected DlmsConnectionHelper dlmsConnectionHelper;
 
     @Autowired
     protected DlmsLogItemRequestMessageSender dlmsLogItemRequestMessageSender;
@@ -52,11 +53,18 @@ public abstract class DlmsConnectionMessageProcessor {
     @Autowired
     protected DlmsDeviceRepository deviceRepository;
 
-    protected DlmsConnectionManager createConnectionForDevice(final DlmsDevice device,
+    @Autowired
+    protected ThrottlingService throttlingService;
+
+    public DlmsConnectionManager createConnectionForDevice(final DlmsDevice device,
             final MessageMetadata messageMetadata) throws OsgpException {
+        
+        throttlingService.openConnection();
+
         final DlmsMessageListener dlmsMessageListener = this
                 .createMessageListenerForDeviceConnection(device, messageMetadata);
-        return this.connectionHelper.createConnectionForDevice(device, dlmsMessageListener);
+
+        return this.dlmsConnectionHelper.createConnectionForDevice(device, dlmsMessageListener);
     }
 
     protected DlmsMessageListener createMessageListenerForDeviceConnection(final DlmsDevice device,
@@ -87,6 +95,8 @@ public abstract class DlmsConnectionMessageProcessor {
 
         this.closeDlmsConnection(device, conn);
 
+        this.throttlingService.closeConnection();
+
         if (device.needsInvocationCounter()) {
             this.updateInvocationCounterForDevice(device, conn);
         }
@@ -110,7 +120,7 @@ public abstract class DlmsConnectionMessageProcessor {
                             + "communication with an InvocationCountingDlmsMessageListener - device: {}, hls5: {}, "
                             + "listener: {}", device.getDeviceIdentification(), device.isHls5Active(),
                     conn.getDlmsMessageListener() == null ? "null" : conn.getDlmsMessageListener().getClass()
-                            .getName());
+                                                                         .getName());
             return;
         }
 

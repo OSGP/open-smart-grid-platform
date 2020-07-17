@@ -12,19 +12,15 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>protocol-adapter-iec60870</artifactId>
   <groupId>org.opensmartgridplatform</groupId>
-  <version>5.0.2</version>
+  <artifactId>protocol-adapter-iec60870</artifactId>
+  <version>5.1.0</version>
   <packaging>pom</packaging>
   <name>protocol-adapter-iec60870</name>
-  <properties>
-    <jxr.version>3.0.0</jxr.version>
-    <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
-    <maven.site.plugin>3.7.1</maven.site.plugin>
-  </properties>
-
   <!-- Description, Organization, Licenses, URL and Distribution Management elements are needed for the maven-jxr-plugin to generate a maven site -->
   <description>Protocol Adapter for IEC60870-5-104 smart devices.</description>
+  <!-- URL is passed in as a maven argument: -Dmaven.site.url=http://my/url/for/the/site -->
+  <url>${maven.site.url}</url>
   <organization>
     <name>OSGP</name>
     <url>https://osgplatform.wordpress.com</url>
@@ -35,8 +31,21 @@
       <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
     </license>
   </licenses>
-  <!-- URL is passed in as a maven argument: -Dmaven.site.url=http://my/url/for/the/site -->
-  <url>${maven.site.url}</url>
+
+  <modules>
+    <!-- Shared Libs -->
+    <module>parent-pa-iec60870</module>
+    <module>../shared/shared</module>
+    <module>../shared/osgp-dto</module>
+    <module>osgp-iec60870</module>
+
+    <!-- Protocol Adapter IEC60870 -->
+    <module>osgp-protocol-adapter-iec60870</module>
+
+    <!-- Simulator IEC60870 -->
+    <module>osgp-protocol-simulator-iec60870</module>
+  </modules>
+
   <distributionManagement>
     <site>
       <id>pa-iec60870</id>
@@ -45,6 +54,12 @@
       <url>${maven.site.distributionManagement.site.url}</url>
     </site>
   </distributionManagement>
+
+  <properties>
+    <jxr.version>3.0.0</jxr.version>
+    <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
+    <maven.site.plugin>3.7.1</maven.site.plugin>
+  </properties>
 
   <build>
     <plugins>
@@ -85,17 +100,4 @@
     </plugins>
   </build>
 
-  <modules>
-    <!-- Shared Libs -->
-    <module>parent-pa-iec60870</module>
-    <module>../shared/shared</module>
-    <module>../shared/osgp-dto</module>
-    <module>osgp-iec60870</module>
-
-    <!-- Protocol Adapter IEC60870 -->
-    <module>osgp-protocol-adapter-iec60870</module>
-
-    <!-- Simulator IEC60870 -->
-    <module>osgp-protocol-simulator-iec60870</module>
-  </modules>
 </project>

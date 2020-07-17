@@ -13,12 +13,6 @@ import java.net.InetAddress;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.StringUtils;
-import org.openmuc.openiec61850.ClientAssociation;
-import org.openmuc.openiec61850.ClientSap;
-import org.openmuc.openiec61850.FcModelNode;
-import org.openmuc.openiec61850.SclParseException;
-import org.openmuc.openiec61850.ServerModel;
-import org.openmuc.openiec61850.ServiceError;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.ConnectionFailureException;
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.NodeReadException;
@@ -34,6 +28,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.beanit.openiec61850.ClientAssociation;
+import com.beanit.openiec61850.ClientSap;
+import com.beanit.openiec61850.FcModelNode;
+import com.beanit.openiec61850.SclParseException;
+import com.beanit.openiec61850.SclParser;
+import com.beanit.openiec61850.ServerModel;
+import com.beanit.openiec61850.ServiceError;
 
 @Component
 public class Iec61850Client {
@@ -110,7 +112,7 @@ public class Iec61850Client {
             // cannot be recovered. You will need to create a new association
             // using ClientSap.associate() in order to
             // reconnect.
-            LOGGER.error("Error connecting to device: " + deviceIdentification, e);
+            LOGGER.error("Error connecting to device: {}", deviceIdentification, e);
             throw new ConnectionFailureException(e.getMessage(), e);
         }
 
@@ -178,7 +180,9 @@ public class Iec61850Client {
         }
 
         try {
-            return clientAssociation.getModelFromSclFile(filePath);
+            final ServerModel serverModel = SclParser.parse(filePath).get(0);
+            clientAssociation.setServerModel(serverModel);
+            return serverModel;
         } catch (final SclParseException e) {
             throw new ProtocolAdapterException("Error parsing SCL file: " + filePath, e);
         }

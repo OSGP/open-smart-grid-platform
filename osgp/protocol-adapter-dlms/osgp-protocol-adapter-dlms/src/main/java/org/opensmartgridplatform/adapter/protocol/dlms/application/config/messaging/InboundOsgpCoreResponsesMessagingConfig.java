@@ -31,7 +31,7 @@ public class InboundOsgpCoreResponsesMessagingConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InboundOsgpCoreResponsesMessagingConfig.class);
 
-    private JmsConfigurationFactory jmsConfigurationFactory;
+    private final JmsConfigurationFactory jmsConfigurationFactory;
 
     public InboundOsgpCoreResponsesMessagingConfig(final Environment environment,
             final DefaultJmsConfiguration defaultJmsConfiguration) throws SSLException {

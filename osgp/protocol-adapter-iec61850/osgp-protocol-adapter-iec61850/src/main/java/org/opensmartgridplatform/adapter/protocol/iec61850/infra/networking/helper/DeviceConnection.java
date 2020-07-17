@@ -7,9 +7,9 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper;
 
-import org.openmuc.openiec61850.Fc;
-import org.openmuc.openiec61850.FcModelNode;
-import org.openmuc.openiec61850.ObjectReference;
+import com.beanit.openiec61850.Fc;
+import com.beanit.openiec61850.FcModelNode;
+import com.beanit.openiec61850.ObjectReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

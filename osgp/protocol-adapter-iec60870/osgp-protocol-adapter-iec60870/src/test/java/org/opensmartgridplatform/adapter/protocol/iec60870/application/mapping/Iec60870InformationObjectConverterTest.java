@@ -9,17 +9,17 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.application.mapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
-import org.openmuc.j60870.IeQuality;
-import org.openmuc.j60870.IeShortFloat;
-import org.openmuc.j60870.IeTime56;
-import org.openmuc.j60870.InformationElement;
-import org.openmuc.j60870.InformationObject;
+import org.openmuc.j60870.ie.IeQuality;
+import org.openmuc.j60870.ie.IeShortFloat;
+import org.openmuc.j60870.ie.IeSinglePointWithQuality;
+import org.openmuc.j60870.ie.IeTime56;
+import org.openmuc.j60870.ie.InformationElement;
+import org.openmuc.j60870.ie.InformationObject;
 import org.opensmartgridplatform.dto.da.measurements.MeasurementDto;
+import org.opensmartgridplatform.dto.da.measurements.MeasurementElementDto;
 import org.opensmartgridplatform.dto.da.measurements.MeasurementGroupDto;
 import org.opensmartgridplatform.dto.da.measurements.elements.BitmaskMeasurementElementDto;
 import org.opensmartgridplatform.dto.da.measurements.elements.FloatMeasurementElementDto;
@@ -29,19 +29,26 @@ public class Iec60870InformationObjectConverterTest {
 
     private final Iec60870Mapper mapper = new Iec60870Mapper();
 
-    private static final long TIMESTAMP_NOW = ZonedDateTime.now(ZoneOffset.UTC).toInstant().toEpochMilli();
+    private static final long TIMESTAMP_NOW = System.currentTimeMillis();
 
-    // @formatter:off
+    private static final InformationElement IE_1 = new IeQuality(true, true, true, true, true);
+    private static final InformationElement IE_2 = new IeShortFloat(30.51f);
+    private static final InformationElement IE_3 = new IeSinglePointWithQuality(true, false, false, false, false);
+    private static final InformationElement IE_4 = new IeTime56(TIMESTAMP_NOW);
+
+    private static final MeasurementElementDto ME_1 = new BitmaskMeasurementElementDto((byte) 241);
+    private static final MeasurementElementDto ME_2 = new FloatMeasurementElementDto(30.51f);
+    private static final MeasurementElementDto ME_3 = new BitmaskMeasurementElementDto((byte) 1);
+    private static final MeasurementElementDto ME_4 = new TimestampMeasurementElementDto(TIMESTAMP_NOW);
+
     private static final MeasurementGroupDto MEASUREMENT_GROUP_DTO = new MeasurementGroupDto("1",
-            Arrays.asList(new MeasurementDto(Arrays.asList(new FloatMeasurementElementDto(30.51f),
-                    new BitmaskMeasurementElementDto((byte) 241), new TimestampMeasurementElementDto(TIMESTAMP_NOW)))));
+            Arrays.asList(new MeasurementDto(Arrays.asList(ME_1, ME_2, ME_3, ME_4))));
 
-    private static final InformationObject INFORMATION_OBJECT = new InformationObject(1, new InformationElement[][] {
-            { new IeShortFloat(30.51f), new IeQuality(true, true, true, true, true), new IeTime56(TIMESTAMP_NOW) } });
-    // @formatter:on
+    private static final InformationObject INFORMATION_OBJECT = new InformationObject(1,
+            new InformationElement[][] { { IE_1, IE_2, IE_3, IE_4 } });
 
     @Test
-    public void shouldConvertInformationObjectToMeasurementGroupDto() {
+    public void testConvertInformationObjectToMeasurementGroupDto() {
         // Arrange
         final MeasurementGroupDto expected = MEASUREMENT_GROUP_DTO;
         final InformationObject source = INFORMATION_OBJECT;

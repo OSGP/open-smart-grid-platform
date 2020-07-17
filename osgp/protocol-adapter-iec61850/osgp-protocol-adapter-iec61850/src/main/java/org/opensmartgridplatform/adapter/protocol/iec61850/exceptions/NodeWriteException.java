@@ -9,7 +9,7 @@ package org.opensmartgridplatform.adapter.protocol.iec61850.exceptions;
 
 import java.io.IOException;
 
-import org.openmuc.openiec61850.ServiceError;
+import com.beanit.openiec61850.ServiceError;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.ConnectionState;
 
 /**

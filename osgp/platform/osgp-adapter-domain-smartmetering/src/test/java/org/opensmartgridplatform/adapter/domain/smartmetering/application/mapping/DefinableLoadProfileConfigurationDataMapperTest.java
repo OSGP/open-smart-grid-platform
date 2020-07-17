@@ -98,7 +98,7 @@ public class DefinableLoadProfileConfigurationDataMapperTest {
     private void assertCaptureObjects(final List<CaptureObjectDefinitionDto> captureObjects) {
         assertThat(captureObjects).withFailMessage("Capture objects").isNotNull();
         assertThat(captureObjects.size()).withFailMessage("Number of capture objects")
-                .isEqualTo(NUMBER_OF_CAPTURE_OBJECTS);
+                                         .isEqualTo(NUMBER_OF_CAPTURE_OBJECTS);
         this.assertCaptureObjectDefinition(1, captureObjects.get(0), CAPTURE_OBJECT_CLASS_ID_1, CAPTURE_OBJECT_OBIS_A_1,
                 CAPTURE_OBJECT_OBIS_B_1, CAPTURE_OBJECT_OBIS_C_1, CAPTURE_OBJECT_OBIS_D_1, CAPTURE_OBJECT_OBIS_E_1,
                 CAPTURE_OBJECT_OBIS_F_1, CAPTURE_OBJECT_ATTRIBUTE_INDEX_1, CAPTURE_OBJECT_DATA_INDEX_1);
@@ -117,13 +117,13 @@ public class DefinableLoadProfileConfigurationDataMapperTest {
             final byte d, final byte e, final byte f, final byte attributeIndex, final Integer dataIndex) {
         final String captureObjectDescription = "capture object " + captureObjectNumber + " - ";
         assertThat(captureObject.getClassId()).withFailMessage(captureObjectDescription + "class id")
-                .isEqualTo(classId);
+                                              .isEqualTo(classId);
         this.assertLogicalName(captureObjectDescription + "OBIS code value ", captureObject.getLogicalName(), a, b, c,
                 d, e, f);
         assertThat(captureObject.getAttributeIndex()).withFailMessage(captureObjectDescription + "attribute index")
-                .isEqualTo(attributeIndex);
+                                                     .isEqualTo(attributeIndex);
         assertThat(captureObject.getDataIndex()).withFailMessage(captureObjectDescription + "data index")
-                .isEqualTo(dataIndex);
+                                                .isEqualTo(dataIndex);
     }
 
     private ObisCodeValues newLogicalName(final byte a, final byte b, final byte c, final byte d, final byte e,

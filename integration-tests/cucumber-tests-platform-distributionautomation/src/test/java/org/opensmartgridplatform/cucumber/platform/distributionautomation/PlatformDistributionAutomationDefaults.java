@@ -13,5 +13,5 @@ public class PlatformDistributionAutomationDefaults {
 
     public static final Integer COMMON_ADDRESS = 1511;
     public static final Integer PORT = 2404;
-
+    public static final String PROFILE = "default_controlled_station";
 }

@@ -14,6 +14,7 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBool
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getFloat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.AddDeviceRequest;
@@ -103,12 +104,8 @@ public class CreateDeviceSteps {
         device.setDeviceIdentification(getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
                 PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
         final DeviceModel deviceModel = new DeviceModel();
-        deviceModel.setDescription(getString(settings, PlatformKeys.KEY_DEVICE_MODEL_DESCRIPTION,
-                PlatformCommonDefaults.DEFAULT_DEVICE_MODEL_DESCRIPTION));
         deviceModel.setManufacturer(getString(settings, PlatformKeys.KEY_DEVICE_MODEL_MANUFACTURER,
                 PlatformCommonDefaults.DEFAULT_DEVICE_MODEL_MANUFACTURER));
-        deviceModel.setMetered(getBoolean(settings, PlatformKeys.KEY_DEVICE_MODEL_METERED,
-                PlatformCommonDefaults.DEFAULT_DEVICE_MODEL_METERED));
         deviceModel.setModelCode(getString(settings, PlatformKeys.KEY_DEVICE_MODEL_MODELCODE,
                 PlatformCommonDefaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
         device.setDeviceModel(deviceModel);

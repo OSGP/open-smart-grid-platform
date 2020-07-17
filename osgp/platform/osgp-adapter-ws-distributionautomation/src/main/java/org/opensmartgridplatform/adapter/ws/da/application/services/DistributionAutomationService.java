@@ -1,9 +1,10 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.ws.da.application.services;
 
@@ -19,6 +20,7 @@ import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataService;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
 import org.opensmartgridplatform.domain.core.entities.RtuDevice;
 import org.opensmartgridplatform.domain.core.exceptions.ArgumentNullOrEmptyException;
+import org.opensmartgridplatform.domain.core.valueobjects.AddRtuDeviceRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.da.measurements.MeasurementReport;
 import org.opensmartgridplatform.domain.da.valueobjects.GetDeviceModelRequest;
@@ -135,6 +137,34 @@ public class DistributionAutomationService {
 
         LOGGER.debug("dequeueMeasurementReport called with correlation uid {}", correlationUid);
         return (MeasurementReport) this.processResponse(correlationUid);
+    }
+
+    public ResponseData dequeueResponseData(final String correlationUid) throws OsgpException {
+        LOGGER.debug("dequeueResponseData called with correlation uid {}", correlationUid);
+        return (ResponseData) this.processResponse(correlationUid);
+    }
+
+    public String enqueueAddRtuDeviceRequest(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, final AddRtuDeviceRequest addRtuDeviceRequest)
+            throws OsgpException {
+
+        LOGGER.debug("enqueueAddRtuDeviceRequest called with organisation {} and device {}", organisationIdentification,
+                deviceIdentification);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final DistributionAutomationRequestMessage message = new DistributionAutomationRequestMessage(
+                MessageType.ADD_DEVICE, correlationUid, organisationIdentification, deviceIdentification,
+                addRtuDeviceRequest);
+
+        try {
+            this.requestMessageSender.send(message);
+        } catch (final ArgumentNullOrEmptyException e) {
+            throw new TechnicalException(ComponentType.WS_DISTRIBUTION_AUTOMATION, e);
+        }
+
+        return correlationUid;
     }
 
     private String processRequest(final String organisationIdentification, final String deviceIdentification,

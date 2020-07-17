@@ -8,7 +8,7 @@
 package org.opensmartgridplatform.shared.exceptionhandling;
 
 /**
- * Enum having list of ExceptionsCodes
+ * Enum having list of components used within OSGP
  */
 public enum ComponentType {
     WS_ADMIN("Osgp Web Service Adapter Admin"),
@@ -18,6 +18,7 @@ public enum ComponentType {
     WS_SMART_METERING("Osgp Web Service Adapter Smart Metering"),
     WS_MICROGRIDS("Osgp Web Service Adapter Microgrids"),
     WS_DISTRIBUTION_AUTOMATION("Osgp Web Service Adapter Distribution Automation"),
+    KAFKA_DISTRIBUTION_AUTOMATION("Osgp Kafka Adapter Distribution Automation"),
     DOMAIN_ADMIN("Osgp Domain Adapter Admin"),
     DOMAIN_CORE("Osgp Domain Adapter Core"),
     DOMAIN_PUBLIC_LIGHTING("Osgp Domain Adapter Public Lighting"),
@@ -30,11 +31,12 @@ public enum ComponentType {
     PROTOCOL_DLMS("Osgp Protocol Adapter DLMS"),
     PROTOCOL_IEC61850("Osgp Protocol Adapter IEC61850"),
     PROTOCOL_IEC60870("Osgp Protocol Adapter IEC60870"),
+    PROTOCOL_MQTT("Osgp Protocol Adapter MQTT"),
     SHARED("Shared"),
 
     UNKNOWN("Unknown");
 
-    private String componentName;
+    private final String componentName;
 
     private ComponentType(final String componentName) {
         this.componentName = componentName;

@@ -1,0 +1,89 @@
+{
+  "type" : "record",
+  "name" : "MeterReading",
+  "namespace" : "org.opensmartgridplatform.adapter.kafka.da.avro",
+  "fields" : [ {
+    "name" : "valuesInterval",
+    "type" : [ "null", {
+      "type" : "record",
+      "name" : "ValuesInterval",
+      "fields" : [ {
+        "name" : "start",
+        "type" : "long",
+        "doc" : "the start as milliseconds from the epoch"
+      }, {
+        "name" : "end",
+        "type" : "long",
+        "doc" : "the end as milliseconds from the epoch"
+      } ]
+    } ]
+  }, {
+    "name" : "mRid",
+    "type" : [ "null", "string" ]
+  }, {
+    "name" : "name",
+    "type" : [ "null", "string" ]
+  }, {
+    "name" : "usagePoint",
+    "type" : {
+      "type" : "record",
+      "name" : "UsagePoint",
+      "fields" : [ {
+        "name" : "mRid",
+        "type" : [ "null", "string" ]
+      } ]
+    }
+  }, {
+    "name" : "intervalBlocks",
+    "type" : {
+      "type" : "array",
+      "items" : {
+        "type" : "record",
+        "name" : "IntervalBlock",
+        "fields" : [ {
+          "name" : "readingType",
+          "type" : {
+            "type" : "record",
+            "name" : "ReadingType",
+            "fields" : [ {
+              "name" : "measuringPeriod",
+              "type" : [ "null", "string" ]
+            }, {
+              "name" : "measuringKind",
+              "type" : [ "null", "string" ]
+            }, {
+              "name" : "multiplier",
+              "type" : [ "null", "string" ]
+            }, {
+              "name" : "unit",
+              "type" : [ "null", "string" ]
+            }, {
+              "name" : "name",
+              "type" : [ "null", "string" ]
+            }, {
+              "name" : "mRid",
+              "type" : [ "null", "string" ]
+            } ]
+          }
+        }, {
+          "name" : "intervalReadings",
+          "type" : {
+            "type" : "array",
+            "items" : {
+              "type" : "record",
+              "name" : "IntervalReading",
+              "fields" : [ {
+                "name" : "value",
+                "type" : [ "null", "string" ]
+              }, {
+                "name" : "timeStamp",
+                "type" : [ "null", "long" ],
+                "doc" : "the dateTime as milliseconds from the epoch"
+              } ]
+            }
+          }
+        } ]
+      }
+    }
+  } ]
+}

@@ -40,7 +40,8 @@ public class GetDeviceModelRequestMessageProcessor extends BaseNotificationMessa
     private AdHocManagementService adHocManagementService;
 
     @Autowired
-    public GetDeviceModelRequestMessageProcessor(final NotificationResponseMessageSender responseMessageSender,
+    public GetDeviceModelRequestMessageProcessor(
+            @Qualifier("domainDistributionAutomationOutboundResponseMessageRouter") final NotificationResponseMessageSender responseMessageSender,
             @Qualifier("domainDistributionAutomationInboundWebServiceRequestsMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.GET_DEVICE_MODEL);
     }

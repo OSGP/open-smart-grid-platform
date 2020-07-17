@@ -7,14 +7,6 @@
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.endpoints;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ws.server.endpoint.annotation.Endpoint;
-import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
-import org.springframework.ws.server.endpoint.annotation.RequestPayload;
-import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
-
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
@@ -35,6 +27,9 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.Clea
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ClearAlarmRegisterAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ClearAlarmRegisterRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ClearAlarmRegisterResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasAsyncRequest;
@@ -44,10 +39,6 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.Peri
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataAsyncRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataAsyncResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterRequest;
@@ -57,6 +48,7 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.Retr
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping.MonitoringMapper;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.services.MonitoringService;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AlarmRegister;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.MeterReads;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.MeterReadsGas;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainer;
@@ -66,6 +58,13 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.server.endpoint.annotation.Endpoint;
+import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
+import org.springframework.ws.server.endpoint.annotation.RequestPayload;
+import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 @Endpoint
 public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
@@ -240,9 +239,9 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
             asyncResponse = gas
                     ? new org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ObjectFactory()
-                            .createActualMeterReadsGasAsyncResponse()
+                    .createActualMeterReadsGasAsyncResponse()
                     : new org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ObjectFactory()
-                            .createActualMeterReadsAsyncResponse();
+                    .createActualMeterReadsAsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
             asyncResponse.setDeviceIdentification(deviceIdentification);
             this.responseUrlService.saveResponseUrlIfNeeded(correlationUid, responseUrl);
@@ -393,28 +392,28 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
         return response;
     }
 
-    @PayloadRoot(localPart = "ProfileGenericDataRequest", namespace = SMARTMETER_MONITORING_NAMESPACE)
+    @PayloadRoot(localPart = "GetPowerQualityProfileRequest", namespace = SMARTMETER_MONITORING_NAMESPACE)
     @ResponsePayload
-    public ProfileGenericDataAsyncResponse getProfileGenericData(
+    public GetPowerQualityProfileAsyncResponse getGetPowerQualityProfile(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final ProfileGenericDataRequest request, @MessagePriority final String messagePriority,
+            @RequestPayload final GetPowerQualityProfileRequest request, @MessagePriority final String messagePriority,
             @ResponseUrl final String responseUrl, @ScheduleTime final String scheduleTime) throws OsgpException {
 
-        LOGGER.debug("Incoming ProfileGenericDataRequest for meter: {}.", request.getDeviceIdentification());
+        LOGGER.debug("Incoming GetPowerQualityProfileRequest for meter: {}.", request.getDeviceIdentification());
 
-        ProfileGenericDataAsyncResponse response = null;
+        GetPowerQualityProfileAsyncResponse response = null;
 
         try {
-            final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileGenericDataRequest dataRequest = this.monitoringMapper
+            final GetPowerQualityProfileRequest dataRequest = this.monitoringMapper
                     .map(request,
-                            org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileGenericDataRequest.class);
+                            GetPowerQualityProfileRequest.class);
 
             final int msgPrio = MessagePriorityEnum.getMessagePriority(messagePriority);
-            final String correlationUid = this.monitoringService.enqueueProfileGenericDataRequestData(
+            final String correlationUid = this.monitoringService.enqueueGetPowerQualityProfileRequest(
                     organisationIdentification, request.getDeviceIdentification(), dataRequest, msgPrio,
                     this.monitoringMapper.map(scheduleTime, Long.class));
 
-            response = new ProfileGenericDataAsyncResponse();
+            response = new GetPowerQualityProfileAsyncResponse();
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
             this.responseUrlService.saveResponseUrlIfNeeded(correlationUid, responseUrl);
@@ -428,26 +427,26 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
     }
 
-    @PayloadRoot(localPart = "ProfileGenericDataAsyncRequest", namespace = SMARTMETER_MONITORING_NAMESPACE)
+    @PayloadRoot(localPart = "GetPowerQualityProfileAsyncRequest", namespace = SMARTMETER_MONITORING_NAMESPACE)
     @ResponsePayload
-    public ProfileGenericDataResponse getProfileGenericDataResponse(
+    public GetPowerQualityProfileResponse getGetPowerQualityProfileResponse(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final ProfileGenericDataAsyncRequest request) throws OsgpException {
+            @RequestPayload final GetPowerQualityProfileAsyncRequest request) throws OsgpException {
 
-        LOGGER.debug("Incoming ProfileGenericDataAsyncRequest for meter: {}.", request.getDeviceIdentification());
+        LOGGER.debug("Incoming GetPowerQualityProfileAsyncRequest for meter: {}.", request.getDeviceIdentification());
 
-        ProfileGenericDataResponse response = null;
+        GetPowerQualityProfileResponse response = null;
         try {
             final ResponseData responseData = this.monitoringService
-                    .dequeueProfileGenericDataResponse(request.getCorrelationUid());
+                    .dequeueGetPowerQualityProfileDataResponseData(request.getCorrelationUid());
 
-            this.throwExceptionIfResultNotOk(responseData, "retrieving profile generic data");
+            this.throwExceptionIfResultNotOk(responseData, "retrieving power quality profile");
 
-            response = this.monitoringMapper.map(responseData.getMessageData(), ProfileGenericDataResponse.class);
+            response = this.monitoringMapper.map(responseData.getMessageData(), GetPowerQualityProfileResponse.class);
 
         } catch (final Exception e) {
             LOGGER.error(
-                    "Exception: {} while sending GetProfileGenericDataAsyncRequest for correlation UID: {} for organisation {}.",
+                    "Exception: {} while sending GetPowerQualityProfileAsyncRequest for correlation UID: {} for organisation {}.",
                     e.getMessage(), request.getCorrelationUid(), organisationIdentification);
 
             this.handleException(e);

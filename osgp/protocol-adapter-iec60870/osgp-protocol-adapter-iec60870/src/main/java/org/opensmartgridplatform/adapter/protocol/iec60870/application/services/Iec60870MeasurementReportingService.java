@@ -27,14 +27,20 @@ public class Iec60870MeasurementReportingService implements MeasurementReporting
 
     @Override
     public void send(final MeasurementReportDto measurementReportDto, final ResponseMetadata responseMetadata) {
-        final DeviceMessageMetadata deviceMessageMetadata = DeviceMessageMetadata.newBuilder().withBypassRetry(true)
+        final DeviceMessageMetadata deviceMessageMetadata = DeviceMessageMetadata.newBuilder()
+                .withBypassRetry(true)
                 .withCorrelationUid(responseMetadata.getCorrelationUid())
-                .withDeviceIdentification(responseMetadata.getDeviceIdentification()).withMessageType(MESSAGE_TYPE)
-                .withOrganisationIdentification(responseMetadata.getOrganisationIdentification()).build();
+                .withDeviceIdentification(responseMetadata.getDeviceIdentification())
+                .withMessageType(MESSAGE_TYPE)
+                .withOrganisationIdentification(responseMetadata.getOrganisationIdentification())
+                .build();
         final ProtocolResponseMessage responseMessage = ProtocolResponseMessage.newBuilder()
-                .deviceMessageMetadata(deviceMessageMetadata).domain(responseMetadata.getDomainInfo().getDomain())
-                .domainVersion(responseMetadata.getDomainInfo().getDomainVersion()).dataObject(measurementReportDto)
-                .result(ResponseMessageResultType.OK).build();
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .domain(responseMetadata.getDomainInfo().getDomain())
+                .domainVersion(responseMetadata.getDomainInfo().getDomainVersion())
+                .dataObject(measurementReportDto)
+                .result(ResponseMessageResultType.OK)
+                .build();
         this.deviceResponseMessageSender.send(responseMessage);
     }
 }

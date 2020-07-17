@@ -44,12 +44,12 @@ public class ConfigurationMapper extends ConfigurableMapper {
 
         mapperFactory.classMap(ConfigureDefinableLoadProfileRequest.class,
                 org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DefinableLoadProfileConfigurationData.class)
-                .fieldAToB(CAPTURE_OBJECTS_CAPTURE_OBJECT, CAPTURE_OBJECTS)
-                .fieldBToA(CAPTURE_OBJECTS, CAPTURE_OBJECTS_CAPTURE_OBJECT).byDefault().register();
+                     .fieldAToB(CAPTURE_OBJECTS_CAPTURE_OBJECT, CAPTURE_OBJECTS)
+                     .fieldBToA(CAPTURE_OBJECTS, CAPTURE_OBJECTS_CAPTURE_OBJECT).byDefault().register();
         mapperFactory.classMap(DefinableLoadProfileConfigurationData.class,
                 org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DefinableLoadProfileConfigurationData.class)
-                .fieldAToB(CAPTURE_OBJECTS_CAPTURE_OBJECT, CAPTURE_OBJECTS)
-                .fieldBToA(CAPTURE_OBJECTS, CAPTURE_OBJECTS_CAPTURE_OBJECT).byDefault().register();
+                     .fieldAToB(CAPTURE_OBJECTS_CAPTURE_OBJECT, CAPTURE_OBJECTS)
+                     .fieldBToA(CAPTURE_OBJECTS, CAPTURE_OBJECTS_CAPTURE_OBJECT).byDefault().register();
         mapperFactory.getConverterFactory().registerConverter(new ObisCodeValuesConverter());
 
         // These two converters are needed because they combine two fields

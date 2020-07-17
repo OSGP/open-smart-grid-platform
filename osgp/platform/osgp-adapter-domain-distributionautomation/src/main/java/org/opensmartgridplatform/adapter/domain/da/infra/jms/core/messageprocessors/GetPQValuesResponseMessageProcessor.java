@@ -44,7 +44,8 @@ public class GetPQValuesResponseMessageProcessor extends BaseNotificationMessage
     private MonitoringService monitoringService;
 
     @Autowired
-    protected GetPQValuesResponseMessageProcessor(final NotificationResponseMessageSender responseMessageSender,
+    protected GetPQValuesResponseMessageProcessor(
+            @Qualifier("domainDistributionAutomationOutboundResponseMessageRouter") final NotificationResponseMessageSender responseMessageSender,
             @Qualifier("domainDistributionAutomationInboundOsgpCoreResponsesMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.GET_POWER_QUALITY_VALUES);
     }

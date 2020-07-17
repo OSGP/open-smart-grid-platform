@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.adapter.ws.shared.services;
 
+import org.hibernate.validator.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;

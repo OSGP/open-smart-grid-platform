@@ -24,6 +24,7 @@ import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
+import org.opensmartgridplatform.shared.infra.jms.RetryHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +59,7 @@ public abstract class AbstractMessageProcessor implements MessageProcessor {
     @Autowired
     private LoggingService iec60870LoggingService;
 
-    private MessageType messageType;
+    private final MessageType messageType;
 
     /**
      * Each MessageProcessor should register its MessageType at construction.
@@ -90,7 +91,7 @@ public abstract class AbstractMessageProcessor implements MessageProcessor {
 
     @Override
     public void processMessage(final ObjectMessage message) {
-        LOGGER.info("Processing get health status request message in new code...");
+        LOGGER.info("Processing message.");
 
         MessageMetadata messageMetadata = null;
         try {
@@ -128,6 +129,8 @@ public abstract class AbstractMessageProcessor implements MessageProcessor {
                 .result(ResponseMessageResultType.NOT_OK)
                 .osgpException(e)
                 .retryCount(messageMetadata.getRetryCount())
+                .retryHeader(new RetryHeader())
+                .scheduled(messageMetadata.isScheduled())
                 .build();
 
         if (this.hasRemainingRedeliveries(messageMetadata)) {

@@ -8,6 +8,7 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
+import ma.glasnost.orika.MapperFactory;
 import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
 import org.opensmartgridplatform.domain.core.entities.Manufacturer;
@@ -30,8 +31,6 @@ import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import ma.glasnost.orika.MapperFactory;
 
 @Service(value = "domainSmartMeteringSmartMeterService")
 @Transactional(value = "transactionManager")
@@ -85,8 +84,10 @@ public class SmartMeterService {
     }
 
     private ProtocolInfo getProtocolInfo(final SmartMeteringDevice smartMeteringDevice) throws FunctionalException {
-        final ProtocolInfo protocolInfo = this.protocolInfoRepository.findByProtocolAndProtocolVersion(
-                smartMeteringDevice.getProtocolName(), smartMeteringDevice.getProtocolVersion());
+        
+        final ProtocolInfo protocolInfo = this.protocolInfoRepository
+                .findByProtocolAndProtocolVersion(smartMeteringDevice.getProtocolInfoLookupName(),
+                        smartMeteringDevice.getProtocolVersion());
         if (protocolInfo == null) {
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_PROTOCOL_NAME_OR_VERSION,
                     ComponentType.DOMAIN_SMART_METERING);
@@ -94,8 +95,8 @@ public class SmartMeterService {
         return protocolInfo;
     }
 
-    private DeviceModel
-            getDeviceModel(final org.opensmartgridplatform.domain.core.valueobjects.DeviceModel deviceModel) {
+    private DeviceModel getDeviceModel(
+            final org.opensmartgridplatform.domain.core.valueobjects.DeviceModel deviceModel) {
         final Manufacturer manufacturer = this.manufacturerRepository.findByCode(deviceModel.getManufacturer());
         return this.deviceModelRepository.findByManufacturerAndModelCode(manufacturer, deviceModel.getModelCode());
     }

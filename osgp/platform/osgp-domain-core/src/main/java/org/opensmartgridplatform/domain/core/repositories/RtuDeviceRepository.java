@@ -9,18 +9,18 @@ package org.opensmartgridplatform.domain.core.repositories;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
+import org.opensmartgridplatform.domain.core.entities.RtuDevice;
+import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
-import org.opensmartgridplatform.domain.core.entities.RtuDevice;
 
 @Repository
 public interface RtuDeviceRepository extends JpaRepository<RtuDevice, Long> {
     RtuDevice findById(long id);
 
-    RtuDevice findByDeviceIdentification(String deviceIdentification);
+    Optional<RtuDevice> findByDeviceIdentification(String deviceIdentification);
 
     List<RtuDevice> findByDeviceLifecycleStatusAndLastCommunicationTimeBefore(
             DeviceLifecycleStatus deviceLifecycleStatus, Date lastCommunicationTime);

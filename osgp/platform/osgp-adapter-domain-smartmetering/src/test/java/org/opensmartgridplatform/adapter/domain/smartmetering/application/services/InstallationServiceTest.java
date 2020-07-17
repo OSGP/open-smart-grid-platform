@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import ma.glasnost.orika.MapperFacade;
+import ma.glasnost.orika.MapperFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,9 +31,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.springframework.test.util.ReflectionTestUtils;
-
-import ma.glasnost.orika.MapperFacade;
-import ma.glasnost.orika.MapperFactory;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -96,8 +95,9 @@ public class InstallationServiceTest {
         when(this.smartMeteringDeviceRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION)).thenReturn(null);
         when(this.smartMeteringDevice.getProtocolName()).thenReturn(PROTOCOL_NAME);
         when(this.smartMeteringDevice.getProtocolVersion()).thenReturn(PROTOCOL_VERSION);
-        when(this.protocolInfoRepository.findByProtocolAndProtocolVersion(PROTOCOL_NAME, PROTOCOL_VERSION))
-                .thenReturn(this.protocolInfo);
+        when(this.protocolInfoRepository
+                .findByProtocolAndProtocolVersion(this.smartMeteringDevice.getProtocolInfoLookupName(),
+                        PROTOCOL_VERSION)).thenReturn(this.protocolInfo);
 
         // CALL
         this.instance.addMeter(this.deviceMessageMetadata, this.addSmartMeterRequest);

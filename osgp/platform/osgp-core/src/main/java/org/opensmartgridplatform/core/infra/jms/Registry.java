@@ -16,7 +16,7 @@ import java.util.Set;
 
 public class Registry<T> {
 
-    private Map<String, T> internalMap = new HashMap<>();
+    private final Map<String, T> internalMap = new HashMap<>();
 
     public Set<String> getKeys() {
         return new HashSet<>(this.internalMap.keySet());

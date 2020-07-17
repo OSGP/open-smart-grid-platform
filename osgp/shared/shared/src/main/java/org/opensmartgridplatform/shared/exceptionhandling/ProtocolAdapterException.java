@@ -21,4 +21,8 @@ public class ProtocolAdapterException extends OsgpException {
         super(componentType, message);
     }
 
+    public ProtocolAdapterException(final ComponentType componentType, final String message, final Throwable cause) {
+        super(componentType, message, cause);
+    }
+
 }

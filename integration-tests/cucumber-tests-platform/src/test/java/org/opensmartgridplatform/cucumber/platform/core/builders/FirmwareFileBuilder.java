@@ -93,18 +93,18 @@ public class FirmwareFileBuilder implements CucumberBuilder<FirmwareFile> {
     }
 
     public FirmwareFile build(final FirmwareModuleRepository firmwareModuleRepository, final boolean isForSmartMeters) {
-        final FirmwareFile firmwareFile = new FirmwareFile();
+        final FirmwareFile.Builder firmwareFileBuilder = new FirmwareFile.Builder();
+        firmwareFileBuilder.withFilename(this.filename)
+                .withDescription(this.description)
+                .withPushToNewDevices(this.pushToNewDevices)
+                .withFile(this.file)
+                .withHash(this.hash);
+        final FirmwareFile firmwareFile = firmwareFileBuilder.build();
         if (this.deviceModel != null) {
             firmwareFile.addDeviceModel(this.deviceModel);
         }
-        firmwareFile.setFilename(this.filename);
-        firmwareFile.setDescription(this.description);
-        firmwareFile.setPushToNewDevices(this.pushToNewDevices);
-        firmwareFile.setFile(this.file);
-        firmwareFile.setHash(this.hash);
         firmwareFile.updateFirmwareModuleData(new FirmwareModuleData(this.moduleVersionComm, this.moduleVersionFunc,
-                this.moduleVersionMa, this.moduleVersionMbus, this.moduleVersionSec,
-                this.moduleVersionMBusDriverActive)
+                this.moduleVersionMa, this.moduleVersionMbus, this.moduleVersionSec, this.moduleVersionMBusDriverActive)
                         .getVersionsByModule(firmwareModuleRepository, isForSmartMeters));
         return firmwareFile;
     }

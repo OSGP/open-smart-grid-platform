@@ -7,9 +7,9 @@
  */
 package org.opensmartgridplatform.cucumber.platform.distributionautomation.mocks.iec60870;
 
-import org.openmuc.j60870.TypeId;
-import org.opensmartgridplatform.iec60870.Iec60870ASduHandler;
-import org.opensmartgridplatform.iec60870.Iec60870ASduHandlerRegistry;
+import org.openmuc.j60870.ASduType;
+import org.opensmartgridplatform.iec60870.Iec60870AsduHandler;
+import org.opensmartgridplatform.iec60870.Iec60870AsduHandlerRegistry;
 import org.opensmartgridplatform.iec60870.Iec60870ConnectionRegistry;
 import org.opensmartgridplatform.iec60870.Iec60870Server;
 import org.opensmartgridplatform.iec60870.Iec60870ServerEventListener;
@@ -26,7 +26,7 @@ public class Iec60870MockServer {
 
     private Iec60870Server rtuSimulator;
 
-    private Iec60870ASduHandlerRegistry asduHandlerRegistry;
+    private Iec60870AsduHandlerRegistry asduHandlerRegistry;
 
     public Iec60870MockServer(final int port, final int connectionTimeout) {
         this.port = port;
@@ -61,8 +61,8 @@ public class Iec60870MockServer {
         LOGGER.info("Stopped IEC60870 Mock server");
     }
 
-    public void addIec60870ASduHandler(final TypeId typeId, final Iec60870ASduHandler handler) {
-        this.asduHandlerRegistry.registerHandler(typeId, handler);
+    public void addIec60870ASduHandler(final ASduType asduType, final Iec60870AsduHandler handler) {
+        this.asduHandlerRegistry.registerHandler(asduType, handler);
     }
 
     private boolean isInitialized() {
@@ -72,12 +72,16 @@ public class Iec60870MockServer {
     private Iec60870Server initializeSimulator() {
         LOGGER.info("Initialize simulator");
         final Iec60870ConnectionRegistry connectionRegistry = new Iec60870ConnectionRegistry();
-        this.asduHandlerRegistry = new Iec60870ASduHandlerRegistry();
+        this.asduHandlerRegistry = new Iec60870AsduHandlerRegistry();
 
         final Iec60870ServerEventListener serverEventListener = new Iec60870ServerEventListener(connectionRegistry,
                 this.asduHandlerRegistry, this.connectionTimeout);
 
         return new Iec60870Server(serverEventListener, this.port);
+    }
+
+    public Iec60870Server getRtuSimulator() {
+        return this.rtuSimulator;
     }
 
 }
