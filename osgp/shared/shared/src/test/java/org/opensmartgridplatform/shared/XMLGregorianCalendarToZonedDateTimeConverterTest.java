@@ -29,7 +29,6 @@ import ma.glasnost.orika.impl.DefaultMapperFactory;
 public class XMLGregorianCalendarToZonedDateTimeConverterTest {
 
     public static final ZoneId UTC = ZoneId.of("UTC");
-    public static final ZoneId EUROPE_PARIS = ZoneId.of("Europe/Paris");
 
     private final MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
     private MapperFacade mapper;
@@ -48,48 +47,50 @@ public class XMLGregorianCalendarToZonedDateTimeConverterTest {
     @Test
     public void mapXMLGregorianCalenderWithTimeZoneToZonedDateTime() throws DatatypeConfigurationException {
         final String withTimeZone = "2010-06-30T01:20:30+02:00";
-        final ZonedDateTime dateTime = ZonedDateTime.parse(withTimeZone);
         final XMLGregorianCalendar xmlGregorianCalendar = DatatypeFactory.newInstance()
                 .newXMLGregorianCalendar(withTimeZone);
 
+        final ZonedDateTime expectedDateTime = ZonedDateTime.parse(withTimeZone);
+
         final ZonedDateTime mappedZonedDateTime = this.mapper.map(xmlGregorianCalendar, ZonedDateTime.class);
-        assertThat(mappedZonedDateTime).isEqualTo(dateTime);
+        assertThat(mappedZonedDateTime).isEqualTo(expectedDateTime);
     }
 
     @Test
-    public void mapXMLGregorianCalenderWithEuropeParisTimeZoneToZonedDateTime() throws DatatypeConfigurationException {
-        final String withTimeZone = "2010-06-30T01:20:30+02:00";
-        final ZonedDateTime dateTime = ZonedDateTime.parse(withTimeZone);
+    public void mapXMLGregorianCalenderCloseToDayEndWithTimeZoneToZonedDateTime()
+            throws DatatypeConfigurationException {
+        final String withTimeZone = "2020-03-30T23:50:30+03:00";
         final XMLGregorianCalendar xmlGregorianCalendar = DatatypeFactory.newInstance()
                 .newXMLGregorianCalendar(withTimeZone);
 
+        final ZonedDateTime expectedDateTime = ZonedDateTime.parse(withTimeZone);
+
         final ZonedDateTime mappedZonedDateTime = this.mapper.map(xmlGregorianCalendar, ZonedDateTime.class);
-        assertThat(mappedZonedDateTime).isEqualTo(dateTime);
+        assertThat(mappedZonedDateTime).isEqualTo(expectedDateTime);
     }
 
     @Test
     public void mapXMLGregorianWithoutTimeZoneCalenderToZonedDateTime() throws DatatypeConfigurationException {
         final String withoutTimeZone = "2010-06-30T01:20:30";
-        final LocalDateTime localDate = LocalDateTime.parse(withoutTimeZone);
-        final ZoneId defaultZone = ZoneId.systemDefault();
-        final ZonedDateTime dateTime = localDate.atZone(defaultZone);
         final XMLGregorianCalendar xmlGregorianCalendar = DatatypeFactory.newInstance()
                 .newXMLGregorianCalendar(withoutTimeZone);
 
+        final LocalDateTime localDate = LocalDateTime.parse(withoutTimeZone);
+        final ZonedDateTime expectedDateTime = localDate.atZone(UTC);
+
         final ZonedDateTime mappedZonedDateTime = this.mapper.map(xmlGregorianCalendar, ZonedDateTime.class);
-        assertThat(mappedZonedDateTime).isEqualTo(dateTime);
+        assertThat(mappedZonedDateTime).isEqualTo(expectedDateTime);
     }
 
     @Test
     public void mapZonedDateTimeToXMLGregorianCalender() throws DatatypeConfigurationException {
         final ZonedDateTime dateTime = ZonedDateTime.now();
-        final XMLGregorianCalendar xmlGregorianCalendar = DatatypeFactory.newInstance()
+
+        final XMLGregorianCalendar expectedXmlGregorianCalendar = DatatypeFactory.newInstance()
                 .newXMLGregorianCalendar(GregorianCalendar.from(dateTime));
 
-        // Try to map to XML version.
-        final XMLGregorianCalendar mappedXMLGregorianCalendar = this.mapper.map(dateTime, XMLGregorianCalendar.class);
-        assertThat(mappedXMLGregorianCalendar).isEqualTo(xmlGregorianCalendar);
-
+        final XMLGregorianCalendar mappedXmlGregorianCalendar = this.mapper.map(dateTime, XMLGregorianCalendar.class);
+        assertThat(mappedXmlGregorianCalendar).isEqualTo(expectedXmlGregorianCalendar);
     }
 
 }

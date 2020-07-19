@@ -7,11 +7,13 @@
  */
 package org.opensmartgridplatform.shared.mappers;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.GregorianCalendar;
 import java.util.Objects;
 
 import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -50,7 +52,13 @@ public class XMLGregorianCalendarToZonedDateTimeConverter
             return null;
         }
 
-        return source.toGregorianCalendar().toZonedDateTime();
+        if (source.getTimezone() == DatatypeConstants.FIELD_UNDEFINED) {
+            // Optional timezone field is empty for source
+            final ZoneId zoneId = ZoneId.of("UTC");
+            return source.toGregorianCalendar().toZonedDateTime().toLocalDateTime().atZone(zoneId);
+        } else {
+            return source.toGregorianCalendar().toZonedDateTime();
+        }
     }
 
     @Override
