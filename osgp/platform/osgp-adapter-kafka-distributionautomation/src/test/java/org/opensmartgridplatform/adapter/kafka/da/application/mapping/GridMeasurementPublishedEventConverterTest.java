@@ -38,16 +38,6 @@ class GridMeasurementPublishedEventConverterTest {
     }
 
     @Test
-    void testConvertCongestion() {
-        final String measurement = "TST-01; 5.1; 5.2; 5.3; 7.1; 7.2; 7.3;";
-        final GridMeasurementPublishedEvent event = this.mapper.map(measurement, GridMeasurementPublishedEvent.class);
-        final List<Analog> measurements = event.getMeasurements();
-
-        assertThat(measurements).usingElementComparatorIgnoringFields("mRID")
-                .isEqualTo(this.expectedCurrentMeasurements());
-    }
-
-    @Test
     void testSomeOtherString() {
         final String someOtherString = "TST-01";
         final GridMeasurementPublishedEvent event = this.mapper.map(someOtherString,
@@ -59,38 +49,44 @@ class GridMeasurementPublishedEventConverterTest {
 
     private List<Analog> expectedMeasurements() {
         final List<Analog> measurements = new ArrayList<>();
-        measurements.add(new Analog("TST-01", null, AccumulationKind.none, MeasuringPeriodKind.none, PhaseCode.none,
-                UnitMultiplier.none, UnitSymbol.V, new ArrayList<Name>(),
-                Arrays.asList(new AnalogValue(220.1f, null, null))));
-        measurements.add(new Analog("TST-01", null, AccumulationKind.none, MeasuringPeriodKind.none, PhaseCode.none,
-                UnitMultiplier.none, UnitSymbol.V, new ArrayList<Name>(),
-                Arrays.asList(new AnalogValue(220.2f, null, null))));
-        measurements.add(new Analog("TST-01", null, AccumulationKind.none, MeasuringPeriodKind.none, PhaseCode.none,
-                UnitMultiplier.none, UnitSymbol.V, new ArrayList<Name>(),
-                Arrays.asList(new AnalogValue(220.3f, null, null))));
+        measurements.addAll(this.expectedVoltageMeasurements());
         measurements.addAll(this.expectedCurrentMeasurements());
+        return measurements;
+    }
+
+    private List<Analog> expectedVoltageMeasurements() {
+        final List<Analog> measurements = new ArrayList<>();
+        measurements.add(new Analog("TST-01:voltage_L1", null, AccumulationKind.none, MeasuringPeriodKind.none,
+                PhaseCode.none, UnitMultiplier.none, UnitSymbol.V, new ArrayList<Name>(),
+                Arrays.asList(new AnalogValue(220.1f, null, null))));
+        measurements.add(new Analog("TST-01:voltage_L2", null, AccumulationKind.none, MeasuringPeriodKind.none,
+                PhaseCode.none, UnitMultiplier.none, UnitSymbol.V, new ArrayList<Name>(),
+                Arrays.asList(new AnalogValue(220.2f, null, null))));
+        measurements.add(new Analog("TST-01:voltage_L3", null, AccumulationKind.none, MeasuringPeriodKind.none,
+                PhaseCode.none, UnitMultiplier.none, UnitSymbol.V, new ArrayList<Name>(),
+                Arrays.asList(new AnalogValue(220.3f, null, null))));
         return measurements;
     }
 
     private List<Analog> expectedCurrentMeasurements() {
         final List<Analog> measurements = new ArrayList<>();
-        measurements.add(new Analog("TST-01", null, AccumulationKind.none, MeasuringPeriodKind.none, PhaseCode.none,
-                UnitMultiplier.none, UnitSymbol.A, new ArrayList<Name>(),
+        measurements.add(new Analog("TST-01:current_in_L1", null, AccumulationKind.none, MeasuringPeriodKind.none,
+                PhaseCode.none, UnitMultiplier.none, UnitSymbol.A, new ArrayList<Name>(),
                 Arrays.asList(new AnalogValue(5.1f, null, null))));
-        measurements.add(new Analog("TST-01", null, AccumulationKind.none, MeasuringPeriodKind.none, PhaseCode.none,
-                UnitMultiplier.none, UnitSymbol.A, new ArrayList<Name>(),
+        measurements.add(new Analog("TST-01:current_in_L2", null, AccumulationKind.none, MeasuringPeriodKind.none,
+                PhaseCode.none, UnitMultiplier.none, UnitSymbol.A, new ArrayList<Name>(),
                 Arrays.asList(new AnalogValue(5.2f, null, null))));
-        measurements.add(new Analog("TST-01", null, AccumulationKind.none, MeasuringPeriodKind.none, PhaseCode.none,
-                UnitMultiplier.none, UnitSymbol.A, new ArrayList<Name>(),
+        measurements.add(new Analog("TST-01:current_in_L3", null, AccumulationKind.none, MeasuringPeriodKind.none,
+                PhaseCode.none, UnitMultiplier.none, UnitSymbol.A, new ArrayList<Name>(),
                 Arrays.asList(new AnalogValue(5.3f, null, null))));
-        measurements.add(new Analog("TST-01", null, AccumulationKind.none, MeasuringPeriodKind.none, PhaseCode.none,
-                UnitMultiplier.none, UnitSymbol.A, new ArrayList<Name>(),
+        measurements.add(new Analog("TST-01:current_returned_L1", null, AccumulationKind.none, MeasuringPeriodKind.none,
+                PhaseCode.none, UnitMultiplier.none, UnitSymbol.A, new ArrayList<Name>(),
                 Arrays.asList(new AnalogValue(7.1f, null, null))));
-        measurements.add(new Analog("TST-01", null, AccumulationKind.none, MeasuringPeriodKind.none, PhaseCode.none,
-                UnitMultiplier.none, UnitSymbol.A, new ArrayList<Name>(),
+        measurements.add(new Analog("TST-01:current_returned_L2", null, AccumulationKind.none, MeasuringPeriodKind.none,
+                PhaseCode.none, UnitMultiplier.none, UnitSymbol.A, new ArrayList<Name>(),
                 Arrays.asList(new AnalogValue(7.2f, null, null))));
-        measurements.add(new Analog("TST-01", null, AccumulationKind.none, MeasuringPeriodKind.none, PhaseCode.none,
-                UnitMultiplier.none, UnitSymbol.A, new ArrayList<Name>(),
+        measurements.add(new Analog("TST-01:current_returned_L3", null, AccumulationKind.none, MeasuringPeriodKind.none,
+                PhaseCode.none, UnitMultiplier.none, UnitSymbol.A, new ArrayList<Name>(),
                 Arrays.asList(new AnalogValue(7.3f, null, null))));
         return measurements;
 

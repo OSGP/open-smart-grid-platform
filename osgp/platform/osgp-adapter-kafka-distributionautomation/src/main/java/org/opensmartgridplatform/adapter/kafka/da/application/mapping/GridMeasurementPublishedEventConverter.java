@@ -31,52 +31,50 @@ import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.metadata.Type;
 
 /**
- * Class for mapping String containing a measurement or congestion
- * to GridMeasurementPublishedEvent
+ * Class for mapping String containing a measurement to GridMeasurementPublishedEvent
  */
 /**
  * measurement: ean_code; voltage_L1; voltage_L2; voltage_L3; current_in_L1;
  * current_in_L2; current_in_L3; current_returned_L1; current_returned_L2;
  * current_returned_L3;
  */
-/**
- * congestion: ean_code; current_in_L1; current_in_L2; current_in_L3;
- * current_returned_L1; current_returned_L2; current_returned_L3;
- *
- */
 public class GridMeasurementPublishedEventConverter extends CustomConverter<String, GridMeasurementPublishedEvent> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GridMeasurementPublishedEventConverter.class);
+
+    private static final int VOLTAGE_START_INDEX = 1;
+    private static final int CURRENT_START_INDEX = 4;
+    private static final int CURRENT_RETURNED_START_INDEX = 7;
+    private static final int CURRENT_RETURNED_END_INDEX = 10;
 
     @Override
     public GridMeasurementPublishedEvent convert(final String source,
             final Type<? extends GridMeasurementPublishedEvent> destinationType, final MappingContext mappingContext) {
 
         final String[] values = source.split(";");
-        if (values.length != 7 && values.length != 10) {
+        if (values.length != 10) {
             LOGGER.error("String '{}' does not have the expected amount of fields, abandoning conversion", source);
             return null;
         }
         final List<Analog> measurements = new ArrayList<>();
 
-        int startIndexCurrent = 1;
-        int endIndexCurrent = 7;
         final String eanCode = values[0];
-        if (values.length == 10) {
-            for (int index = 1; index < 4; index++) {
-                measurements.add(new Analog(eanCode, UUID.randomUUID().toString(), AccumulationKind.none,
-                        MeasuringPeriodKind.none, PhaseCode.none, UnitMultiplier.none, UnitSymbol.V,
-                        new ArrayList<Name>(),
-                        Arrays.asList(new AnalogValue(Float.valueOf(values[index]), null, null))));
-            }
-            startIndexCurrent = 4;
-            endIndexCurrent = 10;
+        for (int index = VOLTAGE_START_INDEX; index < CURRENT_START_INDEX; index++) {
+            measurements.add(new Analog(eanCode + ":voltage_L" + index, UUID.randomUUID().toString(),
+                    AccumulationKind.none, MeasuringPeriodKind.none, PhaseCode.none, UnitMultiplier.none, UnitSymbol.V,
+                    new ArrayList<Name>(), Arrays.asList(new AnalogValue(Float.valueOf(values[index]), null, null))));
         }
 
-        for (int index = startIndexCurrent; index < endIndexCurrent; index++) {
-            measurements.add(new Analog(eanCode, UUID.randomUUID().toString(), AccumulationKind.none,
-                    MeasuringPeriodKind.none, PhaseCode.none, UnitMultiplier.none, UnitSymbol.A, new ArrayList<Name>(),
-                    Arrays.asList(new AnalogValue(Float.valueOf(values[index]), null, null))));
+        for (int index = CURRENT_START_INDEX; index < CURRENT_RETURNED_START_INDEX; index++) {
+            measurements.add(new Analog(eanCode + ":current_in_L" + (index - 3), UUID.randomUUID().toString(),
+                    AccumulationKind.none, MeasuringPeriodKind.none, PhaseCode.none, UnitMultiplier.none, UnitSymbol.A,
+                    new ArrayList<Name>(), Arrays.asList(new AnalogValue(Float.valueOf(values[index]), null, null))));
+        }
+
+        for (int index = CURRENT_RETURNED_START_INDEX; index < CURRENT_RETURNED_END_INDEX; index++) {
+            measurements.add(new Analog(eanCode + ":current_returned_L" + (index - 6), UUID.randomUUID().toString(),
+                    AccumulationKind.none, MeasuringPeriodKind.none, PhaseCode.none, UnitMultiplier.none, UnitSymbol.A,
+                    new ArrayList<Name>(), Arrays.asList(new AnalogValue(Float.valueOf(values[index]), null, null))));
         }
 
         final PowerSystemResource powerSystemResource = new PowerSystemResource(eanCode, UUID.randomUUID().toString(),

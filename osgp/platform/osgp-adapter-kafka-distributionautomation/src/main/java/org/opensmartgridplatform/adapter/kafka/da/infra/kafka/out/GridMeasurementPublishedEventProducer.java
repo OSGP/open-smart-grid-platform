@@ -29,9 +29,9 @@ public class GridMeasurementPublishedEventProducer {
         this.mapper = mapper;
     }
 
-    public void send(final String measurementReport) {
+    public void send(final String measurement) {
 
-        final GridMeasurementPublishedEvent meterReading = this.mapper.map(measurementReport,
+        final GridMeasurementPublishedEvent meterReading = this.mapper.map(measurement,
                 GridMeasurementPublishedEvent.class);
         /*
          * No need for callback functionality now; by default, the template is
