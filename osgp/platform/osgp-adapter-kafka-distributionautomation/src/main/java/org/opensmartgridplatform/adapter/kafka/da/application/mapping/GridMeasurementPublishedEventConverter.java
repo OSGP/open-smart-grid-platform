@@ -18,7 +18,6 @@ import org.opensmartgridplatform.adapter.kafka.da.avro.Analog;
 import org.opensmartgridplatform.adapter.kafka.da.avro.AnalogValue;
 import org.opensmartgridplatform.adapter.kafka.da.avro.GridMeasurementPublishedEvent;
 import org.opensmartgridplatform.adapter.kafka.da.avro.MeasuringPeriodKind;
-import org.opensmartgridplatform.adapter.kafka.da.avro.Name;
 import org.opensmartgridplatform.adapter.kafka.da.avro.PhaseCode;
 import org.opensmartgridplatform.adapter.kafka.da.avro.PowerSystemResource;
 import org.opensmartgridplatform.adapter.kafka.da.avro.UnitMultiplier;
@@ -31,9 +30,9 @@ import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.metadata.Type;
 
 /**
- * Class for mapping String containing a measurement to GridMeasurementPublishedEvent
- */
-/**
+ * Class for mapping String containing a measurement to
+ * GridMeasurementPublishedEvent
+ * <p>
  * measurement: ean_code; voltage_L1; voltage_L2; voltage_L3; current_in_L1;
  * current_in_L2; current_in_L3; current_returned_L1; current_returned_L2;
  * current_returned_L3;
