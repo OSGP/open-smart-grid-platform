@@ -34,7 +34,7 @@ import java.util.TimeZone;
 @PropertySource("classpath:osgp-logging.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/Logging/config}", ignoreResourceNotFound = true)
-public class Application extends SpringBootServletInitializer {
+public class LoggingApplication extends SpringBootServletInitializer {
 
     private static final String DISPATCHER_SERVLET_NAME = "spring-ws";
     private static final String DISPATCHER_SERVLET_MAPPING = "/ws/*";
@@ -46,7 +46,7 @@ public class Application extends SpringBootServletInitializer {
      * @param args
      */
     public static void main(final String[] args) {
-        SpringApplication.run(Application.class, args);
+        SpringApplication.run(LoggingApplication.class, args);
     }
 
     /**
@@ -71,7 +71,7 @@ public class Application extends SpringBootServletInitializer {
         props.setProperty("logging.config", logPropertiesLocation);
         builder.application().setDefaultProperties(props);
 
-        return builder.sources(Application.class);
+        return builder.sources(LoggingApplication.class);
     }
 
     @Bean

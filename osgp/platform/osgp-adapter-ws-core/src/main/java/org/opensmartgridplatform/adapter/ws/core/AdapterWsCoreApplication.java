@@ -1,7 +1,5 @@
 package org.opensmartgridplatform.adapter.ws.core;
 
-import ch.qos.logback.core.joran.spi.JoranException;
-import ch.qos.logback.ext.spring.LogbackConfigurer;
 import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.ws.core.application.config.PersistenceConfig;
 import org.opensmartgridplatform.adapter.ws.core.application.config.WebServiceConfig;
@@ -29,8 +27,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.util.Properties;
 import java.util.TimeZone;
 
 @Slf4j
@@ -43,7 +40,7 @@ import java.util.TimeZone;
 @PropertySource("classpath:osgp-adapter-ws-core.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/AdapterWsCore/config}", ignoreResourceNotFound = true)
-public class Application extends SpringBootServletInitializer {
+public class AdapterWsCoreApplication extends SpringBootServletInitializer {
     private static final String DISPATCHER_SERVLET_NAME = "spring-ws";
     private static final String DISPATCHER_SERVLET_MAPPING = "/ws/*";
     private static final String LOG_CONFIG = "java:comp/env/osgp/AdapterWsCore/log-config";
@@ -54,7 +51,7 @@ public class Application extends SpringBootServletInitializer {
      * @param args
      */
     public static void main(final String[] args) {
-        SpringApplication.run(Application.class, args);
+        SpringApplication.run(AdapterWsCoreApplication.class, args);
     }
 
     /**
@@ -66,13 +63,20 @@ public class Application extends SpringBootServletInitializer {
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-        initializeLogging(LOG_CONFIG);
         super.onStartup(servletContext);
     }
 
     @Override
     protected SpringApplicationBuilder configure(final SpringApplicationBuilder builder) {
-        return builder.sources(Application.class);
+        final String logPropertiesLocation = this.getLogbackConfigurationLocation();
+
+        log.info("Location for properties: {}", logPropertiesLocation);
+
+        final Properties props = new Properties();
+        props.setProperty("logging.config", logPropertiesLocation);
+        builder.application().setDefaultProperties(props);
+
+        return builder.sources(AdapterWsCoreApplication.class);
     }
 
     @Bean
@@ -87,21 +91,13 @@ public class Application extends SpringBootServletInitializer {
         return registrationBean;
     }
 
-    private void initializeLogging(String logConfig) throws ServletException {
-        Context initialContext;
+    private String getLogbackConfigurationLocation() {
         try {
-            initialContext = new InitialContext();
-            String logLocation = (String) initialContext.lookup(logConfig);
+            final Context initialContext = new InitialContext();
 
-            // Load specific logback configuration, otherwise fallback to
-            // classpath logback.xml
-            if (new File(logLocation).exists()) {
-                LogbackConfigurer.initLogging(logLocation);
-                log.info("Initialized logging using {}", logConfig);
-            }
-        } catch (final NamingException | FileNotFoundException | JoranException e) {
-            log.info("Failed to initialize logging using {}", logConfig, e);
-            throw new ServletException(e);
+            return (String) initialContext.lookup(LOG_CONFIG);
+        } catch (final NamingException | RuntimeException e) {
+            throw new IllegalStateException("Getting the location of the logback configuration file failed", e);
         }
     }
 }
