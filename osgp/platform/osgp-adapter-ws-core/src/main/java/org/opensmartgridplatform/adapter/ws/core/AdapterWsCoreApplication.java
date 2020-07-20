@@ -11,7 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
@@ -27,11 +27,13 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import java.io.File;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.TimeZone;
 
 @Slf4j
-@SpringBootApplication(exclude = {SecurityAutoConfiguration.class, DataSourceAutoConfiguration.class, QuartzAutoConfiguration.class, FlywayAutoConfiguration.class})
+@SpringBootApplication(exclude = {UserDetailsServiceAutoConfiguration.class, DataSourceAutoConfiguration.class, QuartzAutoConfiguration.class, FlywayAutoConfiguration.class})
 @ComponentScan(basePackages = {"org.opensmartgridplatform.shared.domain.services",
         "org.opensmartgridplatform.domain.core", "org.opensmartgridplatform.adapter.ws.core",
         "org.opensmartgridplatform.domain.logging"})
@@ -68,13 +70,15 @@ public class AdapterWsCoreApplication extends SpringBootServletInitializer {
 
     @Override
     protected SpringApplicationBuilder configure(final SpringApplicationBuilder builder) {
-        final String logPropertiesLocation = this.getLogbackConfigurationLocation();
+        final Optional<String> logPropertiesLocation = this.getLogbackConfigurationLocation();
 
-        log.info("Location for properties: {}", logPropertiesLocation);
+        if (logPropertiesLocation.isPresent()) {
+            log.info("Location for properties: {}", logPropertiesLocation.get());
 
-        final Properties props = new Properties();
-        props.setProperty("logging.config", logPropertiesLocation);
-        builder.application().setDefaultProperties(props);
+            final Properties props = new Properties();
+            props.setProperty("logging.config", logPropertiesLocation.get());
+            builder.application().setDefaultProperties(props);
+        }
 
         return builder.sources(AdapterWsCoreApplication.class);
     }
@@ -91,13 +95,21 @@ public class AdapterWsCoreApplication extends SpringBootServletInitializer {
         return registrationBean;
     }
 
-    private String getLogbackConfigurationLocation() {
+    private Optional<String> getLogbackConfigurationLocation() {
         try {
-            final Context initialContext = new InitialContext();
+            Context initialContext = new InitialContext();
+            String location = (String) initialContext.lookup(LOG_CONFIG);
+            File logConfig = new File(location);
 
-            return (String) initialContext.lookup(LOG_CONFIG);
+            if (logConfig.exists()) {
+                return Optional.of(location);
+            }
+
+            log.error("File {} does not exist.", location);
         } catch (final NamingException | RuntimeException e) {
-            throw new IllegalStateException("Getting the location of the logback configuration file failed", e);
+            log.error("Getting the location of the logback configuration file failed. Reason: {}", e.getMessage());
         }
+
+        return Optional.empty();
     }
 }

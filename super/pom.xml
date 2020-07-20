@@ -9,7 +9,7 @@
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.opensmartgridplatform</groupId>
@@ -138,6 +138,7 @@
     <!-- spring-kafka-test needs a 2.12 version of the scala libraries -->
     <scala.lang.version>2.12.11</scala.lang.version>
     <lombok.version>1.18.12</lombok.version>
+    <spring-boot.version>2.2.2.RELEASE</spring-boot.version>
   </properties>
 
   <dependencyManagement>
@@ -450,6 +451,15 @@
         <version>${spring.ws.version}</version>
       </dependency>
 
+      <!-- Spring Boot -->
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>${spring-boot.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
       <!-- javax inject -->
       <dependency>
         <groupId>javax.inject</groupId>
@@ -651,7 +661,7 @@
         <version>${apache.httpcomponents.httpcore.version}</version>
       </dependency>
 
-     <!-- Kafka, Avro -->
+      <!-- Kafka, Avro -->
       <dependency>
         <groupId>org.apache.kafka</groupId>
         <artifactId>kafka-clients</artifactId>
@@ -881,7 +891,7 @@
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-reflect</artifactId>
           </exclusion>
-	    </exclusions>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.scala-lang</groupId>

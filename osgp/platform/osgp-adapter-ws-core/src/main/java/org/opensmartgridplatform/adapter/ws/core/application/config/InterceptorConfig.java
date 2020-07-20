@@ -34,7 +34,6 @@ public class InterceptorConfig extends WsConfigurerAdapter {
         interceptors.add(organisationIdentificationInterceptor);
         interceptors.add(messagePriorityInterceptor);
         interceptors.add(organisationIdentificationInCertificateCnEndpointInterceptor);
-//        interceptors.add(payloadValidatingInterceptor);
         interceptors.add(webServiceMonitorInterceptor);
     }
 
