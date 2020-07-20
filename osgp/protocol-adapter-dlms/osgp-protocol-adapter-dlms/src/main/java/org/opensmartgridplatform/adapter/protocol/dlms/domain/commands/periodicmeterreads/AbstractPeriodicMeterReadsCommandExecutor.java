@@ -41,11 +41,8 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends AbstractCommandExecutor<T, R> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPeriodicMeterReadsCommandExecutor.class);
 
     private final AmrProfileStatusCodeHelper amrProfileStatusCodeHelper;
 
@@ -84,8 +81,8 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends Ab
         CosemDateTimeDto cosemDateTime = null;
 
         if (clockIndex != null) {
-            cosemDateTime = dlmsHelper
-                    .readDateTime(ctx.bufferedObjects.get(clockIndex), "Clock from " + queryPeriodType + " buffer");
+            cosemDateTime = dlmsHelper.readDateTime(ctx.bufferedObjects.get(clockIndex),
+                    "Clock from " + queryPeriodType + " buffer");
         }
 
         final DateTime bufferedDateTime = cosemDateTime == null ? null : cosemDateTime.asDateTime();
@@ -133,13 +130,13 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends Ab
         case DAILY:
             return Date.from(prevLogTime.toInstant().plus(Duration.ofDays(1)));
         case MONTHLY:
-            final LocalDateTime localDateTime = LocalDateTime.ofInstant(prevLogTime.toInstant(), ZoneId.systemDefault())
-                                                             .plusMonths(1);
+            final LocalDateTime localDateTime = LocalDateTime.ofInstant(prevLogTime.toInstant(),
+                    ZoneId.systemDefault()).plusMonths(1);
 
             return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
         case INTERVAL:
-            return Date
-                    .from(prevLogTime.toInstant().plus(Duration.ofMinutes(this.getIntervalTimeMinutes(intervalTime))));
+            return Date.from(
+                    prevLogTime.toInstant().plus(Duration.ofMinutes(this.getIntervalTimeMinutes(intervalTime))));
         default:
             throw new BufferedDateTimeValidationException("Invalid PeriodTypeDto given: " + periodTypeDto);
         }
@@ -171,8 +168,9 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends Ab
      */
     Optional<ProfileCaptureTime> getProfileCaptureTime(final DlmsDevice device,
             final DlmsObjectConfigService dlmsObjectConfigService, final Medium medium) {
-        final DlmsObject dlmsObject = dlmsObjectConfigService
-                .findDlmsObject(Protocol.forDevice(device), DlmsObjectType.INTERVAL_VALUES, medium).orElse(null);
+        final DlmsObject dlmsObject = dlmsObjectConfigService.findDlmsObject(
+                Protocol.forDevice(device),
+                DlmsObjectType.INTERVAL_VALUES, medium).orElse(null);
 
         if (dlmsObject instanceof DlmsProfile) {
             final DlmsProfile profile = (DlmsProfile) dlmsObject;
@@ -217,11 +215,8 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends Ab
             throw new ProtocolAdapterException("Could not read AMR profile register data. Invalid data type.");
         }
 
-        LOGGER.info("Received amrProfileStatusData {} - {}", amrProfileStatusData.toString(),
+        final Set<AmrProfileStatusCodeFlagDto> flags = this.amrProfileStatusCodeHelper.toAmrProfileStatusCodeFlags(
                 amrProfileStatusData.getValue());
-
-        final Set<AmrProfileStatusCodeFlagDto> flags = this.amrProfileStatusCodeHelper
-                .toAmrProfileStatusCodeFlags(amrProfileStatusData.getValue());
         return new AmrProfileStatusCodeDto(flags);
     }
 
