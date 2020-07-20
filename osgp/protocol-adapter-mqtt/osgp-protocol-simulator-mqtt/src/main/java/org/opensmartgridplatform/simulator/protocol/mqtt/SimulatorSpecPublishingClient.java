@@ -15,14 +15,14 @@ import org.opensmartgridplatform.simulator.protocol.mqtt.spec.SimulatorSpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LnaClient extends Client {
+public class SimulatorSpecPublishingClient extends Client {
 
-    private static final Logger LOG = LoggerFactory.getLogger(LnaClient.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SimulatorSpecPublishingClient.class);
 
     private final SimulatorSpec simulatorSpec;
     private int i = 0;
 
-    public LnaClient(final SimulatorSpec simulatorSpec) {
+    public SimulatorSpecPublishingClient(final SimulatorSpec simulatorSpec) {
         super(simulatorSpec.getBrokerHost(), simulatorSpec.getBrokerPort());
         this.simulatorSpec = simulatorSpec;
     }

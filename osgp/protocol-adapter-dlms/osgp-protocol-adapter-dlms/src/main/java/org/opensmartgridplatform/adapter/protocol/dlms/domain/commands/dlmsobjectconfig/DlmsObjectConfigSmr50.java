@@ -55,7 +55,7 @@ public class DlmsObjectConfigSmr50 extends DlmsObjectConfig {
 
     @Override
     List<Protocol> initProtocols() {
-        return Arrays.asList(Protocol.SMR_5_0, Protocol.SMR_5_1);
+        return Arrays.asList(Protocol.SMR_5_0_0, Protocol.SMR_5_1);
     }
 
     @Override

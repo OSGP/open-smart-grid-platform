@@ -171,14 +171,14 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     @Test
     public void testExecuteSmr5_0() throws Exception {
         for (final PeriodTypeDto type : PeriodTypeDto.values()) {
-            this.testExecute(Protocol.SMR_5_0, type, false);
+            this.testExecute(Protocol.SMR_5_0_0, type, false);
         }
     }
 
     @Test
     public void testExecuteSmr5_0_WithNullData() throws Exception {
         for (final PeriodTypeDto type : PeriodTypeDto.values()) {
-            this.testExecute(Protocol.SMR_5_0, type, true);
+            this.testExecute(Protocol.SMR_5_0_0, type, true);
         }
     }
 
@@ -276,7 +276,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
             } else if (type == PeriodTypeDto.INTERVAL) {
                 return this.createAttributeAddressDsmr4Interval(from, to);
             }
-        } else if (protocol == Protocol.SMR_5_0 || protocol == Protocol.SMR_5_1) {
+        } else if (protocol == Protocol.SMR_5_0_0 || protocol == Protocol.SMR_5_1) {
             if (type == PeriodTypeDto.DAILY) {
                 return this.createAttributeAddressSmr5Daily(from, to);
             } else if (type == PeriodTypeDto.MONTHLY) {
