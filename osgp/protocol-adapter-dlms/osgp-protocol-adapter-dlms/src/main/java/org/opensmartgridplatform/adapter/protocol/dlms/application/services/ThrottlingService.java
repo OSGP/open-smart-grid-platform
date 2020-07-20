@@ -63,11 +63,11 @@ public class ThrottlingService {
 
         this.newConnectionRequest();
 
-        LOGGER.debug("Requesting openConnection. available = {} ", this.openConnectionsSemaphore.availablePermits());
+        LOGGER.info("Requesting openConnection. available = {} ", this.openConnectionsSemaphore.availablePermits());
 
         try {
             this.openConnectionsSemaphore.acquire();
-            LOGGER.debug("openConnection granted. available = {} ", this.openConnectionsSemaphore.availablePermits());
+            LOGGER.info("openConnection granted. available = {} ", this.openConnectionsSemaphore.availablePermits());
         } catch (InterruptedException e) {
             LOGGER.warn("Unable to acquire Open Connection", e);
             Thread.currentThread().interrupt();
@@ -76,7 +76,7 @@ public class ThrottlingService {
 
     public void closeConnection() {
 
-        LOGGER.debug("closeConnection(). available = {} ", this.openConnectionsSemaphore.availablePermits());
+        LOGGER.info("closeConnection(). available = {} ", this.openConnectionsSemaphore.availablePermits());
         this.openConnectionsSemaphore.release();
     }
 
@@ -84,11 +84,11 @@ public class ThrottlingService {
 
         awaitReset();
 
-        LOGGER.debug("newConnectionRequest(). available = {} ", this.newConnectionRequestsSemaphore.availablePermits());
+        LOGGER.info("newConnectionRequest(). available = {} ", this.newConnectionRequestsSemaphore.availablePermits());
 
         try {
             this.newConnectionRequestsSemaphore.acquire();
-            LOGGER.debug("Request newConnection granted. available = {} ",
+            LOGGER.info("Request newConnection granted. available = {} ",
                     this.newConnectionRequestsSemaphore.availablePermits());
         } catch (InterruptedException e) {
             LOGGER.warn("Unable to acquire New Connection Request", e);
@@ -117,9 +117,12 @@ public class ThrottlingService {
 
                 int nrOfPermitsToBeReleased =
                         maxNewConnectionRequests - newConnectionRequestsSemaphore.availablePermits();
+
+                LOGGER.info("releasing {} permits on newConnectionRequestsSemaphore", nrOfPermitsToBeReleased);
+
                 newConnectionRequestsSemaphore.release(nrOfPermitsToBeReleased);
 
-                LOGGER.debug("ThrottlingService - Timer Reset and Unlocking, newConnectionRequests available = {}  ",
+                LOGGER.info("ThrottlingService - Timer Reset and Unlocking, newConnectionRequests available = {}  ",
                         newConnectionRequestsSemaphore.availablePermits());
             } finally {
                 resetTimerLock.unlock();
