@@ -45,14 +45,14 @@ public class GridMeasurementPublishedEventConverter extends CustomConverter<Stri
     private static final int VOLTAGE_START_INDEX = 1;
     private static final int CURRENT_START_INDEX = 4;
     private static final int CURRENT_RETURNED_START_INDEX = 7;
-    private static final int CURRENT_RETURNED_END_INDEX = 10;
+    private static final int END_INDEX = 10;
 
     @Override
     public GridMeasurementPublishedEvent convert(final String source,
             final Type<? extends GridMeasurementPublishedEvent> destinationType, final MappingContext mappingContext) {
 
         final String[] values = source.split(";");
-        if (values.length != 10) {
+        if (values.length != END_INDEX) {
             LOGGER.error("String '{}' does not have the expected amount of fields, abandoning conversion", source);
             return null;
         }
@@ -69,7 +69,7 @@ public class GridMeasurementPublishedEventConverter extends CustomConverter<Stri
             measurements.add(this.createAnalog(description, Float.valueOf(values[index]), UnitSymbol.A));
         }
 
-        for (int index = CURRENT_RETURNED_START_INDEX; index < CURRENT_RETURNED_END_INDEX; index++) {
+        for (int index = CURRENT_RETURNED_START_INDEX; index < END_INDEX; index++) {
             final String description = eanCode + ":current_returned_L" + (index - CURRENT_RETURNED_START_INDEX + 1);
             measurements.add(this.createAnalog(description, Float.valueOf(values[index]), UnitSymbol.A));
         }
