@@ -60,21 +60,18 @@ public class GridMeasurementPublishedEventConverter extends CustomConverter<Stri
 
         final String eanCode = values[0];
         for (int index = VOLTAGE_START_INDEX; index < CURRENT_START_INDEX; index++) {
-            measurements.add(new Analog(eanCode + ":voltage_L" + index, UUID.randomUUID().toString(),
-                    AccumulationKind.none, MeasuringPeriodKind.none, PhaseCode.none, UnitMultiplier.none, UnitSymbol.V,
-                    new ArrayList<Name>(), Arrays.asList(new AnalogValue(Float.valueOf(values[index]), null, null))));
+            final String description = eanCode + ":voltage_L" + index;
+            measurements.add(this.createAnalog(description, Float.valueOf(values[index]), UnitSymbol.V));
         }
 
         for (int index = CURRENT_START_INDEX; index < CURRENT_RETURNED_START_INDEX; index++) {
-            measurements.add(new Analog(eanCode + ":current_in_L" + (index - 3), UUID.randomUUID().toString(),
-                    AccumulationKind.none, MeasuringPeriodKind.none, PhaseCode.none, UnitMultiplier.none, UnitSymbol.A,
-                    new ArrayList<Name>(), Arrays.asList(new AnalogValue(Float.valueOf(values[index]), null, null))));
+            final String description = eanCode + ":current_in_L" + (index - CURRENT_START_INDEX + 1);
+            measurements.add(this.createAnalog(description, Float.valueOf(values[index]), UnitSymbol.A));
         }
 
         for (int index = CURRENT_RETURNED_START_INDEX; index < CURRENT_RETURNED_END_INDEX; index++) {
-            measurements.add(new Analog(eanCode + ":current_returned_L" + (index - 6), UUID.randomUUID().toString(),
-                    AccumulationKind.none, MeasuringPeriodKind.none, PhaseCode.none, UnitMultiplier.none, UnitSymbol.A,
-                    new ArrayList<Name>(), Arrays.asList(new AnalogValue(Float.valueOf(values[index]), null, null))));
+            final String description = eanCode + ":current_returned_L" + (index - CURRENT_RETURNED_START_INDEX + 1);
+            measurements.add(this.createAnalog(description, Float.valueOf(values[index]), UnitSymbol.A));
         }
 
         final PowerSystemResource powerSystemResource = new PowerSystemResource(eanCode, UUID.randomUUID().toString(),
@@ -82,6 +79,12 @@ public class GridMeasurementPublishedEventConverter extends CustomConverter<Stri
         final long createdDateTime = System.currentTimeMillis();
         return new GridMeasurementPublishedEvent(createdDateTime, eanCode, UUID.randomUUID().toString(),
                 "GridMeasurementPublishedEvent", new ArrayList<Name>(), powerSystemResource, measurements);
+    }
+
+    private Analog createAnalog(final String description, final Float value, final UnitSymbol unitSymbol) {
+        return new Analog(description, UUID.randomUUID().toString(), AccumulationKind.none, MeasuringPeriodKind.none,
+                PhaseCode.none, UnitMultiplier.none, unitSymbol, new ArrayList<Name>(),
+                Arrays.asList(new AnalogValue(value, null, null)));
     }
 
 }
