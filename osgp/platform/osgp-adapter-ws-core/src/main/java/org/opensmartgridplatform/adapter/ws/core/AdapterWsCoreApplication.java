@@ -33,7 +33,8 @@ import java.util.Properties;
 import java.util.TimeZone;
 
 @Slf4j
-@SpringBootApplication(exclude = {UserDetailsServiceAutoConfiguration.class, DataSourceAutoConfiguration.class, QuartzAutoConfiguration.class, FlywayAutoConfiguration.class})
+@SpringBootApplication(exclude = {UserDetailsServiceAutoConfiguration.class, DataSourceAutoConfiguration.class,
+        QuartzAutoConfiguration.class, FlywayAutoConfiguration.class})
 @ComponentScan(basePackages = {"org.opensmartgridplatform.shared.domain.services",
         "org.opensmartgridplatform.domain.core", "org.opensmartgridplatform.adapter.ws.core",
         "org.opensmartgridplatform.domain.logging"})
@@ -83,6 +84,10 @@ public class AdapterWsCoreApplication extends SpringBootServletInitializer {
         return builder.sources(AdapterWsCoreApplication.class);
     }
 
+    /**
+     * Not sure why/if this is needed.
+     * It is taken from org.opensmartgridplatform.shared.application.config.AbstractWsAdapterInitializer.
+     */
     @Bean
     public ServletRegistrationBean registerMessageDispatcherServlet(final ApplicationContext applicationContext) {
         MessageDispatcherServlet servlet = new MessageDispatcherServlet();
