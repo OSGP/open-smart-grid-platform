@@ -60,7 +60,7 @@ public class IdentificationNumberFactoryTest {
         final String last8Digits = "12345BEF";
         final Long identification = 305421295L;
 
-        final IdentificationNumber identificationNumber = IdentificationNumberFactory.create(Protocol.SMR_5_0)
+        final IdentificationNumber identificationNumber = IdentificationNumberFactory.create(Protocol.SMR_5_0_0)
                 .fromIdentification(identification);
 
         assertThat(identificationNumber.getLast8Digits()).isEqualTo(last8Digits);
@@ -73,7 +73,7 @@ public class IdentificationNumberFactoryTest {
         final String last8Digits = "12345BEF";
         final Long identification = 305421295L;
 
-        final IdentificationNumber identificationNumber = IdentificationNumberFactory.create(Protocol.SMR_5_0)
+        final IdentificationNumber identificationNumber = IdentificationNumberFactory.create(Protocol.SMR_5_0_0)
                 .fromLast8Digits(last8Digits);
 
         assertThat(identificationNumber.getIdentificationNumber()).isEqualTo(identification);
@@ -82,14 +82,14 @@ public class IdentificationNumberFactoryTest {
     @Test
     public void testFromInvalidLast8DigitsSmr5() {
         assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> {
-            IdentificationNumberFactory.create(Protocol.SMR_5_0).fromLast8Digits("1234S678");
+            IdentificationNumberFactory.create(Protocol.SMR_5_0_0).fromLast8Digits("1234S678");
         });
     }
 
     @Test
     public void testFromInvalidIdentificationSmr5() {
         assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> {
-            IdentificationNumberFactory.create(Protocol.SMR_5_0).fromIdentification(123456789100L);
+            IdentificationNumberFactory.create(Protocol.SMR_5_0_0).fromIdentification(123456789100L);
         });
     }
 
