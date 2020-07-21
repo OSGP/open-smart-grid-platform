@@ -20,7 +20,6 @@ import javax.persistence.EntityManager;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.secretmanagement.application.domain.DbEncryptedSecret;
 import org.opensmartgridplatform.secretmanagement.application.domain.DbEncryptionKeyReference;
@@ -44,7 +43,6 @@ import org.springframework.ws.test.server.ResponseMatchers;
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager
 @Transactional
-@Disabled
 public class SoapServiceSecretManagementIT {
 
     /**
