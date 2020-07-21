@@ -9,8 +9,6 @@
 package org.opensmartgridplatform.secretmanagement.application.config;
 
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -62,7 +60,7 @@ public class SecurityConfig {
 
             RsaEncryptionProvider rsaEncryptionProvider = new RsaEncryptionProvider();
 
-            this.soapPrivateKeyResource.ifPresent((res)-> {
+            this.soapPrivateKeyResource.ifPresent(res-> {
                 try {
                     rsaEncryptionProvider.setPrivateKeyStore(res.getFile());
                 }
@@ -71,7 +69,7 @@ public class SecurityConfig {
                 }
             });
 
-            this.soapPublicKeyResource.ifPresent((res)-> {
+            this.soapPublicKeyResource.ifPresent(res-> {
                 try {
                     rsaEncryptionProvider.setPublicKeyStore(res.getFile());
                 }

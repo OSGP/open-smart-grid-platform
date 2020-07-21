@@ -35,6 +35,7 @@ public class PublicLightingController {
 
     private static final int LIGHT_OFF = 0;
     private static final int LIGHT_ON = 100;
+    public static final String DEVICE = "device";
 
     @Autowired
     private OsgpPublicLightingClientSoapService osgpPublicLightingClientSoapService;
@@ -117,7 +118,7 @@ public class PublicLightingController {
             return this.error(e.getFaultStringOrReason());
         }
 
-        modelView.addObject("device", deviceStatus);
+        modelView.addObject(DEVICE, deviceStatus);
 
         return modelView;
     }
@@ -128,7 +129,7 @@ public class PublicLightingController {
      * getStatus request is processed by the platform
      */
     public ModelAndView getStatusRequest(final DeviceStatus deviceStatus, final String deviceIdentification) {
-        final ModelAndView modelView = new ModelAndView("device");
+        final ModelAndView modelView = new ModelAndView(DEVICE);
         final DeviceLightStatus deviceLightStatus = new DeviceLightStatus();
 
         deviceLightStatus.setDeviceId(deviceIdentification);
@@ -148,7 +149,7 @@ public class PublicLightingController {
         }
 
         modelView.addObject("command", new DeviceLightStatus());
-        modelView.addObject("device", deviceLightStatus);
+        modelView.addObject(DEVICE, deviceLightStatus);
 
         return modelView;
     }

@@ -35,7 +35,7 @@ public class RsaEncryptionProvider extends AbstractEncryptionProvider implements
         super.setKeyFile(privateKeyStoreFile);
     }
 
-    public void setPublicKeyStore(File publicKeyStoreFile) throws EncrypterException {
+    public void setPublicKeyStore(File publicKeyStoreFile) {
         try {
             byte[] keyData = Files.readAllBytes(publicKeyStoreFile.toPath());
             X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(keyData);
@@ -46,7 +46,7 @@ public class RsaEncryptionProvider extends AbstractEncryptionProvider implements
         }
     }
 
-    protected Cipher getCipher() throws EncrypterException {
+    protected Cipher getCipher() {
         try {
             return Cipher.getInstance(ALGORITHM);
         } catch (NoSuchPaddingException | NoSuchAlgorithmException e) {
