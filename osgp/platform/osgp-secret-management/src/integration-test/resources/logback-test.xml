@@ -8,7 +8,7 @@
   </appender>
 
   <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <file>/var/log/osp/logs/osgp-secret-management.log</file>
+    <file>/var/log/osp/logs/test-osgp-secret-management.log</file>
     <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
       <fileNamePattern>/var/log/osp/logs/test-osgp-secret-management.log.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
       <maxFileSize>100MB</maxFileSize>
