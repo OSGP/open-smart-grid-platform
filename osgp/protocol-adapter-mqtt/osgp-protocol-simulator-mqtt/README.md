@@ -70,7 +70,7 @@ A test request could look like this:
          <ns:RtuDevice>
             <ns:DeviceIdentification>TST-01</ns:DeviceIdentification>
             <ns:ProtocolName>MQTT</ns:ProtocolName>
-            <ns:ProtocolVersion>3</ns:ProtocolVersion>
+            <ns:ProtocolVersion>3.1.1</ns:ProtocolVersion>
             <ns:NetworkAddress>127.0.0.1</ns:NetworkAddress> 
          </ns:RtuDevice>
          <ns:DeviceModel>
