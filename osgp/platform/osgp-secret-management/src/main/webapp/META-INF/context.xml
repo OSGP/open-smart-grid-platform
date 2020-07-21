@@ -12,20 +12,20 @@
 <!-- The contents of this file will be loaded for each web application -->
 <Context useHttpOnly="true">
 
-    <!-- Default set of monitored resources -->
-    <WatchedResource>WEB-INF/web.xml</WatchedResource>
+  <!-- Default set of monitored resources -->
+  <WatchedResource>WEB-INF/web.xml</WatchedResource>
 
-    <!-- App config files -->
-    <Environment name="osgp/Global/config" value="/etc/osp/global.properties"
-                 type="java.lang.String" override="true"/>
+  <!-- App config files -->
+  <Environment name="osgp/Global/config" value="/etc/osp/global.properties"
+               type="java.lang.String" override="true"/>
 
-    <Environment name="osgp/SecretManagement/config" value="/etc/osp/osgp-secret-management.properties"
-                 type="java.lang.String" override="false"/>
+  <Environment name="osgp/SecretManagement/config" value="/etc/osp/osgp-secret-management.properties"
+               type="java.lang.String" override="false"/>
 
-    <Environment name="osgp/SecretManagement/log-config" value="/etc/osp/logback.xml" type="java.lang.String"
-                 override="false"/>
+  <Environment name="osgp/SecretManagement/log-config" value="/etc/osp/logback.xml" type="java.lang.String"
+               override="false"/>
 
-    <Environment name="osgp/JasperInterface/config" value="/etc/osp/jasper-interface.properties"
-                 type="java.lang.String" override="true"/>
+  <Environment name="osgp/JasperInterface/config" value="/etc/osp/jasper-interface.properties"
+               type="java.lang.String" override="true"/>
 
 </Context>

@@ -76,7 +76,7 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider implements
         return decryptedSecret;
     }
 
-    protected Cipher getCipher() throws EncrypterException {
+    protected Cipher getCipher() {
         try {
             return Cipher.getInstance(ALGORITHM, PROVIDER);
         } catch (NoSuchPaddingException | NoSuchAlgorithmException | NoSuchProviderException e) {

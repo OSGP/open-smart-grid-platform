@@ -10,13 +10,10 @@ package org.opensmartgridplatform.shared.security.providers;
 
 import java.io.File;
 import java.security.Key;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.spec.AlgorithmParameterSpec;
 import java.util.Arrays;
 
 import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
 
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 import org.opensmartgridplatform.shared.security.EncryptedSecret;
@@ -31,7 +28,7 @@ public abstract class AbstractEncryptionProvider {
 
     public abstract EncryptionProviderType getType();
 
-    protected abstract Cipher getCipher() throws EncrypterException;
+    protected abstract Cipher getCipher();
 
     protected abstract AlgorithmParameterSpec getAlgorithmParameterSpec();
 

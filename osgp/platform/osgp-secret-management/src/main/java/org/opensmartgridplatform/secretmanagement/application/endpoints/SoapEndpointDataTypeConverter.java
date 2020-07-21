@@ -36,11 +36,11 @@ public class SoapEndpointDataTypeConverter {
         this.encryptionDelegate = defaultEncryptionDelegate;
     }
 
-    public List<SecretType> convertToSecretTypes(SecretTypes soapSecretTypes) throws OsgpException {
+    public List<SecretType> convertToSecretTypes(SecretTypes soapSecretTypes) {
 
         List<org.opensmartgridplatform.ws.schema.core.secret.management.SecretType> soapSecretTypeList = soapSecretTypes.getSecretType();
 
-        return soapSecretTypeList.stream().map((soapSecretType) -> convertToSecretType(soapSecretType)).collect(
+        return soapSecretTypeList.stream().map(soapSecretType -> convertToSecretType(soapSecretType)).collect(
                 Collectors.toList());
     }
 
@@ -54,7 +54,7 @@ public class SoapEndpointDataTypeConverter {
                 soapTypedSecrets.getTypedSecret();
 
         return soapTypedSecretsList.stream().map(
-                (soapTypedSecret) -> decryptAndConvertSoapTypedSecret(soapTypedSecret)).collect(Collectors.toList());
+                soapTypedSecret -> decryptAndConvertSoapTypedSecret(soapTypedSecret)).collect(Collectors.toList());
     }
 
     public TypedSecrets convertToSoapTypedSecrets(List<TypedSecret> typedSecrets) {
