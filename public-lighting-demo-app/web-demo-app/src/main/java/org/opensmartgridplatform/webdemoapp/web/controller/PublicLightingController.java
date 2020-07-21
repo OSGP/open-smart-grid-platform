@@ -35,7 +35,7 @@ public class PublicLightingController {
 
     private static final int LIGHT_OFF = 0;
     private static final int LIGHT_ON = 100;
-    public static final String DEVICE = "device";
+    private static final String DEVICE = "device";
 
     @Autowired
     private OsgpPublicLightingClientSoapService osgpPublicLightingClientSoapService;
