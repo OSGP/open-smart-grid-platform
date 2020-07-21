@@ -137,6 +137,7 @@
 
     <module>../osgp/platform/osgp-core</module>
     <module>../osgp/platform/osgp-logging</module>
+    <module>../osgp/platform/osgp-secret-management</module>
 
     <!-- Automatic tests project -->
     <module>cucumber-tests-core</module>
