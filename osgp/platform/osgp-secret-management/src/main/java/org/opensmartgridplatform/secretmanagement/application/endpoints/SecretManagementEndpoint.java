@@ -115,7 +115,7 @@ public class SecretManagementEndpoint {
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             marshaller.marshal(request, baos);
         } catch (JAXBException e) {
-            log.error("Could not serialize GetSecretsRequest");
+            log.error("Could not serialize GetSecretsRequest", e);
         }
         return baos.toString();
     }
