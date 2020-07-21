@@ -89,8 +89,6 @@ public class DlmsDeviceSteps {
     @Autowired
     private DeviceFirmwareModuleSteps deviceFirmwareModuleSteps;
 
-    @Autowired
-    private DatabaseConnectionParameters databaseConnectionParameters;
 
     @Given("^a dlms device$")
     public void aDlmsDevice(final Map<String, String> inputSettings) {
@@ -478,12 +476,12 @@ public class DlmsDeviceSteps {
         this.dlmsDeviceRepository.save(dlmsDevice);
 
         if (!Base.hasConnection()) {
-            Base.open(databaseConnectionParameters.getDriver(), String.format("jdbc:postgresql://%s:%s/%s", databaseConnectionParameters.getHost(), databaseConnectionParameters.getPort(), databaseConnectionParameters.getDatabase()),
-                    databaseConnectionParameters.getUser(), databaseConnectionParameters.getPassword());
+            Base.open(DatabaseConnectionParameters.getDriver(), String.format("jdbc:postgresql://%s:%s/%s", DatabaseConnectionParameters.getHost(), DatabaseConnectionParameters.getPort(), DatabaseConnectionParameters.getDatabase()),
+                    DatabaseConnectionParameters.getUser(), DatabaseConnectionParameters.getPassword());
         }
         Base.exec("INSERT INTO encrypted_secret (device_identification,secret_type,encoded_secret,creation_time,encryption_key_reference_id)" +
                 "VALUES ('TEST1024000000001', 'E_METER_AUTHENTICATION_KEY', 'c19fe80a22a0f6c5cdaad0826c4d204f23694ded08d811b66e9b845d9f2157d2', NOW(), (SELECT id FROM public.encryption_key_reference where encryption_provider_type = 'JRE'))," +
-                "('TEST1024000000001'd, 'E_METER_ENCRYPTION_KEY_UNICAST', '867424ac75b6d53c89276d304608321f0a1f6e401f453f84adf3477c7ee1623c', NOW(), (SELECT id FROM public.encryption_key_reference where encryption_provider_type = 'JRE'))," +
+                "('TEST1024000000001', 'E_METER_ENCRYPTION_KEY_UNICAST', '867424ac75b6d53c89276d304608321f0a1f6e401f453f84adf3477c7ee1623c', NOW(), (SELECT id FROM public.encryption_key_reference where encryption_provider_type = 'JRE'))," +
                         "('TEST1024000000001', 'E_METER_MASTER_KEY', '55dc88791e6c8f6aff4c8be7714fb8d2ae3d02693ec474593acd3523ee032638', NOW(), (SELECT id FROM public.encryption_key_reference where encryption_provider_type = 'JRE'));");
 
         Base.close();
