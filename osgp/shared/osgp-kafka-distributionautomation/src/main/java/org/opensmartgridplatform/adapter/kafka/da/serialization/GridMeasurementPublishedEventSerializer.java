@@ -11,32 +11,33 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import org.apache.kafka.common.serialization.Serializer;
-import org.opensmartgridplatform.adapter.kafka.da.avro.MeterReading;
+import org.opensmartgridplatform.adapter.kafka.da.avro.GridMeasurementPublishedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MeterReadingSerializer implements Serializer<MeterReading> {
+public class GridMeasurementPublishedEventSerializer implements Serializer<GridMeasurementPublishedEvent> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MeterReadingSerializer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GridMeasurementPublishedEventSerializer.class);
 
     @Override
-    public byte[] serialize(final String topic, final MeterReading data) {
+    public byte[] serialize(final String topic, final GridMeasurementPublishedEvent data) {
         try {
             final ByteBuffer byteBuffer = data.toByteBuffer();
             final byte[] byteArray = new byte[byteBuffer.remaining()];
             byteBuffer.get(byteArray);
             return byteArray;
         } catch (final IOException e) {
-            LOGGER.error("Error during serializing MeterReading {} for topic {}.", this.getName(data), topic, e);
+            LOGGER.error("Error during serializing GridMeasurementPublishedEvent {} for topic {}.", this.getName(data),
+                    topic, e);
             return new byte[0];
         }
     }
 
-    private CharSequence getName(final MeterReading data) {
-        if (data == null || data.getName() == null) {
+    private CharSequence getName(final GridMeasurementPublishedEvent data) {
+        if (data == null || data.getNames() == null || data.getNames().isEmpty()) {
             return "unknown";
         }
-        return data.getName();
+        return data.getNames().get(0).getName();
     }
 
 }
