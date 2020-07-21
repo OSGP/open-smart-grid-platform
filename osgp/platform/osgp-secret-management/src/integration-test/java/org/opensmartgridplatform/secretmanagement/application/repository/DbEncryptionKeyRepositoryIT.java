@@ -13,14 +13,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Date;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.secretmanagement.application.domain.DbEncryptionKeyReference;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-@Disabled
+
 public class DbEncryptionKeyRepositoryIT extends AbstractRepositoryIT {
     @Autowired
     DbEncryptionKeyRepository repository;
