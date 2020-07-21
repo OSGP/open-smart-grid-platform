@@ -18,6 +18,7 @@ import org.opensmartgridplatform.adapter.kafka.da.avro.Analog;
 import org.opensmartgridplatform.adapter.kafka.da.avro.AnalogValue;
 import org.opensmartgridplatform.adapter.kafka.da.avro.GridMeasurementPublishedEvent;
 import org.opensmartgridplatform.adapter.kafka.da.avro.MeasuringPeriodKind;
+import org.opensmartgridplatform.adapter.kafka.da.avro.Name;
 import org.opensmartgridplatform.adapter.kafka.da.avro.PhaseCode;
 import org.opensmartgridplatform.adapter.kafka.da.avro.PowerSystemResource;
 import org.opensmartgridplatform.adapter.kafka.da.avro.UnitMultiplier;

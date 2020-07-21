@@ -18,7 +18,7 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 
 @Configuration
-@Conditional(PeakShavingLoggingEnabled.class)
+@Conditional(GridMeasurementPublishedEventLoggingEnabled.class)
 public class GridMeasurementPublishedEventKafkaConsumerConfig
         extends AbstractKafkaConsumerConfig<String, GridMeasurementPublishedEvent> {
 

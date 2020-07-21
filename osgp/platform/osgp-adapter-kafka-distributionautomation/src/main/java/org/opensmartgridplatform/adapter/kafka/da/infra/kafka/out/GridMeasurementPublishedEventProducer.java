@@ -31,14 +31,14 @@ public class GridMeasurementPublishedEventProducer {
 
     public void send(final String measurement) {
 
-        final GridMeasurementPublishedEvent meterReading = this.mapper.map(measurement,
+        final GridMeasurementPublishedEvent event = this.mapper.map(measurement,
                 GridMeasurementPublishedEvent.class);
         /*
          * No need for callback functionality now; by default, the template is
          * configured with a LoggingProducerListener, which logs errors and does
          * nothing when the send is successful.
          */
-        this.kafkaTemplate.sendDefault(meterReading);
+        this.kafkaTemplate.sendDefault(event);
     }
 
 }
