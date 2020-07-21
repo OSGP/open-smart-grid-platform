@@ -45,7 +45,7 @@ public class JreEncryptionProvider extends AbstractEncryptionProvider implements
         }
     }
 
-    protected Cipher getCipher() throws EncrypterException {
+    protected Cipher getCipher() {
         try {
             return Cipher.getInstance(ALGORITHM, PROVIDER);
         } catch (NoSuchPaddingException | NoSuchAlgorithmException | NoSuchProviderException e) {

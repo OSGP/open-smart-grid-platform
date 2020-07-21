@@ -66,7 +66,7 @@ public class Application extends SpringBootServletInitializer {
 
             log.error("File {} does not exist.", location);
         } catch (final NamingException | RuntimeException e) {
-            log.error("Getting the location of the logback configuration file failed. Reason: {}", e.getMessage());
+            log.error("Getting the location of the logback configuration file failed. Reason: {}", e.getMessage(), e);
         }
 
         return Optional.empty();
