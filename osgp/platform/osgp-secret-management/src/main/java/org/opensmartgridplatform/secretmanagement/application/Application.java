@@ -20,6 +20,8 @@ import org.springframework.context.annotation.PropertySource;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import java.io.File;
+import java.util.Optional;
 import java.util.Properties;
 
 @Slf4j
@@ -39,24 +41,34 @@ public class Application extends SpringBootServletInitializer {
 
     @Override
     protected SpringApplicationBuilder configure(final SpringApplicationBuilder builder) {
-        String logPropertiesLocation = this.getLogbackConfigurationLocation();
+        final Optional<String> logPropertiesLocation = this.getLogbackConfigurationLocation();
 
-        log.info("Location for properties: {}", logPropertiesLocation);
+        if (logPropertiesLocation.isPresent()) {
+            log.info("Location for properties: {}", logPropertiesLocation.get());
 
-        Properties props = new Properties();
-        props.setProperty("logging.config", logPropertiesLocation);
-        builder.application().setDefaultProperties(props);
+            final Properties props = new Properties();
+            props.setProperty("logging.config", logPropertiesLocation.get());
+            builder.application().setDefaultProperties(props);
+        }
 
         return builder.sources(Application.class);
     }
 
-    private String getLogbackConfigurationLocation() {
+    private Optional<String> getLogbackConfigurationLocation() {
         try {
             Context initialContext = new InitialContext();
+            String location = (String) initialContext.lookup(LOG_CONFIG);
+            File logConfig = new File(location);
 
-            return (String) initialContext.lookup(LOG_CONFIG);
-        } catch (NamingException | RuntimeException e) {
-            throw new IllegalStateException("Getting the location of the logback configuration file failed", e);
+            if (logConfig.exists()) {
+                return Optional.of(location);
+            }
+
+            log.error("File {} does not exist.", location);
+        } catch (final NamingException | RuntimeException e) {
+            log.error("Getting the location of the logback configuration file failed. Reason: {}", e.getMessage());
         }
+
+        return Optional.empty();
     }
 }
