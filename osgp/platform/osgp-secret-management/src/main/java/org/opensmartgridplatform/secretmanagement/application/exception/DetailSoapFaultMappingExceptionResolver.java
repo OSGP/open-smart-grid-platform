@@ -1,9 +1,9 @@
 /**
  * Copyright 2020 Smart Society Services B.V.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.secretmanagement.application.exception;
@@ -29,9 +29,7 @@ public class DetailSoapFaultMappingExceptionResolver extends SoapFaultMappingExc
         }
 
         if (ex instanceof TechnicalException) {
-            if (((TechnicalException) ex).getComponentType().name() != null) {
-                detail.addFaultDetailElement(COMPONENT).addText(((TechnicalException) ex).getComponentType().name());
-            }
+            detail.addFaultDetailElement(COMPONENT).addText(((TechnicalException) ex).getComponentType().name());
         }
     }
 

@@ -1,9 +1,9 @@
 /**
  * Copyright 2020 Smart Society Services B.V.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 
@@ -48,7 +48,7 @@ public class SecretManagementService {
         this.keyRepository = keyRepository;
     }
 
-    public void storeSecrets(final String deviceIdentification, final List<TypedSecret> secrets) throws Exception {
+    public void storeSecrets(final String deviceIdentification, final List<TypedSecret> secrets) {
         //@formatter:off
         secrets.stream()
                 .map(t -> this.validateSecret(deviceIdentification, t))
@@ -83,11 +83,11 @@ public class SecretManagementService {
 
     private boolean isIdenticalToCurrent(final String deviceIdentification, final TypedSecret secret) {
         final Optional<TypedSecret> current = this.retrieveSecret(deviceIdentification, secret.getSecretType());
-        return current.isPresent() ? current.get().getSecret().equals(secret.getSecret()) : false;
+        return current.isPresent() && current.get().getSecret().equals(secret.getSecret());
     }
 
     private DbEncryptedSecret createEncrypted(final String deviceIdentification, final TypedSecret typedSecret,
-            final DbEncryptionKeyReference keyReference) {
+                                              final DbEncryptionKeyReference keyReference) {
         final String secretString = typedSecret.getSecret();
         final byte[] secretBytes = HexUtils.fromHexString(secretString);
         final Secret secret = new Secret(secretBytes);
@@ -106,12 +106,11 @@ public class SecretManagementService {
         }
     }
 
-    public List<TypedSecret> retrieveSecrets(final String deviceIdentification, final List<SecretType> secretTypes)
-            throws Exception {
+    public List<TypedSecret> retrieveSecrets(final String deviceIdentification, final List<SecretType> secretTypes) {
         try {
             //@formatter:off
             return secretTypes.stream()
-                    .map(secretType -> this.retrieveSecret(deviceIdentification,secretType))
+                    .map(secretType -> this.retrieveSecret(deviceIdentification, secretType))
                     .map(Optional::get)
                     .collect(Collectors.toList());
             //@formatter:on
@@ -149,7 +148,7 @@ public class SecretManagementService {
     }
 
     private TypedSecret createTypedSecret(final DbEncryptedSecret dbEncryptedSecret,
-            final DbEncryptionKeyReference keyReference, final EncryptedSecret encryptedSecret) {
+                                          final DbEncryptionKeyReference keyReference, final EncryptedSecret encryptedSecret) {
         try {
             final Secret decryptedSecret = this.encryptionDelegate.decrypt(encryptedSecret,
                     keyReference.getReference());

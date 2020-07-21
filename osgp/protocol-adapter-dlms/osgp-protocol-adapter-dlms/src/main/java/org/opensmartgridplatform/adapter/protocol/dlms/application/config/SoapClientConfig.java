@@ -9,8 +9,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.config;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 
 import org.opensmartgridplatform.shared.security.providers.RsaEncryptionProvider;
 import org.springframework.beans.factory.annotation.Value;
@@ -129,7 +127,7 @@ public class SoapClientConfig {
             rsaEncryptionProvider.setPrivateKeyStore(privateRsaKeyFile);
             return rsaEncryptionProvider;
         }
-        catch(IOException | NoSuchAlgorithmException | InvalidKeySpecException e) {
+        catch(IOException e) {
             throw new IllegalStateException("Could not initialize RsaEncryptionProvider", e);
         }
     }
