@@ -93,7 +93,7 @@ INSERT INTO public.protocol_info(
             outgoing_requests_property_prefix, incoming_responses_property_prefix, 
             incoming_requests_property_prefix, outgoing_responses_property_prefix, 
             parallel_requests_allowed)
-    VALUES (now(), now(), 0, 'MQTT', '3', 
+    VALUES (now(), now(), 0, 'MQTT', '3.1.1', 
     'jms.protocol.mqtt.outgoing.requests', 'jms.protocol.mqtt.incoming.responses',
     'jms.protocol.mqtt.incoming.requests', 'jms.protocol.mqtt.outgoing.responses',TRUE
     );
