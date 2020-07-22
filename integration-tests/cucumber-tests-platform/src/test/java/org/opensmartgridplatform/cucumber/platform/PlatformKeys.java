@@ -173,6 +173,7 @@ public class PlatformKeys extends Keys {
     public static final String KEY_MEASUREMENT_NODE = "MeasurementNode";
     public static final String KEY_MEASUREMENT_QUALIFIER = "MeasurementQualifier";
     public static final String KEY_MEASUREMENT_VALUE = "MeasurementValue";
+    public static final String KEY_DECODED_MESSAGE = "DecodedMessage";
     public static final String KEY_MESSAGE = "Message";
     public static final String KEY_MESSAGE_DATA = "MessageData";
     public static final String KEY_MESSAGE_TYPE = "MessageType";
