@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.config;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.opensmartgridplatform.shared.security.providers.RsaEncryptionProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -29,6 +30,9 @@ public class SoapClientConfig {
 
     @Value("${soapclient.use.client.auth:false}")
     private String useClientAuth;
+
+    @Value("${soapclient.use.hostname.verifier:true}")
+    private String useHostNameVerifier;
 
     @Value("${soapclient.default-uri}")
 
@@ -81,6 +85,10 @@ public class SoapClientConfig {
         httpsUrlConnectionMessageSender.setTrustManagers(trustManagersFactoryBean().getObject());
         // set the key store(s)
         httpsUrlConnectionMessageSender.setKeyManagers(keyManagersFactoryBean().getObject());
+
+        if (Boolean.parseBoolean(useHostNameVerifier) == false) {
+            httpsUrlConnectionMessageSender.setHostnameVerifier(new NoopHostnameVerifier());
+        }
 
         return httpsUrlConnectionMessageSender;
     }
