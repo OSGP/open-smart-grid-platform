@@ -222,11 +222,7 @@ public class DaylightSavingTimeTransition {
                 if (w < 1 || w > 5) {
                     return false;
                 }
-                if (d < 0 || d > 6) {
-                    return false;
-                }
-
-                return true;
+                return !(d < 0 || d > 6);
             }
 
             @Override
