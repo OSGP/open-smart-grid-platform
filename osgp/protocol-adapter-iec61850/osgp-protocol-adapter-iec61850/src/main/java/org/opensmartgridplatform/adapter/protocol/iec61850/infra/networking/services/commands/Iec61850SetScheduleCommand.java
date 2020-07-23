@@ -62,13 +62,17 @@ public class Iec61850SetScheduleCommand {
 
     private final DeviceMessageLoggingService loggingService;
 
-    public Iec61850SetScheduleCommand(final DeviceMessageLoggingService loggingService) {
+    private final SsldDataService ssldDataService;
+
+    public Iec61850SetScheduleCommand(final DeviceMessageLoggingService loggingService,
+            final SsldDataService ssldDataService) {
         this.loggingService = loggingService;
+        this.ssldDataService = ssldDataService;
     }
 
     public void setScheduleOnDevice(final Iec61850Client iec61850Client, final DeviceConnection deviceConnection,
-            final RelayTypeDto relayType, final ScheduleDto scheduleDto, final Ssld ssld,
-            final SsldDataService ssldDataService) throws ProtocolAdapterException {
+            final RelayTypeDto relayType, final ScheduleDto scheduleDto, final Ssld ssld)
+            throws ProtocolAdapterException {
 
         final String tariffOrLight = relayType.equals(RelayTypeDto.LIGHT) ? "light" : "tariff";
         final List<ScheduleEntryDto> scheduleList = scheduleDto.getScheduleList();
@@ -78,7 +82,7 @@ public class Iec61850SetScheduleCommand {
         try {
             // Creating a list of all Schedule entries, grouped by relay index.
             final Map<Integer, List<ScheduleEntry>> relaySchedulesEntries = this.createScheduleEntries(scheduleList,
-                    ssld, relayType, ssldDataService);
+                    ssld, relayType);
 
             final Function<Void> function = new Function<Void>() {
 
@@ -88,7 +92,7 @@ public class Iec61850SetScheduleCommand {
                     this.writeAstronomicalOffsetsForSchedule(deviceMessageLog);
 
                     Iec61850SetScheduleCommand.this.disableScheduleEntries(relayType, deviceConnection, iec61850Client,
-                            deviceMessageLog, ssld, ssldDataService);
+                            deviceMessageLog, ssld);
 
                     for (final Integer relayIndex : relaySchedulesEntries.keySet()) {
                         final List<ScheduleEntry> scheduleEntries = relaySchedulesEntries.get(relayIndex);
@@ -304,26 +308,25 @@ public class Iec61850SetScheduleCommand {
      * Returns a map of schedule entries, grouped by the internal index.
      */
     private Map<Integer, List<ScheduleEntry>> createScheduleEntries(final List<ScheduleEntryDto> scheduleList,
-            final Ssld ssld, final RelayTypeDto relayTypeDto, final SsldDataService ssldDataService)
-            throws FunctionalException {
+            final Ssld ssld, final RelayTypeDto relayTypeDto) throws FunctionalException {
 
         final Map<Integer, List<ScheduleEntry>> relaySchedulesEntries = new HashMap<>();
 
         final RelayType relayType = RelayType.valueOf(relayTypeDto.name());
 
-        final List<DeviceOutputSetting> settings = ssldDataService.findByRelayType(ssld, relayType);
+        final List<DeviceOutputSetting> settings = this.ssldDataService.findByRelayType(ssld, relayType);
 
         for (final ScheduleEntryDto schedule : scheduleList) {
             for (final LightValueDto lightValue : schedule.getLightValue()) {
-                this.setScheduleEntry(ssld, ssldDataService, relaySchedulesEntries, relayType, settings, schedule,
-                        lightValue);
+
+                this.setScheduleEntry(ssld, relaySchedulesEntries, relayType, settings, schedule, lightValue);
             }
         }
 
         return relaySchedulesEntries;
     }
 
-    private ScheduleEntry setScheduleEntry(final Ssld ssld, final SsldDataService ssldDataService,
+    private ScheduleEntry setScheduleEntry(final Ssld ssld,
             final Map<Integer, List<ScheduleEntry>> relaySchedulesEntries, final RelayType relayType,
             final List<DeviceOutputSetting> settings, final ScheduleEntryDto schedule, final LightValueDto lightValue)
             throws FunctionalException {
@@ -344,7 +347,7 @@ public class Iec61850SetScheduleCommand {
             }
         } else {
             // Index != 0, adding just the one index to the list.
-            indexes.add(ssldDataService.convertToInternalIndex(ssld, lightValue.getIndex()));
+            indexes.add(this.ssldDataService.convertToInternalIndex(ssld, lightValue.getIndex()));
         }
 
         ScheduleEntry scheduleEntry;
@@ -364,7 +367,7 @@ public class Iec61850SetScheduleCommand {
                 // First time we come across this relay, checking its
                 // type.
                 this.checkRelayForSchedules(
-                        ssldDataService.getDeviceOutputSettingForInternalIndex(ssld, internalIndex).getRelayType(),
+                        this.ssldDataService.getDeviceOutputSettingForInternalIndex(ssld, internalIndex).getRelayType(),
                         relayType, internalIndex);
 
                 // Adding it to scheduleEntries.
@@ -493,10 +496,10 @@ public class Iec61850SetScheduleCommand {
      * @throws NodeException
      */
     private void disableScheduleEntries(final RelayTypeDto relayTypeDto, final DeviceConnection deviceConnection,
-            final Iec61850Client iec61850Client, final DeviceMessageLog deviceMessageLog, final Ssld ssld,
-            final SsldDataService ssldDataService) throws NodeException {
+            final Iec61850Client iec61850Client, final DeviceMessageLog deviceMessageLog, final Ssld ssld)
+            throws NodeException {
 
-        final List<DeviceOutputSetting> deviceOutputSettings = ssldDataService.findByRelayType(ssld,
+        final List<DeviceOutputSetting> deviceOutputSettings = this.ssldDataService.findByRelayType(ssld,
                 RelayType.valueOf(relayTypeDto.name()));
 
         for (final DeviceOutputSetting deviceOutputSetting : deviceOutputSettings) {
