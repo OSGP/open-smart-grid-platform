@@ -33,6 +33,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component()
@@ -57,6 +58,7 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor
     }
 
     @Autowired
+    @Qualifier("secretManagementService")
     private SecurityKeyService securityKeyService;
 
     @Autowired
@@ -123,12 +125,10 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor
 
             return MethodResultCode.SUCCESS;
         } catch (final IOException e) {
-            LOGGER.error("Unexpected exception while connecting with device", e);
             throw new ConnectionException(e);
         } catch (final EncrypterException e) {
-            LOGGER.error("Unexpected exception during decryption of security keys", e);
             throw new ProtocolAdapterException(
-                    "Unexpected exception during decryption of security keys, reason = " + e.getMessage());
+                    "Unexpected exception during decryption of security keys, reason = " + e.getMessage(), e);
         }
     }
 

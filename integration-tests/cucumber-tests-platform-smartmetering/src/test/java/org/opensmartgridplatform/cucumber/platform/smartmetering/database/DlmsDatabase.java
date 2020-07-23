@@ -9,6 +9,7 @@ package org.opensmartgridplatform.cucumber.platform.smartmetering.database;
 
 import java.util.Arrays;
 import java.util.List;
+import org.javalite.activejdbc.Base;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsSecurityKeyRepository;
@@ -18,6 +19,7 @@ import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepo
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseUrlDataRepository;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.ApplicationConstants;
 import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.NotificationWebServiceConfigurationBuilder;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.device.DatabaseConnectionParameters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,6 +74,17 @@ public class DlmsDatabase {
         this.dlmsDeviceRepo.deleteAllInBatch();
         this.responseDataRepo.deleteAllInBatch();
         this.responseUrlDataRepo.deleteAllInBatch();
+
+        if (!Base.hasConnection()) {
+            Base.open(DatabaseConnectionParameters.getDriver(), String.format("jdbc:postgresql://%s:%s/%s", DatabaseConnectionParameters.getHost(), DatabaseConnectionParameters.getPort(), DatabaseConnectionParameters.getDatabase()),
+                    DatabaseConnectionParameters.getUser(), DatabaseConnectionParameters.getPassword());
+        }
+        Base.exec("DELETE FROM public.encrypted_secret;");
+        Base.exec("DELETE FROM public.encryption_key_reference;");
+        Base.exec("insert into public.encryption_key_reference (id, reference, encryption_provider_type, valid_from, valid_to, creation_time, modification_time, modified_by, version)" +
+                "values (1, 1, 'JRE', '2019-06-17 09:25:46.000000', '2021-06-18 09:26:09.000000', '2019-06-18 09:26:23.000000', '2019-06-18 09:26:25.000000', 1, 1);");
+
+        Base.close();
 
         this.insertDefaultData();
     }
