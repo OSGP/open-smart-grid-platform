@@ -7,7 +7,7 @@
  */
 package org.opensmartgridplatform.adapter.ws.admin.application.services;
 
-import static org.opensmartgridplatform.shared.utils.WildcardUtil.replaceWildcards;
+import static org.opensmartgridplatform.shared.utils.SearchUtil.replaceWildcards;
 
 import java.time.ZonedDateTime;
 import java.util.Date;

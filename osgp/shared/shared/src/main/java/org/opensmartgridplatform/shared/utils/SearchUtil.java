@@ -7,16 +7,22 @@
  */
 package org.opensmartgridplatform.shared.utils;
 
-public class WildcardUtil {
+public class SearchUtil {
 
-    // The wildcard, used for filtering.
+    // The escape character for search expressions.
+    //
+    // It's not possible to simply replace the '\' character by something else.
+    // If it's necessary to use another character, investigate what other
+    // changes are needed in the code.
     private static final String ESCAPE = "\\";
+
+    // The wildcards, used for filtering and their replacements
     private static final String WILDCARD_ALL = "*";
     private static final String WILDCARD_SINGLE = "?";
     private static final String WILDCARD_ALL_REPLACEMENT = "%";
     private static final String WILDCARD_SINGLE_REPLACEMENT = "_";
 
-    private WildcardUtil() {
+    private SearchUtil() {
         throw new IllegalStateException("static Utility class not to be instantiated");
     }
 
@@ -29,22 +35,15 @@ public class WildcardUtil {
      * @return an output String containing the correct wildcards.
      */
     public static String replaceWildcards(final String input) {
-        return input.replace(ESCAPE, ESCAPE + ESCAPE)
-                .replace(WILDCARD_ALL_REPLACEMENT, ESCAPE + WILDCARD_ALL_REPLACEMENT)
-                .replace(WILDCARD_SINGLE_REPLACEMENT, ESCAPE + WILDCARD_SINGLE_REPLACEMENT)
-                .replace(WILDCARD_ALL, WILDCARD_ALL_REPLACEMENT)
-                .replace(WILDCARD_SINGLE, WILDCARD_SINGLE_REPLACEMENT)
-                .toUpperCase();
-    }
-
-    /**
-     * Checks whether the input contains a wildcard.
-     *
-     * @param input
-     * @return true or false
-     */
-    public static boolean hasWildcards(final String input) {
-        return input.contains(WILDCARD_ALL) || input.contains(WILDCARD_SINGLE);
+        if (input == null) {
+            return null;
+        } else {
+            return input.replace(ESCAPE, ESCAPE + ESCAPE)
+                    .replace(WILDCARD_ALL_REPLACEMENT, ESCAPE + WILDCARD_ALL_REPLACEMENT)
+                    .replace(WILDCARD_SINGLE_REPLACEMENT, ESCAPE + WILDCARD_SINGLE_REPLACEMENT)
+                    .replace(WILDCARD_ALL, WILDCARD_ALL_REPLACEMENT)
+                    .replace(WILDCARD_SINGLE, WILDCARD_SINGLE_REPLACEMENT);
+        }
     }
 
 }

@@ -1,14 +1,17 @@
 /**
- *  Copyright 2020 Smart Society Services B.V.
- */
+ * Copyright 2020 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+*/
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.admin.devicemanagement;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -36,15 +39,14 @@ public class FilterMessageLogsSteps {
     private AdminDeviceManagementClient client;
 
     @When("receiving a message log request without a filter")
-    public void getMessageLogNoFilter() throws WebServiceSecurityException, GeneralSecurityException, IOException {
+    public void getMessageLogNoFilter() throws WebServiceSecurityException {
         final FindMessageLogsRequest request = new FindMessageLogsRequest();
         request.setMessageLogFilter(new MessageLogFilter());
         ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.client.findMessageLogs(request));
     }
 
     @When("^receiving a filter message log request$")
-    public void getMessageLogFilter(final Map<String, String> requestParameters)
-            throws IllegalArgumentException, WebServiceSecurityException {
+    public void getMessageLogFilter(final Map<String, String> requestParameters) throws WebServiceSecurityException {
         final FindMessageLogsRequest request = new FindMessageLogsRequest();
         final MessageLogFilter filter = new MessageLogFilter();
 
@@ -82,7 +84,7 @@ public class FilterMessageLogsSteps {
         ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.client.findMessageLogs(request));
     }
 
-    @Then("the messages response contains {int} correct messages")
+    @Then("the messages response contains {int} messages")
     public void theGetMessageLogsFilterSuccesful(final int amount, final Map<String, String> requestParameters) {
         final List<MessageLog> messageLogs = this.getMessageLogs();
         assertThat(messageLogs.size()).isEqualTo(amount);
@@ -99,7 +101,7 @@ public class FilterMessageLogsSteps {
         }
     }
 
-    @Then("the messages response contains {int} correct messages for devices")
+    @Then("the messages response contains {int} messages for devices")
     public void theGetMessageLogsDeviceWildcardFeatureSuccesful(final int amount, final List<String> ids) {
         final List<MessageLog> messageLogs = this.getMessageLogs();
         assertThat(messageLogs.size()).isEqualTo(amount);
@@ -109,8 +111,8 @@ public class FilterMessageLogsSteps {
         }
     }
 
-    @Then("the messages response contains {int} correct messages with date filter or no filter")
-    public void theGetMessageLogsDateFilterSuccessFul(final int amount) throws Throwable {
+    @Then("the messages response contains {int} messages with date filter or no filter")
+    public void theGetMessageLogsDateFilterSuccessFul(final int amount) {
         final List<MessageLog> messageLogs = this.getMessageLogs();
         assertThat(messageLogs.size()).isEqualTo(amount);
     }
