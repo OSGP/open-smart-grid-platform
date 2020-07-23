@@ -22,10 +22,11 @@ public class SimulatorConfig {
     private static final Logger LOG = LoggerFactory.getLogger(SimulatorConfig.class);
 
     @Bean
-    public Simulator simulator(@Value("${mqtt.simulator.spec}") final String spec) throws IOException {
-        LOG.info("Start MQTT simulator with spec={}", spec);
+    public Simulator simulator(@Value("${mqtt.simulator.spec}") final String spec,
+            @Value("${mqtt.simulator.startClient}") final boolean startClient) throws IOException {
+        LOG.info("Start MQTT simulator with spec={}, startClient={}", spec, startClient);
         final Simulator app = new Simulator();
-        app.run(spec);
+        app.run(spec, startClient);
         return app;
     }
 }

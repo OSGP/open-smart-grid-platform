@@ -12,12 +12,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.moquette.broker.config.MemoryConfig;
 import org.opensmartgridplatform.simulator.protocol.mqtt.spec.SimulatorSpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.moquette.broker.config.MemoryConfig;
 
 public class Simulator {
 
@@ -25,8 +27,9 @@ public class Simulator {
 
     public static void main(final String[] args) throws IOException {
         final String spec = getFirstArgOrNull(args);
+        final boolean startClient = getSecondArgOrTrue(args);
         final Simulator app = new Simulator();
-        app.run(spec);
+        app.run(spec, startClient);
     }
 
     private static String getFirstArgOrNull(final String[] args) {
@@ -37,17 +40,30 @@ public class Simulator {
         return result;
     }
 
-    public void run(final String specJsonPath) throws IOException {
-        final SimulatorSpec simulatorSpec = this.getSimulatorSpec(specJsonPath);
+    private static boolean getSecondArgOrTrue(final String[] args) {
+        if (args.length < 2) {
+            return true;
+        }
+        return Boolean.parseBoolean(args[1]);
+    }
+
+    public void run(final String specJsonPath, final boolean startClient) throws IOException {
+        this.run(this.getSimulatorSpec(specJsonPath), startClient);
+    }
+
+    public void run(final SimulatorSpec simulatorSpec, final boolean startClient) throws IOException {
         final Broker broker = new Broker(this.getConfig(simulatorSpec));
         broker.start();
         try {
             Thread.sleep(simulatorSpec.getStartupPauseMillis());
         } catch (final InterruptedException e) {
             LOG.warn("Interrupted sleep", e);
+            Thread.currentThread().interrupt();
         }
-        final LnaClient lnaClient = new LnaClient(simulatorSpec);
-        lnaClient.start();
+        if (startClient) {
+            final SimulatorSpecPublishingClient publishingClient = new SimulatorSpecPublishingClient(simulatorSpec);
+            publishingClient.start();
+        }
     }
 
     private MemoryConfig getConfig(final SimulatorSpec simulatorSpec) {

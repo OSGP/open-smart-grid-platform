@@ -70,7 +70,7 @@ A test request could look like this:
          <ns:RtuDevice>
             <ns:DeviceIdentification>TST-01</ns:DeviceIdentification>
             <ns:ProtocolName>MQTT</ns:ProtocolName>
-            <ns:ProtocolVersion>3</ns:ProtocolVersion>
+            <ns:ProtocolVersion>3.1.1</ns:ProtocolVersion>
             <ns:NetworkAddress>127.0.0.1</ns:NetworkAddress> 
          </ns:RtuDevice>
          <ns:DeviceModel>
@@ -93,7 +93,7 @@ INSERT INTO public.protocol_info(
             outgoing_requests_property_prefix, incoming_responses_property_prefix, 
             incoming_requests_property_prefix, outgoing_responses_property_prefix, 
             parallel_requests_allowed)
-    VALUES (now(), now(), 0, 'MQTT', '3', 
+    VALUES (now(), now(), 0, 'MQTT', '3.1.1', 
     'jms.protocol.mqtt.outgoing.requests', 'jms.protocol.mqtt.incoming.responses',
     'jms.protocol.mqtt.incoming.requests', 'jms.protocol.mqtt.outgoing.responses',TRUE
     );

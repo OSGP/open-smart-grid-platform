@@ -65,7 +65,7 @@ public class SetConfigurationObjectCommandExecutorSmr5IT extends SetConfiguratio
         when(this.getResult.getResultData()).thenReturn(deviceData);
 
         final DlmsDevice device = new DlmsDevice();
-        device.setProtocol(Protocol.SMR_5_0);
+        device.setProtocol(Protocol.SMR_5_0_0);
 
         // CALL
         final AccessResultCode result = this.instance.execute(this.conn, device, configurationToSet);

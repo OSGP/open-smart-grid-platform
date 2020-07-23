@@ -117,6 +117,9 @@ public class ThrottlingService {
 
                 int nrOfPermitsToBeReleased =
                         maxNewConnectionRequests - newConnectionRequestsSemaphore.availablePermits();
+
+                LOGGER.debug("releasing {} permits on newConnectionRequestsSemaphore", nrOfPermitsToBeReleased);
+
                 newConnectionRequestsSemaphore.release(nrOfPermitsToBeReleased);
 
                 LOGGER.debug("ThrottlingService - Timer Reset and Unlocking, newConnectionRequests available = {}  ",

@@ -159,6 +159,7 @@ public class PlatformKeys extends Keys {
     public static final String KEY_INDEX = "Index";
     public static final String KEY_INDEXES = "Indexes";
     public static final String KEY_INTERNALID = "InternalId";
+    public static final String KEY_INTEGRATION_TYPE = "IntegrationType";
     public static final String KEY_IP_ADDR_IS_STATIC = "IpAddressIsStatic";
     public static final String KEY_ISIMMEDIATE = "IsImmediate";
     public static final String KEY_LATITUDE = "gpsLatitude";

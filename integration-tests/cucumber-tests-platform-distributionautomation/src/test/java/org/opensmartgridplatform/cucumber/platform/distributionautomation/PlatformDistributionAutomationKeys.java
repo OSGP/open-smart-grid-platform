@@ -17,5 +17,11 @@ public class PlatformDistributionAutomationKeys {
     public static final String INFORMATION_OBJECT_ADDRESS = "InformationObjectAddress";
     public static final String INFORMATION_OBJECT_TYPE = "InformationObjectType";
     public static final String INFORMATION_ELEMENT_VALUE = "InformationElementValue";
+    public static final String PAYLOAD = "payload";
+    public static final String MESSAGE = "message";
+    public static final String MQTT_HOST = "MqttHost";
+    public static final String MQTT_PORT = "MqttPort";
+    public static final String MQTT_TOPIC = "MqttTopic";
+    public static final String MQTT_QOS = "MqttQos";
 
 }
