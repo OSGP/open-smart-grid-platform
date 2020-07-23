@@ -315,61 +315,67 @@ public class Iec61850SetScheduleCommand {
 
         for (final ScheduleEntryDto schedule : scheduleList) {
             for (final LightValueDto lightValue : schedule.getLightValue()) {
-
-                final List<Integer> indexes = new ArrayList<>();
-
-                if (lightValue.getIndex() == 0
-                        && (RelayType.TARIFF.equals(relayType) || RelayType.TARIFF_REVERSED.equals(relayType))) {
-
-                    // Index 0 is not allowed for tariff switching.
-                    throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
-                            ComponentType.PROTOCOL_IEC61850);
-
-                } else if (lightValue.getIndex() == 0 && RelayType.LIGHT.equals(relayType)) {
-
-                    // Index == 0, getting all light relays and adding their
-                    // internal indexes to the indexes list.
-                    for (final DeviceOutputSetting deviceOutputSetting : settings) {
-                        indexes.add(deviceOutputSetting.getInternalId());
-                    }
-                } else {
-                    // Index != 0, adding just the one index to the list.
-                    indexes.add(ssldDataService.convertToInternalIndex(ssld, lightValue.getIndex()));
-                }
-
-                ScheduleEntry scheduleEntry;
-                try {
-                    scheduleEntry = this.convertToScheduleEntry(schedule, lightValue);
-                } catch (final ProtocolAdapterException e) {
-                    throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
-                            ComponentType.PROTOCOL_IEC61850, e);
-                }
-
-                for (final Integer internalIndex : indexes) {
-
-                    if (relaySchedulesEntries.containsKey(internalIndex)) {
-                        // Internal index already in the Map, adding to the List
-                        relaySchedulesEntries.get(internalIndex).add(scheduleEntry);
-                    } else {
-
-                        // First time we come across this relay, checking its
-                        // type.
-                        this.checkRelayForSchedules(
-                                ssldDataService.getDeviceOutputSettingForInternalIndex(ssld, internalIndex)
-                                        .getRelayType(),
-                                relayType, internalIndex);
-
-                        // Adding it to scheduleEntries.
-                        final List<ScheduleEntry> scheduleEntries = new ArrayList<>();
-                        scheduleEntries.add(scheduleEntry);
-
-                        relaySchedulesEntries.put(internalIndex, scheduleEntries);
-                    }
-                }
+                this.setScheduleEntry(ssld, ssldDataService, relaySchedulesEntries, relayType, settings, schedule,
+                        lightValue);
             }
         }
 
         return relaySchedulesEntries;
+    }
+
+    private ScheduleEntry setScheduleEntry(final Ssld ssld, final SsldDataService ssldDataService,
+            final Map<Integer, List<ScheduleEntry>> relaySchedulesEntries, final RelayType relayType,
+            final List<DeviceOutputSetting> settings, final ScheduleEntryDto schedule, final LightValueDto lightValue)
+            throws FunctionalException {
+        final List<Integer> indexes = new ArrayList<>();
+
+        if (lightValue.getIndex() == 0
+                && (RelayType.TARIFF.equals(relayType) || RelayType.TARIFF_REVERSED.equals(relayType))) {
+
+            // Index 0 is not allowed for tariff switching.
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.PROTOCOL_IEC61850);
+
+        } else if (lightValue.getIndex() == 0 && RelayType.LIGHT.equals(relayType)) {
+
+            // Index == 0, getting all light relays and adding their
+            // internal indexes to the indexes list.
+            for (final DeviceOutputSetting deviceOutputSetting : settings) {
+                indexes.add(deviceOutputSetting.getInternalId());
+            }
+        } else {
+            // Index != 0, adding just the one index to the list.
+            indexes.add(ssldDataService.convertToInternalIndex(ssld, lightValue.getIndex()));
+        }
+
+        ScheduleEntry scheduleEntry;
+        try {
+            scheduleEntry = this.convertToScheduleEntry(schedule, lightValue);
+        } catch (final ProtocolAdapterException e) {
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.PROTOCOL_IEC61850, e);
+        }
+
+        for (final Integer internalIndex : indexes) {
+
+            if (relaySchedulesEntries.containsKey(internalIndex)) {
+                // Internal index already in the Map, adding to the List
+                relaySchedulesEntries.get(internalIndex).add(scheduleEntry);
+            } else {
+
+                // First time we come across this relay, checking its
+                // type.
+                this.checkRelayForSchedules(
+                        ssldDataService.getDeviceOutputSettingForInternalIndex(ssld, internalIndex).getRelayType(),
+                        relayType, internalIndex);
+
+                // Adding it to scheduleEntries.
+                final List<ScheduleEntry> scheduleEntries = new ArrayList<>();
+                scheduleEntries.add(scheduleEntry);
+
+                relaySchedulesEntries.put(internalIndex, scheduleEntries);
+            }
+        }
+
+        return scheduleEntry;
     }
 
     private ScheduleEntry convertToScheduleEntry(final ScheduleEntryDto schedule, final LightValueDto lightValue)
