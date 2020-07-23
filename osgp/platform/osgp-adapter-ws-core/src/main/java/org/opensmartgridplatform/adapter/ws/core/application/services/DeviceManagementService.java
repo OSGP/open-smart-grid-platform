@@ -219,8 +219,9 @@ public class DeviceManagementService {
         }
 
         specification = specification.and(this.eventSpecifications.hasEventTypes(criteria.getEventTypes()));
-        specification = this.handleDescription(SearchUtil.replaceWildcards(criteria.getDescription()).toUpperCase(),
-                SearchUtil.replaceWildcards(criteria.getDescriptionStartsWith()).toUpperCase(), specification);
+        specification = this.handleDescription(
+                StringUtils.upperCase(SearchUtil.replaceWildcards(criteria.getDescription())),
+                StringUtils.upperCase(SearchUtil.replaceWildcards(criteria.getDescriptionStartsWith())), specification);
 
         LOGGER.debug("request offset     : {}", request.getOffset());
         LOGGER.debug("        pageNumber : {}", request.getPageNumber());
@@ -236,6 +237,7 @@ public class DeviceManagementService {
         final Specification<Event> descriptionSpecification = this.eventSpecifications.withDescription(description);
         final Specification<Event> descriptionStartsWithSpecification = this.eventSpecifications
                 .startsWithDescription(descriptionStartsWith);
+
         if (description == null && descriptionStartsWith == null) {
             return specification;
         }
