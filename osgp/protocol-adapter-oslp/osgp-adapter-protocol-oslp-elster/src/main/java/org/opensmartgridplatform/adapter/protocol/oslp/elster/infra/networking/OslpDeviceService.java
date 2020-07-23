@@ -812,51 +812,55 @@ public class OslpDeviceService implements DeviceService {
         final List<Oslp.Schedule> oslpSchedules = new ArrayList<>();
 
         for (final ScheduleEntryDto schedule : schedules) {
-            Oslp.Schedule.Builder scheduleBuilder = Oslp.Schedule.newBuilder()
-                    .setWeekday(Oslp.Weekday.valueOf(schedule.getWeekDay().ordinal() + 1))
-                    .setActionTime(Oslp.ActionTime.valueOf(schedule.getActionTime().ordinal() + 1));
-
-            if (schedule.getStartDay() != null) {
-                scheduleBuilder = scheduleBuilder.setStartDay(schedule.getStartDay().toString(DATE_FORMAT));
-            }
-
-            if (schedule.getEndDay() != null) {
-                scheduleBuilder = scheduleBuilder.setEndDay(schedule.getEndDay().toString(DATE_FORMAT));
-            }
-
-            if (StringUtils.isNotBlank(schedule.getTime())) {
-                scheduleBuilder = scheduleBuilder.setTime(LocalTime.parse(schedule.getTime()).toString(TIME_FORMAT));
-            }
-
-            if (schedule.getTriggerWindow() != null) {
-                scheduleBuilder = scheduleBuilder.setWindow(Oslp.Window.newBuilder()
-                        .setMinutesBefore((int) schedule.getTriggerWindow().getMinutesBefore())
-                        .setMinutesAfter((int) schedule.getTriggerWindow().getMinutesAfter()));
-            }
-
-            for (final LightValueDto lightValue : schedule.getLightValue()) {
-                scheduleBuilder.addValue(this.buildLightValue(lightValue));
-            }
-
-            if (schedule.getTriggerType() != null) {
-                scheduleBuilder.setTriggerType(Oslp.TriggerType.valueOf(schedule.getTriggerType().ordinal() + 1));
-            }
-
-            if (schedule.getIndex() != null) {
-                scheduleBuilder.setIndex(schedule.getIndex());
-            }
-
-            if (schedule.getIsEnabled() != null) {
-                scheduleBuilder.setIsEnabled(schedule.getIsEnabled());
-            }
-
-            if (schedule.getMinimumLightsOn() != null) {
-                scheduleBuilder.setMinimumLightsOn(schedule.getMinimumLightsOn());
-            }
-
-            oslpSchedules.add(scheduleBuilder.build());
+            oslpSchedules.add(this.convertToOslpSchedule(schedule));
         }
         return oslpSchedules;
+    }
+
+    private Oslp.Schedule convertToOslpSchedule(final ScheduleEntryDto schedule) {
+        Oslp.Schedule.Builder scheduleBuilder = Oslp.Schedule.newBuilder()
+                .setWeekday(Oslp.Weekday.valueOf(schedule.getWeekDay().ordinal() + 1))
+                .setActionTime(Oslp.ActionTime.valueOf(schedule.getActionTime().ordinal() + 1));
+
+        if (schedule.getStartDay() != null) {
+            scheduleBuilder = scheduleBuilder.setStartDay(schedule.getStartDay().toString(DATE_FORMAT));
+        }
+
+        if (schedule.getEndDay() != null) {
+            scheduleBuilder = scheduleBuilder.setEndDay(schedule.getEndDay().toString(DATE_FORMAT));
+        }
+
+        if (StringUtils.isNotBlank(schedule.getTime())) {
+            scheduleBuilder = scheduleBuilder.setTime(LocalTime.parse(schedule.getTime()).toString(TIME_FORMAT));
+        }
+
+        if (schedule.getTriggerWindow() != null) {
+            scheduleBuilder = scheduleBuilder.setWindow(Oslp.Window.newBuilder()
+                    .setMinutesBefore((int) schedule.getTriggerWindow().getMinutesBefore())
+                    .setMinutesAfter((int) schedule.getTriggerWindow().getMinutesAfter()));
+        }
+
+        for (final LightValueDto lightValue : schedule.getLightValue()) {
+            scheduleBuilder.addValue(this.buildLightValue(lightValue));
+        }
+
+        if (schedule.getTriggerType() != null) {
+            scheduleBuilder.setTriggerType(Oslp.TriggerType.valueOf(schedule.getTriggerType().ordinal() + 1));
+        }
+
+        if (schedule.getIndex() != null) {
+            scheduleBuilder.setIndex(schedule.getIndex());
+        }
+
+        if (schedule.getIsEnabled() != null) {
+            scheduleBuilder.setIsEnabled(schedule.getIsEnabled());
+        }
+
+        if (schedule.getMinimumLightsOn() != null) {
+            scheduleBuilder.setMinimumLightsOn(schedule.getMinimumLightsOn());
+        }
+
+        return scheduleBuilder.build();
     }
 
     @Override
