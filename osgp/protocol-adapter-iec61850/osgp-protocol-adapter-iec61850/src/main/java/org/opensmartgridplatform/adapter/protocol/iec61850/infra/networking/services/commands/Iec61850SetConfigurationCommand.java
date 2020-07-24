@@ -70,48 +70,115 @@ public class Iec61850SetConfigurationCommand {
                 return null;
             }
 
-            private void setDhcpConfiguration(final Iec61850Client iec61850Client,
+            private void setRelayConfiguration(final Iec61850Client iec61850Client,
                     final DeviceConnection deviceConnection, final ConfigurationDto configuration,
                     final DeviceMessageLog deviceMessageLog) throws NodeException {
-                // Checking to see if all network values are null, so that we
+                if (configuration.getRelayConfiguration() != null
+                        && configuration.getRelayConfiguration().getRelayMap() != null) {
+
+                    final List<RelayMapDto> relayMaps = configuration.getRelayConfiguration().getRelayMap();
+                    for (final RelayMapDto relayMap : relayMaps) {
+                        final Integer internalIndex = relayMap.getAddress();
+                        final RelayTypeDto relayType = relayMap.getRelayType();
+
+                        final LogicalNode logicalNode = LogicalNode.getSwitchComponentByIndex(internalIndex);
+                        final NodeContainer switchType = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
+                                logicalNode, DataAttribute.SWITCH_TYPE, Fc.CO);
+                        iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
+                                switchType.getFcmodelNode());
+
+                        final NodeContainer operation = switchType.getChild(SubDataAttribute.OPERATION);
+                        iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
+                                operation.getFcmodelNode());
+                        final BdaInt8 ctlVal = operation.getByte(SubDataAttribute.CONTROL_VALUE);
+
+                        final byte switchTypeValue = (byte) (RelayTypeDto.LIGHT.equals(relayType) ? SWITCH_TYPE_LIGHT
+                                : SWITCH_TYPE_TARIFF);
+                        LOGGER.info("Updating Switch for internal index {} to {} ({})", internalIndex, switchTypeValue,
+                                relayType);
+
+                        ctlVal.setValue(switchTypeValue);
+                        operation.write();
+
+                        deviceMessageLog.addVariable(logicalNode, DataAttribute.SWITCH_TYPE, Fc.CO,
+                                SubDataAttribute.OPERATION, SubDataAttribute.CONTROL_VALUE,
+                                Byte.toString(switchTypeValue));
+                    }
+                }
+            }
+
+            private void setOsgpIpAddressAndPort(final Iec61850Client iec61850Client,
+                    final DeviceConnection deviceConnection, final ConfigurationDto configuration,
+                    final DeviceMessageLog deviceMessageLog) throws NodeException {
+                // Checking to see if all register values are null, so that we
                 // don't read the values for no reason.
-                if (!(configuration.isDhcpEnabled() == null && configuration.getDeviceFixedIp() == null)) {
+                if (!(configuration.getOsgpIpAddres() == null && configuration.getOsgpPortNumber() == null)) {
 
-                    final NodeContainer ipConfiguration = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
-                            LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.IP_CONFIGURATION, Fc.CF);
+                    final NodeContainer registration = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
+                            LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.REGISTRATION, Fc.CF);
                     iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
-                            ipConfiguration.getFcmodelNode());
+                            registration.getFcmodelNode());
 
-                    if (configuration.isDhcpEnabled() != null) {
-                        LOGGER.info("Updating DhcpEnabled to {}", configuration.isDhcpEnabled());
-                        ipConfiguration.writeBoolean(SubDataAttribute.ENABLE_DHCP, configuration.isDhcpEnabled());
+                    if (configuration.getOsgpIpAddres() != null) {
+                        LOGGER.info("Updating OspgIpAddress to {}", configuration.getOsgpIpAddres());
+                        registration.writeString(SubDataAttribute.SERVER_ADDRESS, configuration.getOsgpIpAddres());
 
-                        deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION,
-                                DataAttribute.IP_CONFIGURATION, Fc.CF, SubDataAttribute.ENABLE_DHCP,
-                                Boolean.toString(configuration.isDhcpEnabled()));
+                        deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.REGISTRATION,
+                                Fc.CF, SubDataAttribute.SERVER_ADDRESS, configuration.getOsgpIpAddres());
                     }
 
-                    // All values in DeviceFixedIpDto are non-nullable, so no
-                    // null-checks are needed.
-                    final DeviceFixedIpDto deviceFixedIp = configuration.getDeviceFixedIp();
+                    if (configuration.getOsgpPortNumber() != null) {
+                        LOGGER.info("Updating OsgpPortNumber to {}", configuration.getOsgpPortNumber());
+                        registration.writeInteger(SubDataAttribute.SERVER_PORT, configuration.getOsgpPortNumber());
 
-                    LOGGER.info("Updating deviceFixedIpAddress to {}", configuration.getDeviceFixedIp().getIpAddress());
-                    ipConfiguration.writeString(SubDataAttribute.IP_ADDRESS, deviceFixedIp.getIpAddress());
+                        deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.REGISTRATION,
+                                Fc.CF, SubDataAttribute.SERVER_PORT, configuration.getOsgpPortNumber().toString());
+                    }
+                }
+            }
 
-                    deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.IP_CONFIGURATION,
-                            Fc.CF, SubDataAttribute.IP_ADDRESS, deviceFixedIp.getIpAddress());
+            private void setAstronomicalOffsets(final Iec61850Client iec61850Client,
+                    final DeviceConnection deviceConnection, final ConfigurationDto configuration,
+                    final DeviceMessageLog deviceMessageLog) throws NodeException {
+                // Checking to see if all software configuration values are
+                // null, so that we don't read the values for no reason.
+                if (!(configuration.getAstroGateSunRiseOffset() == null
+                        && configuration.getAstroGateSunSetOffset() == null && configuration.getLightType() == null)) {
 
-                    LOGGER.info("Updating deviceFixedIpNetmask to {}", configuration.getDeviceFixedIp().getNetMask());
-                    ipConfiguration.writeString(SubDataAttribute.NETMASK, deviceFixedIp.getNetMask());
+                    final NodeContainer softwareConfiguration = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
+                            LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.SOFTWARE_CONFIGURATION, Fc.CF);
+                    iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
+                            softwareConfiguration.getFcmodelNode());
 
-                    deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.IP_CONFIGURATION,
-                            Fc.CF, SubDataAttribute.NETMASK, deviceFixedIp.getNetMask());
+                    if (configuration.getAstroGateSunRiseOffset() != null) {
+                        LOGGER.info("Updating AstroGateSunRiseOffset to {}", configuration.getAstroGateSunRiseOffset());
+                        softwareConfiguration.writeShort(SubDataAttribute.ASTRONOMIC_SUNRISE_OFFSET,
+                                configuration.getAstroGateSunRiseOffset().shortValue());
 
-                    LOGGER.info("Updating deviceFixIpGateway to {}", configuration.getDeviceFixedIp().getGateWay());
-                    ipConfiguration.writeString(SubDataAttribute.GATEWAY, deviceFixedIp.getGateWay());
+                        deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION,
+                                DataAttribute.SOFTWARE_CONFIGURATION, Fc.CF, SubDataAttribute.ASTRONOMIC_SUNRISE_OFFSET,
+                                Short.toString(configuration.getAstroGateSunRiseOffset().shortValue()));
+                    }
 
-                    deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.IP_CONFIGURATION,
-                            Fc.CF, SubDataAttribute.GATEWAY, deviceFixedIp.getGateWay());
+                    if (configuration.getAstroGateSunSetOffset() != null) {
+                        LOGGER.info("Updating AstroGateSunSetOffset to {}", configuration.getAstroGateSunSetOffset());
+                        softwareConfiguration.writeShort(SubDataAttribute.ASTRONOMIC_SUNSET_OFFSET,
+                                configuration.getAstroGateSunSetOffset().shortValue());
+
+                        deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION,
+                                DataAttribute.SOFTWARE_CONFIGURATION, Fc.CF, SubDataAttribute.ASTRONOMIC_SUNSET_OFFSET,
+                                Short.toString(configuration.getAstroGateSunSetOffset().shortValue()));
+                    }
+
+                    if (configuration.getLightType() != null) {
+                        LOGGER.info("Updating LightType to {}", configuration.getLightType());
+                        softwareConfiguration.writeString(SubDataAttribute.LIGHT_TYPE,
+                                configuration.getLightType().name());
+
+                        deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION,
+                                DataAttribute.SOFTWARE_CONFIGURATION, Fc.CF, SubDataAttribute.LIGHT_TYPE,
+                                configuration.getLightType().name());
+                    }
                 }
             }
 
@@ -227,117 +294,51 @@ public class Iec61850SetConfigurationCommand {
                 }
             }
 
-            private void setAstronomicalOffsets(final Iec61850Client iec61850Client,
+            private void setDhcpConfiguration(final Iec61850Client iec61850Client,
                     final DeviceConnection deviceConnection, final ConfigurationDto configuration,
                     final DeviceMessageLog deviceMessageLog) throws NodeException {
-                // Checking to see if all software configuration values are
-                // null, so that we don't read the values for no reason.
-                if (!(configuration.getAstroGateSunRiseOffset() == null
-                        && configuration.getAstroGateSunSetOffset() == null && configuration.getLightType() == null)) {
-
-                    final NodeContainer softwareConfiguration = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
-                            LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.SOFTWARE_CONFIGURATION, Fc.CF);
-                    iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
-                            softwareConfiguration.getFcmodelNode());
-
-                    if (configuration.getAstroGateSunRiseOffset() != null) {
-                        LOGGER.info("Updating AstroGateSunRiseOffset to {}", configuration.getAstroGateSunRiseOffset());
-                        softwareConfiguration.writeShort(SubDataAttribute.ASTRONOMIC_SUNRISE_OFFSET,
-                                configuration.getAstroGateSunRiseOffset().shortValue());
-
-                        deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION,
-                                DataAttribute.SOFTWARE_CONFIGURATION, Fc.CF, SubDataAttribute.ASTRONOMIC_SUNRISE_OFFSET,
-                                Short.toString(configuration.getAstroGateSunRiseOffset().shortValue()));
-                    }
-
-                    if (configuration.getAstroGateSunSetOffset() != null) {
-                        LOGGER.info("Updating AstroGateSunSetOffset to {}", configuration.getAstroGateSunSetOffset());
-                        softwareConfiguration.writeShort(SubDataAttribute.ASTRONOMIC_SUNSET_OFFSET,
-                                configuration.getAstroGateSunSetOffset().shortValue());
-
-                        deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION,
-                                DataAttribute.SOFTWARE_CONFIGURATION, Fc.CF, SubDataAttribute.ASTRONOMIC_SUNSET_OFFSET,
-                                Short.toString(configuration.getAstroGateSunSetOffset().shortValue()));
-                    }
-
-                    if (configuration.getLightType() != null) {
-                        LOGGER.info("Updating LightType to {}", configuration.getLightType());
-                        softwareConfiguration.writeString(SubDataAttribute.LIGHT_TYPE,
-                                configuration.getLightType().name());
-
-                        deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION,
-                                DataAttribute.SOFTWARE_CONFIGURATION, Fc.CF, SubDataAttribute.LIGHT_TYPE,
-                                configuration.getLightType().name());
-                    }
-                }
-            }
-
-            private void setOsgpIpAddressAndPort(final Iec61850Client iec61850Client,
-                    final DeviceConnection deviceConnection, final ConfigurationDto configuration,
-                    final DeviceMessageLog deviceMessageLog) throws NodeException {
-                // Checking to see if all register values are null, so that we
+                // Checking to see if all network values are null, so that we
                 // don't read the values for no reason.
-                if (!(configuration.getOsgpIpAddres() == null && configuration.getOsgpPortNumber() == null)) {
+                if (!(configuration.isDhcpEnabled() == null && configuration.getDeviceFixedIp() == null)) {
 
-                    final NodeContainer registration = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
-                            LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.REGISTRATION, Fc.CF);
+                    final NodeContainer ipConfiguration = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
+                            LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.IP_CONFIGURATION, Fc.CF);
                     iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
-                            registration.getFcmodelNode());
+                            ipConfiguration.getFcmodelNode());
 
-                    if (configuration.getOsgpIpAddres() != null) {
-                        LOGGER.info("Updating OspgIpAddress to {}", configuration.getOsgpIpAddres());
-                        registration.writeString(SubDataAttribute.SERVER_ADDRESS, configuration.getOsgpIpAddres());
+                    if (configuration.isDhcpEnabled() != null) {
+                        LOGGER.info("Updating DhcpEnabled to {}", configuration.isDhcpEnabled());
+                        ipConfiguration.writeBoolean(SubDataAttribute.ENABLE_DHCP, configuration.isDhcpEnabled());
 
-                        deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.REGISTRATION,
-                                Fc.CF, SubDataAttribute.SERVER_ADDRESS, configuration.getOsgpIpAddres());
+                        deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION,
+                                DataAttribute.IP_CONFIGURATION, Fc.CF, SubDataAttribute.ENABLE_DHCP,
+                                Boolean.toString(configuration.isDhcpEnabled()));
                     }
 
-                    if (configuration.getOsgpPortNumber() != null) {
-                        LOGGER.info("Updating OsgpPortNumber to {}", configuration.getOsgpPortNumber());
-                        registration.writeInteger(SubDataAttribute.SERVER_PORT, configuration.getOsgpPortNumber());
+                    // All values in DeviceFixedIpDto are non-nullable, so no
+                    // null-checks are needed.
+                    final DeviceFixedIpDto deviceFixedIp = configuration.getDeviceFixedIp();
 
-                        deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.REGISTRATION,
-                                Fc.CF, SubDataAttribute.SERVER_PORT, configuration.getOsgpPortNumber().toString());
-                    }
+                    LOGGER.info("Updating deviceFixedIpAddress to {}", configuration.getDeviceFixedIp().getIpAddress());
+                    ipConfiguration.writeString(SubDataAttribute.IP_ADDRESS, deviceFixedIp.getIpAddress());
+
+                    deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.IP_CONFIGURATION,
+                            Fc.CF, SubDataAttribute.IP_ADDRESS, deviceFixedIp.getIpAddress());
+
+                    LOGGER.info("Updating deviceFixedIpNetmask to {}", configuration.getDeviceFixedIp().getNetMask());
+                    ipConfiguration.writeString(SubDataAttribute.NETMASK, deviceFixedIp.getNetMask());
+
+                    deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.IP_CONFIGURATION,
+                            Fc.CF, SubDataAttribute.NETMASK, deviceFixedIp.getNetMask());
+
+                    LOGGER.info("Updating deviceFixIpGateway to {}", configuration.getDeviceFixedIp().getGateWay());
+                    ipConfiguration.writeString(SubDataAttribute.GATEWAY, deviceFixedIp.getGateWay());
+
+                    deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.IP_CONFIGURATION,
+                            Fc.CF, SubDataAttribute.GATEWAY, deviceFixedIp.getGateWay());
                 }
             }
 
-            private void setRelayConfiguration(final Iec61850Client iec61850Client,
-                    final DeviceConnection deviceConnection, final ConfigurationDto configuration,
-                    final DeviceMessageLog deviceMessageLog) throws NodeException {
-                if (configuration.getRelayConfiguration() != null
-                        && configuration.getRelayConfiguration().getRelayMap() != null) {
-
-                    final List<RelayMapDto> relayMaps = configuration.getRelayConfiguration().getRelayMap();
-                    for (final RelayMapDto relayMap : relayMaps) {
-                        final Integer internalIndex = relayMap.getAddress();
-                        final RelayTypeDto relayType = relayMap.getRelayType();
-
-                        final LogicalNode logicalNode = LogicalNode.getSwitchComponentByIndex(internalIndex);
-                        final NodeContainer switchType = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
-                                logicalNode, DataAttribute.SWITCH_TYPE, Fc.CO);
-                        iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
-                                switchType.getFcmodelNode());
-
-                        final NodeContainer operation = switchType.getChild(SubDataAttribute.OPERATION);
-                        iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
-                                operation.getFcmodelNode());
-                        final BdaInt8 ctlVal = operation.getByte(SubDataAttribute.CONTROL_VALUE);
-
-                        final byte switchTypeValue = (byte) (RelayTypeDto.LIGHT.equals(relayType) ? SWITCH_TYPE_LIGHT
-                                : SWITCH_TYPE_TARIFF);
-                        LOGGER.info("Updating Switch for internal index {} to {} ({})", internalIndex, switchTypeValue,
-                                relayType);
-
-                        ctlVal.setValue(switchTypeValue);
-                        operation.write();
-
-                        deviceMessageLog.addVariable(logicalNode, DataAttribute.SWITCH_TYPE, Fc.CO,
-                                SubDataAttribute.OPERATION, SubDataAttribute.CONTROL_VALUE,
-                                Byte.toString(switchTypeValue));
-                    }
-                }
-            }
         };
 
         iec61850Client.sendCommandWithRetry(function, "SetConfiguration", deviceConnection.getDeviceIdentification());

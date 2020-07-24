@@ -179,43 +179,26 @@ public class Iec61850SetScheduleCommand {
                             scheduleNode);
                 }
 
-                private void setTriggerWindow(final DeviceMessageLog deviceMessageLog, final LogicalNode logicalNode,
+                private void setEnabled(final DeviceMessageLog deviceMessageLog, final LogicalNode logicalNode,
                         final ScheduleEntry scheduleEntry, final String scheduleEntryName,
                         final NodeContainer scheduleNode) throws NodeWriteException {
-                    final Integer triggerMinutesBefore = scheduleNode
-                            .getUnsignedShort(SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_BEFORE)
-                            .getValue();
-                    if (triggerMinutesBefore != scheduleEntry.getTriggerWindowMinutesBefore()) {
-                        scheduleNode.writeUnsignedShort(SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_BEFORE,
-                                scheduleEntry.getTriggerWindowMinutesBefore());
+                    final BdaBoolean enabled = scheduleNode.getBoolean(SubDataAttribute.SCHEDULE_ENABLE);
+                    if (enabled.getValue() != scheduleEntry.isEnabled()) {
+                        scheduleNode.writeBoolean(SubDataAttribute.SCHEDULE_ENABLE, scheduleEntry.isEnabled());
                     }
                     deviceMessageLog.addVariable(logicalNode, DataAttribute.SCHEDULE, Fc.CF, scheduleEntryName,
-                            SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_BEFORE,
-                            Integer.toString(scheduleEntry.getTriggerWindowMinutesBefore()));
-
-                    final Integer triggerMinutesAfter = scheduleNode
-                            .getUnsignedShort(SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_AFTER)
-                            .getValue();
-                    if (triggerMinutesAfter != scheduleEntry.getTriggerWindowMinutesAfter()) {
-                        scheduleNode.writeUnsignedShort(SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_AFTER,
-                                scheduleEntry.getTriggerWindowMinutesAfter());
-                    }
-                    deviceMessageLog.addVariable(logicalNode, DataAttribute.SCHEDULE, Fc.CF, scheduleEntryName,
-                            SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_AFTER,
-                            Integer.toString(scheduleEntry.getTriggerWindowMinutesAfter()));
+                            SubDataAttribute.SCHEDULE_ENABLE, Boolean.toString(scheduleEntry.isEnabled()));
                 }
 
-                private void setMinimumTimeOn(final DeviceMessageLog deviceMessageLog, final LogicalNode logicalNode,
+                private void setDay(final DeviceMessageLog deviceMessageLog, final LogicalNode logicalNode,
                         final ScheduleEntry scheduleEntry, final String scheduleEntryName,
                         final NodeContainer scheduleNode) throws NodeWriteException {
-                    final Integer minimumTimeOn = scheduleNode.getUnsignedShort(SubDataAttribute.MINIMUM_TIME_ON)
-                            .getValue();
-                    final Integer newMinimumTimeOn = scheduleEntry.getMinimumLightsOn() / 60;
-                    if (!Objects.equals(minimumTimeOn, newMinimumTimeOn)) {
-                        scheduleNode.writeUnsignedShort(SubDataAttribute.MINIMUM_TIME_ON, newMinimumTimeOn);
+                    final Integer day = scheduleNode.getInteger(SubDataAttribute.SCHEDULE_DAY).getValue();
+                    if (day != scheduleEntry.getDay()) {
+                        scheduleNode.writeInteger(SubDataAttribute.SCHEDULE_DAY, scheduleEntry.getDay());
                     }
                     deviceMessageLog.addVariable(logicalNode, DataAttribute.SCHEDULE, Fc.CF, scheduleEntryName,
-                            SubDataAttribute.MINIMUM_TIME_ON, Integer.toString(newMinimumTimeOn));
+                            SubDataAttribute.SCHEDULE_DAY, Integer.toString(scheduleEntry.getDay()));
                 }
 
                 private void setSwitchTimes(final DeviceMessageLog deviceMessageLog, final LogicalNode logicalNode,
@@ -274,27 +257,45 @@ public class Iec61850SetScheduleCommand {
                             SubDataAttribute.SCHEDULE_TIME_OFF_TYPE, Byte.toString(timeOffTypeValue));
                 }
 
-                private void setDay(final DeviceMessageLog deviceMessageLog, final LogicalNode logicalNode,
+                private void setMinimumTimeOn(final DeviceMessageLog deviceMessageLog, final LogicalNode logicalNode,
                         final ScheduleEntry scheduleEntry, final String scheduleEntryName,
                         final NodeContainer scheduleNode) throws NodeWriteException {
-                    final Integer day = scheduleNode.getInteger(SubDataAttribute.SCHEDULE_DAY).getValue();
-                    if (day != scheduleEntry.getDay()) {
-                        scheduleNode.writeInteger(SubDataAttribute.SCHEDULE_DAY, scheduleEntry.getDay());
+                    final Integer minimumTimeOn = scheduleNode.getUnsignedShort(SubDataAttribute.MINIMUM_TIME_ON)
+                            .getValue();
+                    final Integer newMinimumTimeOn = scheduleEntry.getMinimumLightsOn() / 60;
+                    if (!Objects.equals(minimumTimeOn, newMinimumTimeOn)) {
+                        scheduleNode.writeUnsignedShort(SubDataAttribute.MINIMUM_TIME_ON, newMinimumTimeOn);
                     }
                     deviceMessageLog.addVariable(logicalNode, DataAttribute.SCHEDULE, Fc.CF, scheduleEntryName,
-                            SubDataAttribute.SCHEDULE_DAY, Integer.toString(scheduleEntry.getDay()));
+                            SubDataAttribute.MINIMUM_TIME_ON, Integer.toString(newMinimumTimeOn));
                 }
 
-                private void setEnabled(final DeviceMessageLog deviceMessageLog, final LogicalNode logicalNode,
+                private void setTriggerWindow(final DeviceMessageLog deviceMessageLog, final LogicalNode logicalNode,
                         final ScheduleEntry scheduleEntry, final String scheduleEntryName,
                         final NodeContainer scheduleNode) throws NodeWriteException {
-                    final BdaBoolean enabled = scheduleNode.getBoolean(SubDataAttribute.SCHEDULE_ENABLE);
-                    if (enabled.getValue() != scheduleEntry.isEnabled()) {
-                        scheduleNode.writeBoolean(SubDataAttribute.SCHEDULE_ENABLE, scheduleEntry.isEnabled());
+                    final Integer triggerMinutesBefore = scheduleNode
+                            .getUnsignedShort(SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_BEFORE)
+                            .getValue();
+                    if (triggerMinutesBefore != scheduleEntry.getTriggerWindowMinutesBefore()) {
+                        scheduleNode.writeUnsignedShort(SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_BEFORE,
+                                scheduleEntry.getTriggerWindowMinutesBefore());
                     }
                     deviceMessageLog.addVariable(logicalNode, DataAttribute.SCHEDULE, Fc.CF, scheduleEntryName,
-                            SubDataAttribute.SCHEDULE_ENABLE, Boolean.toString(scheduleEntry.isEnabled()));
+                            SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_BEFORE,
+                            Integer.toString(scheduleEntry.getTriggerWindowMinutesBefore()));
+
+                    final Integer triggerMinutesAfter = scheduleNode
+                            .getUnsignedShort(SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_AFTER)
+                            .getValue();
+                    if (triggerMinutesAfter != scheduleEntry.getTriggerWindowMinutesAfter()) {
+                        scheduleNode.writeUnsignedShort(SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_AFTER,
+                                scheduleEntry.getTriggerWindowMinutesAfter());
+                    }
+                    deviceMessageLog.addVariable(logicalNode, DataAttribute.SCHEDULE, Fc.CF, scheduleEntryName,
+                            SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_AFTER,
+                            Integer.toString(scheduleEntry.getTriggerWindowMinutesAfter()));
                 }
+
             };
 
             iec61850Client.sendCommandWithRetry(function, "SetSchedule", deviceConnection.getDeviceIdentification());

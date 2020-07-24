@@ -90,28 +90,19 @@ public class OslpGetConfigurationResponseToConfigurationConverter
         return configuration;
     }
 
-    private LongTermIntervalTypeDto getLongTermHistoryIntervalType(final Oslp.GetConfigurationResponse source) {
-        return source.hasLongTermHistoryIntervalType()
-                && !source.getLongTermHistoryIntervalType().equals(Oslp.LongTermIntervalType.LT_INT_NOT_SET)
-                        ? this.mapperFacade.map(source.getLongTermHistoryIntervalType(), LongTermIntervalTypeDto.class)
-                        : null;
+    private LightTypeDto getLightType(final Oslp.GetConfigurationResponse source) {
+        return source.hasLightType() ? this.mapperFacade.map(source.getLightType(), LightTypeDto.class) : null;
     }
 
-    private Integer getLongTermHistoryInterval(final Oslp.GetConfigurationResponse source) {
-        return source.hasLongTermHistoryInterval()
-                ? this.mapperFacade.map(source.getLongTermHistoryInterval(), Integer.class)
+    private DaliConfigurationDto getDaliConfiguration(final Oslp.GetConfigurationResponse source) {
+        return source.hasDaliConfiguration()
+                ? this.mapperFacade.map(source.getDaliConfiguration(), DaliConfigurationDto.class)
                 : null;
     }
 
-    private MeterTypeDto getMeterType(final Oslp.GetConfigurationResponse source) {
-        return source.hasMeterType() && !source.getMeterType().equals(Oslp.MeterType.MT_NOT_SET)
-                ? this.mapperFacade.map(source.getMeterType(), MeterTypeDto.class)
-                : null;
-    }
-
-    private LinkTypeDto getPreferredLinkType(final Oslp.GetConfigurationResponse source) {
-        return source.hasPreferredLinkType() && !source.getPreferredLinkType().equals(Oslp.LinkType.LINK_NOT_SET)
-                ? this.mapperFacade.map(source.getPreferredLinkType(), LinkTypeDto.class)
+    private Integer getShortTermHistoryIntervalMinutes(final Oslp.GetConfigurationResponse source) {
+        return source.hasShortTermHistoryIntervalMinutes()
+                ? this.mapperFacade.map(source.getShortTermHistoryIntervalMinutes(), Integer.class)
                 : null;
     }
 
@@ -121,20 +112,29 @@ public class OslpGetConfigurationResponseToConfigurationConverter
                 : new RelayConfigurationDto(new ArrayList<>());
     }
 
-    private Integer getShortTermHistoryIntervalMinutes(final Oslp.GetConfigurationResponse source) {
-        return source.hasShortTermHistoryIntervalMinutes()
-                ? this.mapperFacade.map(source.getShortTermHistoryIntervalMinutes(), Integer.class)
+    private LinkTypeDto getPreferredLinkType(final Oslp.GetConfigurationResponse source) {
+        return source.hasPreferredLinkType() && !source.getPreferredLinkType().equals(Oslp.LinkType.LINK_NOT_SET)
+                ? this.mapperFacade.map(source.getPreferredLinkType(), LinkTypeDto.class)
                 : null;
     }
 
-    private DaliConfigurationDto getDaliConfiguration(final Oslp.GetConfigurationResponse source) {
-        return source.hasDaliConfiguration()
-                ? this.mapperFacade.map(source.getDaliConfiguration(), DaliConfigurationDto.class)
+    private MeterTypeDto getMeterType(final Oslp.GetConfigurationResponse source) {
+        return source.hasMeterType() && !source.getMeterType().equals(Oslp.MeterType.MT_NOT_SET)
+                ? this.mapperFacade.map(source.getMeterType(), MeterTypeDto.class)
                 : null;
     }
 
-    private LightTypeDto getLightType(final Oslp.GetConfigurationResponse source) {
-        return source.hasLightType() ? this.mapperFacade.map(source.getLightType(), LightTypeDto.class) : null;
+    private Integer getLongTermHistoryInterval(final Oslp.GetConfigurationResponse source) {
+        return source.hasLongTermHistoryInterval()
+                ? this.mapperFacade.map(source.getLongTermHistoryInterval(), Integer.class)
+                : null;
+    }
+
+    private LongTermIntervalTypeDto getLongTermHistoryIntervalType(final Oslp.GetConfigurationResponse source) {
+        return source.hasLongTermHistoryIntervalType()
+                && !source.getLongTermHistoryIntervalType().equals(Oslp.LongTermIntervalType.LT_INT_NOT_SET)
+                        ? this.mapperFacade.map(source.getLongTermHistoryIntervalType(), LongTermIntervalTypeDto.class)
+                        : null;
     }
 
     private void setRelayLinking(final Oslp.GetConfigurationResponse source, final ConfigurationDto configuration) {

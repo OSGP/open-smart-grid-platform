@@ -495,7 +495,7 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
             }
         }
 
-        response = this.handleRequest(request, response, device);
+        response = this.checkForRequest(request, device);
 
         // Update device
         device.setSequenceNumber(expectedSequenceNumber);
@@ -507,9 +507,16 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
         return response;
     }
 
+    /**
+     * The cyclomatic complexity of this method is larger than 10. Instead of
+     * creating a number of classes to implement the test and handling of each
+     * request, suppress the SonarQube check for now.
+     */
     @SuppressWarnings("squid:MethodCyclomaticComplexity")
-    private Oslp.Message handleRequest(final Oslp.Message request, Oslp.Message response, final Device device)
-            throws ParseException {
+    private Oslp.Message checkForRequest(final Oslp.Message request, final Device device) throws ParseException {
+
+        Oslp.Message response = null;
+
         // Handle only expected messages
         if (request.hasStartSelfTestRequest()) {
             device.setLightOn(true);
@@ -582,6 +589,7 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
             // Handle errors by logging
             LOGGER.error("Did not expect request, ignoring: {}", request);
         }
+
         return response;
     }
 

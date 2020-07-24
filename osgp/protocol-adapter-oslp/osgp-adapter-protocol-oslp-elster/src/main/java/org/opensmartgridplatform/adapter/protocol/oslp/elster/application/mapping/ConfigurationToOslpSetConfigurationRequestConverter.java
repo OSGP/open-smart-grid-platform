@@ -66,77 +66,108 @@ public class ConfigurationToOslpSetConfigurationRequestConverter
         return setConfigurationRequest.build();
     }
 
-    private void setRelayLinking(final ConfigurationDto source,
+    private void setLightType(final ConfigurationDto source,
             final Oslp.SetConfigurationRequest.Builder setConfigurationRequest) {
-        if (source.getRelayLinking() != null) {
+        if (source.getLightType() != null) {
+            setConfigurationRequest.setLightType(this.mapperFacade.map(source.getLightType(), Oslp.LightType.class));
+        }
+    }
+
+    private void setDaliConfiguration(final ConfigurationDto source,
+            final Oslp.SetConfigurationRequest.Builder setConfigurationRequest) {
+        if (source.getDaliConfiguration() != null) {
+            setConfigurationRequest.setDaliConfiguration(
+                    this.mapperFacade.map(source.getDaliConfiguration(), Oslp.DaliConfiguration.class));
+        }
+    }
+
+    private void setRelayConfiguration(final ConfigurationDto source,
+            final Oslp.SetConfigurationRequest.Builder setConfigurationRequest) {
+        if (source.getRelayConfiguration() != null) {
+            setConfigurationRequest.setRelayConfiguration(
+                    this.mapperFacade.map(source.getRelayConfiguration(), Oslp.RelayConfiguration.class));
+        }
+    }
+
+    private void setShortTermHistoryIntervalMinutes(final ConfigurationDto source,
+            final Oslp.SetConfigurationRequest.Builder setConfigurationRequest) {
+        if (source.getShortTermHistoryIntervalMinutes() != null) {
+            setConfigurationRequest.setShortTermHistoryIntervalMinutes(
+                    this.mapperFacade.map(source.getShortTermHistoryIntervalMinutes(), Integer.class));
+        }
+    }
+
+    private void setLongTermHistoryInterval(final ConfigurationDto source,
+            final Oslp.SetConfigurationRequest.Builder setConfigurationRequest) {
+        if (source.getLongTermHistoryInterval() != null) {
+            setConfigurationRequest.setLongTermHistoryInterval(
+                    this.mapperFacade.map(source.getLongTermHistoryInterval(), Integer.class));
+        }
+    }
+
+    private void setLongTermHistoryIntervalType(final ConfigurationDto source,
+            final Oslp.SetConfigurationRequest.Builder setConfigurationRequest) {
+        if (source.getLongTermHistoryIntervalType() != null) {
+            setConfigurationRequest.setLongTermHistoryIntervalType(
+                    this.mapperFacade.map(source.getLongTermHistoryIntervalType(), Oslp.LongTermIntervalType.class));
+        }
+    }
+
+    private void setPreferredLinkType(final ConfigurationDto source,
+            final Oslp.SetConfigurationRequest.Builder setConfigurationRequest) {
+        if (source.getPreferredLinkType() != null) {
             setConfigurationRequest
-                    .addAllRelayLinking(this.mapperFacade.mapAsList(source.getRelayLinking(), Oslp.RelayMatrix.class));
+                    .setPreferredLinkType(this.mapperFacade.map(source.getPreferredLinkType(), Oslp.LinkType.class));
         }
     }
 
-    private void setSwitchingDelays(final ConfigurationDto source,
+    private void setMeterType(final ConfigurationDto source,
             final Oslp.SetConfigurationRequest.Builder setConfigurationRequest) {
-        if (source.getSwitchingDelays() != null) {
-            setConfigurationRequest.addAllSwitchingDelay(source.getSwitchingDelays());
+        if (source.getMeterType() != null) {
+            setConfigurationRequest.setMeterType(this.mapperFacade.map(source.getMeterType(), Oslp.MeterType.class));
         }
     }
 
-    private void setWinterTimeDetails(final ConfigurationDto source,
+    private void setAstroGateSunRiseOffset(final ConfigurationDto source,
             final Oslp.SetConfigurationRequest.Builder setConfigurationRequest) {
-        if (source.getWinterTimeDetails() != null) {
-            final String winterTimeDetails = this.convertSummerTimeWinterTimeDetails(source.getWinterTimeDetails());
-            setConfigurationRequest.setWinterTimeDetails(winterTimeDetails);
+        if (source.getAstroGateSunRiseOffset() != null) {
+            setConfigurationRequest.setAstroGateSunRiseOffset(source.getAstroGateSunRiseOffset() * SECONDS_PER_MINUTE);
         }
     }
 
-    private void setTimeSyncFrequency(final ConfigurationDto source,
+    private void setAstroGateSunSetOffset(final ConfigurationDto source,
             final Oslp.SetConfigurationRequest.Builder setConfigurationRequest) {
-        if (source.getTimeSyncFrequency() != null) {
-            setConfigurationRequest.setTimeSyncFrequency(source.getTimeSyncFrequency());
+        if (source.getAstroGateSunSetOffset() != null) {
+            setConfigurationRequest.setAstroGateSunSetOffset(source.getAstroGateSunSetOffset() * SECONDS_PER_MINUTE);
         }
     }
 
-    private void setIsTestButtonEnabled(final ConfigurationDto source,
+    private void setIsAutomaticSummerTimingEnabled(final ConfigurationDto source,
             final Oslp.SetConfigurationRequest.Builder setConfigurationRequest) {
-        if (source.isTestButtonEnabled() != null) {
-            setConfigurationRequest.setIsTestButtonEnabled(source.isTestButtonEnabled());
+        if (source.isAutomaticSummerTimingEnabled() != null) {
+            setConfigurationRequest.setIsAutomaticSummerTimingEnabled(source.isAutomaticSummerTimingEnabled());
         }
     }
 
-    private void setSummerTimeDetails(final ConfigurationDto source,
+    private void setCommunicationNumberOfRetries(final ConfigurationDto source,
             final Oslp.SetConfigurationRequest.Builder setConfigurationRequest) {
-        if (source.getSummerTimeDetails() != null) {
-            final String summerTimeDetails = this.convertSummerTimeWinterTimeDetails(source.getSummerTimeDetails());
-            setConfigurationRequest.setSummerTimeDetails(summerTimeDetails);
+        if (source.getCommunicationNumberOfRetries() != null) {
+            setConfigurationRequest.setCommunicationNumberOfRetries(source.getCommunicationNumberOfRetries());
         }
     }
 
-    private void setRelayRefreshing(final ConfigurationDto source,
+    private void setCommunicationPauseTimeBetweenConnectionTrials(final ConfigurationDto source,
             final Oslp.SetConfigurationRequest.Builder setConfigurationRequest) {
-        if (source.isRelayRefreshing() != null) {
-            setConfigurationRequest.setRelayRefreshing(source.isRelayRefreshing());
+        if (source.getCommunicationPauseTimeBetweenConnectionTrials() != null) {
+            setConfigurationRequest.setCommunicationPauseTimeBetweenConnectionTrials(
+                    source.getCommunicationPauseTimeBetweenConnectionTrials());
         }
     }
 
-    private void setOsgpIpAddress(final ConfigurationDto source,
+    private void setCommunicationTimeout(final ConfigurationDto source,
             final Oslp.SetConfigurationRequest.Builder setConfigurationRequest) {
-        if (source.getOsgpIpAddres() != null) {
-            setConfigurationRequest
-                    .setOspgIpAddress(this.convertTextualIpAddressToByteString(source.getOsgpIpAddres()));
-        }
-    }
-
-    private void setOsgpPortNumber(final ConfigurationDto source,
-            final Oslp.SetConfigurationRequest.Builder setConfigurationRequest) {
-        if (source.getOsgpPortNumber() != null) {
-            setConfigurationRequest.setOsgpPortNumber(source.getOsgpPortNumber());
-        }
-    }
-
-    private void setIsDhcpEnabled(final ConfigurationDto source,
-            final Oslp.SetConfigurationRequest.Builder setConfigurationRequest) {
-        if (source.isDhcpEnabled() != null) {
-            setConfigurationRequest.setIsDhcpEnabled(source.isDhcpEnabled());
+        if (source.getCommunicationTimeout() != null) {
+            setConfigurationRequest.setCommunicationTimeout(source.getCommunicationTimeout());
         }
     }
 
@@ -152,108 +183,77 @@ public class ConfigurationToOslpSetConfigurationRequestConverter
         }
     }
 
-    private void setCommunicationTimeout(final ConfigurationDto source,
+    private void setIsDhcpEnabled(final ConfigurationDto source,
             final Oslp.SetConfigurationRequest.Builder setConfigurationRequest) {
-        if (source.getCommunicationTimeout() != null) {
-            setConfigurationRequest.setCommunicationTimeout(source.getCommunicationTimeout());
+        if (source.isDhcpEnabled() != null) {
+            setConfigurationRequest.setIsDhcpEnabled(source.isDhcpEnabled());
         }
     }
 
-    private void setCommunicationPauseTimeBetweenConnectionTrials(final ConfigurationDto source,
+    private void setOsgpPortNumber(final ConfigurationDto source,
             final Oslp.SetConfigurationRequest.Builder setConfigurationRequest) {
-        if (source.getCommunicationPauseTimeBetweenConnectionTrials() != null) {
-            setConfigurationRequest.setCommunicationPauseTimeBetweenConnectionTrials(
-                    source.getCommunicationPauseTimeBetweenConnectionTrials());
+        if (source.getOsgpPortNumber() != null) {
+            setConfigurationRequest.setOsgpPortNumber(source.getOsgpPortNumber());
         }
     }
 
-    private void setCommunicationNumberOfRetries(final ConfigurationDto source,
+    private void setOsgpIpAddress(final ConfigurationDto source,
             final Oslp.SetConfigurationRequest.Builder setConfigurationRequest) {
-        if (source.getCommunicationNumberOfRetries() != null) {
-            setConfigurationRequest.setCommunicationNumberOfRetries(source.getCommunicationNumberOfRetries());
-        }
-    }
-
-    private void setIsAutomaticSummerTimingEnabled(final ConfigurationDto source,
-            final Oslp.SetConfigurationRequest.Builder setConfigurationRequest) {
-        if (source.isAutomaticSummerTimingEnabled() != null) {
-            setConfigurationRequest.setIsAutomaticSummerTimingEnabled(source.isAutomaticSummerTimingEnabled());
-        }
-    }
-
-    private void setAstroGateSunSetOffset(final ConfigurationDto source,
-            final Oslp.SetConfigurationRequest.Builder setConfigurationRequest) {
-        if (source.getAstroGateSunSetOffset() != null) {
-            setConfigurationRequest.setAstroGateSunSetOffset(source.getAstroGateSunSetOffset() * SECONDS_PER_MINUTE);
-        }
-    }
-
-    private void setAstroGateSunRiseOffset(final ConfigurationDto source,
-            final Oslp.SetConfigurationRequest.Builder setConfigurationRequest) {
-        if (source.getAstroGateSunRiseOffset() != null) {
-            setConfigurationRequest.setAstroGateSunRiseOffset(source.getAstroGateSunRiseOffset() * SECONDS_PER_MINUTE);
-        }
-    }
-
-    private void setMeterType(final ConfigurationDto source,
-            final Oslp.SetConfigurationRequest.Builder setConfigurationRequest) {
-        if (source.getMeterType() != null) {
-            setConfigurationRequest.setMeterType(this.mapperFacade.map(source.getMeterType(), Oslp.MeterType.class));
-        }
-    }
-
-    private void setPreferredLinkType(final ConfigurationDto source,
-            final Oslp.SetConfigurationRequest.Builder setConfigurationRequest) {
-        if (source.getPreferredLinkType() != null) {
+        if (source.getOsgpIpAddres() != null) {
             setConfigurationRequest
-                    .setPreferredLinkType(this.mapperFacade.map(source.getPreferredLinkType(), Oslp.LinkType.class));
+                    .setOspgIpAddress(this.convertTextualIpAddressToByteString(source.getOsgpIpAddres()));
         }
     }
 
-    private void setLongTermHistoryIntervalType(final ConfigurationDto source,
+    private void setRelayRefreshing(final ConfigurationDto source,
             final Oslp.SetConfigurationRequest.Builder setConfigurationRequest) {
-        if (source.getLongTermHistoryIntervalType() != null) {
-            setConfigurationRequest.setLongTermHistoryIntervalType(
-                    this.mapperFacade.map(source.getLongTermHistoryIntervalType(), Oslp.LongTermIntervalType.class));
+        if (source.isRelayRefreshing() != null) {
+            setConfigurationRequest.setRelayRefreshing(source.isRelayRefreshing());
         }
     }
 
-    private void setLongTermHistoryInterval(final ConfigurationDto source,
+    private void setSummerTimeDetails(final ConfigurationDto source,
             final Oslp.SetConfigurationRequest.Builder setConfigurationRequest) {
-        if (source.getLongTermHistoryInterval() != null) {
-            setConfigurationRequest.setLongTermHistoryInterval(
-                    this.mapperFacade.map(source.getLongTermHistoryInterval(), Integer.class));
+        if (source.getSummerTimeDetails() != null) {
+            final String summerTimeDetails = this.convertSummerTimeWinterTimeDetails(source.getSummerTimeDetails());
+            setConfigurationRequest.setSummerTimeDetails(summerTimeDetails);
         }
     }
 
-    private void setShortTermHistoryIntervalMinutes(final ConfigurationDto source,
+    private void setIsTestButtonEnabled(final ConfigurationDto source,
             final Oslp.SetConfigurationRequest.Builder setConfigurationRequest) {
-        if (source.getShortTermHistoryIntervalMinutes() != null) {
-            setConfigurationRequest.setShortTermHistoryIntervalMinutes(
-                    this.mapperFacade.map(source.getShortTermHistoryIntervalMinutes(), Integer.class));
+        if (source.isTestButtonEnabled() != null) {
+            setConfigurationRequest.setIsTestButtonEnabled(source.isTestButtonEnabled());
         }
     }
 
-    private void setRelayConfiguration(final ConfigurationDto source,
+    private void setTimeSyncFrequency(final ConfigurationDto source,
             final Oslp.SetConfigurationRequest.Builder setConfigurationRequest) {
-        if (source.getRelayConfiguration() != null) {
-            setConfigurationRequest.setRelayConfiguration(
-                    this.mapperFacade.map(source.getRelayConfiguration(), Oslp.RelayConfiguration.class));
+        if (source.getTimeSyncFrequency() != null) {
+            setConfigurationRequest.setTimeSyncFrequency(source.getTimeSyncFrequency());
         }
     }
 
-    private void setDaliConfiguration(final ConfigurationDto source,
+    private void setWinterTimeDetails(final ConfigurationDto source,
             final Oslp.SetConfigurationRequest.Builder setConfigurationRequest) {
-        if (source.getDaliConfiguration() != null) {
-            setConfigurationRequest.setDaliConfiguration(
-                    this.mapperFacade.map(source.getDaliConfiguration(), Oslp.DaliConfiguration.class));
+        if (source.getWinterTimeDetails() != null) {
+            final String winterTimeDetails = this.convertSummerTimeWinterTimeDetails(source.getWinterTimeDetails());
+            setConfigurationRequest.setWinterTimeDetails(winterTimeDetails);
         }
     }
 
-    private void setLightType(final ConfigurationDto source,
+    private void setSwitchingDelays(final ConfigurationDto source,
             final Oslp.SetConfigurationRequest.Builder setConfigurationRequest) {
-        if (source.getLightType() != null) {
-            setConfigurationRequest.setLightType(this.mapperFacade.map(source.getLightType(), Oslp.LightType.class));
+        if (source.getSwitchingDelays() != null) {
+            setConfigurationRequest.addAllSwitchingDelay(source.getSwitchingDelays());
+        }
+    }
+
+    private void setRelayLinking(final ConfigurationDto source,
+            final Oslp.SetConfigurationRequest.Builder setConfigurationRequest) {
+        if (source.getRelayLinking() != null) {
+            setConfigurationRequest
+                    .addAllRelayLinking(this.mapperFacade.mapAsList(source.getRelayLinking(), Oslp.RelayMatrix.class));
         }
     }
 

@@ -207,22 +207,25 @@ public class DaylightSavingTimeTransition {
                 } catch (final NumberFormatException nfe) {
                     return false;
                 }
-                final boolean validRange = this.checkRange(m, w, d);
-                if (timeSeparatorPos == -1) {
-                    return true;
-                }
-                return validRange && transition.length() > timeSeparatorPos
-                        && this.isValidTime(transition.substring(timeSeparatorPos + 1));
+                return this.checkTransitionTime(transition, timeSeparatorPos, m, w, d);
             }
 
-            private boolean checkRange(final int m, final int w, final int d) {
+            private boolean checkTransitionTime(final String transition, final int timeSeparatorPos, final int m,
+                    final int w, final int d) {
                 if (m < 1 || m > 12) {
                     return false;
                 }
                 if (w < 1 || w > 5) {
                     return false;
                 }
-                return !(d < 0 || d > 6);
+                if (d < 0 || d > 6) {
+                    return false;
+                }
+                if (timeSeparatorPos == -1) {
+                    return true;
+                }
+                return transition.length() > timeSeparatorPos
+                        && this.isValidTime(transition.substring(timeSeparatorPos + 1));
             }
 
             @Override

@@ -12,6 +12,7 @@ import javax.validation.ConstraintValidatorContext;
 import javax.validation.ValidationException;
 
 import org.opensmartgridplatform.domain.core.valueobjects.Configuration;
+import org.opensmartgridplatform.domain.core.valueobjects.LongTermIntervalType;
 
 public class LongTermIntervalAndLongTermIntervalTypeValidator
         implements ConstraintValidator<LongTermIntervalAndLongTermIntervalType, Configuration> {
@@ -35,13 +36,13 @@ public class LongTermIntervalAndLongTermIntervalTypeValidator
         // permitted values, defined by the ranges:
         // - from 1 to 30 for long term history interval type DAYS.
         // - from 1 to 12 for long term history interval type MONTHS.
-        return this.checkRanges(value);
+        final int interval = value.getLongTermHistoryInterval();
+        final LongTermIntervalType type = value.getLongTermHistoryIntervalType();
+        return this.checkRanges(interval, type);
     }
 
-    protected boolean checkRanges(final Configuration value) {
-        final int interval = value.getLongTermHistoryInterval();
-
-        switch (value.getLongTermHistoryIntervalType()) {
+    private boolean checkRanges(final int interval, final LongTermIntervalType type) {
+        switch (type) {
         case DAYS:
             if (interval >= 1 && interval <= 30) {
                 return true;
