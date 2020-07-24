@@ -23,6 +23,13 @@ public class SimpleStringToAnalogList implements StringArrayToAnalogList {
 
     @Override
     public List<Analog> convertToAnalogList(final String[] values) {
+
+        final int lengthOfInputArray = values.length;
+        if (lengthOfInputArray != END_INDEX) {
+            throw new IllegalArgumentException(
+                    "Invalid value string length " + lengthOfInputArray + ", expected " + END_INDEX);
+        }
+
         final List<Analog> measurements = new ArrayList<>();
 
         final String eanCode = values[0];

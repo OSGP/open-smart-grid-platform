@@ -22,12 +22,15 @@ import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.metadata.Type;
 
 /**
- * Class for mapping String containing a measurement to
- * GridMeasurementPublishedEvent
+ * Class for mapping String containing a simple measurement or ls peak shaving
+ * measurement to GridMeasurementPublishedEvent
  * <p>
- * measurement: ean_code; voltage_L1; voltage_L2; voltage_L3; current_in_L1;
- * current_in_L2; current_in_L3; current_returned_L1; current_returned_L2;
- * current_returned_L3;
+ * simple measurement: ean_code; voltage_L1; voltage_L2; voltage_L3;
+ * current_in_L1; current_in_L2; current_in_L3; current_returned_L1;
+ * current_returned_L2; current_returned_L3;
+ * <p>
+ * ls peak shaving measurement: ean_code + the values of
+ * LsPeakShavingMeasurementType seperated by semicolons.
  */
 public class GridMeasurementPublishedEventConverter extends CustomConverter<String, GridMeasurementPublishedEvent> {
 
@@ -43,7 +46,7 @@ public class GridMeasurementPublishedEventConverter extends CustomConverter<Stri
         final String[] values = source.split(";");
         if (values.length == SIMPLE_END_INDEX) {
             stringArrayToAnalogList = new SimpleStringToAnalogList();
-        } else if (values.length == (LsPeakShavingMeasurementType.getNumberOfElements() + 1)) {
+        } else if (values.length == LsPeakShavingMeasurementType.getNumberOfElements() + 1) {
             stringArrayToAnalogList = new LsMeasurementMessageToAnalogList();
         } else {
             LOGGER.error("String '{}' does not have the expected amount of fields, abandoning conversion", source);
