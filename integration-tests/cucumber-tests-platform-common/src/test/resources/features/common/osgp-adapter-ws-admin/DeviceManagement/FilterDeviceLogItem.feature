@@ -77,7 +77,7 @@ Feature: Filter device messages
     Examples: 
       | StartTime            | EndTime              | Amount |
       | 2020-01-01T00:00:00Z | 2020-05-01T00:00:00Z |      0 |
-      | 2020-01-01T00:00:00Z | 2025-01-01T00:00:00Z |     15 |
+      | 2020-01-01T00:00:00Z | 2040-01-01T00:00:00Z |     15 |
 
   Scenario Outline: Filter messages on Start or End Date
     When receiving a filter message log request
