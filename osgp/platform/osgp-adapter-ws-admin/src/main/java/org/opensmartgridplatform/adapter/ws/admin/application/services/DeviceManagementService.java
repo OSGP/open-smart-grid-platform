@@ -7,11 +7,6 @@
  */
 package org.opensmartgridplatform.adapter.ws.admin.application.services;
 
-import static org.opensmartgridplatform.adapter.ws.admin.application.services.DeviceLogItemSpecifications.hasDeviceIdentification;
-import static org.opensmartgridplatform.adapter.ws.admin.application.services.DeviceLogItemSpecifications.hasEndDate;
-import static org.opensmartgridplatform.adapter.ws.admin.application.services.DeviceLogItemSpecifications.hasOrganisationIdentification;
-import static org.opensmartgridplatform.adapter.ws.admin.application.services.DeviceLogItemSpecifications.hasStartDate;
-
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
@@ -20,10 +15,12 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
+import org.opensmartgridplatform.adapter.ws.admin.application.specifications.DeviceLogItemSpecifications;
 import org.opensmartgridplatform.adapter.ws.admin.application.valueobjects.WsMessageLogFilter;
 import org.opensmartgridplatform.adapter.ws.admin.infra.jms.AdminRequestMessage;
 import org.opensmartgridplatform.adapter.ws.admin.infra.jms.AdminRequestMessageSender;
 import org.opensmartgridplatform.adapter.ws.admin.infra.jms.AdminResponseMessageFinder;
+import org.opensmartgridplatform.adapter.ws.admin.infra.specifications.JpaDeviceLogItemSpecifications;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
 import org.opensmartgridplatform.domain.core.entities.Event;
@@ -346,10 +343,12 @@ public class DeviceManagementService {
     }
 
     private Specification<DeviceLogItem> applyFilter(final WsMessageLogFilter filter) {
-        return hasDeviceIdentification(filter.getDeviceIdentification())
-                .and(hasOrganisationIdentification(filter.getOrganisationIdentification()))
-                .and(hasStartDate(filter.getStartTime()))
-                .and(hasEndDate(filter.getEndTime()));
+        final DeviceLogItemSpecifications specifications = new JpaDeviceLogItemSpecifications();
+
+        return specifications.hasDeviceIdentification(filter.getDeviceIdentification())
+                .and(specifications.hasOrganisationIdentification(filter.getOrganisationIdentification()))
+                .and(specifications.hasStartDate(filter.getStartTime()))
+                .and(specifications.hasEndDate(filter.getEndTime()));
     }
 
     // === REMOVE DEVICE ===
