@@ -39,14 +39,15 @@ public class FilterMessageLogsSteps {
     private AdminDeviceManagementClient client;
 
     @When("receiving a message log request without a filter")
-    public void getMessageLogNoFilter() throws WebServiceSecurityException {
+    public void receivingAMessageLogRequestWithoutAFilter() throws WebServiceSecurityException {
         final FindMessageLogsRequest request = new FindMessageLogsRequest();
         request.setMessageLogFilter(new MessageLogFilter());
         ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.client.findMessageLogs(request));
     }
 
     @When("^receiving a filter message log request$")
-    public void getMessageLogFilter(final Map<String, String> requestParameters) throws WebServiceSecurityException {
+    public void receivingAFilterMessageLogRequest(final Map<String, String> requestParameters)
+            throws WebServiceSecurityException {
         final FindMessageLogsRequest request = new FindMessageLogsRequest();
         final MessageLogFilter filter = new MessageLogFilter();
 
@@ -85,13 +86,13 @@ public class FilterMessageLogsSteps {
     }
 
     @Then("the messages response contains {int} messages")
-    public void theGetMessageLogsDateFilterSuccessFul(final int amount) {
+    public void theMessagesResponseContainsMessages(final int amount) {
         final List<MessageLog> messageLogs = this.getMessageLogs();
         assertThat(messageLogs.size()).isEqualTo(amount);
     }
 
     @Then("the messages response contains {int} messages for")
-    public void theGetMessageLogsFilterSuccesful(final int amount, final Map<String, String> requestParameters) {
+    public void theMessagesResponseContainsMessagesFor(final int amount, final Map<String, String> requestParameters) {
         final List<MessageLog> messageLogs = this.getMessageLogs();
         assertThat(messageLogs.size()).isEqualTo(amount);
         for (final MessageLog log : messageLogs) {
@@ -108,7 +109,7 @@ public class FilterMessageLogsSteps {
     }
 
     @Then("the messages response contains {int} messages for devices")
-    public void theGetMessageLogsDeviceWildcardFeatureSuccesful(final int amount, final List<String> ids) {
+    public void theMessagesResponseContainsMessagesForDevices(final int amount, final List<String> ids) {
         final List<MessageLog> messageLogs = this.getMessageLogs();
         assertThat(messageLogs.size()).isEqualTo(amount);
 
@@ -118,7 +119,7 @@ public class FilterMessageLogsSteps {
     }
 
     @Then("the messages response contains {int} messages ordered descending by device identification")
-    public void theGetMessageLogsInOrder(final int amount) {
+    public void theMessagesResponseContainsMessagesOrderedDescendingByDeviceIdentification(final int amount) {
         final List<MessageLog> messageLogs = this.getMessageLogs();
         assertThat(messageLogs.size()).isEqualTo(amount);
 
