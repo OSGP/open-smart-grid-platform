@@ -26,7 +26,6 @@ Feature: Filter device messages
       | DEV-1  |
       | DEV-11 |
 
-  @NightlyBuildOnly
   Scenario: Use wildcard filter for Organisation Identification
     When receiving a filter message log request
       | OrganizationIdentification | Li?nder |
@@ -34,7 +33,6 @@ Feature: Filter device messages
       | DEV-1 |
       | DEV-2 |
 
-  @NightlyBuildOnly
   Scenario: Filter messages only on Organisation Identification
     When receiving a filter message log request
       | OrganizationIdentification | Liander |
@@ -70,7 +68,6 @@ Feature: Filter device messages
       | 2020-01-01T00:00:00Z | 2020-05-01T00:00:00Z |      0 |
       | 2020-01-01T00:00:00Z | 2040-01-01T00:00:00Z |      5 |
 
-  @NightlyBuildOnly
   Scenario Outline: Filter messages within two dates
     When receiving a filter message log request
       | StartTime | <StartTime> |
@@ -82,7 +79,6 @@ Feature: Filter device messages
       | 2020-01-01T00:00:00Z | 2020-05-01T00:00:00Z |      0 |
       | 2020-01-01T00:00:00Z | 2025-01-01T00:00:00Z |     15 |
 
-  @NightlyBuildOnly
   Scenario Outline: Filter messages on Start or End Date
     When receiving a filter message log request
       | <TimeFilter> | <Time> |
