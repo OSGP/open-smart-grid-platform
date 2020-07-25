@@ -10,6 +10,7 @@ package org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.opensmartgridplatform.adapter.kafka.da.avro.GridMeasurementPublishedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,15 +25,15 @@ public class PeakShavingConsumer {
     @Value("${peakshaving.kafka.consumer.wait.fail.duration:90000}")
     private long waitFailMillis;
 
-    private ConsumerRecord<String, String> consumerRecord;
+    private ConsumerRecord<String, GridMeasurementPublishedEvent> consumerRecord;
 
     @KafkaListener(containerFactory = "peakShavingKafkaListenerContainerFactory", topics = "${peakshaving.kafka.topic}")
-    public void listen(final ConsumerRecord<String, String> consumerRecord) {
+    public void listen(final ConsumerRecord<String, GridMeasurementPublishedEvent> consumerRecord) {
         LOGGER.info("received consumerRecord");
         this.consumerRecord = consumerRecord;
     }
 
-    public void checkKafkaOutput(final String expectedMessage) {
+    public void checkKafkaOutput(final GridMeasurementPublishedEvent expectedMessage) {
 
         final long startTime = System.currentTimeMillis();
         long remaining = this.waitFailMillis;
@@ -41,7 +42,13 @@ public class PeakShavingConsumer {
             remaining = this.waitFailMillis - elapsed;
         }
         assertThat(this.consumerRecord).isNotNull();
-        assertThat(this.consumerRecord.value()).isEqualTo(expectedMessage);
+        final GridMeasurementPublishedEvent message = this.consumerRecord.value();
+        assertThat(message).isEqualToComparingOnlyGivenFields(expectedMessage, "description", "kind");
+        assertThat(message.getPowerSystemResource())
+                .isEqualToComparingOnlyGivenFields(expectedMessage.getPowerSystemResource(), "description");
+        assertThat(message.getMeasurements()).usingElementComparatorIgnoringFields("mRID")
+                .isEqualTo(expectedMessage.getMeasurements());
+
     }
 
 }
