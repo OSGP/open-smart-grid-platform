@@ -17,7 +17,7 @@ Feature: Filter device messages
 
   Scenario: No filters set so getting all the messages
     When receiving a message log request without a filter
-    Then the messages response contains 15 messages with date filter or no filter
+    Then the messages response contains 15 messages
 
   Scenario: Use wildcard filter for Device Identification
     When receiving a filter message log request
@@ -36,14 +36,14 @@ Feature: Filter device messages
   Scenario: Filter messages only on Organisation Identification
     When receiving a filter message log request
       | OrganizationIdentification | Liander |
-    Then the messages response contains 11 messages
+    Then the messages response contains 11 messages for
       | OrganizationIdentification | Liander |
 
   Scenario: Filter messages on Organisation Identification and Device Identification
     When receiving a filter message log request
       | DeviceIdentification       | DEV-2   |
       | OrganizationIdentification | Liander |
-    Then the messages response contains 5 messages
+    Then the messages response contains 5 messages for
       | DeviceIdentification       | DEV-2   |
       | OrganizationIdentification | Liander |
 
@@ -59,7 +59,7 @@ Feature: Filter device messages
       | DeviceIdentification       | DEV-2       |
       | StartTime                  | <StartTime> |
       | EndTime                    | <EndTime>   |
-    Then the messages response contains <Amount> messages
+    Then the messages response contains <Amount> messages for
       | OrganizationIdentification | Liander |
       | DeviceIdentification       | DEV-2   |
 
@@ -72,7 +72,7 @@ Feature: Filter device messages
     When receiving a filter message log request
       | StartTime | <StartTime> |
       | EndTime   | <EndTime>   |
-    Then the messages response contains <Amount> messages with date filter or no filter
+    Then the messages response contains <Amount> messages
 
     Examples: 
       | StartTime            | EndTime              | Amount |
@@ -82,7 +82,7 @@ Feature: Filter device messages
   Scenario Outline: Filter messages on Start or End Date
     When receiving a filter message log request
       | <TimeFilter> | <Time> |
-    Then the messages response contains <Amount> messages with date filter or no filter
+    Then the messages response contains <Amount> messages
 
     Examples: 
       | TimeFilter | Time                 | Amount |

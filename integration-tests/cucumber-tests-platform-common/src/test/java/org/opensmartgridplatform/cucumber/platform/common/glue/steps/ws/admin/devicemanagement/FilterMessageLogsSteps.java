@@ -85,6 +85,12 @@ public class FilterMessageLogsSteps {
     }
 
     @Then("the messages response contains {int} messages")
+    public void theGetMessageLogsDateFilterSuccessFul(final int amount) {
+        final List<MessageLog> messageLogs = this.getMessageLogs();
+        assertThat(messageLogs.size()).isEqualTo(amount);
+    }
+
+    @Then("the messages response contains {int} messages for")
     public void theGetMessageLogsFilterSuccesful(final int amount, final Map<String, String> requestParameters) {
         final List<MessageLog> messageLogs = this.getMessageLogs();
         assertThat(messageLogs.size()).isEqualTo(amount);
@@ -109,12 +115,6 @@ public class FilterMessageLogsSteps {
         for (final MessageLog log : messageLogs) {
             assertThat(ids).contains(log.getDeviceIdentification());
         }
-    }
-
-    @Then("the messages response contains {int} messages with date filter or no filter")
-    public void theGetMessageLogsDateFilterSuccessFul(final int amount) {
-        final List<MessageLog> messageLogs = this.getMessageLogs();
-        assertThat(messageLogs.size()).isEqualTo(amount);
     }
 
     @Then("the messages response contains {int} messages ordered descending by device identification")
