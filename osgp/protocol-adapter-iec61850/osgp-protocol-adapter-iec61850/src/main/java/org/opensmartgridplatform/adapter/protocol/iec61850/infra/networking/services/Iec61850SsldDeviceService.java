@@ -425,9 +425,9 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
             // Getting the SSLD for the device output-settings.
             final Ssld ssld = this.ssldDataService.findDevice(deviceRequest.getDeviceIdentification());
 
-            new Iec61850SetScheduleCommand(this.deviceMessageLoggingService).setScheduleOnDevice(this.iec61850Client,
-                    deviceConnection, deviceRequest.getRelayType(), deviceRequest.getSchedule(), ssld,
-                    this.ssldDataService);
+            new Iec61850SetScheduleCommand(this.deviceMessageLoggingService, this.ssldDataService).setScheduleOnDevice(
+                    this.iec61850Client, deviceConnection, deviceRequest.getRelayType(), deviceRequest.getSchedule(),
+                    ssld);
 
             this.createSuccessfulDefaultResponse(deviceRequest, deviceResponseHandler);
         } catch (final ConnectionFailureException se) {

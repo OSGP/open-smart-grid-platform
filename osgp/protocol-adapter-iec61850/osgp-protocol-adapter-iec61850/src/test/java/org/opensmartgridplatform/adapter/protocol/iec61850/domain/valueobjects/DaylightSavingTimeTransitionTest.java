@@ -195,4 +195,9 @@ public class DaylightSavingTimeTransitionTest {
                         DaylightSavingTimeTransition.DstTransitionFormat.JULIAN_DAY_IGNORING_FEBRUARY_29)
                 .getTransition()).isEqualTo(DST_END_J_IGNORING_FEB29_AMSTERDAM_2016);
     }
+
+    @Test
+    public void testDayOfWeekOfMonthTransitionValidationExceedsMaxMonth() {
+        assertThat(DaylightSavingTimeTransition.DstTransitionFormat.DAY_OF_WEEK_OF_MONTH.isValid("M13.5.0")).isFalse();
+    }
 }

@@ -227,8 +227,8 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
     }
 
     /**
-     * Get an OutOfSequenceEvent for given device id. The OutOfSequenceEvent instance will be removed from the list,
-     * before the instance is returned.
+     * Get an OutOfSequenceEvent for given device id. The OutOfSequenceEvent
+     * instance will be removed from the list, before the instance is returned.
      *
      * @param deviceId
      *            The id of the device.
@@ -417,8 +417,9 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
             LOGGER.info("Received OSLP response (after callback): {}", response.getPayloadMessage());
 
             /*
-             * Devices expect the channel to be closed if - and only if - the platform initiated the conversation. If
-             * the device initiated the conversation it needs to close the channel itself.
+             * Devices expect the channel to be closed if - and only if - the
+             * platform initiated the conversation. If the device initiated the
+             * conversation it needs to close the channel itself.
              */
             channelFuture.channel().close();
 
@@ -450,7 +451,7 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
     }
 
     private Oslp.Message handleRequest(final OslpEnvelope message, final int sequenceNumber)
-            throws DeviceSimulatorException, IOException, ParseException {
+            throws DeviceSimulatorException, ParseException {
         final Oslp.Message request = message.getPayloadMessage();
 
         // Create response message
@@ -493,6 +494,28 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
                 this.sleep(this.responseDelayTime + randomDelay);
             }
         }
+
+        response = this.checkForRequest(request, device);
+
+        // Update device
+        device.setSequenceNumber(expectedSequenceNumber);
+        this.deviceManagementService.updateDevice(device);
+
+        // Write log entry for response
+        LOGGER.debug("Responding: {}", response);
+
+        return response;
+    }
+
+    /**
+     * The cyclomatic complexity of this method is larger than 10. Instead of
+     * creating a number of classes to implement the test and handling of each
+     * request, suppress the SonarQube check for now.
+     */
+    @SuppressWarnings("squid:MethodCyclomaticComplexity")
+    private Oslp.Message checkForRequest(final Oslp.Message request, final Device device) throws ParseException {
+
+        Oslp.Message response = null;
 
         // Handle only expected messages
         if (request.hasStartSelfTestRequest()) {
@@ -566,13 +589,6 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
             // Handle errors by logging
             LOGGER.error("Did not expect request, ignoring: {}", request);
         }
-
-        // Update device
-        device.setSequenceNumber(expectedSequenceNumber);
-        this.deviceManagementService.updateDevice(device);
-
-        // Write log entry for response
-        LOGGER.debug("Responding: {}", response);
 
         return response;
     }
