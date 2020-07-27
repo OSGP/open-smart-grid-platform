@@ -14,7 +14,7 @@
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>shared-components</artifactId>
-  <version>5.1.0</version>
+  <version>5.2.0</version>
   <packaging>pom</packaging>
   <name>shared</name>
   <properties>
@@ -96,6 +96,7 @@
     <module>osgp-dto</module>
     <module>osgp-kafka-distributionautomation</module>
     <module>osgp-kafka-logger</module>
+    <module>osgp-ws-secret-management</module>
     <module>osgp-ws-smartmetering</module>
     <module>osgp-ws-core</module>
     <module>osgp-ws-admin</module>

@@ -13,7 +13,7 @@
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>platform</artifactId>
-  <version>5.1.0</version>
+  <version>5.2.0</version>
   <packaging>pom</packaging>
 
   <properties>
@@ -129,6 +129,9 @@
     <!-- Core -->
     <module>osgp-logging</module>
     <module>osgp-core</module>
+
+    <!-- Other -->
+    <module>osgp-secret-management</module>
   </modules>
 
 </project>

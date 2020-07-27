@@ -7,17 +7,18 @@
  */
 package org.opensmartgridplatform.adapter.ws.publiclighting.application.mapping;
 
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.ConfigurableMapper;
-
+import org.opensmartgridplatform.adapter.ws.publiclighting.application.mapping.converters.DeviceConverter;
+import org.opensmartgridplatform.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
 import org.springframework.stereotype.Component;
 
-import org.opensmartgridplatform.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
+import ma.glasnost.orika.MapperFactory;
+import ma.glasnost.orika.impl.ConfigurableMapper;
 
 @Component(value = "publicLightingAdhocManagementMapper")
 public class AdHocManagementMapper extends ConfigurableMapper {
     @Override
     public void configure(final MapperFactory mapperFactory) {
         mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
+        mapperFactory.getConverterFactory().registerConverter(new DeviceConverter());
     }
 }

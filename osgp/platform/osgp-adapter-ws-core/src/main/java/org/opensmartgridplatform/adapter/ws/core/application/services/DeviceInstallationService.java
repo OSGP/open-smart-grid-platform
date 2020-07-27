@@ -123,26 +123,13 @@ public class DeviceInstallationService {
         ssld.setHasSchedule(false);
         ssld.setDeviceModel(newDevice.getDeviceModel());
 
-        // If the device doesn't exists yet, and the optional
-        // ownerOrganisationIdentification is given, create the device and
-        // owner device authorization.
-        if (StringUtils.isNotEmpty(ownerOrganisationIdentification)) {
-            final Organisation ownerOrganisation = this.domainHelperService
-                    .findOrganisation(ownerOrganisationIdentification);
-            final DeviceAuthorization authorization = ssld.addAuthorization(ownerOrganisation,
-                    DeviceFunctionGroup.OWNER);
-            // Since the column device in device authorizations is cascaded,
-            // this will also save the SSLD and Device entities.
-            this.writableAuthorizationRepository.save(authorization);
-            LOGGER.info("Created new device {} with owner {}", newDevice.getDeviceIdentification(),
-                    ownerOrganisationIdentification);
-        } else {
-            // If the device doesn't exist yet, and the optional
-            // ownerOrganisationIdentification is not given, create device
-            // without owner device authorization.
-            this.writableSsldRepository.save(ssld);
-            LOGGER.info("Created new device {} without owner", newDevice.getDeviceIdentification());
-        }
+        final Organisation ownerOrganisation = this.domainHelperService
+                .findOrganisation(ownerOrganisationIdentification);
+        ssld = this.writableSsldRepository.save(ssld);
+        final DeviceAuthorization authorization = ssld.addAuthorization(ownerOrganisation, DeviceFunctionGroup.OWNER);
+        this.writableAuthorizationRepository.save(authorization);
+        LOGGER.info("Created new device {} with owner {}", newDevice.getDeviceIdentification(),
+                ownerOrganisationIdentification);
     }
 
     @Transactional(value = "writableTransactionManager")
@@ -213,7 +200,8 @@ public class DeviceInstallationService {
                 organisationIdentification, correlationUid, MessageType.GET_STATUS.name(), messagePriority);
 
         final CommonRequestMessage message = new CommonRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).build();
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .build();
 
         this.commonRequestMessageSender.send(message);
 
@@ -248,7 +236,8 @@ public class DeviceInstallationService {
                 organisationIdentification, correlationUid, MessageType.START_SELF_TEST.name(), messagePriority);
 
         final CommonRequestMessage message = new CommonRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).build();
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .build();
 
         this.commonRequestMessageSender.send(message);
 
@@ -285,7 +274,8 @@ public class DeviceInstallationService {
                 organisationIdentification, correlationUid, MessageType.STOP_SELF_TEST.name(), messagePriority);
 
         final CommonRequestMessage message = new CommonRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).build();
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .build();
 
         this.commonRequestMessageSender.send(message);
 
