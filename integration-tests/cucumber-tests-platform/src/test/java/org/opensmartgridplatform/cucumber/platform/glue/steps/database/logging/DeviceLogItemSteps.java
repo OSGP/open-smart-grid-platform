@@ -12,12 +12,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Query;
 
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -28,6 +25,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.transaction.annotation.Transactional;
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -42,6 +40,7 @@ public class DeviceLogItemSteps {
     JpaTransactionManager txMgrLogging;
 
     @Given("^I have a device log item$")
+    @Transactional("txMgrLogging")
     public void iHaveADeviceLogItem(final Map<String, String> settings) {
 
         final String deviceIdentification = getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION);
@@ -73,20 +72,9 @@ public class DeviceLogItemSteps {
         }
     }
 
-    private void updateModificationTime(final Long deviceLogItemId, final ZonedDateTime modificationTime) {
+    private void updateModificationTime(final long deviceLogItemId, final ZonedDateTime modificationTime) {
         if (modificationTime != null) {
-            final EntityManager em = this.txMgrLogging.getEntityManagerFactory().createEntityManager();
-            final EntityTransaction transaction = em.getTransaction();
-
-            transaction.begin();
-            final String sql = "UPDATE device_log_item SET modification_time = :modification_time WHERE id = :id";
-            final Query updateQuery = em.createNativeQuery(sql);
-            updateQuery.setParameter("id", deviceLogItemId);
-            updateQuery.setParameter("modification_time", modificationTime);
-            updateQuery.executeUpdate();
-            transaction.commit();
-
-            em.close();
+            this.deviceLogItemRepository.setModificationTime(deviceLogItemId, Date.from(modificationTime.toInstant()));
         }
     }
 
