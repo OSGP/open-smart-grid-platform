@@ -216,8 +216,7 @@ echo Found cucumber tags: [$EXTRACTED_TAGS]'''
         }
         cleanup {
             // Delete workspace folder.
-            echo "Delete workspace folder."
-            //cleanWs()
+            cleanWs()
         }
     } // post
 } // pipeline
