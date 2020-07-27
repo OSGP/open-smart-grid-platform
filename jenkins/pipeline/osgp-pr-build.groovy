@@ -198,7 +198,7 @@ echo Found cucumber tags: [$EXTRACTED_TAGS]'''
         always {
             echo "End of pipeline"
             // Always destroy the test environment
-            build job: 'Destroy an AWS System', parameters: [string(name: 'SERVERNAME', value: servername), string(name: 'PLAYBOOK', value: playbook)]
+            //build job: 'Destroy an AWS System', parameters: [string(name: 'SERVERNAME', value: servername), string(name: 'PLAYBOOK', value: playbook)]
         }
         success {
             setBuildStatus("Build failed", "SUCCESS")
