@@ -12,12 +12,15 @@ import java.util.List;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceException;
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.StringUtils;
+import org.opensmartgridplatform.adapter.ws.admin.application.specifications.DeviceLogItemSpecifications;
+import org.opensmartgridplatform.adapter.ws.admin.application.valueobjects.WsMessageLogFilter;
 import org.opensmartgridplatform.adapter.ws.admin.infra.jms.AdminRequestMessage;
 import org.opensmartgridplatform.adapter.ws.admin.infra.jms.AdminRequestMessageSender;
 import org.opensmartgridplatform.adapter.ws.admin.infra.jms.AdminResponseMessageFinder;
+import org.opensmartgridplatform.adapter.ws.admin.infra.specifications.JpaDeviceLogItemSpecifications;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
 import org.opensmartgridplatform.domain.core.entities.Event;
@@ -60,10 +63,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 
 @Service(value = "wsAdminDeviceManagementService")
@@ -319,23 +322,33 @@ public class DeviceManagementService {
     }
 
     public Slice<DeviceLogItem> findDeviceMessages(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, @Min(value = 0) final int pageNumber)
-            throws FunctionalException {
+            final WsMessageLogFilter filter) throws FunctionalException {
 
-        LOGGER.debug("findDeviceMessages called with organisation {}, device {} and pagenumber {}",
-                organisationIdentification, deviceIdentification, pageNumber);
+        LOGGER.info("findDeviceMessages called with organisation {} for filter {}", organisationIdentification, filter);
 
         final Organisation organisation = this.findOrganisation(organisationIdentification);
         this.isAllowed(organisation, PlatformFunction.GET_MESSAGES);
 
-        final PageRequest request = PageRequest.of(pageNumber, this.pagingSettings.getMaximumPageSize(),
-                Sort.Direction.DESC, "modificationTime");
-
-        if (!StringUtils.isEmpty(deviceIdentification)) {
-            return this.logItemRepository.findByDeviceIdentification(deviceIdentification, request);
+        PageRequest pageRequest;
+        if (!StringUtils.isBlank(filter.getSortDirection()) && !StringUtils.isBlank(filter.getSortBy())) {
+            pageRequest = PageRequest.of(filter.getPageRequested(), this.pagingSettings.getMaximumPageSize(),
+                    Sort.Direction.valueOf(filter.getSortDirection()), filter.getSortBy());
+        } else {
+            pageRequest = PageRequest.of(filter.getPageRequested(), this.pagingSettings.getMaximumPageSize(),
+                    Sort.Direction.DESC, "modificationTime");
         }
+        final Specification<DeviceLogItem> specification = this.applyFilter(filter);
 
-        return this.logItemRepository.findAllBy(request);
+        return this.logItemRepository.findAll(specification, pageRequest);
+    }
+
+    private Specification<DeviceLogItem> applyFilter(final WsMessageLogFilter filter) {
+        final DeviceLogItemSpecifications specifications = new JpaDeviceLogItemSpecifications();
+
+        return specifications.hasDeviceIdentification(filter.getDeviceIdentification())
+                .and(specifications.hasOrganisationIdentification(filter.getOrganisationIdentification()))
+                .and(specifications.hasStartDate(filter.getStartTime()))
+                .and(specifications.hasEndDate(filter.getEndTime()));
     }
 
     // === REMOVE DEVICE ===

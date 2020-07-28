@@ -13,13 +13,12 @@ import org.opensmartgridplatform.logging.domain.entities.DeviceLogItem;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface DeviceLogItemSlicingRepository extends JpaRepository<DeviceLogItem, Long> {
-    Slice<DeviceLogItem> findByDeviceIdentification(String deviceIdentification, Pageable pagable);
+public interface DeviceLogItemSlicingRepository
+        extends JpaRepository<DeviceLogItem, Long>, JpaSpecificationExecutor<DeviceLogItem> {
+    Slice<DeviceLogItem> findByCreationTimeBefore(Date endDate, Pageable pageable);
 
-    Slice<DeviceLogItem> findAllBy(Pageable pageable);
-
-    Slice<DeviceLogItem> findByCreationTimeBefore(Date date, Pageable pageable);
 }
