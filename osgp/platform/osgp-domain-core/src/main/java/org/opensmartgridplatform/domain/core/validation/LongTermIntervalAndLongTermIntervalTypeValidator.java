@@ -36,28 +36,29 @@ public class LongTermIntervalAndLongTermIntervalTypeValidator
         // permitted values, defined by the ranges:
         // - from 1 to 30 for long term history interval type DAYS.
         // - from 1 to 12 for long term history interval type MONTHS.
-        final int interval = value.getLongTermHistoryInterval();
+        final Integer interval = value.getLongTermHistoryInterval();
         final LongTermIntervalType type = value.getLongTermHistoryIntervalType();
         return this.checkRanges(interval, type);
     }
 
-    private boolean checkRanges(final int interval, final LongTermIntervalType type) {
-        switch (type) {
-        case DAYS:
-            if (interval >= 1 && interval <= 30) {
-                return true;
-            }
-            break;
-        case MONTHS:
-            if (interval >= 1 && interval <= 12) {
-                return true;
-            }
-            break;
-        default:
-            throw new ValidationException("unknown LongTermHistoryIntervalType");
+    private boolean checkRanges(final Integer interval, final LongTermIntervalType type) {
+        if (interval != null && type != null) {
+            switch (type) {
+            case DAYS:
+                if (interval >= 1 && interval <= 30) {
+                    return true;
+                }
+                break;
+            case MONTHS:
+                if (interval >= 1 && interval <= 12) {
+                    return true;
+                }
+                break;
+            default:
+                throw new ValidationException("unknown LongTermHistoryIntervalType");
 
+            }
         }
-
         return false;
     }
 }
