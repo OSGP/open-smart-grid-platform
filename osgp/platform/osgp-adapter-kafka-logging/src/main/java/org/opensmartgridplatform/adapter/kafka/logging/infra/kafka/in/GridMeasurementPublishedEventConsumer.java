@@ -23,7 +23,7 @@ public class GridMeasurementPublishedEventConsumer {
     @Autowired
     private KafkaLogger kafkaLogger;
 
-    @KafkaListener(containerFactory = "gridMeasurementPublishedEventConsumerFactory",
+    @KafkaListener(containerFactory = "gridMeasurementPublishedEventKafkaListenerContainerFactory",
             topics = "${grid.measurement.published.event.kafka.topic}")
     public void listen(final ConsumerRecord<String, GridMeasurementPublishedEvent> consumerRecord) {
         this.kafkaLogger.log(consumerRecord);
