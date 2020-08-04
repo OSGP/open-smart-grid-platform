@@ -75,11 +75,12 @@ public class OslpDecoder extends ReplayingDecoder<OslpDecoder.DecodingState> {
 
         if (this.state().compareTo(DecodingState.PAYLOAD_MESSAGE) <= 0) {
             LOGGER.debug("Decoding payload.");
-            this.decodePayload(in);
-            this.checkpoint(DecodingState.SECURITY_KEY);
             try {
+                this.decodePayload(in);
                 final OslpEnvelope msg = this.builder.withSignature(this.signature).withProvider(this.provider).build();
                 out.add(msg);
+            } catch (final Exception ex) {
+                LOGGER.warn("Decoding exception.", ex);
             } finally {
                 this.reset();
             }
