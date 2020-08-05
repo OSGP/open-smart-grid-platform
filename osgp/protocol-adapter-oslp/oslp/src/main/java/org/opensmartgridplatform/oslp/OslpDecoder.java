@@ -30,19 +30,18 @@ public class OslpDecoder extends ReplayingDecoder<OslpDecoder.DecodingState> {
         SEQUENCE_NUMBER,
         DEVICE_ID,
         LENGTH_INDICATOR,
-        PAYLOAD_MESSAGE;
+        PAYLOAD_MESSAGE,
+        DONE;
     }
 
-    private OslpEnvelope.Builder builder;
-
+    private final OslpEnvelope.Builder builder = new OslpEnvelope.Builder();
     private int length;
 
     public OslpDecoder(final String signature, final String provider) {
+        super(DecodingState.SECURITY_KEY);
         LOGGER.debug("Created new decoder");
         this.signature = signature;
         this.provider = provider;
-
-        this.reset();
     }
 
     @Override
@@ -75,15 +74,14 @@ public class OslpDecoder extends ReplayingDecoder<OslpDecoder.DecodingState> {
 
         if (this.state().compareTo(DecodingState.PAYLOAD_MESSAGE) <= 0) {
             LOGGER.debug("Decoding payload.");
-            try {
-                this.decodePayload(in);
-                final OslpEnvelope msg = this.builder.withSignature(this.signature).withProvider(this.provider).build();
-                out.add(msg);
-            } catch (final Exception ex) {
-                LOGGER.warn("Decoding exception.", ex);
-            } finally {
-                this.reset();
-            }
+            this.decodePayload(in);
+            this.checkpoint(DecodingState.DONE);
+        }
+
+        if (this.state().compareTo(DecodingState.DONE) <= 0) {
+            LOGGER.debug("Done decoding.");
+            final OslpEnvelope msg = this.builder.withSignature(this.signature).withProvider(this.provider).build();
+            out.add(msg);
         } else {
             // Should not get here
             throw new UnknownOslpDecodingStateException(this.state().name());
@@ -92,12 +90,14 @@ public class OslpDecoder extends ReplayingDecoder<OslpDecoder.DecodingState> {
 
     private void decodeSecurityKey(final ByteBuf buffer) {
         final byte[] bytes = ByteBufUtil.getBytes(buffer, buffer.readerIndex(), OslpEnvelope.SECURITY_KEY_LENGTH);
+        LOGGER.debug("Decoded security key: {}", bytes);
         this.builder.withSecurityKey(bytes);
         buffer.readerIndex(buffer.readerIndex() + OslpEnvelope.SECURITY_KEY_LENGTH);
     }
 
     private void decodeSequenceNumber(final ByteBuf buffer) {
         final byte[] bytes = ByteBufUtil.getBytes(buffer, buffer.readerIndex(), OslpEnvelope.SEQUENCE_NUMBER_LENGTH);
+        LOGGER.debug("Decoded sequence number: {}", bytes);
         this.builder.withSequenceNumber(bytes);
         buffer.readerIndex(buffer.readerIndex() + OslpEnvelope.SEQUENCE_NUMBER_LENGTH);
     }
@@ -105,32 +105,21 @@ public class OslpDecoder extends ReplayingDecoder<OslpDecoder.DecodingState> {
     private void decodeDeviceId(final ByteBuf buffer) {
         final int deviceAndManufacturerLength = OslpEnvelope.DEVICE_ID_LENGTH + OslpEnvelope.MANUFACTURER_ID_LENGTH;
         final byte[] bytes = ByteBufUtil.getBytes(buffer, buffer.readerIndex(), deviceAndManufacturerLength);
+        LOGGER.debug("Decoded device id: {}", bytes);
         this.builder.withDeviceId(bytes);
         buffer.readerIndex(buffer.readerIndex() + deviceAndManufacturerLength);
     }
 
     private void decodeLengthIndicator(final ByteBuf buffer) {
         this.length = buffer.getUnsignedShort(buffer.readerIndex());
+        LOGGER.debug("Decoded length: {}", this.length);
         buffer.readerIndex(buffer.readerIndex() + OslpEnvelope.LENGTH_INDICATOR_LENGTH);
     }
 
     private void decodePayload(final ByteBuf buffer) throws InvalidProtocolBufferException {
-        if (this.payloadComplete(buffer)) {
-            final byte[] bytes = ByteBufUtil.getBytes(buffer, buffer.readerIndex(), this.length);
-            this.builder.withPayloadMessage(Oslp.Message.parseFrom(bytes));
-        } else {
-            LOGGER.debug("Payload has not yet been fully received.");
-        }
+        final byte[] bytes = ByteBufUtil.getBytes(buffer, buffer.readerIndex(), this.length);
+        LOGGER.debug("Decoded payload: {}", bytes);
+        this.builder.withPayloadMessage(Oslp.Message.parseFrom(bytes));
+        buffer.readerIndex(buffer.readerIndex() + this.length);
     }
-
-    private boolean payloadComplete(final ByteBuf buffer) {
-        return buffer.capacity() >= buffer.readerIndex() + this.length;
-    }
-
-    private void reset() {
-        this.checkpoint(DecodingState.SECURITY_KEY);
-        this.builder = new OslpEnvelope.Builder();
-        this.length = 0;
-    }
-
 }
