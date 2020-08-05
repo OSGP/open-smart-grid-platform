@@ -117,17 +117,9 @@ public class OslpDecoder extends ReplayingDecoder<OslpDecoder.DecodingState> {
     }
 
     private void decodePayload(final ByteBuf buffer) throws InvalidProtocolBufferException {
-        if (this.payloadComplete(buffer)) {
-            final byte[] bytes = ByteBufUtil.getBytes(buffer, buffer.readerIndex(), this.length);
-            LOGGER.debug("Decoded payload: {}", bytes);
-            this.builder.withPayloadMessage(Oslp.Message.parseFrom(bytes));
-            buffer.readerIndex(buffer.readerIndex() + this.length);
-        } else {
-            LOGGER.debug("Payload has not yet been fully received.");
-        }
-    }
-
-    private boolean payloadComplete(final ByteBuf buffer) {
-        return buffer.capacity() >= buffer.readerIndex() + this.length;
+        final byte[] bytes = ByteBufUtil.getBytes(buffer, buffer.readerIndex(), this.length);
+        LOGGER.debug("Decoded payload: {}", bytes);
+        this.builder.withPayloadMessage(Oslp.Message.parseFrom(bytes));
+        buffer.readerIndex(buffer.readerIndex() + this.length);
     }
 }
