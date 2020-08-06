@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
@@ -16,6 +16,7 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.wsclient.SecretManagementClient;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
@@ -37,7 +38,6 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class SecretManagementService implements SecurityKeyService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SecretManagementService.class);
     private final RsaEncryptionProvider rsaEncryptionProvider;
     private final SecretManagementClient secretManagementClient;
 
@@ -70,10 +70,20 @@ public class SecretManagementService implements SecurityKeyService {
     @Override
     public byte[] getDlmsAuthenticationKey(String deviceIdentification) {
 
+        GetSecretsResponse response;
+
         try {
             GetSecretsRequest request = getSoapRequestForKey(deviceIdentification,
-                    SecretType.E_METER_AUTHENTICATION_KEY);
-            GetSecretsResponse response = secretManagementClient.getSecretsRequest(request);
+                SecretType.E_METER_AUTHENTICATION_KEY);
+
+            response = secretManagementClient.getSecretsRequest(request);
+        }
+        catch (Exception e) {
+            throw new ConnectionException("Error while communicating with secret management "
+                    + "(getDlmsAuthenticationKey)", e);
+        }
+
+        try {
             Optional<TypedSecret> optionalTypedSecret = getTypedSecretFromSoapResponse(response,
                     SecretType.E_METER_AUTHENTICATION_KEY);
 
@@ -83,6 +93,7 @@ public class SecretManagementService implements SecurityKeyService {
             log.trace("DlmsAuthenticationKey for device " + deviceIdentification + " is " + Hex.encodeHexString(decryptedKey));
 
             return decryptedKey;
+
         } catch (Exception e) {
             throw new EncrypterException("Error while retrieving authentication key", e);
         }
@@ -91,10 +102,19 @@ public class SecretManagementService implements SecurityKeyService {
     @Override
     public byte[] getDlmsGlobalUnicastEncryptionKey(String deviceIdentification) {
 
+        GetSecretsResponse response;
+
         try {
             GetSecretsRequest request = getSoapRequestForKey(deviceIdentification,
                     SecretType.E_METER_ENCRYPTION_KEY_UNICAST);
-            GetSecretsResponse response = secretManagementClient.getSecretsRequest(request);
+            response = secretManagementClient.getSecretsRequest(request);
+        }
+        catch(Exception e) {
+            throw new ConnectionException("Error while communicating with secret management "
+                    + "(getDlmsGlobalUnicastEncryptionKey)", e);
+        }
+
+        try {
             Optional<TypedSecret> optionalTypedSecret = getTypedSecretFromSoapResponse(response,
                     SecretType.E_METER_ENCRYPTION_KEY_UNICAST);
 
@@ -106,9 +126,8 @@ public class SecretManagementService implements SecurityKeyService {
             return decryptedKey;
 
         } catch (Exception e) {
-            LOGGER.error("Error while retrieving encryption key", e);
+            throw new EncrypterException("Error while retrieving global unicast key", e);
         }
-        return new byte[0];
     }
 
     @Override
