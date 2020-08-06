@@ -19,8 +19,8 @@ import org.springframework.xml.xsd.SimpleXsdSchema;
 @Configuration
 public class MicroGridsWebServiceConfig {
 
-    private static final String COMMON_XSD_PATH = "schemas/common.xsd";
-    private static final String ADHOC_MANAGEMENT_XSD_PATH = "schemas/adhocmanagement.xsd";
+    private static final String COMMON_XSD_PATH = "schemas/common-ws-microgrids.xsd";
+    private static final String ADHOC_MANAGEMENT_XSD_PATH = "schemas/adhocmanagement-ws-microgrids.xsd";
 
     private static final String ADHOC_MANAGEMENT_WSDL_PATH = "MicrogridsAdHocManagement.wsdl";
 

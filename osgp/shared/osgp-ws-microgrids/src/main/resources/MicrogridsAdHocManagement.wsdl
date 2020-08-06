@@ -15,7 +15,7 @@
 
       <xsd:import
         namespace="http://www.opensmartgridplatform.org/schemas/microgrids/adhocmanagement/2016/06"
-        schemaLocation="schemas/adhocmanagement.xsd" />
+        schemaLocation="schemas/adhocmanagement-ws-microgrids.xsd" />
     </xsd:schema>
   </wsdl:types>
 
