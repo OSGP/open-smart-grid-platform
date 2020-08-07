@@ -2,7 +2,7 @@
 
 if [ "$#" -eq 0 ]
 then
-  echo "Usage: $0 <server> <project> <user> [<ssh key file>] [<additional java parameters>] [<Xvfb options>] [<additional cucumber options>]"
+  echo "Usage: $0 <server> <project> <user> [<ssh key file>] [<additional java parameters>] [<additional cucumber options>]"
   echo ""
   exit 1
 fi
@@ -13,8 +13,7 @@ PROJECT=$3
 USER=$4
 SSH_KEY_FILE=$5
 ADDITIONAL_PARAMETERS=$6
-XVFB=$7
-ADDITIONAL_CUCUMBER_OPTIONS=$8
+ADDITIONAL_CUCUMBER_OPTIONS=$7
 
 # If a space is found in the identity file then create a shortcut as the -i parameter for ssh can't handle spaces.
 [ "${SSH_KEY_FILE}"!="" ] && [ "${SSH_KEY_FILE}"=~" " ] && echo "Creating link ${HOME}/.ssh/${5/ /} => ${HOME}/.ssh/${5} ..." && ln -sf "${HOME}/.ssh/${5}" "${HOME}/.ssh/${5/ /}"
@@ -45,7 +44,14 @@ echo "  [${CMD}]"
 ${CMD}
 
 echo "- Executing cucumber project ${PROJECT} remote on ${SERVER} ..."
-CMD="sudo ${XVFB} java -javaagent:/usr/share/tomcat/lib/jacocoagent.jar=destfile=target/code-coverage/jacoco-it.exec ${ADDITIONAL_PARAMETERS} -Dcucumber.execution.strict=true -Dcucumber.filter.tags=\"not @Skip ${ADDITIONAL_CUCUMBER_OPTIONS}\" -DskipITs=false -Dtimeout=30 -DskipITCoverage=false -jar cucumber-*-test-jar-with-dependencies.jar -report target/output; sudo chown -R ${USER}:${USER} /data/software/${PROJECT}/*"
+CMD="sudo java -javaagent:/usr/share/tomcat/lib/jacocoagent.jar=destfile=target/code-coverage/jacoco-it.exec ${ADDITIONAL_PARAMETERS}\
+ -Dcucumber.execution.strict=true\
+ -Dcucumber.filter.tags=\"not @Skip ${ADDITIONAL_CUCUMBER_OPTIONS}\"\
+ -DskipITs=false\
+ -Dtimeout=30\
+ -DskipITCoverage=false\
+ -DrunHeadless=true\
+ -jar cucumber-*-test-jar-with-dependencies.jar -report target/output; sudo chown -R ${USER}:${USER} /data/software/${PROJECT}/*"
 echo "  [${CMD}]"
 CMD="ssh -oStrictHostKeyChecking=no -oTCPKeepAlive=yes -oServerAliveInterval=50 ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"cd /data/software/${PROJECT} && ${CMD}\"\""
 ${CMD}
