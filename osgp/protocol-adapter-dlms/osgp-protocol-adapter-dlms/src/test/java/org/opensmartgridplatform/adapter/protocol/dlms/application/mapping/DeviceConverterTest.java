@@ -29,9 +29,7 @@ public class DeviceConverterTest {
 
         Assertions.assertThat(result)
                 .isEqualToIgnoringGivenFields(expected, "creationTime", "modificationTime", "version");
-        Assertions.assertThat(result.getSecurityKeys())
-                .usingElementComparatorIgnoringFields("creationTime", "modificationTime", "version")
-                .isEqualTo(expected.getSecurityKeys());
+
     }
 
     private DlmsDevice converted(final SmartMeteringDeviceDto dto) {
@@ -47,14 +45,6 @@ public class DeviceConverterTest {
         dlmsDevice.setMbusManufacturerIdentification(dto.getMbusManufacturerIdentification());
         dlmsDevice.setProtocol(dto.getProtocolName(), dto.getProtocolVersion());
 
-        dlmsDevice.addSecurityKey(new SecurityKey(dlmsDevice, SecurityKeyType.E_METER_MASTER,
-                Hex.encodeHexString(dto.getMasterKey()), dto.getDeliveryDate(), null));
-        dlmsDevice.addSecurityKey(new SecurityKey(dlmsDevice, SecurityKeyType.E_METER_AUTHENTICATION,
-                Hex.encodeHexString(dto.getAuthenticationKey()), dto.getDeliveryDate(), null));
-        dlmsDevice.addSecurityKey(new SecurityKey(dlmsDevice, SecurityKeyType.E_METER_ENCRYPTION,
-                Hex.encodeHexString(dto.getGlobalEncryptionUnicastKey()), dto.getDeliveryDate(), null));
-        dlmsDevice.addSecurityKey(new SecurityKey(dlmsDevice, SecurityKeyType.G_METER_MASTER,
-                Hex.encodeHexString(dto.getMbusDefaultKey()), dto.getDeliveryDate(), null));
         return dlmsDevice;
     }
 }

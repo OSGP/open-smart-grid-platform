@@ -80,13 +80,13 @@ public class RecoverKeyProcess implements Runnable {
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception: {}", e);
         }
-        if (!this.device.hasNewSecurityKey()) {
+        /* TODO if (!this.device.hasNewSecurityKey()) {
             return;
-        }
+        }*/
 
-        if (this.canConnect()) {
-            this.promoteInvalidKey();
-        }
+        /*TODO if (this.canConnect()) {
+          //TODO: Call secret management and make 'the' key VALID (NEW->VALID) this.promoteInvalidKey();
+        }*/
     }
 
     private void initDevice() throws OsgpException {
@@ -107,7 +107,8 @@ public class RecoverKeyProcess implements Runnable {
         }
     }
 
-    private boolean canConnect() {
+    /* TODO
+        private boolean canConnect() {
         DlmsConnection connection = null;
         try {
             connection = this.createConnection();
@@ -124,12 +125,7 @@ public class RecoverKeyProcess implements Runnable {
                 }
             }
         }
-    }
-
-    private void promoteInvalidKey() {
-        this.device.promoteInvalidKey();
-        this.dlmsDeviceRepository.save(this.device);
-    }
+    }*/
 
     /**
      * Create a connection with the device.
@@ -139,10 +135,15 @@ public class RecoverKeyProcess implements Runnable {
      *             When there are problems in connecting to or communicating
      *             with the device.
      */
+    /*
     private DlmsConnection createConnection() throws IOException, FunctionalException {
         final byte[] authenticationKey = Hex
-                .decode(this.getSecurityKey(SecurityKeyType.E_METER_AUTHENTICATION).getKey());
-        final byte[] encryptionKey = Hex.decode(this.getSecurityKey(SecurityKeyType.E_METER_ENCRYPTION).getKey());
+                .decode(
+                        this.getSecurityKey(SecurityKeyType.E_METER_AUTHENTICATION).getKey()
+                );
+        final byte[] encryptionKey = Hex.decode(
+                    this.getSecurityKey(SecurityKeyType.E_METER_ENCRYPTION).getKey()
+        );
 
         final SecuritySuite securitySuite = SecuritySuite.builder().setAuthenticationKey(authenticationKey)
                 .setAuthenticationMechanism(AuthenticationMechanism.HLS5_GMAC)
@@ -167,13 +168,6 @@ public class RecoverKeyProcess implements Runnable {
         }
 
         return tcpConnectionBuilder.build();
-    }
+    }*/
 
-    private SecurityKey getSecurityKey(final SecurityKeyType securityKeyType) {
-        SecurityKey key = this.device.getNewSecurityKey(securityKeyType);
-        if (key == null) {
-            key = this.device.getValidSecurityKey(securityKeyType);
-        }
-        return key;
-    }
 }

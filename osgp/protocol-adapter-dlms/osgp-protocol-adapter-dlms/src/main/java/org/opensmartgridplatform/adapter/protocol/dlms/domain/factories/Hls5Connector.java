@@ -70,10 +70,11 @@ public class Hls5Connector extends SecureDlmsConnector {
             throw new TechnicalException(ComponentType.PROTOCOL_DLMS,
                     "The IP address is not found: " + device.getIpAddress());
         } catch (final IOException e) {
-            if (device.hasNewSecurityKey()) {
-                // Queue key recovery process.
-                this.recoverKeyProcessInitiator.initiate(device.getDeviceIdentification(), device.getIpAddress());
-            }
+            //TODO if (device.hasNewSecurityKey()) {
+
+            // Queue key recovery process.
+            //TODO this.recoverKeyProcessInitiator.initiate(device.getDeviceIdentification(), device.getIpAddress());
+
             final String msg = String
                     .format("Error creating connection for device %s with Ip address:%s Port:%d UseHdlc:%b UseSn:%b "
                                     + "Message:%s", device.getDeviceIdentification(), device.getIpAddress(),

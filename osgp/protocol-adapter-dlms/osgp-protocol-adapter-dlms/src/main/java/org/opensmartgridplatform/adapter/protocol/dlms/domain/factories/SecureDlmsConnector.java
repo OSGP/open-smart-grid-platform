@@ -87,31 +87,4 @@ public abstract class SecureDlmsConnector extends Lls0Connector {
         return tcpConnectionBuilder.build();
     }
 
-    /**
-     * Get the valid securityKey of a given type for the device.
-     *
-     * @param device
-     *         The device.
-     * @param securityKeyType
-     *         The type of key to return.
-     *
-     * @return SecurityKey
-     *
-     * @throws FunctionalException
-     *         when there is no valid key of the given type.
-     */
-    protected SecurityKey getSecurityKey(final DlmsDevice device, final SecurityKeyType securityKeyType)
-            throws FunctionalException {
-        final SecurityKey securityKey = device.getValidSecurityKey(securityKeyType);
-        if (securityKey == null) {
-            final String errorMessage = String.format("There is no valid key for device %s of type %s",
-                    device.getDeviceIdentification(), securityKeyType.name());
-            LOGGER.error(errorMessage);
-
-            throw new FunctionalException(FunctionalExceptionType.INVALID_DLMS_KEY_ENCRYPTION,
-                    ComponentType.PROTOCOL_DLMS);
-        }
-
-        return securityKey;
-    }
 }

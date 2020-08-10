@@ -17,8 +17,10 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.wsclient.Secr
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.security.EncryptedSecret;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 import org.opensmartgridplatform.shared.security.Secret;
@@ -47,83 +49,159 @@ public class SecretManagementService implements SecurityKeyService {
         this.secretManagementClient = secretManagementClient;
     }
 
-    @Override
-    public byte[] reEncryptKey(byte[] externallyEncryptedKey, SecurityKeyType keyType) throws FunctionalException {
+    /**
+     * Re-encrypts the given key with a secret known only inside this protocol
+     * adapter.
+     * <p>
+     * New keys can be provided to OSGP from outside in a form encrypted with
+     * the public key from an asymmetrical key pair for the platform, which is
+     * available to external organizations.<br>
+     * Inside the DLMS protocol adapter keys are encrypted with a faster
+     * symmetrical encryption using a secret key that is not supposed to be
+     * known outside this protocol adapter.
+     *
+     * @param externallyEncryptedKey
+     *         key encrypted with the externally known public key for OSGP
+     * @param keyType
+     *         type of the key, for logging purposes
+     *
+     * @return the key encrypted with the symmetrical secret key used only
+     *         inside the DLMS protocol adapter, or an empty byte array if
+     *         {@code externallyEncryptedKey == null}
+     *
+     * @throws FunctionalException
+     *         in case of a encryption/decryption errors while handling the
+     *         key
+     */
+    public byte[] reEncryptKey(final byte[] externallyEncryptedKey, final SecurityKeyType keyType)
+            throws FunctionalException {
+        /* TODO
+        if (externallyEncryptedKey == null) {
+            return new byte[0];
+        }
+
+        final byte[] key = this.rsaDecrypt(externallyEncryptedKey, keyType);
+        return this.aesEncrypt(key, keyType);
+
+         */
         throw new NotImplementedException();
     }
 
-    @Override
-    public byte[] decryptKey(byte[] encryptedKey, SecurityKeyType keyType) throws ProtocolAdapterException {
+    private byte[] rsaDecrypt(final byte[] externallyEncryptedKey, final SecurityKeyType keyType)
+            throws FunctionalException {
+        /*
+        try {
+            return this.rsaEncryptionService.decrypt(externallyEncryptedKey);
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected exception during decryption", e);
+
+            throw new FunctionalException(FunctionalExceptionType.DECRYPTION_EXCEPTION, ComponentType.PROTOCOL_DLMS,
+                    new EncrypterException(
+                            String.format("Unexpected exception during decryption of %s key.", keyType)));
+        }*/
         throw new NotImplementedException();
     }
 
-    @Override
-    public byte[] encryptKey(byte[] plainKey, SecurityKeyType keyType) throws ProtocolAdapterException {
+    private byte[] aesEncrypt(final byte[] key, final SecurityKeyType keyType) throws FunctionalException {
+        /*TODO
+        try {
+            return this.encryptionService.encrypt(key);
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected exception during encryption", e);
+
+            throw new FunctionalException(FunctionalExceptionType.ENCRYPTION_EXCEPTION, ComponentType.PROTOCOL_DLMS,
+                    new EncrypterException(
+                            String.format("Unexpected exception during encryption of %s key.", keyType)));
+        }*/
+        throw new NotImplementedException();
+    }
+
+    /**
+     * Decrypts the given symmetrically encrypted key.
+     * <p>
+     * <strong>NB:</strong> Only decrypt keys like this at the moment they are
+     * required as part of the communication with a device.
+     *
+     * @param encryptedKey
+     *         key encrypted with the symmetrical key internal to the DLMS
+     *         protocol adapter.
+     * @param keyType
+     *         type of the key, for logging purposes
+     *
+     * @return the plain key, or an empty byte array if
+     *         {@code encryptedKey == null}
+     */
+    public byte[] decryptKey(final byte[] encryptedKey, final SecurityKeyType keyType) throws ProtocolAdapterException {
+        /*TODO
+        if (encryptedKey == null) {
+            return new byte[0];
+        }
+        try {
+            return this.encryptionService.decrypt(encryptedKey);
+        } catch (final Exception e) {
+            throw new ProtocolAdapterException("Error decrypting " + keyType + " key", e);
+        }*/
+        throw new NotImplementedException();
+    }
+
+    /**
+     * Encrypts the given {@code plainKey} with the symmetrical secret key that
+     * is internal to the DLMS protocol adapter.
+     *
+     * @param plainKey
+     *            plain key without encryption
+     * @param keyType
+     *            type of the key, for logging purposes
+     * @return the given key encrypted with the symmetrical key internal to the
+     *         DLMS protocol adapter.
+     */
+    public byte[] encryptKey(final byte[] plainKey, final SecurityKeyType keyType) throws ProtocolAdapterException {
+        /*TODO
+        if (plainKey == null) {
+            return new byte[0];
+        }
+        try {
+            return this.encryptionService.encrypt(plainKey);
+        } catch (final Exception e) {
+            throw new ProtocolAdapterException("Error encrypting " + keyType + " key", e);
+        }*/
         throw new NotImplementedException();
     }
 
     @Override
     public byte[] getDlmsMasterKey(String deviceIdentification) {
-        throw new NotImplementedException();
+        LOGGER.info("Retrieving DLMS master key for device {}", deviceIdentification);
+        return getSecret(deviceIdentification, SecretType.E_METER_MASTER_KEY);
     }
 
     @Override
     public byte[] getDlmsAuthenticationKey(String deviceIdentification) {
-
-        try {
-            GetSecretsRequest request = getSoapRequestForKey(deviceIdentification,
-                    SecretType.E_METER_AUTHENTICATION_KEY);
-            GetSecretsResponse response = secretManagementClient.getSecretsRequest(request);
-            Optional<TypedSecret> optionalTypedSecret = getTypedSecretFromSoapResponse(response,
-                    SecretType.E_METER_AUTHENTICATION_KEY);
-
-            byte[] decryptedKey = decryptSoapSecret(deviceIdentification, optionalTypedSecret.orElseThrow(
-                    () -> new IllegalStateException("Secret not found:" + deviceIdentification)));
-
-            log.trace("DlmsAuthenticationKey for device " + deviceIdentification + " is " + Hex.encodeHexString(decryptedKey));
-
-            return decryptedKey;
-        } catch (Exception e) {
-            throw new EncrypterException("Error while retrieving authentication key", e);
-        }
+        LOGGER.info("Retrieving DLMS authentication key for device {}", deviceIdentification);
+        return getSecret(deviceIdentification, SecretType.E_METER_AUTHENTICATION_KEY);
     }
 
     @Override
     public byte[] getDlmsGlobalUnicastEncryptionKey(String deviceIdentification) {
-
-        try {
-            GetSecretsRequest request = getSoapRequestForKey(deviceIdentification,
-                    SecretType.E_METER_ENCRYPTION_KEY_UNICAST);
-            GetSecretsResponse response = secretManagementClient.getSecretsRequest(request);
-            Optional<TypedSecret> optionalTypedSecret = getTypedSecretFromSoapResponse(response,
-                    SecretType.E_METER_ENCRYPTION_KEY_UNICAST);
-
-            byte[] decryptedKey = decryptSoapSecret(deviceIdentification, optionalTypedSecret.orElseThrow(
-                    () -> new IllegalStateException("Secret not found:" + deviceIdentification)));
-
-            log.trace("DlmsGlobalUnicastEncryptionKey for device " + deviceIdentification + " is " + Hex.encodeHexString(decryptedKey));
-
-            return decryptedKey;
-
-        } catch (Exception e) {
-            LOGGER.error("Error while retrieving encryption key", e);
-        }
-        return new byte[0];
+        LOGGER.info("Retrieving DLMS global unicast encryption key for device {}", deviceIdentification);
+        return getSecret(deviceIdentification, SecretType.E_METER_ENCRYPTION_KEY_UNICAST);
     }
 
     @Override
     public byte[] getMbusDefaultKey(String mbusDeviceIdentification) {
-        throw new NotImplementedException();
+        LOGGER.info("Retrieving M-Bus Default key for device {}", mbusDeviceIdentification);
+        return getSecret(mbusDeviceIdentification, SecretType.G_METER_MASTER_KEY);
     }
 
     @Override
     public byte[] getMbusUserKey(String mbusDeviceIdentification) {
-        throw new NotImplementedException();
+        LOGGER.info("Retrieving M-Bus User key for device {}", mbusDeviceIdentification);
+        return getSecret(mbusDeviceIdentification, SecretType.G_METER_ENCRYPTION_KEY);
     }
 
     @Override
     public byte[] getDlmsPassword(String deviceIdentification) {
-        throw new NotImplementedException();
+        LOGGER.info("Retrieving DLMS LLS Password for device {}", deviceIdentification);
+        return getSecret(deviceIdentification, SecretType.PPP_PASSWORD);
     }
 
     @Override
@@ -149,6 +227,24 @@ public class SecretManagementService implements SecurityKeyService {
     @Override
     public byte[] encryptMbusUserKey(byte[] mbusDefaultKey, byte[] mbusUserKey) throws ProtocolAdapterException {
         throw new NotImplementedException();
+    }
+
+    private byte[] getSecret(String deviceIdentification, SecretType secretType) {
+        try {
+            GetSecretsRequest request = getSoapRequestForKey(deviceIdentification, secretType);
+            GetSecretsResponse response = secretManagementClient.getSecretsRequest(request);
+            Optional<TypedSecret> optionalTypedSecret = getTypedSecretFromSoapResponse(response, secretType);
+
+            byte[] decryptedKey = decryptSoapSecret(deviceIdentification, optionalTypedSecret.orElseThrow(
+                    () -> new IllegalStateException("Secret not found:" + deviceIdentification + " " + secretType.name())));
+
+            log.trace(secretType.name() + " for device " + deviceIdentification + " is " + Hex.encodeHexString(decryptedKey));
+
+            return decryptedKey;
+
+        } catch (Exception e) {
+            throw new EncrypterException("Error while retrieving encryption key", e);
+        }
     }
 
     private Optional<TypedSecret> getTypedSecretFromSoapResponse(GetSecretsResponse response, SecretType secretType) {
