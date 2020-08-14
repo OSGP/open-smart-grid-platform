@@ -86,7 +86,7 @@ public class SmartMeterService {
     private ProtocolInfo getProtocolInfo(final SmartMeteringDevice smartMeteringDevice) throws FunctionalException {
         
         final ProtocolInfo protocolInfo = this.protocolInfoRepository
-                .findByProtocolAndProtocolVersion(smartMeteringDevice.getProtocolInfoLookupName(),
+                .findByProtocolAndProtocolVersion(smartMeteringDevice.getProtocolName(),
                         smartMeteringDevice.getProtocolVersion());
         if (protocolInfo == null) {
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_PROTOCOL_NAME_OR_VERSION,
