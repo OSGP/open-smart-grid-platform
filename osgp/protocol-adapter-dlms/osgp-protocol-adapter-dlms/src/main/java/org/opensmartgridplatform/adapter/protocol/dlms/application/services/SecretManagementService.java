@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
@@ -16,6 +16,7 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.wsclient.SecretManagementClient;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
@@ -29,15 +30,12 @@ import org.opensmartgridplatform.ws.schema.core.secret.management.SecretType;
 import org.opensmartgridplatform.ws.schema.core.secret.management.SecretTypes;
 import org.opensmartgridplatform.ws.schema.core.secret.management.TypedSecret;
 import org.opensmartgridplatform.ws.schema.core.secret.management.TypedSecrets;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
 public class SecretManagementService implements SecurityKeyService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SecretManagementService.class);
     private final RsaEncryptionProvider rsaEncryptionProvider;
     private final SecretManagementClient secretManagementClient;
 
@@ -70,19 +68,32 @@ public class SecretManagementService implements SecurityKeyService {
     @Override
     public byte[] getDlmsAuthenticationKey(String deviceIdentification) {
 
+        GetSecretsResponse response;
+
+        GetSecretsRequest request = getSoapRequestForKey(deviceIdentification,
+                SecretType.E_METER_AUTHENTICATION_KEY);
+
         try {
-            GetSecretsRequest request = getSoapRequestForKey(deviceIdentification,
-                    SecretType.E_METER_AUTHENTICATION_KEY);
-            GetSecretsResponse response = secretManagementClient.getSecretsRequest(request);
-            Optional<TypedSecret> optionalTypedSecret = getTypedSecretFromSoapResponse(response,
-                    SecretType.E_METER_AUTHENTICATION_KEY);
+            response = secretManagementClient.getSecretsRequest(request);
+        }
+        catch (Exception e) {
+            throw new ConnectionException("Error while communicating with secret management "
+                    + "(getDlmsAuthenticationKey)", e);
+        }
+
+        Optional<TypedSecret> optionalTypedSecret = getTypedSecretFromSoapResponse(response,
+                SecretType.E_METER_AUTHENTICATION_KEY);
+
+        try {
 
             byte[] decryptedKey = decryptSoapSecret(deviceIdentification, optionalTypedSecret.orElseThrow(
                     () -> new IllegalStateException("Secret not found:" + deviceIdentification)));
 
-            log.trace("DlmsAuthenticationKey for device " + deviceIdentification + " is " + Hex.encodeHexString(decryptedKey));
+            log.trace("DlmsAuthenticationKey for device {} is {}", deviceIdentification,
+                    Hex.encodeHexString(decryptedKey));
 
             return decryptedKey;
+
         } catch (Exception e) {
             throw new EncrypterException("Error while retrieving authentication key", e);
         }
@@ -91,24 +102,34 @@ public class SecretManagementService implements SecurityKeyService {
     @Override
     public byte[] getDlmsGlobalUnicastEncryptionKey(String deviceIdentification) {
 
-        try {
-            GetSecretsRequest request = getSoapRequestForKey(deviceIdentification,
-                    SecretType.E_METER_ENCRYPTION_KEY_UNICAST);
-            GetSecretsResponse response = secretManagementClient.getSecretsRequest(request);
-            Optional<TypedSecret> optionalTypedSecret = getTypedSecretFromSoapResponse(response,
-                    SecretType.E_METER_ENCRYPTION_KEY_UNICAST);
+        GetSecretsResponse response;
 
+        GetSecretsRequest request = getSoapRequestForKey(deviceIdentification,
+                SecretType.E_METER_ENCRYPTION_KEY_UNICAST);
+
+        try {
+            response = secretManagementClient.getSecretsRequest(request);
+        }
+        catch(Exception e) {
+            throw new ConnectionException("Error while communicating with secret management "
+                    + "(getDlmsGlobalUnicastEncryptionKey)", e);
+        }
+
+        Optional<TypedSecret> optionalTypedSecret = getTypedSecretFromSoapResponse(response,
+                SecretType.E_METER_ENCRYPTION_KEY_UNICAST);
+
+        try {
             byte[] decryptedKey = decryptSoapSecret(deviceIdentification, optionalTypedSecret.orElseThrow(
                     () -> new IllegalStateException("Secret not found:" + deviceIdentification)));
 
-            log.trace("DlmsGlobalUnicastEncryptionKey for device " + deviceIdentification + " is " + Hex.encodeHexString(decryptedKey));
+            log.trace("DlmsGlobalUnicastEncryptionKey for device {} is {}", deviceIdentification,
+                    Hex.encodeHexString(decryptedKey));
 
             return decryptedKey;
 
         } catch (Exception e) {
-            LOGGER.error("Error while retrieving encryption key", e);
+            throw new EncrypterException("Error while retrieving global unicast key", e);
         }
-        return new byte[0];
     }
 
     @Override
@@ -175,7 +196,7 @@ public class SecretManagementService implements SecurityKeyService {
             Secret decryptedSecret = rsaEncryptionProvider.decrypt(encryptedSoapSecret, "1");
             return decryptedSecret.getSecret();
         } catch (Exception e) {
-            throw new IllegalStateException("Decrypting key for device: " + deviceIdentification, e);
+            throw new IllegalStateException("Decrypting key for device:" + deviceIdentification, e);
         }
     }
 }
