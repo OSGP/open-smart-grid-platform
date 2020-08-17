@@ -12,6 +12,7 @@ import java.io.Serializable;
 
 import javax.jms.JMSException;
 
+import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHelper;
@@ -27,17 +28,15 @@ import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.opensmartgridplatform.shared.infra.jms.RetryHeader;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Abstract base class for message processors dealing with optional
  * DlmsConnection creation and DlmsMessageListener handling.
  */
+@Slf4j
 public abstract class DlmsConnectionMessageProcessor {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(DlmsConnectionMessageProcessor.class);
-
+    
     @Autowired
     protected DlmsConnectionHelper dlmsConnectionHelper;
 
@@ -58,13 +57,18 @@ public abstract class DlmsConnectionMessageProcessor {
 
     public DlmsConnectionManager createConnectionForDevice(final DlmsDevice device,
             final MessageMetadata messageMetadata) throws OsgpException {
-        
+
         throttlingService.openConnection();
 
         final DlmsMessageListener dlmsMessageListener = this
                 .createMessageListenerForDeviceConnection(device, messageMetadata);
 
-        return this.dlmsConnectionHelper.createConnectionForDevice(device, dlmsMessageListener);
+        try {
+            return this.dlmsConnectionHelper.createConnectionForDevice(device, dlmsMessageListener);
+        } catch (Exception e) {
+            throttlingService.closeConnection();
+            throw e;
+        }
     }
 
     protected DlmsMessageListener createMessageListenerForDeviceConnection(final DlmsDevice device,
@@ -103,20 +107,20 @@ public abstract class DlmsConnectionMessageProcessor {
     }
 
     protected void closeDlmsConnection(final DlmsDevice device, final DlmsConnectionManager conn) {
-        LOGGER.info("Closing connection with {}", device.getDeviceIdentification());
+        log.info("Closing connection with {}", device.getDeviceIdentification());
         final DlmsMessageListener dlmsMessageListener = conn.getDlmsMessageListener();
         dlmsMessageListener.setDescription("Close connection");
         try {
             conn.close();
         } catch (final Exception e) {
-            LOGGER.error("Error while closing connection", e);
+            log.error("Error while closing connection", e);
         }
     }
 
     /* package private */
     void updateInvocationCounterForDevice(final DlmsDevice device, final DlmsConnectionManager conn) {
         if (!(conn.getDlmsMessageListener() instanceof InvocationCountingDlmsMessageListener)) {
-            LOGGER.error("updateInvocationCounterForDevice should only be called for devices with HLS 5 "
+            log.error("updateInvocationCounterForDevice should only be called for devices with HLS 5 "
                             + "communication with an InvocationCountingDlmsMessageListener - device: {}, hls5: {}, "
                             + "listener: {}", device.getDeviceIdentification(), device.isHls5Active(),
                     conn.getDlmsMessageListener() == null ? "null" : conn.getDlmsMessageListener().getClass()

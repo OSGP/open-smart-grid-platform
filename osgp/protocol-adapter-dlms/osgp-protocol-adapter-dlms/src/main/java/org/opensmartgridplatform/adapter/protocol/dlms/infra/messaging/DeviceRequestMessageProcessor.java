@@ -14,6 +14,7 @@ import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
+import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
@@ -24,8 +25,6 @@ import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -36,9 +35,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
  * construction. The Singleton instance is added to the HashMap of
  * MessageProcessors after dependency injection has completed.
  */
+@Slf4j
 public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessageProcessor implements MessageProcessor {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceRequestMessageProcessor.class);
 
     @Autowired
     protected DeviceResponseMessageSender responseMessageSender;
@@ -77,7 +75,7 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
     // it does not extend Exception.
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
-        LOGGER.debug("Processing {} request message", this.messageType);
+        log.debug("Processing {} request message", this.messageType);
 
         MessageMetadata messageMetadata = null;
         DlmsConnectionManager conn = null;
@@ -97,7 +95,7 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
                 device = this.domainHelperService.findDlmsDevice(messageMetadata);
             }
 
-            LOGGER.info("{} called for device: {} for organisation: {}", message.getJMSType(),
+            log.info("{} called for device: {} for organisation: {}", message.getJMSType(),
                     messageMetadata.getDeviceIdentification(), messageMetadata.getOrganisationIdentification());
 
             final Serializable response;
@@ -112,11 +110,11 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, this.responseMessageSender,
                     response);
         } catch (final JMSException exception) {
-            this.logJmsException(LOGGER, exception, messageMetadata);
+            this.logJmsException(log, exception, messageMetadata);
         } catch (final Exception exception) {
             // Return original request + exception
             if (!(exception instanceof SilentException)) {
-                LOGGER.error("Unexpected exception during {}", this.messageType.name(), exception);
+                log.error("Unexpected exception during {}", this.messageType.name(), exception);
             }
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, exception,
