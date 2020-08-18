@@ -17,10 +17,8 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.wsclient.Secr
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
-import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.security.EncryptedSecret;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 import org.opensmartgridplatform.shared.security.Secret;
@@ -75,7 +73,8 @@ public class SecretManagementService implements SecurityKeyService {
      */
     public byte[] reEncryptKey(final byte[] externallyEncryptedKey, final SecurityKeyType keyType)
             throws FunctionalException {
-        /* TODO
+        // TODO:
+        /*
         if (externallyEncryptedKey == null) {
             return new byte[0];
         }
@@ -89,6 +88,7 @@ public class SecretManagementService implements SecurityKeyService {
 
     private byte[] rsaDecrypt(final byte[] externallyEncryptedKey, final SecurityKeyType keyType)
             throws FunctionalException {
+        // TODO:
         /*
         try {
             return this.rsaEncryptionService.decrypt(externallyEncryptedKey);
@@ -103,7 +103,8 @@ public class SecretManagementService implements SecurityKeyService {
     }
 
     private byte[] aesEncrypt(final byte[] key, final SecurityKeyType keyType) throws FunctionalException {
-        /*TODO
+        // TODO:
+        /*
         try {
             return this.encryptionService.encrypt(key);
         } catch (final Exception e) {
@@ -132,7 +133,8 @@ public class SecretManagementService implements SecurityKeyService {
      *         {@code encryptedKey == null}
      */
     public byte[] decryptKey(final byte[] encryptedKey, final SecurityKeyType keyType) throws ProtocolAdapterException {
-        /*TODO
+        //TODO:
+        /*
         if (encryptedKey == null) {
             return new byte[0];
         }
@@ -156,7 +158,8 @@ public class SecretManagementService implements SecurityKeyService {
      *         DLMS protocol adapter.
      */
     public byte[] encryptKey(final byte[] plainKey, final SecurityKeyType keyType) throws ProtocolAdapterException {
-        /*TODO
+        //TODO:
+        /*
         if (plainKey == null) {
             return new byte[0];
         }
@@ -221,11 +224,6 @@ public class SecretManagementService implements SecurityKeyService {
 
     @Override
     public byte[] generateAndEncryptKey() {
-        throw new NotImplementedException();
-    }
-
-    @Override
-    public byte[] encryptMbusUserKey(byte[] mbusDefaultKey, byte[] mbusUserKey) throws ProtocolAdapterException {
         throw new NotImplementedException();
     }
 

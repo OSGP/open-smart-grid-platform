@@ -9,8 +9,19 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.security;
 
 import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.openmuc.jdlms.MethodParameter;
 import org.openmuc.jdlms.MethodResult;
@@ -146,7 +157,7 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor
     private MethodParameter getTransferKeyToMBusMethodParameter(final ObisCode obisCode, final byte[] mbusDefaultKey,
             final byte[] mbusUserKey) throws ProtocolAdapterException {
 
-        final byte[] encryptedUserKey = this.securityKeyService.encryptMbusUserKey(mbusDefaultKey, mbusUserKey);
+        final byte[] encryptedUserKey = this.encryptMbusUserKey(mbusDefaultKey, mbusUserKey);
         final DataObject methodParameter = DataObject.newOctetStringData(encryptedUserKey);
         return new MethodParameter(MBusClientMethod.TRANSFER_KEY, obisCode, methodParameter);
     }
@@ -154,6 +165,41 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor
     private MethodParameter getSetEncryptionKeyMethodParameter(final ObisCode obisCode, final byte[] encryptionKey) {
         final DataObject methodParameter = DataObject.newOctetStringData(encryptionKey);
         return new MethodParameter(MBusClientMethod.SET_ENCRYPTION_KEY, obisCode, methodParameter);
+    }
+
+    /**
+     * Encrypts a new M-Bus User key with the M-Bus Default key for use as M-Bus
+     * Client Setup transfer_key parameter.
+     * <p>
+     * Note that the specifics of the encryption of the M-Bus User key depend on
+     * the M-Bus version the devices support. This method should be appropriate
+     * for use with DSMR 4 M-Bus devices.
+     * <p>
+     * The encryption is performed by applying an AES/CBC/NoPadding cipher
+     * initialized for encryption with the given mbusDefaultKey and an
+     * initialization vector of 16 zero-bytes to the given mbusUserKey.
+     *
+     * @return the properly wrapped User key for a DSMR 4 M-Bus User key change.
+     */
+    private byte[] encryptMbusUserKey(final byte[] mbusDefaultKey, final byte[] mbusUserKey)
+            throws ProtocolAdapterException {
+
+        final Key secretkeySpec = new SecretKeySpec(mbusDefaultKey, "AES");
+
+        try {
+
+            final Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
+
+            final IvParameterSpec params = new IvParameterSpec(new byte[16]);
+            cipher.init(Cipher.ENCRYPT_MODE, secretkeySpec, params);
+
+            return cipher.doFinal(mbusUserKey);
+
+        } catch (final NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
+            final String message = "Error encrypting M-Bus User key with M-Bus Default key for transfer.";
+            LOGGER.error(message, e);
+            throw new ProtocolAdapterException(message);
+        }
     }
 
 }
