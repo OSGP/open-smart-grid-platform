@@ -161,17 +161,4 @@ http://www.apache.org/licenses/LICENSE-2.0
 
   </build>
 
-  <repositories>
-    <repository>
-      <id>bintray</id>
-      <url>https://jcenter.bintray.com</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
-
 </project>
