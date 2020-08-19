@@ -8,7 +8,7 @@
 package org.opensmartgridplatform.cucumber.platform.glue.steps.database.core;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.opensmartgridplatform.cucumber.core.DateTimeHelper.getDateTime;
+import static org.opensmartgridplatform.cucumber.core.DateTimeHelper.getDateTime2;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.Date;
@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -46,10 +47,9 @@ public class DeviceFirmwareFileSteps {
      *
      * @param settings
      *            The settings for the device to be used.
-     * @throws Throwable
      */
     @Given("^a device firmware$")
-    public void aDeviceFirmware(final Map<String, String> settings) throws Throwable {
+    public void aDeviceFirmware(final Map<String, String> settings) {
 
         // Get the device
         final Device device = this.deviceRepository.findByDeviceIdentification(getString(settings,
@@ -59,8 +59,8 @@ public class DeviceFirmwareFileSteps {
         final FirmwareFile firmwareFile = this
                 .getFirmwareFile(getString(settings, PlatformKeys.FIRMWARE_FILE_FILENAME));
 
-        final Date installationDate = getDateTime(getString(settings, PlatformKeys.FIRMWARE_INSTALLATION_DATE,
-                PlatformDefaults.FIRMWARE_INSTALLATION_DATE)).toDate();
+        final Date installationDate = getDateTime2(getString(settings, PlatformKeys.FIRMWARE_INSTALLATION_DATE),
+                DateTime.now()).toDate();
         final String installedBy = getString(settings, PlatformKeys.FIRMWARE_INSTALLED_BY,
                 PlatformDefaults.FIRMWARE_INSTALLED_BY);
         final DeviceFirmwareFile deviceFirmwareFile = new DeviceFirmwareFile(device, firmwareFile, installationDate,
@@ -82,7 +82,7 @@ public class DeviceFirmwareFileSteps {
     }
 
     @Then("^the device firmware file exists$")
-    public void theDeviceFirmwareFileExists(final Map<String, String> settings) throws Throwable {
+    public void theDeviceFirmwareFileExists(final Map<String, String> settings) {
         final String deviceIdentification = settings.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION);
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
         final FirmwareFile firmwareFile = this
