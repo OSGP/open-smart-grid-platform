@@ -2,27 +2,30 @@
 
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/4104/badge)](https://bestpractices.coreinfrastructure.org/projects/4104)
 
-# Code for Open Smart Grid Platform
+# Code for Grid eXchange Fabric (GXF)
 
 ### Project Description
 
-This repository contains all code for the Open Smart Grid Platform.
+This repository contains all code for the Grid eXchange Fabric (GXF) project, formerly known as Open Smart Grid Platform (OSGP). The name OSGP has been deprecated.
 
 - osgp. This project contains all code components needed to build the platform.
 - integration-tests. This project contains all the tests to verify the platform.
 - public-lighting-demo-app. This project contains a simple demo app for the platform.
 
 
-## Open smart grid platform information and news
+## Grid eXchange Fabric information and news
 
-High-level project information and news can be found on the open smart grid platform website: 
+High-level project information and news can be found on the GXF section of the LF Energy website: 
 * [www.opensmartgridplatform.org](http://opensmartgridplatform.org/)
 
-Open smart grid platform detailed documentation:
+GXF wiki with detailed project information:
+* [LF Energy wiki](https://wiki.lfenergy.org/display/HOME/Grid+eXchange+Fabric+-+GXF)
+
+GXF detailed documentation (note: URL will change soon):
 * [documentation.opensmartgridplatform.org](http://documentation.opensmartgridplatform.org/)
 
-Open smart grid platform issue tracker:
-* [Open smart grid platform Jira](https://smartsocietyservices.atlassian.net/projects/OC/issues/)
+GXF issue tracker:
+* [GXF Jira](https://smartsocietyservices.atlassian.net/projects/OC/issues/)
 
-Questions and discussions:
-* [Open smart grid platform Discourse](https://opensmartgridplatform.discourse.group/)
+Questions and discussions (note: URL will change soon):
+* [GXF Discourse](https://opensmartgridplatform.discourse.group/)
