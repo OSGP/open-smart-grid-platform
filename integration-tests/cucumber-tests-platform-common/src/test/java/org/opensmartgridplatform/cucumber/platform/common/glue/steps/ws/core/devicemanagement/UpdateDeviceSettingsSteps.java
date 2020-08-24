@@ -15,11 +15,12 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStri
 
 import java.util.Map;
 
-import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device;
+import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.BaseDeviceModel;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.DeviceModel;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Manufacturer;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceResponse;
+import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdatedDevice;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -52,7 +53,7 @@ public class UpdateDeviceSettingsSteps {
             deviceIdentification = deviceIdentification.replaceAll("\"", " ");
         }
         request.setDeviceIdentification(deviceIdentification);
-        final Device device = this.createDevice(settings);
+        final UpdatedDevice device = this.createDevice(settings);
         request.setUpdatedDevice(device);
 
         try {
@@ -62,22 +63,16 @@ public class UpdateDeviceSettingsSteps {
         }
     }
 
-    private Device createDevice(final Map<String, String> settings) {
+    private UpdatedDevice createDevice(final Map<String, String> settings) {
 
-        final Device device = new Device();
+        final UpdatedDevice device = new UpdatedDevice();
         device.setAlias(getString(settings, PlatformKeys.ALIAS, PlatformCommonDefaults.DEFAULT_ALIAS));
         device.setContainerAddress(new AddressBuilder().withSettings(settings).build());
         device.setDeviceIdentification(getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
                 PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        final DeviceModel deviceModel = new DeviceModel();
-        deviceModel.setDescription(getString(settings, PlatformKeys.KEY_DEVICE_MODEL_DESCRIPTION,
-                PlatformCommonDefaults.DEFAULT_DEVICE_MODEL_DESCRIPTION));
-
+        final BaseDeviceModel deviceModel = new DeviceModel();
         deviceModel.setManufacturer(this.createManufacturer(settings));
-
-        deviceModel.setMetered(getBoolean(settings, PlatformKeys.KEY_DEVICE_MODEL_METERED,
-                PlatformCommonDefaults.DEFAULT_DEVICE_MODEL_METERED));
         deviceModel.setModelCode(getString(settings, PlatformKeys.KEY_DEVICE_MODEL_MODELCODE,
                 PlatformCommonDefaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
         device.setDeviceModel(deviceModel);

@@ -17,6 +17,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.BaseDevice;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.DeviceModel;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Manufacturer;
@@ -32,7 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import ma.glasnost.orika.MapperFacade;
 
-class DeviceConverterHelper<T extends org.opensmartgridplatform.domain.core.entities.Device> {
+class DeviceConverterHelper<T extends BaseDevice> {
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceConverterHelper.class);
 
     private final Class<T> clazz;

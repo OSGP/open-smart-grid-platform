@@ -184,7 +184,7 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="DeviceIdentification" type="common:Identification" />
-        <xsd:element name="UpdatedDevice" type="tns:Device" />
+        <xsd:element name="UpdatedDevice" type="tns:UpdatedDevice" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -407,7 +407,7 @@
     </xsd:restriction>
   </xsd:simpleType>
 
-  <xsd:complexType name="Device">
+  <xsd:complexType name="BaseDevice">
     <xsd:sequence>
       <xsd:element name="DeviceUid" type="xsd:string" minOccurs="0" />
       <xsd:element name="DeviceIdentification" type="common:Identification" />
@@ -428,11 +428,20 @@
       <xsd:element name="DeviceAuthorizations" type="tns:DeviceAuthorization" minOccurs="0" maxOccurs="unbounded" />
       <xsd:element name="InMaintenance" type="xsd:boolean" minOccurs="0" />
       <xsd:element name="TechnicalInstallationDate" type="xsd:dateTime" minOccurs="0" />
-      <xsd:element name="DeviceModel" type="tns:DeviceModel" minOccurs="0" />
       <xsd:element name="LightMeasurementDevice" type="tns:LightMeasurementDevice" minOccurs="0" />
       <xsd:element name="DeviceLifecycleStatus" type="tns:DeviceLifecycleStatus" minOccurs="0" />
       <xsd:element name="LastCommunicationTime" type="xsd:dateTime" minOccurs="0" />
     </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Device">
+    <xsd:complexContent>
+      <xsd:extension base="tns:BaseDevice">
+        <xsd:sequence>
+          <xsd:element name="DeviceModel" type="tns:DeviceModel" minOccurs="0" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
   </xsd:complexType>
   
   <xsd:complexType name="LightMeasurementDevice">
@@ -447,6 +456,17 @@
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
+
+<xsd:complexType name="UpdatedDevice">
+    <xsd:complexContent>
+      <xsd:extension base="tns:BaseDevice">
+        <xsd:sequence>
+          <xsd:element name="DeviceModel" type="tns:BaseDeviceModel" minOccurs="0" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
 
   <xsd:complexType name="RelayStatus">
     <xsd:sequence>
@@ -708,8 +728,8 @@
     </xsd:sequence>
   </xsd:complexType>
 
-  <xsd:complexType name="DeviceModel">
-    <xsd:sequence>
+	<xsd:complexType name="BaseDeviceModel">
+	 <xsd:sequence>
       <xsd:element name="Manufacturer" type="tns:Manufacturer"
         minOccurs="0" />
       <xsd:element name="ModelCode" minOccurs="0" maxOccurs="1">
@@ -719,17 +739,26 @@
           </xsd:restriction>
         </xsd:simpleType>
       </xsd:element>
-      <xsd:element name="Description" minOccurs="0"
-        maxOccurs="1">
-        <xsd:simpleType>
-          <xsd:restriction base="xsd:string">
-            <xsd:maxLength value="255" />
-          </xsd:restriction>
-        </xsd:simpleType>
-      </xsd:element>
-      <xsd:element name="Metered" type="xsd:boolean"
-        minOccurs="1" maxOccurs="1" />
-    </xsd:sequence>
+	 </xsd:sequence>
+	</xsd:complexType>
+
+  <xsd:complexType name="DeviceModel">
+	<xsd:complexContent>
+		<xsd:extension base="tns:BaseDeviceModel">
+		    <xsd:sequence>
+		      <xsd:element name="Description" minOccurs="0"
+		        maxOccurs="1">
+		        <xsd:simpleType>
+		          <xsd:restriction base="xsd:string">
+		            <xsd:maxLength value="255" />
+		          </xsd:restriction>
+		        </xsd:simpleType>
+		      </xsd:element>
+		      <xsd:element name="Metered" type="xsd:boolean"
+		        minOccurs="1" maxOccurs="1" />
+		    </xsd:sequence>
+	</xsd:extension>
+	</xsd:complexContent>
   </xsd:complexType>
 
   <xsd:complexType name="Firmware">
