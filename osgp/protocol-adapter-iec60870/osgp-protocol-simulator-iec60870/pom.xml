@@ -24,10 +24,12 @@
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>osgp-protocol-simulator-iec60870</artifactId>
-  <version>5.1.0-SNAPSHOT</version>
+  <version>5.3.0-SNAPSHOT</version>
   <packaging>war</packaging>
   <name>osgp-protocol-simulator-iec60870</name>
   <description>Simulator for IEC60870-5-104 protocol</description>
+  <!-- URL is passed in as a maven argument: -Dmaven.site.url=http://my/url/for/the/site -->
+  <url>${maven.site.url}</url>
   <organization>
     <name>OSGP</name>
     <url>http://opensmartgridplatform.org</url>
@@ -38,8 +40,6 @@
       <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
     </license>
   </licenses>
-  <!-- URL is passed in as a maven argument: -Dmaven.site.url=http://my/url/for/the/site -->
-  <url>${maven.site.url}</url>
   <distributionManagement>
     <site>
       <id>pa-iec60870-simulator</id>

@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.adapter.ws.core.application.services;
 
+import static org.opensmartgridplatform.shared.utils.SearchUtil.replaceWildcards;
 import static org.springframework.data.jpa.domain.Specification.where;
 
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import javax.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.QueryException;
 import org.joda.time.DateTime;
+import org.opensmartgridplatform.adapter.ws.core.application.criteria.SearchEventsCriteria;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessage;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessageSender;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonResponseMessageFinder;
@@ -53,7 +55,6 @@ import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceInMaintenanceFilterType;
 import org.opensmartgridplatform.domain.core.valueobjects.EventNotificationMessageDataContainer;
 import org.opensmartgridplatform.domain.core.valueobjects.EventNotificationType;
-import org.opensmartgridplatform.domain.core.valueobjects.EventType;
 import org.opensmartgridplatform.domain.core.valueobjects.PlatformFunction;
 import org.opensmartgridplatform.shared.application.config.PageSpecifier;
 import org.opensmartgridplatform.shared.application.config.PagingSettings;
@@ -65,6 +66,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.opensmartgridplatform.shared.utils.SearchUtil;
 import org.opensmartgridplatform.shared.validation.Identification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,9 +84,6 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public class DeviceManagementService {
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementService.class);
-
-    // The wildcard, used for filtering.
-    private static final String WILDCARD = "\\*";
 
     @Autowired
     private PagingSettings pagingSettings;
@@ -173,7 +172,7 @@ public class DeviceManagementService {
         this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_ORGANISATIONS);
 
         if (this.netManagementOrganisation.equals(organisationIdentification)) {
-            return this.organisationRepository.findAll();
+            return this.organisationRepository.findByOrderByOrganisationIdentification();
         } else {
             final Organisation org = this.organisationRepository
                     .findByOrganisationIdentification(organisationIdentification);
@@ -184,46 +183,44 @@ public class DeviceManagementService {
     }
 
     @Transactional(value = "transactionManager")
-    public Page<Event> findEvents(@Identification final String organisationIdentification,
-            final String deviceIdentification, final PageSpecifier pageSpecifier, final DateTime from,
-            final DateTime until, final List<EventType> eventTypes) throws FunctionalException {
+    public Page<Event> findEvents(final SearchEventsCriteria criteria) throws FunctionalException {
 
+        final String organisationIdentification = criteria.getOrganisationIdentification();
+        final String deviceIdentification = criteria.getDeviceIdentification();
         LOGGER.debug("findEvents called for organisation {} and device {}", organisationIdentification,
                 deviceIdentification);
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
 
-        this.pagingSettings.updatePagingSettings(pageSpecifier);
+        this.pagingSettings.updatePagingSettings(criteria.getPageSpecifier());
 
         final PageRequest request = PageRequest.of(this.pagingSettings.getPageNumber(),
                 this.pagingSettings.getPageSize(), Sort.Direction.DESC, "dateTime");
 
         Specification<Event> specification;
 
-        try {
-            if (deviceIdentification != null && !deviceIdentification.isEmpty()) {
-                final Device device = this.domainHelperService.findDevice(deviceIdentification);
-                this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_EVENT_NOTIFICATIONS);
+        if (deviceIdentification != null && !deviceIdentification.isEmpty()) {
+            final Device device = this.domainHelperService.findDevice(deviceIdentification);
+            this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_EVENT_NOTIFICATIONS);
 
-                specification = where(this.eventSpecifications.isFromDevice(device));
-            } else {
-                specification = where(this.eventSpecifications.isAuthorized(organisation));
-            }
-
-            if (from != null) {
-                specification = specification.and(this.eventSpecifications.isCreatedAfter(from.toDate()));
-            }
-
-            if (until != null) {
-                specification = specification.and(this.eventSpecifications.isCreatedBefore(until.toDate()));
-            }
-
-            if (eventTypes != null && !eventTypes.isEmpty()) {
-                specification = specification.and(this.eventSpecifications.hasEventTypes(eventTypes));
-            }
-        } catch (final ArgumentNullOrEmptyException e) {
-            throw new FunctionalException(FunctionalExceptionType.ARGUMENT_NULL, ComponentType.WS_CORE, e);
+            specification = where(this.eventSpecifications.isFromDevice(device));
+        } else {
+            specification = where(this.eventSpecifications.isAuthorized(organisation));
         }
+
+        final DateTime from = criteria.getFrom();
+        if (from != null) {
+            specification = specification.and(this.eventSpecifications.isCreatedAfter(from.toDate()));
+        }
+
+        final DateTime until = criteria.getUntil();
+        if (until != null) {
+            specification = specification.and(this.eventSpecifications.isCreatedBefore(until.toDate()));
+        }
+
+        specification = specification.and(this.eventSpecifications.hasEventTypes(criteria.getEventTypes()));
+        specification = this.handleDescription(SearchUtil.replaceWildcards(criteria.getDescription()),
+                SearchUtil.replaceWildcards(criteria.getDescriptionStartsWith()), specification);
 
         LOGGER.debug("request offset     : {}", request.getOffset());
         LOGGER.debug("        pageNumber : {}", request.getPageNumber());
@@ -231,6 +228,25 @@ public class DeviceManagementService {
         LOGGER.debug("        sort       : {}", request.getSort());
 
         return this.eventRepository.findAll(specification, request);
+    }
+
+    private Specification<Event> handleDescription(final String description, final String descriptionStartsWith,
+            final Specification<Event> specification) {
+
+        final Specification<Event> descriptionSpecification = this.eventSpecifications.withDescription(description);
+        final Specification<Event> descriptionStartsWithSpecification = this.eventSpecifications
+                .startsWithDescription(descriptionStartsWith);
+
+        if (description == null && descriptionStartsWith == null) {
+            return specification;
+        }
+        if (description == null && descriptionStartsWith != null) {
+            return specification.and(descriptionStartsWithSpecification);
+        }
+        if (description != null && descriptionStartsWith == null) {
+            return specification.and(descriptionSpecification);
+        }
+        return specification.and(descriptionSpecification.or(descriptionStartsWithSpecification));
     }
 
     /**
@@ -396,7 +412,7 @@ public class DeviceManagementService {
         if (!StringUtils.isEmpty(deviceFilter.getFirmwareModuleVersion())) {
             specification = specification
                     .and(this.deviceSpecifications.forFirmwareModuleVersion(deviceFilter.getFirmwareModuleType(),
-                            deviceFilter.getFirmwareModuleVersion().replaceAll(WILDCARD, "%") + "%"));
+                            replaceWildcards(deviceFilter.getFirmwareModuleVersion()).toUpperCase()));
         }
         return specification;
     }
@@ -415,7 +431,7 @@ public class DeviceManagementService {
             Specification<Device> specification) throws ArgumentNullOrEmptyException {
         if (!StringUtils.isEmpty(deviceFilter.getModel())) {
             specification = specification.and(
-                    this.deviceSpecifications.forDeviceModel(deviceFilter.getModel().replaceAll(WILDCARD, "%") + "%"));
+                    this.deviceSpecifications.forDeviceModel(replaceWildcards(deviceFilter.getModel()).toUpperCase()));
         }
         return specification;
     }
@@ -424,7 +440,7 @@ public class DeviceManagementService {
             Specification<Device> specification) throws ArgumentNullOrEmptyException {
         if (!StringUtils.isEmpty(deviceFilter.getDeviceType())) {
             specification = specification.and(this.deviceSpecifications
-                    .forDeviceType(deviceFilter.getDeviceType().replaceAll(WILDCARD, "%") + "%"));
+                    .forDeviceType(replaceWildcards(deviceFilter.getDeviceType()).toUpperCase()));
         }
         return specification;
     }
@@ -433,7 +449,7 @@ public class DeviceManagementService {
             throws ArgumentNullOrEmptyException {
         if (!StringUtils.isEmpty(deviceFilter.getOwner())) {
             specification = specification
-                    .and(this.deviceSpecifications.forOwner(deviceFilter.getOwner().replaceAll(WILDCARD, "%") + "%"));
+                    .and(this.deviceSpecifications.forOwner(replaceWildcards(deviceFilter.getOwner()).toUpperCase()));
         }
         return specification;
     }
@@ -480,23 +496,23 @@ public class DeviceManagementService {
             Specification<Device> specification) throws ArgumentNullOrEmptyException {
         if (!StringUtils.isEmpty(deviceFilter.getCity())) {
             specification = specification
-                    .and(this.deviceSpecifications.hasCity(deviceFilter.getCity().replaceAll(WILDCARD, "%") + "%"));
+                    .and(this.deviceSpecifications.hasCity(replaceWildcards(deviceFilter.getCity()).toUpperCase()));
         }
         if (!StringUtils.isEmpty(deviceFilter.getPostalCode())) {
             specification = specification.and(this.deviceSpecifications
-                    .hasPostalCode(deviceFilter.getPostalCode().replaceAll(WILDCARD, "%") + "%"));
+                    .hasPostalCode(replaceWildcards(deviceFilter.getPostalCode()).toUpperCase()));
         }
         if (!StringUtils.isEmpty(deviceFilter.getStreet())) {
             specification = specification
-                    .and(this.deviceSpecifications.hasStreet(deviceFilter.getStreet().replaceAll(WILDCARD, "%") + "%"));
+                    .and(this.deviceSpecifications.hasStreet(replaceWildcards(deviceFilter.getStreet()).toUpperCase()));
         }
         if (!StringUtils.isEmpty(deviceFilter.getNumber())) {
             specification = specification
-                    .and(this.deviceSpecifications.hasNumber(deviceFilter.getNumber().replaceAll(WILDCARD, "%") + "%"));
+                    .and(this.deviceSpecifications.hasNumber(replaceWildcards(deviceFilter.getNumber()).toUpperCase()));
         }
         if (!StringUtils.isEmpty(deviceFilter.getMunicipality())) {
             specification = specification.and(this.deviceSpecifications
-                    .hasMunicipality(deviceFilter.getMunicipality().replaceAll(WILDCARD, "%") + "%"));
+                    .hasMunicipality(replaceWildcards(deviceFilter.getMunicipality()).toUpperCase()));
         }
         return specification;
     }
@@ -505,7 +521,7 @@ public class DeviceManagementService {
             Specification<Device> specification) throws ArgumentNullOrEmptyException {
         if (!StringUtils.isEmpty(deviceFilter.getAlias())) {
             specification = specification
-                    .and(this.deviceSpecifications.hasAlias(deviceFilter.getAlias().replaceAll(WILDCARD, "%") + "%"));
+                    .and(this.deviceSpecifications.hasAlias(replaceWildcards(deviceFilter.getAlias()).toUpperCase()));
         }
         return specification;
     }
@@ -516,7 +532,7 @@ public class DeviceManagementService {
             String searchString = deviceFilter.getDeviceIdentification();
 
             if (!deviceFilter.isExactMatch()) {
-                searchString = searchString.replaceAll(WILDCARD, "%") + "%";
+                searchString = replaceWildcards(searchString).toUpperCase();
             }
 
             specification = specification

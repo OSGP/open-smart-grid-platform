@@ -28,12 +28,14 @@ import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 public class Lls1Connector extends SecureDlmsConnector {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Lls1Connector.class);
 
     @Autowired
+    @Qualifier("secretManagementService")
     private SecurityKeyService securityKeyService;
 
     public Lls1Connector(final int responseTimeout, final int logicalDeviceAddress,
@@ -78,7 +80,7 @@ public class Lls1Connector extends SecureDlmsConnector {
                     ComponentType.PROTOCOL_DLMS);
         }
         if (password == null) {
-            LOGGER.error("There is no password available for device " + device.getDeviceIdentification());
+            LOGGER.error("There is no password available for device {}", device.getDeviceIdentification());
             throw new FunctionalException(FunctionalExceptionType.INVALID_DLMS_KEY_ENCRYPTION,
                     ComponentType.PROTOCOL_DLMS);
         }

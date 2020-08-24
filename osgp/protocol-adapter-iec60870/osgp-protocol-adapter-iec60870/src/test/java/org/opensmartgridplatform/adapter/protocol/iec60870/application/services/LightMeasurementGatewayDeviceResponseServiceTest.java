@@ -8,7 +8,9 @@
 
 package org.opensmartgridplatform.adapter.protocol.iec60870.application.services;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.factories.Iec60870DeviceFactory.KEY_DEVICE_IDENTIFICATION;
@@ -25,12 +27,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.internal.verification.Times;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.entities.Iec60870Device;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.ResponseMetadataFactory;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.repositories.Iec60870DeviceRepository;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.LightMeasurementService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceType;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseMetadata;
 import org.opensmartgridplatform.dto.da.measurements.MeasurementDto;
@@ -39,7 +38,6 @@ import org.opensmartgridplatform.dto.da.measurements.MeasurementGroupDto;
 import org.opensmartgridplatform.dto.da.measurements.MeasurementReportDto;
 import org.opensmartgridplatform.dto.da.measurements.MeasurementReportHeaderDto;
 import org.opensmartgridplatform.dto.da.measurements.elements.BitmaskMeasurementElementDto;
-import org.opensmartgridplatform.dto.valueobjects.LightSensorStatusDto;
 
 @ExtendWith(MockitoExtension.class)
 public class LightMeasurementGatewayDeviceResponseServiceTest {
@@ -61,17 +59,10 @@ public class LightMeasurementGatewayDeviceResponseServiceTest {
     private Iec60870DeviceRepository iec60870DeviceRepository;
 
     @Mock
-    private ResponseMetadataFactory responseMetadataFactory;
+    private LightMeasurementDeviceResponseService lightMeasurementDeviceResponseService;
 
-    @Mock
-    private LightMeasurementService lightMeasurementService;
-
-    /**
-     * Test method for
-     * {@link org.opensmartgridplatform.adapter.protocol.iec60870.application.services.LightMeasurementGatewayDeviceResponseService#process(org.opensmartgridplatform.dto.da.measurements.MeasurementReportDto, org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseMetadata)}.
-     */
     @Test
-    void testProcessShouldSendLightSensorStatusReports() {
+    public void processShouldDelegateProcessingReportsForEachDeviceBehindTheGateway() {
         // Arrange
         final Iec60870Device gatewayDevice = fromSettings(this.getGatewayDeviceSettings());
         final Iec60870Device lightMeasurementDevice1 = fromSettings(this.getLightMeasurementDevice1Settings());
@@ -87,8 +78,10 @@ public class LightMeasurementGatewayDeviceResponseServiceTest {
         this.lightMeasurementGatewayDeviceResponseService.process(measurementReportDto, responseMetadata);
 
         // Assert
-        verify(this.lightMeasurementService, new Times(2)).send(any(LightSensorStatusDto.class),
-                any(ResponseMetadata.class));
+        verify(this.lightMeasurementDeviceResponseService, times(1)).sendLightSensorStatusResponse(
+                same(measurementReportDto), same(lightMeasurementDevice1), same(responseMetadata), anyString());
+        verify(this.lightMeasurementDeviceResponseService, times(1)).sendLightSensorStatusResponse(
+                same(measurementReportDto), same(lightMeasurementDevice2), same(responseMetadata), anyString());
     }
 
     private ResponseMetadata getResponseMetadata(final String deviceIdentification) {

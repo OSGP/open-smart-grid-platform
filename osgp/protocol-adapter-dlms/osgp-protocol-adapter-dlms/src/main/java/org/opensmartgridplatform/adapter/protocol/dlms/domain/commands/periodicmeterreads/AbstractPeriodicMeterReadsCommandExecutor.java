@@ -41,9 +41,11 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends AbstractCommandExecutor<T, R> {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPeriodicMeterReadsCommandExecutor.class);
     private final AmrProfileStatusCodeHelper amrProfileStatusCodeHelper;
 
     AbstractPeriodicMeterReadsCommandExecutor(final Class<? extends PeriodicMeterReadsRequestDataDto> clazz,
@@ -214,6 +216,9 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends Ab
         if (!amrProfileStatusData.isNumber()) {
             throw new ProtocolAdapterException("Could not read AMR profile register data. Invalid data type.");
         }
+
+        LOGGER.info("Received amrProfileStatusData {} - {}", amrProfileStatusData.toString(),
+                amrProfileStatusData.getValue());
 
         final Set<AmrProfileStatusCodeFlagDto> flags = this.amrProfileStatusCodeHelper.toAmrProfileStatusCodeFlags(
                 amrProfileStatusData.getValue());

@@ -12,7 +12,7 @@ import java.io.IOException;
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.ConnectionEventListener;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseMetadata;
-import org.opensmartgridplatform.iec60870.Iec60870AsduHandlerNotFoundException;
+import org.opensmartgridplatform.iec60870.exceptions.Iec60870AsduHandlerNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -12,9 +12,10 @@ import javax.validation.ConstraintValidatorContext;
 import javax.validation.ValidationException;
 
 import org.opensmartgridplatform.domain.core.valueobjects.Configuration;
+import org.opensmartgridplatform.domain.core.valueobjects.LongTermIntervalType;
 
-public class LongTermIntervalAndLongTermIntervalTypeValidator implements
-ConstraintValidator<LongTermIntervalAndLongTermIntervalType, Configuration> {
+public class LongTermIntervalAndLongTermIntervalTypeValidator
+        implements ConstraintValidator<LongTermIntervalAndLongTermIntervalType, Configuration> {
 
     @Override
     public void initialize(final LongTermIntervalAndLongTermIntervalType constraintAnnotation) {
@@ -27,26 +28,29 @@ ConstraintValidator<LongTermIntervalAndLongTermIntervalType, Configuration> {
             return true;
         }
         // If LongTermHistoryInterval or LongTermHistoryIntervalType is not
-        // present,
-        // the other must be not present as well.
+        // present, the other must be not present as well.
         if (value.getLongTermHistoryInterval() == null && value.getLongTermHistoryIntervalType() == null) {
             return true;
         }
-        // If LongTermHistoryInterval or LongTermHistoryIntervalType is present,
-        // the other must be as well.
-        if (value.getLongTermHistoryInterval() != null && value.getLongTermHistoryIntervalType() != null) {
-            // And, the value of long term history interval must be among the
-            // permitted values, defined by the ranges:
-            // - from 1 to 30 for long term history interval type DAYS.
-            // - from 1 to 12 for long term history interval type MONTHS.
-            switch (value.getLongTermHistoryIntervalType()) {
+        // And, the value of long term history interval must be among the
+        // permitted values, defined by the ranges:
+        // - from 1 to 30 for long term history interval type DAYS.
+        // - from 1 to 12 for long term history interval type MONTHS.
+        final Integer interval = value.getLongTermHistoryInterval();
+        final LongTermIntervalType type = value.getLongTermHistoryIntervalType();
+        return this.checkRanges(interval, type);
+    }
+
+    private boolean checkRanges(final Integer interval, final LongTermIntervalType type) {
+        if (interval != null && type != null) {
+            switch (type) {
             case DAYS:
-                if (value.getLongTermHistoryInterval() >= 1 && value.getLongTermHistoryInterval() <= 30) {
+                if (interval >= 1 && interval <= 30) {
                     return true;
                 }
                 break;
             case MONTHS:
-                if (value.getLongTermHistoryInterval() >= 1 && value.getLongTermHistoryInterval() <= 12) {
+                if (interval >= 1 && interval <= 12) {
                     return true;
                 }
                 break;
@@ -55,7 +59,6 @@ ConstraintValidator<LongTermIntervalAndLongTermIntervalType, Configuration> {
 
             }
         }
-
         return false;
     }
 }

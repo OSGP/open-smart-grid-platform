@@ -1,7 +1,7 @@
 package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
@@ -65,7 +65,7 @@ public class SetRandomisationSettingsRequestDataTest {
                     SetRandomisationSettingsRequestData.MIN_VALUE_MULTIPLICATION_FACTOR,
                     SetRandomisationSettingsRequestData.MIN_VALUE_NUMBER_OF_RETRIES).validate();
         } catch (final FunctionalException e) {
-            fail();
+            fail("");
         }
     }
 }

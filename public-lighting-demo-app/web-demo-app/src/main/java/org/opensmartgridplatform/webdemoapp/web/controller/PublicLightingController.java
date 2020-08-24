@@ -9,6 +9,8 @@ package org.opensmartgridplatform.webdemoapp.web.controller;
 
 import java.util.List;
 
+import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.DeviceStatus;
+import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.LightValue;
 import org.opensmartgridplatform.webdemoapp.application.services.OsgpPublicLightingClientSoapService;
 import org.opensmartgridplatform.webdemoapp.domain.Device;
 import org.opensmartgridplatform.webdemoapp.domain.DeviceLightStatus;
@@ -23,8 +25,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.DeviceStatus;
-
 /**
  * Handles requests for the public lighting domain
  */
@@ -32,6 +32,10 @@ import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagemen
 public class PublicLightingController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PublicLightingController.class);
+
+    private static final int LIGHT_OFF = 0;
+    private static final int LIGHT_ON = 100;
+    private static final String DEVICE = "device";
 
     @Autowired
     private OsgpPublicLightingClientSoapService osgpPublicLightingClientSoapService;
@@ -99,8 +103,7 @@ public class PublicLightingController {
     public ModelAndView switchDevice(@ModelAttribute("SpringWeb") final DeviceLightStatus deviceStatus) {
         final ModelAndView modelView = new ModelAndView("switch-result");
         try {
-            if (deviceStatus.isLightOn()
-                    && ((deviceStatus.getLightValue() > 0) && (deviceStatus.getLightValue() <= 100))) {
+            if (deviceStatus.isLightOn() && deviceStatus.getLightValue() > 0 && deviceStatus.getLightValue() <= 100) {
                 this.osgpPublicLightingClientSoapService.setLightRequest(deviceStatus.getDeviceId(),
                         deviceStatus.getLightValue(), deviceStatus.isLightOn());
             } else if (!deviceStatus.isLightOn()) {
@@ -115,7 +118,7 @@ public class PublicLightingController {
             return this.error(e.getFaultStringOrReason());
         }
 
-        modelView.addObject("device", deviceStatus);
+        modelView.addObject(DEVICE, deviceStatus);
 
         return modelView;
     }
@@ -126,15 +129,27 @@ public class PublicLightingController {
      * getStatus request is processed by the platform
      */
     public ModelAndView getStatusRequest(final DeviceStatus deviceStatus, final String deviceIdentification) {
-        final ModelAndView modelView = new ModelAndView("device");
+        final ModelAndView modelView = new ModelAndView(DEVICE);
         final DeviceLightStatus deviceLightStatus = new DeviceLightStatus();
 
         deviceLightStatus.setDeviceId(deviceIdentification);
-        deviceLightStatus.setLightValue(deviceStatus.getLightValues().get(0).getDimValue());
-        deviceLightStatus.setLightOn(deviceStatus.getLightValues().get(0).isOn());
+
+        final LightValue lightValue = deviceStatus.getLightValues().get(0);
+        if (lightValue != null) {
+            int lv = LIGHT_OFF;
+            if (lightValue.getDimValue() == null) {
+                if (lightValue.isOn()) {
+                    lv = LIGHT_ON;
+                }
+            } else {
+                lv = lightValue.getDimValue();
+            }
+            deviceLightStatus.setLightOn(lightValue.isOn());
+            deviceLightStatus.setLightValue(lv);
+        }
 
         modelView.addObject("command", new DeviceLightStatus());
-        modelView.addObject("device", deviceLightStatus);
+        modelView.addObject(DEVICE, deviceLightStatus);
 
         return modelView;
     }

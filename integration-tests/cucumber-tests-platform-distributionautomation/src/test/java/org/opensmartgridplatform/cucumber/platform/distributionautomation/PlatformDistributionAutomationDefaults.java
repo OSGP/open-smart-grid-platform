@@ -9,9 +9,16 @@
  */
 package org.opensmartgridplatform.cucumber.platform.distributionautomation;
 
+import org.opensmartgridplatform.adapter.kafka.da.avro.UnitMultiplier;
+
 public class PlatformDistributionAutomationDefaults {
 
     public static final Integer COMMON_ADDRESS = 1511;
     public static final Integer PORT = 2404;
+    public static final String PROFILE = "default_controlled_station";
+    public static final String MQTT_HOST = "0.0.0.0";
+    public static final Integer MQTT_PORT = 8883;
+    public static final String MQTT_QOS = "EXACTLY_ONCE";
+    public static final UnitMultiplier UNIT_MULTIPLIER = UnitMultiplier.none;
 
 }

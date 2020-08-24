@@ -95,3 +95,94 @@ Feature: CoreDeviceManagement Find Events
       | TEST-1024000000002   |        2 |             0 |                   47 |            24 |                    2 |
       | TEST-1024000000002   |        2 |            23 |                   47 |            24 |                    1 |
       | TEST-1024000000002   |        2 |            24 |                   47 |            24 |                    0 |
+
+  Scenario: Find events for a device by filtering the description
+    Given a device
+      | OrganizationIdentification | test-org           |
+      | DeviceIdentification       | TEST-1024000000001 |
+    And an event
+      | OrganizationIdentification | test-org              |
+      | DeviceIdentification       | TEST-1024000000001    |
+      | EventType                  | LIGHT_EVENTS_LIGHT_ON |
+      | Description                | ad-hoc trigger        |
+    And an event
+      | OrganizationIdentification | test-org              |
+      | DeviceIdentification       | TEST-1024000000001    |
+      | EventType                  | LIGHT_EVENTS_LIGHT_ON |
+      | Description                | another description   |
+    When a retrieve event notification request is sent
+      | DeviceIdentification | TEST-1024000000001 |
+      | Description          | ad-hoc trigger     |
+      | PageSize             |                 25 |
+      | RequestedPage        |                  0 |
+    Then the retrieve event notification response contains
+      | DeviceIdentification | TEST-1024000000001    |
+      | EventType            | LIGHT_EVENTS_LIGHT_ON |
+      | Description          | ad-hoc trigger        |
+
+  Scenario: Find events for a device by filtering the start of a description
+    Given a device
+      | OrganizationIdentification | test-org           |
+      | DeviceIdentification       | TEST-1024000000001 |
+    And an event
+      | OrganizationIdentification | test-org                  |
+      | DeviceIdentification       | TEST-1024000000001        |
+      | EventType                  | LIGHT_EVENTS_LIGHT_ON     |
+      | Description                | setLightRequest something |
+    And an event
+      | OrganizationIdentification | test-org                            |
+      | DeviceIdentification       | TEST-1024000000001                  |
+      | EventType                  | LIGHT_EVENTS_LIGHT_ON               |
+      | Description                | setLightRequest something different |
+    And an event
+      | OrganizationIdentification | test-org              |
+      | DeviceIdentification       | TEST-1024000000001    |
+      | EventType                  | LIGHT_EVENTS_LIGHT_ON |
+      | Description                | another description   |
+    When a retrieve event notification request is sent
+      | DeviceIdentification    | TEST-1024000000001 |
+      | Description starts with | setLightRequest    |
+      | PageSize                |                 25 |
+      | RequestedPage           |                  0 |
+    Then the retrieve event notification response contains
+      | DeviceIdentification | TEST-1024000000001        |
+      | EventType            | LIGHT_EVENTS_LIGHT_ON     |
+      | Description          | setLightRequest something |
+    And the retrieve event notification response contains
+      | DeviceIdentification | TEST-1024000000001                  |
+      | EventType            | LIGHT_EVENTS_LIGHT_ON               |
+      | Description          | setLightRequest something different |
+
+  Scenario: Find events for a device by combining filtering the description and filtering the start of a description
+    Given a device
+      | OrganizationIdentification | test-org           |
+      | DeviceIdentification       | TEST-1024000000001 |
+    And an event
+      | OrganizationIdentification | test-org                  |
+      | DeviceIdentification       | TEST-1024000000001        |
+      | EventType                  | LIGHT_EVENTS_LIGHT_ON     |
+      | Description                | setLightRequest something |
+    And an event
+      | OrganizationIdentification | test-org              |
+      | DeviceIdentification       | TEST-1024000000001    |
+      | EventType                  | LIGHT_EVENTS_LIGHT_ON |
+      | Description                | ad-hoc trigger        |
+    And an event
+      | OrganizationIdentification | test-org              |
+      | DeviceIdentification       | TEST-1024000000001    |
+      | EventType                  | LIGHT_EVENTS_LIGHT_ON |
+      | Description                | another description   |
+    When a retrieve event notification request is sent
+      | DeviceIdentification    | TEST-1024000000001 |
+      | Description             | ad-hoc trigger     |
+      | Description starts with | setLightRequest    |
+      | PageSize                |                 25 |
+      | RequestedPage           |                  0 |
+    Then the retrieve event notification response contains
+      | DeviceIdentification | TEST-1024000000001        |
+      | EventType            | LIGHT_EVENTS_LIGHT_ON     |
+      | Description          | setLightRequest something |
+    And the retrieve event notification response contains
+      | DeviceIdentification | TEST-1024000000001                  |
+      | EventType            | LIGHT_EVENTS_LIGHT_ON               |
+      | Description          | ad-hoc trigger |

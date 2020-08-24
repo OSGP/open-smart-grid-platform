@@ -10,6 +10,7 @@ import static org.mockito.Mockito.mock;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmuc.j60870.ASduType;
+import org.opensmartgridplatform.iec60870.exceptions.Iec60870AsduHandlerNotFoundException;
 
 public class Iec60870AsduHandlerRegistryTest {
     private Iec60870AsduHandlerRegistry iec60870AsduHandlerRegistry;

@@ -99,12 +99,23 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
         final String ipAddress = unsignedOslpEnvelopeDto.getIpAddress();
         final int retryCount = unsignedOslpEnvelopeDto.getRetryCount();
         final boolean isScheduled = unsignedOslpEnvelopeDto.isScheduled();
-        final ScheduleMessageDataContainerDto scheduleMessageDataContainer = (ScheduleMessageDataContainerDto) unsignedOslpEnvelopeDto
+        final ScheduleMessageDataContainerDto dataContainer = (ScheduleMessageDataContainerDto) unsignedOslpEnvelopeDto
                 .getExtraData();
 
-        final SetScheduleDeviceRequest deviceRequest = new SetScheduleDeviceRequest(organisationIdentification,
-                deviceIdentification, correlationUid, scheduleMessageDataContainer, RelayTypeDto.LIGHT, domain,
-                domainVersion, messageType, messagePriority, ipAddress, retryCount, isScheduled);
+        final DeviceRequest.Builder builder = DeviceRequest.newBuilder()
+                .organisationIdentification(organisationIdentification)
+                .deviceIdentification(deviceIdentification)
+                .correlationUid(correlationUid)
+                .domain(domain)
+                .domainVersion(domainVersion)
+                .messageType(messageType)
+                .messagePriority(messagePriority)
+                .ipAddress(ipAddress)
+                .retryCount(retryCount)
+                .isScheduled(isScheduled);
+
+        final SetScheduleDeviceRequest deviceRequest = new SetScheduleDeviceRequest(builder, dataContainer,
+                RelayTypeDto.LIGHT);
 
         final DeviceResponseHandler deviceResponseHandler = new DeviceResponseHandler() {
 
@@ -122,8 +133,7 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
 
         try {
             this.deviceService.doSetSchedule(oslpEnvelope, deviceRequest, deviceResponseHandler, ipAddress, domain,
-                    domainVersion, messageType, messagePriority, retryCount, isScheduled,
-                    scheduleMessageDataContainer.getPageInfo());
+                    domainVersion, messageType, messagePriority, retryCount, isScheduled, dataContainer.getPageInfo());
         } catch (final IOException e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain, domainVersion,
                     messageType, messagePriority, retryCount);
@@ -158,17 +168,14 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
                 ScheduleMessageTypeDto.SET_ASTRONOMICAL_OFFSETS, deviceRequest.getDomain(),
                 deviceRequest.getDomainVersion());
 
-        final ScheduleMessageDataContainerDto scheduleMessageDataContainer = new ScheduleMessageDataContainerDto.Builder(
+        final ScheduleMessageDataContainerDto dataContainer = new ScheduleMessageDataContainerDto.Builder(
                 deviceRequest.getScheduleMessageDataContainer().getSchedule())
                         .withConfiguration(deviceResponse.getConfiguration())
-                        .withScheduleMessageType(ScheduleMessageTypeDto.SET_ASTRONOMICAL_OFFSETS).build();
+                        .withScheduleMessageType(ScheduleMessageTypeDto.SET_ASTRONOMICAL_OFFSETS)
+                        .build();
 
         final SetScheduleDeviceRequest newDeviceRequest = new SetScheduleDeviceRequest(
-                deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
-                deviceRequest.getCorrelationUid(), scheduleMessageDataContainer, RelayTypeDto.LIGHT,
-                deviceRequest.getDomain(), deviceRequest.getDomainVersion(), deviceRequest.getMessageType(),
-                deviceRequest.getMessagePriority(), deviceRequest.getIpAddress(), deviceRequest.getRetryCount(),
-                deviceRequest.isScheduled());
+                createDeviceRequestBuilder(deviceRequest), dataContainer, RelayTypeDto.LIGHT);
 
         this.deviceService.setSchedule(newDeviceRequest);
     }
@@ -180,18 +187,29 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
         LOGGER.info(LOG_MESSAGE_CALL_DEVICE_SERVICE, deviceRequest.getMessageType(),
                 ScheduleMessageTypeDto.SET_SCHEDULE, deviceRequest.getDomain(), deviceRequest.getDomainVersion());
 
-        final ScheduleMessageDataContainerDto scheduleMessageDataContainer = new ScheduleMessageDataContainerDto.Builder(
+        final ScheduleMessageDataContainerDto dataContainer = new ScheduleMessageDataContainerDto.Builder(
                 deviceRequest.getScheduleMessageDataContainer().getSchedule())
-                        .withScheduleMessageType(ScheduleMessageTypeDto.SET_SCHEDULE).build();
+                        .withScheduleMessageType(ScheduleMessageTypeDto.SET_SCHEDULE)
+                        .build();
 
         final SetScheduleDeviceRequest newDeviceRequest = new SetScheduleDeviceRequest(
-                deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
-                deviceRequest.getCorrelationUid(), scheduleMessageDataContainer, RelayTypeDto.LIGHT,
-                deviceRequest.getDomain(), deviceRequest.getDomainVersion(), deviceRequest.getMessageType(),
-                deviceRequest.getMessagePriority(), deviceRequest.getIpAddress(), deviceRequest.getRetryCount(),
-                deviceRequest.isScheduled());
+                createDeviceRequestBuilder(deviceRequest), dataContainer, RelayTypeDto.LIGHT);
 
         this.deviceService.setSchedule(newDeviceRequest);
+    }
+
+    private static DeviceRequest.Builder createDeviceRequestBuilder(final DeviceRequest deviceRequest) {
+        return DeviceRequest.newBuilder()
+                .organisationIdentification(deviceRequest.getOrganisationIdentification())
+                .deviceIdentification(deviceRequest.getDeviceIdentification())
+                .correlationUid(deviceRequest.getCorrelationUid())
+                .domain(deviceRequest.getDomain())
+                .domainVersion(deviceRequest.getDomainVersion())
+                .messageType(deviceRequest.getMessageType())
+                .messagePriority(deviceRequest.getMessagePriority())
+                .ipAddress(deviceRequest.getIpAddress())
+                .retryCount(deviceRequest.getRetryCount())
+                .isScheduled(deviceRequest.isScheduled());
     }
 
 }

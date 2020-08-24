@@ -23,7 +23,7 @@ public class Iec60870DeviceFactory {
     public static final String KEY_INFORMATION_OBJECT_ADDRESS = "device_address";
 
     public static final String DEFAULT_DEVICE_IDENTIFICATION = "iec60870_device";
-    public static final String DEFAULT_DEVICE_TYPE = "DA_DEVICE";
+    public static final String DEFAULT_DEVICE_TYPE = "DISTRIBUTION_AUTOMATION_DEVICE";
     public static final String DEFAULT_PORT = "2404";
     public static final String DEFAULT_COMMON_ADDRESS = "0";
 
@@ -35,7 +35,8 @@ public class Iec60870DeviceFactory {
     }
 
     public static Iec60870Device createDistributionAutomationDevice(final String deviceIdentification) {
-        final Iec60870Device device = new Iec60870Device(deviceIdentification, DeviceType.DISTRIBUTION_AUTOMATION_DEVICE);
+        final Iec60870Device device = new Iec60870Device(deviceIdentification,
+                DeviceType.DISTRIBUTION_AUTOMATION_DEVICE);
         device.setCommonAddress(Integer.parseInt(DEFAULT_COMMON_ADDRESS));
         device.setPort(Integer.parseInt(DEFAULT_PORT));
         return device;

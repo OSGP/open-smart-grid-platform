@@ -13,10 +13,10 @@
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>open-smart-grid-platform</artifactId>
-  <version>5.1.0-SNAPSHOT</version>
+  <version>5.3.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <!-- Description, Organization, Licenses, URL and Distribution Management 
+  <!-- Description, Organization, Licenses, URL and Distribution Management
     elements are needed for the maven-jxr-plugin to generate a maven site -->
   <description>OSGP, Protocol adapters, Integration tests, Demo application</description>
   <!-- URL is passed in as a maven argument: -Dmaven.site.url=http://my/url/for/the/site -->
@@ -40,6 +40,8 @@
     <module>osgp/shared/parent-shared</module>
     <module>osgp/shared/shared</module>
     <module>osgp/shared/osgp-dto</module>
+    <module>osgp/shared/osgp-kafka-distributionautomation</module>
+    <module>osgp/shared/osgp-kafka-logger</module>
     <module>osgp/shared/osgp-ws-core</module>
     <module>osgp/shared/osgp-ws-admin</module>
     <module>osgp/shared/osgp-ws-microgrids</module>
@@ -47,6 +49,7 @@
     <module>osgp/shared/osgp-ws-publiclighting</module>
     <module>osgp/shared/osgp-ws-tariffswitching</module>
     <module>osgp/shared/osgp-ws-smartmetering</module>
+    <module>osgp/shared/osgp-ws-secret-management</module>
 
     <!-- protocol-adapter-iec61850 -->
     <module>osgp/protocol-adapter-iec61850/parent-pa-iec61850</module>
@@ -109,9 +112,12 @@
     <module>osgp/platform/osgp-adapter-ws-distributionautomation</module>
 
     <module>osgp/platform/osgp-adapter-kafka-distributionautomation</module>
+    <module>osgp/platform/osgp-adapter-kafka-logging</module>
 
     <module>osgp/platform/osgp-core</module>
     <module>osgp/platform/osgp-logging</module>
+
+    <module>osgp/platform/osgp-secret-management</module>
 
     <!-- integration tests -->
     <module>integration-tests/parent-integration-tests</module>
@@ -128,7 +134,7 @@
     <module>public-lighting-demo-app/parent-os-webapps</module>
     <module>public-lighting-demo-app/web-demo-app</module>
   </modules>
-  
+
   <distributionManagement>
     <site>
       <id>platform</id>
@@ -182,5 +188,5 @@
       </plugin>
     </plugins>
   </build>
-  
+
 </project>

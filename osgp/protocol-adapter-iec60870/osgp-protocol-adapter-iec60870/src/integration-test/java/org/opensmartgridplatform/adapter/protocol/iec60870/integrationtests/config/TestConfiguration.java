@@ -35,6 +35,7 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.Loggi
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.MeasurementReportingService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.asduhandlers.InterrogationAsduHandler;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.asduhandlers.ShortFloatWithTime56MeasurementAsduHandler;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.asduhandlers.SinglePointInformationWithTimeTagAsduHandler;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.asduhandlers.SinglePointWithQualityAsduHandler;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.Iec60870Client;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
@@ -130,6 +131,11 @@ public class TestConfiguration {
     @Bean
     public ClientAsduHandler singlePointWithQualityAsduHandler() {
         return new SinglePointWithQualityAsduHandler();
+    }
+
+    @Bean
+    public ClientAsduHandler singlePointInformationWithTimeTagAsduHandler() {
+        return new SinglePointInformationWithTimeTagAsduHandler();
     }
 
     @Bean

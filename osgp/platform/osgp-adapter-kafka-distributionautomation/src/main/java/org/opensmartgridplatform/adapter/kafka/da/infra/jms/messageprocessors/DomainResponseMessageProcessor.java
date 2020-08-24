@@ -12,12 +12,10 @@ import java.io.Serializable;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.opensmartgridplatform.adapter.kafka.da.application.mapping.DistributionAutomationMapper;
-import org.opensmartgridplatform.adapter.kafka.da.infra.kafka.out.MeterReadingProducer;
-import org.opensmartgridplatform.domain.da.measurements.MeasurementReport;
+import org.opensmartgridplatform.adapter.kafka.da.infra.kafka.out.GridMeasurementPublishedEventProducer;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
-import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.slf4j.Logger;
@@ -33,18 +31,17 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DomainResponseMessageProcessor.class);
 
-    @Autowired
-    protected DistributionAutomationMapper mapper;
+    private static final MessageType GET_DATA = MessageType.GET_DATA;
 
     @Autowired
-    private MeterReadingProducer meterReadingProducer;
+    private GridMeasurementPublishedEventProducer producer;
 
     @Override
     public void processMessage(final ObjectMessage message) {
         LOGGER.debug("Processing distribution automation response message");
 
         String correlationUid = null;
-        String messageType = null;
+        MessageType messageType = null;
         String organisationIdentification = null;
         String deviceIdentification = null;
 
@@ -57,7 +54,7 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
 
-            messageType = message.getJMSType();
+            messageType = MessageType.valueOf(message.getJMSType());
 
             resultType = ResponseMessageResultType.valueOf(message.getStringProperty(Constants.RESULT));
             resultDescription = message.getStringProperty(Constants.DESCRIPTION);
@@ -76,37 +73,33 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
         }
 
         try {
-            LOGGER.info("Calling application service function to handle response: {}", messageType);
-
-            final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification,
-                    correlationUid);
-            this.handleMessage(ids, messageType, resultType, resultDescription, dataObject);
-
+            LOGGER.info("Handle message of type {} for device {} with result: {}, description {}.", messageType,
+                    deviceIdentification, resultType, resultDescription);
+            this.handleMessage(messageType, dataObject);
         } catch (final RuntimeException e) {
             handleError(e, correlationUid);
         }
     }
 
-    private void handleMessage(final CorrelationIds ids, final String messageType,
-            final ResponseMessageResultType resultType, final String resultDescription, final ResponseMessage message) {
-        LOGGER.debug("Handling message of type {} for device {} with result: type {}, description {}.", messageType,
-                ids.getDeviceIdentification(), resultType, resultDescription);
+    private void handleMessage(final MessageType messageType, final ResponseMessage message) {
 
         final Serializable dataObject = message.getDataObject();
-        if (!(dataObject instanceof MeasurementReport)) {
-            LOGGER.error("For this component we only handle measurement reports");
+
+        if (dataObject instanceof String && GET_DATA.equals(messageType)) {
+            this.producer.send((String) dataObject);
         } else {
-            this.meterReadingProducer.send(this.mapper.map(dataObject, MeasurementReport.class));
+            LOGGER.warn("Discarding the message. For this component we only handle (MQTT) GET_DATA responses. "
+                    + "Received message type: {}, message {}", messageType, dataObject);
         }
+
     }
 
     private static void handleError(final RuntimeException e, final String correlationUid) {
-
         LOGGER.error("Error '{}' occurred while trying to send message with correlationUid: {}", e.getMessage(),
                 correlationUid, e);
     }
 
-    private static void logDebugInformation(final String messageType, final String correlationUid,
+    private static void logDebugInformation(final MessageType messageType, final String correlationUid,
             final String organisationIdentification, final String deviceIdentification) {
         LOGGER.debug("messageType: {}", messageType);
         LOGGER.debug("CorrelationUid: {}", correlationUid);

@@ -14,6 +14,7 @@ import javax.validation.ConstraintViolationException;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.opensmartgridplatform.adapter.ws.core.application.criteria.SearchEventsCriteria;
 import org.opensmartgridplatform.adapter.ws.core.application.mapping.DeviceManagementMapper;
 import org.opensmartgridplatform.adapter.ws.core.application.services.DeviceManagementService;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
@@ -248,10 +249,18 @@ public class DeviceManagementEndpoint {
                     : new DateTime(request.getUntil().toGregorianCalendar()).toDateTime(DateTimeZone.UTC);
 
             // Get all events matching the request.
+            final SearchEventsCriteria criteria = SearchEventsCriteria.builder()
+                    .organisationIdentification(organisationIdentification)
+                    .deviceIdentification(request.getDeviceIdentification())
+                    .pageSpecifier(this.pageFrom(request))
+                    .from(from)
+                    .until(until)
+                    .eventTypes(this.deviceManagementMapper.mapAsList(request.getEventTypes(), EventType.class))
+                    .description(request.getDescription())
+                    .descriptionStartsWith(request.getDescriptionStartsWith())
+                    .build();
             final Page<org.opensmartgridplatform.domain.core.entities.Event> result = this.deviceManagementService
-                    .findEvents(organisationIdentification, request.getDeviceIdentification(), this.pageFrom(request),
-                            from, until,
-                            this.deviceManagementMapper.mapAsList(request.getEventTypes(), EventType.class));
+                    .findEvents(criteria);
 
             response.getEvents().addAll(this.deviceManagementMapper.mapAsList(result.getContent(), Event.class));
             response.setPage(new org.opensmartgridplatform.adapter.ws.schema.core.common.Page());

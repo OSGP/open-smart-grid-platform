@@ -157,15 +157,26 @@ public class ConfigurationManagementMapperTest {
                 .withTimeSyncFrequency(134)
                 .withDeviceFixedIp(new org.opensmartgridplatform.domain.core.valueobjects.DeviceFixedIp("ipAddress1",
                         "netMask1", "gateWay1"))
-                .withDhcpEnabled(true).withCommunicationTimeout(135).withCommunicationNumberOfRetries(136)
-                .withCommunicationPauseTimeBetweenConnectionTrials(137).withOsgpIpAddress("osgpIpAddress1")
-                .withOsgpPortNumber(138).withNtpHost("ntpHost1").withNtpEnabled(true).withNtpSyncInterval(139)
-                .withTestButtonEnabled(true).withAutomaticSummerTimingEnabled(true).withAstroGateSunRiseOffset(140)
-                .withAstroGateSunSetOffset(141).withSwitchingDelays(asList(142, 142))
+                .withDhcpEnabled(true)
+                .withCommunicationTimeout(135)
+                .withCommunicationNumberOfRetries(136)
+                .withCommunicationPauseTimeBetweenConnectionTrials(137)
+                .withOsgpIpAddress("osgpIpAddress1")
+                .withOsgpPortNumber(138)
+                .withNtpHost("ntpHost1")
+                .withNtpEnabled(true)
+                .withNtpSyncInterval(139)
+                .withTestButtonEnabled(true)
+                .withAutomaticSummerTimingEnabled(true)
+                .withAstroGateSunRiseOffset(140)
+                .withAstroGateSunSetOffset(141)
+                .withSwitchingDelays(asList(142, 142))
                 .withRelayLinking(asList(this.aTargetRelayMatrix(143, true), this.aTargetRelayMatrix(144, false)))
-                .withRelayRefreshing(true).withSummerTimeDetails(DateTime.parse("2010-06-30T01:20:30+02:00"))
-                .withWinterTimeDetails(DateTime.parse("2011-06-30T01:20:30+02:00")).build();
-        assertThat(result).isEqualToComparingFieldByFieldRecursively(expected);
+                .withRelayRefreshing(true)
+                .withSummerTimeDetails(DateTime.parse("2010-06-30T01:20:30+02:00"))
+                .withWinterTimeDetails(DateTime.parse("2011-06-30T01:20:30+02:00"))
+                .build();
+        assertThat(result).usingRecursiveComparison().isEqualTo(expected);
     }
 
     @BeforeEach
