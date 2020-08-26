@@ -63,6 +63,7 @@ import org.opensmartgridplatform.adapter.ws.schema.core.notification.Notificatio
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
 import org.opensmartgridplatform.domain.core.entities.ScheduledTaskWithoutData;
+import org.opensmartgridplatform.domain.core.entities.Ssld;
 import org.opensmartgridplatform.domain.core.exceptions.ValidationException;
 import org.opensmartgridplatform.domain.core.valueobjects.CdmaSettings;
 import org.opensmartgridplatform.domain.core.valueobjects.Certification;
@@ -376,10 +377,9 @@ public class DeviceManagementEndpoint {
                 request.getDeviceIdentification(), organisationIdentification);
 
         try {
-            final org.opensmartgridplatform.domain.core.entities.Ssld device = this.deviceManagementMapper
-                    .map(request.getUpdatedDevice(), org.opensmartgridplatform.domain.core.entities.Ssld.class);
-
-            this.deviceManagementService.updateDevice(organisationIdentification, device);
+            final Device device = this.deviceManagementMapper.map(request.getUpdatedDevice(), Device.class);
+            final Ssld ssld = this.deviceManagementMapper.map(device, Ssld.class);
+            this.deviceManagementService.updateDevice(organisationIdentification, ssld);
 
         } catch (final ConstraintViolationException e) {
             LOGGER.error("Exception update Device: {} ", e.getMessage(), e);
