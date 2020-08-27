@@ -28,14 +28,14 @@ import ch.qos.logback.classic.util.ContextInitializer;
  */
 public abstract class AbstractApplicationInitializer {
 
-    protected final Logger logger;
+    protected Logger logger;
     private final Class<?> contextClass;
     private final String logConfig;
     protected AnnotationConfigWebApplicationContext rootContext;
 
     /**
      * Constructs instance of ApplicationInitializer
-     * 
+     *
      * @param contextClass
      *            the class holding application specific Spring
      *            ApplicationContext
@@ -45,7 +45,6 @@ public abstract class AbstractApplicationInitializer {
     public AbstractApplicationInitializer(final Class<?> contextClass, final String logConfig) {
         this.contextClass = contextClass;
         this.logConfig = logConfig;
-        this.logger = LoggerFactory.getLogger(this.contextClass);
         this.rootContext = new AnnotationConfigWebApplicationContext();
     }
 
@@ -53,7 +52,7 @@ public abstract class AbstractApplicationInitializer {
      * Default startup of application context which: - Forces timezone to UTC -
      * Initializes the application logging - Registers the application context
      * with ServletContext
-     * 
+     *
      * @param servletContext
      *            Java servlet context as supplied by application server
      * @throws ServletException
@@ -73,19 +72,43 @@ public abstract class AbstractApplicationInitializer {
 
     private void initializeLogging() throws ServletException {
         Context initialContext;
+        String logLocation;
+
         try {
             initialContext = new InitialContext();
-            final String logLocation = (String) initialContext.lookup(this.logConfig);
-
-            // Load specific logback configuration, otherwise fallback to
-            // classpath logback.xml
-            if (new File(logLocation).exists()) {
-                System.setProperty(ContextInitializer.CONFIG_FILE_PROPERTY, logLocation);
-                this.logger.info("Initialized logging using {}", this.logConfig);
-            }
+            logLocation = (String) initialContext.lookup(this.logConfig);
         } catch (final NamingException e) {
+            this.logger = LoggerFactory.getLogger(this.contextClass);
             this.logger.info("Failed to initialize logging using {}", this.logConfig, e);
             throw new ServletException(e);
         }
+
+        // Load specific logback configuration, otherwise fallback to classpath
+        // logback.xml
+        // The system property should be set BEFORE initialization of the
+        // logging system;
+        // therefore this unusual notation of not setting the logger in fa the
+        // constructor.
+        final boolean logLocationExists = new File(logLocation).exists();
+        if (logLocationExists) {
+            System.setProperty(ContextInitializer.CONFIG_FILE_PROPERTY, logLocation);
+        }
+
+        this.logger = LoggerFactory.getLogger(this.contextClass);
+
+        if (logLocationExists) {
+            this.logger.info("Initialized logging using {} ({})", this.logConfig, logLocation);
+        } else {
+            this.logger.info("{} not found", logLocation);
+        }
+
+        // Remove the property, to be sure other applications won't be using it.
+        // After some testing, it as found that it might need a Thread.sleep
+        // because it seems like the logging system is not fully initialized
+        // before the first log line has been written.
+        // Although as seen from
+        // http://logback.qos.ch/manual/configuration.html#configFileProperty
+        // the sleep should not be needed.
+        System.clearProperty(ContextInitializer.CONFIG_FILE_PROPERTY);
     }
 }
