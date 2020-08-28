@@ -19,7 +19,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.DeviceModel;
-import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Manufacturer;
 import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
 import org.opensmartgridplatform.domain.core.entities.LightMeasurementDevice;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
@@ -82,10 +81,8 @@ class DeviceConverterHelper<T extends org.opensmartgridplatform.domain.core.enti
                     source.getTechnicalInstallationDate().toGregorianCalendar().getTime());
         }
 
-        if (source.getDeviceModel() != null) {
-            final DeviceModel deviceModel = new DeviceModel();
-            deviceModel.setModelCode(source.getDeviceModel().getModelCode());
-        }
+        destination.setDeviceModel(this.mapper.map(source.getDeviceModel(),
+                org.opensmartgridplatform.domain.core.entities.DeviceModel.class));
 
         return destination;
     }
@@ -136,18 +133,7 @@ class DeviceConverterHelper<T extends org.opensmartgridplatform.domain.core.enti
         destination.getDeviceAuthorizations().addAll(deviceAuthorizations);
 
         if (source.getDeviceModel() != null) {
-            final DeviceModel deviceModel = new DeviceModel();
-            deviceModel.setDescription(source.getDeviceModel().getDescription());
-            if (source.getDeviceModel().getManufacturer() != null) {
-                final Manufacturer manufacturer = new Manufacturer();
-                manufacturer.setManufacturerId(source.getDeviceModel().getManufacturer().getCode());
-                manufacturer.setName(source.getDeviceModel().getManufacturer().getName());
-                manufacturer.setUsePrefix(source.getDeviceModel().getManufacturer().isUsePrefix());
-                deviceModel.setManufacturer(manufacturer);
-            }
-            deviceModel.setModelCode(source.getDeviceModel().getModelCode());
-            deviceModel.setMetered(source.getDeviceModel().isMetered());
-            destination.setDeviceModel(deviceModel);
+            destination.setDeviceModel(this.mapper.map(source.getDeviceModel(), DeviceModel.class));
         }
 
         destination.setLastCommunicationTime(
