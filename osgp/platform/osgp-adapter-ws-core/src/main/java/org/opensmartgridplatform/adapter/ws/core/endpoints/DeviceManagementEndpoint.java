@@ -378,8 +378,6 @@ public class DeviceManagementEndpoint {
 
         try {
             final Ssld ssld = this.deviceManagementMapper.map(request.getUpdatedDevice(), Ssld.class);
-            // LOGGER.info("The description of the ssld device model: {}",
-            // ssld.getDeviceModel().toString());
             this.deviceManagementService.updateDevice(organisationIdentification, ssld);
 
         } catch (final ConstraintViolationException e) {
