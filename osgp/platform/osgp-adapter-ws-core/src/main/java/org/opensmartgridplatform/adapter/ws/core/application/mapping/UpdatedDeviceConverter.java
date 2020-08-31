@@ -24,7 +24,6 @@ public class UpdatedDeviceConverter extends BidirectionalConverter<UpdatedDevice
             final MappingContext mappingContext) {
         final Device device = this.mapperFacade.map(source, Device.class);
         final Ssld ssld = this.mapperFacade.map(device, Ssld.class);
-        // Just to be sure
         ssld.setDeviceModel(this.mapperFacade.map(source.getDeviceModel(), DeviceModel.class));
         return ssld;
     }
@@ -34,7 +33,6 @@ public class UpdatedDeviceConverter extends BidirectionalConverter<UpdatedDevice
             final MappingContext mappingContext) {
         final Device device = this.mapperFacade.map(source, Device.class);
         final UpdatedDevice updatedDevice = this.mapperFacade.map(device, UpdatedDevice.class);
-        // Just to be sure;
         final BaseDeviceModel deviceModel = device.getDeviceModel();
         updatedDevice.setDeviceModel(deviceModel);
         return updatedDevice;
