@@ -53,7 +53,7 @@ CMD="sudo java -javaagent:/usr/share/tomcat/lib/jacocoagent.jar=destfile=target/
  -DrunHeadless=true\
  -jar cucumber-*-test-jar-with-dependencies.jar -report target/output; sudo chown -R ${USER}:${USER} /data/software/${PROJECT}/*"
 echo "  [${CMD}]"
-CMD="ssh -oStrictHostKeyChecking=no -oTCPKeepAlive=yes -oServerAliveInterval=50 ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"cd /data/software/${PROJECT} && ${CMD}\"\""
+CMD="ssh -oStrictHostKeyChecking=no -oTCPKeepAlive=yes -oServerAliveInterval=50 ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"cd /data/software/${PROJECT} && ${CMD}; ret=$?; echo $ret; exit $ret\"\""
 ${CMD}
 
 echo '- Create zip file from files from server ...'
