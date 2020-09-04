@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -o pipefail
+set -e -o pipefail
 
 if [ "$#" -eq 0 ]
 then
@@ -46,7 +46,6 @@ echo "  [${CMD}]"
 ${CMD}
 
 echo "- Executing cucumber project ${PROJECT} remote on ${SERVER} ..."
-
 CMD="sudo java -javaagent:/usr/share/tomcat/lib/jacocoagent.jar=destfile=target/code-coverage/jacoco-it.exec ${ADDITIONAL_PARAMETERS}\
  -Dcucumber.execution.strict=true\
  -Dcucumber.filter.tags=\"not @Skip ${ADDITIONAL_CUCUMBER_OPTIONS}\"\
