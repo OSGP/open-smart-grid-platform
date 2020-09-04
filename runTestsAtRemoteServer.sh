@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#set -e -o pipefail
+set -e
 
 if [ "$#" -eq 0 ]
 then
@@ -57,8 +57,6 @@ CMD="sudo java -javaagent:/usr/share/tomcat/lib/jacocoagent.jar=destfile=target/
 echo "  [${CMD}]"
 CMD="ssh -oStrictHostKeyChecking=no -oTCPKeepAlive=yes -oServerAliveInterval=50 ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"cd /data/software/${PROJECT} && ${CMD}\"\""
 ${CMD}
-
-echo $?
 
 echo "- Take ownership over /data/software/${PROJECT}/* directory ..."
 CMD="sudo chown -R ${USER}:${USER} /data/software/${PROJECT}/*"
