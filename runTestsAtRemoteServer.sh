@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e -o pipefail
+#set -e -o pipefail
 
 if [ "$#" -eq 0 ]
 then
