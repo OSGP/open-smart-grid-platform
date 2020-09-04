@@ -58,6 +58,8 @@ echo "  [${CMD}]"
 CMD="ssh -oStrictHostKeyChecking=no -oTCPKeepAlive=yes -oServerAliveInterval=50 ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"cd /data/software/${PROJECT} && ${CMD}\"\""
 ${CMD}
 
+echo $?
+
 echo '- Create zip file from files from server ...'
 CMD="sudo tar zhcvf /tmp/${SERVER}-${PROJECT}.tgz /etc/osgp /etc/httpd/conf.d /usr/share/tomcat/conf /var/log/tomcat /var/log/osgp && sudo chown $USER:$USER /tmp/${SERVER}-${PROJECT}.tgz"
 echo "  [${CMD}]"
