@@ -195,7 +195,7 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | MONDAY      | SUNRISE      |              | LIGHT_TRIGGER | Validation Exception, violations: triggerWindow may not be null when actionTime is set to SUNRISE or SUNSET and triggerType is LIGHT_TRIGGER; |
       | MONDAY      | SUNSET       |              | LIGHT_TRIGGER | Validation Exception, violations: triggerWindow may not be null when actionTime is set to SUNRISE or SUNSET and triggerType is LIGHT_TRIGGER; |
 
-  Scenario Outline: Set light schedule for inactive/unregistered device (device lifecycle state)
+  Scenario Outline: Set light schedule for inactive or unregistered device (device lifecycle state)
     Given an ssld device
       | DeviceIdentification  | TEST1024000000001       |
       | DeviceLifecycleStatus | <DeviceLifecycleStatus> |
@@ -223,7 +223,7 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | UNDER_TEST            |
       | DESTROYED             |
 
-  Scenario: Set light schedule for inactive/unregistered device (is activated false)
+  Scenario: Set light schedule for inactive or unregistered device (is activated false)
     Given an ssld device
       | DeviceIdentification | TEST1024000000001 |
       | Activated            | false             |
