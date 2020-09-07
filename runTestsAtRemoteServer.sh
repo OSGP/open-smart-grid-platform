@@ -76,6 +76,12 @@ CMD="scp -oStrictHostKeyChecking=no ${SSH_KEY_FILE} -r ${USER}@${SERVER}:/data/s
 echo "  [${CMD}]"
 ${CMD}
 
+echo "- Collecting code-coverage output from cucumber project ${PROJECT} on ${SERVER} ..."
+mkdir -p ${PROJECT}/code-coverage
+CMD="scp -oStrictHostKeyChecking=no ${SSH_KEY_FILE} -r ${USER}@${SERVER}:/data/software/${PROJECT}/target/code-coverage/* ${PROJECT}/code-coverage"
+echo "  [${CMD}]"
+${CMD}
+
 echo "- Collecting server files from ${SERVER} ..."
 CMD="scp -oStrictHostKeyChecking=no ${SSH_KEY_FILE} -r ${USER}@${SERVER}:/tmp/${SERVER}-${PROJECT}.tgz ${PROJECT}/target"
 echo "  [${CMD}]"
