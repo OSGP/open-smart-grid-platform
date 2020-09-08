@@ -186,7 +186,8 @@ class SsldConverter extends BidirectionalConverter<Ssld, BaseDevice> {
     public boolean canConvert(final Type<?> sourceType, final Type<?> destinationType) {
 
         return super.canConvert(sourceType, destinationType)
-                || super.canConvert(sourceType, destinationType.getSuperType());
+                || super.canConvert(sourceType, destinationType.getSuperType())
+                || super.canConvert(sourceType.getSuperType(), destinationType);
 
     }
 
