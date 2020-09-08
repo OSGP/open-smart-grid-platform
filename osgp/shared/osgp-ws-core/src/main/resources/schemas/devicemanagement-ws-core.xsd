@@ -717,8 +717,8 @@
     </xsd:sequence>
   </xsd:complexType>
 
-	<xsd:complexType name="DeviceModel">
-	 <xsd:sequence>
+  <xsd:complexType name="DeviceModel">
+    <xsd:sequence>
       <xsd:element name="Manufacturer" type="tns:Manufacturer"
         minOccurs="0" />
       <xsd:element name="ModelCode" minOccurs="0" maxOccurs="1">
@@ -728,18 +728,18 @@
           </xsd:restriction>
         </xsd:simpleType>
       </xsd:element>
-	  <xsd:element name="Description" minOccurs="0"
-		        maxOccurs="1">
-		<xsd:simpleType>
-			<xsd:restriction base="xsd:string">
-		    	<xsd:maxLength value="255" />
-			</xsd:restriction>
-		  </xsd:simpleType>
-		</xsd:element>
-	<xsd:element name="Metered" type="xsd:boolean"
-		        minOccurs="1" maxOccurs="1" />
-	 </xsd:sequence>
-	</xsd:complexType>
+      <xsd:element name="Description" minOccurs="0"
+        maxOccurs="1">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+           <xsd:maxLength value="255" />
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="Metered" type="xsd:boolean"
+        minOccurs="1" maxOccurs="1" />
+    </xsd:sequence>
+  </xsd:complexType>
 
   <xsd:complexType name="Firmware">
     <xsd:sequence>

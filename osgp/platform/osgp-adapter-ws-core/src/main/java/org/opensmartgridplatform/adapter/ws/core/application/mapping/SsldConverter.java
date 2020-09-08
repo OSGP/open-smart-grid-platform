@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device;
+import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.BaseDevice;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.RelayType;
 import org.opensmartgridplatform.domain.core.entities.DeviceOutputSetting;
 import org.opensmartgridplatform.domain.core.entities.Ean;
@@ -25,7 +25,8 @@ import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
-class SsldConverter extends BidirectionalConverter<Ssld, Device> {
+class SsldConverter extends BidirectionalConverter<Ssld, BaseDevice> {
+
     private final DeviceConverterHelper<Ssld> helper = new DeviceConverterHelper<>(Ssld.class);
 
     private final SsldRepository ssldRepository;
@@ -42,8 +43,8 @@ class SsldConverter extends BidirectionalConverter<Ssld, Device> {
     }
 
     @Override
-    public org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device convertTo(final Ssld source,
-            final Type<org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device> destinationType,
+    public org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.BaseDevice convertTo(final Ssld source,
+            final Type<org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.BaseDevice> destinationType,
             final MappingContext context) {
 
         if (source == null) {
@@ -87,7 +88,7 @@ class SsldConverter extends BidirectionalConverter<Ssld, Device> {
     }
 
     @Override
-    public Ssld convertFrom(final org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device source,
+    public Ssld convertFrom(final org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.BaseDevice source,
             final Type<Ssld> destinationType, final MappingContext context) {
 
         if (source == null) {
@@ -179,6 +180,14 @@ class SsldConverter extends BidirectionalConverter<Ssld, Device> {
     public boolean equals(final Object obj) {
         return super.equals(obj) && Objects.equals(this.helper, ((SsldConverter) obj).helper)
                 && Objects.equals(this.ssldRepository, ((SsldConverter) obj).ssldRepository);
+    }
+
+    @Override
+    public boolean canConvert(final Type<?> sourceType, final Type<?> destinationType) {
+
+        return super.canConvert(sourceType, destinationType)
+                || super.canConvert(sourceType, destinationType.getSuperType());
+
     }
 
 }
