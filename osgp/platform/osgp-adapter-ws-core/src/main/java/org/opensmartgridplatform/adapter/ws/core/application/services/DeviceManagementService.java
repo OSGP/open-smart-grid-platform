@@ -22,7 +22,6 @@ import org.opensmartgridplatform.adapter.ws.core.application.criteria.SearchEven
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessage;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessageSender;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonResponseMessageFinder;
-import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.BaseDevice;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.DeviceLifecycleStatus;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting;
 import org.opensmartgridplatform.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceAuthorizationRepository;
