@@ -132,7 +132,7 @@ public abstract class AppBase {
             return ISSUES_IN_TEST_MECHANISM;
         }
 
-        return failuresLinkedToTests == 0 ? SUCCESS : FAILURE;
+        return SUCCESS;
     }
 
     private void logFailureDetails(final Failure failure) {
