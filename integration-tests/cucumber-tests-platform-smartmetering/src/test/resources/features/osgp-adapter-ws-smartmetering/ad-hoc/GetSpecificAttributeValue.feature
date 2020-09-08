@@ -25,7 +25,7 @@ Feature: SmartMetering AdHoc
       | Result       | OK                                                        |
       | ResponsePart | bytes[100, 101, 118, 105, 99, 101, 32, 110, 97, 109, 101] |
 
-  Scenario: Retrieve Administrative in/out
+  Scenario: Retrieve Administrative in-out
     When the get specific attribute value request is received
       | DeviceIdentification | TEST1024000000001 |
       | ClassId              |                 1 |
