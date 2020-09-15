@@ -13,11 +13,13 @@ import java.net.UnknownHostException;
 
 import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
+import org.opensmartgridplatform.domain.core.entities.DomainInfo;
 import org.opensmartgridplatform.domain.core.entities.Manufacturer;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
 import org.opensmartgridplatform.domain.core.entities.ProtocolInfo;
 import org.opensmartgridplatform.domain.core.repositories.DeviceAuthorizationRepository;
 import org.opensmartgridplatform.domain.core.repositories.DeviceModelRepository;
+import org.opensmartgridplatform.domain.core.repositories.DomainInfoRepository;
 import org.opensmartgridplatform.domain.core.repositories.ManufacturerRepository;
 import org.opensmartgridplatform.domain.core.repositories.OrganisationRepository;
 import org.opensmartgridplatform.domain.core.repositories.ProtocolInfoRepository;
@@ -41,6 +43,9 @@ public class RtuDeviceService {
 
     @Autowired
     private RtuDeviceRepository rtuDeviceRepository;
+    
+    @Autowired
+    private DomainInfoRepository domainInfoRepository;
 
     @Autowired
     private ManufacturerRepository manufacturerRepository;
@@ -63,6 +68,7 @@ public class RtuDeviceService {
         final RtuDevice rtuDevice = addRtuDeviceRequest.getRtuDevice();
         org.opensmartgridplatform.domain.core.entities.RtuDevice rtuDeviceEntity = new org.opensmartgridplatform.domain.core.entities.RtuDevice(
                 rtuDevice.getDeviceIdentification());
+        rtuDeviceEntity.setDomainInfo(domainInfoRepository.findByDomainAndDomainVersion("DISTRIBUTION_AUTOMATION", "1.0"));
         this.addProtocolInfo(rtuDevice, rtuDeviceEntity);
         this.addRegistrationData(rtuDevice, rtuDeviceEntity);
         this.addDeviceModel(addRtuDeviceRequest.getDeviceModel(), rtuDeviceEntity);
