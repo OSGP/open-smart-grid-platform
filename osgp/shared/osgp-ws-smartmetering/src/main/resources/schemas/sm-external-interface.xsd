@@ -4,7 +4,7 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             xmlns:bun="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-bundle/2014/10"
             xmlns:con="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-configuration/2014/10"
-            xmlns:adm="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-administration/2020/09"
+            xmlns:adm="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-administration"
             attributeFormDefault="qualified" elementFormDefault="qualified"
             targetNamespace="http://www.opensmartgridplatform.org/schemas/smartmetering/external-interface">
 
@@ -14,7 +14,7 @@
   <xsd:import namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-configuration/2014/10"
               schemaLocation="sm-configuration.xsd"/>
 
-  <xsd:import namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-administration/2020/09"
+  <xsd:import namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-administration"
               schemaLocation="sm-administration.xsd"/>
 
   <xsd:element name="ExternalInterfaceRequestMessage">
