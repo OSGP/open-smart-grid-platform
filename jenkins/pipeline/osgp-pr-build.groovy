@@ -185,7 +185,7 @@ echo Found cucumber tags: [$EXTRACTED_TAGS]'''
         stage('Reporting') {
             steps {
                 jacoco execPattern: '**/code-coverage/jacoco-it.exec'
-                cucumber buildStatus: null, fileIncludePattern: '**/cucumber.json', sortingMethod: 'ALPHABETICAL'
+                cucumber buildStatus: 'FAILURE', fileIncludePattern: '**/cucumber.json', sortingMethod: 'ALPHABETICAL'
                 archiveArtifacts '**/target/*.tgz'
 
                 // Check the console log for failed tests
