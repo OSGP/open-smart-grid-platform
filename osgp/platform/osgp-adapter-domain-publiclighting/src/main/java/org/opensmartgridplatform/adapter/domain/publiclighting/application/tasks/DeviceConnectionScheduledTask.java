@@ -9,17 +9,16 @@ package org.opensmartgridplatform.adapter.domain.publiclighting.application.task
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.config.SchedulingConfigForDeviceConnectionScheduledTask;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
 import org.opensmartgridplatform.domain.core.entities.LightMeasurementDevice;
 import org.opensmartgridplatform.domain.core.entities.Manufacturer;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Periodic task to ensure active connection to devices of a given manufacturer.
@@ -41,6 +40,8 @@ public class DeviceConnectionScheduledTask extends BaseTask implements Runnable 
 
     @Override
     public void run() {
+        LOGGER.info("Ensuring active connections with LMD devices of manufacturer '{}'",
+                this.deviceConnectionScheduledTaskManufacturerName);
         try {
             final Manufacturer manufacturer = this.findManufacturer(this.deviceConnectionScheduledTaskManufacturerName);
             if (manufacturer == null) {

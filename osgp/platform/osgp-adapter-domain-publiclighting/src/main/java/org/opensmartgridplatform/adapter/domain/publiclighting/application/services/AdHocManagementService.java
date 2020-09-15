@@ -15,6 +15,7 @@ import java.util.Map;
 import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaRun;
 import org.opensmartgridplatform.adapter.domain.shared.FilterLightAndTariffValuesHelper;
+import org.opensmartgridplatform.adapter.domain.shared.GetLightSensorStatusResponse;
 import org.opensmartgridplatform.adapter.domain.shared.GetStatusResponse;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceOutputSetting;
@@ -24,6 +25,7 @@ import org.opensmartgridplatform.domain.core.entities.RelayStatus;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
 import org.opensmartgridplatform.domain.core.exceptions.ValidationException;
 import org.opensmartgridplatform.domain.core.repositories.EventRepository;
+import org.opensmartgridplatform.domain.core.repositories.RtuDeviceRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.CdmaDevice;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
@@ -32,18 +34,20 @@ import org.opensmartgridplatform.domain.core.valueobjects.DeviceStatusMapped;
 import org.opensmartgridplatform.domain.core.valueobjects.DomainType;
 import org.opensmartgridplatform.domain.core.valueobjects.EventMessageDataContainer;
 import org.opensmartgridplatform.domain.core.valueobjects.EventType;
+import org.opensmartgridplatform.domain.core.valueobjects.LightSensorStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.LightValue;
 import org.opensmartgridplatform.domain.core.valueobjects.TransitionType;
 import org.opensmartgridplatform.dto.valueobjects.DeviceStatusDto;
+import org.opensmartgridplatform.dto.valueobjects.LightSensorStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.LightValueMessageDataContainerDto;
 import org.opensmartgridplatform.dto.valueobjects.ResumeScheduleMessageDataContainerDto;
-import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.NoDeviceResponseException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
@@ -61,6 +65,9 @@ public class AdHocManagementService extends AbstractService {
 
     @Autowired
     private EventRepository eventRepository;
+
+    @Autowired
+    private RtuDeviceRepository rtuDeviceRepository;
 
     @Autowired
     private SetTransitionService setTransitionService;
@@ -92,6 +99,67 @@ public class AdHocManagementService extends AbstractService {
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, lightValueMessageDataContainer), messageType, messagePriority,
                 device.getIpAddress());
+    }
+
+    // === GET LIGHT SENSOR STATUS ===
+
+    public void handleGetLightSensorStatusResponse(final LightSensorStatusDto lightSensorStatusDto,
+            final CorrelationIds ids, final String messageType, final int messagePriority,
+            final ResponseMessageResultType deviceResult, final OsgpException exception) {
+
+        LOGGER.info("handleResponse for MessageType: {}", messageType);
+        final GetLightSensorStatusResponse response = new GetLightSensorStatusResponse();
+        response.setOsgpException(exception);
+        response.setResult(deviceResult);
+        if (lightSensorStatusDto != null) {
+            response.setLightSensorStatus(new LightSensorStatus(lightSensorStatusDto.isOn()));
+            this.updateLastCommunicationTime(ids.getDeviceIdentification());
+        }
+
+        if (deviceResult == ResponseMessageResultType.NOT_OK || exception != null) {
+            LOGGER.error("Device Response not ok.", exception);
+        }
+
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withIds(ids)
+                .withResult(response.getResult())
+                .withOsgpException(response.getOsgpException())
+                .withDataObject(response.getLightSensorStatus())
+                .withMessagePriority(messagePriority)
+                .build();
+        /*
+         * For now this only takes care of updating some light measurement
+         * device related data, and no response will be sent to the web service
+         * layer.
+         *
+         * For the use cases involving keeping device connections open, this
+         * behavior is probably sufficient. There may be issues when the light
+         * sensor status will be requested from the web service layer as well as
+         * from the DeviceConnection104LmdScheduledTask. If these occur, they
+         * will need to be addressed, possibly as part of the work for FLEX-5349
+         * (Fix get status in web-operator for 104 light measurement devices
+         * (Make sure correlation uid is correctly passed)).
+         */
+        LOGGER.info("For now only use sensor status to keep 104 LMDs connected, ignore response: {}", responseMessage);
+    }
+
+    private void updateLastCommunicationTime(final String deviceIdentification) {
+        final LightMeasurementDevice lightMeasurementDevice = this.lightMeasurementDeviceRepository
+                .findByDeviceIdentification(deviceIdentification);
+        if (lightMeasurementDevice == null) {
+            LOGGER.warn(
+                    "Device identification for update last communication time does not identify a known light measurement device: {}",
+                    deviceIdentification);
+            return;
+        }
+        final Device gateway = lightMeasurementDevice.getGatewayDevice();
+        final Date lastCommunicationTime = this.updateLmdLastCommunicationTime(lightMeasurementDevice)
+                .getLastCommunicationTime();
+        if (gateway != null) {
+            gateway.setLastSuccessfulConnectionTimestamp(lastCommunicationTime);
+            this.rtuDeviceRepository.findById(gateway.getId())
+                    .ifPresent(rtu -> rtu.messageReceived(lastCommunicationTime));
+        }
     }
 
     // === GET STATUS ===
@@ -128,7 +196,8 @@ public class AdHocManagementService extends AbstractService {
                 .map(allowedDomainType, org.opensmartgridplatform.dto.valueobjects.DomainTypeDto.class);
 
         final String actualMessageType = LightMeasurementDevice.LMD_TYPE.equals(device.getDeviceType())
-                ? DeviceFunction.GET_LIGHT_SENSOR_STATUS.name() : messageType;
+                ? DeviceFunction.GET_LIGHT_SENSOR_STATUS.name()
+                : messageType;
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, allowedDomainTypeDto), actualMessageType, messagePriority, device.getIpAddress());
@@ -159,9 +228,13 @@ public class AdHocManagementService extends AbstractService {
             }
         }
 
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withIds(ids)
-                .withResult(response.getResult()).withOsgpException(response.getOsgpException())
-                .withDataObject(response.getDeviceStatusMapped()).withMessagePriority(messagePriority).build();
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withIds(ids)
+                .withResult(response.getResult())
+                .withOsgpException(response.getOsgpException())
+                .withDataObject(response.getDeviceStatusMapped())
+                .withMessagePriority(messagePriority)
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage);
     }
 
@@ -411,7 +484,8 @@ public class AdHocManagementService extends AbstractService {
             }
             if (!updated) {
                 final RelayStatus newRelayStatus = new RelayStatus.Builder(device, lightValue.getIndex())
-                        .withLastKnownState(lightValue.isOn(), new Date()).build();
+                        .withLastKnownState(lightValue.isOn(), new Date())
+                        .build();
                 relayStatuses.add(newRelayStatus);
             }
         }
