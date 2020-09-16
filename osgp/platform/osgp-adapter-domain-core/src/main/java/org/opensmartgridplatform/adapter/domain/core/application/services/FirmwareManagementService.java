@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.domain.core.application.services;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -53,6 +54,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
 @Service(value = "domainCoreFirmwareManagementService")
 @Transactional(value = "transactionManager")
@@ -153,25 +155,67 @@ public class FirmwareManagementService extends AbstractService {
 
     public void handleSsldPendingFirmwareUpdate(final String deviceIdentification) {
 
-        final SsldPendingFirmwareUpdate ssldPendingFirmwareUpdate = this.ssldPendingFirmwareUpdateRepository
+        final List<SsldPendingFirmwareUpdate> ssldPendingFirmwareUpdates = this.ssldPendingFirmwareUpdateRepository
                 .findByDeviceIdentification(deviceIdentification);
 
-        if (ssldPendingFirmwareUpdate != null) {
-            final String organisationIdentification = ssldPendingFirmwareUpdate.getOrganisationIdentification();
-            final String correlationUid = ssldPendingFirmwareUpdate.getCorrelationUid();
-
-            LOGGER.info(
-                    "Handling SSLD pending firmware update for device identification: {}, organisation identification: {} and correlation UID: {}.",
-                    deviceIdentification, organisationIdentification, correlationUid);
-
-            try {
-                final int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
-                this.getFirmwareVersion(organisationIdentification, deviceIdentification, correlationUid,
-                        DeviceFunction.GET_FIRMWARE_VERSION.name(), messagePriority, this.getFirmwareVersionDelay);
-            } catch (final FunctionalException e) {
-                LOGGER.error("Caught exception when calling get firmware version", e);
-            }
+        if (CollectionUtils.isEmpty(ssldPendingFirmwareUpdates)) {
+            return;
         }
+        /*
+         * A pending firmware update record was stored for this device earlier.
+         * This means this method is probably called following a firmware
+         * update. Retrieve the firmware version from the device to have the
+         * current version that is installed available.
+         *
+         * If multiple pending update records exist, it is not really clear what
+         * to do. The following approach assumes the most recently created one
+         * is relevant, and other pending records are out-dated.
+         */
+        final SsldPendingFirmwareUpdate ssldPendingFirmwareUpdate = this
+                .getMostRecentDeletingOutdatedPendingFirmwareUpdates(ssldPendingFirmwareUpdates);
+
+        final String organisationIdentification = ssldPendingFirmwareUpdate.getOrganisationIdentification();
+        final String correlationUid = ssldPendingFirmwareUpdate.getCorrelationUid();
+
+        LOGGER.info(
+                "Handling SSLD pending firmware update for device identification: {}, organisation identification: {} and correlation UID: {}.",
+                deviceIdentification, organisationIdentification, correlationUid);
+
+        try {
+            final int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
+            this.getFirmwareVersion(organisationIdentification, deviceIdentification, correlationUid,
+                    DeviceFunction.GET_FIRMWARE_VERSION.name(), messagePriority, this.getFirmwareVersionDelay);
+        } catch (final FunctionalException e) {
+            LOGGER.error("Caught exception when calling get firmware version", e);
+        }
+    }
+
+    private SsldPendingFirmwareUpdate getMostRecentDeletingOutdatedPendingFirmwareUpdates(
+            final List<SsldPendingFirmwareUpdate> ssldPendingFirmwareUpdates) {
+
+        if (CollectionUtils.isEmpty(ssldPendingFirmwareUpdates)) {
+            throw new IllegalArgumentException("ssldPendingFirmwareUpdates must not be empty");
+        }
+        if (ssldPendingFirmwareUpdates.size() == 1) {
+            return ssldPendingFirmwareUpdates.get(0);
+        }
+
+        LOGGER.warn("Found multiple pending firmware update records for SSLD: {}", ssldPendingFirmwareUpdates);
+
+        final SsldPendingFirmwareUpdate mostRecentSsldPendingFirmwareUpdate = ssldPendingFirmwareUpdates.stream()
+                .max(Comparator.comparing(SsldPendingFirmwareUpdate::getCreationTime)
+                        .thenComparing(Comparator.comparing(SsldPendingFirmwareUpdate::getId)))
+                .orElseThrow(() -> new AssertionError("No most recent pending firmware update from a non-empty list"));
+
+        ssldPendingFirmwareUpdates.forEach(pendingUpdate -> {
+            if (mostRecentSsldPendingFirmwareUpdate.getId() != pendingUpdate.getId()) {
+                LOGGER.warn("Deleting pending firmware update assumed outdated: {}", pendingUpdate);
+                this.ssldPendingFirmwareUpdateRepository.delete(pendingUpdate);
+            }
+        });
+
+        LOGGER.info("Keep most recent pending firmware update: {}", mostRecentSsldPendingFirmwareUpdate);
+        return mostRecentSsldPendingFirmwareUpdate;
     }
 
     // === GET FIRMWARE VERSION ===
@@ -244,11 +288,12 @@ public class FirmwareManagementService extends AbstractService {
         final String deviceIdentification = ids.getDeviceIdentification();
 
         final SsldPendingFirmwareUpdate ssldPendingFirmwareUpdate = this.ssldPendingFirmwareUpdateRepository
-                .findByDeviceIdentification(deviceIdentification);
+                .findByDeviceIdentification(deviceIdentification)
+                .stream()
+                .filter(pendingUpdate -> pendingUpdate.getCorrelationUid().equals(ids.getCorrelationUid()))
+                .findAny()
+                .orElse(null);
         if (ssldPendingFirmwareUpdate == null) {
-            return false;
-        }
-        if (!ssldPendingFirmwareUpdate.getCorrelationUid().equals(ids.getCorrelationUid())) {
             return false;
         }
 
