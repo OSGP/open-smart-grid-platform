@@ -4,7 +4,7 @@ BEGIN
 
 IF NOT EXISTS (
   SELECT
-    *
+    1
   FROM
     information_schema.columns 
   WHERE TABLE_SCHEMA = current_schema AND TABLE_NAME = 'rtu_device' AND COLUMN_NAME = 'domain_info_id') THEN

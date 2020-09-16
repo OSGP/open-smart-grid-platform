@@ -25,7 +25,7 @@ public class RtuDevice extends Device {
 
     @ManyToOne()
     @JoinColumn(name = "domain_info_id")
-    protected DomainInfo domainInfo;
+    private DomainInfo domainInfo;
 
     public RtuDevice() {
         // No-arg constructor for frameworks.
