@@ -45,26 +45,27 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider implements
 
     private final KeyStore keyStore;
 
-    public HsmEncryptionProvider(File keyStoreFile) {
+    public HsmEncryptionProvider(final File keyStoreFile) {
         try {
             super.setKeyFile(keyStoreFile);
             this.keyStore = KeyStore.getInstance(TYPE, PROVIDER);
-            FileInputStream fIn = new FileInputStream(keyStoreFile);
+            final FileInputStream fIn = new FileInputStream(keyStoreFile);
             this.keyStore.load(fIn, null);
-        } catch (CertificateException | NoSuchAlgorithmException | NoSuchProviderException | IOException | KeyStoreException e) {
+        } catch (final CertificateException | NoSuchAlgorithmException | NoSuchProviderException | IOException | KeyStoreException e) {
             throw new EncrypterException("Could not read keystore", e);
         }
     }
 
-    public Secret decrypt(EncryptedSecret secret, String keyReference) {
+    @Override
+    public Secret decrypt(final EncryptedSecret secret, final String keyReference) {
 
         Secret decryptedSecret = super.decrypt(secret, keyReference);
 
-        byte[] decryptedSecretBytes = decryptedSecret.getSecret();
+        final byte[] decryptedSecretBytes = decryptedSecret.getSecret();
 
         if (decryptedSecretBytes.length > KEY_LENGTH) {
 
-            byte[] truncatedDecryptedSecretBytes = Arrays.copyOfRange(decryptedSecretBytes, 0,
+            final byte[] truncatedDecryptedSecretBytes = Arrays.copyOfRange(decryptedSecretBytes, 0,
                     decryptedSecretBytes.length-16);
 
             LOGGER.trace("Truncating decrypted key from " + Hex.encodeHexString(decryptedSecretBytes) + " to " +
@@ -76,10 +77,11 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider implements
         return decryptedSecret;
     }
 
+    @Override
     protected Cipher getCipher() {
         try {
             return Cipher.getInstance(ALGORITHM, PROVIDER);
-        } catch (NoSuchPaddingException | NoSuchAlgorithmException | NoSuchProviderException e) {
+        } catch (final NoSuchPaddingException | NoSuchAlgorithmException | NoSuchProviderException e) {
             throw new EncrypterException("Could not get cipher", e);
         }
     }
@@ -90,18 +92,21 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider implements
      *
      * @return the key that must be used for encryption/decryption
      */
-    protected Key getSecretEncryptionKey(String keyReference, int cipherMode) {
+    @Override
+    protected Key getSecretEncryptionKey(final String keyReference, final int cipherMode) {
         try {
             return this.keyStore.getKey(keyReference, null);
-        } catch (UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException e) {
+        } catch (final UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException e) {
             throw new EncrypterException("Could not get keystore from key", e);
         }
     }
 
+    @Override
     protected AlgorithmParameterSpec getAlgorithmParameterSpec() {
         return new IvParameterSpec(IV);
     }
 
+    @Override
     public EncryptionProviderType getType() {
         return EncryptionProviderType.HSM;
     }

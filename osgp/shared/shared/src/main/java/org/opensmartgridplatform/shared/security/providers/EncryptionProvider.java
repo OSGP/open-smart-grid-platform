@@ -15,6 +15,7 @@ import org.opensmartgridplatform.shared.security.Secret;
 public interface EncryptionProvider {
     EncryptedSecret encrypt(Secret secret, String keyReference);
     Secret decrypt(EncryptedSecret secret, String keyReference);
+
     EncryptionProviderType getType();
 }
 

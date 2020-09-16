@@ -19,9 +19,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface DbEncryptionKeyRepository extends JpaRepository<DbEncryptionKeyReference, Long> {
-    @Query("SELECT ekr FROM DbEncryptionKeyReference ekr " + "WHERE ekr.encryptionProviderType = :ept "
+    @Query("SELECT ekr FROM DbEncryptionKeyReference ekr WHERE ekr.encryptionProviderType = :ept "
             + "AND ekr.validFrom < :date AND (ekr.validTo IS NULL OR ekr.validTo > :date) "
             + "ORDER BY ekr.validFrom DESC")
-    Page<DbEncryptionKeyReference> findByTypeAndValid(@Param("date") Date validDate,
-            @Param("ept") EncryptionProviderType encryptionProviderType, Pageable pageable);
+    Page<DbEncryptionKeyReference> findByTypeAndValid(@Param("ept") EncryptionProviderType encryptionProviderType,
+            @Param("date") Date validDate, Pageable pageable);
 }
