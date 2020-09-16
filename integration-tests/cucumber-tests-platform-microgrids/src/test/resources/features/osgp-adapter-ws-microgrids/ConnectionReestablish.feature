@@ -1,9 +1,8 @@
-@NightlyBuildOnly @Microgrids @Platform @Iec61850MockServerPampus
+@Microgrids @Platform @Iec61850MockServerPampus
 Feature: Microgrids Re-establish Connection
   As MSP
   I want to know when a connection between OSGP and RTU is lost or re-established.
 
-  @Skip
   Scenario: Connection lost and reestablished
     Given an rtu iec61850 device
       | DeviceIdentification  | RTU-PAMPUS |
