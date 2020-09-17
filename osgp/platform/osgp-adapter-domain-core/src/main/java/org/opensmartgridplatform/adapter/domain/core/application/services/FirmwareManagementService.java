@@ -282,8 +282,7 @@ public class FirmwareManagementService extends AbstractService {
         }
     }
 
-    private boolean checkSsldPendingFirmwareUpdate(final CorrelationIds ids,
-            final List<FirmwareVersion> firmwareVersions) {
+    boolean checkSsldPendingFirmwareUpdate(final CorrelationIds ids, final List<FirmwareVersion> firmwareVersions) {
 
         final String deviceIdentification = ids.getDeviceIdentification();
 
