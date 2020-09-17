@@ -18,6 +18,7 @@ import static org.mockito.Mockito.when;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -149,11 +150,11 @@ public class FirmwareManagementServiceTest {
         firmwareFile.addFirmwareModule(firmwareModule, VERSION_2);
         when(this.firmwareFileRepository.findByDeviceModel(any(DeviceModel.class)))
                 .thenReturn(Arrays.asList(firmwareFile));
-        final FirmwareVersion firmwareVersion = new FirmwareVersion(FirmwareModuleType.SECURITY, VERSION_2);
+        final List<FirmwareVersion> firmwareVersions = Arrays
+                .asList(new FirmwareVersion(FirmwareModuleType.SECURITY, VERSION_2));
 
         // Act
-        this.firmwareManagementService.tryToAddFirmwareVersionToHistory("", firmwareVersion);
-
+        this.firmwareManagementService.tryToAddFirmwareVersionToHistory("", firmwareVersions);
         // Assert
         verify(this.deviceFirmwareFileRepository, times(1)).save(any(DeviceFirmwareFile.class));
     }
@@ -168,10 +169,11 @@ public class FirmwareManagementServiceTest {
                 .build();
         when(this.firmwareFileRepository.findByDeviceModel(any(DeviceModel.class)))
                 .thenReturn(Arrays.asList(firmwareFile));
-        final FirmwareVersion firmwareVersion1 = new FirmwareVersion(FirmwareModuleType.SECURITY, VERSION_2);
+        final List<FirmwareVersion> firmwareVersions1 = Arrays
+                .asList(new FirmwareVersion(FirmwareModuleType.SECURITY, VERSION_2));
 
         // Act
-        this.firmwareManagementService.tryToAddFirmwareVersionToHistory("", firmwareVersion1);
+        this.firmwareManagementService.tryToAddFirmwareVersionToHistory("", firmwareVersions1);
 
         // Assert
         verify(this.deviceFirmwareFileRepository, never()).save(any(DeviceFirmwareFile.class));
