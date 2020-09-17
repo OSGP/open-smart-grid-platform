@@ -16,8 +16,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -282,16 +280,7 @@ public class FirmwareManagementService extends AbstractService {
             final List<org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion> firmwareVersions) {
         final List<org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion> firmwareVersionsNotCurrent = this
                 .checkFirmwareHistoryForModuleVersionsNotCurrentlyInstalled(deviceId, firmwareVersions);
-        this.tryToAddFirmwareVersionToHistory(deviceId, firmwareVersionsNotCurrent);
-        //
-        // for (final
-        // org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion
-        // firmwareVersion : versionsNotCurrent) {
-        // LOGGER.info("Firmware version {} is not in history of device {}, we
-        // are trying to add it", firmwareVersion,
-        // deviceId);
-        // this.tryToAddFirmwareVersionToHistory(deviceId, firmwareVersion);
-        // }
+        this.tryToAddDeviceFirmwareFile(deviceId, firmwareVersionsNotCurrent);
     }
 
     /**
@@ -359,18 +348,8 @@ public class FirmwareManagementService extends AbstractService {
         final List<DeviceFirmwareFile> deviceFirmwareFiles = this.deviceFirmwareFileRepository
                 .findByDeviceOrderByInstallationDateAsc(device);
 
-        // Next section can be removed
-        final List<FirmwareVersion> firmwareVersionsInHistory = deviceFirmwareFiles.stream()
-                .map(d -> d.getFirmwareFile().getModuleVersions().entrySet())
-                .flatMap(Collection::stream)
-                .map(e -> new FirmwareVersion(FirmwareModuleType.forDescription(e.getKey().getDescription()),
-                        e.getValue()))
-                .collect(Collectors.toList());
-
         // Transform this list so it contains only the latest entry for each
-        // moduleType, using
-        // firmwareVersionsInHistory[x].DeviceFimwareFile.firmwareFile.firmwareModules.firmwareModule.description.
-        // and firmwareVersionsInHistory[x].installationDate
+        // moduleType
         Map<String, FirmwareVersionWithInstallationDate> currentlyInstalledFirmwareVersionsPerType = new HashMap<String, FirmwareVersionWithInstallationDate>();
 
         for (DeviceFirmwareFile firmwareFile : deviceFirmwareFiles) {
@@ -413,13 +392,10 @@ public class FirmwareManagementService extends AbstractService {
         return firmwareVersionsToCheck;
     }
 
+    // Helper class to keep track of InstallationDate and FirmwareVersion
     private class FirmwareVersionWithInstallationDate {
         public Date installationDate;
         public FirmwareVersion firmwareVersion;
-
-        public FirmwareVersionWithInstallationDate() {
-            // Parameterless constructor required for transactions...
-        }
 
         public FirmwareVersionWithInstallationDate(Date _installationDate, FirmwareVersion _firmwareVersion) {
             installationDate = _installationDate;
@@ -427,8 +403,13 @@ public class FirmwareManagementService extends AbstractService {
         }
     }
 
-    public void tryToAddFirmwareVersionToHistory(final String deviceIdentification,
+    public void tryToAddDeviceFirmwareFile(final String deviceIdentification,
             final List<FirmwareVersion> firmwareVersionsNotCurrent) {
+
+        if (firmwareVersionsNotCurrent.isEmpty()) {
+            LOGGER.info("No firmware to look for, so nothing to add");
+            return;
+        }
 
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
         final List<FirmwareFile> firmwareFiles = this.getAvailableFirmwareFilesForDeviceModel(device.getDeviceModel());
@@ -436,21 +417,22 @@ public class FirmwareManagementService extends AbstractService {
         // check each file for the module and the version as returned by the
         // device
         boolean recordAdded = false;
+        String modulesAndVersionSearchedFor = "";
 
         for (final FirmwareFile file : firmwareFiles) {
             int numberOfModulesFound = 0;
             for (FirmwareVersion firmwareNotCurrent : firmwareVersionsNotCurrent) {
                 final FirmwareModule module = createFirmwareModule(firmwareNotCurrent);
                 final Map<FirmwareModule, String> moduleVersions = file.getModuleVersions();
+                final String moduleType = firmwareNotCurrent.getFirmwareModuleType().toString();
+                final String version = firmwareNotCurrent.getVersion();
+                modulesAndVersionSearchedFor += System.lineSeparator() + "ModuleType:" + moduleType + " with version:"
+                        + version;
+
                 if (moduleVersions.containsKey(module)
                         && moduleVersions.get(module).equals(firmwareNotCurrent.getVersion())) {
                     // module found in this file
                     numberOfModulesFound++;
-                    LOGGER.info(
-                            "{} of {} modules found, Firmware version {} for moduleType {} found for to device {} in File {}, ",
-                            numberOfModulesFound, firmwareVersionsNotCurrent.size(), firmwareNotCurrent.getVersion(),
-                            firmwareNotCurrent.getFirmwareModuleType().toString(), deviceIdentification,
-                            file.getFilename());
 
                     // check if all different modules are in this file
                     if (numberOfModulesFound == firmwareVersionsNotCurrent.size()) {
@@ -459,8 +441,11 @@ public class FirmwareManagementService extends AbstractService {
                                 INSTALLER);
                         this.deviceFirmwareFileRepository.save(deviceFirmwareFile);
 
-                        LOGGER.info("Firmware version {} added to device {}", firmwareNotCurrent.getVersion(),
-                                deviceIdentification);
+                        LOGGER.info(
+                                "Added new record to DeviceFirmwareFile for device: {}" + System.lineSeparator()
+                                        + "with following modules (ModulesType/Versions): {}" + System.lineSeparator()
+                                        + "using File: {}",
+                                deviceIdentification, modulesAndVersionSearchedFor, file.getFilename());
 
                         // we only want to add one record in history
                         recordAdded = true;
@@ -471,10 +456,11 @@ public class FirmwareManagementService extends AbstractService {
         }
 
         if (!recordAdded) {
-            LOGGER.warn("No firmware file record found for: {} for device: {}", firmwareVersionsNotCurrent,
-                    deviceIdentification);
+            LOGGER.warn(
+                    "Could not find any firmware file for device: {}" + System.lineSeparator()
+                            + "that contains (all of) the following modules (ModulesType/Versions): {}",
+                    deviceIdentification, modulesAndVersionSearchedFor);
         }
-
     }
 
     private static FirmwareModule createFirmwareModule(final FirmwareVersion firmwareVersion) {
