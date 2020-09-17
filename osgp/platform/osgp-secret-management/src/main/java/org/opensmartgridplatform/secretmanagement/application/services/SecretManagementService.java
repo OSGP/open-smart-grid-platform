@@ -9,7 +9,6 @@
 
 package org.opensmartgridplatform.secretmanagement.application.services;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -29,7 +28,6 @@ import org.opensmartgridplatform.shared.security.EncryptionDelegate;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 import org.opensmartgridplatform.shared.security.Secret;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -67,7 +65,7 @@ public class SecretManagementService {
             throw new IllegalArgumentException("No secret string set");
         } else if (secret.getSecretType() == null) {
             throw new IllegalArgumentException("No secret type set");
-        } else if (this.isIdenticalToCurrent(deviceIdentification, secret)) {
+        } else if (this.isIdenticalToActive(deviceIdentification, secret)) {
             throw new IllegalArgumentException(
                     String.format("Secret is identical to current secret (%s, %s)", deviceIdentification,
                             secret.getSecretType().name()));
@@ -75,9 +73,9 @@ public class SecretManagementService {
         return secret;
     }
 
-    private boolean isIdenticalToCurrent(final String deviceIdentification, final TypedSecret secret) {
-        final Optional<TypedSecret> current = this.retrieveCurrentSecret(deviceIdentification, secret.getSecretType());
-        return current.isPresent() && current.get().getSecret().equals(secret.getSecret());
+    private boolean isIdenticalToActive(final String deviceIdentification, final TypedSecret secret) {
+        final Optional<TypedSecret> active = this.retrieveActiveSecret(deviceIdentification, secret.getSecretType());
+        return active.isPresent() && active.get().getSecret().equals(secret.getSecret());
     }
 
     private DbEncryptedSecret createEncrypted(final String deviceIdentification, final TypedSecret typedSecret,
@@ -106,7 +104,7 @@ public class SecretManagementService {
         try {
             //@formatter:off
             return secretTypes.stream()
-                    .map(secretType -> this.retrieveCurrentSecret(deviceIdentification, secretType))
+                    .map(secretType -> this.retrieveActiveSecret(deviceIdentification, secretType))
                     .map(Optional::get)
                     .collect(Collectors.toList());
             //@formatter:on
@@ -116,7 +114,8 @@ public class SecretManagementService {
         }
     }
 
-    public Optional<TypedSecret> retrieveCurrentSecret(final String deviceIdentification, final SecretType secretType) {
+    private Optional<TypedSecret> retrieveActiveSecret(final String deviceIdentification,
+            final SecretType secretType) {
         final Optional<DbEncryptedSecret> encryptedSecret = this.getSingleDbEncryptedSecret(deviceIdentification,
                 secretType, SecretStatus.ACTIVE);
         return encryptedSecret.isPresent() ? Optional.of(this.getTypedSecret(encryptedSecret.get())) : Optional.empty();
@@ -125,14 +124,14 @@ public class SecretManagementService {
 
     private Optional<DbEncryptedSecret> getSingleDbEncryptedSecret(final String deviceIdentification,
             final SecretType secretType, final SecretStatus secretStatus) {
-        final Page<DbEncryptedSecret> secretsPage = this.secretRepository.findSecrets(deviceIdentification, secretType,
-                secretStatus, Pageable.unpaged());
-        if (secretsPage.getTotalElements() == 0) {
+        final List<DbEncryptedSecret> secretsList = this.secretRepository.findSecrets(deviceIdentification, secretType,
+                secretStatus);
+        if (secretsList.size() == 0) {
             return Optional.empty();
-        } else if (secretsPage.getTotalElements() > 1) {
+        } else if (secretsList.size() > 1) {
             throw new IllegalStateException(); //TODO set proper msg
         }
-        return Optional.of(secretsPage.iterator().next());
+        return Optional.of(secretsList.iterator().next());
     }
 
     private TypedSecret getTypedSecret(final DbEncryptedSecret dbEncryptedSecret) {
@@ -160,43 +159,50 @@ public class SecretManagementService {
         }
     }
 
-    public synchronized Long storeSecret(final String deviceIdentification, final TypedSecret typedSecret)
-            throws IOException {
-        final Date now = new Date(); //TODO check creation & time zone
-        final SecretType secretType = typedSecret.getSecretType();
-        if (this.secretRepository.getSecretCount(deviceIdentification, secretType, SecretStatus.NEW) > 0) {
-            final String errorMsg = "Cannot store new secret: a new secret of type %s is already present";
-            throw new IllegalStateException(String.format(errorMsg, secretType.name()));
-        }
-        this.validateSecret(deviceIdentification, typedSecret);
-        DbEncryptedSecret encryptedSecret = this.createEncrypted(deviceIdentification, typedSecret, this.getKey());
-        try {
-            encryptedSecret = this.secretRepository.save(encryptedSecret);
-            return encryptedSecret.getId();
-        } catch (final DataAccessException dae) {
-            throw new IOException("Could not store new key in database", dae);
-        }
+    public void storeSecrets(final String deviceIdentification, final List<TypedSecret> secrets) {
+        //@formatter:off
+        secrets.stream().map(s->s.getSecretType()).forEach(t-> this.checkNrNewSecretsOfType(deviceIdentification, t, 0));
+        secrets.stream()
+                .map(t -> this.validateSecret(deviceIdentification, t))
+                .map(s -> this.createEncrypted(deviceIdentification, s, this.getKey()))
+                .forEach(this.secretRepository::save);
+        //@formatter:on
     }
 
-    public synchronized void activateNewSecret(final String deviceIdentification, final SecretType secretType) {
-        final Date now = new Date(); //TODO check creation & time zone
-        final int nrNewSecrets = this.secretRepository.getSecretCount(deviceIdentification, secretType,
-                SecretStatus.NEW);
-        if (nrNewSecrets == 0) {
-            throw new IllegalStateException("Cannot activate new secret: no new secret is present");
-        } else if (nrNewSecrets > 1) { //should not be possible
-            throw new IllegalStateException("Cannot activate new secret: multiple new secrets are present");
-        }
-        final Optional<DbEncryptedSecret> currentSecretOptional = this.getSingleDbEncryptedSecret(deviceIdentification,
+    public synchronized void activateNewSecrets(final String deviceIdentification, final List<SecretType> secretTypes) {
+        secretTypes.stream().forEach(t -> this.checkNrNewSecretsOfType(deviceIdentification, t, 1));
+        secretTypes.stream().forEach(t -> this.activateNewSecret(deviceIdentification, t));
+    }
+
+    public boolean hasNewSecret(final String deviceIdentification, final SecretType secretType) {
+        return this.secretRepository.getSecretCount(deviceIdentification, secretType, SecretStatus.NEW) > 0;
+    }
+
+    private synchronized long activateNewSecret(final String deviceIdentification, final SecretType secretType) {
+        final Optional<DbEncryptedSecret> activeSecretOptional = this.getSingleDbEncryptedSecret(deviceIdentification,
                 secretType, SecretStatus.ACTIVE);
-        if (currentSecretOptional.isPresent()) {
-            final DbEncryptedSecret currentSecret = currentSecretOptional.get();
+        if (activeSecretOptional.isPresent()) {
+            final DbEncryptedSecret currentSecret = activeSecretOptional.get();
             currentSecret.setSecretStatus(SecretStatus.EXPIRED);
             this.secretRepository.save(currentSecret);
         }
         final DbEncryptedSecret newSecret = this.getSingleDbEncryptedSecret(deviceIdentification, secretType,
-                SecretStatus.NEW).get(); //We have checked nr of new secrets already
+                SecretStatus.NEW).get(); //We have checked nr of new secrets already in activateNewSecrets
         newSecret.setSecretStatus(SecretStatus.ACTIVE);
-        this.secretRepository.save(newSecret);
+        return this.secretRepository.save(newSecret).getId();
+    }
+
+    private void checkNrNewSecretsOfType(final String deviceIdentification, final SecretType t, final int expectedNr) {
+        final int nrNewSecretsOfType = this.secretRepository.getSecretCount(deviceIdentification, t, SecretStatus.NEW);
+        if (nrNewSecretsOfType != expectedNr) {
+            final String errorMsg = "Expected %s new secrets, but %s new secret(s) present";
+            throw new IllegalStateException(String.format(errorMsg, expectedNr, nrNewSecretsOfType));
+        }
+    }
+
+    public TypedSecret generateAes128BitsSecret(final SecretType secretType) {
+        final DbEncryptionKeyReference keyReference = this.getKey();
+        //TODO get key (KEK) from HSM and use it to generate AES 128-bits secret
+        return null;
     }
 }

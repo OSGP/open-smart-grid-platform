@@ -8,11 +8,11 @@
  */
 package org.opensmartgridplatform.secretmanagement.application.repository;
 
+import java.util.List;
+
 import org.opensmartgridplatform.secretmanagement.application.domain.DbEncryptedSecret;
 import org.opensmartgridplatform.secretmanagement.application.domain.SecretStatus;
 import org.opensmartgridplatform.secretmanagement.application.domain.SecretType;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -25,9 +25,8 @@ public interface DbEncryptedSecretRepository extends JpaRepository<DbEncryptedSe
             + "AND es.secretStatus= :secretStatus AND es.encryptionKeyReference.valid_from < current_time() "
             + "AND (es.encryptionKeyReference.valid_to IS NULL OR es.encryptionKeyReference.valid_to > current_time()) "
             + "ORDER BY es.creation_time DESC, es.id DESC")
-    Page<DbEncryptedSecret> findSecrets(@Param("deviceIdentification") String deviceIdentification,
-            @Param("secretType") SecretType secretType, @Param("secretStatus") SecretStatus secretStatus,
-            Pageable pageable);
+    List<DbEncryptedSecret> findSecrets(@Param("deviceIdentification") String deviceIdentification,
+            @Param("secretType") SecretType secretType, @Param("secretStatus") SecretStatus secretStatus);
 
     @Query(value = "SELECT count(es) FROM DbEncryptedSecret es "
             + "WHERE es.device_identification = :deviceIdentification AND es.secret_type = :secretType "

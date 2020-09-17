@@ -43,7 +43,6 @@ import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 import org.opensmartgridplatform.shared.security.Secret;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 public class SecretManagementServiceTest {
@@ -72,13 +71,12 @@ public class SecretManagementServiceTest {
         final DbEncryptedSecret secret = new DbEncryptedSecret();
         secret.setSecretType(SecretType.E_METER_MASTER_KEY);
         secret.setEncryptionKeyReference(keyReference);
-        final Page<DbEncryptedSecret> secretPage = new PageImpl<>(Arrays.asList(secret));
+        final List<DbEncryptedSecret> secretPage = Arrays.asList(secret);
         final Secret decryptedSecret = new Secret("secret".getBytes());
 
         //WHEN
         when(this.secretRepository.getSecretCount(SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.ACTIVE)).thenReturn(1);
-        when(this.secretRepository.findSecrets(SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.ACTIVE,
-                Pageable.unpaged())).thenReturn(secretPage);
+        when(this.secretRepository.findSecrets(SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.ACTIVE)).thenReturn(secretPage);
         when(this.encryptionDelegate.decrypt(any(), any())).thenReturn(decryptedSecret);
         final List<TypedSecret> typedSecrets = this.service.retrieveSecrets(SOME_DEVICE,
                 Arrays.asList(SecretType.E_METER_MASTER_KEY));
@@ -98,12 +96,11 @@ public class SecretManagementServiceTest {
         final DbEncryptedSecret secret = new DbEncryptedSecret();
         secret.setSecretType(SecretType.E_METER_MASTER_KEY);
         secret.setEncryptionKeyReference(keyReference);
-        final Page<DbEncryptedSecret> secretPage = new PageImpl<>(Arrays.asList(secret));
+        final List<DbEncryptedSecret> secretPage = Arrays.asList(secret);
 
         //WHEN
         when(this.secretRepository.getSecretCount(SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.ACTIVE)).thenReturn(1);
-        when(this.secretRepository.findSecrets(SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.ACTIVE,
-                Pageable.unpaged())).thenReturn(secretPage);
+        when(this.secretRepository.findSecrets(SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.ACTIVE)).thenReturn(secretPage);
         when(this.encryptionDelegate.decrypt(any(), any())).thenThrow(new RuntimeException("Decryption error"));
 
         //THEN
@@ -114,10 +111,9 @@ public class SecretManagementServiceTest {
     @Test
     public void retrieveSecrets_secretWithoutKey() {
         final DbEncryptedSecret secret = new DbEncryptedSecret();
-        final Page<DbEncryptedSecret> secretPage = new PageImpl<>(Arrays.asList(secret));
+        final List<DbEncryptedSecret> secretList = Arrays.asList(secret);
         when(this.secretRepository.getSecretCount(SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.ACTIVE)).thenReturn(1);
-        when(this.secretRepository.findSecrets(SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.ACTIVE,
-                Pageable.unpaged())).thenReturn(secretPage);
+        when(this.secretRepository.findSecrets(SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.ACTIVE)).thenReturn(secretList);
         assertThatIllegalStateException().isThrownBy(
                 () -> this.service.retrieveSecrets("SOME_DEVICE", Arrays.asList(SecretType.E_METER_MASTER_KEY)));
     }
@@ -146,7 +142,7 @@ public class SecretManagementServiceTest {
         when(this.keyRepository.findByTypeAndValid(any(), any(), any())).thenReturn(
                 new PageImpl<>(Arrays.asList(keyReference)));
         when(this.encryptionDelegate.encrypt(any(), any(), anyString())).thenReturn(encryptedSecret);
-        this.service.storeSecret("SOME_DEVICE", typedSecret);
+        this.service.storeSecrets("SOME_DEVICE", Arrays.asList(typedSecret));
         //THEN
         final ArgumentCaptor<DbEncryptedSecret> secretArgumentCaptor = ArgumentCaptor.forClass(DbEncryptedSecret.class);
         verify(this.secretRepository).save(secretArgumentCaptor.capture());
@@ -169,7 +165,7 @@ public class SecretManagementServiceTest {
         keyReference.setReference("keyReferenceString");
         //THEN
         assertThatIllegalArgumentException().isThrownBy(
-                () -> this.service.storeSecret("SOME_DEVICE", typedSecret));
+                () -> this.service.storeSecrets("SOME_DEVICE", Arrays.asList(typedSecret)));
     }
 
     @Test
@@ -182,7 +178,7 @@ public class SecretManagementServiceTest {
         keyReference.setReference("keyReferenceString");
         //THEN
         assertThatIllegalArgumentException().isThrownBy(
-                () -> this.service.storeSecret("SOME_DEVICE", typedSecret));
+                () -> this.service.storeSecrets("SOME_DEVICE", Arrays.asList(typedSecret)));
     }
 
     @Test
@@ -196,7 +192,7 @@ public class SecretManagementServiceTest {
         when(this.keyRepository.findByTypeAndValid(any(), any(), any())).thenReturn(Page.empty());
         //THEN
         assertThatExceptionOfType(NoSuchElementException.class).isThrownBy(
-                () -> this.service.storeSecret("SOME_DEVICE", typedSecret));
+                () -> this.service.storeSecrets("SOME_DEVICE", Arrays.asList(typedSecret)));
 
     }
 
@@ -212,12 +208,12 @@ public class SecretManagementServiceTest {
                 new PageImpl<>(Arrays.asList(new DbEncryptionKeyReference(), new DbEncryptionKeyReference())));
         //THEN
         try {
-            this.service.storeSecret("SOME_DEVICE", typedSecret);
+            this.service.storeSecrets("SOME_DEVICE", Arrays.asList(typedSecret));
         } catch (final Exception exc) {
 
         }
         assertThatIllegalStateException().isThrownBy(
-                () -> this.service.storeSecret("SOME_DEVICE", typedSecret));
+                () -> this.service.storeSecrets("SOME_DEVICE", Arrays.asList(typedSecret)));
 
     }
 
@@ -239,7 +235,7 @@ public class SecretManagementServiceTest {
                 new RuntimeException("Encryption error"));
         //THEN
         assertThatIllegalStateException().isThrownBy(
-                () -> this.service.storeSecret("SOME_DEVICE", typedSecret));
+                () -> this.service.storeSecrets("SOME_DEVICE", Arrays.asList(typedSecret)));
 
     }
 
@@ -269,7 +265,7 @@ public class SecretManagementServiceTest {
                 new Secret(existingDbSecret.getEncodedSecret().getBytes()));    //decrypt existing DB secret
         when(this.encryptionDelegate.encrypt(any(), any(), anyString())).thenReturn(
                 encryptedSecret);   //encrypt new DB secret
-        this.service.storeSecret("SOME_DEVICE", typedSecret);
+        this.service.storeSecrets("SOME_DEVICE", Arrays.asList(typedSecret));
         //THEN
         final ArgumentCaptor<DbEncryptedSecret> secretArgumentCaptor = ArgumentCaptor.forClass(DbEncryptedSecret.class);
         verify(this.secretRepository).save(secretArgumentCaptor.capture());
@@ -307,7 +303,7 @@ public class SecretManagementServiceTest {
 
         //THEN
         assertThatIllegalArgumentException().isThrownBy(
-                () -> this.service.storeSecret("SOME_DEVICE", newTypedSecret)).withMessageContaining(
+                () -> this.service.storeSecrets("SOME_DEVICE", Arrays.asList(newTypedSecret))).withMessageContaining(
                 "identical to current");
     }
 }

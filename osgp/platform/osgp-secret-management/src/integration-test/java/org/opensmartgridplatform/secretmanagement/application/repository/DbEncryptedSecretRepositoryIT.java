@@ -11,6 +11,7 @@ package org.opensmartgridplatform.secretmanagement.application.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Date;
+import java.util.List;
 
 import org.apache.tomcat.util.buf.HexUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,8 +22,6 @@ import org.opensmartgridplatform.secretmanagement.application.domain.SecretStatu
 import org.opensmartgridplatform.secretmanagement.application.domain.SecretType;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 public class DbEncryptedSecretRepositoryIT extends AbstractRepositoryIT {
     @Autowired
@@ -62,11 +61,11 @@ public class DbEncryptedSecretRepositoryIT extends AbstractRepositoryIT {
 
     @Test void findSecrets() {
         assertThat(this.repository.count()).isEqualTo(1);
-        final Page<DbEncryptedSecret> secretsPage =
+        final List<DbEncryptedSecret> secretsList =
                 this.repository.findSecrets(this.dbEncryptedSecret.getDeviceIdentification(),
-                this.dbEncryptedSecret.getSecretType(), SecretStatus.ACTIVE, Pageable.unpaged());
-        assertThat(secretsPage.getTotalElements()).isEqualTo(1);
-        assertThat(secretsPage.iterator().next().getId()).isEqualTo(this.dbEncryptedSecret.getId());
+                this.dbEncryptedSecret.getSecretType(), SecretStatus.ACTIVE);
+        assertThat(secretsList.size()).isEqualTo(1);
+        assertThat(secretsList.iterator().next().getId()).isEqualTo(this.dbEncryptedSecret.getId());
     }
 
 }
