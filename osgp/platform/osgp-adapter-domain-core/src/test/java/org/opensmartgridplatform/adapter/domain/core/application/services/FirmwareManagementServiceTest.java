@@ -346,7 +346,10 @@ class FirmwareManagementServiceTest {
         when(this.ssldPendingFirmwareUpdateRepository.findByDeviceIdentification(deviceIdentification))
                 .thenReturn(Collections.emptyList());
 
-        assertThat(this.firmwareManagementService.checkSsldPendingFirmwareUpdate(ids, firmwareVersions)).isFalse();
+        final boolean hasPendingFirmwareUpdate = this.firmwareManagementService.checkSsldPendingFirmwareUpdate(ids,
+                firmwareVersions);
+
+        assertThat(hasPendingFirmwareUpdate).isFalse();
 
         verify(this.ssldPendingFirmwareUpdateRepository).findByDeviceIdentification(deviceIdentification);
         verifyNoMoreInteractions(this.ssldPendingFirmwareUpdateRepository);

@@ -182,7 +182,7 @@ public class FirmwareManagementService extends AbstractService {
             ssldPendingFirmwareUpdate = this.getMostRecentSsldPendingFirmwareUpdate(ssldPendingFirmwareUpdates)
                     .orElseThrow(
                             () -> new AssertionError("No most recent pending firmware update from a non-empty list"));
-            this.deleteOutdatedSsldPendingFirmareUpdates(ssldPendingFirmwareUpdates, ssldPendingFirmwareUpdate);
+            this.deleteOutdatedSsldPendingFirmwareUpdates(ssldPendingFirmwareUpdates, ssldPendingFirmwareUpdate);
         }
 
         final String organisationIdentification = ssldPendingFirmwareUpdate.getOrganisationIdentification();
@@ -209,7 +209,7 @@ public class FirmwareManagementService extends AbstractService {
                         .thenComparing(Comparator.comparing(SsldPendingFirmwareUpdate::getId)));
     }
 
-    private void deleteOutdatedSsldPendingFirmareUpdates(final List<SsldPendingFirmwareUpdate> updatesToDelete,
+    private void deleteOutdatedSsldPendingFirmwareUpdates(final List<SsldPendingFirmwareUpdate> updatesToDelete,
             final SsldPendingFirmwareUpdate notToBeDeleted) {
 
         updatesToDelete.stream()
