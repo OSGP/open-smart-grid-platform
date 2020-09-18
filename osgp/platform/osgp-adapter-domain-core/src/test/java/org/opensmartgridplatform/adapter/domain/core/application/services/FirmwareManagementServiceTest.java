@@ -335,6 +335,7 @@ class FirmwareManagementServiceTest {
         return ssldPendingFirmwareUpdate;
     }
 
+    @Test
     void checkSsldPendingFirmwareUpdateReturnsFalseIfThereAreNoPendingUpdates() {
         final String organisationIdentification = "test-org";
         final String deviceIdentification = "device-identification";
@@ -351,6 +352,7 @@ class FirmwareManagementServiceTest {
         verifyNoMoreInteractions(this.ssldPendingFirmwareUpdateRepository);
     }
 
+    @Test
     void checkSsldPendingFirmwareUpdateReturnsFalseIfPendingUpdatesAreForDifferentCorrelationUids() {
         final String organisationIdentification = "test-org";
         final String deviceIdentification = "device-identification";
@@ -369,6 +371,7 @@ class FirmwareManagementServiceTest {
         verifyNoMoreInteractions(this.ssldPendingFirmwareUpdateRepository);
     }
 
+    @Test
     void checkSsldPendingFirmwareUpdateReturnsTrueAndDeletesPendingUpdateWithMatchingCorrelationUid() {
         final String organisationIdentification = "test-org";
         final String deviceIdentification = "device-identification";

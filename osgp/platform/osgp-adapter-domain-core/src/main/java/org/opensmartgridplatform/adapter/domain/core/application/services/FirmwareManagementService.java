@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -161,6 +163,7 @@ public class FirmwareManagementService extends AbstractService {
         if (CollectionUtils.isEmpty(ssldPendingFirmwareUpdates)) {
             return;
         }
+
         /*
          * A pending firmware update record was stored for this device earlier.
          * This means this method is probably called following a firmware
@@ -171,8 +174,16 @@ public class FirmwareManagementService extends AbstractService {
          * to do. The following approach assumes the most recently created one
          * is relevant, and other pending records are out-dated.
          */
-        final SsldPendingFirmwareUpdate ssldPendingFirmwareUpdate = this
-                .getMostRecentDeletingOutdatedPendingFirmwareUpdates(ssldPendingFirmwareUpdates);
+        final SsldPendingFirmwareUpdate ssldPendingFirmwareUpdate;
+        if (ssldPendingFirmwareUpdates.size() == 1) {
+            ssldPendingFirmwareUpdate = ssldPendingFirmwareUpdates.get(0);
+        } else {
+            LOGGER.warn("Found multiple pending firmware update records for SSLD: {}", ssldPendingFirmwareUpdates);
+            ssldPendingFirmwareUpdate = this.getMostRecentSsldPendingFirmwareUpdate(ssldPendingFirmwareUpdates)
+                    .orElseThrow(
+                            () -> new AssertionError("No most recent pending firmware update from a non-empty list"));
+            this.deleteOutdatedSsldPendingFirmareUpdates(ssldPendingFirmwareUpdates, ssldPendingFirmwareUpdate);
+        }
 
         final String organisationIdentification = ssldPendingFirmwareUpdate.getOrganisationIdentification();
         final String correlationUid = ssldPendingFirmwareUpdate.getCorrelationUid();
@@ -190,32 +201,23 @@ public class FirmwareManagementService extends AbstractService {
         }
     }
 
-    private SsldPendingFirmwareUpdate getMostRecentDeletingOutdatedPendingFirmwareUpdates(
+    private Optional<SsldPendingFirmwareUpdate> getMostRecentSsldPendingFirmwareUpdate(
             final List<SsldPendingFirmwareUpdate> ssldPendingFirmwareUpdates) {
 
-        if (CollectionUtils.isEmpty(ssldPendingFirmwareUpdates)) {
-            throw new IllegalArgumentException("ssldPendingFirmwareUpdates must not be empty");
-        }
-        if (ssldPendingFirmwareUpdates.size() == 1) {
-            return ssldPendingFirmwareUpdates.get(0);
-        }
-
-        LOGGER.warn("Found multiple pending firmware update records for SSLD: {}", ssldPendingFirmwareUpdates);
-
-        final SsldPendingFirmwareUpdate mostRecentSsldPendingFirmwareUpdate = ssldPendingFirmwareUpdates.stream()
+        return ssldPendingFirmwareUpdates.stream()
                 .max(Comparator.comparing(SsldPendingFirmwareUpdate::getCreationTime)
-                        .thenComparing(Comparator.comparing(SsldPendingFirmwareUpdate::getId)))
-                .orElseThrow(() -> new AssertionError("No most recent pending firmware update from a non-empty list"));
+                        .thenComparing(Comparator.comparing(SsldPendingFirmwareUpdate::getId)));
+    }
 
-        ssldPendingFirmwareUpdates.forEach(pendingUpdate -> {
-            if (mostRecentSsldPendingFirmwareUpdate.getId() != pendingUpdate.getId()) {
-                LOGGER.warn("Deleting pending firmware update assumed outdated: {}", pendingUpdate);
-                this.ssldPendingFirmwareUpdateRepository.delete(pendingUpdate);
-            }
-        });
+    private void deleteOutdatedSsldPendingFirmareUpdates(final List<SsldPendingFirmwareUpdate> updatesToDelete,
+            final SsldPendingFirmwareUpdate notToBeDeleted) {
 
-        LOGGER.info("Keep most recent pending firmware update: {}", mostRecentSsldPendingFirmwareUpdate);
-        return mostRecentSsldPendingFirmwareUpdate;
+        updatesToDelete.stream()
+                .filter(pendingUpdate -> !Objects.equals(notToBeDeleted.getId(), pendingUpdate.getId()))
+                .forEach(pendingUpdate -> {
+                    LOGGER.warn("Deleting pending firmware update assumed outdated: {}", pendingUpdate);
+                    this.ssldPendingFirmwareUpdateRepository.delete(pendingUpdate);
+                });
     }
 
     // === GET FIRMWARE VERSION ===
@@ -311,7 +313,7 @@ public class FirmwareManagementService extends AbstractService {
                     deviceIdentification, expectedFirmwareVersion, expectedFirmwareModuleType);
         } else {
             LOGGER.error(
-                    "Expected firmware version from SSLD pending firmware update record does not match firmware version as retrieved from device identification: {}, expected firmware version: {}, expected firmware module type: {}, actual firmware version and module type list: {}",
+                    "Expected firmware version from SSLD pending firmware update record does )not match firmware version as retrieved from device identification: {}, expected firmware version: {}, expected firmware module type: {}, actual firmware version and module type list: {}",
                     deviceIdentification, expectedFirmwareVersion, expectedFirmwareModuleType, firmwareVersions);
         }
 
