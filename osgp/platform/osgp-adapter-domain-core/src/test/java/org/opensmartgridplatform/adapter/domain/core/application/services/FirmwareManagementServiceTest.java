@@ -368,7 +368,10 @@ class FirmwareManagementServiceTest {
                 .thenReturn(Collections.singletonList(this.anSsldPendingFirmwareUpdate(4579L, new Date(),
                         deviceIdentification, "some-other-correlation-uid")));
 
-        assertThat(this.firmwareManagementService.checkSsldPendingFirmwareUpdate(ids, firmwareVersions)).isFalse();
+        final boolean hasPendingFirmwareUpdate = this.firmwareManagementService.checkSsldPendingFirmwareUpdate(ids,
+                firmwareVersions);
+
+        assertThat(hasPendingFirmwareUpdate).isFalse();
 
         verify(this.ssldPendingFirmwareUpdateRepository).findByDeviceIdentification(deviceIdentification);
         verifyNoMoreInteractions(this.ssldPendingFirmwareUpdateRepository);
@@ -391,7 +394,10 @@ class FirmwareManagementServiceTest {
                         matchingPendingFirmwareUpdate, this.anSsldPendingFirmwareUpdate(94085089L, new Date(),
                                 deviceIdentification, "yet-another-correlation-uid")));
 
-        assertThat(this.firmwareManagementService.checkSsldPendingFirmwareUpdate(ids, firmwareVersions)).isTrue();
+        final boolean hasPendingFirmwareUpdate = this.firmwareManagementService.checkSsldPendingFirmwareUpdate(ids,
+                firmwareVersions);
+
+        assertThat(hasPendingFirmwareUpdate).isTrue();
 
         verify(this.ssldPendingFirmwareUpdateRepository).delete(matchingPendingFirmwareUpdate);
     }
