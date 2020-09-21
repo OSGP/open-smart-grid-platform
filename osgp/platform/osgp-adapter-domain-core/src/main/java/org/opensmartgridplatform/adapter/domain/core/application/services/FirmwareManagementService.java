@@ -410,7 +410,7 @@ public class FirmwareManagementService extends AbstractService {
                 // of a later date
                 if (currentlyInstalledFirmwareVersionsPerType.containsKey(fwm.getDescription())
                         && currentlyInstalledFirmwareVersionsPerType.get(fwm.getDescription())
-                                .get_installationDate()
+                                .getInstallationDate()
                                 .before(installationDate)) {
                     currentlyInstalledFirmwareVersionsPerType.replace(fwm.getDescription(),
                             new FirmwareVersionWithInstallationDate(installationDate, new FirmwareVersion(
@@ -427,8 +427,8 @@ public class FirmwareManagementService extends AbstractService {
         final List<FirmwareVersion> latestfirmwareVersionsOfEachModuleTypeInHistory = currentlyInstalledFirmwareVersionsPerType
                 .values()
                 .stream()
-                .map(e -> new FirmwareVersion(e.get_firmwareVersion().getFirmwareModuleType(),
-                        e.get_firmwareVersion().getVersion()))
+                .map(e -> new FirmwareVersion(e.getFirmwareVersion().getFirmwareModuleType(),
+                        e.getFirmwareVersion().getVersion()))
                 .collect(Collectors.toList());
 
         // remove the latest history (module)versions from the firmwareVersions
@@ -443,19 +443,19 @@ public class FirmwareManagementService extends AbstractService {
         private Date installationDate;
         private FirmwareVersion firmwareVersion;
 
-        public Date get_installationDate() {
+        public Date getInstallationDate() {
             return this.installationDate;
         }
 
-        public void set_installationDate(Date installationDate) {
+        public void setInstallationDate(Date installationDate) {
             this.installationDate = installationDate;
         }
 
-        public FirmwareVersion get_firmwareVersion() {
+        public FirmwareVersion getFirmwareVersion() {
             return this.firmwareVersion;
         }
 
-        public void set_firmwareVersion(FirmwareVersion firmwareVersion) {
+        public void setFirmwareVersion(FirmwareVersion firmwareVersion) {
             this.firmwareVersion = firmwareVersion;
         }
 
