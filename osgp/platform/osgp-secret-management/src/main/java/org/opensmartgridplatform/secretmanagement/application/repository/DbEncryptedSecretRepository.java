@@ -21,17 +21,21 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DbEncryptedSecretRepository extends JpaRepository<DbEncryptedSecret, Long> {
     @Query(value = "SELECT es FROM DbEncryptedSecret es "
-            + "WHERE es.device_identification = :deviceIdentification AND es.secret_type = :secretType "
-            + "AND es.secretStatus= :secretStatus AND es.encryptionKeyReference.valid_from < current_time() "
-            + "AND (es.encryptionKeyReference.valid_to IS NULL OR es.encryptionKeyReference.valid_to > current_time()) "
-            + "ORDER BY es.creation_time DESC, es.id DESC")
+            + "JOIN es.encryptionKeyReference ekr "
+            + "WHERE es.deviceIdentification = :deviceIdentification AND es.secretType = :secretType "
+            + "AND es.secretStatus= :secretStatus "
+            + "AND ekr.validFrom < current_timestamp() "
+            + "AND (ekr.validTo IS NULL OR ekr.validTo > current_timestamp()) "
+            + "ORDER BY es.creationTime DESC, es.id DESC")
     List<DbEncryptedSecret> findSecrets(@Param("deviceIdentification") String deviceIdentification,
             @Param("secretType") SecretType secretType, @Param("secretStatus") SecretStatus secretStatus);
 
     @Query(value = "SELECT count(es) FROM DbEncryptedSecret es "
-            + "WHERE es.device_identification = :deviceIdentification AND es.secret_type = :secretType "
-            + "AND es.secretStatus= :secretStatus AND es.encryptionKeyReference.valid_from < current_time() "
-            + "AND (es.encryptionKeyReference.valid_to IS NULL OR es.encryptionKeyReference.valid_to > current_time())")
+            + "JOIN es.encryptionKeyReference ekr "
+            + "WHERE es.deviceIdentification = :deviceIdentification AND es.secretType = :secretType "
+            + "AND es.secretStatus= :secretStatus "
+            + "AND ekr.validFrom < current_timestamp() "
+            + "AND (ekr.validTo IS NULL OR ekr.validTo > current_timestamp())")
     int getSecretCount(@Param("deviceIdentification") String deviceIdentification,
             @Param("secretType") SecretType secretType, @Param("secretStatus") SecretStatus secretStatus);
 }

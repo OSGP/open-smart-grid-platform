@@ -158,13 +158,9 @@ public class SecretManagementEndpoint {
         log.info("Handling incoming SOAP request 'hasNewSecretRequest' for device {}", request.getDeviceId());
         log.trace(request.toString());
         final HasNewSecretResponse response = new HasNewSecretResponse();
-        try {
-            final boolean result = this.secretManagementService.hasNewSecret(request.getDeviceId(),
-                    this.converter.convertToSecretType(request.getSecretType()));
-            response.setHasNewSecret(result);
-        } catch (final RuntimeException rte) {
-            //TODO process/rethrow exception
-        }
+        final SecretType type = this.converter.convertToSecretType(request.getSecretType());
+        final boolean result = this.secretManagementService.hasNewSecret(request.getDeviceId(), type);
+        response.setHasNewSecret(result);
         log.trace(response.toString());
         return response;
     }

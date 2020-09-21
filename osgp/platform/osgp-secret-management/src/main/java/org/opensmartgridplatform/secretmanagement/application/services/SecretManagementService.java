@@ -60,7 +60,8 @@ public class SecretManagementService {
                 () -> new NoSuchElementException("No encryption key found that is valid at " + now));
     }
 
-    private TypedSecret validateSecret(final String deviceIdentification, final TypedSecret secret) {
+    private TypedSecret validateNewSecret(final String deviceIdentification, final TypedSecret secret) {
+        this.checkNrNewSecretsOfType(deviceIdentification, secret.getSecretType(), 0);
         if (secret.getSecret() == null) {
             throw new IllegalArgumentException("No secret string set");
         } else if (secret.getSecretType() == null) {
@@ -161,9 +162,8 @@ public class SecretManagementService {
 
     public void storeSecrets(final String deviceIdentification, final List<TypedSecret> secrets) {
         //@formatter:off
-        secrets.stream().map(s->s.getSecretType()).forEach(t-> this.checkNrNewSecretsOfType(deviceIdentification, t, 0));
         secrets.stream()
-                .map(t -> this.validateSecret(deviceIdentification, t))
+                .map(t -> this.validateNewSecret(deviceIdentification, t))
                 .map(s -> this.createEncrypted(deviceIdentification, s, this.getKey()))
                 .forEach(this.secretRepository::save);
         //@formatter:on

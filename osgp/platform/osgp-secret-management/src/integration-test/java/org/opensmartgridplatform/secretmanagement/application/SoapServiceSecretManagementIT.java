@@ -23,6 +23,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.secretmanagement.application.domain.DbEncryptedSecret;
 import org.opensmartgridplatform.secretmanagement.application.domain.DbEncryptionKeyReference;
+import org.opensmartgridplatform.secretmanagement.application.domain.SecretStatus;
 import org.opensmartgridplatform.secretmanagement.application.repository.DbEncryptedSecretRepository;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,16 +57,16 @@ public class SoapServiceSecretManagementIT {
      * hex: 7f3a2c8b9d65f32aaa74fbee752b8c5a (E_METER_ENCRYPTION_KEY_UNICAST, not a real key)
      *
      * The db-encrypted secrets are:
-     *      hex:e4e6fe6af967f5ca2b523f5917425a802a488c9d73fa3ae0a8d3151e4a6a1a44
-     *          (E_METER_AUTHENTICATION)
-     *      hex:f1f3113322acc27bc5454fcf7765a5996930fccef67d7d6fdf90f882c7b98a1d
-     *          (E_METER_ENCRYPTION_KEY_UNICAST)
+     * hex:e4e6fe6af967f5ca2b523f5917425a802a488c9d73fa3ae0a8d3151e4a6a1a44
+     * (E_METER_AUTHENTICATION)
+     * hex:f1f3113322acc27bc5454fcf7765a5996930fccef67d7d6fdf90f882c7b98a1d
+     * (E_METER_ENCRYPTION_KEY_UNICAST)
      *
      * The soap-encrypted secrets are:
-     *      hex:863d92d1176312adab58714361f00e998c5c0bd6bdf5a406611a44e5323e251f
-     *          (E_METER_AUTHENTICATION)
-     *      hex:006a607aaa8ad3b37a6e5a41d93b06434d30032dd42b9412ff93e51980f66328
-     *          (E_METER_ENCRYPTION_KEY_UNICAST)
+     * hex:863d92d1176312adab58714361f00e998c5c0bd6bdf5a406611a44e5323e251f
+     * (E_METER_AUTHENTICATION)
+     * hex:006a607aaa8ad3b37a6e5a41d93b06434d30032dd42b9412ff93e51980f66328
+     * (E_METER_ENCRYPTION_KEY_UNICAST)
      */
 
     private static final String E_METER_AUTHENTICATION_KEY_ENCRYPTED_FOR_DB =
@@ -100,18 +101,16 @@ public class SoapServiceSecretManagementIT {
          */
         assertThat(this.secretRepository.count()).isEqualTo(2);
         final Resource request = new ClassPathResource("test-requests/getSecrets.xml");
-        final Resource expectedResponse = new ClassPathResource("test-responses/getSecrets.xml");
         try {
-           this.mockWebServiceClient.sendRequest(withPayload(request)).andExpect(
-                   (request2, response) -> {
-                       OutputStream outStream = new ByteArrayOutputStream();
-                       response.writeTo(outStream);
-                       String outputString = outStream.toString();
-                       assertThat(outputString.contains("<ns2:Result>OK</ns2:Result>")).isTrue();
-                       assertThat(outputString.contains("E_METER_AUTHENTICATION")).isTrue();
-                       assertThat(outputString.contains("E_METER_ENCRYPTION_KEY_UNICAST")).isTrue();
+            this.mockWebServiceClient.sendRequest(withPayload(request)).andExpect((request2, response) -> {
+                final OutputStream outStream = new ByteArrayOutputStream();
+                response.writeTo(outStream);
+                final String outputString = outStream.toString();
+                assertThat(outputString.contains("<ns2:Result>OK</ns2:Result>")).isTrue();
+                assertThat(outputString.contains("E_METER_AUTHENTICATION")).isTrue();
+                assertThat(outputString.contains("E_METER_ENCRYPTION_KEY_UNICAST")).isTrue();
 
-                   });
+            });
         } catch (final Exception exc) {
             Assertions.fail("Error", exc);
         }
@@ -182,15 +181,19 @@ public class SoapServiceSecretManagementIT {
          */
         assertThat(this.secretRepository.count()).isEqualTo(2);
 
-        final Resource request = new ClassPathResource("test-requests/storeSecrets.xml");
-        final Resource expectedResponse = new ClassPathResource("test-responses/storeSecrets.xml");
+        final Resource storeRequest = new ClassPathResource("test-requests/storeSecrets.xml");
+        final Resource activateRequest = new ClassPathResource("test-requests/activateSecrets.xml");
+        final Resource expectedStoreResponse = new ClassPathResource("test-responses/storeSecrets.xml");
+        final Resource expectedActivateResponse = new ClassPathResource("test-responses/activateSecrets.xml");
         //Store secrets
-        this.mockWebServiceClient.sendRequest(withPayload(request)).andExpect(ResponseMatchers.noFault()).andExpect(
-                ResponseMatchers.payload(expectedResponse));
+        this.mockWebServiceClient.sendRequest(withPayload(storeRequest)).andExpect(
+                ResponseMatchers.noFault()).andExpect(ResponseMatchers.payload(expectedStoreResponse));
+        this.mockWebServiceClient.sendRequest(withPayload(activateRequest)).andExpect(
+                ResponseMatchers.noFault()).andExpect(ResponseMatchers.payload(expectedActivateResponse));
         //Store identical secrets again
         final String errorMessage = "Secret is identical to current secret (" + DEVICE_IDENTIFICATION + ", "
                 + "E_METER_AUTHENTICATION_KEY)";
-        this.mockWebServiceClient.sendRequest(withPayload(request)).andExpect(
+        this.mockWebServiceClient.sendRequest(withPayload(storeRequest)).andExpect(
                 ResponseMatchers.serverOrReceiverFault(errorMessage));
     }
 
@@ -215,6 +218,7 @@ public class SoapServiceSecretManagementIT {
         encryptedSecret.setSecretType(
                 org.opensmartgridplatform.secretmanagement.application.domain.SecretType.E_METER_AUTHENTICATION_KEY);
         encryptedSecret.setEncodedSecret(E_METER_AUTHENTICATION_KEY_ENCRYPTED_FOR_DB);
+        encryptedSecret.setSecretStatus(SecretStatus.ACTIVE);
         encryptedSecret.setEncryptionKeyReference(encryptionKey);
 
         this.testEntityManager.persist(encryptedSecret);
@@ -225,6 +229,7 @@ public class SoapServiceSecretManagementIT {
         encryptedSecret2.setSecretType(
                 org.opensmartgridplatform.secretmanagement.application.domain.SecretType.E_METER_ENCRYPTION_KEY_UNICAST);
         encryptedSecret2.setEncodedSecret(E_METER_ENCRYPTION_KEY_UNICAST_ENCRYPTED_FOR_DB);
+        encryptedSecret2.setSecretStatus(SecretStatus.ACTIVE);
         encryptedSecret2.setEncryptionKeyReference(encryptionKey);
 
         this.testEntityManager.persist(encryptedSecret2);
