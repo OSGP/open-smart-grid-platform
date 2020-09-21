@@ -407,7 +407,7 @@ public class FirmwareManagementService extends AbstractService {
             final List<FirmwareVersion> firmwareVersionsNotCurrent) {
 
         if (firmwareVersionsNotCurrent.isEmpty()) {
-            LOGGER.info("No firmware to look for, so nothing to add");
+            LOGGER.info("No firmware to look for, concerning device {}, so nothing to add.", deviceIdentification);
             return;
         }
 
@@ -415,7 +415,9 @@ public class FirmwareManagementService extends AbstractService {
         final List<FirmwareFile> firmwareFiles = this.getAvailableFirmwareFilesForDeviceModel(device.getDeviceModel());
 
         // check each file for the module and the version as returned by the
-        // device
+        // device, in theory there could be files that have partially
+        // overlapping modules,
+        // therefore we check if all modules are in the file
         boolean recordAdded = false;
         String modulesAndVersionSearchedFor = "";
 
@@ -426,8 +428,7 @@ public class FirmwareManagementService extends AbstractService {
                 final Map<FirmwareModule, String> moduleVersions = file.getModuleVersions();
                 final String moduleType = firmwareNotCurrent.getFirmwareModuleType().toString();
                 final String version = firmwareNotCurrent.getVersion();
-                modulesAndVersionSearchedFor += System.lineSeparator() + "ModuleType:" + moduleType + " with version:"
-                        + version;
+                modulesAndVersionSearchedFor += " moduleType:" + moduleType + " with version:" + version;
 
                 if (moduleVersions.containsKey(module)
                         && moduleVersions.get(module).equals(firmwareNotCurrent.getVersion())) {
@@ -442,9 +443,8 @@ public class FirmwareManagementService extends AbstractService {
                         this.deviceFirmwareFileRepository.save(deviceFirmwareFile);
 
                         LOGGER.info(
-                                "Added new record to DeviceFirmwareFile for device: {}" + System.lineSeparator()
-                                        + "with following modules (ModulesType/Versions): {}" + System.lineSeparator()
-                                        + "using File: {}",
+                                "Added new record to deviceFirmwareFile for device: {} "
+                                        + "with following modules (ModulesType/Versions):{} " + ", using file: {}",
                                 deviceIdentification, modulesAndVersionSearchedFor, file.getFilename());
 
                         // we only want to add one record in history
@@ -457,8 +457,8 @@ public class FirmwareManagementService extends AbstractService {
 
         if (!recordAdded) {
             LOGGER.warn(
-                    "Could not find any firmware file for device: {}" + System.lineSeparator()
-                            + "that contains (all of) the following modules (ModulesType/Versions): {}",
+                    "Could not find any firmware file for device: {} "
+                            + "that contains (all of) the following modules (ModulesType/Versions):{}",
                     deviceIdentification, modulesAndVersionSearchedFor);
         }
     }

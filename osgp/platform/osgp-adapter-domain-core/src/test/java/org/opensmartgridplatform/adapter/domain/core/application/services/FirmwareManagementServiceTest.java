@@ -137,9 +137,11 @@ public class FirmwareManagementServiceTest {
         when(this.firmwareFileRepository.findByDeviceModel(any(DeviceModel.class)))
                 .thenReturn(Arrays.asList(firmwareFile));
         final CorrelationIds ids = new CorrelationIds("ORG", "DVC", "CORR");
+
         // Act
         this.firmwareManagementService.handleGetFirmwareVersionResponse(versionsOnDeviceDtos, ids, "FW", 0,
                 ResponseMessageResultType.OK, null);
+
         // Validate
         verify(this.deviceFirmwareFileRepository, times(1)).save(any(DeviceFirmwareFile.class));
     }
@@ -148,7 +150,6 @@ public class FirmwareManagementServiceTest {
     public void testHandleGetFirmwareVersionResponseVersionNotInHistory() throws FunctionalException {
         // Arrange
         // Mock that VERSION 3 is now installed
-
         final FirmwareVersionDto firmwareVersionDto1 = new FirmwareVersionDto(
                 org.opensmartgridplatform.dto.valueobjects.FirmwareModuleType.SECURITY, VERSION_3);
         final FirmwareVersionDto firmwareVersionDto2 = new FirmwareVersionDto(
@@ -172,18 +173,58 @@ public class FirmwareManagementServiceTest {
         when(this.firmwareFileRepository.findByDeviceModel(any(DeviceModel.class)))
                 .thenReturn(Arrays.asList(firmwareFile));
         final CorrelationIds ids = new CorrelationIds("ORG", "DVC", "CORR");
+
         // Act
         this.firmwareManagementService.handleGetFirmwareVersionResponse(versionsOnDeviceDtos, ids, "FW", 0,
                 ResponseMessageResultType.OK, null);
+
         // Validate
         verify(this.deviceFirmwareFileRepository, times(1)).save(any(DeviceFirmwareFile.class));
+    }
+
+    @Test
+    public void testHandleGetFirmwareVersionResponseVersionNotInHistoryButNoCorrespondingFirmwareFile()
+            throws FunctionalException {
+        // Arrange
+        // Mock that FUNCTIONAL VERSION 3 and SECURTY VERSION 1 is now
+        // installed,
+        // no firmware file will hold this combination, so it will fail to save
+        final FirmwareVersionDto firmwareVersionDto1 = new FirmwareVersionDto(
+                org.opensmartgridplatform.dto.valueobjects.FirmwareModuleType.SECURITY, VERSION_3);
+        final FirmwareVersionDto firmwareVersionDto2 = new FirmwareVersionDto(
+                org.opensmartgridplatform.dto.valueobjects.FirmwareModuleType.FUNCTIONAL, VERSION_3);
+        final List<FirmwareVersionDto> versionsOnDeviceDtos = Arrays.asList(firmwareVersionDto1, firmwareVersionDto2);
+        final FirmwareVersion firmwareVersion1 = new FirmwareVersion(FirmwareModuleType.SECURITY, VERSION_1);
+        final FirmwareVersion firmwareVersion3 = new FirmwareVersion(FirmwareModuleType.FUNCTIONAL, VERSION_3);
+        final List<FirmwareVersion> versionsOnDevice = Arrays.asList(firmwareVersion1, firmwareVersion3);
+        final FirmwareFile firmwareFile = new FirmwareFile.Builder().withFilename("filename")
+                .withDescription("description")
+                .withPushToNewDevices(false)
+                .build();
+        final FirmwareModule firmwareModule1 = new FirmwareModule(
+                FirmwareModuleType.SECURITY.getDescription().toLowerCase());
+        firmwareFile.addFirmwareModule(firmwareModule1, VERSION_3);
+        final FirmwareModule firmwareModule2 = new FirmwareModule(
+                FirmwareModuleType.FUNCTIONAL.getDescription().toLowerCase());
+        firmwareFile.addFirmwareModule(firmwareModule2, VERSION_3);
+        when(this.domainCoreMapper.mapAsList(versionsOnDeviceDtos, FirmwareVersion.class)).thenReturn(versionsOnDevice);
+        when(this.ssldPendingFirmwareUpdateRepository.findByDeviceIdentification("DVC")).thenReturn(null);
+        when(this.firmwareFileRepository.findByDeviceModel(any(DeviceModel.class)))
+                .thenReturn(Arrays.asList(firmwareFile));
+        final CorrelationIds ids = new CorrelationIds("ORG", "DVC", "CORR");
+
+        // Act
+        this.firmwareManagementService.handleGetFirmwareVersionResponse(versionsOnDeviceDtos, ids, "FW", 0,
+                ResponseMessageResultType.OK, null);
+
+        // Validate
+        verify(this.deviceFirmwareFileRepository, never()).save(any(DeviceFirmwareFile.class));
     }
 
     @Test
     public void testHandleGetFirmwareVersionResponseVersionAlreadyInAndLast() throws FunctionalException {
         // Arrange
         // Mock that VERSION 2 is now installed
-
         final FirmwareVersionDto firmwareVersionDto1 = new FirmwareVersionDto(
                 org.opensmartgridplatform.dto.valueobjects.FirmwareModuleType.SECURITY, VERSION_2);
         final FirmwareVersionDto firmwareVersionDto2 = new FirmwareVersionDto(
@@ -207,9 +248,11 @@ public class FirmwareManagementServiceTest {
         when(this.firmwareFileRepository.findByDeviceModel(any(DeviceModel.class)))
                 .thenReturn(Arrays.asList(firmwareFile));
         final CorrelationIds ids = new CorrelationIds("ORG", "DVC", "CORR");
+
         // Act
         this.firmwareManagementService.handleGetFirmwareVersionResponse(versionsOnDeviceDtos, ids, "FW", 0,
                 ResponseMessageResultType.OK, null);
+
         // Validate
         verify(this.deviceFirmwareFileRepository, never()).save(any(DeviceFirmwareFile.class));
     }
@@ -224,7 +267,7 @@ public class FirmwareManagementServiceTest {
 
         // Act
         final List<FirmwareVersion> versionsNotInHistory = this.firmwareManagementService
-                .checkFirmwareHistoryForVersion("", versionsOnDevice);
+                .checkFirmwareHistoryForVersion("DVC", versionsOnDevice);
 
         // Validate
         assertThat(versionsNotInHistory).withFailMessage("List should be empty").isEmpty();
@@ -242,7 +285,7 @@ public class FirmwareManagementServiceTest {
 
         // Act
         final List<FirmwareVersion> versionsNotInHistory = this.firmwareManagementService
-                .checkFirmwareHistoryForVersion("", versionsOnDevice);
+                .checkFirmwareHistoryForVersion("DVC", versionsOnDevice);
 
         // Assert
         assertThat(versionsNotInHistory).withFailMessage("Lists should be equal").isEqualTo(expected);
@@ -265,7 +308,8 @@ public class FirmwareManagementServiceTest {
                 .asList(new FirmwareVersion(FirmwareModuleType.SECURITY, VERSION_2));
 
         // Act
-        this.firmwareManagementService.tryToAddDeviceFirmwareFile("", firmwareVersions);
+        this.firmwareManagementService.tryToAddDeviceFirmwareFile("DVC", firmwareVersions);
+
         // Assert
         verify(this.deviceFirmwareFileRepository, times(1)).save(any(DeviceFirmwareFile.class));
     }
@@ -284,7 +328,7 @@ public class FirmwareManagementServiceTest {
                 .asList(new FirmwareVersion(FirmwareModuleType.SECURITY, VERSION_2));
 
         // Act
-        this.firmwareManagementService.tryToAddDeviceFirmwareFile("", firmwareVersions);
+        this.firmwareManagementService.tryToAddDeviceFirmwareFile("DVC", firmwareVersions);
 
         // Assert
         verify(this.deviceFirmwareFileRepository, never()).save(any(DeviceFirmwareFile.class));
