@@ -9,11 +9,14 @@
 
 package org.opensmartgridplatform.secretmanagement.application.services;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import javax.crypto.KeyGenerator;
 
 import org.apache.tomcat.util.buf.HexUtils;
 import org.opensmartgridplatform.secretmanagement.application.domain.DbEncryptedSecret;
@@ -34,6 +37,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class SecretManagementService {
+    public static final int AES_GMC_128_KEY_SIZE = 128;
+
     private final EncryptionDelegate encryptionDelegate;
     private final EncryptionProviderType encryptionProviderType;
     private final DbEncryptedSecretRepository secretRepository;
@@ -202,7 +207,24 @@ public class SecretManagementService {
 
     public TypedSecret generateAes128BitsSecret(final SecretType secretType) {
         final DbEncryptionKeyReference keyReference = this.getKey();
-        //TODO get key (KEK) from HSM and use it to generate AES 128-bits secret
+        //TODO get key (KEK) from HSM and use it to encrypt generated AES 128-bits secret
+        //Old implementation:
+        try {
+            final KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
+            keyGenerator.init(AES_GMC_128_KEY_SIZE);
+            final byte[] encodedSecret = keyGenerator.generateKey().getEncoded();
+            //encrypt with KEK
+        } catch(final NoSuchAlgorithmException nsae) {
+            throw new IllegalStateException("Secret configuration incorrect", nsae);
+        }
+
+        //EvB:
+        // Dit is hoe je een secret kunt genereren
+        // Die moet vervolgens bij het opslaan encrypted worden met een KEK
+        // Het lijkt me dat het zo werkt, maar ik weet dat niet zeker. ik heb dat niet uitgezocht.
+        // Het idee is wanneer je ervoor zorgt dat de KeyGenerator provided wordt door NCipher, dat de key dan in de
+        // HSM wordt gegenereerd.
+        // Ik zal een link naar documentatie sturen.
         return null;
     }
 }
