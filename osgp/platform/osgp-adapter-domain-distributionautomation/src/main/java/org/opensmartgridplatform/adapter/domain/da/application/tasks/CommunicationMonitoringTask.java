@@ -13,17 +13,18 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.domain.da.application.services.CommunicationRecoveryService;
+import org.opensmartgridplatform.domain.core.entities.DomainInfo;
 import org.opensmartgridplatform.domain.core.entities.RtuDevice;
 import org.opensmartgridplatform.domain.core.entities.Task;
+import org.opensmartgridplatform.domain.core.repositories.DomainInfoRepository;
 import org.opensmartgridplatform.domain.core.repositories.RtuDeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.TaskRepository;
+import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.TaskStatusType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 
 @Component
 public class CommunicationMonitoringTask implements Runnable {
@@ -31,6 +32,9 @@ public class CommunicationMonitoringTask implements Runnable {
     private static final Logger LOGGER = LoggerFactory.getLogger(CommunicationMonitoringTask.class);
 
     private static final String TASK_IDENTIFICATION = "DACommunicationMonitoring";
+
+    private static final String DOMAIN = "DISTRIBUTION_AUTOMATION";
+    private static final String DOMAIN_VERSION = "1.0";
 
     @Autowired
     private CommunicationRecoveryService communicationRecoveryService;
@@ -40,6 +44,9 @@ public class CommunicationMonitoringTask implements Runnable {
 
     @Autowired
     private TaskRepository taskRepository;
+
+    @Autowired
+    private DomainInfoRepository domainInfoRepository;
 
     @Autowired
     private Integer minimumTimeBetweenRuns;
@@ -129,7 +136,8 @@ public class CommunicationMonitoringTask implements Runnable {
         LOGGER.debug("Loading devices from repository for which communication should be restored.");
         final DateTime lastCommunicationTime = new DateTime(task.getStartTime())
                 .minusMinutes(this.maximumTimeWithoutCommunication);
-        return this.rtuDeviceRepository.findByDeviceLifecycleStatusAndLastCommunicationTimeBefore(
-                DeviceLifecycleStatus.IN_USE, lastCommunicationTime.toDate());
+        final DomainInfo domainInfo = this.domainInfoRepository.findByDomainAndDomainVersion(DOMAIN, DOMAIN_VERSION);
+        return this.rtuDeviceRepository.findByDeviceLifecycleStatusAndLastCommunicationTimeBeforeAndDomainInfo(
+                DeviceLifecycleStatus.IN_USE, lastCommunicationTime.toDate(), domainInfo);
     }
 }

@@ -18,6 +18,8 @@ import java.util.Map;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.entities.Iec61850Device;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
+import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
+import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.glue.steps.database.core.RtuDeviceSteps;
 import org.opensmartgridplatform.cucumber.platform.helpers.SettingsHelper;
 import org.opensmartgridplatform.cucumber.platform.microgrids.PlatformMicrogridsDefaults;
@@ -36,6 +38,7 @@ public class Iec61850DeviceSteps {
     private static final String DEFAULT_DEVICE_TYPE = "RTU";
     private static final String DEFAULT_PROTOCOL = "IEC61850";
     private static final String DEFAULT_PROTOCOL_VERSION = "1.0";
+    private static final String DOMAIN = "MICROGRIDS";
 
     private static final Map<String, String> RTU_DEFAULT_SETTINGS = Collections
             .unmodifiableMap(new HashMap<String, String>() {
@@ -67,6 +70,7 @@ public class Iec61850DeviceSteps {
         final Map<String, String> rtuSettings = SettingsHelper.addAsDefaults(settings, RTU_DEFAULT_SETTINGS);
         rtuSettings.put(PlatformMicrogridsKeys.KEY_NETWORKADDRESS,
                 this.iec61850MockServerConfig.iec61850MockNetworkAddress());
+        rtuSettings.put(PlatformKeys.KEY_DOMAIN, DOMAIN);
 
         this.rtuDeviceSteps.anRtuDevice(rtuSettings);
 

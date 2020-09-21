@@ -12,6 +12,8 @@ import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class RtuDevice extends Device {
@@ -20,6 +22,10 @@ public class RtuDevice extends Device {
 
     @Column(insertable = false)
     private Date lastCommunicationTime;
+
+    @ManyToOne()
+    @JoinColumn(name = "domain_info_id")
+    private DomainInfo domainInfo;
 
     public RtuDevice() {
         // No-arg constructor for frameworks.
@@ -39,6 +45,10 @@ public class RtuDevice extends Device {
 
     public Date getLastCommunicationTime() {
         return this.lastCommunicationTime;
+    }
+
+    public void setDomainInfo(final DomainInfo domainInfo) {
+        this.domainInfo = domainInfo;
     }
 
     @Override
