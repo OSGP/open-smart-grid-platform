@@ -157,7 +157,8 @@ public class FirmwareManagementServiceTest {
                 FirmwareModuleType.FUNCTIONAL.getDescription().toLowerCase());
         firmwareFile.addFirmwareModule(firmwareModule2, VERSION_1);
         when(this.domainCoreMapper.mapAsList(versionsOnDeviceDtos, FirmwareVersion.class)).thenReturn(versionsOnDevice);
-        when(this.ssldPendingFirmwareUpdateRepository.findByDeviceIdentification("DVC")).thenReturn(null);
+        when(this.ssldPendingFirmwareUpdateRepository.findByDeviceIdentification("DVC"))
+                .thenReturn(Collections.emptyList());
         when(this.firmwareFileRepository.findByDeviceModel(any(DeviceModel.class)))
                 .thenReturn(Arrays.asList(firmwareFile));
         final CorrelationIds ids = new CorrelationIds("ORG", "DVC", "CORR");
@@ -193,7 +194,8 @@ public class FirmwareManagementServiceTest {
                 FirmwareModuleType.FUNCTIONAL.getDescription().toLowerCase());
         firmwareFile.addFirmwareModule(firmwareModule2, VERSION_3);
         when(this.domainCoreMapper.mapAsList(versionsOnDeviceDtos, FirmwareVersion.class)).thenReturn(versionsOnDevice);
-        when(this.ssldPendingFirmwareUpdateRepository.findByDeviceIdentification("DVC")).thenReturn(null);
+        when(this.ssldPendingFirmwareUpdateRepository.findByDeviceIdentification("DVC"))
+                .thenReturn(Collections.emptyList());
         when(this.firmwareFileRepository.findByDeviceModel(any(DeviceModel.class)))
                 .thenReturn(Arrays.asList(firmwareFile));
         final CorrelationIds ids = new CorrelationIds("ORG", "DVC", "CORR");
@@ -232,7 +234,8 @@ public class FirmwareManagementServiceTest {
                 FirmwareModuleType.FUNCTIONAL.getDescription().toLowerCase());
         firmwareFile.addFirmwareModule(firmwareModule2, VERSION_3);
         when(this.domainCoreMapper.mapAsList(versionsOnDeviceDtos, FirmwareVersion.class)).thenReturn(versionsOnDevice);
-        when(this.ssldPendingFirmwareUpdateRepository.findByDeviceIdentification("DVC")).thenReturn(null);
+        when(this.ssldPendingFirmwareUpdateRepository.findByDeviceIdentification("DVC"))
+                .thenReturn(Collections.emptyList());
         when(this.firmwareFileRepository.findByDeviceModel(any(DeviceModel.class)))
                 .thenReturn(Arrays.asList(firmwareFile));
         final CorrelationIds ids = new CorrelationIds("ORG", "DVC", "CORR");
@@ -268,7 +271,8 @@ public class FirmwareManagementServiceTest {
                 FirmwareModuleType.FUNCTIONAL.getDescription().toLowerCase());
         firmwareFile.addFirmwareModule(firmwareModule2, VERSION_2);
         when(this.domainCoreMapper.mapAsList(versionsOnDeviceDtos, FirmwareVersion.class)).thenReturn(versionsOnDevice);
-        when(this.ssldPendingFirmwareUpdateRepository.findByDeviceIdentification("DVC")).thenReturn(null);
+        when(this.ssldPendingFirmwareUpdateRepository.findByDeviceIdentification("DVC"))
+                .thenReturn(Collections.emptyList());
         when(this.firmwareFileRepository.findByDeviceModel(any(DeviceModel.class)))
                 .thenReturn(Arrays.asList(firmwareFile));
         final CorrelationIds ids = new CorrelationIds("ORG", "DVC", "CORR");
