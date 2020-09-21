@@ -406,16 +406,15 @@ public class FirmwareManagementService extends AbstractService {
             for (Map.Entry<FirmwareModule, String> entry : fwms.entrySet()) {
                 String version = entry.getValue();
                 FirmwareModule fwm = entry.getKey();
-                if (currentlyInstalledFirmwareVersionsPerType.containsKey(fwm.getDescription())) {
-                    // check if this installation of this same kind of module is
-                    // of a later date
-                    if (currentlyInstalledFirmwareVersionsPerType.get(fwm.getDescription())
-                            .get_installationDate()
-                            .before(installationDate)) {
-                        currentlyInstalledFirmwareVersionsPerType.replace(fwm.getDescription(),
-                                new FirmwareVersionWithInstallationDate(installationDate, new FirmwareVersion(
-                                        FirmwareModuleType.forDescription(fwm.getDescription()), version)));
-                    }
+                // check if this installation of this same kind of module is
+                // of a later date
+                if (currentlyInstalledFirmwareVersionsPerType.containsKey(fwm.getDescription())
+                        && currentlyInstalledFirmwareVersionsPerType.get(fwm.getDescription())
+                                .get_installationDate()
+                                .before(installationDate)) {
+                    currentlyInstalledFirmwareVersionsPerType.replace(fwm.getDescription(),
+                            new FirmwareVersionWithInstallationDate(installationDate, new FirmwareVersion(
+                                    FirmwareModuleType.forDescription(fwm.getDescription()), version)));
                 } else {
                     // no other module of this type found yet so just add it
                     currentlyInstalledFirmwareVersionsPerType.put(fwm.getDescription(),
@@ -440,29 +439,29 @@ public class FirmwareManagementService extends AbstractService {
     }
 
     // Helper class to keep track of InstallationDate and FirmwareVersion
-    private class FirmwareVersionWithInstallationDate {
-        private Date _installationDate;
-        private FirmwareVersion _firmwareVersion;
+    class FirmwareVersionWithInstallationDate {
+        private Date installationDate;
+        private FirmwareVersion firmwareVersion;
 
         public Date get_installationDate() {
-            return _installationDate;
+            return this.installationDate;
         }
 
-        public void set_installationDate(Date _installationDate) {
-            this._installationDate = _installationDate;
+        public void set_installationDate(Date installationDate) {
+            this.installationDate = installationDate;
         }
 
         public FirmwareVersion get_firmwareVersion() {
-            return _firmwareVersion;
+            return this.firmwareVersion;
         }
 
-        public void set_firmwareVersion(FirmwareVersion _firmwareVersion) {
-            this._firmwareVersion = _firmwareVersion;
+        public void set_firmwareVersion(FirmwareVersion firmwareVersion) {
+            this.firmwareVersion = firmwareVersion;
         }
 
         public FirmwareVersionWithInstallationDate(Date installationDate, FirmwareVersion firmwareVersion) {
-            _installationDate = installationDate;
-            _firmwareVersion = firmwareVersion;
+            this.installationDate = installationDate;
+            this.firmwareVersion = firmwareVersion;
         }
     }
 
