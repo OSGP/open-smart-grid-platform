@@ -20,20 +20,26 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.platform.commons.util.ReflectionUtils;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.opensmartgridplatform.adapter.domain.core.application.mapping.DomainCoreMapper;
 import org.opensmartgridplatform.adapter.domain.core.infra.jms.core.OsgpCoreRequestMessageSender;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceFirmwareFile;
@@ -53,6 +59,7 @@ import org.opensmartgridplatform.domain.core.repositories.SsldPendingFirmwareUpd
 import org.opensmartgridplatform.domain.core.services.DeviceDomainService;
 import org.opensmartgridplatform.domain.core.services.OrganisationDomainService;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleType;
+import org.opensmartgridplatform.domain.core.valueobjects.FirmwareUpdateMessageDataContainer;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion;
 import org.opensmartgridplatform.domain.core.valueobjects.PlatformFunctionGroup;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
@@ -96,6 +103,9 @@ class FirmwareManagementServiceTest {
 
     @Mock
     private OrganisationDomainService organisationDomainService;
+    
+    @Mock
+    private DomainCoreMapper domainCoreMapper;
 
     @InjectMocks
     private FirmwareManagementService firmwareManagementService;
@@ -400,5 +410,109 @@ class FirmwareManagementServiceTest {
         assertThat(hasPendingFirmwareUpdate).isTrue();
 
         verify(this.ssldPendingFirmwareUpdateRepository).delete(matchingPendingFirmwareUpdate);
+    }
+    
+    
+    /*
+     * Returns basic CorrelationIds for simple tests
+     */
+    private CorrelationIds getCorrelationIds() {
+    	final String organisationIdentification = "test-org";
+        final String deviceIdentification = "device-identification";
+        final String correlationUid = "correlation-uid";
+    	return new CorrelationIds(organisationIdentification, deviceIdentification, correlationUid);
+    }
+    
+    @Test
+    void testUpdateFirmwareForNonSsld() throws FunctionalException {
+    	final CorrelationIds ids = getCorrelationIds();
+    	final FirmwareUpdateMessageDataContainer firmwareUpdateMessageDataContainer = 
+    			Mockito.mock(FirmwareUpdateMessageDataContainer.class);
+    	final Device device = Mockito.mock(Device.class);
+
+    	when(firmwareUpdateMessageDataContainer.getFirmwareUrl()).thenReturn("/firmware-test");
+    	when(this.deviceDomainService.searchActiveDevice(ids.getDeviceIdentification(), ComponentType.DOMAIN_CORE))
+			.thenReturn(device);
+    	
+    	this.firmwareManagementService.updateFirmware(ids, firmwareUpdateMessageDataContainer, 0L, "", 0);
+    	
+    	verify(this.ssldPendingFirmwareUpdateRepository, never()).save(any());
+    }
+    
+    @Test
+    void testUpdateFirmwareForSsld() throws FunctionalException {
+    	final CorrelationIds ids = getCorrelationIds();
+    	final FirmwareUpdateMessageDataContainer firmwareUpdateMessageDataContainer = 
+    			Mockito.mock(FirmwareUpdateMessageDataContainer.class);
+    	final Device device = Mockito.mock(Ssld.class);
+    	final FirmwareFile firmwareFile = new FirmwareFile.Builder().withFilename("firmware-test").build();
+    	firmwareFile.addFirmwareModule(new FirmwareModule("functional"), VERSION_1);
+    	
+    	when(firmwareUpdateMessageDataContainer.getFirmwareUrl()).thenReturn("/firmware-test");
+    	when(this.deviceDomainService.searchActiveDevice(ids.getDeviceIdentification(), ComponentType.DOMAIN_CORE))
+    		.thenReturn(device);
+    	when(device.getIpAddress()).thenReturn("");
+    	when(this.firmwareFileRepository.findByFilename("firmware-test")).thenReturn(Arrays.asList(firmwareFile));
+    	
+    	this.firmwareManagementService.updateFirmware(ids, firmwareUpdateMessageDataContainer, 0L, "", 0);
+
+    	verify(this.ssldPendingFirmwareUpdateRepository).save(any());
+    }
+    
+    @Test
+    void testUpdateFirmwareWithNoFirmwareFiles() throws FunctionalException {
+    	final CorrelationIds ids = getCorrelationIds();
+    	final FirmwareUpdateMessageDataContainer firmwareUpdateMessageDataContainer = 
+    			Mockito.mock(FirmwareUpdateMessageDataContainer.class);
+    	final Device device = Mockito.mock(Ssld.class);
+    	
+    	when(firmwareUpdateMessageDataContainer.getFirmwareUrl()).thenReturn("/firmware-test");
+    	when(this.deviceDomainService.searchActiveDevice(any(), eq(ComponentType.DOMAIN_CORE)))
+    		.thenReturn(device);
+    	when(device.getIpAddress()).thenReturn("");
+    	when(this.firmwareFileRepository.findByFilename("firmware-test")).thenReturn(Collections.emptyList());
+    	
+    	this.firmwareManagementService.updateFirmware(ids, firmwareUpdateMessageDataContainer, 0L, "", 0);
+    	
+    	verify(this.ssldPendingFirmwareUpdateRepository, never()).save(any());
+    }
+    
+    @Test
+    void testUpdateFirmwareWithNoFirmwareModuleVersions() throws FunctionalException {
+    	final CorrelationIds ids = getCorrelationIds();
+    	final FirmwareUpdateMessageDataContainer firmwareUpdateMessageDataContainer = 
+    			Mockito.mock(FirmwareUpdateMessageDataContainer.class);
+    	final Device device = Mockito.mock(Ssld.class);
+    	final FirmwareFile firmwareFile = Mockito.mock(FirmwareFile.class);
+    	firmwareFile.addFirmwareModule(new FirmwareModule("functional"), VERSION_1);
+    	
+    	when(firmwareUpdateMessageDataContainer.getFirmwareUrl()).thenReturn("/firmware-test");
+    	when(this.deviceDomainService.searchActiveDevice(any(), eq(ComponentType.DOMAIN_CORE)))
+    		.thenReturn(device);
+    	when(device.getIpAddress()).thenReturn("");
+    	when(this.firmwareFileRepository.findByFilename("firmware-test")).thenReturn(Arrays.asList(firmwareFile));
+    	when(firmwareFile.getModuleVersions()).thenReturn(new HashMap<FirmwareModule, String>());
+    	
+    	this.firmwareManagementService.updateFirmware(ids, firmwareUpdateMessageDataContainer, 0L, "", 0);
+    	
+    	verify(this.ssldPendingFirmwareUpdateRepository, never()).save(any());
+    }
+    
+    @Test
+    void testUpdateFirmwareWithIncorrectFirmwareUrl() throws FunctionalException {
+    	final CorrelationIds ids = getCorrelationIds();
+    	final FirmwareUpdateMessageDataContainer firmwareUpdateMessageDataContainer = 
+    			Mockito.mock(FirmwareUpdateMessageDataContainer.class);
+    	final Device device = Mockito.mock(Ssld.class);
+    	final FirmwareFile firmwareFile = Mockito.mock(FirmwareFile.class);
+    	firmwareFile.addFirmwareModule(new FirmwareModule("functional"), VERSION_1);
+    	
+    	when(firmwareUpdateMessageDataContainer.getFirmwareUrl()).thenReturn("/");
+    	when(this.deviceDomainService.searchActiveDevice(any(), eq(ComponentType.DOMAIN_CORE)))
+			.thenReturn(device);
+    	
+    	this.firmwareManagementService.updateFirmware(ids, firmwareUpdateMessageDataContainer, 0L, "", 0);
+    	
+    	verify(this.ssldPendingFirmwareUpdateRepository, never()).save(any());
     }
 }
