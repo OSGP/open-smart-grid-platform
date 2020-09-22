@@ -38,6 +38,8 @@ import org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.k
 import org.opensmartgridplatform.simulator.protocol.mqtt.SimulatorSpecPublishingClient;
 import org.opensmartgridplatform.simulator.protocol.mqtt.spec.Message;
 import org.opensmartgridplatform.simulator.protocol.mqtt.spec.SimulatorSpec;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.cucumber.java.en.Then;
@@ -51,6 +53,8 @@ public class MqttDeviceSteps {
     @Autowired
     private PeakShavingConsumer consumer;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimulatorSpecPublishingClient.class);
+
     @When("MQTT device {string} sends a measurement report")
     public void theDeviceSendsAMeasurementReport(final String deviceIdentification,
             final Map<String, String> parameters) throws IOException {
@@ -63,6 +67,7 @@ public class MqttDeviceSteps {
         final SimulatorSpec spec = new SimulatorSpec(host, port);
         spec.setStartupPauseMillis(2000);
         final String payload = parameters.get(PlatformDistributionAutomationKeys.PAYLOAD);
+        LOGGER.info("Payload: {}", payload);
         final Message message = new Message(topic, payload, 10000);
         final Message[] messages = { message };
         spec.setMessages(messages);
