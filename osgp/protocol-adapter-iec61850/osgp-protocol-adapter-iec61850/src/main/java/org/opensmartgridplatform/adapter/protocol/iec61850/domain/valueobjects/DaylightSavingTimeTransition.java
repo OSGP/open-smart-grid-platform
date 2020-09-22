@@ -40,7 +40,7 @@ public class DaylightSavingTimeTransition {
         JULIAN_DAY_IGNORING_FEBRUARY_29 {
             @Override
             public boolean isValid(final String transition) {
-                if (transition == null || 'J' != transition.charAt(0)) {
+                if (transition == null || transition.isEmpty() || 'J' != transition.charAt(0)) {
                     return false;
                 }
                 final int timeSeparatorPos = transition.indexOf('/');
@@ -181,7 +181,7 @@ public class DaylightSavingTimeTransition {
         DAY_OF_WEEK_OF_MONTH {
             @Override
             public boolean isValid(final String transition) {
-                if (transition == null || 'M' != transition.charAt(0)) {
+                if (transition == null || transition.isEmpty() || 'M' != transition.charAt(0)) {
                     return false;
                 }
                 final int timeSeparatorPos = transition.indexOf('/');
