@@ -18,6 +18,7 @@ import org.opensmartgridplatform.adapter.kafka.da.avro.PowerSystemResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -53,45 +54,36 @@ public class GridMeasurementPublishedEventConverter extends CustomConverter<Stri
         LOGGER.info("Source string: {}", source);
 
         try {
-            final Payload payload = this.objectMapper.readValue(source, Payload.class);
-            LOGGER.info("Gisnr payload: {}", payload.getGisnr());
+            final Payload payload = this.objectMapper.readValue(source, Payload[].class)[0];
+
+            final String[] values = (payload.gisnr + ", " + String.join(", ", payload.data)).split(", ");
+            LOGGER.info("Values length: {} and values: {}", values.length, Arrays.toString(values));
+
+            if (values.length == SIMPLE_END_INDEX) {
+                stringArrayToAnalogList = new SimpleStringToAnalogList();
+            } else if (values.length == LsPeakShavingMeasurementType.getNumberOfElements() + 1) {
+                stringArrayToAnalogList = new LsMeasurementMessageToAnalogList();
+            } else {
+                LOGGER.error("String '{}' does not have the expected amount of fields, abandoning conversion", source);
+                return null;
+            }
+
+            final String eanCode = values[0];
+            final PowerSystemResource powerSystemResource = new PowerSystemResource(eanCode,
+                    UUID.randomUUID().toString(), new ArrayList<Name>());
+            final long createdDateTime = System.currentTimeMillis();
+            return new GridMeasurementPublishedEvent(createdDateTime, eanCode, UUID.randomUUID().toString(),
+                    "GridMeasurementPublishedEvent", new ArrayList<Name>(), powerSystemResource,
+                    stringArrayToAnalogList.convertToAnalogList(values));
         } catch (final JsonMappingException e) {
-            // TODO Auto-generated catch block
+            LOGGER.error("Caught an error mapping a JSON string to Payload. {}", source);
             e.printStackTrace();
+            return null;
         } catch (final JsonProcessingException e) {
-            // TODO Auto-generated catch block
+            LOGGER.error("Caught an error processing a JSON string to Payload. {}", source);
             e.printStackTrace();
-        }
-
-        final String[] eancode = {
-                source.substring(ordinalIndexOf(source, "\"", 3) + 1, ordinalIndexOf(source, "\"", 4)) };
-        LOGGER.info("Eancode: {}", eancode[0]);
-
-        final String[] data = source.substring(ordinalIndexOf(source, "[", 2) + 1, source.indexOf("]")).split(",");
-        LOGGER.info("Data length {} and data {}", data.length, Arrays.toString(data));
-
-        final String[] values = new String[data.length + eancode.length];
-        System.arraycopy(eancode, 0, values, 0, eancode.length);
-        System.arraycopy(data, 0, values, eancode.length, data.length);
-
-        LOGGER.info("Values length: {} and values: {}", values.length, Arrays.toString(values));
-
-        if (values.length == SIMPLE_END_INDEX) {
-            stringArrayToAnalogList = new SimpleStringToAnalogList();
-        } else if (values.length == LsPeakShavingMeasurementType.getNumberOfElements() + 1) {
-            stringArrayToAnalogList = new LsMeasurementMessageToAnalogList();
-        } else {
-            LOGGER.error("String '{}' does not have the expected amount of fields, abandoning conversion", source);
             return null;
         }
-
-        final String eanCode = values[0];
-        final PowerSystemResource powerSystemResource = new PowerSystemResource(eanCode, UUID.randomUUID().toString(),
-                new ArrayList<Name>());
-        final long createdDateTime = System.currentTimeMillis();
-        return new GridMeasurementPublishedEvent(createdDateTime, eanCode, UUID.randomUUID().toString(),
-                "GridMeasurementPublishedEvent", new ArrayList<Name>(), powerSystemResource,
-                stringArrayToAnalogList.convertToAnalogList(values));
     }
 
     private static int ordinalIndexOf(final String str, final String substr, int n) {
@@ -102,17 +94,22 @@ public class GridMeasurementPublishedEventConverter extends CustomConverter<Stri
         return pos;
     }
 
-    private class Payload {
+    private static class Payload {
 
-        private final String gisnr;
-        private final String feeder;
-        private final String D;
-        private final String data;
+        private String gisnr;
+        private String feeder;
+        @JsonAlias({ "D" })
+        private String date;
+        private String[] data;
 
-        public Payload(final String gisnr, final String feeder, final String d, final String data) {
+        public Payload() {
+            super();
+        }
+
+        public Payload(final String gisnr, final String feeder, final String date, final String[] data) {
             this.gisnr = gisnr;
             this.feeder = feeder;
-            this.D = d;
+            this.date = date;
             this.data = data;
         }
 
@@ -124,11 +121,11 @@ public class GridMeasurementPublishedEventConverter extends CustomConverter<Stri
             return this.feeder;
         }
 
-        public String getD() {
-            return this.D;
+        public String getDate() {
+            return this.date;
         }
 
-        public String getData() {
+        public String[] getData() {
             return this.data;
         }
     }
