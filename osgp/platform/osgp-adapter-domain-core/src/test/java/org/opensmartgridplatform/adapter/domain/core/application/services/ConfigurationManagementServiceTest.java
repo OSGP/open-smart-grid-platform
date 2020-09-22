@@ -1,18 +1,16 @@
 package org.opensmartgridplatform.adapter.domain.core.application.services;
 
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.eq;
+
 import org.apache.activemq.command.ActiveMQMessage;
+import org.opensmartgridplatform.domain.core.entities.DeviceOutputSetting;
 import org.assertj.core.api.Assertions;
+import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,12 +21,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.opensmartgridplatform.domain.core.entities.DeviceOutputSetting;
+import org.opensmartgridplatform.domain.core.valueobjects.RelayType;
+import org.opensmartgridplatform.dto.da.ConnectRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
-import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.opensmartgridplatform.shared.infra.jms.*;
 import org.opensmartgridplatform.adapter.domain.core.application.mapping.DomainCoreMapper;
 import org.opensmartgridplatform.adapter.domain.core.infra.jms.core.OsgpCoreRequestMessageSender;
 import org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.WebServiceResponseMessageSender;
@@ -48,6 +47,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.LoggingEvent;
 import org.springframework.beans.factory.annotation.Qualifier;
+
+import javax.jms.JMSException;
+import javax.jms.ObjectMessage;
+
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class ConfigurationManagementServiceTest {
@@ -77,6 +80,8 @@ public class ConfigurationManagementServiceTest {
     private ConfigurationDto.Builder builder;
     @Mock
     private OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
+    @Mock
+    private Ssld ssld;
     @InjectMocks
     @Qualifier("organisationDomainService")
     private ConfigurationManagementService configurationManagementService;
@@ -91,49 +96,40 @@ public class ConfigurationManagementServiceTest {
     @BeforeEach
     public void setUp() throws NoSuchFieldException,
             SecurityException, IllegalArgumentException, IllegalAccessException {
-// make ids
+        // make ids
         ids = new CorrelationIds("a", "b", "c");
-        configurationManagementService = new
-                ConfigurationManagementService();
-// do injection using reflection
-        injectionUsingReflection(AbstractService.class,
-                "organisationDomainService", configurationManagementService,
-                organisationDomainService);
-        injectionUsingReflection(AbstractService.class,
-                "deviceDomainService", configurationManagementService,
-                deviceDomainService);
-        injectionUsingReflection(AbstractService.class,
-                "domainCoreMapper", configurationManagementService, domainCoreMapper);
-        injectionUsingReflection(AbstractService.class,
-                "osgpCoreRequestMessageSender", configurationManagementService,
-                osgpCoreRequestMessageSender);
-        injectionUsingReflection(AbstractService.class,
-                "webServiceResponseMessageSender", configurationManagementService,
-                webServiceResponseMessageSender);
-        injectionUsingReflection(AbstractService.class,
-                "ssldRepository", configurationManagementService, ssldRepository);
+        configurationManagementService = new ConfigurationManagementService();
+        // do injection using reflection
+        injectionUsingReflection(AbstractService.class, "organisationDomainService", configurationManagementService, organisationDomainService);
+        injectionUsingReflection(AbstractService.class, "deviceDomainService", configurationManagementService, deviceDomainService);
+        injectionUsingReflection(AbstractService.class, "domainCoreMapper", configurationManagementService, domainCoreMapper);
+        injectionUsingReflection(AbstractService.class, "osgpCoreRequestMessageSender", configurationManagementService, osgpCoreRequestMessageSender);
+        injectionUsingReflection(AbstractService.class, "webServiceResponseMessageSender", configurationManagementService, webServiceResponseMessageSender);
+        injectionUsingReflection(AbstractService.class, "ssldRepository", configurationManagementService, ssldRepository);
         scheduleTime = 1;
         messageType = "none";
         messagePriority = 1;
     }
     @Test
-    public void testTrySetConfiguration() throws
-            FunctionalException, UnknownEntityException {
-        Organisation testOrganisation = new
-                Organisation();
-        when(organisationDomainService.searchOrganisation(any(String.class))).
-                thenReturn(testOrganisation);
-        when(deviceDomainService.searchActiveDevice(any(),
-                any())).thenReturn(new Device());
-        when(configuration.getRelayConfiguration()).thenReturn(new
-                RelayConfiguration(new ArrayList<RelayMap>()));
+    public void testTrySetConfiguration() throws FunctionalException, UnknownEntityException, JMSException {
+        Organisation testOrganisation = new Organisation();
+
+        RelayMap relayMap = new RelayMap(1, 1, RelayType.LIGHT, "1");
+        ArrayList<RelayMap> relayMapList = new ArrayList<>();
+        relayMapList.add(relayMap);
+
+        when(organisationDomainService.searchOrganisation(any(String.class))).thenReturn(testOrganisation);
+        when(deviceDomainService.searchActiveDevice(any(), any())).thenReturn(new Device());
+        when(configuration.getRelayConfiguration()).thenReturn(new RelayConfiguration(relayMapList));
+        when(ssldRepository.findById(any())).thenReturn(java.util.Optional.of(ssld));
+        doNothing().when(ssld).updateOutputSettings(any());
         try {
-            configurationManagementService.setConfiguration(ids, configuration,
-                    scheduleTime, messageType, messagePriority);
+            configurationManagementService.setConfiguration(ids, configuration, scheduleTime, messageType, messagePriority);
         } catch (FunctionalException e) {
             fail("should not throw exception");
         }
-        verify(configuration, times(6)).getRelayConfiguration();
+        verify(ssldRepository, times(1)).save(any());
+        verify(configuration, times(7)).getRelayConfiguration();
         verify(domainCoreMapper, times(1)).map(any(), any());
     }
     @Test
@@ -280,10 +276,8 @@ public class ConfigurationManagementServiceTest {
         verify(osgpCoreRequestMessageSender, times(2)).send(
                 any(RequestMessage.class), eq("none"), eq(1), eq(null));
     }
-    private void injectionUsingReflection(Class<?> c, String
-            fieldName, Object instance, Object newValue) throws
-            NoSuchFieldException, SecurityException, IllegalArgumentException,
-            IllegalAccessException {
+    private void injectionUsingReflection(Class<?> c, String fieldName, Object instance, Object newValue) throws
+            NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         Field field = c.getDeclaredField(fieldName);
         field.setAccessible(true);
         field.set(instance, newValue);
