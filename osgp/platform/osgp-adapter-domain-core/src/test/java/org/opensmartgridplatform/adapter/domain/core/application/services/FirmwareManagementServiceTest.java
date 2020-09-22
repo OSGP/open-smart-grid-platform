@@ -8,6 +8,7 @@
 package org.opensmartgridplatform.adapter.domain.core.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -20,18 +21,16 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.platform.commons.util.ReflectionUtils;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -41,6 +40,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.opensmartgridplatform.adapter.domain.core.application.mapping.DomainCoreMapper;
 import org.opensmartgridplatform.adapter.domain.core.infra.jms.core.OsgpCoreRequestMessageSender;
+import org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceFirmwareFile;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
@@ -62,11 +62,15 @@ import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleType;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareUpdateMessageDataContainer;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion;
 import org.opensmartgridplatform.domain.core.valueobjects.PlatformFunctionGroup;
+import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
@@ -77,6 +81,8 @@ class FirmwareManagementServiceTest {
     private static final String VERSION_2 = "R02";
     private static final String VERSION_3 = "R03";
 
+    private final OsgpException defaultException = new OsgpException(ComponentType.DOMAIN_CORE, "test");
+    
     @Mock
     private DeviceRepository deviceRepository;
 
@@ -107,8 +113,12 @@ class FirmwareManagementServiceTest {
     @Mock
     private DomainCoreMapper domainCoreMapper;
 
+    @Mock
+    private WebServiceResponseMessageSender webServiceResponseMessageSender;
+    
     @InjectMocks
     private FirmwareManagementService firmwareManagementService;
+	
 
     private Device createDevice(final DeviceModel deviceModel) {
         final Device device = new Device();
@@ -514,5 +524,106 @@ class FirmwareManagementServiceTest {
     	this.firmwareManagementService.updateFirmware(ids, firmwareUpdateMessageDataContainer, 0L, "", 0);
     	
     	verify(this.ssldPendingFirmwareUpdateRepository, never()).save(any());
+    }
+
+    @Test
+    public void testHandleGetFirmwareVersionWithMatchingFirmwareVersion() {
+    	final CorrelationIds ids = getCorrelationIds();
+    	final List<FirmwareVersionDto> firmwareVersionDtos = Arrays.asList();
+    	final SsldPendingFirmwareUpdate ssldPendingFirmwareUpdate = Mockito.mock(SsldPendingFirmwareUpdate.class);
+    	final List<SsldPendingFirmwareUpdate> ssldPendingFirmwareUpdates = Arrays.asList(ssldPendingFirmwareUpdate);
+       
+    	when(this.ssldPendingFirmwareUpdateRepository.findByDeviceIdentification(any(String.class)))
+       		.thenReturn(ssldPendingFirmwareUpdates);
+    	when(ssldPendingFirmwareUpdate.getCorrelationUid()).thenReturn(ids.getCorrelationUid());
+    	when(ssldPendingFirmwareUpdate.getFirmwareModuleType()).thenReturn(FirmwareModuleType.SECURITY);
+    	when(ssldPendingFirmwareUpdate.getFirmwareVersion()).thenReturn(VERSION_1);
+    	when(this.domainCoreMapper.mapAsList(firmwareVersionDtos, FirmwareVersion.class)).thenReturn(
+		   	Arrays.asList(new FirmwareVersion(FirmwareModuleType.SECURITY, VERSION_1))
+		);
+
+    	firmwareManagementService.handleGetFirmwareVersionResponse(firmwareVersionDtos, ids, "messageType", 1, 
+    			ResponseMessageResultType.OK, null);
+
+    	verify(this.ssldPendingFirmwareUpdateRepository, times(1)).delete(any());
+    }
+
+    @Test
+    public void testHandleGetFirmwareVersionResponseNotOk() {
+    	final CorrelationIds ids = getCorrelationIds();
+    	final List<FirmwareVersionDto> versionsOnDevice = new ArrayList<>();
+    	
+    	ArgumentCaptor<ResponseMessage> captor = ArgumentCaptor.forClass(ResponseMessage.class);
+    	firmwareManagementService.handleGetFirmwareVersionResponse(versionsOnDevice, ids, "messageType", 1,
+    			ResponseMessageResultType.NOT_OK, null);
+
+    	verify(this.webServiceResponseMessageSender).send(captor.capture());
+    	verify(this.ssldPendingFirmwareUpdateRepository, never()).delete(any());
+    		
+    	ResponseMessage responseMessage = captor.getValue();
+
+    	assertEquals(ResponseMessageResultType.NOT_OK, responseMessage.getResult());
+    	assertEquals("Exception occurred while getting device firmware version", responseMessage.getOsgpException().getMessage());
+    }
+
+   
+    @Test
+    public void testHandleGetFirmwareVersionErrorNotNull() {
+    	final CorrelationIds ids = getCorrelationIds();
+		final List<FirmwareVersionDto> versionsOnDevice = new ArrayList<>();
+		ArgumentCaptor<ResponseMessage> captor = ArgumentCaptor.forClass(ResponseMessage.class);
+		
+		firmwareManagementService.handleGetFirmwareVersionResponse(versionsOnDevice, ids, "messageType", 1,
+				ResponseMessageResultType.OK, defaultException);
+		
+		verify(this.webServiceResponseMessageSender).send(captor.capture());
+		verify(this.ssldPendingFirmwareUpdateRepository, never()).delete(any());
+		
+		ResponseMessage responseMessage = captor.getValue();
+		
+		assertEquals(ResponseMessageResultType.NOT_OK, responseMessage.getResult());
+		assertEquals("Exception occurred while getting device firmware version", responseMessage.getOsgpException().getMessage());
+    }
+
+    @Test
+    public void testHandleGetFirmwareVersionWithPendingUpdateIsNull() {
+    	final CorrelationIds ids = getCorrelationIds();
+    	final List<FirmwareVersionDto> versionsOnDevice = new ArrayList<>();
+    	ArgumentCaptor<ResponseMessage> captor = ArgumentCaptor.forClass(ResponseMessage.class);
+    	
+    	when(this.ssldPendingFirmwareUpdateRepository.findByDeviceIdentification(any(String.class))).thenReturn(null);
+
+    	firmwareManagementService.handleGetFirmwareVersionResponse(versionsOnDevice, ids, "messageType", 1,
+    			ResponseMessageResultType.OK, null);
+	
+    	verify(this.webServiceResponseMessageSender).send(captor.capture());
+    	verify(this.ssldPendingFirmwareUpdateRepository, never()).delete(any());
+	
+    	ResponseMessage responseMessage = captor.getValue();
+    	assertEquals(ResponseMessageResultType.OK, responseMessage.getResult());
+    }
+
+   
+    @Test
+    public void testHandleGetFirmwareVersionWithNonMatchingCorrelationUid() {
+    	final CorrelationIds ids = getCorrelationIds();
+    	final List<FirmwareVersionDto> versionsOnDevice = new ArrayList<>();
+    	final SsldPendingFirmwareUpdate ssldPendingFirmwareUpdate = Mockito.mock(SsldPendingFirmwareUpdate.class);
+    	final List<SsldPendingFirmwareUpdate> ssldPendingFirmwareUpdates = Arrays.asList(ssldPendingFirmwareUpdate);
+    	
+    	ArgumentCaptor<ResponseMessage> captor = ArgumentCaptor.forClass(ResponseMessage.class);
+		
+    	when(this.ssldPendingFirmwareUpdateRepository.findByDeviceIdentification(any(String.class)))
+    		.thenReturn(ssldPendingFirmwareUpdates);
+    	when(ssldPendingFirmwareUpdate.getCorrelationUid()).thenReturn("differentUid");
+		
+    	firmwareManagementService.handleGetFirmwareVersionResponse(versionsOnDevice, ids, "messageType", 1,
+    		ResponseMessageResultType.OK, null);
+
+		verify(this.webServiceResponseMessageSender).send(captor.capture());
+		verify(this.ssldPendingFirmwareUpdateRepository, never()).delete(any());
+		
+		ResponseMessage responseMessage = captor.getValue();
+		assertEquals(ResponseMessageResultType.OK, responseMessage.getResult());
     }
 }
