@@ -49,7 +49,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class ReplaceKeyCommandExecutor
-        extends AbstractCommandExecutor<ReplaceKeyCommandExecutor.KeyWrapper, DlmsDevice> {
+        extends AbstractCommandExecutor<ReplaceKeyCommandExecutor.ReplaceKeyInput, DlmsDevice> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReplaceKeyCommandExecutor.class);
 
@@ -60,15 +60,18 @@ public class ReplaceKeyCommandExecutor
     @Qualifier("secretManagementService")
     private SecurityKeyService securityKeyService;
 
-    static class KeyWrapper {
+    static class ReplaceKeyInput {
         private final byte[] bytes;
         private final KeyId keyId;
         private final SecurityKeyType securityKeyType;
+        private final boolean isGenerated;
 
-        public KeyWrapper(final byte[] bytes, final KeyId keyId, final SecurityKeyType securityKeyType) {
+        public ReplaceKeyInput(final byte[] bytes, final KeyId keyId, final SecurityKeyType securityKeyType,
+                boolean isGenerated) {
             this.bytes = bytes;
             this.keyId = keyId;
             this.securityKeyType = securityKeyType;
+            this.isGenerated = isGenerated;
         }
 
         public byte[] getBytes() {
@@ -82,14 +85,17 @@ public class ReplaceKeyCommandExecutor
         public SecurityKeyType getSecurityKeyType() {
             return this.securityKeyType;
         }
+
+        public boolean isGenerated() { return this.isGenerated; }
     }
 
     public ReplaceKeyCommandExecutor() {
         super(SetKeysRequestDto.class);
     }
 
-    public static KeyWrapper wrap(final byte[] bytes, final KeyId keyId, final SecurityKeyType securityKeyType) {
-        return new KeyWrapper(bytes, keyId, securityKeyType);
+    public static ReplaceKeyInput wrap(final byte[] bytes, final KeyId keyId, final SecurityKeyType securityKeyType,
+            boolean isGenerated) {
+        return new ReplaceKeyInput(bytes, keyId, securityKeyType, isGenerated);
     }
 
     @Override
@@ -101,17 +107,19 @@ public class ReplaceKeyCommandExecutor
         LOGGER.info("Keys set on device :{}", device.getDeviceIdentification());
 
         SetKeysRequestDto setKeysRequestDto = (SetKeysRequestDto) actionRequestDto;
-        if (!setKeysRequestDto.isGeneratedKeys()) {
+
+        if (!setKeysRequestDto.isGeneratedKeys()) { //generated keys are encrypted using AES
+            //decrypt using RSA and encrypt using AES
             setKeysRequestDto = this.reEncryptKeys((SetKeysRequestDto) actionRequestDto);
         }
 
         final DlmsDevice devicePostSave = this.execute(conn, device, ReplaceKeyCommandExecutor
                 .wrap(setKeysRequestDto.getAuthenticationKey(), KeyId.AUTHENTICATION_KEY,
-                        SecurityKeyType.E_METER_AUTHENTICATION));
+                        SecurityKeyType.E_METER_AUTHENTICATION, setKeysRequestDto.isGeneratedKeys()));
 
         this.execute(conn, devicePostSave, ReplaceKeyCommandExecutor
                 .wrap(setKeysRequestDto.getEncryptionKey(), KeyId.GLOBAL_UNICAST_ENCRYPTION_KEY,
-                        SecurityKeyType.E_METER_ENCRYPTION));
+                        SecurityKeyType.E_METER_ENCRYPTION, setKeysRequestDto.isGeneratedKeys()));
 
         return new ActionResponseDto(REPLACE_KEYS + device.getDeviceIdentification() + WAS_SUCCESFULL);
     }
@@ -127,12 +135,17 @@ public class ReplaceKeyCommandExecutor
 
     @Override
     public DlmsDevice execute(final DlmsConnectionManager conn, final DlmsDevice device,
-            final ReplaceKeyCommandExecutor.KeyWrapper keyWrapper) throws OsgpException {
+            final ReplaceKeyCommandExecutor.ReplaceKeyInput keyWrapper) throws OsgpException {
 
-        final DlmsDevice devicePostSave = this.securityKeyService
-                .storeNewKey(device, keyWrapper.getBytes(), keyWrapper.getSecurityKeyType());
-        this.sendToDevice(conn, devicePostSave, keyWrapper);
-        return this.securityKeyService.validateNewKey(devicePostSave, keyWrapper.getSecurityKeyType());
+        if (!keyWrapper.isGenerated()) {
+            this.securityKeyService.aesDecryptAndStoreNewKey(device.getDeviceIdentification(), keyWrapper.getSecurityKeyType(),
+                    keyWrapper.getBytes());
+        }
+
+        this.sendToDevice(conn, device.getDeviceIdentification(), keyWrapper);
+        this.securityKeyService.activateNewKey(device.getDeviceIdentification(),
+                keyWrapper.getSecurityKeyType());
+        return device;
     }
 
     /**
@@ -140,19 +153,19 @@ public class ReplaceKeyCommandExecutor
      *
      * @param conn
      *         jDLMS connection.
-     * @param device
-     *         Device instance
+     * @param deviceIdentification
+     *         Device identification
      * @param keyWrapper
      *         Key data
      */
-    private void sendToDevice(final DlmsConnectionManager conn, final DlmsDevice device,
-            final ReplaceKeyCommandExecutor.KeyWrapper keyWrapper) throws ProtocolAdapterException {
+    private void sendToDevice(final DlmsConnectionManager conn, String deviceIdentification,
+            final ReplaceKeyCommandExecutor.ReplaceKeyInput keyWrapper) throws ProtocolAdapterException {
 
         try {
             final byte[] decryptedKey = this.securityKeyService
-                    .decryptKey(keyWrapper.getBytes(), keyWrapper.securityKeyType);
+                    .aesDecryptKey(keyWrapper.getBytes(), keyWrapper.securityKeyType);
             final byte[] decryptedMasterKey = this.securityKeyService
-                    .getDlmsMasterKey(device.getDeviceIdentification());
+                    .getDlmsMasterKey(deviceIdentification) ;
 
             final MethodParameter methodParameterAuth = SecurityUtils
                     .keyChangeMethodParamFor(decryptedMasterKey, decryptedKey, keyWrapper.getKeyId());
@@ -175,7 +188,7 @@ public class ReplaceKeyCommandExecutor
             }
         } catch (final IOException e) {
             throw new ConnectionException(e);
-        } catch (final EncrypterException e) {
+        } catch (final EncrypterException | FunctionalException e) {
             throw new ProtocolAdapterException(
                     "Unexpected exception during decryption of security keys, reason = " + e.getMessage(), e);
         }

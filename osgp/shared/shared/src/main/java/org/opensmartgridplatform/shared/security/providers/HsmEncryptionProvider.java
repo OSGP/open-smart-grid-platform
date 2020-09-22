@@ -29,7 +29,6 @@ import org.apache.commons.codec.binary.Hex;
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 import org.opensmartgridplatform.shared.security.EncryptedSecret;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
-import org.opensmartgridplatform.shared.security.Secret;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,21 +56,19 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider implements
     }
 
     @Override
-    public Secret decrypt(final EncryptedSecret secret, final String keyReference) {
+    public byte[] decrypt(final EncryptedSecret secret, final String keyReference) {
 
-        Secret decryptedSecret = super.decrypt(secret, keyReference);
+        byte[] decryptedSecret = super.decrypt(secret, keyReference);
 
-        final byte[] decryptedSecretBytes = decryptedSecret.getSecret();
+        if (decryptedSecret.length > KEY_LENGTH) {
 
-        if (decryptedSecretBytes.length > KEY_LENGTH) {
+            final byte[] truncatedDecryptedSecretBytes = Arrays.copyOfRange(decryptedSecret, 0,
+                    decryptedSecret.length-16);
 
-            final byte[] truncatedDecryptedSecretBytes = Arrays.copyOfRange(decryptedSecretBytes, 0,
-                    decryptedSecretBytes.length-16);
-
-            LOGGER.trace("Truncating decrypted key from " + Hex.encodeHexString(decryptedSecretBytes) + " to " +
+            LOGGER.trace("Truncating decrypted key from " + Hex.encodeHexString(decryptedSecret) + " to " +
                             Hex.encodeHexString(truncatedDecryptedSecretBytes));
 
-            decryptedSecret = new Secret(truncatedDecryptedSecretBytes);
+            return truncatedDecryptedSecretBytes;
         }
 
         return decryptedSecret;
@@ -87,8 +84,7 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider implements
     }
 
     /**
-     * This method reads the 'actual' encryption key (from the database).
-     * Normally this is the key start isValidFrom(now) and isValidUntil(now).
+     * This method reads the encryption key specified by keyReference from the Hsm.
      *
      * @return the key that must be used for encryption/decryption
      */

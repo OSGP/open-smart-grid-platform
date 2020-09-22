@@ -8,7 +8,6 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.mapping.InstallationMapper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.CoupleMBusDeviceCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.CoupleMbusDeviceByChannelCommandExecutor;
@@ -53,58 +52,34 @@ public class InstallationService {
     private CoupleMbusDeviceByChannelCommandExecutor coupleMbusDeviceByChannelCommandExecutor;
 
     // === ADD METER ===
-    public void addMeter(final SmartMeteringDeviceDto smartMeteringDevice) throws FunctionalException {
-        this.reEncryptKeys(smartMeteringDevice);
+    public void addMeter(final SmartMeteringDeviceDto smartMeteringDevice) {
+        this.storeNewKeys(smartMeteringDevice);
         final DlmsDevice dlmsDevice = this.installationMapper.map(smartMeteringDevice, DlmsDevice.class);
         this.dlmsDeviceRepository.save(dlmsDevice);
     }
 
-    private void reEncryptKeys(final SmartMeteringDeviceDto smartMeteringDevice) throws FunctionalException {
-        this.reEncryptMasterKey(smartMeteringDevice);
-        this.reEncryptAuthenticationKey(smartMeteringDevice);
-        this.reEncryptEncryptionKey(smartMeteringDevice);
-        this.reEncryptMbusDefaultKey(smartMeteringDevice);
-    }
+    private void storeNewKeys(final SmartMeteringDeviceDto smartMeteringDeviceDto) {
+        byte[][] securityKeys = new byte[4][];
 
-    private void reEncryptMasterKey(final SmartMeteringDeviceDto smartMeteringDevice) throws FunctionalException {
-        if (ArrayUtils.isEmpty(smartMeteringDevice.getMasterKey())) {
-            return;
-        }
-        final byte[] reEncryptedMasterKey = this.securityKeyService
-                .reEncryptKey(smartMeteringDevice.getMasterKey(), SecurityKeyType.E_METER_MASTER);
-        smartMeteringDevice.setMasterKey(reEncryptedMasterKey);
-    }
+        try {
+            SecurityKeyType[] securityKeyTypes = { SecurityKeyType.E_METER_MASTER, SecurityKeyType.E_METER_AUTHENTICATION,
+                    SecurityKeyType.E_METER_ENCRYPTION, SecurityKeyType.G_METER_MASTER };
 
-    private void reEncryptAuthenticationKey(final SmartMeteringDeviceDto smartMeteringDevice)
-            throws FunctionalException {
+            securityKeys[0] = this.securityKeyService.rsaDecrypt(smartMeteringDeviceDto.getMasterKey(),
+                    SecurityKeyType.E_METER_MASTER);
+            securityKeys[1] = this.securityKeyService.rsaDecrypt(smartMeteringDeviceDto.getAuthenticationKey(),
+                    SecurityKeyType.E_METER_AUTHENTICATION);
+            securityKeys[2] = this.securityKeyService.rsaDecrypt(smartMeteringDeviceDto.getGlobalEncryptionUnicastKey(),
+                    SecurityKeyType.G_METER_ENCRYPTION);
+            securityKeys[3] = this.securityKeyService.rsaDecrypt(smartMeteringDeviceDto.getMbusDefaultKey(),
+                    SecurityKeyType.G_METER_MASTER);
 
-        if (ArrayUtils.isEmpty(smartMeteringDevice.getAuthenticationKey())) {
-            return;
-        }
-        final byte[] reEncryptedAuthenticationKey = this.securityKeyService
-                .reEncryptKey(smartMeteringDevice.getAuthenticationKey(), SecurityKeyType.E_METER_AUTHENTICATION);
-        smartMeteringDevice.setAuthenticationKey(reEncryptedAuthenticationKey);
-    }
-
-    private void reEncryptEncryptionKey(final SmartMeteringDeviceDto smartMeteringDevice) throws FunctionalException {
-
-        if (ArrayUtils.isEmpty(smartMeteringDevice.getGlobalEncryptionUnicastKey())) {
-            return;
-        }
-        final byte[] reEncryptedEncryptionKey = this.securityKeyService
-                .reEncryptKey(smartMeteringDevice.getGlobalEncryptionUnicastKey(), SecurityKeyType.E_METER_ENCRYPTION);
-        smartMeteringDevice.setGlobalEncryptionUnicastKey(reEncryptedEncryptionKey);
-    }
-
-    private void reEncryptMbusDefaultKey(final SmartMeteringDeviceDto smartMeteringDevice) throws FunctionalException {
-
-        if (ArrayUtils.isEmpty(smartMeteringDevice.getMbusDefaultKey())) {
-            return;
+            securityKeyService.storeNewKeys(smartMeteringDeviceDto.getDeviceIdentification(), securityKeyTypes,
+                    securityKeys);
+        } catch (FunctionalException e) {
+            e.printStackTrace();
         }
 
-        final byte[] reEncryptedMbusDefaultKey = this.securityKeyService
-                .reEncryptKey(smartMeteringDevice.getMbusDefaultKey(), SecurityKeyType.G_METER_MASTER);
-        smartMeteringDevice.setMbusDefaultKey(reEncryptedMbusDefaultKey);
     }
 
     public MbusChannelElementsResponseDto coupleMbusDevice(final DlmsConnectionManager conn, final DlmsDevice device,

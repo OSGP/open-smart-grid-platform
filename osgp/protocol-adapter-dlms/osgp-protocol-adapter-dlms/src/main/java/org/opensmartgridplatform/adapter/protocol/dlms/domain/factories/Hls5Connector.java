@@ -21,6 +21,7 @@ import org.openmuc.jdlms.TcpConnectionBuilder;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecurityKeyService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.threads.RecoverKeyProcessInitiator;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
@@ -70,10 +71,10 @@ public class Hls5Connector extends SecureDlmsConnector {
             throw new TechnicalException(ComponentType.PROTOCOL_DLMS,
                     "The IP address is not found: " + device.getIpAddress());
         } catch (final IOException e) {
-            //TODO if (device.hasNewSecurityKey()) {
 
-            // Queue key recovery process.
-            //TODO this.recoverKeyProcessInitiator.initiate(device.getDeviceIdentification(), device.getIpAddress());
+            if (!securityKeyService.isActivated(device.getDeviceIdentification(), SecurityKeyType.E_METER_ENCRYPTION)) {
+               this.recoverKeyProcessInitiator.initiate(device.getDeviceIdentification(), device.getIpAddress());
+            }
 
             final String msg = String
                     .format("Error creating connection for device %s with Ip address:%s Port:%d UseHdlc:%b UseSn:%b "

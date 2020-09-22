@@ -17,11 +17,10 @@ import org.openmuc.jdlms.SecuritySuite;
 import org.openmuc.jdlms.SecuritySuite.EncryptionMechanism;
 import org.openmuc.jdlms.TcpConnectionBuilder;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecurityKeyService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsDeviceAssociation;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.RecoverKeyException;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
@@ -30,14 +29,14 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionTyp
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 public class RecoverKeyProcess implements Runnable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RecoverKeyProcess.class);
 
     private final DomainHelperService domainHelperService;
-
-    private final DlmsDeviceRepository dlmsDeviceRepository;
 
     private final int responseTimeout;
 
@@ -51,11 +50,15 @@ public class RecoverKeyProcess implements Runnable {
 
     private String ipAddress;
 
+    @Autowired
+    @Qualifier("secretManagementService")
+    private SecurityKeyService securityKeyService;
+
+
     public RecoverKeyProcess(final DomainHelperService domainHelperService,
-            final DlmsDeviceRepository dlmsDeviceRepository, final int responseTimeout, final int logicalDeviceAddress,
+            final int responseTimeout, final int logicalDeviceAddress,
             final DlmsDeviceAssociation deviceAssociation) {
         this.domainHelperService = domainHelperService;
-        this.dlmsDeviceRepository = dlmsDeviceRepository;
         this.responseTimeout = responseTimeout;
         this.logicalDeviceAddress = logicalDeviceAddress;
         this.clientId = deviceAssociation.getClientId();
@@ -76,20 +79,34 @@ public class RecoverKeyProcess implements Runnable {
         LOGGER.info("Attempting key recovery for device {}", this.deviceIdentification);
 
         try {
-            this.initDevice();
+            this.findDevice();
         } catch (final Exception e) {
-            LOGGER.error("Unexpected exception: {}", e);
+            LOGGER.error("Unexpected exception", e);
         }
-        /* TODO if (!this.device.hasNewSecurityKey()) {
-            return;
-        }*/
 
-        /*TODO if (this.canConnect()) {
-          //TODO: Call secret management and make 'the' key VALID (NEW->VALID) this.promoteInvalidKey();
-        }*/
+        if (securityKeyService.isActivated(this.deviceIdentification, SecurityKeyType.E_METER_AUTHENTICATION)) {
+            return;
+        }
+
+       if (this.canConnect()) {
+           try {
+               this.securityKeyService.activateNewKey(this.deviceIdentification,
+                       SecurityKeyType.E_METER_ENCRYPTION);
+           }
+           catch(ProtocolAdapterException e) {
+               throw new RecoverKeyException(e.getMessage(), e);
+           }
+           try {
+               this.securityKeyService.activateNewKey(this.deviceIdentification,
+                       SecurityKeyType.E_METER_AUTHENTICATION);
+           }
+           catch(ProtocolAdapterException e) {
+               throw new RecoverKeyException(e.getMessage(), e);
+           }
+       }
     }
 
-    private void initDevice() throws OsgpException {
+    private void findDevice() throws OsgpException {
         try {
             this.device = this.domainHelperService.findDlmsDevice(this.deviceIdentification, this.ipAddress);
         } catch (final ProtocolAdapterException e) {
@@ -107,8 +124,7 @@ public class RecoverKeyProcess implements Runnable {
         }
     }
 
-    /* TODO
-        private boolean canConnect() {
+    private boolean canConnect() {
         DlmsConnection connection = null;
         try {
             connection = this.createConnection();
@@ -125,7 +141,7 @@ public class RecoverKeyProcess implements Runnable {
                 }
             }
         }
-    }*/
+    }
 
     /**
      * Create a connection with the device.
@@ -135,15 +151,13 @@ public class RecoverKeyProcess implements Runnable {
      *             When there are problems in connecting to or communicating
      *             with the device.
      */
-    /*
     private DlmsConnection createConnection() throws IOException, FunctionalException {
-        final byte[] authenticationKey = Hex
-                .decode(
-                        this.getSecurityKey(SecurityKeyType.E_METER_AUTHENTICATION).getKey()
-                );
-        final byte[] encryptionKey = Hex.decode(
-                    this.getSecurityKey(SecurityKeyType.E_METER_ENCRYPTION).getKey()
-        );
+
+        byte[][] keys = this.securityKeyService.getKeys(this.deviceIdentification,
+                new SecurityKeyType[]{ SecurityKeyType.E_METER_AUTHENTICATION, SecurityKeyType.E_METER_ENCRYPTION });
+
+        final byte[] authenticationKey = Hex.decode(keys[0]);
+        final byte[] encryptionKey = Hex.decode(keys[1]);
 
         final SecuritySuite securitySuite = SecuritySuite.builder().setAuthenticationKey(authenticationKey)
                 .setAuthenticationMechanism(AuthenticationMechanism.HLS5_GMAC)
@@ -168,6 +182,6 @@ public class RecoverKeyProcess implements Runnable {
         }
 
         return tcpConnectionBuilder.build();
-    }*/
+    }
 
 }
