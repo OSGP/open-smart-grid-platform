@@ -60,8 +60,7 @@ public class DaylightSavingTimeTransition {
                 if (timeSeparatorPos == -1) {
                     return true;
                 }
-                return transition.length() > timeSeparatorPos
-                        && this.isValidTime(transition.substring(timeSeparatorPos + 1));
+                return this.isValidTime(transition.substring(timeSeparatorPos + 1));
             }
 
             @Override
@@ -140,8 +139,7 @@ public class DaylightSavingTimeTransition {
                 if (timeSeparatorPos == -1) {
                     return true;
                 }
-                return transition.length() > timeSeparatorPos
-                        && this.isValidTime(transition.substring(timeSeparatorPos + 1));
+                return this.isValidTime(transition.substring(timeSeparatorPos + 1));
             }
 
             @Override
