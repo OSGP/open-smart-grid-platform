@@ -19,7 +19,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 import org.opensmartgridplatform.shared.security.EncryptedSecret;
-import org.opensmartgridplatform.shared.security.Secret;
 import org.opensmartgridplatform.shared.security.providers.JreEncryptionProvider;
 
 @ExtendWith(MockitoExtension.class)
@@ -35,7 +34,7 @@ public class JreEncryptionProviderTest {
 
         jreEncryptionProvider = new JreEncryptionProvider(keyFile);
 
-        Secret secret = new Secret(HexUtils.fromHexString("5b3a65ba2a7d347f1eedf7fab25f2813"));
+        byte[] secret = HexUtils.fromHexString("5b3a65ba2a7d347f1eedf7fab25f2813");
 
         EncryptedSecret encryptedSecret = jreEncryptionProvider.encrypt(secret, "1");
 
@@ -43,9 +42,9 @@ public class JreEncryptionProviderTest {
 
         assertEquals("f2edbdc2ad1dab1458f1b866c5a5e6a68873d5738b3742bf3fa5d673133313b6", encryptedSecretAsString);
 
-        Secret decryptedSecret = jreEncryptionProvider.decrypt(encryptedSecret, "1");
+        byte[] decryptedSecret = jreEncryptionProvider.decrypt(encryptedSecret, "1");
 
-        String decryptedSecretAsString = HexUtils.toHexString(decryptedSecret.getSecret());
+        String decryptedSecretAsString = HexUtils.toHexString(decryptedSecret);
 
         assertEquals("5b3a65ba2a7d347f1eedf7fab25f2813", decryptedSecretAsString);
 

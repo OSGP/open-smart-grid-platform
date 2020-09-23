@@ -29,7 +29,6 @@ import org.opensmartgridplatform.secretmanagement.application.repository.DbEncry
 import org.opensmartgridplatform.shared.security.EncryptedSecret;
 import org.opensmartgridplatform.shared.security.EncryptionDelegate;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
-import org.opensmartgridplatform.shared.security.Secret;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -88,11 +87,10 @@ public class SecretManagementService {
             final DbEncryptionKeyReference keyReference) {
         final String secretString = typedSecret.getSecret();
         final byte[] secretBytes = HexUtils.fromHexString(secretString);
-        final Secret secret = new Secret(secretBytes);
         final Date now = new Date(); //TODO check creation & time zone
         try {
             final EncryptedSecret encryptedSecret = this.encryptionDelegate.encrypt(
-                    keyReference.getEncryptionProviderType(), secret, keyReference.getReference());
+                    keyReference.getEncryptionProviderType(), secretBytes, keyReference.getReference());
             final DbEncryptedSecret dbEncryptedSecret = new DbEncryptedSecret();
             dbEncryptedSecret.setDeviceIdentification(deviceIdentification);
             dbEncryptedSecret.setEncodedSecret(HexUtils.toHexString(encryptedSecret.getSecret()));
@@ -154,10 +152,10 @@ public class SecretManagementService {
     private TypedSecret createTypedSecret(final DbEncryptedSecret dbEncryptedSecret,
             final DbEncryptionKeyReference keyReference, final EncryptedSecret encryptedSecret) {
         try {
-            final Secret decryptedSecret = this.encryptionDelegate.decrypt(encryptedSecret,
+            final byte[] decryptedSecret = this.encryptionDelegate.decrypt(encryptedSecret,
                     keyReference.getReference());
             final TypedSecret typedSecret = new TypedSecret();
-            typedSecret.setSecret(HexUtils.toHexString(decryptedSecret.getSecret()));
+            typedSecret.setSecret(HexUtils.toHexString(decryptedSecret));
             typedSecret.setSecretType(dbEncryptedSecret.getSecretType());
             return typedSecret;
         } catch (final Exception exc) {
