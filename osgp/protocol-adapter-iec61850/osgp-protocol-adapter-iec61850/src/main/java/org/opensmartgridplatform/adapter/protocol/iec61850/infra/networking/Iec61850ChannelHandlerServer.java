@@ -16,6 +16,7 @@ import org.opensmartgridplatform.adapter.protocol.iec61850.application.services.
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.OsgpRequestMessageSender;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.IED;
 import org.opensmartgridplatform.core.db.api.iec61850.entities.Ssld;
+import org.opensmartgridplatform.dto.valueobjects.ConfirmDeviceRegistrationDataDto;
 import org.opensmartgridplatform.dto.valueobjects.DeviceRegistrationDataDto;
 import org.opensmartgridplatform.iec61850.RegisterDeviceRequest;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -90,6 +91,14 @@ public class Iec61850ChannelHandlerServer extends Iec61850ChannelHandler {
         try {
             this.deviceRegistrationService.disableRegistration(deviceIdentification, InetAddress.getByName(ipAddress),
                     ied, ied.getDescription());
+
+            final ConfirmDeviceRegistrationDataDto confirmDeviceRegistrationDataDto = new ConfirmDeviceRegistrationDataDto(
+                    Ssld.SSLD_TYPE);
+
+            final RequestMessage cdrRequestMessage = new RequestMessage(correlationId, "no-organisation",
+                    deviceIdentification, ipAddress, confirmDeviceRegistrationDataDto);
+
+            this.osgpRequestMessageSender.send(cdrRequestMessage, MessageType.REGISTER_DEVICE.name());
             LOGGER.info("Disabled registration for device: {}, at IP address: {}", deviceIdentification, ipAddress);
         } catch (final Exception e) {
             LOGGER.error("Failed to disable registration for device: {}, at IP address: {}", deviceIdentification,

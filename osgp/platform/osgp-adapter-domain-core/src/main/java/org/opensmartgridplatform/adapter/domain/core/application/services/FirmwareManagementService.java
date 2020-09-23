@@ -86,6 +86,7 @@ public class FirmwareManagementService extends AbstractService {
 
     @Value("${ssld.pending.firmware.update.get.firmware.version.delay}")
     private Long getFirmwareVersionDelay;
+    private SsldPendingFirmwareUpdate ssldPendingFirmwareUpdate;
 
     /**
      * Constructor

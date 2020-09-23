@@ -49,37 +49,27 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(OslpChannelHandlerServer.class);
 
     private static DateTimeFormatter format = DateTimeFormat.forPattern("yyyyMMddHHmmss");
-
+    private final ConcurrentMap<String, Channel> channelMap = new ConcurrentHashMap<>();
     @Autowired
     private DeviceRegistrationService deviceRegistrationService;
-
     @Autowired
     private DeviceManagementService deviceManagementService;
-
     @Autowired
     private Integer sequenceNumberWindow;
-
     @Autowired
     private Integer timeZoneOffsetMinutes;
-
     @Autowired
     private Float defaultLatitude;
-
     @Autowired
     private Float defaultLongitude;
-
     @Autowired
     private OslpDeviceSettingsService oslpDeviceSettingsService;
-
     @Autowired
     private DeviceDataService deviceDataService;
-
     @Autowired
     private OslpSigningService oslpSigningService;
-
     @Autowired
     private LoggingService loggingService;
-
     /**
      * Convert list in property files to {@code Map}.
      *
@@ -88,8 +78,6 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
      */
     @Value("#{${test.device.ips}}")
     private Map<String, String> testDeviceIps;
-
-    private final ConcurrentMap<String, Channel> channelMap = new ConcurrentHashMap<>();
 
     public OslpChannelHandlerServer() {
         super(LOGGER);
@@ -172,8 +160,9 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
     }
 
     /**
-     * Called when a signed OSLP envelope arrives from signing server. The envelope will be sent to the device which is
-     * waiting for a response. The channel for the waiting device should be present in the channelMap.
+     * Called when a signed OSLP envelope arrives from signing server. The
+     * envelope will be sent to the device which is waiting for a response. The
+     * channel for the waiting device should be present in the channelMap.
      *
      * @param signedOslpEnvelopeDto
      *            DTO containing signed OslpEnvelope.
@@ -202,17 +191,7 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
         final String deviceIdentification = registerRequest.getDeviceIdentification();
         final String deviceType = registerRequest.getDeviceType().toString();
         final boolean hasSchedule = registerRequest.getHasSchedule();
-        InetAddress inetAddress;
-
-        // In case the optional properties 'testDeviceId' and 'testDeviceIp' are
-        // set, the values will be used to set an IP address for a device.
-        if (this.testDeviceIps != null && this.testDeviceIps.containsKey(deviceIdentification)) {
-            final String testDeviceIp = this.testDeviceIps.get(deviceIdentification);
-            LOGGER.info("Using testDeviceId: {} and testDeviceIp: {}", deviceIdentification, testDeviceIp);
-            inetAddress = InetAddress.getByName(testDeviceIp);
-        } else {
-            inetAddress = InetAddress.getByAddress(registerRequest.getIpAddress().toByteArray());
-        }
+        InetAddress inetAddress = getInetAddress(registerRequest, deviceIdentification);
 
         // Send message to OSGP-CORE to save IP Address, device type and has
         // schedule values in OSGP-CORE database.
@@ -256,6 +235,22 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
         responseBuilder.setLocationInfo(locationInfo);
 
         return Oslp.Message.newBuilder().setRegisterDeviceResponse(responseBuilder.build()).build();
+    }
+
+    private InetAddress getInetAddress(Oslp.RegisterDeviceRequest registerRequest, String deviceIdentification)
+            throws UnknownHostException {
+        InetAddress inetAddress;
+
+        // In case the optional properties 'testDeviceId' and 'testDeviceIp' are
+        // set, the values will be used to set an IP address for a device.
+        if (this.testDeviceIps != null && this.testDeviceIps.containsKey(deviceIdentification)) {
+            final String testDeviceIp = this.testDeviceIps.get(deviceIdentification);
+            LOGGER.info("Using testDeviceId: {} and testDeviceIp: {}", deviceIdentification, testDeviceIp);
+            inetAddress = InetAddress.getByName(testDeviceIp);
+        } else {
+            inetAddress = InetAddress.getByAddress(registerRequest.getIpAddress().toByteArray());
+        }
+        return inetAddress;
     }
 
     private int convertGpsCoordinateFromFloatToInt(final Float input) {

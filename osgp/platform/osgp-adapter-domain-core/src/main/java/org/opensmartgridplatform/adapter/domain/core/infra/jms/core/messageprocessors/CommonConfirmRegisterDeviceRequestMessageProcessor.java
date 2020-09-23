@@ -20,15 +20,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CommonRegisterDeviceRequestMessageProcessor extends DomainCoreDeviceRequestMessageProcessor {
+public class CommonConfirmRegisterDeviceRequestMessageProcessor extends DomainCoreDeviceRequestMessageProcessor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CommonRegisterDeviceRequestMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(CommonConfirmRegisterDeviceRequestMessageProcessor.class);
 
     @Autowired
     private FirmwareManagementService firmwareManagementService;
 
-    public CommonRegisterDeviceRequestMessageProcessor() {
-        super(MessageType.REGISTER_DEVICE);
+    public CommonConfirmRegisterDeviceRequestMessageProcessor() {
+        super(MessageType.CONFIRM_REGISTER_DEVICE);
     }
 
     @Override

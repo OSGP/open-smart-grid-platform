@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.oslp.elster.application.servi
 import java.net.InetAddress;
 
 import org.apache.commons.codec.binary.Base64;
+import org.opensmartgridplatform.dto.valueobjects.ConfirmDeviceRegistrationDataDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,8 +73,8 @@ public class DeviceRegistrationService {
     public void sendDeviceRegisterRequest(final InetAddress inetAddress, final String deviceType,
             final boolean hasSchedule, final String deviceIdentification) {
 
-        final DeviceRegistrationDataDto deviceRegistrationData = new DeviceRegistrationDataDto(inetAddress
-                .getHostAddress(), deviceType, hasSchedule);
+        final DeviceRegistrationDataDto deviceRegistrationData = new DeviceRegistrationDataDto(
+                inetAddress.getHostAddress(), deviceType, hasSchedule);
 
         final RequestMessage requestMessage = new RequestMessage("no-correlationUid", "no-organisation",
                 deviceIdentification, deviceRegistrationData);
@@ -85,8 +86,16 @@ public class DeviceRegistrationService {
             final Integer randomDevice, final Integer randomPlatform) throws ProtocolAdapterException {
 
         this.checkDeviceRandomAndPlatformRandom(deviceId, randomDevice, randomPlatform);
-
         this.updateDeviceSequenceNumber(deviceId, newSequenceNumber);
+
+        OslpDevice oslpDevice = this.findDevice(deviceId);
+        final ConfirmDeviceRegistrationDataDto confirmDeviceRegistrationDataDto = new ConfirmDeviceRegistrationDataDto(
+                oslpDevice.getDeviceType());
+
+        final RequestMessage requestMessage = new RequestMessage("no-correlationUid", "no-organisation",
+                oslpDevice.getDeviceIdentification(), confirmDeviceRegistrationDataDto);
+
+        this.osgpRequestMessageSender.send(requestMessage, "CONFIRM_REGISTER_DEVICE");
 
         LOGGER.debug("confirmRegisterDevice successful for device with UID: {}.", deviceId);
     }
