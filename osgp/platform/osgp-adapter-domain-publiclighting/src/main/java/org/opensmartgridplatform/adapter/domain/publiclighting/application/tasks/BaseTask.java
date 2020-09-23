@@ -9,11 +9,19 @@ package org.opensmartgridplatform.adapter.domain.publiclighting.application.task
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
+import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -21,11 +29,14 @@ import org.opensmartgridplatform.adapter.domain.publiclighting.application.value
 import org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.core.OsgpCoreRequestMessageSender;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
+import org.opensmartgridplatform.domain.core.entities.LightMeasurementDevice;
 import org.opensmartgridplatform.domain.core.entities.Manufacturer;
 import org.opensmartgridplatform.domain.core.repositories.DeviceModelRepository;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.EventRepository;
+import org.opensmartgridplatform.domain.core.repositories.LightMeasurementDeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.ManufacturerRepository;
+import org.opensmartgridplatform.domain.core.repositories.RtuDeviceRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.opensmartgridplatform.dto.valueobjects.DomainTypeDto;
@@ -35,6 +46,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.util.CollectionUtils;
 
 /**
  * Base class for scheduled tasks.
@@ -49,6 +61,12 @@ public class BaseTask {
 
     @Autowired
     protected DeviceRepository deviceRepository;
+
+    @Autowired
+    protected RtuDeviceRepository rtuDeviceRepository;
+
+    @Autowired
+    protected LightMeasurementDeviceRepository lightMeasurementDeviceRepository;
 
     @Autowired
     protected ManufacturerRepository manufacturerRepository;
@@ -122,6 +140,35 @@ public class BaseTask {
             }
         }
         return devices;
+    }
+
+    /**
+     * Try to find all devices which are not 'in maintenance' that are
+     * communicated with using the given protocol.
+     */
+    protected List<LightMeasurementDevice> findLightMeasurementDevicesByProtocol(final String protocol) {
+        LOGGER.info("Trying to find connectable light measurement devices for protocol {}", protocol);
+
+        final List<LightMeasurementDevice> lightMeasurementDevices = this.lightMeasurementDeviceRepository
+                .findByInMaintenanceAndProtocolInfoProtocolAndDeviceLifecycleStatusIn(false, protocol,
+                        EnumSet.of(DeviceLifecycleStatus.IN_USE, DeviceLifecycleStatus.REGISTERED));
+
+        if (lightMeasurementDevices.isEmpty()) {
+            LOGGER.warn("No connectable light measurement devices found for protocol {}", protocol);
+        } else {
+            this.deviceIdentifications(lightMeasurementDevices);
+            final String identifications = this.deviceIdentifications(lightMeasurementDevices);
+            LOGGER.info("{} connectable light measurement device(s) found for protocol {}: {}",
+                    lightMeasurementDevices.size(), protocol, identifications);
+        }
+        return lightMeasurementDevices;
+    }
+
+    private String deviceIdentifications(final Collection<? extends Device> devices) {
+        if (CollectionUtils.isEmpty(devices)) {
+            return "";
+        }
+        return devices.stream().map(Device::getDeviceIdentification).sorted().collect(Collectors.joining(", "));
     }
 
     /**
@@ -223,4 +270,177 @@ public class BaseTask {
                 MessagePriorityEnum.LOW.getPriority(), ipAddress);
     }
 
+    /**
+     * Filter a list of given light measurement devices to determine which
+     * devices should be connected. The filtering uses the latest communication
+     * time in comparison with 'maximumAllowedAge' relative to the current time.
+     */
+    protected List<LightMeasurementDevice> findLightMeasurementDevicesToConnect(
+            final List<LightMeasurementDevice> lightMeasurementDevices, final int maximumAllowedAge) {
+
+        if (CollectionUtils.isEmpty(lightMeasurementDevices)) {
+            LOGGER.info("No light measurement devices to connect with");
+            return lightMeasurementDevices;
+        }
+
+        if (this.isFirstRun()) {
+            LOGGER.info("This is the first run. Connect all light measurement devices: {}",
+                    lightMeasurementDevices.size());
+            return lightMeasurementDevices;
+        }
+
+        final Date maxAge = DateTime.now(DateTimeZone.UTC).minusHours(maximumAllowedAge).toDate();
+        final long valueForMissingTime = 0;
+        final long boundaryTime = this.getTime(maxAge, valueForMissingTime);
+
+        final Predicate<LightMeasurementDevice> deviceFilter;
+        if (boundaryTime < valueForMissingTime) {
+            LOGGER.error(
+                    "Maximum allowed age earlier than {} is not allowed."
+                            + " Possibly an error in configuration of maximum allowed age in hours: {}.",
+                    new Date(valueForMissingTime), maximumAllowedAge);
+            /*
+             * Make sure all devices will be connected.
+             */
+            deviceFilter = lightMeasurementDevice -> true;
+        } else {
+            LOGGER.info("Connect light measurement devices last communicated with no later than: {}", maxAge);
+            deviceFilter = this.noCommunicationSince(boundaryTime, valueForMissingTime);
+        }
+
+        return lightMeasurementDevices.stream()
+                .filter(deviceFilter)
+                .sorted(Comparator.comparing(LightMeasurementDevice::getDeviceIdentification))
+                .collect(Collectors.toList());
+    }
+
+    private long getTime(final Date date, final long valueIfNull) {
+        if (date == null) {
+            return valueIfNull;
+        }
+        return date.getTime();
+    }
+
+    private Predicate<LightMeasurementDevice> noCommunicationSince(final long boundaryTime,
+            final long valueForMissingTime) {
+
+        return lightMeasurementDevice -> this.getLastCommunicationTime(lightMeasurementDevice,
+                valueForMissingTime) < boundaryTime;
+    }
+
+    /**
+     * Determines the last known communication time with the light measurement
+     * device, or its gateway. The gateway connection time counts equally, since
+     * it is just as relevant with respect to the connection or reconnecting
+     * with the light measurement device as the light measurement device itself.
+     *
+     * @param lightMeasurementDevice
+     * @param valueForMissingTime
+     *            default value if no communication time is available
+     * @return the last known communication time (as the number of milliseconds
+     *         since January 1, 1970, 00:00:00 GMT) with the given
+     *         {@code lightMeasurementDevice} or its gateway, or
+     *         {@code valueForMissingTime} if there is no known communication
+     *         time.
+     */
+    private long getLastCommunicationTime(final LightMeasurementDevice lightMeasurementDevice,
+            final long valueForMissingTime) {
+
+        final long lastCommunicationTimeLightMeasurementDevice = Long.max(
+                this.getTime(lightMeasurementDevice.getLastCommunicationTime(), valueForMissingTime),
+                this.getTime(lightMeasurementDevice.getLastSuccessfulConnectionTimestamp(), valueForMissingTime));
+        final long lastCommunicationTimeGateway = this.getGatewayLastCommunicationTime(lightMeasurementDevice,
+                valueForMissingTime);
+        return Long.max(lastCommunicationTimeLightMeasurementDevice, lastCommunicationTimeGateway);
+    }
+
+    private long getGatewayLastCommunicationTime(final LightMeasurementDevice lightMeasurementDevice,
+            final long valueForMissingTime) {
+
+        final Device gatewayDevice = lightMeasurementDevice.getGatewayDevice();
+        if (gatewayDevice == null) {
+            return valueForMissingTime;
+        }
+
+        final long lastSuccessFullConnectionTimestampGateway = this
+                .getTime(gatewayDevice.getLastSuccessfulConnectionTimestamp(), valueForMissingTime);
+        final long lastCommunicationTimeRtuGateway = this.rtuDeviceRepository.findById(gatewayDevice.getId())
+                .map(rtu -> this.getTime(rtu.getLastCommunicationTime(), valueForMissingTime))
+                .orElse(valueForMissingTime);
+        return Long.max(lastSuccessFullConnectionTimestampGateway, lastCommunicationTimeRtuGateway);
+    }
+
+    protected void connectLightMeasurementDevices(final List<LightMeasurementDevice> devicesToConnect) {
+        if (CollectionUtils.isEmpty(devicesToConnect)) {
+            LOGGER.info("No light measurement devices to connect with");
+            return;
+        }
+        final String deviceIdentifications = this.deviceIdentifications(devicesToConnect);
+        LOGGER.info("Sending requests to ensure active connections with the following light measurement devices: {}",
+                deviceIdentifications);
+
+        final Set<Long> connectedToGatewayIds = new HashSet<>();
+        for (final LightMeasurementDevice device : devicesToConnect) {
+            if (this.aDeviceWithTheSameGatewayHasNotBeenConnected(device, connectedToGatewayIds)) {
+                final String withGateway = device.getGatewayDevice() == null ? ""
+                        : String.format(" with gateway: %s", device.getGatewayDevice().getDeviceIdentification());
+                LOGGER.info("Send connect request to device {}{}", device.getDeviceIdentification(), withGateway);
+                this.sendConnectRequestToDevice(device);
+            } else {
+                LOGGER.info("Skipping device {} since the connection was already assured for its gateway ({})",
+                        device.getDeviceIdentification(), device.getGatewayDevice().getDeviceIdentification());
+            }
+        }
+    }
+
+    private boolean aDeviceWithTheSameGatewayHasNotBeenConnected(final LightMeasurementDevice device,
+            final Set<Long> connectedToGatewayIds) {
+
+        return device.getGatewayDevice() == null || connectedToGatewayIds.add(device.getGatewayDevice().getId());
+    }
+
+    protected void sendConnectRequestToDevice(final LightMeasurementDevice lightMeasurementDevice) {
+        final String deviceIdentification = lightMeasurementDevice.getDeviceIdentification();
+        final String organisation = lightMeasurementDevice.getOwner() == null ? ""
+                : lightMeasurementDevice.getOwner().getOrganisationIdentification();
+        // Creating message with OSGP System CorrelationUID. This way the
+        // responses for scheduled tasks can be filtered out.
+        final String correlationUid = OsgpSystemCorrelationUid.CORRELATION_UID;
+        final String messageType = DeviceFunction.GET_LIGHT_SENSOR_STATUS.name();
+        final DomainTypeDto domain = DomainTypeDto.PUBLIC_LIGHTING;
+
+        final String ipAddress = this.getIpAddress(lightMeasurementDevice);
+        if (ipAddress == null) {
+            LOGGER.warn("Unable to create connect request because no IP address is known for device: {}",
+                    deviceIdentification);
+            return;
+        }
+
+        final RequestMessage requestMessage = new RequestMessage(correlationUid, organisation, deviceIdentification,
+                domain);
+        this.osgpCoreRequestMessageSender.send(requestMessage, messageType, MessagePriorityEnum.LOW.getPriority(),
+                ipAddress);
+    }
+
+    private String getIpAddress(final LightMeasurementDevice lightMeasurementDevice) {
+        final String gatewayIpAddress = this.getGatewayIpAddress(lightMeasurementDevice);
+        if (gatewayIpAddress != null) {
+            return gatewayIpAddress;
+        }
+        return this.getHostAddress(lightMeasurementDevice.getNetworkAddress());
+    }
+
+    private String getGatewayIpAddress(final LightMeasurementDevice lightMeasurementDevice) {
+        if (lightMeasurementDevice.getGatewayDevice() == null) {
+            return null;
+        }
+        return this.getHostAddress(lightMeasurementDevice.getGatewayDevice().getNetworkAddress());
+    }
+
+    private String getHostAddress(final InetAddress inetAddress) {
+        if (inetAddress == null) {
+            return null;
+        }
+        return inetAddress.getHostAddress();
+    }
 }

@@ -102,7 +102,6 @@
     <versions.maven.plugin.version>2.7</versions.maven.plugin.version>
     <apache.activemq.version>5.15.12</apache.activemq.version>
     <logback.version>1.2.3</logback.version>
-    <logback.ext.version>0.1.5</logback.ext.version>
     <apache.commons.schema>2.2.5</apache.commons.schema>
     <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
     <netty.version>4.1.49.Final</netty.version>
@@ -941,11 +940,6 @@
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-core</artifactId>
         <version>${logback.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.logback-extensions</groupId>
-        <artifactId>logback-ext-spring</artifactId>
-        <version>${logback.ext.version}</version>
       </dependency>
 
       <dependency>
