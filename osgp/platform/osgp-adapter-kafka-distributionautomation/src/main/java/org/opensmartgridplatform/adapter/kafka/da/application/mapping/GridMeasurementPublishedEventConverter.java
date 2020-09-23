@@ -76,22 +76,12 @@ public class GridMeasurementPublishedEventConverter extends CustomConverter<Stri
                     "GridMeasurementPublishedEvent", new ArrayList<Name>(), powerSystemResource,
                     stringArrayToAnalogList.convertToAnalogList(values));
         } catch (final JsonMappingException e) {
-            LOGGER.error("Caught an error mapping a JSON string to Payload. {}", source);
-            e.printStackTrace();
+            LOGGER.error("Caught an error mapping a JSON string to Payload. {}", source, e);
             return null;
         } catch (final JsonProcessingException e) {
-            LOGGER.error("Caught an error processing a JSON string to Payload. {}", source);
-            e.printStackTrace();
+            LOGGER.error("Caught an error processing a JSON string to Payload. {}", source, e);
             return null;
         }
-    }
-
-    private static int ordinalIndexOf(final String str, final String substr, int n) {
-        int pos = str.indexOf(substr);
-        while (--n > 0 && pos != -1) {
-            pos = str.indexOf(substr, pos + 1);
-        }
-        return pos;
     }
 
     private static class Payload {
