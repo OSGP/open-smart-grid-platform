@@ -25,4 +25,12 @@
       <xsd:enumeration value="IN_SERVICE"/>
     </xsd:restriction>
   </xsd:simpleType>
+
+  <xsd:element name="SetMaintenanceStateResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="result" type="xsd:string" minOccurs="1" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
 </xsd:schema>
