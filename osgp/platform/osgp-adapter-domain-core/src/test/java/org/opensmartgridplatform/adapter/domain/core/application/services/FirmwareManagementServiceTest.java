@@ -32,6 +32,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -82,6 +83,24 @@ class FirmwareManagementServiceTest {
     private static final String VERSION_3 = "R03";
 
     private final OsgpException defaultException = new OsgpException(ComponentType.DOMAIN_CORE, "test");
+    
+    @Captor
+    ArgumentCaptor<RequestMessage> requestMessageCaptor;
+    @Captor
+    ArgumentCaptor<ResponseMessage> responseMessageCaptor;
+    @Captor
+	ArgumentCaptor<String> messageTypeCaptor;
+    @Captor
+	ArgumentCaptor<Integer> messagePriorityCaptor;
+    @Captor
+	ArgumentCaptor<String> ipAddressCaptor;
+    @Captor
+    ArgumentCaptor<Long> scheduledTimeCaptor;
+    @Captor
+    ArgumentCaptor<SsldPendingFirmwareUpdate> ssldPendingFirmwareUpdateArgumentCaptor;
+    
+    @Mock
+    FirmwareUpdateMessageDataContainer firmwareUpdateMessageDataContainer;
     
     @Mock
     private DeviceRepository deviceRepository;
@@ -136,7 +155,7 @@ class FirmwareManagementServiceTest {
     }
 
     @BeforeEach
-    void setUp() throws FunctionalException {
+    void setUp() {
         final Manufacturer manufacturer = new Manufacturer("code", "name", false);
         final DeviceModel deviceModel = new DeviceModel(manufacturer, "modelCode", "description", false);
         final Device device = this.createDevice(deviceModel);
@@ -433,106 +452,126 @@ class FirmwareManagementServiceTest {
     	return new CorrelationIds(organisationIdentification, deviceIdentification, correlationUid);
     }
     
+    /*
+     * Returns device of provided class with already mocked IP address 
+     */
+    private <T> Device getMockDevice(final Class<T> deviceClass) {
+    	final Device device = (Device) Mockito.mock(deviceClass);
+    	when(device.getIpAddress()).thenReturn("0.0.0.0"); 
+    	return device;
+    }
+
     @Test
     void testUpdateFirmwareForNonSsld() throws FunctionalException {
-    	final CorrelationIds ids = getCorrelationIds();
-    	final FirmwareUpdateMessageDataContainer firmwareUpdateMessageDataContainer = 
-    			Mockito.mock(FirmwareUpdateMessageDataContainer.class);
-    	final Device device = Mockito.mock(Device.class);
-
-    	when(firmwareUpdateMessageDataContainer.getFirmwareUrl()).thenReturn("/firmware-test");
+    	final CorrelationIds ids = this.getCorrelationIds();
+    	final Device device = this.getMockDevice(Device.class);
+    	
+    	when(this.firmwareUpdateMessageDataContainer.getFirmwareUrl()).thenReturn("/firmware-test");
     	when(this.deviceDomainService.searchActiveDevice(ids.getDeviceIdentification(), ComponentType.DOMAIN_CORE))
 			.thenReturn(device);
     	
-    	this.firmwareManagementService.updateFirmware(ids, firmwareUpdateMessageDataContainer, 0L, "", 0);
+    	this.firmwareManagementService.updateFirmware(ids, this.firmwareUpdateMessageDataContainer, 0L, "", 0);
     	
-    	verify(this.ssldPendingFirmwareUpdateRepository, never()).save(any());
+    	verify(this.osgpCoreRequestMessageSender).sendWithScheduledTime(this.requestMessageCaptor.capture(),
+                this.messageTypeCaptor.capture(), this.messagePriorityCaptor.capture(), this.ipAddressCaptor.capture(),
+                this.scheduledTimeCaptor.capture());
+
+    	final RequestMessage requestMessage = this.requestMessageCaptor.getValue();
+
+        assertEquals("test-org", requestMessage.getOrganisationIdentification());
+        assertEquals("device-identification", requestMessage.getDeviceIdentification());
+        assertEquals("correlation-uid", requestMessage.getCorrelationUid());
     }
     
     @Test
     void testUpdateFirmwareForSsld() throws FunctionalException {
-    	final CorrelationIds ids = getCorrelationIds();
-    	final FirmwareUpdateMessageDataContainer firmwareUpdateMessageDataContainer = 
-    			Mockito.mock(FirmwareUpdateMessageDataContainer.class);
-    	final Device device = Mockito.mock(Ssld.class);
+    	final CorrelationIds ids = this.getCorrelationIds();
+    	final Device device = this.getMockDevice(Ssld.class);
     	final FirmwareFile firmwareFile = new FirmwareFile.Builder().withFilename("firmware-test").build();
     	firmwareFile.addFirmwareModule(new FirmwareModule("functional"), VERSION_1);
     	
-    	when(firmwareUpdateMessageDataContainer.getFirmwareUrl()).thenReturn("/firmware-test");
+    	when(this.firmwareUpdateMessageDataContainer.getFirmwareUrl()).thenReturn("/firmware-test");
     	when(this.deviceDomainService.searchActiveDevice(ids.getDeviceIdentification(), ComponentType.DOMAIN_CORE))
     		.thenReturn(device);
-    	when(device.getIpAddress()).thenReturn("");
     	when(this.firmwareFileRepository.findByFilename("firmware-test")).thenReturn(Arrays.asList(firmwareFile));
     	
-    	this.firmwareManagementService.updateFirmware(ids, firmwareUpdateMessageDataContainer, 0L, "", 0);
+    	this.firmwareManagementService.updateFirmware(ids, this.firmwareUpdateMessageDataContainer, 0L, "", 0);
 
-    	verify(this.ssldPendingFirmwareUpdateRepository).save(any());
+    	verify(this.ssldPendingFirmwareUpdateRepository).save(this.ssldPendingFirmwareUpdateArgumentCaptor.capture());
+
+        final SsldPendingFirmwareUpdate ssldPendingFirmwareUpdate =
+                this.ssldPendingFirmwareUpdateArgumentCaptor.getValue();
+
+        assertEquals("device-identification", ssldPendingFirmwareUpdate.getDeviceIdentification());
+        assertEquals("test-org", ssldPendingFirmwareUpdate.getOrganisationIdentification());
+        assertEquals("correlation-uid", ssldPendingFirmwareUpdate.getCorrelationUid());
+        assertEquals("R01", ssldPendingFirmwareUpdate.getFirmwareVersion());
+        assertEquals("FUNCTIONAL", ssldPendingFirmwareUpdate.getFirmwareModuleType().name());
     }
     
     @Test
     void testUpdateFirmwareWithNoFirmwareFiles() throws FunctionalException {
-    	final CorrelationIds ids = getCorrelationIds();
-    	final FirmwareUpdateMessageDataContainer firmwareUpdateMessageDataContainer = 
-    			Mockito.mock(FirmwareUpdateMessageDataContainer.class);
-    	final Device device = Mockito.mock(Ssld.class);
+    	final CorrelationIds ids = this.getCorrelationIds();
+    	final Device device = this.getMockDevice(Ssld.class);
     	
-    	when(firmwareUpdateMessageDataContainer.getFirmwareUrl()).thenReturn("/firmware-test");
+    	when(this.firmwareUpdateMessageDataContainer.getFirmwareUrl()).thenReturn("/firmware-test");
     	when(this.deviceDomainService.searchActiveDevice(any(), eq(ComponentType.DOMAIN_CORE)))
     		.thenReturn(device);
-    	when(device.getIpAddress()).thenReturn("");
     	when(this.firmwareFileRepository.findByFilename("firmware-test")).thenReturn(Collections.emptyList());
     	
-    	this.firmwareManagementService.updateFirmware(ids, firmwareUpdateMessageDataContainer, 0L, "", 0);
-    	
-    	verify(this.ssldPendingFirmwareUpdateRepository, never()).save(any());
+    	this.firmwareManagementService.updateFirmware(ids, this.firmwareUpdateMessageDataContainer, 0L, "", 0);
+
+        verifyNoInteractions(this.ssldPendingFirmwareUpdateRepository);
+
+
+
+
+    	assertEquals("rens", "rens");
     }
     
     @Test
     void testUpdateFirmwareWithNoFirmwareModuleVersions() throws FunctionalException {
-    	final CorrelationIds ids = getCorrelationIds();
-    	final FirmwareUpdateMessageDataContainer firmwareUpdateMessageDataContainer = 
-    			Mockito.mock(FirmwareUpdateMessageDataContainer.class);
-    	final Device device = Mockito.mock(Ssld.class);
+    	final CorrelationIds ids = this.getCorrelationIds();
+    	final Device device = this.getMockDevice(Ssld.class);
     	final FirmwareFile firmwareFile = Mockito.mock(FirmwareFile.class);
     	firmwareFile.addFirmwareModule(new FirmwareModule("functional"), VERSION_1);
     	
-    	when(firmwareUpdateMessageDataContainer.getFirmwareUrl()).thenReturn("/firmware-test");
+    	when(this.firmwareUpdateMessageDataContainer.getFirmwareUrl()).thenReturn("/firmware-test");
     	when(this.deviceDomainService.searchActiveDevice(any(), eq(ComponentType.DOMAIN_CORE)))
     		.thenReturn(device);
-    	when(device.getIpAddress()).thenReturn("");
     	when(this.firmwareFileRepository.findByFilename("firmware-test")).thenReturn(Arrays.asList(firmwareFile));
-    	when(firmwareFile.getModuleVersions()).thenReturn(new HashMap<FirmwareModule, String>());
+    	when(firmwareFile.getModuleVersions()).thenReturn(new HashMap<>());
     	
-    	this.firmwareManagementService.updateFirmware(ids, firmwareUpdateMessageDataContainer, 0L, "", 0);
+    	this.firmwareManagementService.updateFirmware(ids, this.firmwareUpdateMessageDataContainer, 0L, "", 0);
     	
-    	verify(this.ssldPendingFirmwareUpdateRepository, never()).save(any());
+    	verifyNoInteractions(this.ssldPendingFirmwareUpdateRepository.save(any()));
     }
     
     @Test
     void testUpdateFirmwareWithIncorrectFirmwareUrl() throws FunctionalException {
-    	final CorrelationIds ids = getCorrelationIds();
-    	final FirmwareUpdateMessageDataContainer firmwareUpdateMessageDataContainer = 
-    			Mockito.mock(FirmwareUpdateMessageDataContainer.class);
-    	final Device device = Mockito.mock(Ssld.class);
+    	final CorrelationIds ids = this.getCorrelationIds();
+    	final Device device = this.getMockDevice(Ssld.class);
     	final FirmwareFile firmwareFile = Mockito.mock(FirmwareFile.class);
     	firmwareFile.addFirmwareModule(new FirmwareModule("functional"), VERSION_1);
     	
-    	when(firmwareUpdateMessageDataContainer.getFirmwareUrl()).thenReturn("/");
+    	when(this.firmwareUpdateMessageDataContainer.getFirmwareUrl()).thenReturn("/");
     	when(this.deviceDomainService.searchActiveDevice(any(), eq(ComponentType.DOMAIN_CORE)))
 			.thenReturn(device);
     	
-    	this.firmwareManagementService.updateFirmware(ids, firmwareUpdateMessageDataContainer, 0L, "", 0);
+    	this.firmwareManagementService.updateFirmware(ids, this.firmwareUpdateMessageDataContainer, 0L, "", 0);
     	
-    	verify(this.ssldPendingFirmwareUpdateRepository, never()).save(any());
+    	verifyNoInteractions(this.ssldPendingFirmwareUpdateRepository.save(any()));
     }
 
     @Test
     public void testHandleGetFirmwareVersionWithMatchingFirmwareVersion() {
-    	final CorrelationIds ids = getCorrelationIds();
+    	final CorrelationIds ids = this.getCorrelationIds();
     	final List<FirmwareVersionDto> firmwareVersionDtos = Arrays.asList();
+    	
     	final SsldPendingFirmwareUpdate ssldPendingFirmwareUpdate = Mockito.mock(SsldPendingFirmwareUpdate.class);
     	final List<SsldPendingFirmwareUpdate> ssldPendingFirmwareUpdates = Arrays.asList(ssldPendingFirmwareUpdate);
-       
+    	final ArgumentCaptor<ResponseMessage> captor = ArgumentCaptor.forClass(ResponseMessage.class);
+    	
     	when(this.ssldPendingFirmwareUpdateRepository.findByDeviceIdentification(any(String.class)))
        		.thenReturn(ssldPendingFirmwareUpdates);
     	when(ssldPendingFirmwareUpdate.getCorrelationUid()).thenReturn(ids.getCorrelationUid());
@@ -542,26 +581,25 @@ class FirmwareManagementServiceTest {
 		   	Arrays.asList(new FirmwareVersion(FirmwareModuleType.SECURITY, VERSION_1))
 		);
 
-    	firmwareManagementService.handleGetFirmwareVersionResponse(firmwareVersionDtos, ids, "messageType", 1, 
+    	this.firmwareManagementService.handleGetFirmwareVersionResponse(firmwareVersionDtos, ids, "messageType", 1, 
     			ResponseMessageResultType.OK, null);
 
-    	verify(this.ssldPendingFirmwareUpdateRepository, times(1)).delete(any());
+    	verify(this.webServiceResponseMessageSender).send(captor.capture());
+    	verify(this.ssldPendingFirmwareUpdateRepository).delete(any());
     }
 
     @Test
     public void testHandleGetFirmwareVersionResponseNotOk() {
-    	final CorrelationIds ids = getCorrelationIds();
+    	final CorrelationIds ids = this.getCorrelationIds();
     	final List<FirmwareVersionDto> versionsOnDevice = new ArrayList<>();
     	
-    	ArgumentCaptor<ResponseMessage> captor = ArgumentCaptor.forClass(ResponseMessage.class);
-    	firmwareManagementService.handleGetFirmwareVersionResponse(versionsOnDevice, ids, "messageType", 1,
+    	this.firmwareManagementService.handleGetFirmwareVersionResponse(versionsOnDevice, ids, "messageType", 1,
     			ResponseMessageResultType.NOT_OK, null);
 
-    	verify(this.webServiceResponseMessageSender).send(captor.capture());
-    	verify(this.ssldPendingFirmwareUpdateRepository, never()).delete(any());
-    		
-    	ResponseMessage responseMessage = captor.getValue();
+    	verify(this.webServiceResponseMessageSender).send(this.responseMessageCaptor.capture());
 
+    	final ResponseMessage responseMessage = this.responseMessageCaptor.getValue();
+    	
     	assertEquals(ResponseMessageResultType.NOT_OK, responseMessage.getResult());
     	assertEquals("Exception occurred while getting device firmware version", responseMessage.getOsgpException().getMessage());
     }
@@ -569,17 +607,16 @@ class FirmwareManagementServiceTest {
    
     @Test
     public void testHandleGetFirmwareVersionErrorNotNull() {
-    	final CorrelationIds ids = getCorrelationIds();
+    	final CorrelationIds ids = this.getCorrelationIds();
 		final List<FirmwareVersionDto> versionsOnDevice = new ArrayList<>();
-		ArgumentCaptor<ResponseMessage> captor = ArgumentCaptor.forClass(ResponseMessage.class);
 		
-		firmwareManagementService.handleGetFirmwareVersionResponse(versionsOnDevice, ids, "messageType", 1,
-				ResponseMessageResultType.OK, defaultException);
+		this.firmwareManagementService.handleGetFirmwareVersionResponse(versionsOnDevice, ids, "messageType", 1,
+				ResponseMessageResultType.OK, this.defaultException);
 		
-		verify(this.webServiceResponseMessageSender).send(captor.capture());
+		verify(this.webServiceResponseMessageSender).send(this.responseMessageCaptor.capture());
 		verify(this.ssldPendingFirmwareUpdateRepository, never()).delete(any());
 		
-		ResponseMessage responseMessage = captor.getValue();
+		final ResponseMessage responseMessage = this.responseMessageCaptor.getValue();
 		
 		assertEquals(ResponseMessageResultType.NOT_OK, responseMessage.getResult());
 		assertEquals("Exception occurred while getting device firmware version", responseMessage.getOsgpException().getMessage());
@@ -587,43 +624,40 @@ class FirmwareManagementServiceTest {
 
     @Test
     public void testHandleGetFirmwareVersionWithPendingUpdateIsNull() {
-    	final CorrelationIds ids = getCorrelationIds();
+    	final CorrelationIds ids = this.getCorrelationIds();
     	final List<FirmwareVersionDto> versionsOnDevice = new ArrayList<>();
-    	ArgumentCaptor<ResponseMessage> captor = ArgumentCaptor.forClass(ResponseMessage.class);
     	
     	when(this.ssldPendingFirmwareUpdateRepository.findByDeviceIdentification(any(String.class))).thenReturn(null);
 
-    	firmwareManagementService.handleGetFirmwareVersionResponse(versionsOnDevice, ids, "messageType", 1,
+    	this.firmwareManagementService.handleGetFirmwareVersionResponse(versionsOnDevice, ids, "messageType", 1,
     			ResponseMessageResultType.OK, null);
 	
-    	verify(this.webServiceResponseMessageSender).send(captor.capture());
-    	verify(this.ssldPendingFirmwareUpdateRepository, never()).delete(any());
+    	verify(this.webServiceResponseMessageSender).send(this.responseMessageCaptor.capture());
 	
-    	ResponseMessage responseMessage = captor.getValue();
+    	final ResponseMessage responseMessage = this.responseMessageCaptor.getValue();
+    	
     	assertEquals(ResponseMessageResultType.OK, responseMessage.getResult());
     }
 
    
     @Test
     public void testHandleGetFirmwareVersionWithNonMatchingCorrelationUid() {
-    	final CorrelationIds ids = getCorrelationIds();
+    	final CorrelationIds ids = this.getCorrelationIds();
     	final List<FirmwareVersionDto> versionsOnDevice = new ArrayList<>();
     	final SsldPendingFirmwareUpdate ssldPendingFirmwareUpdate = Mockito.mock(SsldPendingFirmwareUpdate.class);
     	final List<SsldPendingFirmwareUpdate> ssldPendingFirmwareUpdates = Arrays.asList(ssldPendingFirmwareUpdate);
-    	
-    	ArgumentCaptor<ResponseMessage> captor = ArgumentCaptor.forClass(ResponseMessage.class);
-		
-    	when(this.ssldPendingFirmwareUpdateRepository.findByDeviceIdentification(any(String.class)))
+   
+    	when(this.ssldPendingFirmwareUpdateRepository.findByDeviceIdentification(any()))
     		.thenReturn(ssldPendingFirmwareUpdates);
     	when(ssldPendingFirmwareUpdate.getCorrelationUid()).thenReturn("differentUid");
-		
-    	firmwareManagementService.handleGetFirmwareVersionResponse(versionsOnDevice, ids, "messageType", 1,
+
+        this.firmwareManagementService.handleGetFirmwareVersionResponse(versionsOnDevice, ids, "messageType", 1,
     		ResponseMessageResultType.OK, null);
 
-		verify(this.webServiceResponseMessageSender).send(captor.capture());
-		verify(this.ssldPendingFirmwareUpdateRepository, never()).delete(any());
+		verify(this.webServiceResponseMessageSender).send(this.responseMessageCaptor.capture());
 		
-		ResponseMessage responseMessage = captor.getValue();
+		final ResponseMessage responseMessage = this.responseMessageCaptor.getValue();
+		
 		assertEquals(ResponseMessageResultType.OK, responseMessage.getResult());
     }
 }
