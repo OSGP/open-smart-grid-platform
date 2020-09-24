@@ -8,8 +8,11 @@
  */
 package org.opensmartgridplatform.adapter.kafka.da.application.mapping;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.UUID;
 
 import org.opensmartgridplatform.adapter.kafka.da.avro.GridMeasurementPublishedEvent;
@@ -42,15 +45,13 @@ public class GridMeasurementPublishedEventConverter extends CustomConverter<Stri
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GridMeasurementPublishedEventConverter.class);
 
-    private static final int SIMPLE_END_INDEX = 10;
-
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public GridMeasurementPublishedEvent convert(final String source,
             final Type<? extends GridMeasurementPublishedEvent> destinationType, final MappingContext mappingContext) {
 
-        StringArrayToAnalogList stringArrayToAnalogList = null;
+        LsMeasurementMessageToAnalogList stringArrayToAnalogList = null;
         LOGGER.info("Source string: {}", source);
 
         try {
@@ -59,9 +60,7 @@ public class GridMeasurementPublishedEventConverter extends CustomConverter<Stri
             final String[] values = (payload.gisnr + ", " + String.join(", ", payload.data)).split(", ");
             LOGGER.info("Values length: {} and values: {}", values.length, Arrays.toString(values));
 
-            if (values.length == SIMPLE_END_INDEX) {
-                stringArrayToAnalogList = new SimpleStringToAnalogList();
-            } else if (values.length == LsPeakShavingMeasurementType.getNumberOfElements() + 1) {
+            if (values.length == LsPeakShavingMeasurementType.getNumberOfElements() + 1) {
                 stringArrayToAnalogList = new LsMeasurementMessageToAnalogList();
             } else {
                 LOGGER.error("String '{}' does not have the expected amount of fields, abandoning conversion", source);
@@ -71,7 +70,10 @@ public class GridMeasurementPublishedEventConverter extends CustomConverter<Stri
             final String eanCode = values[0];
             final PowerSystemResource powerSystemResource = new PowerSystemResource(eanCode,
                     UUID.randomUUID().toString(), new ArrayList<Name>());
-            final long createdDateTime = System.currentTimeMillis();
+            final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");
+            final Date date = dateFormat.parse(payload.date);
+            final long createdDateTime = date.getTime();
+            LOGGER.info("CreatedDateTime: {}", createdDateTime);
             return new GridMeasurementPublishedEvent(createdDateTime, eanCode, UUID.randomUUID().toString(),
                     "GridMeasurementPublishedEvent", new ArrayList<Name>(), powerSystemResource,
                     stringArrayToAnalogList.convertToAnalogList(values));
@@ -80,6 +82,10 @@ public class GridMeasurementPublishedEventConverter extends CustomConverter<Stri
             return null;
         } catch (final JsonProcessingException e) {
             LOGGER.error("Caught an error processing a JSON string to Payload. {}", source, e);
+            return null;
+        } catch (final ParseException e) {
+            LOGGER.error("Date could not be parsed corrrectly. Date format is: yyyy-mm-dd HH:mm:ss, "
+                    + "however the provided date was not the correct format. {}", source, e);
             return null;
         }
     }
