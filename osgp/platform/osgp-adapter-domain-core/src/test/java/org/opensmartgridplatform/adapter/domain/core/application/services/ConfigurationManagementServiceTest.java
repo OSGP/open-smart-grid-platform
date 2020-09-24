@@ -1,7 +1,6 @@
 package org.opensmartgridplatform.adapter.domain.core.application.services;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
@@ -12,7 +11,6 @@ import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
-import org.apache.activemq.command.ActiveMQMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,7 +28,6 @@ import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
 import org.opensmartgridplatform.domain.core.exceptions.UnknownEntityException;
-import org.opensmartgridplatform.domain.core.repositories.OrganisationRepository;
 import org.opensmartgridplatform.domain.core.repositories.SsldRepository;
 import org.opensmartgridplatform.domain.core.services.DeviceDomainService;
 import org.opensmartgridplatform.domain.core.services.OrganisationDomainService;
@@ -58,23 +55,15 @@ public class ConfigurationManagementServiceTest {
     @Mock
     private ConfigurationDto configurationDto;
     @Mock
-    private Organisation organisation;
-    @Mock
-    private OrganisationRepository organisationRepository;
-    @Mock
     private DomainCoreMapper domainCoreMapper;
     @Mock
     private OrganisationDomainService organisationDomainService;
     @Mock
     private DeviceDomainService deviceDomainService;
     @Mock
-    private ActiveMQMessage message;
-    @Mock
     private CorrelationIds ids;
     @Mock
     private Configuration configuration;
-    @Mock
-    private ConfigurationDto.Builder builder;
     @Mock
     private OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
     @Mock
@@ -151,13 +140,13 @@ public class ConfigurationManagementServiceTest {
                 this.stringArgumentCaptorOne.capture(), this.integerArgumentCaptor.capture(),
                 this.stringArgumentCaptorTwo.capture(), this.longArgumentCaptor.capture());
 
-        assertEquals("c", this.requestMessageArgumentCaptor.getValue().getCorrelationUid());
-        assertEquals("a", this.requestMessageArgumentCaptor.getValue().getOrganisationIdentification());
-        assertEquals("b", this.requestMessageArgumentCaptor.getValue().getDeviceIdentification());
-        assertEquals(this.messageType, this.stringArgumentCaptorOne.getValue());
-        assertEquals(1, this.integerArgumentCaptor.getValue());
-        assertEquals("333.333.1.22", this.stringArgumentCaptorTwo.getValue());
-        assertEquals((long) 1, this.longArgumentCaptor.getValue());
+        assertThat(this.requestMessageArgumentCaptor.getValue().getCorrelationUid()).isEqualTo("c");
+        assertThat(this.requestMessageArgumentCaptor.getValue().getOrganisationIdentification()).isEqualTo("a");
+        assertThat(this.requestMessageArgumentCaptor.getValue().getDeviceIdentification()).isEqualTo("b");
+        assertThat(this.stringArgumentCaptorOne.getValue()).isEqualTo(this.messageType);
+        assertThat(this.integerArgumentCaptor.getValue()).isEqualTo(1);
+        assertThat(this.stringArgumentCaptorTwo.getValue()).isEqualTo("333.333.1.22");
+        assertThat(this.longArgumentCaptor.getValue()).isEqualTo(1);
     }
     @Test
     public void testTrySetConfigurationWithNoConfiguration() throws Exception {
@@ -169,7 +158,7 @@ public class ConfigurationManagementServiceTest {
         this.configurationManagementService.setConfiguration(this.ids, null, this.scheduleTime, this.messageType,
                 this.messagePriority);
 
-        assertTrue(this.outContent.toString().contains("Configuration is empty, skip sending a request to device"));
+        assertThat(this.outContent.toString().contains("Configuration is empty, skip sending a request to device")).isTrue();
     }
     @Test
     public void
@@ -186,13 +175,13 @@ public class ConfigurationManagementServiceTest {
                 this.stringArgumentCaptorOne.capture(), this.integerArgumentCaptor.capture(),
                 this.stringArgumentCaptorTwo.capture(), this.longArgumentCaptor.capture());
 
-        assertEquals("c", this.requestMessageArgumentCaptor.getValue().getCorrelationUid());
-        assertEquals("a", this.requestMessageArgumentCaptor.getValue().getOrganisationIdentification());
-        assertEquals("b", this.requestMessageArgumentCaptor.getValue().getDeviceIdentification());
-        assertEquals(this.messageType, this.stringArgumentCaptorOne.getValue());
-        assertEquals(1, this.integerArgumentCaptor.getValue());
-        assertEquals(null, this.stringArgumentCaptorTwo.getValue());
-        assertEquals((long) 1, this.longArgumentCaptor.getValue());
+        assertThat(this.requestMessageArgumentCaptor.getValue().getCorrelationUid()).isEqualTo("c");
+        assertThat(this.requestMessageArgumentCaptor.getValue().getOrganisationIdentification()).isEqualTo("a");
+        assertThat(this.requestMessageArgumentCaptor.getValue().getDeviceIdentification()).isEqualTo("b");
+        assertThat(this.stringArgumentCaptorOne.getValue()).isEqualTo(this.messageType);
+        assertThat(this.integerArgumentCaptor.getValue()).isEqualTo(1);
+        assertThat(this.stringArgumentCaptorTwo.getValue()).isEqualTo(null);
+        assertThat(this.longArgumentCaptor.getValue()).isEqualTo(1);
     }
     @Test
     public void testGetConfiguration() throws UnknownEntityException, FunctionalException {
@@ -211,12 +200,12 @@ public class ConfigurationManagementServiceTest {
                 this.stringArgumentCaptorOne.capture(), this.integerArgumentCaptor.capture(),
                 this.stringArgumentCaptorTwo.capture());
 
-        assertEquals("c", this.requestMessageArgumentCaptor.getValue().getCorrelationUid());
-        assertEquals("a", this.requestMessageArgumentCaptor.getValue().getOrganisationIdentification());
-        assertEquals("b", this.requestMessageArgumentCaptor.getValue().getDeviceIdentification());
-        assertEquals(this.messageType, this.stringArgumentCaptorOne.getValue());
-        assertEquals(1, this.integerArgumentCaptor.getValue());
-        assertEquals("333.333.1.22", this.stringArgumentCaptorTwo.getValue());
+        assertThat(this.requestMessageArgumentCaptor.getValue().getCorrelationUid()).isEqualTo("c");
+        assertThat(this.requestMessageArgumentCaptor.getValue().getOrganisationIdentification()).isEqualTo("a");
+        assertThat(this.requestMessageArgumentCaptor.getValue().getDeviceIdentification()).isEqualTo("b");
+        assertThat(this.stringArgumentCaptorOne.getValue()).isEqualTo(this.messageType);
+        assertThat(this.integerArgumentCaptor.getValue()).isEqualTo(1);
+        assertThat(this.stringArgumentCaptorTwo.getValue()).isEqualTo("333.333.1.22");
     }
     @Test
     public void testHandleGetConfigurationResponse() throws UnknownEntityException, FunctionalException {
@@ -234,10 +223,10 @@ public class ConfigurationManagementServiceTest {
 
         verify(this.webServiceResponseMessageSender).send(this.responseMessageArgumentCaptor.capture());
 
-        assertEquals("c", this.responseMessageArgumentCaptor.getValue().getCorrelationUid());
-        assertEquals("a", this.responseMessageArgumentCaptor.getValue().getOrganisationIdentification());
-        assertEquals("b", this.responseMessageArgumentCaptor.getValue().getDeviceIdentification());
-        assertEquals(ResponseMessageResultType.OK, this.responseMessageArgumentCaptor.getValue().getResult());
+        assertThat(this.responseMessageArgumentCaptor.getValue().getCorrelationUid()).isEqualTo("c");
+        assertThat(this.responseMessageArgumentCaptor.getValue().getOrganisationIdentification()).isEqualTo("a");
+        assertThat(this.responseMessageArgumentCaptor.getValue().getDeviceIdentification()).isEqualTo("b");
+        assertThat(this.responseMessageArgumentCaptor.getValue().getResult()).isEqualTo(ResponseMessageResultType.OK);
     }
     @Test
     public void testHandleGetConfigurationResponseWithException() throws UnknownEntityException, FunctionalException {
@@ -253,14 +242,14 @@ public class ConfigurationManagementServiceTest {
         this.configurationManagementService.handleGetConfigurationResponse(this.configurationDto, this.ids,
                 this.messageType, this.messagePriority, ResponseMessageResultType.OK, this.exception);
 
-        assertTrue(this.outContent.toString().contains("Unexpected Exception for messageType:"));
+        assertThat(this.outContent.toString().contains("Unexpected Exception for messageType:")).isTrue();
 
         verify(this.webServiceResponseMessageSender).send(this.responseMessageArgumentCaptor.capture());
 
-        assertEquals("c", this.responseMessageArgumentCaptor.getValue().getCorrelationUid());
-        assertEquals("a", this.responseMessageArgumentCaptor.getValue().getOrganisationIdentification());
-        assertEquals("b", this.responseMessageArgumentCaptor.getValue().getDeviceIdentification());
-        assertEquals(ResponseMessageResultType.NOT_OK, this.responseMessageArgumentCaptor.getValue().getResult());
+        assertThat(this.responseMessageArgumentCaptor.getValue().getCorrelationUid()).isEqualTo("c");
+        assertThat(this.responseMessageArgumentCaptor.getValue().getOrganisationIdentification()).isEqualTo("a");
+        assertThat(this.responseMessageArgumentCaptor.getValue().getDeviceIdentification()).isEqualTo("b");
+        assertThat(this.responseMessageArgumentCaptor.getValue().getResult()).isEqualTo(ResponseMessageResultType.NOT_OK);
     }
     @Test
     public void testswitchConfiguration() throws UnknownEntityException, FunctionalException {
@@ -279,12 +268,12 @@ public class ConfigurationManagementServiceTest {
                 this.stringArgumentCaptorOne.capture(), this.integerArgumentCaptor.capture(),
                 this.stringArgumentCaptorTwo.capture());
 
-        assertEquals("c", this.requestMessageArgumentCaptor.getValue().getCorrelationUid());
-        assertEquals("a", this.requestMessageArgumentCaptor.getValue().getOrganisationIdentification());
-        assertEquals("b", this.requestMessageArgumentCaptor.getValue().getDeviceIdentification());
-        assertEquals(this.messageType, this.stringArgumentCaptorOne.getValue());
-        assertEquals(1, this.integerArgumentCaptor.getValue());
-        assertEquals("333.333.1.22", this.stringArgumentCaptorTwo.getValue());
+        assertThat(this.requestMessageArgumentCaptor.getValue().getCorrelationUid()).isEqualTo("c");
+        assertThat(this.requestMessageArgumentCaptor.getValue().getOrganisationIdentification()).isEqualTo("a");
+        assertThat(this.requestMessageArgumentCaptor.getValue().getDeviceIdentification()).isEqualTo("b");
+        assertThat(this.stringArgumentCaptorOne.getValue()).isEqualTo(this.messageType);
+        assertThat(this.integerArgumentCaptor.getValue()).isEqualTo(1);
+        assertThat(this.stringArgumentCaptorTwo.getValue()).isEqualTo("333.333.1.22");
     }
 
     private void injectionUsingReflection(final Class<?> c, final String fieldName, final Object instance, final Object newValue) throws
