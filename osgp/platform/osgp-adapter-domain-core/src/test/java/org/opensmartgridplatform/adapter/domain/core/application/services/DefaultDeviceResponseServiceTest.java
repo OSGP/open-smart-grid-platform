@@ -33,7 +33,7 @@ public class DefaultDeviceResponseServiceTest {
     private DefaultDeviceResponseService defaultDeviceResponseService;
     
     @Test
-    public void testDefaultDeviseResponseWithNotOkTypeAndException() {
+    public void testDefaultDeviceResponseWithNotOkTypeAndException() {
     	//Arrange
     	CorrelationIds ids = new CorrelationIds("orginazationTestId", "deviceIdTest", "correlationUid");
     	String messageType = "Warning";
@@ -59,7 +59,7 @@ public class DefaultDeviceResponseServiceTest {
     }
     
     @Test
-    public void testDefaultDeviseResponseWithNotOkTypeAndNoException2() {
+    public void testDefaultDeviceResponseWithNotOkTypeAndNoException2() {
     	//Arrange
     	CorrelationIds ids = new CorrelationIds("orginazationTestId", "deviceIdTest", "correlationUid");
     	String messageType = "Warning";
@@ -85,7 +85,7 @@ public class DefaultDeviceResponseServiceTest {
     }
     
     @Test
-    public void testDefaultDeviseResponseWithOkTypeAndException() {
+    public void testDefaultDeviceResponseWithOkTypeAndException() {
     	//Arrange
     	CorrelationIds ids = new CorrelationIds("orginazationTestId", "deviceIdTest", "correlationUid");
     	String messageType = "Warning";
@@ -112,7 +112,7 @@ public class DefaultDeviceResponseServiceTest {
     }
     
     @Test
-    public void testDefaultDeviseResponseWithOkTypeAndNoException() {
+    public void testDefaultDeviceResponseWithOkTypeAndNoException() {
     	//Arrange
     	CorrelationIds ids = new CorrelationIds("orginazationTestId", "deviceIdTest", "correlationUid");
     	String messageType = "Warning";
