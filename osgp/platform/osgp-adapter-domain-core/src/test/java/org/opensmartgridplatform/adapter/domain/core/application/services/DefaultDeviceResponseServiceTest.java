@@ -1,6 +1,5 @@
 package org.opensmartgridplatform.adapter.domain.core.application.services;
 
-import org.assertj.core.api.Assert;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -16,7 +15,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 
@@ -128,7 +126,7 @@ public class DefaultDeviceResponseServiceTest {
 				.withOsgpException(exception)
 				.withMessagePriority(messagePriority)
 				.build();
-		
+
 		//Act
     	this.defaultDeviceResponseService.handleDefaultDeviceResponse(ids, messageType, messagePriority, deviceResult, exception);
     
