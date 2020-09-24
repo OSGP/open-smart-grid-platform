@@ -52,16 +52,15 @@ public class InstallationService {
     private CoupleMbusDeviceByChannelCommandExecutor coupleMbusDeviceByChannelCommandExecutor;
 
     // === ADD METER ===
-    public void addMeter(final SmartMeteringDeviceDto smartMeteringDevice) {
+    public void addMeter(final SmartMeteringDeviceDto smartMeteringDevice) throws FunctionalException {
         this.storeNewKeys(smartMeteringDevice);
         final DlmsDevice dlmsDevice = this.installationMapper.map(smartMeteringDevice, DlmsDevice.class);
         this.dlmsDeviceRepository.save(dlmsDevice);
     }
 
-    private void storeNewKeys(final SmartMeteringDeviceDto smartMeteringDeviceDto) {
+    private void storeNewKeys(final SmartMeteringDeviceDto smartMeteringDeviceDto) throws FunctionalException {
         byte[][] securityKeys = new byte[4][];
 
-        try {
             SecurityKeyType[] securityKeyTypes = { SecurityKeyType.E_METER_MASTER, SecurityKeyType.E_METER_AUTHENTICATION,
                     SecurityKeyType.E_METER_ENCRYPTION, SecurityKeyType.G_METER_MASTER };
 
@@ -76,10 +75,6 @@ public class InstallationService {
 
             securityKeyService.storeNewKeys(smartMeteringDeviceDto.getDeviceIdentification(), securityKeyTypes,
                     securityKeys);
-        } catch (FunctionalException e) {
-            e.printStackTrace();
-        }
-
     }
 
     public MbusChannelElementsResponseDto coupleMbusDevice(final DlmsConnectionManager conn, final DlmsDevice device,
