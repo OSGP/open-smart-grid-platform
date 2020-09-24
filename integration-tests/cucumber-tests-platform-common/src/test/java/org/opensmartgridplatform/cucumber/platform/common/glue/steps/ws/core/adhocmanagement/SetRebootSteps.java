@@ -84,7 +84,7 @@ public class SetRebootSteps {
      * @throws Throwable
      */
     @Then("^the set reboot async response contains$")
-    public void theSetRebootAsyncResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
+    public static void theSetRebootAsyncResponseContains(final Map<String, String> expectedResponseData) {
         final SetRebootAsyncResponse asyncResponse = (SetRebootAsyncResponse) ScenarioContext.current()
                 .get(PlatformKeys.RESPONSE);
 
@@ -104,7 +104,7 @@ public class SetRebootSteps {
 
     @Then("^the platform buffers a set reboot response message for device \"([^\"]*)\"$")
     public void thenThePlatformBuffersASetRebootResponseMessage(final String deviceIdentification,
-            final Map<String, String> expectedResult) throws Throwable {
+            final Map<String, String> expectedResult) {
         final SetRebootAsyncRequest request = new SetRebootAsyncRequest();
         final AsyncRequest asyncRequest = new AsyncRequest();
         asyncRequest.setDeviceId(deviceIdentification);
@@ -125,7 +125,7 @@ public class SetRebootSteps {
     }
 
     @Then("^the set reboot async response contains a soap fault$")
-    public void theSetRebootAsyncResponseContainsASoapFault(final Map<String, String> expectedResult) {
+    public static void theSetRebootAsyncResponseContainsASoapFault(final Map<String, String> expectedResult) {
         final SoapFaultClientException response = (SoapFaultClientException) ScenarioContext.current()
                 .get(PlatformKeys.RESPONSE);
 

@@ -191,7 +191,7 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
         final String deviceIdentification = registerRequest.getDeviceIdentification();
         final String deviceType = registerRequest.getDeviceType().toString();
         final boolean hasSchedule = registerRequest.getHasSchedule();
-        InetAddress inetAddress = getInetAddress(registerRequest, deviceIdentification);
+        InetAddress inetAddress = this.getInetAddress(registerRequest, deviceIdentification);
 
         // Send message to OSGP-CORE to save IP Address, device type and has
         // schedule values in OSGP-CORE database.

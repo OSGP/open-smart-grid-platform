@@ -1,4 +1,4 @@
-@PublicLighting @Platform @FirmwareManagement
+@PublicLighting @Platform @FirmwareManagement @PendingFirmwareUpdate
 Feature: FirmwareManagement pending firmware update
   As grid operator
   I want to have an updated firmware history upon registration of an SSLD after a firmware update
@@ -36,12 +36,18 @@ Feature: FirmwareManagement pending firmware update
       | OrganizationIdentification | TestOrganization   |
     When the device sends a register device request to the platform over "<Protocol>"
       | DeviceIdentification | TEST1024010101010 |
-      | Protocol             | <Protocol>        |
       | DeviceUid            | eHW0eEFzN0R2Okd5  |
       | IpAddress            | 127.0.0.2         |
       | DeviceType           | SSLD              |
       | HasSchedule          | false             |
     Then the register device response contains
+      | Status | OK |
+    When the device sends a confirm register device request to the platform over "<Protocol>"
+      | DeviceIdentification | TEST1024010101010 |
+      | DeviceUid            | eHW0eEFzN0R2Okd5  |
+      | IpAddress            | 127.0.0.2         |
+      | DeviceType           | SSLD              |
+    Then the confirm register device response contains
       | Status | OK |
     And the ssld oslp device contains
       | DeviceIdentification | TEST1024010101010 |
