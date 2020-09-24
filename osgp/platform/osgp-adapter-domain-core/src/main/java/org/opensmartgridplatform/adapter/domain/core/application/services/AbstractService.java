@@ -52,7 +52,7 @@ public class AbstractService {
     }
 
     protected Organisation findOrganisation(final String organisationIdentification) throws FunctionalException {
-        Organisation organisation;
+        final Organisation organisation;
         try {
             organisation = this.organisationDomainService.searchOrganisation(organisationIdentification);
         } catch (final UnknownEntityException e) {
