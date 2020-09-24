@@ -1,11 +1,9 @@
 package org.opensmartgridplatform.adapter.domain.core.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -107,7 +105,7 @@ public class DeviceManagementServiceTest {
 				null, "testMessageType", 1);
 
 		//This method is not called since it comes after the check of the certificate
-		verify(this.domainCoreMapper, never()).map(null,  org.opensmartgridplatform.dto.valueobjects.CertificationDto.class);
+		verifyNoInteractions(this.domainCoreMapper);
 	}
 	
 	@Test
@@ -137,7 +135,7 @@ public class DeviceManagementServiceTest {
 				null, "testMessageType", 1);
 
 		//This method is not called since it comes after the check of the verification
-		verify(this.osgpCoreRequestManager, never()).send(any(RequestMessage.class), eq("testMessageType"), eq(1), eq(null));
+		verifyNoInteractions(this.osgpCoreRequestManager);
 	}
 	
 	@Test
