@@ -1,16 +1,18 @@
 package org.opensmartgridplatform.adapter.domain.core.application.services;
 
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.apache.activemq.command.ActiveMQMessage;
-import org.opensmartgridplatform.domain.core.entities.DeviceOutputSetting;
-import org.assertj.core.api.Assertions;
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,13 +23,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.opensmartgridplatform.domain.core.entities.DeviceOutputSetting;
-import org.opensmartgridplatform.domain.core.valueobjects.RelayType;
-import org.opensmartgridplatform.dto.da.ConnectRequestDto;
-import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
-import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
-import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.infra.jms.*;
 import org.opensmartgridplatform.adapter.domain.core.application.mapping.DomainCoreMapper;
 import org.opensmartgridplatform.adapter.domain.core.infra.jms.core.OsgpCoreRequestMessageSender;
 import org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.WebServiceResponseMessageSender;
@@ -42,14 +37,16 @@ import org.opensmartgridplatform.domain.core.services.OrganisationDomainService;
 import org.opensmartgridplatform.domain.core.valueobjects.Configuration;
 import org.opensmartgridplatform.domain.core.valueobjects.RelayConfiguration;
 import org.opensmartgridplatform.domain.core.valueobjects.RelayMap;
+import org.opensmartgridplatform.domain.core.valueobjects.RelayType;
 import org.opensmartgridplatform.dto.valueobjects.ConfigurationDto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.event.LoggingEvent;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
+import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.springframework.beans.factory.annotation.Qualifier;
-
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -82,6 +79,20 @@ public class ConfigurationManagementServiceTest {
     private OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
     @Mock
     private Ssld ssld;
+    @Mock
+    private Device device;
+    @Captor
+    private ArgumentCaptor<RequestMessage> requestMessageArgumentCaptor;
+    @Captor
+    private ArgumentCaptor<String> stringArgumentCaptorOne;
+    @Captor
+    private ArgumentCaptor<String> stringArgumentCaptorTwo;
+    @Captor
+    private ArgumentCaptor<Integer> integerArgumentCaptor;
+    @Captor
+    private ArgumentCaptor<Long> longArgumentCaptor;
+    @Captor
+    private ArgumentCaptor<ResponseMessage> responseMessageArgumentCaptor;
     @InjectMocks
     @Qualifier("organisationDomainService")
     private ConfigurationManagementService configurationManagementService;
@@ -91,194 +102,194 @@ public class ConfigurationManagementServiceTest {
     private String organisationIdentification;
     private String deviceIdentification;
     private String correlationUid;
-    private ResponseMessageResultType deviceResult;
     private OsgpException exception;
+    private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
     @BeforeEach
     public void setUp() throws NoSuchFieldException,
             SecurityException, IllegalArgumentException, IllegalAccessException {
         // make ids
-        ids = new CorrelationIds("a", "b", "c");
-        configurationManagementService = new ConfigurationManagementService();
+        this.ids = new CorrelationIds("a", "b", "c");
+        this.configurationManagementService = new ConfigurationManagementService();
         // do injection using reflection
-        injectionUsingReflection(AbstractService.class, "organisationDomainService", configurationManagementService, organisationDomainService);
-        injectionUsingReflection(AbstractService.class, "deviceDomainService", configurationManagementService, deviceDomainService);
-        injectionUsingReflection(AbstractService.class, "domainCoreMapper", configurationManagementService, domainCoreMapper);
-        injectionUsingReflection(AbstractService.class, "osgpCoreRequestMessageSender", configurationManagementService, osgpCoreRequestMessageSender);
-        injectionUsingReflection(AbstractService.class, "webServiceResponseMessageSender", configurationManagementService, webServiceResponseMessageSender);
-        injectionUsingReflection(AbstractService.class, "ssldRepository", configurationManagementService, ssldRepository);
-        scheduleTime = 1;
-        messageType = "none";
-        messagePriority = 1;
+        this.injectionUsingReflection(AbstractService.class, "organisationDomainService",
+                this.configurationManagementService, this.organisationDomainService);
+        this.injectionUsingReflection(AbstractService.class, "deviceDomainService", this.configurationManagementService,
+                this.deviceDomainService);
+        this.injectionUsingReflection(AbstractService.class, "domainCoreMapper", this.configurationManagementService,
+                this.domainCoreMapper);
+        this.injectionUsingReflection(AbstractService.class, "osgpCoreRequestMessageSender",
+                this.configurationManagementService, this.osgpCoreRequestMessageSender);
+        this.injectionUsingReflection(AbstractService.class, "webServiceResponseMessageSender",
+                this.configurationManagementService, this.webServiceResponseMessageSender);
+        this.injectionUsingReflection(AbstractService.class, "ssldRepository", this.configurationManagementService,
+                this.ssldRepository);
+        this.scheduleTime = 1;
+        this.messageType = "none";
+        this.messagePriority = 1;
+        System.setOut(new PrintStream(this.outContent));
     }
     @Test
-    public void testTrySetConfiguration() throws FunctionalException, UnknownEntityException, JMSException {
-        Organisation testOrganisation = new Organisation();
+    public void testTrySetConfiguration() throws FunctionalException, UnknownEntityException {
+        final Organisation testOrganisation = new Organisation();
 
-        RelayMap relayMap = new RelayMap(1, 1, RelayType.LIGHT, "1");
-        ArrayList<RelayMap> relayMapList = new ArrayList<>();
+        final RelayMap relayMap = new RelayMap(1, 1, RelayType.LIGHT, "1");
+        final ArrayList<RelayMap> relayMapList = new ArrayList<>();
         relayMapList.add(relayMap);
 
-        when(organisationDomainService.searchOrganisation(any(String.class))).thenReturn(testOrganisation);
-        when(deviceDomainService.searchActiveDevice(any(), any())).thenReturn(new Device());
-        when(configuration.getRelayConfiguration()).thenReturn(new RelayConfiguration(relayMapList));
-        when(ssldRepository.findById(any())).thenReturn(java.util.Optional.of(ssld));
-        doNothing().when(ssld).updateOutputSettings(any());
-        try {
-            configurationManagementService.setConfiguration(ids, configuration, scheduleTime, messageType, messagePriority);
-        } catch (FunctionalException e) {
-            fail("should not throw exception");
-        }
-        verify(ssldRepository, times(1)).save(any());
-        verify(configuration, times(7)).getRelayConfiguration();
-        verify(domainCoreMapper, times(1)).map(any(), any());
+        when(this.organisationDomainService.searchOrganisation(any(String.class))).thenReturn(testOrganisation);
+        when(this.deviceDomainService.searchActiveDevice(any(), any())).thenReturn(this.device);
+        when(this.configuration.getRelayConfiguration()).thenReturn(new RelayConfiguration(relayMapList));
+        when(this.ssldRepository.findById(any())).thenReturn(java.util.Optional.of(this.ssld));
+        when(this.domainCoreMapper.map(any(), any())).thenReturn(this.configurationDto);
+        doNothing().when(this.ssld).updateOutputSettings(any());
+        when(this.device.getIpAddress()).thenReturn("333.333.1.22");
+
+        this.configurationManagementService.setConfiguration(this.ids, this.configuration, this.scheduleTime,
+                this.messageType, this.messagePriority);
+
+        verify(this.osgpCoreRequestMessageSender).sendWithScheduledTime(this.requestMessageArgumentCaptor.capture(),
+                this.stringArgumentCaptorOne.capture(), this.integerArgumentCaptor.capture(),
+                this.stringArgumentCaptorTwo.capture(), this.longArgumentCaptor.capture());
+
+        assertEquals("c", this.requestMessageArgumentCaptor.getValue().getCorrelationUid());
+        assertEquals("a", this.requestMessageArgumentCaptor.getValue().getOrganisationIdentification());
+        assertEquals("b", this.requestMessageArgumentCaptor.getValue().getDeviceIdentification());
+        assertEquals(this.messageType, this.stringArgumentCaptorOne.getValue());
+        assertEquals(1, this.integerArgumentCaptor.getValue());
+        assertEquals("333.333.1.22", this.stringArgumentCaptorTwo.getValue());
+        assertEquals((long) 1, this.longArgumentCaptor.getValue());
     }
     @Test
-    public void testTrySetConfigurationWithNoConfiguration()
-            throws Exception {
-        Organisation testOrganisation = new
-                Organisation();
-        when(organisationDomainService.searchOrganisation(any(String.class))).
-                thenReturn(testOrganisation);
-        when(deviceDomainService.searchActiveDevice(any(),
-                any())).thenReturn(new Device());
-        try {
-            when(organisationDomainService.searchOrganisation(any(String.class))).
-                    thenReturn(testOrganisation);
-        } catch (UnknownEntityException e) {
-            fail("should not throw exception in mocks 1: "
-                    + e);
-        }
-        try {
-            configurationManagementService.setConfiguration(ids, null,
-                    scheduleTime, messageType, messagePriority);
-        } catch (FunctionalException e) {
-            fail("should not throw exception in method");
-        }
+    public void testTrySetConfigurationWithNoConfiguration() throws Exception {
+        final Organisation testOrganisation = new Organisation();
+        when(this.organisationDomainService.searchOrganisation(any(String.class))).thenReturn(testOrganisation);
+        when(this.deviceDomainService.searchActiveDevice(any(), any())).thenReturn(new Device());
+        when(this.organisationDomainService.searchOrganisation(any(String.class))).thenReturn(testOrganisation);
+
+        this.configurationManagementService.setConfiguration(this.ids, null, this.scheduleTime, this.messageType,
+                this.messagePriority);
+
+        assertTrue(this.outContent.toString().contains("Configuration is empty, skip sending a request to device"));
     }
     @Test
     public void
-    testTrySetConfigurationWithNullRelayConfiguration() throws
-            UnknownEntityException, FunctionalException {
-        Organisation testOrganisation = new
-                Organisation();
-        when(organisationDomainService.searchOrganisation(any(String.class))).
-                thenReturn(testOrganisation);
-        when(deviceDomainService.searchActiveDevice(any(),
-                any())).thenReturn(new Device());
-        when(configuration.getRelayConfiguration()).thenReturn(null);
-        try {
-            configurationManagementService.setConfiguration(ids, configuration,
-                    scheduleTime, messageType, messagePriority);
-        } catch (FunctionalException e) {
-            fail("should not throw exception");
-        }
-        verify(configuration,
-                times(2)).getRelayConfiguration();
-        verify(domainCoreMapper, times(1)).map(any(), any());
+    testTrySetConfigurationWithNullRelayConfiguration() throws UnknownEntityException, FunctionalException {
+        final Organisation testOrganisation = new Organisation();
+        when(this.organisationDomainService.searchOrganisation(any(String.class))).thenReturn(testOrganisation);
+        when(this.deviceDomainService.searchActiveDevice(any(), any())).thenReturn(new Device());
+        when(this.configuration.getRelayConfiguration()).thenReturn(null);
+
+        this.configurationManagementService.setConfiguration(this.ids, this.configuration, this.scheduleTime,
+                this.messageType, this.messagePriority);
+
+        verify(this.osgpCoreRequestMessageSender).sendWithScheduledTime(this.requestMessageArgumentCaptor.capture(),
+                this.stringArgumentCaptorOne.capture(), this.integerArgumentCaptor.capture(),
+                this.stringArgumentCaptorTwo.capture(), this.longArgumentCaptor.capture());
+
+        assertEquals("c", this.requestMessageArgumentCaptor.getValue().getCorrelationUid());
+        assertEquals("a", this.requestMessageArgumentCaptor.getValue().getOrganisationIdentification());
+        assertEquals("b", this.requestMessageArgumentCaptor.getValue().getDeviceIdentification());
+        assertEquals(this.messageType, this.stringArgumentCaptorOne.getValue());
+        assertEquals(1, this.integerArgumentCaptor.getValue());
+        assertEquals(null, this.stringArgumentCaptorTwo.getValue());
+        assertEquals((long) 1, this.longArgumentCaptor.getValue());
     }
     @Test
-    public void testGetConfiguration() throws
-            UnknownEntityException, FunctionalException {
-        organisationIdentification = "a";
-        deviceIdentification = "b";
-        correlationUid = "c";
-        when(organisationDomainService.searchOrganisation(any(String.class))).
-                thenReturn(new Organisation());
-        when(deviceDomainService.searchActiveDevice(any(),
-                any())).thenReturn(new Device());
-        try {
-            configurationManagementService.getConfiguration(organisationIdentification,
-                    deviceIdentification, correlationUid, messageType,
-                    messagePriority);
-        }
-        catch(Exception e){
-            fail("should not throw exception in method:" +
-                    e);
-        }
-        verify(osgpCoreRequestMessageSender, times(1)).send(
-                any(RequestMessage.class), eq("none"), eq(1), eq(null));
+    public void testGetConfiguration() throws UnknownEntityException, FunctionalException {
+        this.organisationIdentification = "a";
+        this.deviceIdentification = "b";
+        this.correlationUid = "c";
+
+        when(this.organisationDomainService.searchOrganisation(any(String.class))).thenReturn(new Organisation());
+        when(this.deviceDomainService.searchActiveDevice(any(), any())).thenReturn(this.device);
+        when(this.device.getIpAddress()).thenReturn("333.333.1.22");
+
+        this.configurationManagementService.getConfiguration(this.organisationIdentification, this.deviceIdentification,
+                this.correlationUid, this.messageType, this.messagePriority);
+
+        verify(this.osgpCoreRequestMessageSender).send(this.requestMessageArgumentCaptor.capture(),
+                this.stringArgumentCaptorOne.capture(), this.integerArgumentCaptor.capture(),
+                this.stringArgumentCaptorTwo.capture());
+
+        assertEquals("c", this.requestMessageArgumentCaptor.getValue().getCorrelationUid());
+        assertEquals("a", this.requestMessageArgumentCaptor.getValue().getOrganisationIdentification());
+        assertEquals("b", this.requestMessageArgumentCaptor.getValue().getDeviceIdentification());
+        assertEquals(this.messageType, this.stringArgumentCaptorOne.getValue());
+        assertEquals(1, this.integerArgumentCaptor.getValue());
+        assertEquals("333.333.1.22", this.stringArgumentCaptorTwo.getValue());
     }
     @Test
-    public void testHandleGetConfigurationResponse() throws
-            UnknownEntityException, FunctionalException {
-        organisationIdentification = "a";
-        deviceIdentification = "b";
-        correlationUid = "c";
-        exception = null;
-        when(organisationDomainService.searchOrganisation(any(String.class))).
-                thenReturn(new Organisation());
-        when(deviceDomainService.searchActiveDevice(any(),
-                any())).thenReturn(new Device());
-        when(ssldRepository.findByDeviceIdentification("b")).thenReturn(new
-                Ssld());
-        try {
-            configurationManagementService.handleGetConfigurationResponse(configurationDto,
-                    ids, messageType, messagePriority,
-                    ResponseMessageResultType.OK, exception);
-        }
-        catch(Exception e){
-            fail("should not throw exception in method:" +
-                    e);
-        }
-        verify(domainCoreMapper, times(1)).map(any(), any());
-        verify(webServiceResponseMessageSender,
-                times(1)).send(any());
+    public void testHandleGetConfigurationResponse() throws UnknownEntityException, FunctionalException {
+        this.organisationIdentification = "a";
+        this.deviceIdentification = "b";
+        this.correlationUid = "c";
+        this.exception = null;
+        when(this.organisationDomainService.searchOrganisation(any(String.class))).thenReturn(new Organisation());
+        when(this.deviceDomainService.searchActiveDevice(any(), any())).thenReturn(new Device());
+        when(this.ssldRepository.findByDeviceIdentification("b")).thenReturn(new Ssld());
+
+        this.configurationManagementService.handleGetConfigurationResponse(this.configurationDto, this.ids,
+                this.messageType, this.messagePriority,
+                ResponseMessageResultType.OK, this.exception);
+
+        verify(this.webServiceResponseMessageSender).send(this.responseMessageArgumentCaptor.capture());
+
+        assertEquals("c", this.responseMessageArgumentCaptor.getValue().getCorrelationUid());
+        assertEquals("a", this.responseMessageArgumentCaptor.getValue().getOrganisationIdentification());
+        assertEquals("b", this.responseMessageArgumentCaptor.getValue().getDeviceIdentification());
+        assertEquals(ResponseMessageResultType.OK, this.responseMessageArgumentCaptor.getValue().getResult());
     }
     @Test
-    public void testHandleGetConfigurationResponseWithException()
-            throws UnknownEntityException, FunctionalException {
-        organisationIdentification = "a";
-        deviceIdentification = "b";
-        correlationUid = "c";
-        exception = new
-                OsgpException(ComponentType.DOMAIN_ADMIN, "a");
-        when(organisationDomainService.searchOrganisation(any(String.class))).
-                thenReturn(new Organisation());
-        when(deviceDomainService.searchActiveDevice(any(),
-                any())).thenReturn(new Device());
-        when(ssldRepository.findByDeviceIdentification("b")).thenReturn(new
-                Ssld());
-        try {
-            configurationManagementService.handleGetConfigurationResponse(configurationDto,
-                    ids, messageType, messagePriority,
-                    ResponseMessageResultType.OK, exception);
-        }
-        catch(Exception e){
-            fail("should not throw exception in method:" +
-                    e);
-        }
-        verify(domainCoreMapper, times(0)).map(any(), any());
-        verify(webServiceResponseMessageSender,
-                times(1)).send(any());
+    public void testHandleGetConfigurationResponseWithException() throws UnknownEntityException, FunctionalException {
+        this.organisationIdentification = "a";
+        this.deviceIdentification = "b";
+        this.correlationUid = "c";
+        this.exception = new OsgpException(ComponentType.DOMAIN_ADMIN, "a");
+
+        when(this.organisationDomainService.searchOrganisation(any(String.class))).thenReturn(new Organisation());
+        when(this.deviceDomainService.searchActiveDevice(any(), any())).thenReturn(new Device());
+        when(this.ssldRepository.findByDeviceIdentification("b")).thenReturn(new Ssld());
+
+        this.configurationManagementService.handleGetConfigurationResponse(this.configurationDto, this.ids,
+                this.messageType, this.messagePriority, ResponseMessageResultType.OK, this.exception);
+
+        assertTrue(this.outContent.toString().contains("Unexpected Exception for messageType:"));
+
+        verify(this.webServiceResponseMessageSender).send(this.responseMessageArgumentCaptor.capture());
+
+        assertEquals("c", this.responseMessageArgumentCaptor.getValue().getCorrelationUid());
+        assertEquals("a", this.responseMessageArgumentCaptor.getValue().getOrganisationIdentification());
+        assertEquals("b", this.responseMessageArgumentCaptor.getValue().getDeviceIdentification());
+        assertEquals(ResponseMessageResultType.NOT_OK, this.responseMessageArgumentCaptor.getValue().getResult());
     }
     @Test
-    public void testswitchConfiguration() throws
-            UnknownEntityException, FunctionalException {
-        organisationIdentification = "a";
-        deviceIdentification = "b";
-        correlationUid = "c";
-        when(organisationDomainService.searchOrganisation(any(String.class))).
-                thenReturn(new Organisation());
-        when(deviceDomainService.searchActiveDevice(any(),
-                any())).thenReturn(new Device());
-        configurationManagementService.switchConfiguration(organisationIdentification,
-                deviceIdentification, correlationUid, messageType,
-                messagePriority, "a");
-        try {
-            configurationManagementService.switchConfiguration(organisationIdentification,
-                    deviceIdentification, correlationUid, messageType,
-                    messagePriority, "a");
-        }
-        catch(Exception e){
-            fail("should not throw exception in method:" +
-                    e);
-        }
-        verify(osgpCoreRequestMessageSender, times(2)).send(
-                any(RequestMessage.class), eq("none"), eq(1), eq(null));
+    public void testswitchConfiguration() throws UnknownEntityException, FunctionalException {
+        this.organisationIdentification = "a";
+        this.deviceIdentification = "b";
+        this.correlationUid = "c";
+
+        when(this.organisationDomainService.searchOrganisation(any(String.class))).thenReturn(new Organisation());
+        when(this.deviceDomainService.searchActiveDevice(any(), any())).thenReturn(this.device);
+        when(this.device.getIpAddress()).thenReturn("333.333.1.22");
+
+        this.configurationManagementService.switchConfiguration(this.organisationIdentification,
+                this.deviceIdentification, this.correlationUid, this.messageType, this.messagePriority, "a");
+
+        verify(this.osgpCoreRequestMessageSender).send(this.requestMessageArgumentCaptor.capture(),
+                this.stringArgumentCaptorOne.capture(), this.integerArgumentCaptor.capture(),
+                this.stringArgumentCaptorTwo.capture());
+
+        assertEquals("c", this.requestMessageArgumentCaptor.getValue().getCorrelationUid());
+        assertEquals("a", this.requestMessageArgumentCaptor.getValue().getOrganisationIdentification());
+        assertEquals("b", this.requestMessageArgumentCaptor.getValue().getDeviceIdentification());
+        assertEquals(this.messageType, this.stringArgumentCaptorOne.getValue());
+        assertEquals(1, this.integerArgumentCaptor.getValue());
+        assertEquals("333.333.1.22", this.stringArgumentCaptorTwo.getValue());
     }
-    private void injectionUsingReflection(Class<?> c, String fieldName, Object instance, Object newValue) throws
+
+    private void injectionUsingReflection(final Class<?> c, final String fieldName, final Object instance, final Object newValue) throws
             NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-        Field field = c.getDeclaredField(fieldName);
+        final Field field = c.getDeclaredField(fieldName);
         field.setAccessible(true);
         field.set(instance, newValue);
     }
