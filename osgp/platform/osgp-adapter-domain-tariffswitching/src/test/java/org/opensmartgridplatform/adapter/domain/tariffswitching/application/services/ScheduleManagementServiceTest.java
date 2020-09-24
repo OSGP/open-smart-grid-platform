@@ -1,29 +1,29 @@
 package org.opensmartgridplatform.adapter.domain.tariffswitching.application.services;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.doReturn;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.opensmartgridplatform.adapter.domain.tariffswitching.application.mapping.DomainTariffSwitchingMapper;
-import org.opensmartgridplatform.adapter.domain.tariffswitching.infra.jms.core.OsgpCoreRequestMessageSender ;
+import org.opensmartgridplatform.adapter.domain.tariffswitching.infra.jms.core.OsgpCoreRequestMessageSender;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceOutputSetting;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
@@ -37,12 +37,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
-
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -81,47 +75,66 @@ public class ScheduleManagementServiceTest{
 	
 	@BeforeEach
 	public void setup() throws FunctionalException {
-		scheduleEntries = new ArrayList<ScheduleEntry>();
-		deviceOutputSettings = new ArrayList<DeviceOutputSetting>();
-		lightValues = new ArrayList<LightValue>();
+		this.scheduleEntries = new ArrayList<>();
+		this.deviceOutputSettings = new ArrayList<>();
+		this.lightValues = new ArrayList<>();
 		
-		DeviceOutputSetting dos = Mockito.mock(DeviceOutputSetting.class);
+		final DeviceOutputSetting dos = Mockito.mock(DeviceOutputSetting.class);
 		when(dos.getOutputType()).thenReturn(RelayType.TARIFF_REVERSED);
 		
-		ScheduleEntry entry = Mockito.mock(ScheduleEntry.class);
-		when(entry.getLightValue()).thenReturn(lightValues);
+		final ScheduleEntry entry = Mockito.mock(ScheduleEntry.class);
+		when(entry.getLightValue()).thenReturn(this.lightValues);
 		
-		LightValue value = Mockito.mock(LightValue.class);
+		final LightValue value = Mockito.mock(LightValue.class);
 		
 		//idk how many entries are typically required
 		for(int i =0; i < 3; i++) {
-			scheduleEntries.add(entry);
-			deviceOutputSettings.add(dos);
-			lightValues.add(value);
+			this.scheduleEntries.add(entry);
+			this.deviceOutputSettings.add(dos);
+			this.lightValues.add(value);
 		}
 		
-		
-		when(device.getId()).thenReturn((long) 0.0f);
-		when(ssld.getOutputSettings()).thenReturn(deviceOutputSettings);
-		when(ssldRepository.findById(any())).thenReturn(Optional.of(ssld));
-		
-		when(deviceDomainService.searchActiveDevice(any(), any(ComponentType.class))).thenReturn(device);
+		when(this.device.getId()).thenReturn((long) 0.0f);
+		when(this.ssld.getOutputSettings()).thenReturn(this.deviceOutputSettings);
+		when(this.ssldRepository.findById(any())).thenReturn(Optional.of(this.ssld));
+		when(this.device.getIpAddress()).thenReturn("127.0.0.1");
+		when(this.deviceDomainService.searchActiveDevice(any(), any(ComponentType.class))).thenReturn(this.device);
 	}
 	
 	@Test
 	public void testSetTariffSchedule() throws FunctionalException {
-		when(device.getDeviceType()).thenReturn(Ssld.SSLD_TYPE);
-		
-		scheduleManagementService.setTariffSchedule(correlationIds, scheduleEntries, (long) 0.0f, "messageType", 1);
-		verify(osgpCoreRequestMessageSender, times(1)).send(any(RequestMessage.class), eq("messageType"), eq(1), eq(null), anyLong());
+		when(this.device.getDeviceType()).thenReturn(Ssld.SSLD_TYPE);
+
+		final long scheduleTime = (long) 0.0f;
+		final String messageType = "testType";
+		final int priority = 1;
+
+		final ArgumentCaptor<RequestMessage> requestMessageArgumentCaptor =
+				ArgumentCaptor.forClass(RequestMessage.class);
+		final ArgumentCaptor<Long> scheduleTimeCaptor = ArgumentCaptor.forClass(long.class);
+		final ArgumentCaptor<String> ipCaptor = ArgumentCaptor.forClass(String.class);
+		final ArgumentCaptor<String> messageTypeCaptor = ArgumentCaptor.forClass(String.class);
+		final ArgumentCaptor<Integer> priorityCapture = ArgumentCaptor.forClass(int.class);
+
+		this.scheduleManagementService.setTariffSchedule(this.correlationIds, this.scheduleEntries, scheduleTime,
+				messageType,priority
+				);
+
+		verify(this.osgpCoreRequestMessageSender).send(requestMessageArgumentCaptor.capture(),
+				messageTypeCaptor.capture(),priorityCapture.capture(),ipCaptor.capture(), scheduleTimeCaptor.capture());
+
+		assertEquals(messageType,messageTypeCaptor.getValue());
+		assertEquals(scheduleTime,scheduleTimeCaptor.getValue());
+		assertEquals(priority,priorityCapture.getValue());
 	}
 	
 	@Test
 	public void testSetTariffScheduleFunctionalExceptionThrown() throws FunctionalException {
 		//incorrect type should return an exception
-		when(device.getDeviceType()).thenReturn(Ssld.PSLD_TYPE);
+		when(this.device.getDeviceType()).thenReturn(Ssld.PSLD_TYPE);
 		
-		assertThatThrownBy(()->{scheduleManagementService.setTariffSchedule(correlationIds, scheduleEntries, (long) 0.0f, "messageType", 1);});
-		verify(osgpCoreRequestMessageSender, never()).send(any(RequestMessage.class), eq("messageType"), eq(1), eq(null));
+		assertThatThrownBy(()->{
+			this.scheduleManagementService.setTariffSchedule(this.correlationIds, this.scheduleEntries, (long) 0.0f, "messageType", 1);});
+		verify(this.osgpCoreRequestMessageSender, never()).send(any(RequestMessage.class), eq("messageType"), eq(1), eq(null));
 	}
 }
