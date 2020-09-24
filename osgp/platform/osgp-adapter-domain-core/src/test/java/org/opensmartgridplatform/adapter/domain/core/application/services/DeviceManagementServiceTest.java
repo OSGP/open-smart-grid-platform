@@ -23,7 +23,6 @@ import org.opensmartgridplatform.adapter.domain.core.infra.jms.core.OsgpCoreRequ
 import org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.services.DeviceDomainService;
-import org.opensmartgridplatform.domain.core.services.OrganisationDomainService;
 import org.opensmartgridplatform.domain.core.valueobjects.CdmaSettings;
 import org.opensmartgridplatform.domain.core.valueobjects.Certification;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
@@ -41,9 +40,6 @@ public class DeviceManagementServiceTest {
 	
 	@Mock
 	private TransactionalDeviceService transactionalDeviceService;
-	
-	@Mock
-	private OrganisationDomainService organisationDomainService;
 	
 	@Mock
 	private DeviceDomainService deviceDomainService;
@@ -90,10 +86,11 @@ public class DeviceManagementServiceTest {
 		verify(this.osgpCoreRequestManager).send(this.argumentReqM.capture(), this.argumentStringOne.capture(),
 				this.argumentInt.capture(), this.argumentStringTwo.capture());
 
-		assertThat(this.argumentReqM.getValue()).usingRecursiveComparison().isEqualTo(
-				new RequestMessage("testUid", "testOrganisation", "testDevice",
+		final RequestMessage expectedRM = new RequestMessage("testUid", "testOrganisation", "testDevice",
 				new EventNotificationMessageDataContainerDto(this.domainCoreMapper.mapAsList(eventNotifications,
-						org.opensmartgridplatform.dto.valueobjects.EventNotificationTypeDto.class))));
+						org.opensmartgridplatform.dto.valueobjects.EventNotificationTypeDto.class)));
+
+		assertThat(this.argumentReqM.getValue()).usingRecursiveComparison().isEqualTo(expectedRM);
 		assertThat(this.argumentStringOne.getValue()).isEqualTo("testMessageType");
 		assertThat(this.argumentInt.getValue()).isEqualTo(1);
 		assertThat(this.argumentStringTwo.getValue()).isEqualTo("testIp");
@@ -121,9 +118,11 @@ public class DeviceManagementServiceTest {
 		verify(this.osgpCoreRequestManager).send(this.argumentReqM.capture(), this.argumentStringOne.capture(),
 				this.argumentInt.capture(), this.argumentStringTwo.capture());
 
-		assertThat(this.argumentReqM.getValue()).usingRecursiveComparison().isEqualTo(
-				new RequestMessage("testUid", "testOrganisation", "testDevice",
-						this.domainCoreMapper.map(certification, org.opensmartgridplatform.dto.valueobjects.CertificationDto.class)));
+		final RequestMessage expectedRM = new RequestMessage("testUid", "testOrganisation", "testDevice",
+				this.domainCoreMapper.map(certification,
+						org.opensmartgridplatform.dto.valueobjects.CertificationDto.class));
+
+		assertThat(this.argumentReqM.getValue()).usingRecursiveComparison().isEqualTo(expectedRM);
 		assertThat(this.argumentStringOne.getValue()).isEqualTo("testMessageType");
 		assertThat(this.argumentInt.getValue()).isEqualTo(1);
 		assertThat(this.argumentStringTwo.getValue()).isEqualTo("testIp");
@@ -149,8 +148,9 @@ public class DeviceManagementServiceTest {
 		verify(this.osgpCoreRequestManager).send(this.argumentReqM.capture(), this.argumentStringOne.capture(),
 				this.argumentInt.capture(), this.argumentStringTwo.capture());
 
-		assertThat(this.argumentReqM.getValue()).usingRecursiveComparison().isEqualTo(
-				new RequestMessage("testUid", "testOrganisation", "testDevice", "testKey"));
+		final RequestMessage expectedRM = new RequestMessage("testUid", "testOrganisation", "testDevice", "testKey");
+
+		assertThat(this.argumentReqM.getValue()).usingRecursiveComparison().isEqualTo(expectedRM);
 		assertThat(this.argumentStringOne.getValue()).isEqualTo("testMessageType");
 		assertThat(this.argumentInt.getValue()).isEqualTo(1);
 		assertThat(this.argumentStringTwo.getValue()).isEqualTo("testIp");
@@ -167,15 +167,16 @@ public class DeviceManagementServiceTest {
 				argumentDeviceLifecycleStatus.capture());
 		verify(this.webServiceResponseMessageSender).send(this.argumentResM.capture());
 
-		assertThat(this.argumentStringOne.getValue()).isEqualTo("testDevice");
-		assertThat(argumentDeviceLifecycleStatus.getValue()).isEqualTo(DeviceLifecycleStatus.UNDER_TEST);
-		assertThat(this.argumentResM.getValue()).usingRecursiveComparison().isEqualTo(ResponseMessage.newResponseMessageBuilder()
+		final ResponseMessage expectedRM = ResponseMessage.newResponseMessageBuilder()
 				.withCorrelationUid("testUid")
 				.withOrganisationIdentification("testOrganisation")
 				.withDeviceIdentification("testDevice")
 				.withResult(ResponseMessageResultType.OK)
-				.build()
-		);
+				.build();
+
+		assertThat(this.argumentStringOne.getValue()).isEqualTo("testDevice");
+		assertThat(argumentDeviceLifecycleStatus.getValue()).isEqualTo(DeviceLifecycleStatus.UNDER_TEST);
+		assertThat(this.argumentResM.getValue()).usingRecursiveComparison().isEqualTo(expectedRM);
 	}
 	
 	@Test
@@ -189,14 +190,15 @@ public class DeviceManagementServiceTest {
 				argumentCdmaSettings.capture());
 		verify(this.webServiceResponseMessageSender).send(this.argumentResM.capture());
 
-		assertThat(this.argumentStringOne.getValue()).isEqualTo("testDevice");
-		assertThat(argumentCdmaSettings.getValue()).isEqualTo(cdmaSettings);
-		assertThat(this.argumentResM.getValue()).usingRecursiveComparison().isEqualTo(ResponseMessage.newResponseMessageBuilder()
+		final ResponseMessage expectedRM = ResponseMessage.newResponseMessageBuilder()
 				.withCorrelationUid("testUid")
 				.withOrganisationIdentification("testOrganisation")
 				.withDeviceIdentification("testDevice")
 				.withResult(ResponseMessageResultType.OK)
-				.build()
-		);
+				.build();
+
+		assertThat(this.argumentStringOne.getValue()).isEqualTo("testDevice");
+		assertThat(argumentCdmaSettings.getValue()).isEqualTo(cdmaSettings);
+		assertThat(this.argumentResM.getValue()).usingRecursiveComparison().isEqualTo(expectedRM);
 	}
 }
