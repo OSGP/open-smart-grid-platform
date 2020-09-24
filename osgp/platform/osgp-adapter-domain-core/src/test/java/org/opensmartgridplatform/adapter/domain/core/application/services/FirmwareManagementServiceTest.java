@@ -90,16 +90,16 @@ class FirmwareManagementServiceTest {
     @Captor
     ArgumentCaptor<ResponseMessage> responseMessageCaptor;
     @Captor
-	ArgumentCaptor<String> messageTypeCaptor;
+    ArgumentCaptor<String> messageTypeCaptor;
     @Captor
-	ArgumentCaptor<Integer> messagePriorityCaptor;
+    ArgumentCaptor<Integer> messagePriorityCaptor;
     @Captor
-	ArgumentCaptor<String> ipAddressCaptor;
+    ArgumentCaptor<String> ipAddressCaptor;
     @Captor
     ArgumentCaptor<Long> scheduledTimeCaptor;
     @Captor
     ArgumentCaptor<SsldPendingFirmwareUpdate> ssldPendingFirmwareUpdateArgumentCaptor;
-    
+
     @Mock
     FirmwareUpdateMessageDataContainer firmwareUpdateMessageDataContainer;
     
@@ -464,20 +464,20 @@ class FirmwareManagementServiceTest {
 
     @Test
     void testUpdateFirmwareForNonSsld() throws FunctionalException {
-    	final CorrelationIds ids = this.getCorrelationIds();
-    	final Device device = this.getMockDevice(Device.class);
-    	
-    	when(this.firmwareUpdateMessageDataContainer.getFirmwareUrl()).thenReturn("/firmware-test");
-    	when(this.deviceDomainService.searchActiveDevice(ids.getDeviceIdentification(), ComponentType.DOMAIN_CORE))
-			.thenReturn(device);
-    	
-    	this.firmwareManagementService.updateFirmware(ids, this.firmwareUpdateMessageDataContainer, 0L, "", 0);
-    	
-    	verify(this.osgpCoreRequestMessageSender).sendWithScheduledTime(this.requestMessageCaptor.capture(),
+        final CorrelationIds ids = this.getCorrelationIds();
+        final Device device = this.getMockDevice(Device.class);
+
+        when(this.firmwareUpdateMessageDataContainer.getFirmwareUrl()).thenReturn("/firmware-test");
+        when(this.deviceDomainService.searchActiveDevice(ids.getDeviceIdentification(), ComponentType.DOMAIN_CORE))
+            .thenReturn(device);
+
+        this.firmwareManagementService.updateFirmware(ids, this.firmwareUpdateMessageDataContainer, 0L, "", 0);
+
+        verify(this.osgpCoreRequestMessageSender).sendWithScheduledTime(this.requestMessageCaptor.capture(),
                 this.messageTypeCaptor.capture(), this.messagePriorityCaptor.capture(), this.ipAddressCaptor.capture(),
                 this.scheduledTimeCaptor.capture());
 
-    	final RequestMessage requestMessage = this.requestMessageCaptor.getValue();
+        final RequestMessage requestMessage = this.requestMessageCaptor.getValue();
         final RequestMessage expectedRequestMessage = new RequestMessage("correlation-uid", "test-org",
             "device-identification", null);
 
