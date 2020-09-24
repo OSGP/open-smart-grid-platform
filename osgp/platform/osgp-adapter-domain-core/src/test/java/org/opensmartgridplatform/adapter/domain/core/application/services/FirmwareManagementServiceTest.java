@@ -601,15 +601,15 @@ class FirmwareManagementServiceTest {
 
     @Test
     public void testHandleGetFirmwareVersionErrorNotNull() {
-    	final CorrelationIds ids = this.getCorrelationIds();
-		final List<FirmwareVersionDto> versionsOnDevice = new ArrayList<>();
+        final CorrelationIds ids = this.getCorrelationIds();
+        final List<FirmwareVersionDto> versionsOnDevice = new ArrayList<>();
+
+        this.firmwareManagementService.handleGetFirmwareVersionResponse(versionsOnDevice, ids, "messageType", 1,
+            ResponseMessageResultType.OK, this.defaultException);
 		
-		this.firmwareManagementService.handleGetFirmwareVersionResponse(versionsOnDevice, ids, "messageType", 1,
-				ResponseMessageResultType.OK, this.defaultException);
-		
-		verify(this.webServiceResponseMessageSender).send(this.responseMessageCaptor.capture());
+        verify(this.webServiceResponseMessageSender).send(this.responseMessageCaptor.capture());
 		verify(this.ssldPendingFirmwareUpdateRepository, never()).delete(any());
-		
+
 		final ResponseMessage responseMessage = this.responseMessageCaptor.getValue();
 		final ResponseMessage expectedResponseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withIds(ids)
