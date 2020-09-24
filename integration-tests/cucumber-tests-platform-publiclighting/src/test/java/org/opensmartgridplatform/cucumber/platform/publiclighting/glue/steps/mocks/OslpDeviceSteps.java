@@ -954,7 +954,7 @@ public class OslpDeviceSteps {
     }
 
     @Then("^the \"([^\"]*)\" event notification response contains$")
-    public static void theOSLPEventNotificationResponseContains(final String protocol,
+    public void theOSLPEventNotificationResponseContains(final String protocol,
             final Map<String, String> expectedResponse) {
         final Message responseMessage = (Message) ScenarioContext.current().get(PlatformPubliclightingKeys.RESPONSE);
 
@@ -1097,7 +1097,7 @@ public class OslpDeviceSteps {
     }
 
     /**
-     * Verify that we have received a response over OSLP/OSLP ELSTER
+     * Verify that we have received an event notification response over OSLP/OSLP ELSTER
      */
     @Then("^the event notification response contains$")
     public void theEventNotificationResponseContains(final Map<String, String> expectedResponse) {
@@ -1110,7 +1110,7 @@ public class OslpDeviceSteps {
     }
 
     /**
-     * Verify that we have received a response over OSLP/OSLP ELSTER
+     * Verify that we have received a set configuration response over OSLP/OSLP ELSTER
      */
     @Then("^the set configuration response contains$")
     public void theSetConfigurationResponseContains(final Map<String, String> expectedResponse) {
@@ -1156,7 +1156,7 @@ public class OslpDeviceSteps {
 
 
     /**
-     * Verify that we have received a response over OSLP/OSLP ELSTER
+     * Verify that we have received a confirm register device response over OSLP/OSLP ELSTER
      */
     @Then("^the confirm register device response contains$")
     public void theConfirmRegisterDeviceResponseContains(final Map<String, String> expectedResponse) {

@@ -76,7 +76,7 @@ public class GetFirmwareVersionSteps {
      *          the current scenario context for later use.
      */
     @Then("^the get firmware version async response contains$")
-    public void theGetFirmwareVersionResponseContains(final Map<String, String> expectedResponseData) {
+    public static void theGetFirmwareVersionResponseContains(final Map<String, String> expectedResponseData) {
         final GetFirmwareVersionAsyncResponse asyncResponse = (GetFirmwareVersionAsyncResponse) ScenarioContext
                 .current().get(PlatformKeys.RESPONSE);
 
@@ -123,7 +123,7 @@ public class GetFirmwareVersionSteps {
     }
 
     @Then("^the get firmware version response contains soap fault$")
-    public void theGetFirmwareVersionResponseContainsSoapFault(final Map<String, String> expectedResponseData) {
+    public static void theGetFirmwareVersionResponseContainsSoapFault(final Map<String, String> expectedResponseData) {
         GenericResponseSteps.verifySoapFault(expectedResponseData);
     }
 }

@@ -81,10 +81,9 @@ public class SetRebootSteps {
      *            The table with the expected fields in the response.
      * @apiNote The response will contain the correlation uid, so store that in
      *          the current scenario context for later use.
-     * @throws Throwable
      */
     @Then("^the set reboot async response contains$")
-    public static void theSetRebootAsyncResponseContains(final Map<String, String> expectedResponseData) {
+    public void theSetRebootAsyncResponseContains(final Map<String, String> expectedResponseData) {
         final SetRebootAsyncResponse asyncResponse = (SetRebootAsyncResponse) ScenarioContext.current()
                 .get(PlatformKeys.RESPONSE);
 
@@ -125,7 +124,7 @@ public class SetRebootSteps {
     }
 
     @Then("^the set reboot async response contains a soap fault$")
-    public static void theSetRebootAsyncResponseContainsASoapFault(final Map<String, String> expectedResult) {
+    public void theSetRebootAsyncResponseContainsASoapFault(final Map<String, String> expectedResult) {
         final SoapFaultClientException response = (SoapFaultClientException) ScenarioContext.current()
                 .get(PlatformKeys.RESPONSE);
 
