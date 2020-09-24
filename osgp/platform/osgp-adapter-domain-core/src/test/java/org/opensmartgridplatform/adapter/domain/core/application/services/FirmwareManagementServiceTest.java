@@ -610,13 +610,13 @@ class FirmwareManagementServiceTest {
         verify(this.webServiceResponseMessageSender).send(this.responseMessageCaptor.capture());
 		verify(this.ssldPendingFirmwareUpdateRepository, never()).delete(any());
 
-		final ResponseMessage responseMessage = this.responseMessageCaptor.getValue();
-		final ResponseMessage expectedResponseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withIds(ids)
-                .withResult(ResponseMessageResultType.NOT_OK)
-                .withOsgpException(new TechnicalException("Exception occurred while getting device firmware version"))
-                .withMessagePriority(1)
-                .build();
+        final ResponseMessage responseMessage = this.responseMessageCaptor.getValue();
+        final ResponseMessage expectedResponseMessage = ResponseMessage.newResponseMessageBuilder()
+            .withIds(ids)
+            .withResult(ResponseMessageResultType.NOT_OK)
+            .withOsgpException(new TechnicalException("Exception occurred while getting device firmware version"))
+            .withMessagePriority(1)
+            .build();
 
 		assertThat(responseMessage).usingRecursiveComparison().ignoringFields("dataObject").isEqualTo(expectedResponseMessage);
     }
