@@ -8,7 +8,7 @@
 package org.opensmartgridplatform.adapter.domain.core.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -67,6 +67,7 @@ import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
@@ -477,10 +478,10 @@ class FirmwareManagementServiceTest {
                 this.scheduledTimeCaptor.capture());
 
     	final RequestMessage requestMessage = this.requestMessageCaptor.getValue();
+        final RequestMessage expectedRequestMessage = new RequestMessage("correlation-uid", "test-org",
+            "device-identification", null);
 
-        assertEquals("test-org", requestMessage.getOrganisationIdentification());
-        assertEquals("device-identification", requestMessage.getDeviceIdentification());
-        assertEquals("correlation-uid", requestMessage.getCorrelationUid());
+        assertThat(requestMessage).usingRecursiveComparison().ignoringFields("request").isEqualTo(expectedRequestMessage);
     }
     
     @Test
@@ -501,12 +502,11 @@ class FirmwareManagementServiceTest {
 
         final SsldPendingFirmwareUpdate ssldPendingFirmwareUpdate =
                 this.ssldPendingFirmwareUpdateArgumentCaptor.getValue();
+        final SsldPendingFirmwareUpdate expectedSsldPendingFirmwareUpdate = new SsldPendingFirmwareUpdate(
+            "device-identification", FirmwareModuleType.FUNCTIONAL, VERSION_1, "test-org", "correlation-uid"
+        );
 
-        assertEquals("device-identification", ssldPendingFirmwareUpdate.getDeviceIdentification());
-        assertEquals("test-org", ssldPendingFirmwareUpdate.getOrganisationIdentification());
-        assertEquals("correlation-uid", ssldPendingFirmwareUpdate.getCorrelationUid());
-        assertEquals("R01", ssldPendingFirmwareUpdate.getFirmwareVersion());
-        assertEquals("FUNCTIONAL", ssldPendingFirmwareUpdate.getFirmwareModuleType().name());
+        assertThat(ssldPendingFirmwareUpdate).isEqualTo(expectedSsldPendingFirmwareUpdate);
     }
     
     @Test
@@ -522,11 +522,6 @@ class FirmwareManagementServiceTest {
     	this.firmwareManagementService.updateFirmware(ids, this.firmwareUpdateMessageDataContainer, 0L, "", 0);
 
         verifyNoInteractions(this.ssldPendingFirmwareUpdateRepository);
-
-
-
-
-    	assertEquals("rens", "rens");
     }
     
     @Test
@@ -544,7 +539,7 @@ class FirmwareManagementServiceTest {
     	
     	this.firmwareManagementService.updateFirmware(ids, this.firmwareUpdateMessageDataContainer, 0L, "", 0);
     	
-    	verifyNoInteractions(this.ssldPendingFirmwareUpdateRepository.save(any()));
+    	verifyNoInteractions(this.ssldPendingFirmwareUpdateRepository);
     }
     
     @Test
@@ -560,7 +555,7 @@ class FirmwareManagementServiceTest {
     	
     	this.firmwareManagementService.updateFirmware(ids, this.firmwareUpdateMessageDataContainer, 0L, "", 0);
     	
-    	verifyNoInteractions(this.ssldPendingFirmwareUpdateRepository.save(any()));
+    	verifyNoInteractions(this.ssldPendingFirmwareUpdateRepository);
     }
 
     @Test
@@ -570,7 +565,6 @@ class FirmwareManagementServiceTest {
     	
     	final SsldPendingFirmwareUpdate ssldPendingFirmwareUpdate = Mockito.mock(SsldPendingFirmwareUpdate.class);
     	final List<SsldPendingFirmwareUpdate> ssldPendingFirmwareUpdates = Arrays.asList(ssldPendingFirmwareUpdate);
-    	final ArgumentCaptor<ResponseMessage> captor = ArgumentCaptor.forClass(ResponseMessage.class);
     	
     	when(this.ssldPendingFirmwareUpdateRepository.findByDeviceIdentification(any(String.class)))
        		.thenReturn(ssldPendingFirmwareUpdates);
@@ -584,7 +578,7 @@ class FirmwareManagementServiceTest {
     	this.firmwareManagementService.handleGetFirmwareVersionResponse(firmwareVersionDtos, ids, "messageType", 1, 
     			ResponseMessageResultType.OK, null);
 
-    	verify(this.webServiceResponseMessageSender).send(captor.capture());
+    	verifyNoInteractions(this.webServiceResponseMessageSender);
     	verify(this.ssldPendingFirmwareUpdateRepository).delete(any());
     }
 
@@ -599,12 +593,12 @@ class FirmwareManagementServiceTest {
     	verify(this.webServiceResponseMessageSender).send(this.responseMessageCaptor.capture());
 
     	final ResponseMessage responseMessage = this.responseMessageCaptor.getValue();
-    	
-    	assertEquals(ResponseMessageResultType.NOT_OK, responseMessage.getResult());
-    	assertEquals("Exception occurred while getting device firmware version", responseMessage.getOsgpException().getMessage());
+
+    	assertThat(responseMessage.getResult()).isEqualTo(ResponseMessageResultType.NOT_OK);
+    	assertThat(responseMessage.getOsgpException().getMessage())
+                .isEqualTo("Exception occurred while getting device firmware version");
     }
 
-   
     @Test
     public void testHandleGetFirmwareVersionErrorNotNull() {
     	final CorrelationIds ids = this.getCorrelationIds();
@@ -617,9 +611,14 @@ class FirmwareManagementServiceTest {
 		verify(this.ssldPendingFirmwareUpdateRepository, never()).delete(any());
 		
 		final ResponseMessage responseMessage = this.responseMessageCaptor.getValue();
-		
-		assertEquals(ResponseMessageResultType.NOT_OK, responseMessage.getResult());
-		assertEquals("Exception occurred while getting device firmware version", responseMessage.getOsgpException().getMessage());
+		final ResponseMessage expectedResponseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withIds(ids)
+                .withResult(ResponseMessageResultType.NOT_OK)
+                .withOsgpException(new TechnicalException("Exception occurred while getting device firmware version"))
+                .withMessagePriority(1)
+                .build();
+
+		assertThat(responseMessage).usingRecursiveComparison().ignoringFields("dataObject").isEqualTo(expectedResponseMessage);
     }
 
     @Test
@@ -627,19 +626,14 @@ class FirmwareManagementServiceTest {
     	final CorrelationIds ids = this.getCorrelationIds();
     	final List<FirmwareVersionDto> versionsOnDevice = new ArrayList<>();
     	
-    	when(this.ssldPendingFirmwareUpdateRepository.findByDeviceIdentification(any(String.class))).thenReturn(null);
+    	when(this.ssldPendingFirmwareUpdateRepository.findByDeviceIdentification(any())).thenReturn(null);
 
-    	this.firmwareManagementService.handleGetFirmwareVersionResponse(versionsOnDevice, ids, "messageType", 1,
-    			ResponseMessageResultType.OK, null);
-	
-    	verify(this.webServiceResponseMessageSender).send(this.responseMessageCaptor.capture());
-	
-    	final ResponseMessage responseMessage = this.responseMessageCaptor.getValue();
-    	
-    	assertEquals(ResponseMessageResultType.OK, responseMessage.getResult());
+    	assertThatThrownBy(() -> {
+            this.firmwareManagementService.handleGetFirmwareVersionResponse(versionsOnDevice, ids, "messageType", 1,
+                    ResponseMessageResultType.OK, null);
+        }).hasMessage(null);
     }
 
-   
     @Test
     public void testHandleGetFirmwareVersionWithNonMatchingCorrelationUid() {
     	final CorrelationIds ids = this.getCorrelationIds();
@@ -657,7 +651,12 @@ class FirmwareManagementServiceTest {
 		verify(this.webServiceResponseMessageSender).send(this.responseMessageCaptor.capture());
 		
 		final ResponseMessage responseMessage = this.responseMessageCaptor.getValue();
-		
-		assertEquals(ResponseMessageResultType.OK, responseMessage.getResult());
+        final ResponseMessage expectedResponseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withIds(ids)
+                .withResult(ResponseMessageResultType.OK)
+                .withMessagePriority(1)
+                .build();
+
+        assertThat(responseMessage).usingRecursiveComparison().ignoringFields("dataObject").isEqualTo(expectedResponseMessage);
     }
 }
