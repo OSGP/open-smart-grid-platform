@@ -96,7 +96,10 @@ public class ConfigurationManagementServiceTest {
         // make ids
         this.ids = new CorrelationIds(this.organisationIdentification, this.deviceIdentification, this.correlationUid);
         this.configurationManagementService = new ConfigurationManagementService();
+
         // do injection using reflection
+        // Inject Mocks doesn't inject these mocks, possibly because they are in the parent class of
+        // ConfigurationManagementService
         this.injectionUsingReflection(AbstractService.class, "organisationDomainService",
                 this.configurationManagementService, this.organisationDomainService);
         this.injectionUsingReflection(AbstractService.class, "deviceDomainService", this.configurationManagementService,
@@ -109,6 +112,7 @@ public class ConfigurationManagementServiceTest {
                 this.configurationManagementService, this.webServiceResponseMessageSender);
         this.injectionUsingReflection(AbstractService.class, "ssldRepository", this.configurationManagementService,
                 this.ssldRepository);
+
         System.setOut(new PrintStream(this.outContent));
     }
     @Test
