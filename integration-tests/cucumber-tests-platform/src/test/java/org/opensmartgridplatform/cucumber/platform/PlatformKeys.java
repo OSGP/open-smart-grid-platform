@@ -40,7 +40,6 @@ public class PlatformKeys extends Keys {
 
     public static final String DEVICEMODEL_DESCRIPTION = "DeviceModelDescription";
     public static final String DEVICEMODEL_FILESTORAGE = "DeviceModelFileStorage";
-    public static final String DEVICEMODEL_METERED = "DeviceModelMetered";
     public static final String DEVICEMODEL_MODELCODE = "ModelCode";
     public static final String DEVICEMODEL_NAME = "DeviceModelName";
     public static final String EAN_CODE = "EanCode";
@@ -64,7 +63,6 @@ public class PlatformKeys extends Keys {
     public static final String FIRMWARE_VERSION = "FirmwareVersion";
     public static final String FROM_DATE = "FromDate";
     public static final String HISTORY_TERM_TYPE = "HistoryTermType";
-    public static final String INTERVAL_TYPE = "IntervalType";
     public static final String KEY_ACTIVATED = "Activated";
     public static final String KEY_ALIAS = "Alias";
 
@@ -127,7 +125,6 @@ public class PlatformKeys extends Keys {
     public static final String KEY_DEVICE_MODEL_DESCRIPTION = "DeviceModelDescription";
     public static final String KEY_DEVICE_MODEL_FILESTORAGE = "FileStorage";
     public static final String KEY_DEVICE_MODEL_MANUFACTURER = "Manufacturer";
-    public static final String KEY_DEVICE_MODEL_METERED = "Metered";
     public static final String KEY_DEVICE_MODEL_MODELCODE = "DeviceModelCode";
 
     public static final String KEY_DEVICE_SUPPLIER = "Supplier";
@@ -254,7 +251,6 @@ public class PlatformKeys extends Keys {
 
     public static final String KEY_LAST_COMMUNICATION_TIME = "LastCommunicationTime";
     public static final String LOGIN_ATTEMPT_COUNT = "LoginAttemptCount";
-    public static final String LONG_INTERVAL = "LongInterval";
     public static final String MANUFACTURER_CODE = "ManufacturerCode";
     public static final String MANUFACTURER_NAME = "ManufacturerName";
     public static final String MANUFACTURER_USE_PREFIX = "ManufacturerUsePrefix";
@@ -290,7 +286,6 @@ public class PlatformKeys extends Keys {
     public static final String SEPARATOR_COLON = ":";
     public static final String SEPARATOR_SPACE = " ";
     public static final String SEPARATOR_SPACE_COLON_SPACE = " : ";
-    public static final String SHORT_INTERVAL = "ShortInterval";
     public static final String START_TIME = "StartTime";
     public static final String SUPPLIER = "Supplier";
     public static final String TOTAL_CONSUMED_ENERGY = "TotalConsumedEnergy";

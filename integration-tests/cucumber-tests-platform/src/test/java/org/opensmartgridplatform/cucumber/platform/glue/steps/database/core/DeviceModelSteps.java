@@ -8,7 +8,6 @@
 package org.opensmartgridplatform.cucumber.platform.glue.steps.database.core;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.List;
@@ -60,8 +59,6 @@ public class DeviceModelSteps {
                 PlatformDefaults.DEFAULT_DEVICE_MODEL_MODEL_CODE);
         final String modelDescription = getString(expectedEntity, PlatformKeys.KEY_DEVICE_MODEL_DESCRIPTION,
                 PlatformDefaults.DEFAULT_DEVICE_MODEL_DESCRIPTION);
-        final boolean modelMetered = getBoolean(expectedEntity, PlatformKeys.KEY_DEVICE_MODEL_METERED,
-                PlatformDefaults.DEFAULT_DEVICE_MODEL_METERED);
 
         final Manufacturer manufacturer = this.manufacturerRepository.findByCode(
                 getString(expectedEntity, PlatformKeys.MANUFACTURER_CODE, PlatformDefaults.DEFAULT_MANUFACTURER_CODE));
@@ -71,7 +68,6 @@ public class DeviceModelSteps {
         for (final DeviceModel deviceModel : entityList) {
             if (deviceModel.getModelCode().equals(modelCode)) {
                 assertThat(deviceModel.getDescription()).isEqualTo(modelDescription);
-                assertThat(deviceModel.isMetered()).isEqualTo(modelMetered);
                 return;
             }
         }
@@ -108,7 +104,8 @@ public class DeviceModelSteps {
 
         final Manufacturer manufacturer = this.manufacturerRepository.findByName(
                 getString(settings, PlatformKeys.MANUFACTURER_NAME, PlatformDefaults.DEFAULT_MANUFACTURER_NAME));
-        final DeviceModel deviceModel = new DeviceModelBuilder().withSettings(settings).withManufacturer(manufacturer)
+        final DeviceModel deviceModel = new DeviceModelBuilder().withSettings(settings)
+                .withManufacturer(manufacturer)
                 .build();
         return this.deviceModelRepository.save(deviceModel);
     }

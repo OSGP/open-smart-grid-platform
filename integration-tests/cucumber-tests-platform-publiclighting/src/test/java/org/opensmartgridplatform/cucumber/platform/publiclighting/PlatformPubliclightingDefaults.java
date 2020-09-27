@@ -13,7 +13,6 @@ import org.opensmartgridplatform.adapter.ws.schema.publiclighting.devicemonitori
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.devicemonitoring.MeterType;
 import org.opensmartgridplatform.oslp.Oslp.LightType;
 import org.opensmartgridplatform.oslp.Oslp.LinkType;
-import org.opensmartgridplatform.oslp.Oslp.LongTermIntervalType;
 import org.opensmartgridplatform.oslp.Oslp.Status;
 
 public class PlatformPubliclightingDefaults extends org.opensmartgridplatform.cucumber.platform.PlatformDefaults {
@@ -29,7 +28,6 @@ public class PlatformPubliclightingDefaults extends org.opensmartgridplatform.cu
     public static final LightType DEFAULT_LIGHTTYPE = LightType.LT_NOT_SET;
     public static final String FIRMARE_DOMAIN = "localhost";
     public static final String FIRMWARE_URL = "firmware/" + FIRMWARE_IDENTIFICATION;
-    public static final LongTermIntervalType DEFAULT_INTERVAL_TYPE = LongTermIntervalType.MONTHS;
     public static String DEFAULT_RELAY_CONFIGURATION = "";
     public static String DEFAULT_DC_MAP = "";
     public static Integer DEFAULT_OSLP_PORT = 12122;

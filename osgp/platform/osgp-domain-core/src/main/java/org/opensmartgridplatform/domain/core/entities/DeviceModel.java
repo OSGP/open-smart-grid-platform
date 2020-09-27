@@ -37,28 +37,22 @@ public class DeviceModel extends AbstractEntity implements Comparable<DeviceMode
     @Column
     private boolean fileStorage;
 
-    @Column
-    private boolean metered;
-
     public DeviceModel() {
         // Default constructor
     }
 
-    public DeviceModel(final Manufacturer manufacturer, final String modelCode, final String description,
-            final boolean metered) {
+    public DeviceModel(final Manufacturer manufacturer, final String modelCode, final String description) {
         this.manufacturer = manufacturer;
         this.modelCode = modelCode;
         this.description = description;
         // default behavior is true
         this.fileStorage = true;
-        this.metered = metered;
     }
 
     public DeviceModel(final Manufacturer manufacturer, final String modelCode, final String description,
-            final boolean fileStorage, final boolean metered) {
-        this(manufacturer, modelCode, description, metered);
+            final boolean fileStorage) {
+        this(manufacturer, modelCode, description);
         this.fileStorage = fileStorage;
-        this.metered = metered;
     }
 
     @Override
@@ -92,11 +86,6 @@ public class DeviceModel extends AbstractEntity implements Comparable<DeviceMode
         return String.format("DeviceModel[manufacturer=%s, code=%s]", this.manufacturer.getCode(), this.modelCode);
     }
 
-    public void updateData(final String description, final boolean metered) {
-        this.description = description;
-        this.metered = metered;
-    }
-
     public Manufacturer getManufacturer() {
         return this.manufacturer;
     }
@@ -105,15 +94,15 @@ public class DeviceModel extends AbstractEntity implements Comparable<DeviceMode
         return this.description;
     }
 
+    public void setDescription(final String description) {
+        this.description = description;
+    }
+
     public String getModelCode() {
         return this.modelCode;
     }
 
     public boolean isFileStorage() {
         return this.fileStorage;
-    }
-
-    public boolean isMetered() {
-        return this.metered;
     }
 }

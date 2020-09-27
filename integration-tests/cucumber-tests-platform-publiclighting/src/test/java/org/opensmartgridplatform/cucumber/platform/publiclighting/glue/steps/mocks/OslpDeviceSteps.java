@@ -31,7 +31,6 @@ import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities.OslpDevice;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.repositories.OslpDeviceRepository;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
-import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.config.CoreDeviceConfiguration;
 import org.opensmartgridplatform.cucumber.platform.publiclighting.PlatformPubliclightingDefaults;
@@ -54,9 +53,7 @@ import org.opensmartgridplatform.oslp.Oslp.IndexAddressMap;
 import org.opensmartgridplatform.oslp.Oslp.LightType;
 import org.opensmartgridplatform.oslp.Oslp.LightValue;
 import org.opensmartgridplatform.oslp.Oslp.LinkType;
-import org.opensmartgridplatform.oslp.Oslp.LongTermIntervalType;
 import org.opensmartgridplatform.oslp.Oslp.Message;
-import org.opensmartgridplatform.oslp.Oslp.MeterType;
 import org.opensmartgridplatform.oslp.Oslp.RegisterDeviceResponse;
 import org.opensmartgridplatform.oslp.Oslp.RelayConfiguration;
 import org.opensmartgridplatform.oslp.Oslp.ResumeScheduleRequest;
@@ -334,33 +331,6 @@ public class OslpDeviceSteps {
                     .isEqualTo(getEnum(expectedResponseData, PlatformKeys.KEY_PREFERRED_LINKTYPE, LinkType.class));
         }
 
-        if (!StringUtils.isEmpty(expectedResponseData.get(PlatformKeys.METER_TYPE))
-                && receivedConfiguration.getMeterType() != null) {
-            MeterType meterType;
-            meterType = getEnum(expectedResponseData, PlatformKeys.METER_TYPE, MeterType.class);
-            assertThat(receivedConfiguration.getMeterType()).isEqualTo(meterType);
-        }
-
-        if (!StringUtils.isEmpty(expectedResponseData.get(PlatformKeys.SHORT_INTERVAL))
-                && receivedConfiguration.getShortTermHistoryIntervalMinutes() != 0) {
-            assertThat(receivedConfiguration.getShortTermHistoryIntervalMinutes())
-                    .isEqualTo((int) getInteger(expectedResponseData, PlatformKeys.SHORT_INTERVAL,
-                            PlatformDefaults.DEFAULT_SHORT_INTERVAL));
-        }
-
-        if (!StringUtils.isEmpty(expectedResponseData.get(PlatformKeys.LONG_INTERVAL))
-                && receivedConfiguration.getLongTermHistoryInterval() != 0) {
-            assertThat(receivedConfiguration.getLongTermHistoryInterval())
-                    .isEqualTo((int) getInteger(expectedResponseData, PlatformKeys.LONG_INTERVAL,
-                            PlatformDefaults.DEFAULT_LONG_INTERVAL));
-        }
-
-        if (!StringUtils.isEmpty(expectedResponseData.get(PlatformKeys.INTERVAL_TYPE))
-                && receivedConfiguration.getLongTermHistoryIntervalType() != null) {
-            assertThat(receivedConfiguration.getLongTermHistoryIntervalType())
-                    .isEqualTo(getEnum(expectedResponseData, PlatformKeys.INTERVAL_TYPE, LongTermIntervalType.class));
-        }
-
         if (!StringUtils.isEmpty(expectedResponseData.get(PlatformKeys.OSGP_IP_ADDRESS))) {
             assertThat(this.convertIpAddress(receivedConfiguration.getOspgIpAddress()))
                     .isEqualTo(expectedResponseData.get(PlatformKeys.OSGP_IP_ADDRESS));
@@ -573,13 +543,15 @@ public class OslpDeviceSteps {
             }
             if (StringUtils.isNotBlank(expectedRequest.get(PlatformPubliclightingKeys.SCHEDULE_STARTDAY))) {
                 final String startDay = getDate(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_STARTDAY)
-                        .toDateTime(DateTimeZone.UTC).toString("yyyyMMdd");
+                        .toDateTime(DateTimeZone.UTC)
+                        .toString("yyyyMMdd");
 
                 assertThat(schedule.getStartDay()).isEqualTo(startDay);
             }
             if (StringUtils.isNotBlank(expectedRequest.get(PlatformPubliclightingKeys.SCHEDULE_ENDDAY))) {
                 final String endDay = getDate(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_ENDDAY)
-                        .toDateTime(DateTimeZone.UTC).toString("yyyyMMdd");
+                        .toDateTime(DateTimeZone.UTC)
+                        .toString("yyyyMMdd");
 
                 assertThat(schedule.getEndDay()).isEqualTo(endDay);
             }
@@ -650,7 +622,8 @@ public class OslpDeviceSteps {
 
         final EventNotification eventNotification = EventNotification.newBuilder()
                 .setDescription(getString(settings, PlatformPubliclightingKeys.KEY_DESCRIPTION, ""))
-                .setEvent(getEnum(settings, PlatformPubliclightingKeys.KEY_EVENT, Event.class)).build();
+                .setEvent(getEnum(settings, PlatformPubliclightingKeys.KEY_EVENT, Event.class))
+                .build();
 
         final Message message = Oslp.Message.newBuilder()
                 .setEventNotificationRequest(EventNotificationRequest.newBuilder().addNotifications(eventNotification))
@@ -684,18 +657,6 @@ public class OslpDeviceSteps {
     @Given("^the device returns a get configuration status \"([^\"]*)\" over \"([^\"]*)\"$")
     public void theDeviceReturnsAGetConfigurationStatusWithResultOverOSLP(final String result, final String protocol,
             final Map<String, String> requestParameters) throws UnknownHostException {
-        // Note: This piece of code has been made because there are multiple
-        // enumerations with the name MeterType, but not all of them has all
-        // values the same. Some with underscore and some without.
-        MeterType meterType;
-        final String sMeterType = getString(requestParameters, PlatformPubliclightingKeys.METER_TYPE, "");
-        if (!sMeterType.contains("_") && sMeterType.equals(String.valueOf(MeterType.P1_VALUE))) {
-            final String[] sMeterTypeArray = sMeterType.split("");
-            meterType = MeterType.valueOf(sMeterTypeArray[0] + "_" + sMeterTypeArray[1]);
-        } else {
-            meterType = getEnum(requestParameters, PlatformPubliclightingKeys.METER_TYPE, MeterType.class,
-                    PlatformPubliclightingDefaults.DEFAULT_OSLP_METER_TYPE);
-        }
 
         final String osgpIpAddress = getString(requestParameters, PlatformPubliclightingKeys.OSGP_IP_ADDRESS);
         String osgpIpAddressMock;
@@ -716,15 +677,6 @@ public class OslpDeviceSteps {
                         PlatformPubliclightingDefaults.DEFAULT_RELAY_CONFIGURATION),
                 getEnum(requestParameters, PlatformPubliclightingKeys.KEY_PREFERRED_LINKTYPE, LinkType.class,
                         PlatformPubliclightingDefaults.DEFAULT_PREFERRED_LINKTYPE),
-                meterType,
-                getInteger(requestParameters, PlatformPubliclightingKeys.SHORT_INTERVAL,
-                        PlatformPubliclightingDefaults.SHORT_INTERVAL),
-                getInteger(requestParameters, PlatformPubliclightingKeys.LONG_INTERVAL,
-                        PlatformPubliclightingDefaults.LONG_INTERVAL),
-                requestParameters.containsKey(PlatformPubliclightingKeys.INTERVAL_TYPE)
-                        ? getEnum(requestParameters, PlatformPubliclightingKeys.INTERVAL_TYPE,
-                                LongTermIntervalType.class)
-                        : PlatformPubliclightingDefaults.DEFAULT_INTERVAL_TYPE,
                 osgpIpAddressMock, getInteger(requestParameters, PlatformPubliclightingKeys.OSGP_PORT,
                         PlatformPubliclightingDefaults.DEFAULT_OSLP_PORT));
     }
@@ -789,7 +741,8 @@ public class OslpDeviceSteps {
                 final LightValue lightValue = LightValue.newBuilder()
                         .setIndex(OslpUtils.integerToByteString(Integer.parseInt(parts[0])))
                         .setOn(parts[1].toLowerCase().equals("true"))
-                        .setDimValue(OslpUtils.integerToByteString(Integer.parseInt(parts[2]))).build();
+                        .setDimValue(OslpUtils.integerToByteString(Integer.parseInt(parts[2])))
+                        .build();
 
                 lightValues.add(lightValue);
             }
@@ -809,7 +762,8 @@ public class OslpDeviceSteps {
 
                 final LightValue tariffValue = LightValue.newBuilder()
                         .setIndex(OslpUtils.integerToByteString(Integer.parseInt(parts[0])))
-                        .setOn(parts[1].toLowerCase().equals("true")).build();
+                        .setOn(parts[1].toLowerCase().equals("true"))
+                        .build();
 
                 tariffValues.add(tariffValue);
             }
@@ -1014,13 +968,18 @@ public class OslpDeviceSteps {
             final int randomPlatform = oslpDevice.getRandomPlatform();
 
             final Oslp.ConfirmRegisterDeviceRequest confirmRegisterDeviceRequest = Oslp.ConfirmRegisterDeviceRequest
-                    .newBuilder().setRandomDevice(randomDevice).setRandomPlatform(randomPlatform).build();
+                    .newBuilder()
+                    .setRandomDevice(randomDevice)
+                    .setRandomPlatform(randomPlatform)
+                    .build();
 
-            final Message message = Message.newBuilder().setConfirmRegisterDeviceRequest(confirmRegisterDeviceRequest)
+            final Message message = Message.newBuilder()
+                    .setConfirmRegisterDeviceRequest(confirmRegisterDeviceRequest)
                     .build();
 
             final OslpEnvelope request = this.createEnvelopeBuilder(deviceUid, this.oslpMockServer.getSequenceNumber())
-                    .withPayloadMessage(message).build();
+                    .withPayloadMessage(message)
+                    .build();
 
             this.send(request, settings);
         } catch (final IOException | IllegalArgumentException e) {
@@ -1161,7 +1120,8 @@ public class OslpDeviceSteps {
 
         return new OslpEnvelope.Builder().withSignature(this.oslpMockServer.getOslpSignature())
                 .withProvider(this.oslpMockServer.getOslpSignatureProvider())
-                .withPrimaryKey(this.oslpMockServer.privateKey()).withDeviceId(Base64.decodeBase64(deviceUid))
+                .withPrimaryKey(this.oslpMockServer.privateKey())
+                .withDeviceId(Base64.decodeBase64(deviceUid))
                 .withSequenceNumber(sequenceNumberBytes);
     }
 

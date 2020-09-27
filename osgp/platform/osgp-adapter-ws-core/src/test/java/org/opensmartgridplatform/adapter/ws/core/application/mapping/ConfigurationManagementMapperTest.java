@@ -25,15 +25,13 @@ import org.opensmartgridplatform.adapter.ws.schema.core.configurationmanagement.
 import org.opensmartgridplatform.adapter.ws.schema.core.configurationmanagement.IndexAddressMap;
 import org.opensmartgridplatform.adapter.ws.schema.core.configurationmanagement.LightType;
 import org.opensmartgridplatform.adapter.ws.schema.core.configurationmanagement.LinkType;
-import org.opensmartgridplatform.adapter.ws.schema.core.configurationmanagement.LongTermIntervalType;
-import org.opensmartgridplatform.adapter.ws.schema.core.configurationmanagement.MeterType;
 import org.opensmartgridplatform.adapter.ws.schema.core.configurationmanagement.RelayConfiguration;
 import org.opensmartgridplatform.adapter.ws.schema.core.configurationmanagement.RelayMap;
 import org.opensmartgridplatform.adapter.ws.schema.core.configurationmanagement.RelayMatrix;
 
 import ma.glasnost.orika.impl.DefaultMapperFactory;
 
-public class ConfigurationManagementMapperTest {
+class ConfigurationManagementMapperTest {
     private ConfigurationManagementMapper mapper;
 
     private DaliConfiguration aSourceDaliConfiguration(final int numberOfLights, final int index1, final int address1,
@@ -108,16 +106,12 @@ public class ConfigurationManagementMapperTest {
     }
 
     @Test
-    public void mapsWsConfigurationToDomainConfiguration() throws DatatypeConfigurationException {
+    void mapsWsConfigurationToDomainConfiguration() throws DatatypeConfigurationException {
         final Configuration source = new Configuration();
         source.setLightType(LightType.DALI);
         source.setDaliConfiguration(this.aSourceDaliConfiguration(123, 124, 125, 126, 127));
         source.setRelayConfiguration(this.aSourceRelayConfiguration(128, 129, 130, 131));
-        source.setShortTermHistoryIntervalMinutes(132);
         source.setPreferredLinkType(LinkType.CDMA);
-        source.setMeterType(MeterType.AUX);
-        source.setLongTermHistoryInterval(133);
-        source.setLongTermHistoryIntervalType(LongTermIntervalType.DAYS);
         source.setTimeSyncFrequency(134);
         source.setDeviceFixedIp(this.aSourceDeviceFixedIp("ipAddress1", "netMask1", "gateWay1"));
         source.setDhcpEnabled(true);
@@ -148,12 +142,7 @@ public class ConfigurationManagementMapperTest {
                 .withLightType(org.opensmartgridplatform.domain.core.valueobjects.LightType.DALI)
                 .withDaliConfiguration(this.aTargetDaliConfiguration(123, 124, 125, 126, 127))
                 .withRelayConfiguration(this.aTargetRelayConfiguration(128, 129, 130, 131))
-                .withShortTemHistoryIntervalMinutes(132)
                 .withPreferredLinkType(org.opensmartgridplatform.domain.core.valueobjects.LinkType.CDMA)
-                .withMeterType(org.opensmartgridplatform.domain.core.valueobjects.MeterType.AUX)
-                .withLongTermHistoryInterval(133)
-                .withLongTermHistoryIntervalType(
-                        org.opensmartgridplatform.domain.core.valueobjects.LongTermIntervalType.DAYS)
                 .withTimeSyncFrequency(134)
                 .withDeviceFixedIp(new org.opensmartgridplatform.domain.core.valueobjects.DeviceFixedIp("ipAddress1",
                         "netMask1", "gateWay1"))

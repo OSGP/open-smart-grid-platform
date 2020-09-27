@@ -1,7 +1,7 @@
 @PublicLighting @Platform @PublicLightingSetLightSchedule
 Feature: PublicLightingScheduleManagement Set Light Schedule
-  In order to ... 
-  As a platform 
+  In order to ...
+  As a platform
   I want to ...
 
   @OslpMockServer
@@ -34,7 +34,7 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
     And the platform buffers a set light schedule response message for device "TEST1024000000001"
       | Result | OK |
 
-    Examples: 
+    Examples:
       | Protocol    | WeekDay     | StartDay   | EndDay     | ActionTime   | Time         | TriggerWindow | LightValues         | TriggerType   |
       | OSLP ELSTER | ALL         |            |            | ABSOLUTETIME | 18:00:00.000 |               | 0,true,             |               |
       | OSLP ELSTER | MONDAY      |            |            | ABSOLUTETIME | 18:00:00.000 |               | 0,true,             |               |
@@ -75,10 +75,6 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | DcMap             |             |
       | RelayConf         |             |
       | PreferredLinkType |             |
-      | MeterType         | AUX         |
-      | ShortInterval     |             |
-      | LongInterval      |             |
-      | IntervalType      |             |
       | OsgpIpAddress     | 10.20.30.40 |
       | OsgpPort          |       12122 |
     And the device returns a set configuration status "OK" over "OSLP ELSTER"
@@ -132,7 +128,7 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
     And the platform buffers a set light schedule response message for device "TEST1024000000001" that contains a soap fault
       | Message | Device reports failure |
 
-    Examples: 
+    Examples:
       | Protocol    |
       | OSLP ELSTER |
 
@@ -167,7 +163,7 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
     And the platform buffers a set light schedule response message for device "TEST1024000000001" that contains a soap fault
       | Message | Device reports rejected |
 
-    Examples: 
+    Examples:
       | Protocol    |
       | OSLP ELSTER |
 
@@ -189,7 +185,7 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | FaultString  | VALIDATION_ERROR |
       | InnerMessage | <Message>        |
 
-    Examples: 
+    Examples:
       | WeekDay     | ActionTime   | Time         | TriggerType   | Message                                                                                                                                       |
       | ABSOLUTEDAY | ABSOLUTETIME | 18:00:00.000 |               | Validation Exception, violations: startDay may not be null when weekDay is set to ABSOLUTEDAY;                                                |
       | MONDAY      | SUNRISE      |              | LIGHT_TRIGGER | Validation Exception, violations: triggerWindow may not be null when actionTime is set to SUNRISE or SUNSET and triggerType is LIGHT_TRIGGER; |
@@ -214,7 +210,7 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | FaultString  | INACTIVE_DEVICE                                        |
       | InnerMessage | Device TEST1024000000001 is not active in the platform |
 
-    Examples: 
+    Examples:
       | DeviceLifecycleStatus |
       | NEW_IN_INVENTORY      |
       | READY_FOR_USE         |
@@ -294,7 +290,7 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | FaultCode   | SOAP-ENV:Server            |
       | FaultString | CorrelationUid is unknown. |
 
-    Examples: 
+    Examples:
       | Protocol    | WeekDay     | StartDay   | EndDay     | ScheduledTime | ActionTime   | Time         | TriggerWindow | LightValues | TriggerType   |
       | OSLP ELSTER | ABSOLUTEDAY | 2016-01-01 | 2016-12-31 | 2016-12-15    | ABSOLUTETIME | 18:00:00.000 |         30,30 | 0,true,     | LIGHT_TRIGGER |
 
@@ -316,7 +312,7 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | FaultCode   | SOAP-ENV:Client  |
       | FaultString | Validation error |
 
-    Examples: 
+    Examples:
       | Protocol    | WeekDay | StartDay | EndDay | ActionTime   | Time         | TriggerWindow | LightValues | TriggerType   |
       | OSLP ELSTER | ALL     |          |        | ABSOLUTETIME | 18:00:00.000 |               | 2,true,     | ASTRONOMICAL  |
       | OSLP ELSTER | ALL     |          |        | SUNRISE      |              |               | 2,true,     | LIGHT_TRIGGER |
@@ -343,6 +339,6 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | FaultString      | Validation error                                                                                                                                                                                                         |
       | ValidationErrors | cvc-complex-type.2.4.a: Invalid content was found starting with element 'ns2:Schedules'. One of '{"http://www.opensmartgridplatform.org/schemas/publiclighting/schedulemanagement/2014/10":scheduled_time}' is expected. |
 
-    Examples: 
+    Examples:
       | WeekDay     | StartDay   | EndDay     | ActionTime   | Time         | TriggerWindow | LightValues | TriggerType   |
       | ABSOLUTEDAY | 2016-01-01 | 2016-12-31 | ABSOLUTETIME | 18:00:00.000 |         30,30 | 0,true,     | LIGHT_TRIGGER |

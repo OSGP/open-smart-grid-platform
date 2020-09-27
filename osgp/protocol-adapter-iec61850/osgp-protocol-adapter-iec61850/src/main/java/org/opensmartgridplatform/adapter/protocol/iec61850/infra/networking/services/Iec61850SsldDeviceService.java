@@ -275,9 +275,8 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
             deviceConnection = this.connectToDevice(deviceRequest);
             final ConfigurationDto configuration = deviceRequest.getConfiguration();
 
-            // Ignoring required, unused fields DALI-configuration, meterType,
-            // shortTermHistoryIntervalMinutes, preferredLinkType,
-            // longTermHistoryInterval and longTermHistoryIntervalType.
+            // Ignoring required, unused fields DALI-configuration and
+            // preferredLinkType.
             new Iec61850SetConfigurationCommand(this.deviceMessageLoggingService)
                     .setConfigurationOnDevice(this.iec61850Client, deviceConnection, configuration);
 

@@ -7,19 +7,17 @@
  */
 package org.opensmartgridplatform.adapter.domain.core.application.mapping;
 
-import ma.glasnost.orika.MappingContext;
-import ma.glasnost.orika.converter.BidirectionalConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import org.opensmartgridplatform.domain.core.valueobjects.Configuration;
 import org.opensmartgridplatform.domain.core.valueobjects.DaliConfiguration;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFixedIp;
 import org.opensmartgridplatform.domain.core.valueobjects.LightType;
 import org.opensmartgridplatform.domain.core.valueobjects.LinkType;
-import org.opensmartgridplatform.domain.core.valueobjects.LongTermIntervalType;
-import org.opensmartgridplatform.domain.core.valueobjects.MeterType;
 import org.opensmartgridplatform.domain.core.valueobjects.RelayConfiguration;
 import org.opensmartgridplatform.dto.valueobjects.DeviceFixedIpDto;
+
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.metadata.Type;
 
 public class ConfigurationConverter
         extends BidirectionalConverter<org.opensmartgridplatform.dto.valueobjects.ConfigurationDto, Configuration> {
@@ -36,27 +34,12 @@ public class ConfigurationConverter
         final RelayConfiguration relayConfiguration = this.mapperFacade.map(source.getRelayConfiguration(),
                 RelayConfiguration.class);
 
-        final Integer shortTermHistoryIntervalMinutes = this.mapperFacade
-                .map(source.getShortTermHistoryIntervalMinutes(), Integer.class);
-
         final LinkType preferredLinkType = this.mapperFacade.map(source.getPreferredLinkType(), LinkType.class);
 
-        final MeterType meterType = this.mapperFacade.map(source.getMeterType(), MeterType.class);
-
-        final Integer longTermHistoryInterval = this.mapperFacade.map(source.getLongTermHistoryInterval(),
-                Integer.class);
-
-        final LongTermIntervalType longTermHistoryIntervalType = this.mapperFacade
-                .map(source.getLongTermHistoryIntervalType(), LongTermIntervalType.class);
-
-        Configuration.Builder builder = new Configuration.Builder()
-                .withLightType(lightType)
+        final Configuration.Builder builder = new Configuration.Builder().withLightType(lightType)
                 .withDaliConfiguration(daliConfiguration)
                 .withRelayConfiguration(relayConfiguration)
-                .withShortTemHistoryIntervalMinutes(shortTermHistoryIntervalMinutes)
-                .withPreferredLinkType(preferredLinkType).withMeterType(meterType)
-                .withLongTermHistoryInterval(longTermHistoryInterval)
-                .withLongTermHistoryIntervalType(longTermHistoryIntervalType)
+                .withPreferredLinkType(preferredLinkType)
                 .withTimeSyncFrequency(source.getTimeSyncFrequency())
                 .withDhcpEnabled(source.isDhcpEnabled())
                 .withTlsEnabled(source.isTlsEnabled())
@@ -96,38 +79,26 @@ public class ConfigurationConverter
             final Type<org.opensmartgridplatform.dto.valueobjects.ConfigurationDto> destinationType,
             final MappingContext context) {
 
-        final org.opensmartgridplatform.dto.valueobjects.LightTypeDto lightType = this.mapperFacade.map(source.getLightType(),
-                org.opensmartgridplatform.dto.valueobjects.LightTypeDto.class);
+        final org.opensmartgridplatform.dto.valueobjects.LightTypeDto lightType = this.mapperFacade
+                .map(source.getLightType(), org.opensmartgridplatform.dto.valueobjects.LightTypeDto.class);
 
-        final org.opensmartgridplatform.dto.valueobjects.DaliConfigurationDto daliConfiguration = this.mapperFacade
-                .map(source.getDaliConfiguration(), org.opensmartgridplatform.dto.valueobjects.DaliConfigurationDto.class);
+        final org.opensmartgridplatform.dto.valueobjects.DaliConfigurationDto daliConfiguration = this.mapperFacade.map(
+                source.getDaliConfiguration(), org.opensmartgridplatform.dto.valueobjects.DaliConfigurationDto.class);
 
         final org.opensmartgridplatform.dto.valueobjects.RelayConfigurationDto relayConfiguration = this.mapperFacade
-                .map(source.getRelayConfiguration(), org.opensmartgridplatform.dto.valueobjects.RelayConfigurationDto.class);
-
-        final Integer shortTermHistoryIntervalMinutes = this.mapperFacade
-                .map(source.getShortTermHistoryIntervalMinutes(), Integer.class);
+                .map(source.getRelayConfiguration(),
+                        org.opensmartgridplatform.dto.valueobjects.RelayConfigurationDto.class);
 
         final org.opensmartgridplatform.dto.valueobjects.LinkTypeDto preferredLinkType = this.mapperFacade
                 .map(source.getPreferredLinkType(), org.opensmartgridplatform.dto.valueobjects.LinkTypeDto.class);
 
-        final org.opensmartgridplatform.dto.valueobjects.MeterTypeDto meterType = this.mapperFacade.map(source.getMeterType(),
-                org.opensmartgridplatform.dto.valueobjects.MeterTypeDto.class);
-
-        final Integer longTermHistoryInterval = this.mapperFacade.map(source.getLongTermHistoryInterval(),
-                Integer.class);
-
-        final org.opensmartgridplatform.dto.valueobjects.LongTermIntervalTypeDto longTermHistoryIntervalType = this.mapperFacade
-                .map(source.getLongTermHistoryIntervalType(),
-                        org.opensmartgridplatform.dto.valueobjects.LongTermIntervalTypeDto.class);
-
         final org.opensmartgridplatform.dto.valueobjects.ConfigurationDto configuration = org.opensmartgridplatform.dto.valueobjects.ConfigurationDto
-                .newBuilder().withLightType(lightType).withDaliConfiguration(daliConfiguration)
+                .newBuilder()
+                .withLightType(lightType)
+                .withDaliConfiguration(daliConfiguration)
                 .withRelayConfiguration(relayConfiguration)
-                .withShortTermHistoryIntervalMinutes(shortTermHistoryIntervalMinutes)
-                .withPreferredLinkType(preferredLinkType).withMeterType(meterType)
-                .withLongTermHistoryInterval(longTermHistoryInterval)
-                .withLongTermHysteryIntervalType(longTermHistoryIntervalType).build();
+                .withPreferredLinkType(preferredLinkType)
+                .build();
 
         configuration.setAstroGateSunRiseOffset(source.getAstroGateSunRiseOffset());
         configuration.setAstroGateSunSetOffset(source.getAstroGateSunSetOffset());
