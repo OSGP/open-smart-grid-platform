@@ -71,10 +71,6 @@
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.logback-extensions</groupId>
-      <artifactId>logback-ext-spring</artifactId>
-    </dependency>
 
     <!-- Servlet API 3.0 -->
     <dependency>

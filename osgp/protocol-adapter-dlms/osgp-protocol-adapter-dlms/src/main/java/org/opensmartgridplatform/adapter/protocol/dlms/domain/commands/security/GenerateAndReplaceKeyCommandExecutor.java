@@ -11,6 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.security
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecurityKeyService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
@@ -54,14 +55,26 @@ public class GenerateAndReplaceKeyCommandExecutor extends AbstractCommandExecuto
     public ActionResponseDto execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final ActionRequestDto actionRequestDto) throws OsgpException {
         LOGGER.info("Generate new keys for device {}", device.getDeviceIdentification());
-        final SetKeysRequestDto setKeysRequest = this.generateSetKeysRequest();
+        final SetKeysRequestDto setKeysRequest = this.generateSetKeysRequest(device.getDeviceIdentification());
         return this.replaceKeyCommandExecutor.executeBundleAction(conn, device, setKeysRequest);
     }
 
-    private SetKeysRequestDto generateSetKeysRequest() throws FunctionalException {
+    private SetKeysRequestDto generateSetKeysRequest(String deviceIdentification) throws FunctionalException {
         try {
-            final byte[] encryptedAuthenticationKey = this.securityKeyService.generateAndEncryptKey();
-            final byte[] encryptedEncryptionKey = this.securityKeyService.generateAndEncryptKey();
+            final byte[][] generatedKeys =
+                    this.securityKeyService.generateAES128BitsKeysAndStoreAsNewKeys(deviceIdentification,
+                            new SecurityKeyType[]{SecurityKeyType.E_METER_AUTHENTICATION,
+                                    SecurityKeyType.E_METER_ENCRYPTION});
+
+            final byte[] authenticationKey = generatedKeys[0];
+            final byte[] encryptionKey = generatedKeys[1];
+
+            final byte[] encryptedAuthenticationKey = this.securityKeyService.aesEncryptKey(authenticationKey,
+                    SecurityKeyType.E_METER_AUTHENTICATION);
+
+            final byte[] encryptedEncryptionKey = this.securityKeyService.aesEncryptKey(encryptionKey,
+                    SecurityKeyType.E_METER_ENCRYPTION);
+
             final SetKeysRequestDto setKeysRequest = new SetKeysRequestDto(encryptedAuthenticationKey,
                     encryptedEncryptionKey);
             setKeysRequest.setGeneratedKeys(true);

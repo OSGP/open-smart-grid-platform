@@ -40,7 +40,6 @@ import org.opensmartgridplatform.secretmanagement.application.repository.DbEncry
 import org.opensmartgridplatform.shared.security.EncryptedSecret;
 import org.opensmartgridplatform.shared.security.EncryptionDelegate;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
-import org.opensmartgridplatform.shared.security.Secret;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 
@@ -72,7 +71,7 @@ public class SecretManagementServiceTest {
         secret.setSecretType(SecretType.E_METER_MASTER_KEY);
         secret.setEncryptionKeyReference(keyReference);
         final List<DbEncryptedSecret> secretList = Arrays.asList(secret);
-        final Secret decryptedSecret = new Secret("secret".getBytes());
+        final byte[] decryptedSecret = "secret".getBytes();
 
         //WHEN
         when(this.secretRepository.findSecrets(SOME_DEVICE, SecretType.E_METER_MASTER_KEY,
@@ -317,7 +316,7 @@ public class SecretManagementServiceTest {
         when(this.secretRepository.findSecrets(SOME_DEVICE, SecretType.E_METER_MASTER_KEY,
                 SecretStatus.ACTIVE)).thenReturn(Arrays.asList(existingDbSecret));
         when(this.encryptionDelegate.decrypt(any(), any())).thenReturn(
-                new Secret(HexUtils.fromHexString(newTypedSecret.getSecret())));    //identical secrets
+                HexUtils.fromHexString(newTypedSecret.getSecret()));    //identical secrets
 
         //THEN
         assertThatIllegalArgumentException().isThrownBy(
@@ -372,9 +371,9 @@ public class SecretManagementServiceTest {
     public void hasNewSecret() {
         when(this.secretRepository.getSecretCount(SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.NEW)).thenReturn(1);
         boolean result = this.service.hasNewSecret(SOME_DEVICE, SecretType.E_METER_MASTER_KEY);
-        assertThat(result).isEqualTo(true);
+        assertThat(result).isTrue();
         when(this.secretRepository.getSecretCount(SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.NEW)).thenReturn(0);
         result = this.service.hasNewSecret(SOME_DEVICE, SecretType.E_METER_MASTER_KEY);
-        assertThat(result).isEqualTo(false);
+        assertThat(result).isFalse();
     }
 }

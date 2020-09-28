@@ -114,7 +114,7 @@ Feature: TariffSwitchingScheduleManagement Set Reverse Tariff Schedule
       | FaultString  | VALIDATION_ERROR                                                                               |
       | InnerMessage | Validation Exception, violations: startDay may not be null when weekDay is set to ABSOLUTEDAY; |
 
-  Scenario Outline: Set reverse tariff schedule for inactive/unregistered device (device lifecycle state)
+  Scenario Outline: Set reverse tariff schedule for inactive or unregistered device (device lifecycle state)
     Given an ssld device
       | DeviceIdentification  | TEST1024000000001       |
       | DeviceLifecycleStatus | <DeviceLifecycleStatus> |
@@ -139,7 +139,7 @@ Feature: TariffSwitchingScheduleManagement Set Reverse Tariff Schedule
       | UNDER_TEST            |
       | DESTROYED             |
 
-  Scenario: Set reverse tariff schedule for inactive/unregistered device (is activated false)
+  Scenario: Set reverse tariff schedule for inactive or unregistered device (is activated false)
     Given an ssld device
       | DeviceIdentification | TEST1024000000001 |
       | Activated            | false             |

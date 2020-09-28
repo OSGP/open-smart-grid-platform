@@ -363,7 +363,8 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
          * order to be created. This seems to be the only way to work around
          * this circular dependency.
          */
-        this.getEnabledKeyBuilders().forEach(skb -> dlmsDevice.addSecurityKey(skb.setDlmsDevice(dlmsDevice).build()));
+        //TODO FIX
+        // this.getEnabledKeyBuilders().forEach(skb -> dlmsDevice.addSecurityKey(skb.setDlmsDevice(dlmsDevice).build()));
 
         return dlmsDevice;
     }

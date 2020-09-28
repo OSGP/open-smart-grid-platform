@@ -7,14 +7,16 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 
 public interface SecurityKeyService {
 
-    //get decrypted keys
+    //get multiple keys in one call to secret management
+    byte[][] getKeys(String deviceIdentification, SecurityKeyType[] keyTypes);
+
+    //get one specific decrypted key in a call to secret management
     byte[] getDlmsMasterKey(final String deviceIdentification);
     byte[] getDlmsAuthenticationKey(final String deviceIdentification);
     byte[] getDlmsGlobalUnicastEncryptionKey(final String deviceIdentification);
@@ -25,60 +27,59 @@ public interface SecurityKeyService {
     /**
      * Store new key
      * <p>
-     * A new key is a security key with a device that does not have a valid from
-     * date. This situation occurs in the process of updating a key, when the
-     * new key is known, but not yet set on the device.
+     * A new key is a security key with a device which status NEW.
+     * This status is used when the new key is known, but not yet set on the device.
      * <p>
      * <strong>CAUTION:</strong> Only call this method when a successful
      * connection with the device has been set up (that is: a valid
      * communication key that works is known), and you are sure any existing new
-     * key data is NOT VALID (for instance a new key stored earlier in an
+     * key data that is not activated yet (for instance a new key stored earlier in an
      * attempt to replace the communication key that got aborted).<br>
-     * <strong>This method will throw away any earlier stored new key and
-     * replace it.</strong>
      * <p>
      * The moment the new key is known to be transferred to the device, make
-     * sure to update its status from a new key to a valid key (and invalidating
-     * any previous key) by calling
-     * {@link #validateNewKey(DlmsDevice, SecurityKeyType)}.
+     * sure to activate it by calling
+     * {@link #activateNewKey(String, SecurityKeyType)}.
      *
-     * @param device
-     *         DLMS device
-     * @param encryptedKey
-     *         key encrypted with the symmetrical key internal to the DLMS
-     *         protocol adapter.
-     * @param keyType
+     * @param deviceIdentification
+     *         DLMS device id
+     * @param plainKeys
+     *        keys to store, not encrypted
+     * @param keyTypes
      *         type of key
      *
-     * @return saved device, with a new key of the given type
      *
-     * @see #validateNewKey(DlmsDevice, SecurityKeyType)
+     * @see #activateNewKey(String, SecurityKeyType)
      */
-    DlmsDevice storeNewKey(final DlmsDevice device, final byte[] encryptedKey, final SecurityKeyType keyType);
+    void storeNewKey(final String deviceIdentification, final SecurityKeyType keyTypes, final byte[] plainKeys);
+
+    //store multiple keys in one call
+    void storeNewKeys(final String deviceIdentification, final SecurityKeyType[] keyTypes, final byte[][] plainKeys);
 
     /**
-     * Updates the state of a new key (having valid from date {@code null}) to
-     * be considered valid (setting valid from to now).<br>
-     * This invalidates any previous valid key (setting valid of the previous
-     * key to now).
+     * @see #storeNewKey(String, SecurityKeyType, byte[])
+     */
+    void aesDecryptAndStoreNewKey(final String deviceIdentification, final SecurityKeyType keyTypes,
+            final byte[] aesEncryptedKeys) throws FunctionalException;
+
+    boolean isActivated(final String deviceIdentification, final SecurityKeyType keyType);
+
+    /**
+     * Updates the state of a new key from 'new' to 'active'
      * <p>
-     * This method should be called to validate a new key stored with
-     * {@link #storeNewKey(DlmsDevice, byte[], SecurityKeyType)} after it has
+     * This method should be called to activate a new key stored with
+     * {@link #storeNewKeys(String, SecurityKeyType[], byte[][])} after it has
      * been confirmed to be set on the device.
      *
-     * @param device
-     *         DLMS device
+     * @param deviceIdentification
+     *         DLMS device id
      * @param keyType
      *         type of key
-     *
-     * @return saved device, with a new security key that has become valid, and
-     *         any previously valid security key marked as no longer valid
      *
      * @throws ProtocolAdapterException
      *         if no new key is stored with the given device
-     * @see #storeNewKey(DlmsDevice, byte[], SecurityKeyType)
+     * @see #storeNewKeys(String, SecurityKeyType[], byte[][])
      */
-    DlmsDevice validateNewKey(final DlmsDevice device, final SecurityKeyType keyType) throws ProtocolAdapterException;
+    void activateNewKey(final String deviceIdentification, final SecurityKeyType keyType) throws ProtocolAdapterException;
 
     /**
      * Generates a new key that can be used as DLMS master key, authentication
@@ -88,45 +89,21 @@ public interface SecurityKeyService {
      * device, but can be generated for use in tests or with simulated devices.
      *
      * @return a new 16-byte AES key.
-     */
-    byte[] generateKey();
+     *
+    byte[] generateAES128BitsKey();*/
 
-    /**
-     * Convenience method to generate a new key that does not need to be used
-     * immediately, and return it appropriately encrypted (AES) with the secret key
-     * for the DLMS protocol adapter.
-     *
-     * @return a new encrypted key.
-     *
-     * @see #generateKey()
-     */
-    byte[] generateAndEncryptKey();
+    byte[][] generateAES128BitsKeysAndStoreAsNewKeys(final String deviceIdentification,
+            final SecurityKeyType[] keyTypes);
 
     //RSA decrypt key (from incoming requests) and encrypt with AES (for in memory storage)
     byte[] reEncryptKey(final byte[] externallyEncryptedKey, final SecurityKeyType keyType) throws FunctionalException;
 
+    byte[] rsaDecrypt(final byte[] externallyEncryptedKey, final SecurityKeyType keyType) throws FunctionalException;
+
     //AES decrypt (decrypt memory storage for actual use of key)
-    byte[] decryptKey(final byte[] encryptedKey, final SecurityKeyType keyType) throws ProtocolAdapterException;
+    byte[] aesDecryptKey(final byte[] encryptedKey, final SecurityKeyType keyType) throws FunctionalException;
 
     //AES encrypt (encrypt for safe memory storage)
-    byte[] encryptKey(final byte[] plainKey, final SecurityKeyType keyType) throws ProtocolAdapterException;
+    byte[] aesEncryptKey(final byte[] plainKey, final SecurityKeyType keyType) throws FunctionalException;
 
-    //Note this method is moved to the appropriate command since it seems to be DSMR specific
-    /**
-     * Encrypts a new M-Bus User key with the M-Bus Default key for use as M-Bus
-     * Client Setup transfer_key parameter.
-     * <p>
-     * Note that the specifics of the encryption of the M-Bus User key depend on
-     * the M-Bus version the devices support. This method should be appropriate
-     * for use with DSMR 4 M-Bus devices.
-     * <p>
-     * The encryption is performed by applying an AES/CBC/NoPadding cipher
-     * initialized for encryption with the given mbusDefaultKey and an
-     * initialization vector of 16 zero-bytes to the given mbusUserKey.
-     *
-     * @return the properly wrapped User key for a DSMR 4 M-Bus User key change.
-     *
-    public byte[] encryptMbusUserKey(final byte[] mbusDefaultKey, final byte[] mbusUserKey)
-            throws ProtocolAdapterException {}
-    */
 }

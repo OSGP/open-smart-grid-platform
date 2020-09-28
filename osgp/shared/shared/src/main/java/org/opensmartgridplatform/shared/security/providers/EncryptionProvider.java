@@ -10,11 +10,10 @@ package org.opensmartgridplatform.shared.security.providers;
 
 import org.opensmartgridplatform.shared.security.EncryptedSecret;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
-import org.opensmartgridplatform.shared.security.Secret;
 
 public interface EncryptionProvider {
-    EncryptedSecret encrypt(Secret secret, String keyReference);
-    Secret decrypt(EncryptedSecret secret, String keyReference);
+    EncryptedSecret encrypt(byte[] secret, String keyReference);
+    byte[] decrypt(EncryptedSecret secret, String keyReference);
 
     EncryptionProviderType getType();
 }

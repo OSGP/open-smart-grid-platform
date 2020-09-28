@@ -98,13 +98,13 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor
                 throw new ProtocolAdapterException("Unknown M-Bus device: " + mbusDeviceIdentification);
             }
 
-            final byte[] mbusUserKey = this.securityKeyService.generateKey();
+            final byte[][] generatedKeys = this.securityKeyService.generateAES128BitsKeysAndStoreAsNewKeys(mbusDevice.getDeviceIdentification(),
+                            new SecurityKeyType[]{SecurityKeyType.G_METER_ENCRYPTION});
+
+            final byte[] mbusUserKey = generatedKeys[0];
+
             final byte[] mbusDefaultKey = this.securityKeyService
                     .getMbusDefaultKey(gMeterInfo.getDeviceIdentification());
-
-            final SecurityKeyType mbusUserKeyType = SecurityKeyType.G_METER_ENCRYPTION;
-            final byte[] encryptedUserKey = this.securityKeyService.encryptKey(mbusUserKey, mbusUserKeyType);
-            mbusDevice = this.securityKeyService.storeNewKey(mbusDevice, encryptedUserKey, mbusUserKeyType);
 
             final ObisCode obisCode = OBIS_HASHMAP.get(channel);
 
@@ -132,7 +132,8 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor
             LOGGER.info("Successfully invoked M-Bus Setup set_encryption_key method: class_id {} obis_code {}",
                     CLASS_ID, obisCode);
 
-            this.securityKeyService.validateNewKey(mbusDevice, mbusUserKeyType);
+            this.securityKeyService.activateNewKey(mbusDevice.getDeviceIdentification(),
+                    SecurityKeyType.G_METER_ENCRYPTION);
 
             return MethodResultCode.SUCCESS;
         } catch (final IOException e) {

@@ -19,7 +19,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.security.EncryptedSecret;
 import org.opensmartgridplatform.shared.security.EncryptionDelegate;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
-import org.opensmartgridplatform.shared.security.Secret;
 import org.opensmartgridplatform.ws.schema.core.secret.management.SecretTypes;
 import org.opensmartgridplatform.ws.schema.core.secret.management.TypedSecrets;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -89,8 +88,7 @@ public class SoapEndpointDataTypeConverter {
 
         final String encodedSecret = typedSecret.getSecret();
         final byte[] rawSecret = HexUtils.fromHexString(encodedSecret);
-        final Secret secret = new Secret(rawSecret);
-        final EncryptedSecret encryptedSecret = this.encryptionDelegate.encrypt(EncryptionProviderType.RSA, secret, KEY_REFERENCE);
+        final EncryptedSecret encryptedSecret = this.encryptionDelegate.encrypt(EncryptionProviderType.RSA, rawSecret, KEY_REFERENCE);
         soapTypedSecret.setSecret(HexUtils.toHexString(encryptedSecret.getSecret()));
 
         final SecretType secretType = typedSecret.getSecretType();
@@ -105,9 +103,9 @@ public class SoapEndpointDataTypeConverter {
 
         final byte[] rawEncryptedSecret = HexUtils.fromHexString(soapTypedSecret.getSecret());
         final EncryptedSecret encryptedSecret = new EncryptedSecret(EncryptionProviderType.RSA, rawEncryptedSecret);
-        final Secret decryptedSecret = this.encryptionDelegate.decrypt(encryptedSecret, KEY_REFERENCE);
+        final byte[] decryptedSecret = this.encryptionDelegate.decrypt(encryptedSecret, KEY_REFERENCE);
 
-        typedSecret.setSecret(HexUtils.toHexString(decryptedSecret.getSecret()));
+        typedSecret.setSecret(HexUtils.toHexString(decryptedSecret));
         typedSecret.setSecretType(this.convertToSecretType(soapTypedSecret.getType()));
 
         return typedSecret;

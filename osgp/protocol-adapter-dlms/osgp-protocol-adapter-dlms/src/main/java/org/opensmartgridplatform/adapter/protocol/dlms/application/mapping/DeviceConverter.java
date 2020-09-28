@@ -34,8 +34,6 @@ public class DeviceConverter extends BidirectionalConverter<SmartMeteringDeviceD
         dlmsDevice.setMbusManufacturerIdentification(source.getMbusManufacturerIdentification());
         dlmsDevice.setProtocol(source.getProtocolName(), source.getProtocolVersion());
 
-        //TODO add keys to secret Management: SecurityKeyType.E_METER_MASTER,E_METER_AUTHENTICATION,E_METER_ENCRYPTION,G_METER_MASTER,
-
         return dlmsDevice;
     }
 
