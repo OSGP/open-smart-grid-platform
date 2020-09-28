@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Smart Society Services B.V.
+ * Copyright 2020 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -33,9 +33,9 @@ public class CommonConfirmRegisterDeviceRequestMessageProcessor extends DomainCo
     }
 
     @Override
-    public void processMessage(final ObjectMessage message) throws JMSException {
+    public void processMessage(final ObjectMessage message) {
 
-        MessageMetadata messageMetadata;
+        final MessageMetadata messageMetadata;
         try {
             messageMetadata = MessageMetadata.fromMessage(message);
         } catch (final JMSException e) {
