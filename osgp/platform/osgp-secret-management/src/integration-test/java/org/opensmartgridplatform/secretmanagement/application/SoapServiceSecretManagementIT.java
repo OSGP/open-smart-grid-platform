@@ -138,6 +138,44 @@ public class SoapServiceSecretManagementIT {
     }
 
     @Test
+    public void storeSecretsRequest_alreadyNewSecretPresent() throws IOException {
+
+        /**
+         * Note that the output depends, besides the value of the keys, also on both the db key and the soap key.
+         */
+        assertThat(this.secretRepository.count()).isEqualTo(2);
+
+        final Resource storeRequest = new ClassPathResource("test-requests/storeSecrets.xml");
+        final Resource expectedStoreResponse = new ClassPathResource("test-responses/storeSecrets.xml");
+        //Store secrets
+        this.mockWebServiceClient.sendRequest(withPayload(storeRequest)).andExpect(
+                ResponseMatchers.noFault()).andExpect(ResponseMatchers.payload(expectedStoreResponse));
+        //Store secrets again, while previously stored secret still have status NEW
+        final String errorMessage = "Expected 0 new secrets, but 1 new secret(s) present";
+        this.mockWebServiceClient.sendRequest(withPayload(storeRequest)).andExpect(
+                ResponseMatchers.serverOrReceiverFault(errorMessage));
+    }
+
+    @Test
+    public void activateSecretsRequest() throws IOException {
+
+        /**
+         * Note that the output depends, besides the value of the keys, also on both the db key and the soap key.
+         */
+        assertThat(this.secretRepository.count()).isEqualTo(2);
+
+        final Resource storeRequest = new ClassPathResource("test-requests/storeSecrets.xml");
+        final Resource activateRequest = new ClassPathResource("test-requests/activateSecrets.xml");
+        final Resource expectedStoreResponse = new ClassPathResource("test-responses/storeSecrets.xml");
+        final Resource expectedActivateResponse = new ClassPathResource("test-responses/activateSecrets.xml");
+        //Store secrets
+        this.mockWebServiceClient.sendRequest(withPayload(storeRequest)).andExpect(
+                ResponseMatchers.noFault()).andExpect(ResponseMatchers.payload(expectedStoreResponse));
+        this.mockWebServiceClient.sendRequest(withPayload(activateRequest)).andExpect(
+                ResponseMatchers.noFault()).andExpect(ResponseMatchers.payload(expectedActivateResponse));
+    }
+
+    @Test
     public void getSecretsRequest_noSecretTypes() {
 
         /**
