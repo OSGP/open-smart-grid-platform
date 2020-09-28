@@ -9,14 +9,11 @@
 
 package org.opensmartgridplatform.secretmanagement.application.services;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import javax.crypto.KeyGenerator;
 
 import org.apache.tomcat.util.buf.HexUtils;
 import org.opensmartgridplatform.secretmanagement.application.domain.DbEncryptedSecret;
@@ -120,8 +117,7 @@ public class SecretManagementService {
         }
     }
 
-    private Optional<TypedSecret> retrieveActiveSecret(final String deviceIdentification,
-            final SecretType secretType) {
+    private Optional<TypedSecret> retrieveActiveSecret(final String deviceIdentification, final SecretType secretType) {
         final Optional<DbEncryptedSecret> encryptedSecret = this.getSingleDbEncryptedSecret(deviceIdentification,
                 secretType, SecretStatus.ACTIVE);
         return encryptedSecret.isPresent() ? Optional.of(this.getTypedSecret(encryptedSecret.get())) : Optional.empty();
@@ -206,17 +202,14 @@ public class SecretManagementService {
     }
 
     public TypedSecret generateAes128BitsSecret(final SecretType secretType) {
-        final DbEncryptionKeyReference keyReference = this.getKey();
-        //TODO get key (KEK) from HSM and use it to encrypt generated AES 128-bits secret
         //Old implementation:
-        try {
-            final KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
+        /*try {
+            final KeyGenerator keyGenerator = KeyGenerator.getInstance("AES",""); //.getInstance("AES");
             keyGenerator.init(AES_GMC_128_KEY_SIZE);
             final byte[] encodedSecret = keyGenerator.generateKey().getEncoded();
-            //encrypt with KEK
-        } catch(final NoSuchAlgorithmException nsae) {
+        } catch (final NoSuchAlgorithmException nsae) {
             throw new IllegalStateException("Secret configuration incorrect", nsae);
-        }
+        }*/
 
         //EvB:
         // Dit is hoe je een secret kunt genereren

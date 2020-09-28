@@ -112,6 +112,7 @@ public class SecretManagementEndpoint {
                 t -> this.secretManagementService.generateAes128BitsSecret(t)).collect(Collectors.toList());
         this.secretManagementService.storeSecrets(request.getDeviceId(), typedSecretList);
         response.setResult(OsgpResultType.OK);
+        response.setTypedSecrets(this.converter.convertToSoapTypedSecrets(typedSecretList));
         log.trace(response.toString());
         return response;
     }

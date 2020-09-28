@@ -11,4 +11,5 @@ package org.opensmartgridplatform.shared.security;
 public interface EncryptionDelegate {
     EncryptedSecret encrypt(EncryptionProviderType encryptionProviderType, Secret secret, String keyReference);
     Secret decrypt(EncryptedSecret secret, String keyReference);
+    //Secret generate128BitsSecret();
 }

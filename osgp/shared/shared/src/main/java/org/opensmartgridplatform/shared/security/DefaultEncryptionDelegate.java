@@ -39,5 +39,11 @@ public class DefaultEncryptionDelegate implements EncryptionDelegate {
         return this.providers.stream().filter(ep -> ep.getType().equals(secret.getType())).findFirst().orElseThrow(
                 () -> new EncrypterException(ERROR_NO_PROVIDER)).decrypt(secret, keyReference);
     }
+
+    /*@Override
+    public Secret generate128BitsSecret(final EncryptionProviderType encryptionProviderType) {
+        return this.providers.stream().filter(ep -> ep.getType().equals(encryptionProviderType)).findFirst().orElseThrow(
+                () -> new EncrypterException(ERROR_NO_PROVIDER)).;
+    }*/
 }
 
