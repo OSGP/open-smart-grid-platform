@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.TimeZone;
 import java.util.UUID;
 
 import org.opensmartgridplatform.adapter.kafka.da.avro.GridMeasurementPublishedEvent;
@@ -52,31 +53,40 @@ public class GridMeasurementPublishedEventConverter extends CustomConverter<Stri
             final Type<? extends GridMeasurementPublishedEvent> destinationType, final MappingContext mappingContext) {
 
         LsMeasurementMessageToAnalogList stringArrayToAnalogList = null;
-        LOGGER.info("Source string: {}", source);
+        LOGGER.debug("Source string: {}", source);
 
         try {
-            final Payload payload = this.objectMapper.readValue(source, Payload[].class)[0];
+            final Payload[] payloads = this.objectMapper.readValue(source, Payload[].class);
+            if (payloads[0].equals(null)) {
+                LOGGER.error("Source does not include the correct data fields. Source {}", source);
+                return null;
+            }
+            final Payload payload = payloads[0];
 
-            final String[] values = (payload.gisnr + ", " + String.join(", ", payload.data)).split(", ");
-            LOGGER.info("Values length: {} and values: {}", values.length, Arrays.toString(values));
+            final String[] measurementValues = (payload.gisnr + ", " + String.join(", ", payload.data)).split(", ");
+            LOGGER.debug("Values length: {} and values: {}", measurementValues.length,
+                    Arrays.toString(measurementValues));
 
-            if (values.length == LsPeakShavingMeasurementType.getNumberOfElements() + 1) {
+            if (measurementValues.length == LsPeakShavingMeasurementType.getNumberOfElements() + 1) {
                 stringArrayToAnalogList = new LsMeasurementMessageToAnalogList();
             } else {
-                LOGGER.error("String '{}' does not have the expected amount of fields, abandoning conversion", source);
+                LOGGER.error(
+                        "Measurement values does not have the expected amount of fields. Expecting: {}, actual: {}. Payload: {}.",
+                        LsPeakShavingMeasurementType.getNumberOfElements() + 1, measurementValues.length, source);
                 return null;
             }
 
-            final String eanCode = values[0];
+            final String eanCode = measurementValues[0];
             final PowerSystemResource powerSystemResource = new PowerSystemResource(eanCode,
                     UUID.randomUUID().toString(), new ArrayList<Name>());
             final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");
+            dateFormat.setTimeZone(TimeZone.getTimeZone("Europe/Amsterdam"));
             final Date date = dateFormat.parse(payload.date);
             final long createdDateTime = date.getTime();
-            LOGGER.info("CreatedDateTime: {}", createdDateTime);
+            LOGGER.debug("CreatedDateTime: {}", createdDateTime);
             return new GridMeasurementPublishedEvent(createdDateTime, eanCode, UUID.randomUUID().toString(),
                     "GridMeasurementPublishedEvent", new ArrayList<Name>(), powerSystemResource,
-                    stringArrayToAnalogList.convertToAnalogList(values));
+                    stringArrayToAnalogList.convertToAnalogList(measurementValues));
         } catch (final JsonMappingException e) {
             LOGGER.error("Caught an error mapping a JSON string to Payload. {}", source, e);
             return null;
@@ -98,6 +108,8 @@ public class GridMeasurementPublishedEventConverter extends CustomConverter<Stri
         private String date;
         private String[] data;
 
+        // Super is needed to map the String to the Payload object by the
+        // objectmapper.
         public Payload() {
             super();
         }

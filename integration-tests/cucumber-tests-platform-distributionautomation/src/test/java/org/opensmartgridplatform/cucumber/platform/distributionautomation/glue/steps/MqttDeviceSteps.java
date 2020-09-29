@@ -53,7 +53,7 @@ public class MqttDeviceSteps {
     @Autowired
     private PeakShavingConsumer consumer;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SimulatorSpecPublishingClient.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MqttDeviceSteps.class);
 
     @When("MQTT device {string} sends a measurement report")
     public void theDeviceSendsAMeasurementReport(final String deviceIdentification,
