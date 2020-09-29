@@ -119,8 +119,8 @@ It may be needed to delete TST-1 or rename it before inserting the device using 
 
 ```
 INSERT INTO public.rtu_device(
-            id, last_communication_time)
-    VALUES ((SELECT id FROM device WHERE device_identification = 'TST-01'), now());
+            id, last_communication_time, domain_info_id)
+    VALUES ((SELECT id FROM device WHERE device_identification = 'TST-01'), now(), (SELECT id FROM domain_info WHERE domain = 'DISTRIBUTION_AUTOMATION'));
 
 INSERT INTO public.device_authorization(
             creation_time, modification_time, version, function_group, 
