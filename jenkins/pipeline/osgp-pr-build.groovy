@@ -42,8 +42,8 @@ pipeline {
 
         stage ('Set GitHub Status') {
             steps {
-                step([$class: 'GitHubSetCommitStatusBuilder',
-                      contextSource: [$class: 'ManuallyEnteredCommitContextSource']])
+                // Set status on GitHub to PENDING.
+                setBuildStatus("Build triggered", "PENDING")
             }
         } // stage
 
