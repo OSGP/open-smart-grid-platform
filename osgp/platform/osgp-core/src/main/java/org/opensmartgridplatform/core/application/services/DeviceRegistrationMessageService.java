@@ -93,13 +93,13 @@ public class DeviceRegistrationMessageService {
     }
 
     public void sendRequestMessageToDomainCore(final String deviceIdentification,
-            final String organisationIdentification, final String correlationUid) {
+            final String organisationIdentification, final String correlationUid, final MessageType messageType) {
 
         final RequestMessage message = new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, null);
 
         final DomainInfo domainInfo = this.domainInfoRepository.findByDomainAndDomainVersion("CORE", "1.0");
 
-        this.domainRequestService.send(message, MessageType.REGISTER_DEVICE.name(), domainInfo);
+        this.domainRequestService.send(message, messageType.name(), domainInfo);
     }
 }

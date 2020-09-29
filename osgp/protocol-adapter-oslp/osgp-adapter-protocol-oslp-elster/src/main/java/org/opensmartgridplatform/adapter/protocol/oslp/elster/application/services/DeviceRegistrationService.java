@@ -10,19 +10,19 @@ package org.opensmartgridplatform.adapter.protocol.oslp.elster.application.servi
 import java.net.InetAddress;
 
 import org.apache.commons.codec.binary.Base64;
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.oslp.OslpDeviceSettingsService;
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities.OslpDevice;
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.OsgpRequestMessageSender;
 import org.opensmartgridplatform.dto.valueobjects.ConfirmDeviceRegistrationDataDto;
+import org.opensmartgridplatform.dto.valueobjects.DeviceRegistrationDataDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.oslp.OslpDeviceSettingsService;
-import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities.OslpDevice;
-import org.opensmartgridplatform.adapter.protocol.oslp.elster.exceptions.ProtocolAdapterException;
-import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.OsgpRequestMessageSender;
-import org.opensmartgridplatform.dto.valueobjects.DeviceRegistrationDataDto;
-import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 
 @Service(value = "oslpDeviceRegistrationService")
 @Transactional(value = "transactionManager")
@@ -79,7 +79,7 @@ public class DeviceRegistrationService {
         final RequestMessage requestMessage = new RequestMessage("no-correlationUid", "no-organisation",
                 deviceIdentification, deviceRegistrationData);
 
-        this.osgpRequestMessageSender.send(requestMessage, "REGISTER_DEVICE");
+        this.osgpRequestMessageSender.send(requestMessage, MessageType.REGISTER_DEVICE.name());
     }
 
     public void confirmRegisterDevice(final byte[] deviceId, final Integer newSequenceNumber,
@@ -88,14 +88,14 @@ public class DeviceRegistrationService {
         this.checkDeviceRandomAndPlatformRandom(deviceId, randomDevice, randomPlatform);
         this.updateDeviceSequenceNumber(deviceId, newSequenceNumber);
 
-        OslpDevice oslpDevice = this.findDevice(deviceId);
+        final OslpDevice oslpDevice = this.findDevice(deviceId);
         final ConfirmDeviceRegistrationDataDto confirmDeviceRegistrationDataDto = new ConfirmDeviceRegistrationDataDto(
                 oslpDevice.getDeviceType());
 
         final RequestMessage requestMessage = new RequestMessage("no-correlationUid", "no-organisation",
                 oslpDevice.getDeviceIdentification(), confirmDeviceRegistrationDataDto);
 
-        this.osgpRequestMessageSender.send(requestMessage, "CONFIRM_REGISTER_DEVICE");
+        this.osgpRequestMessageSender.send(requestMessage, MessageType.CONFIRM_REGISTER_DEVICE.name());
 
         LOGGER.debug("confirmRegisterDevice successful for device with UID: {}.", deviceId);
     }
