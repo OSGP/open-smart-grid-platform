@@ -6,8 +6,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 public class DaylightSavingTimeTransitionTest {
+    public static final DateTimeZone amsterdamDTZ = DateTimeZone.forID("Europe/Amsterdam");
 
     public static final String DST_START_MWD_AMSTERDAM = "M3.5.0/2";
     public static final String DST_END_MWD_AMSTERDAM = "M10.5.0/3";
@@ -269,7 +272,6 @@ public class DaylightSavingTimeTransitionTest {
     
     @Test
     public void testGetDateTime() {
-    	DateTimeZone amsterdamDTZ = DateTimeZone.forID("Europe/Amsterdam");
     	assertThat(DaylightSavingTimeTransition.DstTransitionFormat.JULIAN_DAY_IGNORING_FEBRUARY_29.getDateTime(amsterdamDTZ, DST_START_J_IGNORING_FEB29_AMSTERDAM_2015, 2015).toDateTime(DateTimeZone.UTC)).isEqualTo(DST_START_DATE_TIME_AMSTERDAM_2015.toDateTime(DateTimeZone.UTC));
     	assertThat(DaylightSavingTimeTransition.DstTransitionFormat.JULIAN_DAY_COUNTING_FEBRUARY_29.getDateTime(amsterdamDTZ, DST_START_J_COUNTING_FEB29_AMSTERDAM_2015, 2015).toDateTime(DateTimeZone.UTC)).isEqualTo(DST_START_DATE_TIME_AMSTERDAM_2015.toDateTime(DateTimeZone.UTC));
     	assertThat(DaylightSavingTimeTransition.DstTransitionFormat.DAY_OF_WEEK_OF_MONTH.getDateTime(amsterdamDTZ, DST_START_MWD_AMSTERDAM, 2015).toDateTime(DateTimeZone.UTC)).isEqualTo(DST_START_DATE_TIME_AMSTERDAM_2015.toDateTime(DateTimeZone.UTC));
@@ -281,7 +283,7 @@ public class DaylightSavingTimeTransitionTest {
     
     @Test
     public void testGetDaylightSavingTimeTransition() {
-    	DateTime midNight = DateTime.parse("2015-01-1T00:00:00.000+01:00");
+    	final DateTime midNight = DateTime.parse("2015-01-1T00:00:00.000+01:00");
     	assertThat(DaylightSavingTimeTransition.DstTransitionFormat.JULIAN_DAY_IGNORING_FEBRUARY_29.getDaylightSavingTimeTransition(midNight).getTransition()).isEqualTo("J1");
     	assertThat(DaylightSavingTimeTransition.DstTransitionFormat.JULIAN_DAY_COUNTING_FEBRUARY_29.getDaylightSavingTimeTransition(midNight).getTransition()).isEqualTo("0");
     	assertThat(DaylightSavingTimeTransition.DstTransitionFormat.DAY_OF_WEEK_OF_MONTH.getDaylightSavingTimeTransition(midNight).getTransition()).isEqualTo("M1.1.4");
@@ -306,5 +308,20 @@ public class DaylightSavingTimeTransitionTest {
     	assertThat(DaylightSavingTimeTransition.DstTransitionFormat.DAY_OF_WEEK_OF_MONTH.getTime("50")).isEqualTo(0);
     	assertThat(DaylightSavingTimeTransition.DstTransitionFormat.DAY_OF_WEEK_OF_MONTH.getTime("M3.5.0/2")).isEqualTo(2);
     	assertThat(DaylightSavingTimeTransition.DstTransitionFormat.DAY_OF_WEEK_OF_MONTH.getTime("M3.5.0/2:30")).isEqualTo(2);
+    }
+
+    @Test
+    public void testGetDateTimeForNextTransition() {
+        final DateTime dateTimeBeforeDay30 = DateTime.parse("2015-01-01T00:00:00.000+01:00");
+        final DateTime dateTimeAfterDay30 = DateTime.parse("2015-06-01T02:00:00.000+01:00");
+        final DateTime dateTimeOfDay30ThisYear = DateTime.parse("2015-01-31T00:00:00.000+01:00");
+        final DateTime dateTimeOfDay30NextYear = DateTime.parse("2016-01-31T00:00:00.000+01:00");
+
+        try (final MockedStatic<DateTime> mockDateTime = Mockito.mockStatic(DateTime.class)) {
+            mockDateTime.when(() -> DateTime.now(amsterdamDTZ)).thenReturn(dateTimeBeforeDay30);
+            assertThat((new DaylightSavingTimeTransition("30")).getDateTimeForNextTransition()).isEqualByComparingTo(dateTimeOfDay30ThisYear);
+            mockDateTime.when(() -> DateTime.now(amsterdamDTZ)).thenReturn(dateTimeAfterDay30);
+            assertThat((new DaylightSavingTimeTransition("30")).getDateTimeForNextTransition()).isEqualByComparingTo(dateTimeOfDay30NextYear);
+        }
     }
 }
