@@ -11,6 +11,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
+  <artifactId>osgp-adapter-kafka-distributionautomation</artifactId>
+  <packaging>war</packaging>
+  <name>osgp-adapter-kafka-distributionautomation</name>
+  <!-- Description element is needed for the maven-jxr-plugin to generate
+    a maven site -->
+  <description>Kafka module for Distribution Automation domain.</description>
+
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-platform</artifactId>
@@ -18,12 +25,7 @@
     <relativePath>../parent-platform/pom.xml</relativePath>
   </parent>
 
-  <artifactId>osgp-adapter-kafka-distributionautomation</artifactId>
-  <packaging>war</packaging>
-  <name>osgp-adapter-kafka-distributionautomation</name>
-  <!-- Description element is needed for the maven-jxr-plugin to generate
-    a maven site -->
-  <description>Kafka module for Distribution Automation domain.</description>
+
 
   <properties>
     <display.version>${project.version}-${BUILD_TAG}</display.version>
