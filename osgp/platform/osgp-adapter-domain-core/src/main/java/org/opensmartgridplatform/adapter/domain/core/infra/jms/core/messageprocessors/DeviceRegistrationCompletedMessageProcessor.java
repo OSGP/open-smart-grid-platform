@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Smart Society Services B.V.
+ * Copyright 2020 Alliander N.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -20,16 +20,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CommonConfirmRegisterDeviceRequestMessageProcessor extends DomainCoreDeviceRequestMessageProcessor {
+public class DeviceRegistrationCompletedMessageProcessor extends DomainCoreDeviceRequestMessageProcessor {
 
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(CommonConfirmRegisterDeviceRequestMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceRegistrationCompletedMessageProcessor.class);
 
     @Autowired
     private FirmwareManagementService firmwareManagementService;
 
-    public CommonConfirmRegisterDeviceRequestMessageProcessor() {
-        super(MessageType.CONFIRM_REGISTER_DEVICE);
+    public DeviceRegistrationCompletedMessageProcessor() {
+        super(MessageType.DEVICE_REGISTRATION_COMPLETED);
     }
 
     @Override

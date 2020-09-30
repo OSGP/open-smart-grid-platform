@@ -54,10 +54,6 @@ public class RegisterDeviceMessageProcessor extends AbstractProtocolRequestMessa
                     deviceRegistrationData.getIpAddress(), deviceRegistrationData.getDeviceType(),
                     deviceRegistrationData.isHasSchedule());
 
-            this.deviceRegistrationMessageService.sendRequestMessageToDomainCore(metadata.getDeviceIdentification(),
-                    metadata.getOrganisationIdentification(), metadata.getCorrelationUid(),
-                    MessageType.REGISTER_DEVICE);
-
         } catch (final UnknownHostException e) {
             final String errorMessage = String.format("%s occurred, reason: %s", e.getClass().getName(),
                     e.getMessage());

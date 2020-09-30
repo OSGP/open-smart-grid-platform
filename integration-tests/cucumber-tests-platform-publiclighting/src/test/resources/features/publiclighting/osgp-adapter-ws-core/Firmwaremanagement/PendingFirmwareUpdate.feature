@@ -45,8 +45,6 @@ Feature: FirmwareManagement pending firmware update
     When the device sends a confirm register device request to the platform over "<Protocol>"
       | DeviceIdentification | TEST1024010101010 |
       | DeviceUid            | eHW0eEFzN0R2Okd5  |
-      | IpAddress            | 127.0.0.2         |
-      | DeviceType           | SSLD              |
     Then the confirm register device response contains
       | Status | OK |
     And the ssld oslp device contains

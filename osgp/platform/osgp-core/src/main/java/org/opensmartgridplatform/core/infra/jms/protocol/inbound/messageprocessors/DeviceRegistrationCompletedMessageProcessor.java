@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Smart Society Services B.V.
+ * Copyright 2020 Alliander N.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
@@ -20,16 +20,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component("confirmRegisterDeviceMessageProcessor")
-public class ConfirmRegisterDeviceMessageProcessor extends AbstractProtocolRequestMessageProcessor {
+@Component
+public class DeviceRegistrationCompletedMessageProcessor extends AbstractProtocolRequestMessageProcessor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConfirmRegisterDeviceMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceRegistrationCompletedMessageProcessor.class);
 
     @Autowired
     private DeviceRegistrationMessageService deviceRegistrationMessageService;
 
-    protected ConfirmRegisterDeviceMessageProcessor() {
-        super(MessageType.CONFIRM_REGISTER_DEVICE);
+    protected DeviceRegistrationCompletedMessageProcessor() {
+        super(MessageType.DEVICE_REGISTRATION_COMPLETED);
     }
 
     @Override
@@ -42,7 +42,7 @@ public class ConfirmRegisterDeviceMessageProcessor extends AbstractProtocolReque
 
         this.deviceRegistrationMessageService.sendRequestMessageToDomainCore(metadata.getDeviceIdentification(),
                 metadata.getOrganisationIdentification(), metadata.getCorrelationUid(),
-                MessageType.CONFIRM_REGISTER_DEVICE);
+                MessageType.DEVICE_REGISTRATION_COMPLETED);
 
     }
 }

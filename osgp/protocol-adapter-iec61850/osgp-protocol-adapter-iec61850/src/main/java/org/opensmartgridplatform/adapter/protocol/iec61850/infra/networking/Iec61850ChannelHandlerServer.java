@@ -16,7 +16,6 @@ import org.opensmartgridplatform.adapter.protocol.iec61850.application.services.
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.OsgpRequestMessageSender;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.IED;
 import org.opensmartgridplatform.core.db.api.iec61850.entities.Ssld;
-import org.opensmartgridplatform.dto.valueobjects.ConfirmDeviceRegistrationDataDto;
 import org.opensmartgridplatform.dto.valueobjects.DeviceRegistrationDataDto;
 import org.opensmartgridplatform.iec61850.RegisterDeviceRequest;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -33,6 +32,8 @@ import io.netty.channel.ChannelHandlerContext;
 public class Iec61850ChannelHandlerServer extends Iec61850ChannelHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850ChannelHandlerServer.class);
+
+    private static final String NO_ORGANISATION = "no-organisation";
 
     @Autowired
     private OsgpRequestMessageSender osgpRequestMessageSender;
@@ -82,7 +83,7 @@ public class Iec61850ChannelHandlerServer extends Iec61850ChannelHandler {
         final DeviceRegistrationDataDto deviceRegistrationData = new DeviceRegistrationDataDto(ipAddress,
                 Ssld.SSLD_TYPE, true);
 
-        final RequestMessage requestMessage = new RequestMessage(correlationId, "no-organisation", deviceIdentification,
+        final RequestMessage requestMessage = new RequestMessage(correlationId, NO_ORGANISATION, deviceIdentification,
                 ipAddress, deviceRegistrationData);
 
         LOGGER.info("Sending register device request to OSGP with correlation ID: {}", correlationId);
@@ -92,13 +93,10 @@ public class Iec61850ChannelHandlerServer extends Iec61850ChannelHandler {
             this.deviceRegistrationService.disableRegistration(deviceIdentification, InetAddress.getByName(ipAddress),
                     ied, ied.getDescription());
 
-            final ConfirmDeviceRegistrationDataDto confirmDeviceRegistrationDataDto = new ConfirmDeviceRegistrationDataDto(
-                    Ssld.SSLD_TYPE);
+            final RequestMessage cdrRequestMessage = new RequestMessage(correlationId, NO_ORGANISATION,
+                    deviceIdentification, ipAddress);
 
-            final RequestMessage cdrRequestMessage = new RequestMessage(correlationId, "no-organisation",
-                    deviceIdentification, ipAddress, confirmDeviceRegistrationDataDto);
-
-            this.osgpRequestMessageSender.send(cdrRequestMessage, MessageType.CONFIRM_REGISTER_DEVICE.name());
+            this.osgpRequestMessageSender.send(cdrRequestMessage, MessageType.DEVICE_REGISTRATION_COMPLETED.name());
             LOGGER.info("Disabled registration for device: {}, at IP address: {}", deviceIdentification, ipAddress);
         } catch (final Exception e) {
             LOGGER.error("Failed to disable registration for device: {}, at IP address: {}", deviceIdentification,
