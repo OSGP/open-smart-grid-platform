@@ -152,29 +152,6 @@ public class SecretManagementService implements SecurityKeyService {
         }
     }
 
-    /**
-     * Encrypts the given {@code plainKey} with the symmetrical secret key that
-     * is internal to the DLMS protocol adapter.
-     *
-     * @param plainKey
-     *            plain key without encryption
-     * @param keyType
-     *            type of the key, for logging purposes
-     * @return the given key encrypted with the symmetrical key internal to the
-     *         DLMS protocol adapter.
-     */
-    public byte[] encryptKey(final byte[] plainKey, final SecurityKeyType keyType) throws ProtocolAdapterException {
-
-        if (plainKey == null) {
-            return new byte[0];
-        }
-        try {
-            return this.aesEncryptionService.encrypt(plainKey);
-        } catch (final Exception e) {
-            throw new ProtocolAdapterException("Error encrypting " + keyType + " key", e);
-        }
-    }
-
     @Override
     public byte[] getDlmsMasterKey(String deviceIdentification) {
         LOGGER.info("Retrieving DLMS master key for device {}", deviceIdentification);

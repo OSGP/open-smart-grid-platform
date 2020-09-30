@@ -84,11 +84,12 @@ public class RecoverKeyProcess implements Runnable {
             LOGGER.error("Unexpected exception", e);
         }
 
+        //TODO: if hasNewKeys(...)
         if (securityKeyService.isActivated(this.deviceIdentification, SecurityKeyType.E_METER_AUTHENTICATION)) {
             return;
         }
 
-       if (this.canConnect()) {
+       if (this.canConnectUsingNewKeys()) {
            try {
                this.securityKeyService.activateNewKey(this.deviceIdentification,
                        SecurityKeyType.E_METER_ENCRYPTION);
@@ -124,10 +125,10 @@ public class RecoverKeyProcess implements Runnable {
         }
     }
 
-    private boolean canConnect() {
+    private boolean canConnectUsingNewKeys() {
         DlmsConnection connection = null;
         try {
-            connection = this.createConnection();
+            connection = this.createConnectionUsingNewKeys();
             return true;
         } catch (final Exception e) {
             LOGGER.warn("Connection exception: {}", e.getMessage(), e);
@@ -151,8 +152,9 @@ public class RecoverKeyProcess implements Runnable {
      *             When there are problems in connecting to or communicating
      *             with the device.
      */
-    private DlmsConnection createConnection() throws IOException, FunctionalException {
+    private DlmsConnection createConnectionUsingNewKeys() throws IOException, FunctionalException {
 
+        //TODO: specify that the NEW keys should be retrieved
         byte[][] keys = this.securityKeyService.getKeys(this.deviceIdentification,
                 new SecurityKeyType[]{ SecurityKeyType.E_METER_AUTHENTICATION, SecurityKeyType.E_METER_ENCRYPTION });
 

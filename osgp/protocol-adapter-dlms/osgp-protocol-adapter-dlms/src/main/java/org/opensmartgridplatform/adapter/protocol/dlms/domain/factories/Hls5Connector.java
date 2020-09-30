@@ -72,6 +72,7 @@ public class Hls5Connector extends SecureDlmsConnector {
                     "The IP address is not found: " + device.getIpAddress());
         } catch (final IOException e) {
 
+            //TODO: use isNew instead of isActivated (because secrets can be expired also)
             if (!securityKeyService.isActivated(device.getDeviceIdentification(), SecurityKeyType.E_METER_ENCRYPTION)) {
                this.recoverKeyProcessInitiator.initiate(device.getDeviceIdentification(), device.getIpAddress());
             }
