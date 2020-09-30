@@ -26,7 +26,7 @@ Feature: SmartMetering Bundle - GetSpecificAttributeValueAction
       | Result       | OK                                                        |
       | ResponsePart | bytes[100, 101, 118, 105, 99, 101, 32, 110, 97, 109, 101] |
 
-  Scenario: Retrieve Administrative in/out
+  Scenario: Retrieve Administrative in-out
     Given a bundle request
       | DeviceIdentification | TEST1024000000001 |
     And the bundle request contains a get specific attribute value action with parameters
