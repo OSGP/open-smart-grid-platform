@@ -41,4 +41,13 @@ class GridMeasurementPublishedEventConverterTest {
 
     }
 
+    @Test
+    void testNullString() {
+        final String someNullString = null;
+        final GridMeasurementPublishedEvent event = this.mapper.map(someNullString,
+                GridMeasurementPublishedEvent.class);
+
+        assertThat(event).isNull();
+    }
+
 }

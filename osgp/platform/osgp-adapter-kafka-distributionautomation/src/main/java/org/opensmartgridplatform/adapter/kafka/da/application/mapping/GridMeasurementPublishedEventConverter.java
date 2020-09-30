@@ -57,7 +57,7 @@ public class GridMeasurementPublishedEventConverter extends CustomConverter<Stri
 
         try {
             final Payload[] payloads = this.objectMapper.readValue(source, Payload[].class);
-            if (payloads[0].equals(null)) {
+            if (payloads.length == 0 || payloads[0] == null) {
                 LOGGER.error("Source does not include the correct data fields. Source {}", source);
                 return null;
             }
@@ -95,7 +95,7 @@ public class GridMeasurementPublishedEventConverter extends CustomConverter<Stri
             return null;
         } catch (final ParseException e) {
             LOGGER.error("Date could not be parsed corrrectly. Date format is: yyyy-mm-dd HH:mm:ss, "
-                    + "however the provided date was not the correct format. {}", source, e);
+                    + "however the provided date was not in the correct format. {}", source, e);
             return null;
         }
     }
