@@ -207,7 +207,7 @@ public class FirmwareManagementService extends AbstractService {
 
         return ssldPendingFirmwareUpdates.stream()
                 .max(Comparator.comparing(SsldPendingFirmwareUpdate::getCreationTime)
-                        .thenComparing(Comparator.comparing(SsldPendingFirmwareUpdate::getId)));
+                        .thenComparing(SsldPendingFirmwareUpdate::getId));
     }
 
     private void deleteOutdatedSsldPendingFirmwareUpdates(final List<SsldPendingFirmwareUpdate> updatesToDelete,
@@ -330,8 +330,6 @@ public class FirmwareManagementService extends AbstractService {
     }
 
     /**
-     * @param organisationIdentification
-     *            the organisation the device we want to check belongs to
      * @param deviceId
      *            the id of the device we are checking
      * @param firmwareVersions
@@ -339,7 +337,6 @@ public class FirmwareManagementService extends AbstractService {
      *            history of the devices firmware history
      * @return a list of firmware versions not present in the the devices
      *         firmware history
-     * @throws FunctionalException
      */
     public List<FirmwareVersion> checkFirmwareHistoryForVersion(final String deviceId,
             final List<FirmwareVersion> firmwareVersions) {
@@ -348,8 +345,7 @@ public class FirmwareManagementService extends AbstractService {
             return firmwareVersions;
         }
         // copy input parameter
-        final List<FirmwareVersion> firmwareVersionsToCheck = new ArrayList<>();
-        firmwareVersionsToCheck.addAll(firmwareVersions);
+        final List<FirmwareVersion> firmwareVersionsToCheck = new ArrayList<>(firmwareVersions);
 
         // get history
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceId);
