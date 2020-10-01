@@ -98,6 +98,8 @@
     <module>../shared/osgp-ws-publiclighting</module>
     <module>../shared/osgp-ws-distributionautomation</module>
     <module>../shared/osgp-ws-microgrids</module>
+    <module>../shared/osgp-kafka-distributionautomation</module>
+    <module>../shared/osgp-kafka-logger</module>
 
     <!-- Domain -->
     <module>osgp-domain-core</module>
