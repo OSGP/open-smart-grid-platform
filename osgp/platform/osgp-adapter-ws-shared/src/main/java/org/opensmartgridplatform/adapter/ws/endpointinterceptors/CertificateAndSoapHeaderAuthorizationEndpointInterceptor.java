@@ -25,6 +25,9 @@ import org.opensmartgridplatform.domain.core.exceptions.CertificateInvalidExcept
  */
 public class CertificateAndSoapHeaderAuthorizationEndpointInterceptor extends EndpointInterceptorAdapter {
 
+    // LOGGER has a similar name to logger in the extended class. LOGGER, however is a conventional name and it is
+    // not an issue to have it similar to another name
+    @SuppressWarnings("squid:S1845")
     private static final Logger LOGGER = LoggerFactory
             .getLogger(CertificateAndSoapHeaderAuthorizationEndpointInterceptor.class);
     private final String rdnAttributeValuesPropertyName;

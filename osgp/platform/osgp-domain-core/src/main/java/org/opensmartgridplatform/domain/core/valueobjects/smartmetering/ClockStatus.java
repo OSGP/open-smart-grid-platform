@@ -51,6 +51,9 @@ public class ClockStatus implements Serializable {
         return this.statusBits != null;
     }
 
+    // this is a getter, meaning it should return what the actual value is. Since it is possible that the actual
+    // value is set to null, it should also return this in that case.
+    @SuppressWarnings("squid:S1168")
     public Set<ClockStatusBit> getStatusBits() {
         if (this.statusBits == null) {
             return null;

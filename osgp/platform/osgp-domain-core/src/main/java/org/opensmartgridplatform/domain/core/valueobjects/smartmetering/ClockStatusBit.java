@@ -45,6 +45,10 @@ public enum ClockStatusBit {
         return forClockStatus(clockStatus & 0xFF);
     }
 
+    // here returning null is independed of the actual ClockStatusBit that is later used to make the list. This meand
+    // that returning an empty list would falsly suggest that there is an empty list, where in fact there is no valid
+    // list to return
+    @SuppressWarnings("squid:S1168")
     public static Set<ClockStatusBit> forClockStatus(final int clockStatus) {
         if (ClockStatus.STATUS_NOT_SPECIFIED == clockStatus) {
             return null;
