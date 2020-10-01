@@ -1,7 +1,7 @@
 package org.opensmartgridplatform.adapter.domain.tariffswitching.application.services;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -116,16 +116,13 @@ public class ScheduleManagementServiceTest{
 		final ArgumentCaptor<String> messageTypeCaptor = ArgumentCaptor.forClass(String.class);
 		final ArgumentCaptor<Integer> priorityCapture = ArgumentCaptor.forClass(int.class);
 
-		this.scheduleManagementService.setTariffSchedule(this.correlationIds, this.scheduleEntries, scheduleTime,
-				messageType,priority
-				);
+		this.scheduleManagementService.setTariffSchedule(this.correlationIds, this.scheduleEntries, scheduleTime, messageType,priority);
 
-		verify(this.osgpCoreRequestMessageSender).send(requestMessageArgumentCaptor.capture(),
-				messageTypeCaptor.capture(),priorityCapture.capture(),ipCaptor.capture(), scheduleTimeCaptor.capture());
+		verify(this.osgpCoreRequestMessageSender).send(requestMessageArgumentCaptor.capture(), messageTypeCaptor.capture(),priorityCapture.capture(),ipCaptor.capture(), scheduleTimeCaptor.capture());
 
-		assertEquals(messageType,messageTypeCaptor.getValue());
-		assertEquals(scheduleTime,scheduleTimeCaptor.getValue());
-		assertEquals(priority,priorityCapture.getValue());
+		assertThat(messageType).isEqualTo(messageTypeCaptor.getValue());
+		assertThat(scheduleTime).isEqualTo(scheduleTimeCaptor.getValue());
+		assertThat(priority).isEqualTo(priorityCapture.getValue());
 	}
 	
 	@Test
