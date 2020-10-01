@@ -152,6 +152,10 @@ public abstract class AbstractPushSetup implements Serializable {
         return this.pushObjectList != null;
     }
 
+    // suppress warning about returning null. With this method a null return is currently used to show that the list
+    // that is used isn't actually initialized. This means that there isn't really an absence of objects to put in
+    // the list, but rather that the object to put into it couldn't be made.
+    @SuppressWarnings("squid:S1168")
     public List<CosemObjectDefinition> getPushObjectList() {
         if (this.pushObjectList == null) {
             return null;
@@ -171,6 +175,10 @@ public abstract class AbstractPushSetup implements Serializable {
         return this.communicationWindow != null;
     }
 
+    // suppress warning about returning null. With this method a null return is currently used to show that the list
+    // that is used isn't actually initialized. This means that there isn't really an absence of objects to put in
+    // the list, but rather that the object to put into it couldn't be made.
+    @SuppressWarnings("squid:S1168")
     public List<WindowElement> getCommunicationWindow() {
         if (this.communicationWindow == null) {
             return null;
