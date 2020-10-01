@@ -439,7 +439,8 @@ public class AdHocManagementService extends AbstractService {
             final String lightMeasurementDeviceIdentification, final String messageType) throws FunctionalException {
 
         LOGGER.debug(
-                "setLightMeasurementDevice called for device {} with organisation {} and light measurement device, message type: {}, correlationUid: {}",
+                "setLightMeasurementDevice called for device {} with organisation {} and light measurement device {}, "
+                        + "message type: {}, correlationUid: {}",
                 deviceIdentification, organisationIdentification, lightMeasurementDeviceIdentification, messageType,
                 correlationUid);
 
