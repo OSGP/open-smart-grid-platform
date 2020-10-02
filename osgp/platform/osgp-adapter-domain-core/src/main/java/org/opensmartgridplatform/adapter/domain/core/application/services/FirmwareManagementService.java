@@ -437,6 +437,11 @@ public class FirmwareManagementService extends AbstractService {
         private final Date installationDate;
         private final FirmwareVersion firmwareVersion;
 
+        public FirmwareVersionWithInstallationDate(final Date installationDate, final FirmwareVersion firmwareVersion) {
+            this.installationDate = installationDate;
+            this.firmwareVersion = firmwareVersion;
+        }
+
         public Date getInstallationDate() {
             return this.installationDate;
         }
@@ -445,10 +450,7 @@ public class FirmwareManagementService extends AbstractService {
             return this.firmwareVersion;
         }
 
-        public FirmwareVersionWithInstallationDate(final Date installationDate, final FirmwareVersion firmwareVersion) {
-            this.installationDate = installationDate;
-            this.firmwareVersion = firmwareVersion;
-        }
+
     }
 
     public void tryToAddDeviceFirmwareFile(final String deviceIdentification,
