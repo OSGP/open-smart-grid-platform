@@ -28,6 +28,7 @@ import java.util.Map;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTimeZone;
+import org.junit.Assert;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities.OslpDevice;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.repositories.OslpDeviceRepository;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
@@ -332,7 +333,7 @@ public class OslpDeviceSteps {
         }
 
         if (!StringUtils.isEmpty(expectedResponseData.get(PlatformKeys.OSGP_IP_ADDRESS))) {
-            assertThat(this.convertIpAddress(receivedConfiguration.getOspgIpAddress()))
+            assertThat(OslpDeviceSteps.convertIpAddress(receivedConfiguration.getOspgIpAddress()))
                     .isEqualTo(expectedResponseData.get(PlatformKeys.OSGP_IP_ADDRESS));
         }
 
@@ -659,7 +660,7 @@ public class OslpDeviceSteps {
             final Map<String, String> requestParameters) throws UnknownHostException {
 
         final String osgpIpAddress = getString(requestParameters, PlatformPubliclightingKeys.OSGP_IP_ADDRESS);
-        String osgpIpAddressMock;
+        final String osgpIpAddressMock;
         if (StringUtils.isEmpty(osgpIpAddress)) {
             osgpIpAddressMock = null;
         } else {
@@ -1054,7 +1055,8 @@ public class OslpDeviceSteps {
     }
 
     /**
-     * Verify that we have received a response over OSLP/OSLP ELSTER
+     * Verify that we have received an event notification response over
+     * OSLP/OSLP ELSTER
      */
     @Then("^the event notification response contains$")
     public void theEventNotificationResponseContains(final Map<String, String> expectedResponse) {
@@ -1067,7 +1069,8 @@ public class OslpDeviceSteps {
     }
 
     /**
-     * Verify that we have received a response over OSLP/OSLP ELSTER
+     * Verify that we have received a set configuration response over OSLP/OSLP
+     * ELSTER
      */
     @Then("^the set configuration response contains$")
     public void theSetConfigurationResponseContains(final Map<String, String> expectedResponse) {
@@ -1092,8 +1095,7 @@ public class OslpDeviceSteps {
      * Verify that we have received a response over OSLP/OSLP ELSTER
      */
     @Then("^the register device response contains$")
-    public void theRegisterDeviceResponseContains(final Map<String, String> expectedResponse)
-            throws IOException, DeviceSimulatorException {
+    public void theRegisterDeviceResponseContains(final Map<String, String> expectedResponse) {
         final Exception e = (Exception) ScenarioContext.current().get("Error");
         if (e == null || getString(expectedResponse, PlatformPubliclightingKeys.MESSAGE) == null) {
             final Message responseMessage = this.oslpMockServer.waitForResponse();
@@ -1108,9 +1110,27 @@ public class OslpDeviceSteps {
             assertThat(response.getStatus().name())
                     .isEqualTo(getString(expectedResponse, PlatformPubliclightingKeys.KEY_STATUS));
         } else {
-            assertThat(e.getMessage()).isEqualTo(getString(expectedResponse, PlatformPubliclightingKeys.MESSAGE));
+            assertThat(e).hasMessage(getString(expectedResponse, PlatformPubliclightingKeys.MESSAGE));
         }
+    }
 
+    /**
+     * Verify that we have received a confirm register device response over
+     * OSLP/OSLP ELSTER
+     */
+    @Then("^the confirm register device response contains$")
+    public void theConfirmRegisterDeviceResponseContains(final Map<String, String> expectedResponse) {
+        final Exception e = (Exception) ScenarioContext.current().get("Error");
+        if (e == null || getString(expectedResponse, PlatformPubliclightingKeys.MESSAGE) == null) {
+            final Message responseMessage = this.oslpMockServer.waitForResponse();
+
+            final Oslp.ConfirmRegisterDeviceResponse response = responseMessage.getConfirmRegisterDeviceResponse();
+            Assert.assertNotNull(response);
+            assertThat(response.getStatus().name())
+                    .isEqualTo(getString(expectedResponse, PlatformPubliclightingKeys.KEY_STATUS));
+        } else {
+            assertThat(e).hasMessage(getString(expectedResponse, PlatformPubliclightingKeys.MESSAGE));
+        }
     }
 
     public OslpEnvelope.Builder createEnvelopeBuilder(final String deviceUid, final Integer sequenceNumber) {
@@ -1163,7 +1183,7 @@ public class OslpDeviceSteps {
                 PlatformPubliclightingKeys.FIRMWARE_URL, PlatformPubliclightingDefaults.FIRMWARE_URL));
     }
 
-    private String convertIpAddress(final ByteString byteString) {
+    private static String convertIpAddress(final ByteString byteString) {
         if (byteString == null || byteString.isEmpty()) {
             return "";
         }
