@@ -373,17 +373,15 @@ public class FirmwareManagementService extends AbstractService {
      *            history of the devices firmware history
      * @return a list of firmware module versions not present in the the devices
      *         firmware history
-     * @throws FunctionalException
      */
-    public List<FirmwareVersion> checkFirmwareHistoryForModuleVersionsNotCurrentlyInstalled(final String deviceId,
+    private List<FirmwareVersion> checkFirmwareHistoryForModuleVersionsNotCurrentlyInstalled(final String deviceId,
             final List<FirmwareVersion> firmwareVersions) {
 
         if (firmwareVersions.isEmpty()) {
             return firmwareVersions;
         }
         // copy input parameter
-        final List<FirmwareVersion> firmwareVersionsToCheck = new ArrayList<>();
-        firmwareVersionsToCheck.addAll(firmwareVersions);
+        final List<FirmwareVersion> firmwareVersionsToCheck = new ArrayList<>(firmwareVersions);
 
         // gets list of all historically installed modules
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceId);
@@ -392,16 +390,16 @@ public class FirmwareManagementService extends AbstractService {
 
         // Transform this list so it contains only the latest entry for each
         // moduleType
-        Map<String, FirmwareVersionWithInstallationDate> currentlyInstalledFirmwareVersionsPerType = new HashMap<String, FirmwareVersionWithInstallationDate>();
+        final Map<String, FirmwareVersionWithInstallationDate> currentlyInstalledFirmwareVersionsPerType = new HashMap<>();
 
-        for (DeviceFirmwareFile firmwareFile : deviceFirmwareFiles) {
+        for (final DeviceFirmwareFile firmwareFile : deviceFirmwareFiles) {
 
-            Map<FirmwareModule, String> fwms = firmwareFile.getFirmwareFile().getModuleVersions();
-            Date installationDate = firmwareFile.getInstallationDate();
+            final Map<FirmwareModule, String> fwms = firmwareFile.getFirmwareFile().getModuleVersions();
+            final Date installationDate = firmwareFile.getInstallationDate();
 
-            for (Map.Entry<FirmwareModule, String> entry : fwms.entrySet()) {
-                String version = entry.getValue();
-                FirmwareModule fwm = entry.getKey();
+            for (final Map.Entry<FirmwareModule, String> entry : fwms.entrySet()) {
+                final String version = entry.getValue();
+                final FirmwareModule fwm = entry.getKey();
                 // check if this installation of this same kind of module is
                 // of a later date
                 if (currentlyInstalledFirmwareVersionsPerType.containsKey(fwm.getDescription())
@@ -435,27 +433,19 @@ public class FirmwareManagementService extends AbstractService {
     }
 
     // Helper class to keep track of InstallationDate and FirmwareVersion
-    class FirmwareVersionWithInstallationDate {
-        private Date installationDate;
-        private FirmwareVersion firmwareVersion;
+    private static class FirmwareVersionWithInstallationDate {
+        private final Date installationDate;
+        private final FirmwareVersion firmwareVersion;
 
         public Date getInstallationDate() {
             return this.installationDate;
-        }
-
-        public void setInstallationDate(Date installationDate) {
-            this.installationDate = installationDate;
         }
 
         public FirmwareVersion getFirmwareVersion() {
             return this.firmwareVersion;
         }
 
-        public void setFirmwareVersion(FirmwareVersion firmwareVersion) {
-            this.firmwareVersion = firmwareVersion;
-        }
-
-        public FirmwareVersionWithInstallationDate(Date installationDate, FirmwareVersion firmwareVersion) {
+        public FirmwareVersionWithInstallationDate(final Date installationDate, final FirmwareVersion firmwareVersion) {
             this.installationDate = installationDate;
             this.firmwareVersion = firmwareVersion;
         }
@@ -483,26 +473,25 @@ public class FirmwareManagementService extends AbstractService {
                         INSTALLER);
                 this.deviceFirmwareFileRepository.save(deviceFirmwareFile);
 
-                LOGGER.info(
-                        "Added new record to deviceFirmwareFile for device: {} "
-                                + "with following modules (ModulesType/Versions):{} " + ", using file: {}",
-                        deviceIdentification, firmwareVersionsNotCurrent.toString(), file.getFilename());
+                if (LOGGER.isInfoEnabled()) {
+                    LOGGER.info(
+                            "Added new record to deviceFirmwareFile for device: {} with following modules (ModulesType/Versions):{} " + ", using file: {}",
+                            deviceIdentification, firmwareVersionsNotCurrent.toString(), file.getFilename());
+                }
                 return;
             }
         }
 
-        LOGGER.warn(
-                "Could not find any firmware file for device: {} "
-                        + "that contains (all of) the following modules (ModulesType/Versions):{}",
-                deviceIdentification, firmwareVersionsNotCurrent.toString());
+        LOGGER.warn("Could not find any firmware file for device: {} that contains (all of) the following modules (ModulesType/Versions):{}",
+                deviceIdentification, firmwareVersionsNotCurrent);
     }
 
-    private static boolean firmwareFileContainsAllOfTheseModules(FirmwareFile file,
-            List<FirmwareVersion> firmwareVersions) {
+    private static boolean firmwareFileContainsAllOfTheseModules(final FirmwareFile file,
+            final List<FirmwareVersion> firmwareVersions) {
         int numberOfModulesFound = 0;
         final Map<FirmwareModule, String> moduleVersionsInFile = file.getModuleVersions();
 
-        for (FirmwareVersion firmwareVersion : firmwareVersions) {
+        for (final FirmwareVersion firmwareVersion : firmwareVersions) {
             final FirmwareModule module = createFirmwareModule(firmwareVersion);
 
             if (moduleVersionsInFile.containsKey(module)
