@@ -32,6 +32,7 @@
   </properties>
 
   <build>
+
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -76,6 +77,15 @@
       </plugin>
     </plugins>
   </build>
+
+  <repositories>
+    <repository>
+      <snapshots/>
+      <id>osgp-snapshots</id>
+      <name>osgp-snapshots</name>
+      <url>http://artifactory.shs.osgp.cloud/artifactory/osgp-snapshots</url>
+    </repository>
+  </repositories>
 
   <dependencies>
     <!-- OpenMUC Dependencies -->
@@ -322,4 +332,5 @@
       <scope>compile</scope>
     </dependency>
   </dependencies>
+
 </project>
