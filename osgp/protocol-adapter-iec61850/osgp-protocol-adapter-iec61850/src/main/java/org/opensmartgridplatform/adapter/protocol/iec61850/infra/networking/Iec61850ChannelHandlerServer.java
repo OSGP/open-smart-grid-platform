@@ -33,6 +33,8 @@ public class Iec61850ChannelHandlerServer extends Iec61850ChannelHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850ChannelHandlerServer.class);
 
+    private static final String NO_ORGANISATION = "no-organisation";
+
     @Autowired
     private OsgpRequestMessageSender osgpRequestMessageSender;
 
@@ -66,7 +68,7 @@ public class Iec61850ChannelHandlerServer extends Iec61850ChannelHandler {
 
         final String deviceIdentification = message.getDeviceIdentification();
         final IED ied = IED.FLEX_OVL;
-        String ipAddress;
+        final String ipAddress;
 
         // In case the optional properties 'testDeviceId' and 'testDeviceIp' are
         // set, the values will be used to set an IP address for a device.
@@ -81,7 +83,7 @@ public class Iec61850ChannelHandlerServer extends Iec61850ChannelHandler {
         final DeviceRegistrationDataDto deviceRegistrationData = new DeviceRegistrationDataDto(ipAddress,
                 Ssld.SSLD_TYPE, true);
 
-        final RequestMessage requestMessage = new RequestMessage(correlationId, "no-organisation", deviceIdentification,
+        final RequestMessage requestMessage = new RequestMessage(correlationId, NO_ORGANISATION, deviceIdentification,
                 ipAddress, deviceRegistrationData);
 
         LOGGER.info("Sending register device request to OSGP with correlation ID: {}", correlationId);
@@ -90,6 +92,11 @@ public class Iec61850ChannelHandlerServer extends Iec61850ChannelHandler {
         try {
             this.deviceRegistrationService.disableRegistration(deviceIdentification, InetAddress.getByName(ipAddress),
                     ied, ied.getDescription());
+
+            final RequestMessage cdrRequestMessage = new RequestMessage(correlationId, NO_ORGANISATION,
+                    deviceIdentification, ipAddress);
+
+            this.osgpRequestMessageSender.send(cdrRequestMessage, MessageType.DEVICE_REGISTRATION_COMPLETED.name());
             LOGGER.info("Disabled registration for device: {}, at IP address: {}", deviceIdentification, ipAddress);
         } catch (final Exception e) {
             LOGGER.error("Failed to disable registration for device: {}, at IP address: {}", deviceIdentification,
