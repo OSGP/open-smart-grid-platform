@@ -19,11 +19,9 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
-import org.opensmartgridplatform.shared.security.EncryptedSecret;
-import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 import org.opensmartgridplatform.shared.security.EncryptionService;
+import org.opensmartgridplatform.shared.security.RsaEncrypter;
 import org.opensmartgridplatform.shared.security.RsaEncryptionService;
-import org.opensmartgridplatform.shared.security.providers.RsaEncryptionProvider;
 import org.opensmartgridplatform.ws.schema.core.secret.management.ActivateSecretsRequest;
 import org.opensmartgridplatform.ws.schema.core.secret.management.GenerateAndStoreSecretsRequest;
 import org.opensmartgridplatform.ws.schema.core.secret.management.GenerateAndStoreSecretsResponse;
@@ -46,7 +44,7 @@ import org.springframework.stereotype.Service;
 public class SecretManagementService implements SecurityKeyService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SecretManagementService.class);
-    private final RsaEncryptionProvider soapSecretsRsaEncryptionProvider;
+    private final RsaEncrypter soapSecretsRsaEncryptionProvider;
     private final SecretManagementClient secretManagementClient;
 
     @Autowired
@@ -55,7 +53,7 @@ public class SecretManagementService implements SecurityKeyService {
     @Autowired
     private EncryptionService aesEncryptionService;
 
-    public SecretManagementService(RsaEncryptionProvider soapSecretsRsaEncryptionProvider,
+    public SecretManagementService(RsaEncrypter soapSecretsRsaEncryptionProvider,
             SecretManagementClient secretManagementClient) {
         this.soapSecretsRsaEncryptionProvider = soapSecretsRsaEncryptionProvider;
         this.secretManagementClient = secretManagementClient;
@@ -85,6 +83,7 @@ public class SecretManagementService implements SecurityKeyService {
      *         in case of a encryption/decryption errors while handling the
      *         key
      */
+    @Override
     public byte[] reEncryptKey(final byte[] externallyEncryptedKey, final SecurityKeyType keyType)
             throws FunctionalException {
 
@@ -97,6 +96,7 @@ public class SecretManagementService implements SecurityKeyService {
 
     }
 
+    @Override
     public byte[] rsaDecrypt(final byte[] externallyEncryptedKey, final SecurityKeyType keyType)
             throws FunctionalException {
 
@@ -112,6 +112,7 @@ public class SecretManagementService implements SecurityKeyService {
 
     }
 
+    @Override
     public byte[] aesEncryptKey(final byte[] key, final SecurityKeyType keyType) throws FunctionalException {
 
         try {
@@ -140,6 +141,7 @@ public class SecretManagementService implements SecurityKeyService {
      * @return the plain key, or an empty byte array if
      *         {@code encryptedKey == null}
      */
+    @Override
     public byte[] aesDecryptKey(final byte[] encryptedKey, final SecurityKeyType keyType) throws FunctionalException {
 
         if (encryptedKey == null) {
@@ -178,37 +180,37 @@ public class SecretManagementService implements SecurityKeyService {
     @Override
     public byte[] getDlmsMasterKey(String deviceIdentification) {
         LOGGER.info("Retrieving DLMS master key for device {}", deviceIdentification);
-        return getSecret(deviceIdentification, SecretType.E_METER_MASTER_KEY);
+        return this.getSecret(deviceIdentification, SecretType.E_METER_MASTER_KEY);
     }
 
     @Override
     public byte[] getDlmsAuthenticationKey(String deviceIdentification) {
         LOGGER.info("Retrieving DLMS authentication key for device {}", deviceIdentification);
-        return getSecret(deviceIdentification, SecretType.E_METER_AUTHENTICATION_KEY);
+        return this.getSecret(deviceIdentification, SecretType.E_METER_AUTHENTICATION_KEY);
     }
 
     @Override
     public byte[] getDlmsGlobalUnicastEncryptionKey(String deviceIdentification) {
         LOGGER.info("Retrieving DLMS global unicast encryption key for device {}", deviceIdentification);
-        return getSecret(deviceIdentification, SecretType.E_METER_ENCRYPTION_KEY_UNICAST);
+        return this.getSecret(deviceIdentification, SecretType.E_METER_ENCRYPTION_KEY_UNICAST);
     }
 
     @Override
     public byte[] getMbusDefaultKey(String mbusDeviceIdentification) {
         LOGGER.info("Retrieving M-Bus Default key for device {}", mbusDeviceIdentification);
-        return getSecret(mbusDeviceIdentification, SecretType.G_METER_MASTER_KEY);
+        return this.getSecret(mbusDeviceIdentification, SecretType.G_METER_MASTER_KEY);
     }
 
     @Override
     public byte[] getMbusUserKey(String mbusDeviceIdentification) {
         LOGGER.info("Retrieving M-Bus User key for device {}", mbusDeviceIdentification);
-        return getSecret(mbusDeviceIdentification, SecretType.G_METER_ENCRYPTION_KEY);
+        return this.getSecret(mbusDeviceIdentification, SecretType.G_METER_ENCRYPTION_KEY);
     }
 
     @Override
     public byte[] getDlmsPassword(String deviceIdentification) {
         LOGGER.info("Retrieving DLMS LLS Password for device {}", deviceIdentification);
-        return getSecret(deviceIdentification, SecretType.PPP_PASSWORD);
+        return this.getSecret(deviceIdentification, SecretType.PPP_PASSWORD);
     }
 
     @Override
@@ -219,10 +221,10 @@ public class SecretManagementService implements SecurityKeyService {
         List<SecretType> secretTypeList = request.getSecretTypes().getSecretType();
 
         for (SecurityKeyType keyType: keyTypes) {
-            secretTypeList.add(getSecretTypeFrom(keyType));
+            secretTypeList.add(this.getSecretTypeFrom(keyType));
         }
 
-        GetSecretsResponse response = secretManagementClient.getSecretsRequest(request);
+        GetSecretsResponse response = this.secretManagementClient.getSecretsRequest(request);
 
         TypedSecrets typedSecrets = response.getTypedSecrets();
         List<TypedSecret> typedSecretList = typedSecrets.getTypedSecret();
@@ -234,8 +236,8 @@ public class SecretManagementService implements SecurityKeyService {
         byte[][] decryptedKeys = new byte[keyTypes.length][];
 
         for (int i = 0; i < keyTypes.length; i++) {
-            if (typedSecretList.get(i).getType().equals(getSecretTypeFrom(keyTypes[i]))) {
-                decryptedKeys[i] = decryptSoapSecret(deviceIdentification, typedSecretList.get(i));
+            if (typedSecretList.get(i).getType().equals(this.getSecretTypeFrom(keyTypes[i]))) {
+                decryptedKeys[i] = this.decryptSoapSecret(deviceIdentification, typedSecretList.get(i));
             }
         }
 
@@ -244,13 +246,13 @@ public class SecretManagementService implements SecurityKeyService {
 
     @Override
     public void aesDecryptAndStoreNewKey(String deviceIdentification, SecurityKeyType keyType, byte[]encryptedKey) throws FunctionalException {
-        byte[] plainKey = aesDecryptKey(encryptedKey, keyType);
-        storeNewKeys(deviceIdentification, new  SecurityKeyType[] { keyType}, new byte[][] {plainKey});
+        byte[] plainKey = this.aesDecryptKey(encryptedKey, keyType);
+        this.storeNewKeys(deviceIdentification, new  SecurityKeyType[] { keyType}, new byte[][] {plainKey});
     }
 
     @Override
     public void storeNewKey(String deviceIdentification, SecurityKeyType keyType, byte[]key) {
-        storeNewKeys(deviceIdentification, new  SecurityKeyType[] { keyType}, new byte[][] {key});
+        this.storeNewKeys(deviceIdentification, new  SecurityKeyType[] { keyType}, new byte[][] {key});
     }
 
     @Override
@@ -264,12 +266,12 @@ public class SecretManagementService implements SecurityKeyService {
 
         for (int i = 0; i < keyTypes.length; i++) {
             TypedSecret typedSecret = new TypedSecret();
-            typedSecret.setSecret(encryptSoapSecret(deviceIdentification, keys[i]));
-            typedSecret.setType(getSecretTypeFrom(keyTypes[i]));
+            typedSecret.setSecret(this.encryptSoapSecret(deviceIdentification, keys[i]));
+            typedSecret.setType(this.getSecretTypeFrom(keyTypes[i]));
             typedSecretList.add(typedSecret);
         }
 
-        secretManagementClient.storeSecretsRequest(request);
+        this.secretManagementClient.storeSecretsRequest(request);
     }
 
     @Override
@@ -278,8 +280,8 @@ public class SecretManagementService implements SecurityKeyService {
         request.setDeviceId(deviceIdentification);
         request.setSecretTypes(new SecretTypes());
         List<SecretType> secretTypeList = request.getSecretTypes().getSecretType();
-        secretTypeList.add(getSecretTypeFrom(keyType));
-        secretManagementClient.activateSecretsRequest(request);
+        secretTypeList.add(this.getSecretTypeFrom(keyType));
+        this.secretManagementClient.activateSecretsRequest(request);
     }
 
     @Override
@@ -287,8 +289,8 @@ public class SecretManagementService implements SecurityKeyService {
         //isActivated is = !hasNewSecret
         HasNewSecretRequest request = new HasNewSecretRequest();
         request.setDeviceId(deviceIdentification);
-        request.setSecretType(getSecretTypeFrom(keyType));
-        HasNewSecretResponse response = secretManagementClient.hasNewSecretRequest(request);
+        request.setSecretType(this.getSecretTypeFrom(keyType));
+        HasNewSecretResponse response = this.secretManagementClient.hasNewSecretRequest(request);
         return !response.isHasNewSecret();
     }
 
@@ -310,10 +312,10 @@ public class SecretManagementService implements SecurityKeyService {
         List<SecretType> secretTypeList = request.getSecretTypes().getSecretType();
 
         for (SecurityKeyType keyType: keyTypes) {
-            secretTypeList.add(getSecretTypeFrom(keyType));
+            secretTypeList.add(this.getSecretTypeFrom(keyType));
         }
 
-        GenerateAndStoreSecretsResponse response = secretManagementClient.generateAndStoreSecrets(request);
+        GenerateAndStoreSecretsResponse response = this.secretManagementClient.generateAndStoreSecrets(request);
 
         TypedSecrets typedSecrets = response.getTypedSecrets();
         List<TypedSecret> typedSecretList = typedSecrets.getTypedSecret();
@@ -325,8 +327,8 @@ public class SecretManagementService implements SecurityKeyService {
         byte[][] decryptedKeys = new byte[keyTypes.length][];
 
         for (int i = 0; i < keyTypes.length; i++) {
-            if (typedSecretList.get(i).getType().equals(getSecretTypeFrom(keyTypes[i]))) {
-                decryptedKeys[i] = decryptSoapSecret(deviceIdentification, typedSecretList.get(i));
+            if (typedSecretList.get(i).getType().equals(this.getSecretTypeFrom(keyTypes[i]))) {
+                decryptedKeys[i] = this.decryptSoapSecret(deviceIdentification, typedSecretList.get(i));
             }
         }
 
@@ -345,11 +347,11 @@ public class SecretManagementService implements SecurityKeyService {
 
     private byte[] getSecret(String deviceIdentification, SecretType secretType) {
         try {
-            GetSecretsRequest request = getSoapGetRequestForSingleKey(deviceIdentification, secretType);
-            GetSecretsResponse response = secretManagementClient.getSecretsRequest(request);
-            Optional<TypedSecret> optionalTypedSecret = getTypedSecretFromSoapResponse(response, secretType);
+            GetSecretsRequest request = this.getSoapGetRequestForSingleKey(deviceIdentification, secretType);
+            GetSecretsResponse response = this.secretManagementClient.getSecretsRequest(request);
+            Optional<TypedSecret> optionalTypedSecret = this.getTypedSecretFromSoapResponse(response, secretType);
 
-            byte[] decryptedKey = decryptSoapSecret(deviceIdentification, optionalTypedSecret.orElseThrow(
+            byte[] decryptedKey = this.decryptSoapSecret(deviceIdentification, optionalTypedSecret.orElseThrow(
                     () -> new IllegalStateException("Secret not found:" + deviceIdentification + " " + secretType.name())));
 
             log.trace(secretType.name() + " for device " + deviceIdentification + " is " + Hex.encodeHexString(decryptedKey));
@@ -380,9 +382,7 @@ public class SecretManagementService implements SecurityKeyService {
     private byte[] decryptSoapSecret(String deviceIdentification, TypedSecret typedSecret) {
         try {
             byte[] encryptedDecodedSoapSecret = Hex.decodeHex(typedSecret.getSecret());
-            EncryptedSecret encryptedSoapSecret = new EncryptedSecret(EncryptionProviderType.RSA,
-                    encryptedDecodedSoapSecret);
-            return soapSecretsRsaEncryptionProvider.decrypt(encryptedSoapSecret, "1");
+            return this.soapSecretsRsaEncryptionProvider.decrypt(encryptedDecodedSoapSecret);
         } catch (Exception e) {
             throw new IllegalStateException("Decrypting key for device: " + deviceIdentification, e);
         }
@@ -390,8 +390,8 @@ public class SecretManagementService implements SecurityKeyService {
 
     private String encryptSoapSecret(String deviceIdentification, byte[] secret) {
         try {
-            EncryptedSecret encryptedSecret = soapSecretsRsaEncryptionProvider.encrypt(secret, "1");
-            return Hex.encodeHexString(encryptedSecret.getSecret());
+            byte[] encrypted = this.soapSecretsRsaEncryptionProvider.encrypt(secret);
+            return Hex.encodeHexString(encrypted);
         } catch (Exception e) {
             throw new IllegalStateException("Encrypting key for device: " + deviceIdentification, e);
         }
