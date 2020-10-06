@@ -10,7 +10,6 @@ package org.opensmartgridplatform.secretmanagement.application.endpoints;
 
 import java.io.ByteArrayOutputStream;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -108,9 +107,8 @@ public class SecretManagementEndpoint {
             throw new TechnicalException("Missing input: typed secrets");
         }
         final List<SecretType> secretTypeList = this.converter.convertToSecretTypes(soapSecretTypes);
-        final List<TypedSecret> typedSecretList = secretTypeList.stream().map(
-                t -> this.secretManagementService.generateAes128BitsSecret(t)).collect(Collectors.toList());
-        this.secretManagementService.storeSecrets(request.getDeviceId(), typedSecretList);
+        List<TypedSecret> typedSecretList = this.secretManagementService.generateAndStoreSecrets(request.getDeviceId(),
+                secretTypeList);
         response.setResult(OsgpResultType.OK);
         response.setTypedSecrets(this.converter.convertToSoapTypedSecrets(typedSecretList));
         log.trace(response.toString());
@@ -146,7 +144,8 @@ public class SecretManagementEndpoint {
                     this.converter.convertToSecretTypes(soapSecretTypes));
             response.setResult(OsgpResultType.OK);
         } catch (final RuntimeException rte) {
-            //TODO process/rethrow exception
+            log.error("Could not activate new secrets: "+rte.toString());
+            throw new TechnicalException("Could not activate new secrets",rte);
         }
         log.trace(response.toString());
         return response;

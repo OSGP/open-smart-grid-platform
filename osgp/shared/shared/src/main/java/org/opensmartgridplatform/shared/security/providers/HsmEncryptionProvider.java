@@ -22,6 +22,7 @@ import java.security.spec.AlgorithmParameterSpec;
 import java.util.Arrays;
 
 import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 
@@ -44,7 +45,7 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider implements
 
     private final KeyStore keyStore;
 
-    public HsmEncryptionProvider(final File keyStoreFile) {
+    public HsmEncryptionProvider(final File keyStoreFile) throws EncrypterException {
         try {
             super.setKeyFile(keyStoreFile);
             this.keyStore = KeyStore.getInstance(TYPE, PROVIDER);
@@ -56,7 +57,7 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider implements
     }
 
     @Override
-    public byte[] decrypt(final EncryptedSecret secret, final String keyReference) {
+    public byte[] decrypt(final EncryptedSecret secret, final String keyReference) throws EncrypterException {
 
         byte[] decryptedSecret = super.decrypt(secret, keyReference);
 
@@ -75,7 +76,19 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider implements
     }
 
     @Override
-    protected Cipher getCipher() {
+    public byte[] generateAes128BitsSecret(String keyReference) throws EncrypterException {
+        //byte[] newSecret = new byte[128/8];
+        try {
+            //SecureRandom.getInstance("SHA1PRNG",PROVIDER).nextBytes(newSecret);
+            return this.encrypt(KeyGenerator.getInstance("AES").generateKey().getEncoded(),keyReference).getSecret();
+        } catch (NoSuchAlgorithmException exc) {
+            throw new EncrypterException("Could not generate secret", exc);
+        }
+        //return newSecret;
+    }
+
+    @Override
+    protected Cipher getCipher() throws EncrypterException {
         try {
             return Cipher.getInstance(ALGORITHM, PROVIDER);
         } catch (final NoSuchPaddingException | NoSuchAlgorithmException | NoSuchProviderException e) {
@@ -89,7 +102,7 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider implements
      * @return the key that must be used for encryption/decryption
      */
     @Override
-    protected Key getSecretEncryptionKey(final String keyReference, final int cipherMode) {
+    protected Key getSecretEncryptionKey(final String keyReference, final int cipherMode) throws EncrypterException {
         try {
             return this.keyStore.getKey(keyReference, null);
         } catch (final UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException e) {

@@ -9,6 +9,11 @@
 
 package org.opensmartgridplatform.secretmanagement.application.services;
 
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
+
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -23,199 +28,280 @@ import org.opensmartgridplatform.secretmanagement.application.domain.SecretType;
 import org.opensmartgridplatform.secretmanagement.application.domain.TypedSecret;
 import org.opensmartgridplatform.secretmanagement.application.repository.DbEncryptedSecretRepository;
 import org.opensmartgridplatform.secretmanagement.application.repository.DbEncryptionKeyRepository;
+import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 import org.opensmartgridplatform.shared.security.EncryptedSecret;
 import org.opensmartgridplatform.shared.security.EncryptionDelegate;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
+import org.opensmartgridplatform.shared.security.RsaEncrypter;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service that manages secrets (store, retrieve, activate, generate).
+ * Secrets in this service are always AES-encrypted secrets of type EncryptedTypedSecret. Methods that manipulate the
+ * secrets in the database (store/activate) are mostly batch-wise and are implemented transactionally: they do their
+ * pre-processing and finally persist any changes in transactional repository saveAll() call, in order to prevent
+ * database corruption as a result of partially succeeded batch results.
+ *
+ * Keep in mind that all public methods assume (externally provided) RSA-encrypted secrets of type TypedSecret, so
+ * these secrets are always reencrypted to AES before being processed any further in order to keep unencrypted secret
+ * in JVM memory/heap for the shortest possible time. Likewise, any public method will return RSA-encrypted secrets
+ * by reencrypting the AES-encrypted secrets to RSA.
+ */
 @Service
 public class SecretManagementService {
-    public static final int AES_GMC_128_KEY_SIZE = 128;
+    //Internal datastructure to keep track of (intermediate) secret details
+    private static class EncryptedTypedSecret {
+        byte[] encryptedSecret;
+        SecretType type;
+        String encryptionKeyReference;  //NULL when RSA
+
+        private EncryptedTypedSecret(SecretType type) {
+            this.type = type;
+        }
+
+        private EncryptedTypedSecret(byte[] secret, SecretType type) {
+            this(secret,type,null);
+        }
+
+        private EncryptedTypedSecret(byte[] secret, SecretType type, String encryptionKeyReference) {
+            if(secret==null) {
+                throw new IllegalArgumentException("No NULL value allowed for parameter 'secret'");
+            } else if(type==null) {
+                throw new IllegalArgumentException("No NULL value allowed for parameter 'secretType'");
+            }
+            this.encryptedSecret = secret;
+            this.type = type;
+            this.encryptionKeyReference = encryptionKeyReference;
+        }
+
+        private boolean hasNullSecret() {
+            return this.encryptedSecret==null;
+        }
+
+        private TypedSecret toTypedSecret() {
+            return new TypedSecret(this.encryptedSecret, this.type);
+        }
+
+        private static EncryptedTypedSecret getNullInstance(SecretType type) {
+            return new EncryptedTypedSecret(type);
+        }
+    }
 
     private final EncryptionDelegate encryptionDelegate;
     private final EncryptionProviderType encryptionProviderType;
     private final DbEncryptedSecretRepository secretRepository;
     private final DbEncryptionKeyRepository keyRepository;
+    private final RsaEncrypter rsaEncrypter;
 
     public SecretManagementService(
             @Qualifier("DefaultEncryptionDelegate") final EncryptionDelegate defaultEncryptionDelegate,
             final EncryptionProviderType encryptionProviderType, final DbEncryptedSecretRepository secretRepository,
-            final DbEncryptionKeyRepository keyRepository) {
+            final DbEncryptionKeyRepository keyRepository, RsaEncrypter rsaEncrypter) {
         this.encryptionDelegate = defaultEncryptionDelegate;
         this.encryptionProviderType = encryptionProviderType;
         this.secretRepository = secretRepository;
         this.keyRepository = keyRepository;
+        this.rsaEncrypter = rsaEncrypter;
     }
 
-    private DbEncryptionKeyReference getKey() {
+    private DbEncryptionKeyReference getCurrentKey() {
         final Date now = new Date();
-        final Page<DbEncryptionKeyReference> keyRefsPage = this.keyRepository.findByTypeAndValid(
-                this.encryptionProviderType, now, Pageable.unpaged());
-        if (keyRefsPage.getSize() > 1) {
+        final List<DbEncryptionKeyReference> keyRefs = this.keyRepository
+                .findByTypeAndValid(this.encryptionProviderType, now);
+        if (keyRefs.size() > 1) {
             throw new IllegalStateException("Multiple encryption keys found that are valid at " + now);
+        } else if(keyRefs.size()==0) {
+            throw new NoSuchElementException("No encryption key found that is valid at " + now);
         }
-        return keyRefsPage.stream().findFirst().orElseThrow(
-                () -> new NoSuchElementException("No encryption key found that is valid at " + now));
+        return keyRefs.get(0);
     }
 
-    private TypedSecret validateNewSecret(final String deviceIdentification, final TypedSecret secret) {
-        this.checkNrNewSecretsOfType(deviceIdentification, secret.getSecretType(), 0);
-        if (secret.getSecret() == null) {
+    private DbEncryptionKeyReference getKeyByReference(String reference) {
+        return this.keyRepository.findByTypeAndReference(this.encryptionProviderType, reference);
+    }
+
+    private EncryptedTypedSecret validateNewSecret(final String deviceIdentification,
+            final EncryptedTypedSecret secret) {
+        this.checkNrNewSecretsOfType(deviceIdentification, secret.type, 0);
+        if (secret.hasNullSecret()) {
             throw new IllegalArgumentException("No secret string set");
-        } else if (secret.getSecretType() == null) {
-            throw new IllegalArgumentException("No secret type set");
-        } else if (this.isIdenticalToActive(deviceIdentification, secret)) {
-            throw new IllegalArgumentException(
-                    String.format("Secret is identical to current secret (%s, %s)", deviceIdentification,
-                            secret.getSecretType().name()));
         }
         return secret;
     }
 
-    private boolean isIdenticalToActive(final String deviceIdentification, final TypedSecret secret) {
-        final Optional<TypedSecret> active = this.retrieveActiveSecret(deviceIdentification, secret.getSecretType());
-        return active.isPresent() && active.get().getSecret().equals(secret.getSecret());
-    }
-
-    private DbEncryptedSecret createEncrypted(final String deviceIdentification, final TypedSecret typedSecret,
+    private DbEncryptedSecret createDbEncrypted(final String deviceIdentification, final EncryptedTypedSecret secret,
             final DbEncryptionKeyReference keyReference) {
-        final String secretString = typedSecret.getSecret();
-        final byte[] secretBytes = HexUtils.fromHexString(secretString);
-        final Date now = new Date(); //TODO check creation & time zone
-        try {
-            final EncryptedSecret encryptedSecret = this.encryptionDelegate.encrypt(
-                    keyReference.getEncryptionProviderType(), secretBytes, keyReference.getReference());
-            final DbEncryptedSecret dbEncryptedSecret = new DbEncryptedSecret();
-            dbEncryptedSecret.setDeviceIdentification(deviceIdentification);
-            dbEncryptedSecret.setEncodedSecret(HexUtils.toHexString(encryptedSecret.getSecret()));
-            dbEncryptedSecret.setSecretType(typedSecret.getSecretType());
-            dbEncryptedSecret.setSecretStatus(SecretStatus.NEW);
-            dbEncryptedSecret.setEncryptionKeyReference(keyReference);
-            dbEncryptedSecret.setCreationTime(now);
-            return dbEncryptedSecret;
-        } catch (final Exception exc) {
-            throw new IllegalStateException("Could not create encrypted secret", exc);
-        }
+        final Date now = new Date();
+        final DbEncryptedSecret dbEncryptedSecret = new DbEncryptedSecret();
+        dbEncryptedSecret.setDeviceIdentification(deviceIdentification);
+        dbEncryptedSecret.setEncodedSecret(HexUtils.toHexString(secret.encryptedSecret));
+        dbEncryptedSecret.setSecretType(secret.type);
+        dbEncryptedSecret.setSecretStatus(SecretStatus.NEW);
+        dbEncryptedSecret.setEncryptionKeyReference(keyReference);
+        dbEncryptedSecret.setCreationTime(now);
+        return dbEncryptedSecret;
     }
 
     public List<TypedSecret> retrieveSecrets(final String deviceIdentification, final List<SecretType> secretTypes) {
+        return this.retrieveAesSecrets(deviceIdentification, secretTypes).stream()
+                   .map(this::reencryptAes2Rsa)
+                   .map(EncryptedTypedSecret::toTypedSecret)
+                   .collect(Collectors.toList());
+    }
+
+    private List<EncryptedTypedSecret> retrieveAesSecrets(final String deviceIdentification,
+            final List<SecretType> secretTypes) {
         try {
-            //@formatter:off
-            return secretTypes.stream()
-                    .map(secretType -> this.retrieveActiveSecret(deviceIdentification, secretType))
-                    .map(Optional::get)
-                    .collect(Collectors.toList());
-            //@formatter:on
+            return secretTypes.stream().map(secretType -> this.retrieveActiveSecret(deviceIdentification,
+                    secretType))
+                              .collect(Collectors.toList());
         } catch (final Exception exc) {
             throw new IllegalStateException(
                     String.format("Something went wrong retrieving secrets for device %s", deviceIdentification), exc);
         }
     }
 
-    private Optional<TypedSecret> retrieveActiveSecret(final String deviceIdentification, final SecretType secretType) {
-        final Optional<DbEncryptedSecret> encryptedSecret = this.getSingleDbEncryptedSecret(deviceIdentification,
-                secretType, SecretStatus.ACTIVE);
-        return encryptedSecret.isPresent() ? Optional.of(this.getTypedSecret(encryptedSecret.get())) : Optional.empty();
-
+    private EncryptedTypedSecret retrieveActiveSecret(final String deviceIdentification,
+            final SecretType secretType) {
+        final Optional<DbEncryptedSecret> optional = this
+                .getSingleDbEncryptedSecret(deviceIdentification, secretType, SecretStatus.ACTIVE);
+        if (optional.isPresent()) {
+            DbEncryptedSecret dbEncryptedSecret = optional.get();
+            byte[] aesEncrypted = HexUtils.fromHexString(dbEncryptedSecret.getEncodedSecret());
+            String keyReference = dbEncryptedSecret.getEncryptionKeyReference().getReference();
+            return new EncryptedTypedSecret(aesEncrypted, dbEncryptedSecret.getSecretType(), keyReference);
+        } else {
+            return EncryptedTypedSecret.getNullInstance(secretType);
+        }
     }
 
     private Optional<DbEncryptedSecret> getSingleDbEncryptedSecret(final String deviceIdentification,
             final SecretType secretType, final SecretStatus secretStatus) {
-        final List<DbEncryptedSecret> secretsList = this.secretRepository.findSecrets(deviceIdentification, secretType,
-                secretStatus);
+        final List<DbEncryptedSecret> secretsList = this.secretRepository
+                .findSecrets(deviceIdentification, secretType, secretStatus);
+        boolean onlySingleSecretAllowed =
+                SecretStatus.NEW.equals(secretStatus) || SecretStatus.ACTIVE.equals(secretStatus);
         if (secretsList.size() == 0) {
             return Optional.empty();
-        } else if (secretsList.size() > 1) {
-            throw new IllegalStateException(); //TODO set proper msg
+        } else if (secretsList.size() > 1 && onlySingleSecretAllowed) {
+            String msgFormat = "Only 1 instance allowed with status %s, but found %s for device %s";
+            throw new IllegalStateException(String.format(msgFormat, secretStatus, secretsList.size(),
+                    deviceIdentification));
         }
         return Optional.of(secretsList.iterator().next());
     }
 
-    private TypedSecret getTypedSecret(final DbEncryptedSecret dbEncryptedSecret) {
-        final DbEncryptionKeyReference keyReference = dbEncryptedSecret.getEncryptionKeyReference();
-        if (keyReference == null) {
-            throw new IllegalStateException("Could not create encrypted secret: secret has no key reference");
-        }
-        final byte[] secretBytes = HexUtils.fromHexString(dbEncryptedSecret.getEncodedSecret());
-        final EncryptedSecret encryptedSecret = new EncryptedSecret(keyReference.getEncryptionProviderType(),
-                secretBytes);
-        return this.createTypedSecret(dbEncryptedSecret, keyReference, encryptedSecret);
+    public synchronized void storeSecrets(final String deviceIdentification, final List<TypedSecret> secrets) {
+        List<EncryptedTypedSecret> aesSecrets =
+                secrets.stream()
+                       .map(ts -> new EncryptedTypedSecret(ts.getSecret(), ts.getSecretType()))
+                       .map(this::reencryptRsa2Aes)
+                       .collect(toList());
+        this.storeAesSecrets(deviceIdentification, aesSecrets);
     }
 
-    private TypedSecret createTypedSecret(final DbEncryptedSecret dbEncryptedSecret,
-            final DbEncryptionKeyReference keyReference, final EncryptedSecret encryptedSecret) {
-        try {
-            final byte[] decryptedSecret = this.encryptionDelegate.decrypt(encryptedSecret,
-                    keyReference.getReference());
-            final TypedSecret typedSecret = new TypedSecret();
-            typedSecret.setSecret(HexUtils.toHexString(decryptedSecret));
-            typedSecret.setSecretType(dbEncryptedSecret.getSecretType());
-            return typedSecret;
-        } catch (final Exception exc) {
-            throw new IllegalStateException("Could not decrypt secret (id: " + dbEncryptedSecret.getId() + ")", exc);
-        }
-    }
-
-    public void storeSecrets(final String deviceIdentification, final List<TypedSecret> secrets) {
-        //@formatter:off
+    private void storeAesSecrets(final String deviceIdentification, final List<EncryptedTypedSecret> secrets) {
         secrets.stream()
-                .map(t -> this.validateNewSecret(deviceIdentification, t))
-                .map(s -> this.createEncrypted(deviceIdentification, s, this.getKey()))
-                .forEach(this.secretRepository::save);
-        //@formatter:on
+               .map(ets -> this.validateNewSecret(deviceIdentification, ets))
+               .map(ets -> this.createDbEncrypted(deviceIdentification, ets,
+                       this.getKeyByReference(ets.encryptionKeyReference)))
+               .collect(collectingAndThen(toList(), this.secretRepository::saveAll));
     }
 
     public synchronized void activateNewSecrets(final String deviceIdentification, final List<SecretType> secretTypes) {
         secretTypes.stream().forEach(t -> this.checkNrNewSecretsOfType(deviceIdentification, t, 1));
-        secretTypes.stream().forEach(t -> this.activateNewSecret(deviceIdentification, t));
+        secretTypes.stream()
+                   .map(t -> this.getUpdatedSecretsForActivation(deviceIdentification, t))
+                   .flatMap(Collection::stream)
+                   .collect(collectingAndThen(toList(), this.secretRepository::saveAll));
     }
 
     public boolean hasNewSecret(final String deviceIdentification, final SecretType secretType) {
         return this.secretRepository.getSecretCount(deviceIdentification, secretType, SecretStatus.NEW) > 0;
     }
 
-    private synchronized long activateNewSecret(final String deviceIdentification, final SecretType secretType) {
-        final Optional<DbEncryptedSecret> activeSecretOptional = this.getSingleDbEncryptedSecret(deviceIdentification,
-                secretType, SecretStatus.ACTIVE);
+    private List<DbEncryptedSecret> getUpdatedSecretsForActivation(final String deviceIdentification,
+            final SecretType secretType) {
+        List<DbEncryptedSecret> updatedSecrets = new ArrayList<>();
+        final Optional<DbEncryptedSecret> activeSecretOptional = this
+                .getSingleDbEncryptedSecret(deviceIdentification, secretType, SecretStatus.ACTIVE);
         if (activeSecretOptional.isPresent()) {
             final DbEncryptedSecret currentSecret = activeSecretOptional.get();
             currentSecret.setSecretStatus(SecretStatus.EXPIRED);
-            this.secretRepository.save(currentSecret);
+            updatedSecrets.add(currentSecret);
         }
-        final DbEncryptedSecret newSecret = this.getSingleDbEncryptedSecret(deviceIdentification, secretType,
-                SecretStatus.NEW).get(); //We have checked nr of new secrets already in activateNewSecrets
+        final DbEncryptedSecret newSecret = this
+                .getSingleDbEncryptedSecret(deviceIdentification, secretType, SecretStatus.NEW)
+                .get(); //We have checked nr of new secrets already in activateNewSecrets
         newSecret.setSecretStatus(SecretStatus.ACTIVE);
-        return this.secretRepository.save(newSecret).getId();
+        updatedSecrets.add(newSecret);
+        return updatedSecrets;
     }
 
     private void checkNrNewSecretsOfType(final String deviceIdentification, final SecretType t, final int expectedNr) {
         final int nrNewSecretsOfType = this.secretRepository.getSecretCount(deviceIdentification, t, SecretStatus.NEW);
         if (nrNewSecretsOfType != expectedNr) {
-            final String errorMsg = "Expected %s new secrets, but %s new secret(s) present";
-            throw new IllegalStateException(String.format(errorMsg, expectedNr, nrNewSecretsOfType));
+            final String errorMsg = "Expected %s new secrets of type %s for device %s, but %s new secret(s) present";
+            throw new IllegalStateException(String.format(errorMsg, expectedNr, t,
+                    deviceIdentification, nrNewSecretsOfType));
         }
     }
 
-    public TypedSecret generateAes128BitsSecret(final SecretType secretType) {
-        //Old implementation:
-        /*try {
-            final KeyGenerator keyGenerator = KeyGenerator.getInstance("AES",""); //.getInstance("AES");
-            keyGenerator.init(AES_GMC_128_KEY_SIZE);
-            final byte[] encodedSecret = keyGenerator.generateKey().getEncoded();
-        } catch (final NoSuchAlgorithmException nsae) {
-            throw new IllegalStateException("Secret configuration incorrect", nsae);
-        }*/
+    public synchronized List<TypedSecret> generateAndStoreSecrets(String deviceIdentification,
+            final List<SecretType> secretTypes) {
+        List<EncryptedTypedSecret> encryptedTypedSecrets = secretTypes.stream().map(this::generateAes128BitsSecret)
+                                                                      .collect(Collectors.toList());
+        this.storeAesSecrets(deviceIdentification, encryptedTypedSecrets);
+        return encryptedTypedSecrets.stream().map(this::reencryptAes2Rsa).map(EncryptedTypedSecret::toTypedSecret)
+                                    .collect(Collectors.toList());
+    }
 
-        //EvB:
-        // Dit is hoe je een secret kunt genereren
-        // Die moet vervolgens bij het opslaan encrypted worden met een KEK
-        // Het lijkt me dat het zo werkt, maar ik weet dat niet zeker. ik heb dat niet uitgezocht.
-        // Het idee is wanneer je ervoor zorgt dat de KeyGenerator provided wordt door NCipher, dat de key dan in de
-        // HSM wordt gegenereerd.
-        // Ik zal een link naar documentatie sturen.
-        return null;
+    private EncryptedTypedSecret generateAes128BitsSecret(final SecretType secretType) {
+        try {
+            String keyReference = this.getCurrentKey().getReference();
+            byte[] aesEncrypted = this.encryptionDelegate
+                    .generateAes128BitsSecret(this.encryptionProviderType, keyReference);
+            return new EncryptedTypedSecret(aesEncrypted, secretType, keyReference);
+        } catch (EncrypterException ee) {
+            throw new IllegalStateException("Eror generating secret", ee);
+        }
+    }
+
+    private EncryptedTypedSecret reencryptRsa2Aes(EncryptedTypedSecret secret) {
+            byte[] aesEncrypted = this.reencryptRsa2Aes(secret.encryptedSecret);
+            String keyReference = this.getCurrentKey().getReference();
+            return new EncryptedTypedSecret(aesEncrypted, secret.type, keyReference);
+    }
+
+    private EncryptedTypedSecret reencryptAes2Rsa(EncryptedTypedSecret secret) {
+        if (secret.hasNullSecret()) {
+            return secret;  //No need to encrypt NULL value
+        } else  {
+            byte[] rsaEncrypted = this.reencryptAes2Rsa(secret.encryptedSecret, secret.encryptionKeyReference);
+            return new EncryptedTypedSecret(rsaEncrypted, secret.type);
+        }
+    }
+
+    private byte[] reencryptRsa2Aes(byte[] rsa) {
+        //Incoming new secret, so use current key
+        String keyReference = this.getCurrentKey().getReference();
+        try {
+            return this.encryptionDelegate
+                    .encrypt(this.encryptionProviderType, this.rsaEncrypter.decrypt(rsa), keyReference)
+                    .getSecret();
+        } catch (final EncrypterException ee) {
+            throw new IllegalStateException("Could not reecrypt secret from RSA to AES", ee);
+        }
+    }
+
+    private byte[] reencryptAes2Rsa(byte[] aes, String keyReference) {
+        //Outgoing existing secret, so use AES key provided by parameter for decrypting aes
+        try {
+            return this.rsaEncrypter.encrypt(this.encryptionDelegate
+                    .decrypt(new EncryptedSecret(this.encryptionProviderType, aes), keyReference));
+        } catch (final EncrypterException ee) {
+            throw new IllegalStateException("Could not reecrypt secret from AES to RSA", ee);
+        }
     }
 }

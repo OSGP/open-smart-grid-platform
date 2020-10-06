@@ -29,21 +29,22 @@ public class DefaultEncryptionDelegate implements EncryptionDelegate {
 
     @Override
     public EncryptedSecret encrypt(final EncryptionProviderType encryptionProviderType, final byte[] secret,
-            final String keyReference) {
+            final String keyReference) throws EncrypterException {
         return this.providers.stream().filter(ep -> ep.getType().equals(encryptionProviderType)).findFirst().orElseThrow(
                 () -> new EncrypterException(ERROR_NO_PROVIDER)).encrypt(secret, keyReference);
     }
 
     @Override
-    public byte[] decrypt(final EncryptedSecret secret, final String keyReference) {
+    public byte[] decrypt(final EncryptedSecret secret, final String keyReference) throws EncrypterException {
         return this.providers.stream().filter(ep -> ep.getType().equals(secret.getType())).findFirst().orElseThrow(
                 () -> new EncrypterException(ERROR_NO_PROVIDER)).decrypt(secret, keyReference);
     }
 
-    /*@Override
-    public Secret generate128BitsSecret(final EncryptionProviderType encryptionProviderType) {
+    @Override
+    public byte[] generateAes128BitsSecret(final EncryptionProviderType encryptionProviderType,
+            final String keyReference) throws EncrypterException {
         return this.providers.stream().filter(ep -> ep.getType().equals(encryptionProviderType)).findFirst().orElseThrow(
-                () -> new EncrypterException(ERROR_NO_PROVIDER)).;
-    }*/
+                () -> new EncrypterException(ERROR_NO_PROVIDER)).generateAes128BitsSecret(keyReference);
+    }
 }
 

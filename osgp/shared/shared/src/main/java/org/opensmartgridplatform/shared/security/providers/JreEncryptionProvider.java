@@ -18,6 +18,7 @@ import java.security.NoSuchProviderException;
 import java.security.spec.AlgorithmParameterSpec;
 
 import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
@@ -36,7 +37,7 @@ public class JreEncryptionProvider extends AbstractEncryptionProvider implements
 
     private final byte[] key;
 
-    public JreEncryptionProvider(File keyStoreFile) {
+    public JreEncryptionProvider(File keyStoreFile) throws EncrypterException {
         try {
             super.setKeyFile(keyStoreFile);
             this.key = Files.readAllBytes(Paths.get(keyStoreFile.getAbsolutePath()));
@@ -45,7 +46,8 @@ public class JreEncryptionProvider extends AbstractEncryptionProvider implements
         }
     }
 
-    protected Cipher getCipher() {
+    @Override
+    protected Cipher getCipher() throws EncrypterException {
         try {
             return Cipher.getInstance(ALGORITHM, PROVIDER);
         } catch (NoSuchPaddingException | NoSuchAlgorithmException | NoSuchProviderException e) {
@@ -53,13 +55,16 @@ public class JreEncryptionProvider extends AbstractEncryptionProvider implements
         }
     }
 
-    protected Key getSecretEncryptionKey(String keyReference, int cipherMode) {
+    @Override
+    protected Key getSecretEncryptionKey(String keyReference, int cipherMode) throws EncrypterException {
 
         if (!keyReference.equals(DEFAULT_SINGLE_KEY_REFERENCE)) {
             throw new EncrypterException("Only keyReference '1' is valid in this implementation.");
         }
 
         return new SecretKey() {
+            private static final long serialVersionUID = 4555243342661334965L;
+
             @Override
             public String getAlgorithm() {
                 return ALG;
@@ -72,15 +77,28 @@ public class JreEncryptionProvider extends AbstractEncryptionProvider implements
 
             @Override
             public byte[] getEncoded() {
-                return key;
+                return JreEncryptionProvider.this.key;
             }
         };
     }
 
+    @Override
     protected AlgorithmParameterSpec getAlgorithmParameterSpec() {
         return new IvParameterSpec(IV);
     }
 
+    @Override
+    public byte[] generateAes128BitsSecret(String keyReference) throws EncrypterException {
+        try {
+            KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
+            keyGenerator.init(128);
+            return this.encrypt(keyGenerator.generateKey().getEncoded(),keyReference).getSecret();
+        } catch (NoSuchAlgorithmException exc) {
+            throw new EncrypterException("Could not generate secret", exc);
+        }
+    }
+
+    @Override
     public EncryptionProviderType getType() {
         return EncryptionProviderType.JRE;
     }

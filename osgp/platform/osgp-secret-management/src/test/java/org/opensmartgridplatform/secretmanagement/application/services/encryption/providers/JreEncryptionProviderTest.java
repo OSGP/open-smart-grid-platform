@@ -27,23 +27,18 @@ public class JreEncryptionProviderTest {
     private JreEncryptionProvider jreEncryptionProvider;
 
     @Test
-    public void identityTest() {
-
+    public void identityTest() throws EncrypterException {
         String path = "src/test/resources/osgp-secret-management-db.key";
         File keyFile = new File(path);
-
-        jreEncryptionProvider = new JreEncryptionProvider(keyFile);
+        this.jreEncryptionProvider = new JreEncryptionProvider(keyFile);
 
         byte[] secret = HexUtils.fromHexString("5b3a65ba2a7d347f1eedf7fab25f2813");
-
-        EncryptedSecret encryptedSecret = jreEncryptionProvider.encrypt(secret, "1");
-
+        EncryptedSecret encryptedSecret = this.jreEncryptionProvider.encrypt(secret, "1");
         String encryptedSecretAsString = HexUtils.toHexString(encryptedSecret.getSecret());
 
         assertEquals("f2edbdc2ad1dab1458f1b866c5a5e6a68873d5738b3742bf3fa5d673133313b6", encryptedSecretAsString);
 
-        byte[] decryptedSecret = jreEncryptionProvider.decrypt(encryptedSecret, "1");
-
+        byte[] decryptedSecret = this.jreEncryptionProvider.decrypt(encryptedSecret, "1");
         String decryptedSecretAsString = HexUtils.toHexString(decryptedSecret);
 
         assertEquals("5b3a65ba2a7d347f1eedf7fab25f2813", decryptedSecretAsString);
@@ -51,18 +46,18 @@ public class JreEncryptionProviderTest {
     }
 
     @Test
-    public void doErrorTest() {
+    public void doErrorTest() throws EncrypterException {
 
         String path = "src/test/resources/osgp-secret-management-db.key";
         File keyFile = new File(path);
 
-        jreEncryptionProvider = new JreEncryptionProvider(keyFile);
+        this.jreEncryptionProvider = new JreEncryptionProvider(keyFile);
 
         byte[] secret = HexUtils.fromHexString("00000000000000000000000000000000");
 
-        EncryptedSecret encryptedSecret = new EncryptedSecret(jreEncryptionProvider.getType(), secret);
+        EncryptedSecret encryptedSecret = new EncryptedSecret(this.jreEncryptionProvider.getType(), secret);
 
-        assertThrows(EncrypterException.class, () -> jreEncryptionProvider.decrypt(encryptedSecret, "1"),
+        assertThrows(EncrypterException.class, () -> this.jreEncryptionProvider.decrypt(encryptedSecret, "1"),
                 "Expected decrypt() to throw javax.crypto.BadPaddingException, but it didn't");
     }
 

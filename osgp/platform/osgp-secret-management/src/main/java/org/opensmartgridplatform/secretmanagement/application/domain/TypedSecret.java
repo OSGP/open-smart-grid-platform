@@ -8,29 +8,20 @@
  */
 package org.opensmartgridplatform.secretmanagement.application.domain;
 
+import lombok.Getter;
+
 /**
  * TypedSecret stores a secret (not necessarily an encrypted secret), along with it's type.
  */
+@Getter
 public class TypedSecret {
-    private SecretType secretType;
-    private String secret;
+    private final SecretType secretType;
+    private final byte[] secret;
 
-    public String getSecret() {
-        return this.secret;
-    }
-
-    public SecretType getSecretType() {
-        return this.secretType;
-    }
-
-    public void setSecret(final String secret) {
+    public TypedSecret(final byte[] secret, final SecretType secretType) {
         this.secret = secret;
-    }
-
-    public void setSecretType(final SecretType secretType) {
         this.secretType = secretType;
     }
-
 }
 
 

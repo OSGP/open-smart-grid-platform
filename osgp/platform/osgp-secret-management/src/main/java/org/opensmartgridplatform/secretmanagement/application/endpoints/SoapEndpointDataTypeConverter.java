@@ -16,23 +16,19 @@ import org.opensmartgridplatform.secretmanagement.application.domain.SecretType;
 import org.opensmartgridplatform.secretmanagement.application.domain.TypedSecret;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
-import org.opensmartgridplatform.shared.security.EncryptedSecret;
-import org.opensmartgridplatform.shared.security.EncryptionDelegate;
-import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 import org.opensmartgridplatform.ws.schema.core.secret.management.SecretTypes;
 import org.opensmartgridplatform.ws.schema.core.secret.management.TypedSecrets;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
 public class SoapEndpointDataTypeConverter {
-
+    //TODO Refactor this to directly use RsaEncryptionProvider (removing key_reference, delegate, etc.)
     private static final String KEY_REFERENCE = "1"; //only one key in use
-    private final EncryptionDelegate encryptionDelegate;
+    //private final EncryptionDelegate encryptionDelegate;
 
-    public SoapEndpointDataTypeConverter(
-            @Qualifier("DefaultEncryptionDelegate") final EncryptionDelegate defaultEncryptionDelegate) {
-        this.encryptionDelegate = defaultEncryptionDelegate;
+    public SoapEndpointDataTypeConverter() {
+      /*      @Qualifier("DefaultEncryptionDelegate") final EncryptionDelegate defaultEncryptionDelegate) {
+        this.encryptionDelegate = defaultEncryptionDelegate;*/
     }
 
     public List<SecretType> convertToSecretTypes(final SecretTypes soapSecretTypes) {
@@ -86,10 +82,11 @@ public class SoapEndpointDataTypeConverter {
         final org.opensmartgridplatform.ws.schema.core.secret.management.TypedSecret soapTypedSecret =
                 new org.opensmartgridplatform.ws.schema.core.secret.management.TypedSecret();
 
-        final String encodedSecret = typedSecret.getSecret();
-        final byte[] rawSecret = HexUtils.fromHexString(encodedSecret);
-        final EncryptedSecret encryptedSecret = this.encryptionDelegate.encrypt(EncryptionProviderType.RSA, rawSecret, KEY_REFERENCE);
-        soapTypedSecret.setSecret(HexUtils.toHexString(encryptedSecret.getSecret()));
+        //final String encodedSecret = typedSecret.getSecret();
+        final byte[] rsaSecret = typedSecret.getSecret(); //HexUtils.fromHexString(encodedSecret);
+        //final EncryptedSecret encryptedSecret = this.encryptionDelegate.encrypt(EncryptionProviderType.RSA,
+        //        rawSecret, KEY_REFERENCE);
+        soapTypedSecret.setSecret(HexUtils.toHexString(rsaSecret));
 
         final SecretType secretType = typedSecret.getSecretType();
         soapTypedSecret.setType(this.convertToSoapSecretType(secretType));
@@ -99,14 +96,13 @@ public class SoapEndpointDataTypeConverter {
 
     public TypedSecret decryptAndConvertSoapTypedSecret(
             final org.opensmartgridplatform.ws.schema.core.secret.management.TypedSecret soapTypedSecret) {
-        final TypedSecret typedSecret = new TypedSecret();
 
-        final byte[] rawEncryptedSecret = HexUtils.fromHexString(soapTypedSecret.getSecret());
-        final EncryptedSecret encryptedSecret = new EncryptedSecret(EncryptionProviderType.RSA, rawEncryptedSecret);
-        final byte[] decryptedSecret = this.encryptionDelegate.decrypt(encryptedSecret, KEY_REFERENCE);
+        final byte[] rsaEncryptedSecret = HexUtils.fromHexString(soapTypedSecret.getSecret());
+        //final EncryptedSecret encryptedSecret = new EncryptedSecret(EncryptionProviderType.RSA, rawEncryptedSecret);
+        //final byte[] decryptedSecret = this.encryptionDelegate.decrypt(encryptedSecret, KEY_REFERENCE);
 
-        typedSecret.setSecret(HexUtils.toHexString(decryptedSecret));
-        typedSecret.setSecretType(this.convertToSecretType(soapTypedSecret.getType()));
+        final TypedSecret typedSecret = new TypedSecret(rsaEncryptedSecret,
+                this.convertToSecretType(soapTypedSecret.getType()));
 
         return typedSecret;
     }

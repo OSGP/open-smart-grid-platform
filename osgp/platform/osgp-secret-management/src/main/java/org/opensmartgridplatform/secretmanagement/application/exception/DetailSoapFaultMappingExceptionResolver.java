@@ -25,7 +25,11 @@ public class DetailSoapFaultMappingExceptionResolver extends SoapFaultMappingExc
         SoapFaultDetail detail = fault.addFaultDetail();
 
         if (ex.getMessage() != null) {
-            detail.addFaultDetailElement(MESSAGE).addText(ex.getMessage());
+            String messageText = ex.getMessage();
+            if (ex.getCause() != null) {
+                messageText += ": " + ex.getCause().toString();
+            }
+            detail.addFaultDetailElement(MESSAGE).addText(messageText);
         }
 
         if (ex instanceof TechnicalException) {
