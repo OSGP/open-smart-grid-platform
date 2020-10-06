@@ -84,6 +84,11 @@
       <artifactId>jdlms</artifactId>
       <version>1.7.1-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>org.openmuc</groupId>
+      <artifactId>jasn1</artifactId>
+      <version>1.10.0</version>
+    </dependency>
 
     <!-- OSGP -->
     <dependency>
