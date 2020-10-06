@@ -82,6 +82,7 @@
     <dependency>
       <groupId>org.openmuc</groupId>
       <artifactId>jdlms</artifactId>
+      <version>1.7.1-SNAPSHOT</version>
     </dependency>
 
     <!-- OSGP -->
