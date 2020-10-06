@@ -78,6 +78,7 @@
     </plugins>
   </build>
 
+  <!-- This repository was added to be able to draw the snapshot jDLMS version from artifactory -->
   <repositories>
     <repository>
       <snapshots/>
