@@ -42,7 +42,7 @@ import org.springframework.stereotype.Component;
  * device that received the status NOT_OK should be saved, so in case the
  * supposedly valid key (the key that was on the device before replace keys was
  * executed) does not work anymore the new (but supposedly NOT_OK) key can be
- * tried. This key is recognized because both: valid_to=null and valid_from=null
+ * tried.
  * ! If that key works we know the device gave the wrong response and this key
  * should be made valid. See also DlmsDevice: discardInvalidKeys,
  * promoteInvalidKeys, get/hasNewSecurityKey.
@@ -108,10 +108,13 @@ public class ReplaceKeyCommandExecutor
 
         SetKeysRequestDto setKeysRequestDto = (SetKeysRequestDto) actionRequestDto;
 
-        if (!setKeysRequestDto.isGeneratedKeys()) { //generated keys are encrypted using AES
+        if (!setKeysRequestDto.isGeneratedKeys()) {
+            // using AES
             //decrypt using RSA and encrypt using AES
             setKeysRequestDto = this.reEncryptKeys((SetKeysRequestDto) actionRequestDto);
-        }
+        } //else
+          //if isGeneratedKeys() == true, then:
+          // generated keys are encrypted using AES by the GenerateAndReplaceKeyCommandExecutor
 
         final DlmsDevice devicePostSave = this.execute(conn, device, ReplaceKeyCommandExecutor
                 .wrap(setKeysRequestDto.getAuthenticationKey(), KeyId.AUTHENTICATION_KEY,

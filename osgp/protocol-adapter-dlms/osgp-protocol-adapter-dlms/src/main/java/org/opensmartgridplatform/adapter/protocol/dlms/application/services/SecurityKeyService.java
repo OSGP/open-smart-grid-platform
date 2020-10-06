@@ -42,15 +42,15 @@ public interface SecurityKeyService {
      *
      * @param deviceIdentification
      *         DLMS device id
-     * @param plainKeys
+     * @param plainKey
      *        keys to store, not encrypted
-     * @param keyTypes
+     * @param keyType
      *         type of key
      *
      *
      * @see #activateNewKey(String, SecurityKeyType)
      */
-    void storeNewKey(final String deviceIdentification, final SecurityKeyType keyTypes, final byte[] plainKeys);
+    void storeNewKey(final String deviceIdentification, final SecurityKeyType keyType, final byte[] plainKey);
 
     //store multiple keys in one call
     void storeNewKeys(final String deviceIdentification, final SecurityKeyType[] keyTypes, final byte[][] plainKeys);
@@ -80,17 +80,6 @@ public interface SecurityKeyService {
      * @see #storeNewKeys(String, SecurityKeyType[], byte[][])
      */
     void activateNewKey(final String deviceIdentification, final SecurityKeyType keyType) throws ProtocolAdapterException;
-
-    /**
-     * Generates a new key that can be used as DLMS master key, authentication
-     * key, global unicast encryption key, M-Bus Default key or M-Bus User key.
-     * <p>
-     * The master keys (DLMS master or M-Bus Default) cannot be changed on a
-     * device, but can be generated for use in tests or with simulated devices.
-     *
-     * @return a new 16-byte AES key.
-     *
-    byte[] generateAES128BitsKey();*/
 
     byte[][] generateAES128BitsKeysAndStoreAsNewKeys(final String deviceIdentification,
             final SecurityKeyType[] keyTypes);
