@@ -73,10 +73,6 @@ import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
-import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
-import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
-
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -127,10 +123,6 @@ class FirmwareManagementServiceTest {
     private DeviceDomainService deviceDomainService;
     @Mock
     private OrganisationDomainService organisationDomainService;
-    @Mock
-    private DomainCoreMapper domainCoreMapper;
-    @Mock
-    private WebServiceResponseMessageSender webServiceResponseMessageSender;
     
     @InjectMocks
     private FirmwareManagementService firmwareManagementService;
