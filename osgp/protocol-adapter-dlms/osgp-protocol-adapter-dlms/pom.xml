@@ -82,11 +82,13 @@
     <dependency>
       <groupId>org.openmuc</groupId>
       <artifactId>jdlms</artifactId>
+      <!-- Note: version is hardcoded here because this is a TEMP fix only for the protocol-adapter-dlms -->
       <version>1.7.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.openmuc</groupId>
       <artifactId>jasn1</artifactId>
+      <!-- Note: version is hardcoded here because this is a TEMP fix only for the protocol-adapter-dlms -->
       <version>1.10.0</version>
     </dependency>
 
