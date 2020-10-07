@@ -65,6 +65,7 @@ public class SoapClientConfig {
 
     @Bean
     public WebServiceTemplate webServiceTemplate() throws Exception {
+
         WebServiceTemplate webServiceTemplate = new WebServiceTemplate();
         webServiceTemplate.setMarshaller(soapClientJaxb2Marshaller());
         webServiceTemplate.setUnmarshaller(soapClientJaxb2Marshaller());
