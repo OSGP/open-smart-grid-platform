@@ -181,7 +181,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
             final List<ScalerUnitInfo> scalerUnitInfos, ProfileEntryDto previousProfileEntryDto,
             final Map<Integer, CaptureObjectDefinitionDto> selectableCaptureObjects, int timeInterval);
 
-    public GetPowerQualityProfileResponseDto handle(final DlmsConnectionManager conn, final DlmsDevice device,
+    protected GetPowerQualityProfileResponseDto handle(final DlmsConnectionManager conn, final DlmsDevice device,
             final GetPowerQualityProfileRequestDataDto getPowerQualityProfileRequestDataDto)
             throws ProtocolAdapterException {
 
