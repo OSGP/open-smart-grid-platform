@@ -10,6 +10,9 @@ package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 import java.util.EnumSet;
 import java.util.Set;
 
+// suppress warning for duplicate string at reserved (line 21,22,23) The duplicate part is a single string in the
+// description of an enum value.
+@SuppressWarnings("squid:S1192")
 public enum ClockStatusBit {
 
     INVALID_VALUE("invalid value"),

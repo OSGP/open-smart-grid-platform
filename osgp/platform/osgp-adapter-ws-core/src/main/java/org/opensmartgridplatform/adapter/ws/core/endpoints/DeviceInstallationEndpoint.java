@@ -153,12 +153,12 @@ public class DeviceInstallationEndpoint {
         } catch (final ConstraintViolationException e) {
             LOGGER.error(EXCEPTION_WHILE_ADDING_DEVICE, e.getMessage(), request.getDevice().getDeviceIdentification(),
                     organisationIdentification, e);
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
-                    new ValidationException(e.getConstraintViolations()));
+            this.handleException(new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations())));
         } catch (final AssertionError e) {
             LOGGER.error(EXCEPTION_WHILE_ADDING_DEVICE, e.getMessage(), request.getDevice().getDeviceIdentification(),
                     organisationIdentification, e);
-            throw new TechnicalException(COMPONENT_WS_CORE, e);
+            this.handleException(new TechnicalException(COMPONENT_WS_CORE, e));
         } catch (final Exception e) {
             LOGGER.error(EXCEPTION_WHILE_ADDING_DEVICE, e.getMessage(), request.getDevice().getDeviceIdentification(),
                     organisationIdentification, e);
@@ -182,8 +182,8 @@ public class DeviceInstallationEndpoint {
 
         } catch (final ConstraintViolationException e) {
             LOGGER.error("Exception update Device: {} ", e.getMessage(), e);
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
-                    new ValidationException(e.getConstraintViolations()));
+            this.handleException(new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations())));
         } catch (final Exception e) {
             LOGGER.error(EXCEPTION_WHILE_UPDATING_DEVICE, e.getMessage(),
                     request.getUpdatedDevice().getDeviceIdentification(), organisationIdentification, e);
@@ -217,8 +217,8 @@ public class DeviceInstallationEndpoint {
                     org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.Device.class));
         } catch (final ConstraintViolationException e) {
             LOGGER.error("Exception find recent device: {} ", e.getMessage(), e);
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
-                    new ValidationException(e.getConstraintViolations()));
+            this.handleException(new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations())));
         } catch (final Exception e) {
             this.handleException(e);
         }
@@ -252,8 +252,8 @@ public class DeviceInstallationEndpoint {
 
         } catch (final ConstraintViolationException e) {
             LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
-                    new ValidationException(e.getConstraintViolations()));
+            this.handleException(new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations())));
         } catch (final Exception e) {
             this.handleException(e);
         }
@@ -310,8 +310,8 @@ public class DeviceInstallationEndpoint {
 
         } catch (final ConstraintViolationException e) {
             LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
-                    new ValidationException(e.getConstraintViolations()));
+            this.handleException(new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations())));
         } catch (final Exception e) {
             this.handleException(e);
         }

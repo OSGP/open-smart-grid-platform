@@ -49,7 +49,7 @@ public class CommonRequestMessageListener implements MessageListener {
                 throw new UnknownMessageTypeException("Unknown JMSType: " + messageType);
             }
         } catch (final JMSException ex) {
-            LOGGER.error("Caught JMSException: {} ", ex);
+            LOGGER.error("Caught JMSException: {} ", ex, ex);
         } catch (final UnknownMessageTypeException e) {
             LOGGER.error("Caught UnknownMessageTypeException", e);
         }

@@ -64,17 +64,17 @@ public class CommunicationMonitoringConfig extends AbstractConfig {
     @Resource
     private Environment environment;
 
-    @Autowired
-    private Runnable communicationMonitoringTask;
-
+    // suppress warning about string building in LOGGER. The way it is done here is actually correct.
+    @SuppressWarnings("squid:S2629")
     @Bean
     public CronTrigger communicationMonitoringTaskCronTrigger() {
         LOGGER.info("Initializing Cron Trigger bean with cron expression {}.", this.cronExpression());
         return new CronTrigger(this.cronExpression());
     }
 
+    // runnable set in method call rather than in @Autowired. This method is the only one that uses it.
     @Bean(destroyMethod = "shutdown")
-    public TaskScheduler communicationMonitoringTaskScheduler() {
+    public TaskScheduler communicationMonitoringTaskScheduler(Runnable communicationMonitoringTask) {
         LOGGER.info("Initializing Communication Monitoring Task Scheduler bean");
         final ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
 
@@ -85,7 +85,7 @@ public class CommunicationMonitoringConfig extends AbstractConfig {
             taskScheduler.setWaitForTasksToCompleteOnShutdown(false);
             taskScheduler.setAwaitTerminationSeconds(DEFAULT_AWAIT_TERMINATION_SECONDS);
             taskScheduler.initialize();
-            taskScheduler.schedule(this.communicationMonitoringTask, this.communicationMonitoringTaskCronTrigger());
+            taskScheduler.schedule(communicationMonitoringTask, this.communicationMonitoringTaskCronTrigger());
         } else {
             LOGGER.info("Communication Monitoring not enabled, skipping task scheduler initialization.");
         }

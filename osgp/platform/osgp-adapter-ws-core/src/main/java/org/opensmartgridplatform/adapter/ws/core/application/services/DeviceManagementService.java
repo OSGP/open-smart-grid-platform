@@ -240,10 +240,10 @@ public class DeviceManagementService {
         if (description == null && descriptionStartsWith == null) {
             return specification;
         }
-        if (description == null && descriptionStartsWith != null) {
+        if (description == null) {
             return specification.and(descriptionStartsWithSpecification);
         }
-        if (description != null && descriptionStartsWith == null) {
+        if (descriptionStartsWith == null) {
             return specification.and(descriptionSpecification);
         }
         return specification.and(descriptionSpecification.or(descriptionStartsWithSpecification));

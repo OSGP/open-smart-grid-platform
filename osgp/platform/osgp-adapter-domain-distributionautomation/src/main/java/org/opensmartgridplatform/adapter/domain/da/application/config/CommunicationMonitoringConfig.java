@@ -14,7 +14,6 @@ import org.opensmartgridplatform.adapter.domain.da.application.tasks.Communicati
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -61,17 +60,20 @@ public class CommunicationMonitoringConfig extends AbstractConfig {
     @Resource
     private Environment environment;
 
-    @Autowired
-    private CommunicationMonitoringTask communicationMonitoringTask;
-
+    // suppress warning concerning the string in the LOGGER.info. This is actually a correct way of doing it.
+    @SuppressWarnings("squid:S2629")
     @Bean
     public CronTrigger communicationMonitoringTaskCronTrigger() {
+
         LOGGER.info("Initializing Cron Trigger bean with cron expression {}.", this.cronExpression());
         return new CronTrigger(this.cronExpression());
     }
 
+    // suppress warning about using method for boolean in if. The method can only return a boolean, and not a null
+    // value that would result in an issue.
+    @SuppressWarnings("squid:S5411")
     @Bean(destroyMethod = "shutdown")
-    public TaskScheduler communicationMonitoringTaskScheduler() {
+    public TaskScheduler communicationMonitoringTaskScheduler(CommunicationMonitoringTask communicationMonitoringTask) {
         LOGGER.info("Initializing Communication Monitoring Task Scheduler bean");
         final ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
 
@@ -82,7 +84,7 @@ public class CommunicationMonitoringConfig extends AbstractConfig {
             taskScheduler.setWaitForTasksToCompleteOnShutdown(false);
             taskScheduler.setAwaitTerminationSeconds(DEFAULT_AWAIT_TERMINATION_SECONDS);
             taskScheduler.initialize();
-            taskScheduler.schedule(this.communicationMonitoringTask, this.communicationMonitoringTaskCronTrigger());
+            taskScheduler.schedule(communicationMonitoringTask, this.communicationMonitoringTaskCronTrigger());
         } else {
             LOGGER.info("Communication Monitoring not enabled, skipping task scheduler initialization.");
         }
