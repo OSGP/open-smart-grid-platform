@@ -4,6 +4,7 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             xmlns:bun="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-bundle/2014/10"
             xmlns:con="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-configuration/2014/10"
+            xmlns:man="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-management/2014/10"
             xmlns:adm="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-administration"
             attributeFormDefault="qualified" elementFormDefault="qualified"
             targetNamespace="http://www.opensmartgridplatform.org/schemas/smartmetering/external-interface">
@@ -16,6 +17,9 @@
 
   <xsd:import namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-administration"
               schemaLocation="sm-administration.xsd"/>
+
+  <xsd:import namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-management/2014/10"
+              schemaLocation="sm-management.xsd"/>
 
   <xsd:element name="ExternalInterfaceRequestMessage">
     <xsd:complexType>
@@ -42,6 +46,7 @@
           <xsd:element ref="bun:PeriodicMeterReadsResponse"/>
           <xsd:element ref="bun:GetPowerQualityProfileResponse"/>
           <xsd:element ref="con:GetPushNotificationAlarmResponse"/>
+          <xsd:element ref="man:FindEventsResponse"/>
           <xsd:element ref="bun:FaultResponse"/>
         </xsd:choice>
       </xsd:sequence>
