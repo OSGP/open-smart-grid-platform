@@ -554,8 +554,8 @@ public class OslpDeviceSteps {
     /**
      * Setup method to get a status which should be returned by the mock.
      */
-    private void callMockSetScheduleResponse(final String result, final MessageType type) {
-        this.oslpMockServer.mockSetScheduleResponse(type, Enum.valueOf(Status.class, result));
+    private void callMockSetScheduleResponse(final String deviceUID, final String result, final MessageType type) {
+        this.oslpMockServer.mockSetScheduleResponse(deviceUID, type, Enum.valueOf(Status.class, result));
     }
 
     private void checkAndValidateRequest(final MessageType type, final Map<String, String> expectedRequest) {
@@ -660,10 +660,10 @@ public class OslpDeviceSteps {
                 .build();
 
         // Save the OSLP response for later validation.
-        ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE, this.oslpMockServer.sendRequest(message));
+        ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE, this.oslpMockServer.sendRequest(this.getDeviceUID(settings), message));
     }
 
-    @Given("^the device returns a get configuration status over \"([^\"]*)\"$")
+    @Given("^the device returns a get configuration status over \"([^\"]*)\"(datatable )?$")
     public void theDeviceReturnsAGetConfigurationStatusOverOSLP(final String protocol,
             final Map<String, String> requestParameters) throws UnknownHostException {
         this.theDeviceReturnsAGetConfigurationStatusWithResultOverOSLP(
@@ -671,10 +671,13 @@ public class OslpDeviceSteps {
                 protocol, requestParameters);
     }
 
-    @Given("^the device returns a get configuration status \"([^\"]*)\" over \"([^\"]*)\" using default values$")
-    public void theDeviceReturnsAGetConfigurationStatusWithResultOverOSLP(final String result, final String protocol)
+    // TODO: this seems like useless.
+    @Given("^the device returns a get configuration status \"([^\"]*)\" over \"([^\"]*)\" using default values(datatable )?$")
+    public void theDeviceReturnsAGetConfigurationStatusWithResultOverOSLPUsingDefaultValues(final String result, final String protocol, Map<String, String> requestParameters)
             throws UnknownHostException {
-        final Map<String, String> requestParameters = new HashMap<>();
+        if (requestParameters == null) {
+            requestParameters = new HashMap<>();
+        }
         this.theDeviceReturnsAGetConfigurationStatusWithResultOverOSLP(result, protocol, requestParameters);
     }
 
@@ -708,7 +711,8 @@ public class OslpDeviceSteps {
             osgpIpAddressMock = osgpIpAddress;
         }
 
-        this.oslpMockServer.mockGetConfigurationResponse(Enum.valueOf(Status.class, result),
+        this.oslpMockServer.mockGetConfigurationResponse(this.getDeviceUID(requestParameters),
+                Enum.valueOf(Status.class, result),
                 getEnum(requestParameters, PlatformPubliclightingKeys.KEY_LIGHTTYPE, LightType.class,
                         PlatformPubliclightingDefaults.DEFAULT_LIGHTTYPE),
                 getString(requestParameters, PlatformPubliclightingKeys.DC_LIGHTS,
@@ -752,7 +756,7 @@ public class OslpDeviceSteps {
             requestMap.put(key, values);
         }
 
-        this.oslpMockServer.mockGetPowerUsageHistoryResponse(Enum.valueOf(Status.class, result), requestMap);
+        this.oslpMockServer.mockGetPowerUsageHistoryResponse(this.getDeviceUID(requestParameters), Enum.valueOf(Status.class, result), requestMap);
     }
 
     /**
@@ -821,6 +825,7 @@ public class OslpDeviceSteps {
         }
 
         this.oslpMockServer.mockGetStatusResponse(
+                this.getDeviceUID(requestParameters),
                 getEnum(requestParameters, PlatformPubliclightingKeys.KEY_PREFERRED_LINKTYPE, LinkType.class,
                         PlatformPubliclightingDefaults.DEFAULT_PREFERRED_LINKTYPE),
                 getEnum(requestParameters, PlatformPubliclightingKeys.KEY_ACTUAL_LINKTYPE, LinkType.class,
@@ -833,50 +838,50 @@ public class OslpDeviceSteps {
     /**
      * Setup method to resume a schedule which should be returned by the mock.
      */
-    @Given("^the device returns a resume schedule response \"([^\"]*)\" over \"([^\"]*)\"$")
-    public void theDeviceReturnsAResumeScheduleResponseOverOSLP(final String result, final String protocol) {
-        this.oslpMockServer.mockResumeScheduleResponse(Enum.valueOf(Status.class, result));
+    @Given("^the device returns a resume schedule response \"([^\"]*)\" over \"([^\"]*)\"(datatable )?$")
+    public void theDeviceReturnsAResumeScheduleResponseOverOSLP(final String result, final String protocol, final Map<String, String> requestParameters) {
+        this.oslpMockServer.mockResumeScheduleResponse(this.getDeviceUID(requestParameters), Enum.valueOf(Status.class, result));
     }
 
     @Given("^the device returns a set configuration status over \"([^\"]*)\"$")
     public void theDeviceReturnsASetConfigurationStatusOverOSLP(final String protocol,
-            final Map<String, String> settings) {
+            final Map<String, String> requestParameters) {
         this.theDeviceReturnsASetConfigurationStatusWithStatusOverOSLP(
-                getEnum(settings, PlatformPubliclightingKeys.KEY_STATUS, Status.class).name(), protocol);
+                getEnum(requestParameters, PlatformPubliclightingKeys.KEY_STATUS, Status.class).name(), protocol, requestParameters);
     }
 
     /**
      * Setup method to set the configuration status which should be returned by
      * the mock.
      */
-    @Given("^the device returns a set configuration status \"([^\"]*)\" over \"([^\"]*)\"$")
-    public void theDeviceReturnsASetConfigurationStatusWithStatusOverOSLP(final String result, final String protocol) {
-        this.oslpMockServer.mockSetConfigurationResponse(Enum.valueOf(Status.class, result));
+    @Given("^the device returns a set configuration status \"([^\"]*)\" over \"([^\"]*)\"(datatable )?$")
+    public void theDeviceReturnsASetConfigurationStatusWithStatusOverOSLP(final String result, final String protocol, final Map<String, String> requestParameters) {
+        this.oslpMockServer.mockSetConfigurationResponse(this.getDeviceUID(requestParameters), Enum.valueOf(Status.class, result));
     }
 
     /**
      * Setup method to set the event notification which should be returned by
      * the mock.
      */
-    @Given("^the device returns a set event notification \"([^\"]*)\" over \"([^\"]*)\"$")
-    public void theDeviceReturnsASetEventNotificationOverOSLP(final String result, final String protocol) {
-        this.oslpMockServer.mockSetEventNotificationResponse(Enum.valueOf(Status.class, result));
+    @Given("^the device returns a set event notification \"([^\"]*)\" over \"([^\"]*)\"(datatable )?$")
+    public void theDeviceReturnsASetEventNotificationOverOSLP(final String result, final String protocol, final Map<String, String> requestParameters) {
+        this.oslpMockServer.mockSetEventNotificationResponse(this.getDeviceUID(requestParameters), Enum.valueOf(Status.class, result));
     }
 
     /**
      * Setup method to set a light which should be returned by the mock.
      */
-    @Given("^the device returns a set light response \"([^\"]*)\" over \"([^\"]*)\"$")
-    public void theDeviceReturnsASetLightOverOSLP(final String result, final String protocol) {
-        this.oslpMockServer.mockSetLightResponse(Enum.valueOf(Status.class, result));
+    @Given("^the device returns a set light response \"([^\"]*)\" over \"([^\"]*)\"(datatable )?$")
+    public void theDeviceReturnsASetLightOverOSLP(final String result, final String protocol, final Map<String, String> requestParameters) {
+        this.oslpMockServer.mockSetLightResponse(this.getDeviceUID(requestParameters), Enum.valueOf(Status.class, result));
     }
 
     /**
      * Setup method to get a status which should be returned by the mock.
      */
-    @Given("^the device returns a set light schedule response \"([^\"]*)\" over \"([^\"]*)\"$")
-    public void theDeviceReturnsASetLightScheduleResponseOverOSLP(final String result, final String protocol) {
-        this.callMockSetScheduleResponse(result, MessageType.SET_LIGHT_SCHEDULE);
+    @Given("^the device returns a set light schedule response \"([^\"]*)\" over \"([^\"]*)\"(datatable )?$")
+    public void theDeviceReturnsASetLightScheduleResponseOverOSLP(final String result, final String protocol, final Map<String, String> requestParameters) {
+        this.callMockSetScheduleResponse(this.getDeviceUID(requestParameters), result, MessageType.SET_LIGHT_SCHEDULE);
     }
 
     /**
@@ -886,55 +891,55 @@ public class OslpDeviceSteps {
      * FAILURE response, the protocol adapter will only validate the last of the
      * 3 steps.
      */
-    @Given("^the device returns the responses for setting a light schedule with result \"([^\"]*)\" over \"([^\"]*)\"$")
+    @Given("^the device returns the responses for setting a light schedule with result \"([^\"]*)\" over \"([^\"]*)\"(datatable )?$")
     public void theDeviceReturnsTheResponsesForSettingLightScheduleWithResultOverProtocol(final String result,
-            final String protocol) throws UnknownHostException {
-        this.theDeviceReturnsAGetConfigurationStatusWithResultOverOSLP(result, protocol);
-        this.theDeviceReturnsASetConfigurationStatusWithStatusOverOSLP(result, protocol);
-        this.theDeviceReturnsASetLightScheduleResponseOverOSLP(result, protocol);
+            final String protocol, final Map<String, String> requestParameters) throws UnknownHostException {
+        this.theDeviceReturnsAGetConfigurationStatusWithResultOverOSLP(result, protocol, requestParameters);
+        this.theDeviceReturnsASetConfigurationStatusWithStatusOverOSLP(result, protocol, requestParameters);
+        this.theDeviceReturnsASetLightScheduleResponseOverOSLP(result, protocol, requestParameters);
     }
 
     /**
      * Setup method to set a reboot which should be returned by the mock.
      */
-    @Given("^the device returns a set reboot response \"([^\"]*)\" over \"([^\"]*)\"$")
-    public void theDeviceReturnsASetRebootResponseOverOSLP(final String result, final String protocol) {
-        this.oslpMockServer.mockSetRebootResponse(Enum.valueOf(Status.class, result));
+    @Given("^the device returns a set reboot response \"([^\"]*)\" over \"([^\"]*)\"(datatable )?$")
+    public void theDeviceReturnsASetRebootResponseOverOSLP(final String result, final String protocol, final Map<String, String> requestParameters) {
+        this.oslpMockServer.mockSetRebootResponse(this.getDeviceUID(requestParameters), Enum.valueOf(Status.class, result));
     }
 
-    @Given("^the device returns a set reverse tariff schedule response \"([^\"]*)\" over \"([^\"]*)\"$")
-    public void theDeviceReturnsASetReverseTariffScheduleResponseOverOSLP(final String result, final String protocol) {
-        this.theDeviceReturnsASetTariffScheduleResponseOverOSLP(result, protocol);
+    @Given("^the device returns a set reverse tariff schedule response \"([^\"]*)\" over \"([^\"]*)\"(datatable )?$")
+    public void theDeviceReturnsASetReverseTariffScheduleResponseOverOSLP(final String result, final String protocol, final Map<String, String> requestParameters) {
+        this.theDeviceReturnsASetTariffScheduleResponseOverOSLP(result, protocol, requestParameters);
     }
 
-    @Given("^the device returns a set tariff schedule response \"([^\"]*)\" over \"([^\"]*)\"$")
-    public void theDeviceReturnsASetTariffScheduleResponseOverOSLP(final String result, final String protocol) {
-        this.callMockSetScheduleResponse(result, MessageType.SET_TARIFF_SCHEDULE);
+    @Given("^the device returns a set tariff schedule response \"([^\"]*)\" over \"([^\"]*)\"(datatable )?$")
+    public void theDeviceReturnsASetTariffScheduleResponseOverOSLP(final String result, final String protocol, final Map<String, String> requestParameters) {
+        this.callMockSetScheduleResponse(this.getDeviceUID(requestParameters), result, MessageType.SET_TARIFF_SCHEDULE);
     }
 
     /**
      * Setup method to set a transition which should be returned by the mock.
      */
-    @Given("^the device returns a set transition response \"([^\"]*)\" over \"([^\"]*)\"$")
-    public void theDeviceReturnsASetTransitionResponseOverOSLP(final String result, final String protocol) {
-        this.oslpMockServer.mockSetTransitionResponse(Enum.valueOf(Status.class, result));
+    @Given("^the device returns a set transition response \"([^\"]*)\" over \"([^\"]*)\"(datatable )?$")
+    public void theDeviceReturnsASetTransitionResponseOverOSLP(final String result, final String protocol, final Map<String, String> requestParameters) {
+        this.oslpMockServer.mockSetTransitionResponse(this.getDeviceUID(requestParameters), Enum.valueOf(Status.class, result));
     }
 
     /**
      * Setup method to start a device which should be returned by the mock.
      */
-    @Given("^the device returns a start device response \"([^\"]*)\" over \"([^\"]*)\"$")
-    public void theDeviceReturnsAStartDeviceResponseOverOSLP(final String result, final String protocol) {
-        this.oslpMockServer.mockStartDeviceResponse(Enum.valueOf(Status.class, result));
+    @Given("^the device returns a start device response \"([^\"]*)\" over \"([^\"]*)\"(datatable )?$")
+    public void theDeviceReturnsAStartDeviceResponseOverOSLP(final String result, final String protocol, final Map<String, String> requestParameters) {
+        this.oslpMockServer.mockStartDeviceResponse(this.getDeviceUID(requestParameters), Enum.valueOf(Status.class, result));
     }
 
     /**
      * Setup method to stop a device which should be returned by the mock.
      */
-    @Given("^the device returns a stop device response \"([^\"]*)\" over \"([^\"]*)\"$")
-    public void theDeviceReturnsAStopDeviceResponseOverOSLP(final String result, final String protocol) {
+    @Given("^the device returns a stop device response \"([^\"]*)\" over \"([^\"]*)\"(datatable )?$")
+    public void theDeviceReturnsAStopDeviceResponseOverOSLP(final String result, final String protocol, final Map<String, String> requestParameters) {
         // TODO: Check if ByteString.EMPTY must be something else
-        this.oslpMockServer.mockStopDeviceResponse(ByteString.EMPTY, Enum.valueOf(Status.class, result));
+        this.oslpMockServer.mockStopDeviceResponse(this.getDeviceUID(requestParameters), ByteString.EMPTY, Enum.valueOf(Status.class, result));
     }
 
     /**
@@ -943,17 +948,17 @@ public class OslpDeviceSteps {
      * @param firmwareVersion
      *            The firmware to respond.
      */
-    @Given("^the device returns firmware version \"([^\"]*)\" over \"([^\"]*)\"$")
-    public void theDeviceReturnsFirmwareVersionOverOSLP(final String firmwareVersion, final String protocol) {
-        this.oslpMockServer.mockGetFirmwareVersionResponse(firmwareVersion);
+    @Given("^the device returns firmware version \"([^\"]*)\" over \"([^\"]*)\"(datatable )?$")
+    public void theDeviceReturnsFirmwareVersionOverOSLP(final String firmwareVersion, final String protocol, final Map<String, String> settings) {
+        this.oslpMockServer.mockGetFirmwareVersionResponse(this.getDeviceUID(settings), firmwareVersion);
     }
 
     /**
      * Setup method to set the firmware which should be returned by the mock.
      */
-    @Given("^the device returns update firmware response \"([^\"]*)\" over \"([^\"]*)\"$")
-    public void theDeviceReturnsUpdateFirmwareResponseOverOSLP(final String result, final String protocol) {
-        this.oslpMockServer.mockUpdateFirmwareResponse(Enum.valueOf(Status.class, result));
+    @Given("^the device returns update firmware response \"([^\"]*)\" over \"([^\"]*)\"(datatable )?$")
+    public void theDeviceReturnsUpdateFirmwareResponseOverOSLP(final String result, final String protocol, final Map<String, String> settings) {
+        this.oslpMockServer.mockUpdateFirmwareResponse(this.getDeviceUID(settings), Enum.valueOf(Status.class, result));
     }
 
     @Then("^the \"([^\"]*)\" event notification response contains$")
@@ -973,7 +978,7 @@ public class OslpDeviceSteps {
         try {
             final OslpEnvelope request = this
                     .createEnvelopeBuilder(getString(settings, PlatformPubliclightingKeys.KEY_DEVICE_UID,
-                            PlatformPubliclightingDefaults.DEVICE_UID), this.oslpMockServer.getSequenceNumber())
+                            PlatformPubliclightingDefaults.DEVICE_UID), this.oslpMockServer.getSequenceNumber(this.getDeviceUID(settings)))
                     .withPayloadMessage(
                             Message.newBuilder()
                                     .setRegisterDeviceRequest(Oslp.RegisterDeviceRequest.newBuilder()
@@ -1028,7 +1033,7 @@ public class OslpDeviceSteps {
                     .setConfirmRegisterDeviceRequest(confirmRegisterDeviceRequest)
                     .build();
 
-            final OslpEnvelope request = this.createEnvelopeBuilder(deviceUid, this.oslpMockServer.getSequenceNumber())
+            final OslpEnvelope request = this.createEnvelopeBuilder(deviceUid, this.oslpMockServer.getSequenceNumber(this.getDeviceUID(settings)))
                     .withPayloadMessage(message)
                     .build();
 
@@ -1042,7 +1047,7 @@ public class OslpDeviceSteps {
     public void theDeviceSendsAnEventNotificationRequestToThePlatform(final String protocol,
             final Map<String, String> settings) throws IOException, DeviceSimulatorException {
 
-        this.oslpMockServer.doNextSequenceNumber();
+        this.oslpMockServer.incrementSequenceNumber(this.getDeviceUID(settings));
 
         final Oslp.EventNotification.Builder builder = Oslp.EventNotification.newBuilder()
                 .setEvent(getEnum(settings, PlatformKeys.KEY_EVENT, Event.class))
@@ -1058,7 +1063,7 @@ public class OslpDeviceSteps {
 
         final OslpEnvelope request = this
                 .createEnvelopeBuilder(getString(settings, PlatformPubliclightingKeys.KEY_DEVICE_UID,
-                        PlatformPubliclightingDefaults.DEVICE_UID), this.oslpMockServer.getSequenceNumber())
+                        PlatformPubliclightingDefaults.DEVICE_UID), this.oslpMockServer.getSequenceNumber(this.getDeviceUID(settings)))
                 .withPayloadMessage(Message.newBuilder()
                         .setEventNotificationRequest(
                                 Oslp.EventNotificationRequest.newBuilder().addNotifications(builder.build()))
@@ -1072,7 +1077,7 @@ public class OslpDeviceSteps {
     public void theDeviceSendsMultipleEventNotificationsRequestToThePlatform(final String protocol,
             final Map<String, String> settings) throws IOException, DeviceSimulatorException {
 
-        this.oslpMockServer.doNextSequenceNumber();
+        this.oslpMockServer.incrementSequenceNumber(this.getDeviceUID(settings));
 
         final Oslp.EventNotificationRequest.Builder requestBuilder = Oslp.EventNotificationRequest.newBuilder();
         final Oslp.EventNotification.Builder builder = Oslp.EventNotification.newBuilder();
@@ -1097,7 +1102,7 @@ public class OslpDeviceSteps {
 
         final OslpEnvelope request = this
                 .createEnvelopeBuilder(getString(settings, PlatformPubliclightingKeys.KEY_DEVICE_UID,
-                        PlatformPubliclightingDefaults.DEVICE_UID), this.oslpMockServer.getSequenceNumber())
+                        PlatformPubliclightingDefaults.DEVICE_UID), this.oslpMockServer.getSequenceNumber(this.getDeviceUID(settings)))
                 .withPayloadMessage(Message.newBuilder().setEventNotificationRequest(requestBuilder.build()).build())
                 .build();
 
@@ -1214,8 +1219,8 @@ public class OslpDeviceSteps {
      * mock.
      */
     @Given("^the device returns a update firmware \"([^\"]*)\" over \"([^\"]*)\"$")
-    public void theDeviceReturnsAUpdateFirmwareOverOSLP(final String result, final String protocol) {
-        this.oslpMockServer.mockUpdateFirmwareResponse(Enum.valueOf(Status.class, result));
+    public void theDeviceReturnsAUpdateFirmwareOverOSLP(final String result, final String protocol, final Map<String, String> settings) {
+        this.oslpMockServer.mockUpdateFirmwareResponse(this.getDeviceUID(settings), Enum.valueOf(Status.class, result));
     }
 
     @Then("^an update firmware \"([^\"]*)\" message is sent to device \"([^\"]*)\"$")
@@ -1249,5 +1254,13 @@ public class OslpDeviceSteps {
         }
         final String ipValue = stringBuilder.toString();
         return ipValue.substring(0, ipValue.length() - 1);
+    }
+
+    private String getDeviceUID(Map<String, String> settings) {
+        if (settings == null) {
+            settings = new HashMap<>();
+        }
+        return getString(settings, PlatformPubliclightingKeys.KEY_DEVICE_UID,
+                PlatformPubliclightingDefaults.DEVICE_UID);
     }
 }
