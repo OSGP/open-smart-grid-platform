@@ -1,6 +1,7 @@
 package org.opensmartgridplatform.adapter.domain.core.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -9,6 +10,7 @@ import static org.mockito.Mockito.when;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -22,7 +24,10 @@ import org.opensmartgridplatform.adapter.domain.core.application.mapping.DomainC
 import org.opensmartgridplatform.adapter.domain.core.infra.jms.core.OsgpCoreRequestMessageSender;
 import org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.domain.core.entities.Device;
+import org.opensmartgridplatform.domain.core.entities.Organisation;
+import org.opensmartgridplatform.domain.core.exceptions.UnknownEntityException;
 import org.opensmartgridplatform.domain.core.services.DeviceDomainService;
+import org.opensmartgridplatform.domain.core.services.OrganisationDomainService;
 import org.opensmartgridplatform.domain.core.valueobjects.CdmaSettings;
 import org.opensmartgridplatform.domain.core.valueobjects.Certification;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
@@ -52,6 +57,9 @@ public class DeviceManagementServiceTest {
 	
 	@Mock
 	private WebServiceResponseMessageSender webServiceResponseMessageSender;
+
+	@Mock
+	private OrganisationDomainService organisationDomainService;
 	
 	@InjectMocks
 	private DeviceManagementService deviceManagementService;
@@ -70,6 +78,11 @@ public class DeviceManagementServiceTest {
 
 	@Captor
 	private ArgumentCaptor<Integer> argumentInt;
+
+	@BeforeEach
+	public void init() throws UnknownEntityException {
+		when(this.organisationDomainService.searchOrganisation(any())).thenReturn(new Organisation());
+	}
 	
 	@Test
 	public void testSetEventNotifications() throws FunctionalException {
