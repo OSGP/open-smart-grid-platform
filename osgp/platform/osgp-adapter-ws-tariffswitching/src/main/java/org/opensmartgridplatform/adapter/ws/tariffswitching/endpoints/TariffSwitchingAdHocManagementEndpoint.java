@@ -81,8 +81,8 @@ public class TariffSwitchingAdHocManagementEndpoint {
             response.setDevicePage(devicePage);
         } catch (final ConstraintViolationException e) {
             LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_WS_TARIFF_SWITCHING,
-                    new ValidationException(e.getConstraintViolations()));
+            this.handleException(new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_WS_TARIFF_SWITCHING,
+                    new ValidationException(e.getConstraintViolations())));
         } catch (final Exception e) {
             this.handleException(e);
         }

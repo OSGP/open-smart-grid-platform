@@ -77,8 +77,8 @@ public class TaskManager {
     }
 
     private boolean taskAlreadyRan() {
-        LOGGER.debug("Checking if task has already ran within " + this.minimumMinutesBetweenRuns
-                + " (minimum time between runs in minutes).");
+        LOGGER.debug("Checking if task has already ran within {} (minimum time between runs in minutes).",
+                this.minimumMinutesBetweenRuns);
 
         if (this.task.getEndTime() == null) {
             return false;

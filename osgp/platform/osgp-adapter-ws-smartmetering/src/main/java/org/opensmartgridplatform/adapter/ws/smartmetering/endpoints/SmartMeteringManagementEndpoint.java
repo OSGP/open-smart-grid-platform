@@ -123,6 +123,9 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
         return response;
     }
 
+    // suppress warnings about the string in the final LOGGER. THere are 3 arguments provided that SonarLint expects
+    // to be part of the string, but they are actually arguments for the error method.
+    @SuppressWarnings("squid:S3457")
     @PayloadRoot(localPart = "FindEventsAsyncRequest", namespace = NAMESPACE)
     @ResponsePayload
     public FindEventsResponse getFindEventsResponse(@OrganisationIdentification final String organisationIdentification,
@@ -152,8 +155,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
 
         } catch (final ConstraintViolationException e) {
             LOGGER.error("FindEventsRequest Exception", e.getMessage(), e.getStackTrace(), e);
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
-                    new ValidationException(e.getConstraintViolations()));
+            this.handleException(new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
+                    new ValidationException(e.getConstraintViolations())));
         } catch (final Exception e) {
             this.handleException(e);
         }
@@ -181,8 +184,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             response.setDevicePage(devicePage);
         } catch (final ConstraintViolationException e) {
             LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_WS_SMART_METERING,
-                    new ValidationException(e.getConstraintViolations()));
+            this.handleException(new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_WS_SMART_METERING,
+                    new ValidationException(e.getConstraintViolations())));
         } catch (final Exception e) {
             this.handleException(e);
         }
@@ -221,6 +224,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
         return response;
     }
 
+    @SuppressWarnings("squid:S3457")
     @PayloadRoot(localPart = "EnableDebuggingAsyncRequest", namespace = NAMESPACE)
     @ResponsePayload
     public EnableDebuggingResponse getEnableDebuggingResponse(
@@ -245,8 +249,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             }
         } catch (final ConstraintViolationException e) {
             LOGGER.error("EnableDebuggingResponse Exception", e.getMessage(), e.getStackTrace(), e);
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
-                    new ValidationException(e.getConstraintViolations()));
+            this.handleException(new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
+                    new ValidationException(e.getConstraintViolations())));
         } catch (final Exception e) {
             this.handleException(e);
         }
@@ -285,6 +289,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
         return response;
     }
 
+    @SuppressWarnings("squid:S3457")
     @PayloadRoot(localPart = "DisableDebuggingAsyncRequest", namespace = NAMESPACE)
     @ResponsePayload
     public DisableDebuggingResponse getDisableDebuggingResponse(
@@ -309,8 +314,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             }
         } catch (final ConstraintViolationException e) {
             LOGGER.error("DisableDebuggingResponse Exception", e.getMessage(), e.getStackTrace(), e);
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
-                    new ValidationException(e.getConstraintViolations()));
+            this.handleException(new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
+                    new ValidationException(e.getConstraintViolations())));
         } catch (final Exception e) {
             this.handleException(e);
         }
@@ -369,6 +374,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
      * @return FindMessageLogsResponse
      * @throws OsgpException
      */
+    @SuppressWarnings("squid:S3457")
     @PayloadRoot(localPart = "FindMessageLogsAsyncRequest", namespace = NAMESPACE)
     @ResponsePayload
     public FindMessageLogsResponse getFindMessageLogsResponse(
@@ -394,8 +400,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             response.setMessageLogPage(logPage);
         } catch (final ConstraintViolationException e) {
             LOGGER.error("FindMessageLogsResponse Exception", e.getMessage(), e.getStackTrace(), e);
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
-                    new ValidationException(e.getConstraintViolations()));
+            this.handleException(new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
+                    new ValidationException(e.getConstraintViolations())));
         } catch (final Exception e) {
             this.handleException(e);
         }
@@ -436,6 +442,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
         return response;
     }
 
+    @SuppressWarnings("squid:S3457")
     @PayloadRoot(localPart = "SetDeviceCommunicationSettingsAsyncRequest", namespace = NAMESPACE)
     @ResponsePayload
     public SetDeviceCommunicationSettingsResponse setDeviceCommunicationSettingsResponse(
@@ -460,8 +467,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             }
         } catch (final ConstraintViolationException e) {
             LOGGER.error("SetDeviceCommunicationSettingsResponse Exception", e.getMessage(), e.getStackTrace(), e);
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
-                    new ValidationException(e.getConstraintViolations()));
+            this.handleException(new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
+                    new ValidationException(e.getConstraintViolations())));
         } catch (final Exception e) {
             this.handleException(e);
         }
@@ -501,6 +508,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
         return asyncResponse;
     }
 
+    @SuppressWarnings("squid:S3457")
     @PayloadRoot(localPart = "SetDeviceLifecycleStatusByChannelAsyncRequest", namespace = NAMESPACE)
     @ResponsePayload
     public SetDeviceLifecycleStatusByChannelResponse setDeviceLifecycleStatusByChannelResponse(
@@ -526,8 +534,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
 
         } catch (final ConstraintViolationException e) {
             LOGGER.error("Set device lifecycle status by channel Exception", e.getMessage(), e.getStackTrace(), e);
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
-                    new ValidationException(e.getConstraintViolations()));
+            this.handleException(new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
+                    new ValidationException(e.getConstraintViolations())));
         } catch (final Exception e) {
             this.handleException(e);
         }

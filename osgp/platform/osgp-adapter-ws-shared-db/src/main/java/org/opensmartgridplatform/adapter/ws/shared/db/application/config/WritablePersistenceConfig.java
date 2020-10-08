@@ -120,6 +120,10 @@ public class WritablePersistenceConfig extends AbstractCustomConfig {
      * @throws SharedDbException
      *             When creating entity manager factory fails.
      */
+    // suppressed warning that error should not be logged and thrown at the same time. The catch gets a generic error
+    // which is then thrown as a specific error. The LOGGER remains to log the issue because it isn't necessary
+    // logged at the catch for the method.
+    @SuppressWarnings("squid:S2139")
     @Bean
     public JpaTransactionManager writableTransactionManager() throws SharedDbException {
         final JpaTransactionManager transactionManager = new JpaTransactionManager();

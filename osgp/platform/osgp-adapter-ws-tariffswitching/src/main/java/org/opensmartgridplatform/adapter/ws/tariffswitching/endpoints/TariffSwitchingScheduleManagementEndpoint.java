@@ -99,8 +99,9 @@ public class TariffSwitchingScheduleManagementEndpoint {
             response.setAsyncResponse(asyncResponse);
         } catch (final ConstraintViolationException e) {
             LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_TARIFF_SWITCHING,
-                    new ValidationException(e.getConstraintViolations()));
+            this.handleException(new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
+                ComponentType.WS_TARIFF_SWITCHING,
+                    new ValidationException(e.getConstraintViolations())));
         } catch (final Exception e) {
             this.handleException(e);
         }

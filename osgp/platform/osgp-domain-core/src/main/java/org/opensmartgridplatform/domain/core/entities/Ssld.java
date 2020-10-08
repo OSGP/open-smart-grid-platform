@@ -97,6 +97,7 @@ public class Ssld extends Device {
         super(deviceIdentification, alias, containerAddress, gpsCoordinates, cdmaSettings);
     }
 
+    @SuppressWarnings("squid:S2159")
     @Override
     public boolean equals(final Object o) {
         /*

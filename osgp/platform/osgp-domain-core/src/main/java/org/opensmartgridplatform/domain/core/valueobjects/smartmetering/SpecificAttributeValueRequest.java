@@ -33,6 +33,10 @@ public class SpecificAttributeValueRequest extends SpecificAttributeValueRequest
         return result;
     }
 
+    // Suppress warning that super.equals(obj) always returns false. This is not true since the given object might
+    // be the parent class from this class. I'm not sure if the current behaviour is intended but that should be
+    // tested in unit tests.
+    @SuppressWarnings("squid:S2159")
     @Override
     public boolean equals(final Object obj) {
         if (this == obj) {
