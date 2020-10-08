@@ -31,7 +31,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsD
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.DeviceSessionTerminatedAfterReadingInvocationCounterException;
 
 @ExtendWith(MockitoExtension.class)
-public class InvocationCounterManagerTest {
+class InvocationCounterManagerTest {
     private static final AttributeAddress ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE = new AttributeAddress(1,
             new ObisCode(new byte[] { 0, 0, 43, 1, 0, -1 }), 2);
 
@@ -52,7 +52,7 @@ public class InvocationCounterManagerTest {
     }
 
     @Test
-    public void initializesInvocationCounterForDevice() throws Exception {
+    void initializesInvocationCounterForDevice() throws Exception {
         final DlmsDevice device = new DlmsDeviceBuilder().build();
 
         final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
@@ -76,7 +76,7 @@ public class InvocationCounterManagerTest {
     }
 
     @Test
-    public void resetsInvocationCounter() {
+    void resetsInvocationCounter() {
         final DlmsDevice device = new DlmsDeviceBuilder().withInvocationCounter(123L).build();
 
         this.manager.resetInvocationCounter(device);

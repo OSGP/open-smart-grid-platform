@@ -81,8 +81,12 @@ public class DeviceRegistrationService {
             final String serverName) throws ProtocolAdapterException {
 
         final DeviceConnectionParameters deviceConnectionParameters = DeviceConnectionParameters.newBuilder()
-                .ipAddress(ipAddress.getHostAddress()).deviceIdentification(deviceIdentification).ied(ied)
-                .serverName(serverName).logicalDevice(LogicalDevice.LIGHTING.getDescription()).build();
+                .ipAddress(ipAddress.getHostAddress())
+                .deviceIdentification(deviceIdentification)
+                .ied(ied)
+                .serverName(serverName)
+                .logicalDevice(LogicalDevice.LIGHTING.getDescription())
+                .build();
 
         final DeviceConnection deviceConnection = this.iec61850DeviceConnectionService
                 .connectWithoutConnectionCaching(deviceConnectionParameters, "");

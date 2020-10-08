@@ -28,6 +28,7 @@ import java.util.Map;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTimeZone;
+import org.junit.Assert;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities.OslpDevice;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.repositories.OslpDeviceRepository;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
@@ -336,8 +337,7 @@ public class OslpDeviceSteps {
 
         if (!StringUtils.isEmpty(expectedResponseData.get(PlatformKeys.METER_TYPE))
                 && receivedConfiguration.getMeterType() != null) {
-            MeterType meterType;
-            meterType = getEnum(expectedResponseData, PlatformKeys.METER_TYPE, MeterType.class);
+            final MeterType meterType = getEnum(expectedResponseData, PlatformKeys.METER_TYPE, MeterType.class);
             assertThat(receivedConfiguration.getMeterType()).isEqualTo(meterType);
         }
 
@@ -362,7 +362,7 @@ public class OslpDeviceSteps {
         }
 
         if (!StringUtils.isEmpty(expectedResponseData.get(PlatformKeys.OSGP_IP_ADDRESS))) {
-            assertThat(this.convertIpAddress(receivedConfiguration.getOspgIpAddress()))
+            assertThat(OslpDeviceSteps.convertIpAddress(receivedConfiguration.getOspgIpAddress()))
                     .isEqualTo(expectedResponseData.get(PlatformKeys.OSGP_IP_ADDRESS));
         }
 
@@ -573,13 +573,15 @@ public class OslpDeviceSteps {
             }
             if (StringUtils.isNotBlank(expectedRequest.get(PlatformPubliclightingKeys.SCHEDULE_STARTDAY))) {
                 final String startDay = getDate(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_STARTDAY)
-                        .toDateTime(DateTimeZone.UTC).toString("yyyyMMdd");
+                        .toDateTime(DateTimeZone.UTC)
+                        .toString("yyyyMMdd");
 
                 assertThat(schedule.getStartDay()).isEqualTo(startDay);
             }
             if (StringUtils.isNotBlank(expectedRequest.get(PlatformPubliclightingKeys.SCHEDULE_ENDDAY))) {
                 final String endDay = getDate(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_ENDDAY)
-                        .toDateTime(DateTimeZone.UTC).toString("yyyyMMdd");
+                        .toDateTime(DateTimeZone.UTC)
+                        .toString("yyyyMMdd");
 
                 assertThat(schedule.getEndDay()).isEqualTo(endDay);
             }
@@ -650,7 +652,8 @@ public class OslpDeviceSteps {
 
         final EventNotification eventNotification = EventNotification.newBuilder()
                 .setDescription(getString(settings, PlatformPubliclightingKeys.KEY_DESCRIPTION, ""))
-                .setEvent(getEnum(settings, PlatformPubliclightingKeys.KEY_EVENT, Event.class)).build();
+                .setEvent(getEnum(settings, PlatformPubliclightingKeys.KEY_EVENT, Event.class))
+                .build();
 
         final Message message = Oslp.Message.newBuilder()
                 .setEventNotificationRequest(EventNotificationRequest.newBuilder().addNotifications(eventNotification))
@@ -687,7 +690,7 @@ public class OslpDeviceSteps {
         // Note: This piece of code has been made because there are multiple
         // enumerations with the name MeterType, but not all of them has all
         // values the same. Some with underscore and some without.
-        MeterType meterType;
+        final MeterType meterType;
         final String sMeterType = getString(requestParameters, PlatformPubliclightingKeys.METER_TYPE, "");
         if (!sMeterType.contains("_") && sMeterType.equals(String.valueOf(MeterType.P1_VALUE))) {
             final String[] sMeterTypeArray = sMeterType.split("");
@@ -698,7 +701,7 @@ public class OslpDeviceSteps {
         }
 
         final String osgpIpAddress = getString(requestParameters, PlatformPubliclightingKeys.OSGP_IP_ADDRESS);
-        String osgpIpAddressMock;
+        final String osgpIpAddressMock;
         if (StringUtils.isEmpty(osgpIpAddress)) {
             osgpIpAddressMock = null;
         } else {
@@ -789,7 +792,8 @@ public class OslpDeviceSteps {
                 final LightValue lightValue = LightValue.newBuilder()
                         .setIndex(OslpUtils.integerToByteString(Integer.parseInt(parts[0])))
                         .setOn(parts[1].toLowerCase().equals("true"))
-                        .setDimValue(OslpUtils.integerToByteString(Integer.parseInt(parts[2]))).build();
+                        .setDimValue(OslpUtils.integerToByteString(Integer.parseInt(parts[2])))
+                        .build();
 
                 lightValues.add(lightValue);
             }
@@ -809,7 +813,8 @@ public class OslpDeviceSteps {
 
                 final LightValue tariffValue = LightValue.newBuilder()
                         .setIndex(OslpUtils.integerToByteString(Integer.parseInt(parts[0])))
-                        .setOn(parts[1].toLowerCase().equals("true")).build();
+                        .setOn(parts[1].toLowerCase().equals("true"))
+                        .build();
 
                 tariffValues.add(tariffValue);
             }
@@ -1014,13 +1019,18 @@ public class OslpDeviceSteps {
             final int randomPlatform = oslpDevice.getRandomPlatform();
 
             final Oslp.ConfirmRegisterDeviceRequest confirmRegisterDeviceRequest = Oslp.ConfirmRegisterDeviceRequest
-                    .newBuilder().setRandomDevice(randomDevice).setRandomPlatform(randomPlatform).build();
+                    .newBuilder()
+                    .setRandomDevice(randomDevice)
+                    .setRandomPlatform(randomPlatform)
+                    .build();
 
-            final Message message = Message.newBuilder().setConfirmRegisterDeviceRequest(confirmRegisterDeviceRequest)
+            final Message message = Message.newBuilder()
+                    .setConfirmRegisterDeviceRequest(confirmRegisterDeviceRequest)
                     .build();
 
             final OslpEnvelope request = this.createEnvelopeBuilder(deviceUid, this.oslpMockServer.getSequenceNumber())
-                    .withPayloadMessage(message).build();
+                    .withPayloadMessage(message)
+                    .build();
 
             this.send(request, settings);
         } catch (final IOException | IllegalArgumentException e) {
@@ -1095,7 +1105,8 @@ public class OslpDeviceSteps {
     }
 
     /**
-     * Verify that we have received a response over OSLP/OSLP ELSTER
+     * Verify that we have received an event notification response over
+     * OSLP/OSLP ELSTER
      */
     @Then("^the event notification response contains$")
     public void theEventNotificationResponseContains(final Map<String, String> expectedResponse) {
@@ -1108,7 +1119,8 @@ public class OslpDeviceSteps {
     }
 
     /**
-     * Verify that we have received a response over OSLP/OSLP ELSTER
+     * Verify that we have received a set configuration response over OSLP/OSLP
+     * ELSTER
      */
     @Then("^the set configuration response contains$")
     public void theSetConfigurationResponseContains(final Map<String, String> expectedResponse) {
@@ -1133,8 +1145,7 @@ public class OslpDeviceSteps {
      * Verify that we have received a response over OSLP/OSLP ELSTER
      */
     @Then("^the register device response contains$")
-    public void theRegisterDeviceResponseContains(final Map<String, String> expectedResponse)
-            throws IOException, DeviceSimulatorException {
+    public void theRegisterDeviceResponseContains(final Map<String, String> expectedResponse) {
         final Exception e = (Exception) ScenarioContext.current().get("Error");
         if (e == null || getString(expectedResponse, PlatformPubliclightingKeys.MESSAGE) == null) {
             final Message responseMessage = this.oslpMockServer.waitForResponse();
@@ -1149,9 +1160,27 @@ public class OslpDeviceSteps {
             assertThat(response.getStatus().name())
                     .isEqualTo(getString(expectedResponse, PlatformPubliclightingKeys.KEY_STATUS));
         } else {
-            assertThat(e.getMessage()).isEqualTo(getString(expectedResponse, PlatformPubliclightingKeys.MESSAGE));
+            assertThat(e).hasMessage(getString(expectedResponse, PlatformPubliclightingKeys.MESSAGE));
         }
+    }
 
+    /**
+     * Verify that we have received a confirm register device response over
+     * OSLP/OSLP ELSTER
+     */
+    @Then("^the confirm register device response contains$")
+    public void theConfirmRegisterDeviceResponseContains(final Map<String, String> expectedResponse) {
+        final Exception e = (Exception) ScenarioContext.current().get("Error");
+        if (e == null || getString(expectedResponse, PlatformPubliclightingKeys.MESSAGE) == null) {
+            final Message responseMessage = this.oslpMockServer.waitForResponse();
+
+            final Oslp.ConfirmRegisterDeviceResponse response = responseMessage.getConfirmRegisterDeviceResponse();
+            Assert.assertNotNull(response);
+            assertThat(response.getStatus().name())
+                    .isEqualTo(getString(expectedResponse, PlatformPubliclightingKeys.KEY_STATUS));
+        } else {
+            assertThat(e).hasMessage(getString(expectedResponse, PlatformPubliclightingKeys.MESSAGE));
+        }
     }
 
     public OslpEnvelope.Builder createEnvelopeBuilder(final String deviceUid, final Integer sequenceNumber) {
@@ -1161,7 +1190,8 @@ public class OslpDeviceSteps {
 
         return new OslpEnvelope.Builder().withSignature(this.oslpMockServer.getOslpSignature())
                 .withProvider(this.oslpMockServer.getOslpSignatureProvider())
-                .withPrimaryKey(this.oslpMockServer.privateKey()).withDeviceId(Base64.decodeBase64(deviceUid))
+                .withPrimaryKey(this.oslpMockServer.privateKey())
+                .withDeviceId(Base64.decodeBase64(deviceUid))
                 .withSequenceNumber(sequenceNumberBytes);
     }
 
@@ -1203,7 +1233,7 @@ public class OslpDeviceSteps {
                 PlatformPubliclightingKeys.FIRMWARE_URL, PlatformPubliclightingDefaults.FIRMWARE_URL));
     }
 
-    private String convertIpAddress(final ByteString byteString) {
+    private static String convertIpAddress(final ByteString byteString) {
         if (byteString == null || byteString.isEmpty()) {
             return "";
         }
