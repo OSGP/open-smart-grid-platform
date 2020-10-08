@@ -653,7 +653,10 @@ public class DeviceManagementService {
                 updateDevice.getGpsCoordinates());
 
         existingDevice.setActivated(updateDevice.isActivated());
-        existingDevice.setDeviceLifecycleStatus(updateDevice.getDeviceLifecycleStatus());
+
+        if (updateDevice.getDeviceLifecycleStatus() != null) {
+            existingDevice.setDeviceLifecycleStatus(updateDevice.getDeviceLifecycleStatus());
+        }
 
         if (updateDevice.getTechnicalInstallationDate() != null) {
             existingDevice.setTechnicalInstallationDate(updateDevice.getTechnicalInstallationDate());

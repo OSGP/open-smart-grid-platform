@@ -17,7 +17,6 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.BaseDevice;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.DeviceModel;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Manufacturer;
@@ -48,7 +47,7 @@ class DeviceConverterHelper<T extends org.opensmartgridplatform.domain.core.enti
     }
 
     @SuppressWarnings("unchecked")
-    T initEntity(final BaseDevice source) {
+    T initEntity(final Device source) {
         T destination;
 
         final Address containerAddress = this.mapper.map(source.getContainerAddress(), Address.class);
@@ -83,11 +82,8 @@ class DeviceConverterHelper<T extends org.opensmartgridplatform.domain.core.enti
                     source.getTechnicalInstallationDate().toGregorianCalendar().getTime());
         }
 
-        if (source instanceof Device) {
-            final Device sourceDevice = (Device) source;
-            destination.setDeviceModel(this.mapper.map(sourceDevice.getDeviceModel(),
-                    org.opensmartgridplatform.domain.core.entities.DeviceModel.class));
-        }
+        destination.setDeviceModel(this.mapper.map(source.getDeviceModel(),
+                org.opensmartgridplatform.domain.core.entities.DeviceModel.class));
 
         return destination;
     }

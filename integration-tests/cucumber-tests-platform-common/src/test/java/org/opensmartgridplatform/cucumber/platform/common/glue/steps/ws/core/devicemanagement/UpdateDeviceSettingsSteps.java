@@ -15,13 +15,10 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStri
 
 import java.util.Map;
 
-import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.BaseDevice;
-import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.DeviceModel;
-import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Manufacturer;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceResponse;
+import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdatedDevice;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
-import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonDefaults;
 import org.opensmartgridplatform.cucumber.platform.common.support.ws.core.CoreDeviceManagementClient;
@@ -52,7 +49,7 @@ public class UpdateDeviceSettingsSteps {
             deviceIdentification = deviceIdentification.replaceAll("\"", " ");
         }
         request.setDeviceIdentification(deviceIdentification);
-        final BaseDevice device = this.createDevice(settings);
+        final UpdatedDevice device = this.createUpdatedDevice(settings);
         request.setUpdatedDevice(device);
 
         try {
@@ -62,23 +59,17 @@ public class UpdateDeviceSettingsSteps {
         }
     }
 
-    private BaseDevice createDevice(final Map<String, String> settings) {
+    private UpdatedDevice createUpdatedDevice(final Map<String, String> settings) {
 
-        final BaseDevice device = new BaseDevice();
+        final UpdatedDevice device = new UpdatedDevice();
         device.setAlias(getString(settings, PlatformKeys.ALIAS, PlatformCommonDefaults.DEFAULT_ALIAS));
         device.setContainerAddress(new AddressBuilder().withSettings(settings).build());
         device.setDeviceIdentification(getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
                 PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
-        device.setDeviceUid(getString(settings, PlatformKeys.KEY_DEVICE_UID, PlatformCommonDefaults.DEVICE_UID));
         device.setGpsLatitude(
                 getString(settings, PlatformKeys.KEY_LATITUDE, PlatformCommonDefaults.DEFAULT_LATITUDE_STRING));
         device.setGpsLongitude(
                 getString(settings, PlatformKeys.KEY_LONGITUDE, PlatformCommonDefaults.DEFAULT_LONGITUDE_STRING));
-        device.setHasSchedule(
-                getBoolean(settings, PlatformKeys.KEY_HAS_SCHEDULE, PlatformCommonDefaults.DEFAULT_HASSCHEDULE));
-        device.setOwner(getString(settings, PlatformKeys.KEY_OWNER, PlatformCommonDefaults.DEFAULT_OWNER));
-        device.setPublicKeyPresent(getBoolean(settings, PlatformKeys.KEY_PUBLICKEYPRESENT,
-                PlatformCommonDefaults.DEFAULT_PUBLICKEYPRESENT));
         device.setActivated(getBoolean(settings, PlatformKeys.KEY_ACTIVATED, PlatformCommonDefaults.DEFAULT_ACTIVATED));
 
         return device;

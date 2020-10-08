@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.BaseDevice;
+import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.RelayType;
 import org.opensmartgridplatform.domain.core.entities.DeviceOutputSetting;
 import org.opensmartgridplatform.domain.core.entities.Ean;
@@ -25,7 +25,7 @@ import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
-class SsldConverter extends BidirectionalConverter<Ssld, BaseDevice> {
+class SsldConverter extends BidirectionalConverter<Ssld, Device> {
 
     private final DeviceConverterHelper<Ssld> helper = new DeviceConverterHelper<>(Ssld.class);
 
@@ -43,8 +43,8 @@ class SsldConverter extends BidirectionalConverter<Ssld, BaseDevice> {
     }
 
     @Override
-    public org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.BaseDevice convertTo(final Ssld source,
-            final Type<org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.BaseDevice> destinationType,
+    public org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device convertTo(final Ssld source,
+            final Type<org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device> destinationType,
             final MappingContext context) {
 
         if (source == null) {
@@ -88,7 +88,7 @@ class SsldConverter extends BidirectionalConverter<Ssld, BaseDevice> {
     }
 
     @Override
-    public Ssld convertFrom(final org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.BaseDevice source,
+    public Ssld convertFrom(final org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device source,
             final Type<Ssld> destinationType, final MappingContext context) {
 
         if (source == null) {
