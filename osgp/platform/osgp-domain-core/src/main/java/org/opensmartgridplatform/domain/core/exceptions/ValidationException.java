@@ -16,6 +16,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.ws.soap.server.endpoint.annotation.FaultCode;
 import org.springframework.ws.soap.server.endpoint.annotation.SoapFault;
 
+// suppress warning about the Set<? extends ConstraintViolation<?>>. This is because it is apparently required to be
+// written this way.
+@SuppressWarnings("squid:S1452")
 @SoapFault(faultCode = FaultCode.SERVER)
 public class ValidationException extends PlatformException {
 
@@ -26,7 +29,7 @@ public class ValidationException extends PlatformException {
     private static final String DEFAULT_MESSAGE = "Validation Exception";
 
     @Transient
-    private final Set<ConstraintViolation> constraintViolations;
+    private final Set<? extends ConstraintViolation<?>> constraintViolations;
 
     public ValidationException() {
         super(DEFAULT_MESSAGE);
@@ -38,17 +41,17 @@ public class ValidationException extends PlatformException {
         this.constraintViolations = null;
     }
 
-    public ValidationException(final Set<ConstraintViolation> constraintViolations) {
+    public ValidationException(final Set<? extends ConstraintViolation<?>> constraintViolations) {
         super(DEFAULT_MESSAGE + ", violations: " + convertToString(constraintViolations));
         this.constraintViolations = constraintViolations;
     }
 
-    public ValidationException(final String message, final Set<ConstraintViolation> constraintViolations) {
+    public ValidationException(final String message, final Set<? extends ConstraintViolation<?>> constraintViolations) {
         super(message);
         this.constraintViolations = constraintViolations;
     }
 
-    public Set<ConstraintViolation> getConstraintViolations() {
+    public Set<? extends ConstraintViolation<?>> getConstraintViolations() {
         return this.constraintViolations;
     }
 
@@ -68,7 +71,7 @@ public class ValidationException extends PlatformException {
         return result.toString();
     }
 
-    private static String convertToString(final Set<ConstraintViolation> constraintViolations) {
+    private static String convertToString(final Set<? extends ConstraintViolation<?>> constraintViolations) {
         final StringBuilder violations = new StringBuilder();
 
         for (final ConstraintViolation<?> violation : constraintViolations) {
