@@ -12,19 +12,19 @@ import java.util.concurrent.ConcurrentMap;
 
 public class DevicesContext {
 
-    private final ConcurrentMap<String, DeviceState> mockedDevices = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, DeviceState> mockedDevicesMap = new ConcurrentHashMap<>();
 
     public DeviceState getDeviceState(final String deviceIdentification) {
-        DeviceState deviceState = this.mockedDevices.get(deviceIdentification);
+        DeviceState deviceState = this.mockedDevicesMap.get(deviceIdentification);
         if (deviceState == null) {
             deviceState = new DeviceState(deviceIdentification);
-            this.mockedDevices.put(deviceIdentification, deviceState);
+            this.mockedDevicesMap.put(deviceIdentification, deviceState);
         }
 
         return deviceState;
     }
 
     public void clear() {
-        this.mockedDevices.clear();
+        this.mockedDevicesMap.clear();
     }
 }

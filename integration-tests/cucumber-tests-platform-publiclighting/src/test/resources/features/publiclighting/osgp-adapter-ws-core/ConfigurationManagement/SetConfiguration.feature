@@ -7,7 +7,7 @@ Feature: CoreConfigurationManagement SetConfiguration
   @OslpMockServer
   Scenario Outline: Set configuration of a device
     Given an ssld oslp device
-      | DeviceIdentification | TEST1024000000001 |
+      | DeviceIdentification | TEST10240F00000001 |
       | Protocol             | <Protocol>        |
     And the device returns a set configuration status "OK" over "<Protocol>"
     And the device returns a set reboot response "OK" over "<Protocol>"

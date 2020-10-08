@@ -20,8 +20,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -126,7 +124,6 @@ public class MockOslpServer {
     private MockOslpChannelHandler channelHandler;
 
     private final DevicesContext devicesContext = new DevicesContext();
-    private final ConcurrentMap<MessageType, Message> receivedRequests = new ConcurrentHashMap<>();
     private final List<Message> receivedResponses = new ArrayList<>();
 
     public MockOslpServer(final CoreDeviceConfiguration configuration, final int oslpPortServer,
@@ -159,9 +156,8 @@ public class MockOslpServer {
 
     public void start() {
         this.channelHandler = new MockOslpChannelHandler(this.oslpSignature, this.oslpSignatureProvider,
-                this.connectionTimeout, this.sequenceNumberWindow, this.sequenceNumberMaximum, this.responseDelayTime,
-                this.responseDelayRandomRange, this.privateKey(), this.clientBootstrap(), this.devicesContext,
-                this.receivedRequests, this.receivedResponses);
+                this.connectionTimeout, this.sequenceNumberMaximum, this.responseDelayTime,
+                this.responseDelayRandomRange, this.privateKey(), this.clientBootstrap(), this.devicesContext, this.receivedResponses);
 
         this.serverBossGroup = new DisposableNioEventLoopGroup();
         this.serverWorkerGroup = new DisposableNioEventLoopGroup();
@@ -184,22 +180,23 @@ public class MockOslpServer {
     }
 
     public void resetServer() {
-        this.receivedRequests.clear();
         this.receivedResponses.clear();
         this.devicesContext.clear();
         this.channelHandler.reset();
     }
 
-    public Message waitForRequest(final MessageType requestType) {
+    public Message waitForRequest(final String deviceUID, final MessageType messageType)
+            throws DeviceSimulatorException {
         LOGGER.info(
-                "Waiting for request of message type: {} - receivedRequests: {}, receivedResponses: {}",
-                requestType.name(), this.receivedRequests.size(), this.receivedResponses.size());
+                "Device {} is waiting for request of message type: {}, receivedResponses: {}",
+                deviceUID, messageType.name(), this.receivedResponses.size());
 
+        final DeviceState deviceState = this.devicesContext.getDeviceState(deviceUID);
         int count = 0;
-        while (!this.receivedRequests.containsKey(requestType)) {
+        while (!deviceState.hasRequests(messageType)) {
             try {
                 count++;
-                LOGGER.info("Sleeping 1s " + count + " - waiting for request of message type: " + requestType.name());
+                LOGGER.info("Sleeping 1s {} - Device {} is waiting for request of message type: {}", count, deviceUID, messageType.name());
                 Thread.sleep(1000);
             } catch (final InterruptedException e) {
                 Assertions.fail("Polling for response interrupted");
@@ -210,7 +207,7 @@ public class MockOslpServer {
             }
         }
 
-        return this.receivedRequests.get(requestType);
+        return deviceState.getRequest(messageType);
     }
 
     public OslpEnvelope send(final InetSocketAddress address, final OslpEnvelope request,
@@ -280,8 +277,7 @@ public class MockOslpServer {
         return pipeline;
     }
 
-    private PublicKey publicKey()
-            throws NoSuchAlgorithmException, IOException, InvalidKeySpecException, NoSuchProviderException {
+    private PublicKey publicKey() throws IOException {
         return CertificateHelper.createPublicKey(this.verifyKeyPath, this.keytype, this.oslpSignatureProvider);
     }
 

@@ -8,6 +8,7 @@
 package org.opensmartgridplatform.cucumber.platform.publiclighting.mocks.oslpdevice;
 
 import java.util.EmptyStackException;
+import java.util.Map;
 import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -16,45 +17,49 @@ import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.oslp.Oslp;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.data.annotation.Transient;
 
 import lombok.Getter;
 
 public class DeviceState {
 
-    private final String deviceIdentification;
+    @Getter
+    private final String deviceUID;
 
     // Device settings
     @Getter
     private Integer sequenceNumber = 0;
-    private final Integer sequenceNumberMaximum = 0;
 
-    @Transient
     private static final Integer SEQUENCE_NUMBER_MAXIMUM = 65535;
 
-    private final ConcurrentMap<MessageType, Stack<Oslp.Message>> mockResponses = new ConcurrentHashMap<>();
-    private final ConcurrentMap<MessageType, Oslp.Message> receivedRequests = new ConcurrentHashMap<>();
+    private final ConcurrentMap<MessageType, Stack<Oslp.Message>> mockedResponsesMap = new ConcurrentHashMap<>();
+    private final ConcurrentMap<MessageType, Stack<Oslp.Message>> receivedRequestsMap = new ConcurrentHashMap<>();
 
-    public DeviceState(final String deviceIdentification) {
-        this.deviceIdentification = deviceIdentification;
+    public DeviceState(final String deviceUID) {
+        this.deviceUID = deviceUID;
     }
 
     public Oslp.Message getResponse(final MessageType messageType) throws DeviceSimulatorException {
-        try {
-            return this.getStackFromResponses(messageType).pop();
-        } catch (final EmptyStackException e) {
-            throw new DeviceSimulatorException(String.format("No message of type %s found for device %s", messageType, this.deviceIdentification), e);
+        return this.getFromMap(this.mockedResponsesMap, messageType);
+    }
 
-        }
+    public Oslp.Message getRequest(final MessageType messageType) throws DeviceSimulatorException {
+        return this.getFromMap(this.receivedRequestsMap, messageType);
     }
 
     public void addResponse(final MessageType messageType, final Oslp.Message message) {
-        this.getStackFromResponses(messageType).push(message);
+        this.getStack(this.mockedResponsesMap, messageType).push(message);
     }
 
+    public void addReceivedRequest(final MessageType messageType, final Oslp.Message message) {
+        this.getStack(this.receivedRequestsMap, messageType).add(message);
+    }
 
     public boolean hasResponses(final MessageType messageType) {
-        return !this.getStackFromResponses(messageType).empty();
+        return !this.getStack(this.mockedResponsesMap, messageType).empty();
+    }
+
+    public boolean hasRequests(final MessageType messageType) {
+        return !this.getStack(this.receivedRequestsMap, messageType).empty();
     }
 
     public int incrementSequenceNumber() {
@@ -83,10 +88,20 @@ public class DeviceState {
         return this.sequenceNumber = next;
     }
 
-    private Stack<Oslp.Message> getStackFromResponses(final MessageType messageType) {
-        if (this.mockResponses.get(messageType) == null) {
-            this.mockResponses.put(messageType, new Stack<>());
+    private Stack<Oslp.Message> getStack(final Map<MessageType, Stack<Oslp.Message>> messageMap, final MessageType messageType) {
+        if (messageMap.get(messageType) == null) {
+            messageMap.put(messageType, new Stack<>());
         }
-        return this.mockResponses.get(messageType);
+        return messageMap.get(messageType);
+    }
+
+    private Oslp.Message getFromMap(final Map<MessageType, Stack<Oslp.Message>> messageMap, final MessageType messageType)
+            throws DeviceSimulatorException {
+        try {
+            return this.getStack(messageMap, messageType).pop();
+        } catch (final EmptyStackException e) {
+            throw new DeviceSimulatorException(String.format("No message of type %s found for device %s", messageType, this.deviceUID), e);
         }
+    }
+
 }

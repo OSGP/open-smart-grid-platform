@@ -117,7 +117,6 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
 
     private final Random random = new Random();
 
-    private final ConcurrentMap<MessageType, Message> receivedRequests;
     private final List<Message> receivedResponses;
 
     private final Long reponseDelayRandomRange;
@@ -128,10 +127,9 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
     private final Integer sequenceNumberMaximum;
 
     public MockOslpChannelHandler(final String oslpSignature, final String oslpSignatureProvider,
-            final int connectionTimeout, final Integer sequenceNumberWindow, final Integer sequenceNumberMaximum,
+            final int connectionTimeout, final Integer sequenceNumberMaximum,
             final Long responseDelayTime, final Long reponseDelayRandomRange, final PrivateKey privateKey,
-            final Bootstrap clientBootstrap, final DevicesContext devicesContext,
-            final ConcurrentMap<MessageType, Message> receivedRequests, final List<Message> receivedResponses) {
+            final Bootstrap clientBootstrap, final DevicesContext devicesContext, final List<Message> receivedResponses) {
         this.oslpSignature = oslpSignature;
         this.oslpSignatureProvider = oslpSignatureProvider;
         this.connectionTimeout = connectionTimeout;
@@ -141,7 +139,6 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
         this.privateKey = privateKey;
         this.clientBootstrap = clientBootstrap;
         this.devicesContext = devicesContext;
-        this.receivedRequests = receivedRequests;
         this.receivedResponses = receivedResponses;
     }
 
@@ -207,7 +204,7 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
 
         if (message.isValid()) {
             if (this.isOslpResponse(message)) {
-                LOGGER.debug("Received OSLP Response (before callback): {}", message.getPayloadMessage());
+                LOGGER.debug("Device {} received an OSLP Response (before callback): {}", this.getDeviceUID(message), message.getPayloadMessage());
 
                 // Lookup correct callback and call handle method.
                 final String channelId = ctx.channel().id().asLongText();
@@ -219,21 +216,21 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
 
                 callback.handle(message);
             } else {
-                LOGGER.debug("Received OSLP Request: {}", message.getPayloadMessage().toString().split(" ")[0]);
 
-                final String deviceIdentification = this.getDeviceIdentification(message);
+                final String deviceUID = this.getDeviceUID(message);
                 final MessageType messageType = this.getMessageType(message.getPayloadMessage());
-                final DeviceState deviceState = this.devicesContext.getDeviceState(deviceIdentification);
-                if (deviceState.hasResponses(messageType)) {
+                final DeviceState deviceState = this.devicesContext.getDeviceState(deviceUID);
 
-                    final byte[] deviceId = message.getDeviceId();
+                LOGGER.debug("Device {} received an OSLP Request of type {}", deviceUID, messageType);
+
+                if (deviceState.hasResponses(messageType)) {
 
                     // Build the OslpEnvelope.
                     final OslpEnvelope.Builder responseBuilder = new OslpEnvelope.Builder()
                             .withSignature(this.oslpSignature)
                             .withProvider(this.oslpSignatureProvider)
                             .withPrimaryKey(this.privateKey)
-                            .withDeviceId(deviceId);
+                            .withDeviceId(message.getDeviceId());
 
                     // Pass the incremented sequence number to the
                     // handleRequest() function for checking.
@@ -243,8 +240,8 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
 
                     final OslpEnvelope response = responseBuilder.build();
 
-                    LOGGER.debug("sending OSLP response with sequence number: {}",
-                            convertByteArrayToInteger(response.getSequenceNumber()));
+                    LOGGER.debug("Device {} is sending OSLP an response with sequence number: {}",
+                           this.getDeviceUID(response), convertByteArrayToInteger(response.getSequenceNumber()));
 
                     // wait for the response to actually be written. This
                     // improves stability of the tests
@@ -332,12 +329,12 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
             throws DeviceSimulatorException, IOException, ParseException {
         final Oslp.Message request = requestMessage.getPayloadMessage();
 
-        final String deviceIdentification = this.getDeviceIdentification(requestMessage);
+        final String deviceUID = this.getDeviceUID(requestMessage);
         final MessageType messageType = this.getMessageType(requestMessage.getPayloadMessage());
 
-        final DeviceState deviceState = this.devicesContext.getDeviceState(deviceIdentification);
+        final DeviceState deviceState = this.devicesContext.getDeviceState(deviceUID);
 
-        LOGGER.info("Received a new request: [" + request + "], sequencenumber [" + deviceState.getSequenceNumber() + "]");
+        LOGGER.info("Device {} received [{}], sequence number [{}]", deviceUID, request, requestMessage.getSequenceNumber());
 
         // Calculate expected sequence number
         deviceState.incrementSequenceNumber();
@@ -351,13 +348,13 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
             this.sleep(this.responseDelayTime + randomDelay);
         }
 
-        this.receivedRequests.put(messageType, request);
+        deviceState.addReceivedRequest(messageType, request);
 
         // Create response requestMessage
         final Oslp.Message response = deviceState.getResponse(messageType);
 
         // Write log entry for response
-        LOGGER.info("Mock Response: " + response);
+        LOGGER.info("Device {} mocked response: [{}]", deviceState.getDeviceUID(), response);
 
         return response;
     }
@@ -382,7 +379,7 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
     }
 
 
-    private static String getDeviceIdentification(final OslpEnvelope message) {
+    private static String getDeviceUID(final OslpEnvelope message) {
         return Base64.encodeBase64String(message.getDeviceId());
     }
 
