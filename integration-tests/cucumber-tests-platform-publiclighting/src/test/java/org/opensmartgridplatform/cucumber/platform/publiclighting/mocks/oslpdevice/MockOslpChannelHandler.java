@@ -399,23 +399,48 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
      * @return
      */
     private MessageType getMessageType(final Oslp.Message request) throws DeviceSimulatorException {
-        if (request.hasGetFirmwareVersionRequest()) { return MessageType.GET_FIRMWARE_VERSION; }
-        if (request.hasUpdateFirmwareRequest()) { return MessageType.UPDATE_FIRMWARE; }
-        if (request.hasSetLightRequest()) { return MessageType.SET_LIGHT; }
-        if (request.hasSetEventNotificationsRequest()) { return MessageType.SET_EVENT_NOTIFICATIONS; }
-        if (request.hasStartSelfTestRequest()) { return MessageType.START_SELF_TEST; }
-        if (request.hasStopSelfTestRequest()) { return MessageType.STOP_SELF_TEST; }
-
+        if (request.hasGetFirmwareVersionRequest()) {
+            return MessageType.GET_FIRMWARE_VERSION;
+        }
+        if (request.hasUpdateFirmwareRequest()) {
+            return MessageType.UPDATE_FIRMWARE;
+        }
+        if (request.hasSetLightRequest()) {
+            return MessageType.SET_LIGHT;
+        }
+        if (request.hasSetEventNotificationsRequest()) {
+            return MessageType.SET_EVENT_NOTIFICATIONS;
+        }
+        if (request.hasStartSelfTestRequest()) {
+            return MessageType.START_SELF_TEST;
+        }
+        if (request.hasStopSelfTestRequest()) {
+            return MessageType.STOP_SELF_TEST;
+        }
         if (request.hasGetStatusRequest()) {
             return MessageType.GET_STATUS;
         }
-
-        if (request.hasResumeScheduleRequest()) { return MessageType.RESUME_SCHEDULE; }
-        if (request.hasSetRebootRequest()) { return MessageType.SET_REBOOT; }
-        if (request.hasSetTransitionRequest()) { return MessageType.SET_TRANSITION; }
-        if (request.hasSetDeviceVerificationKeyRequest()) { return MessageType.UPDATE_KEY; }
-        if (request.hasGetPowerUsageHistoryRequest()) { return MessageType.GET_POWER_USAGE_HISTORY; }
-
+        if (request.hasResumeScheduleRequest()) {
+            return MessageType.RESUME_SCHEDULE;
+        }
+        if (request.hasSetRebootRequest()) {
+            return MessageType.SET_REBOOT;
+        }
+        if (request.hasSetTransitionRequest()) {
+            return MessageType.SET_TRANSITION;
+        }
+        if (request.hasSetDeviceVerificationKeyRequest()) {
+            return MessageType.UPDATE_KEY;
+        }
+        if (request.hasGetPowerUsageHistoryRequest()) {
+            return MessageType.GET_POWER_USAGE_HISTORY;
+        }
+        if (request.hasGetConfigurationRequest()) {
+            return MessageType.GET_CONFIGURATION;
+        }
+        if (request.hasSetConfigurationRequest()) {
+            return MessageType.SET_CONFIGURATION;
+        }
         if (request.hasSetScheduleRequest()) {
             final Oslp.RelayType relayType = request.getSetScheduleRequest().getScheduleType();
             if (TARIFF == relayType) {
@@ -423,13 +448,11 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
             } else if (LIGHT == relayType) {
                 return MessageType.SET_LIGHT_SCHEDULE;
             } else {
-                throw new DeviceSimulatorException(String.format("Unimplemented RelayType received in setScheduleRequest of type %s", relayType));
+                throw new DeviceSimulatorException(String.format("Received an unimplemented RelayType in setScheduleRequest of type %s", relayType));
             }
         }
-       if (request.hasGetConfigurationRequest()) { return MessageType.GET_CONFIGURATION; }
-       if (request.hasSetConfigurationRequest()) { return MessageType.SET_CONFIGURATION; }
 
-       throw new DeviceSimulatorException("Unimplemented message type received");
+       throw new DeviceSimulatorException("Received an unimplemented message type");
     }
 
 }

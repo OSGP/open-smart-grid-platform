@@ -7,7 +7,6 @@
  */
 package org.opensmartgridplatform.cucumber.platform.publiclighting.mocks.oslpdevice;
 
-import java.util.EmptyStackException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -61,10 +60,6 @@ public class DeviceState {
         return !this.getQueue(this.receivedRequestsMap, messageType).isEmpty();
     }
 
-    public int mockedResponsesQueued(final MessageType messageType) {
-        return this.getQueue(this.receivedRequestsMap, messageType).size();
-    }
-
     public void incrementSequenceNumber() {
         int numberToAddToSequenceNumberValue = 1;
 
@@ -99,11 +94,12 @@ public class DeviceState {
 
     private Oslp.Message getFromMap(final Map<MessageType, ConcurrentLinkedQueue<Oslp.Message>> messageMap, final MessageType messageType)
             throws DeviceSimulatorException {
-        try {
-            return this.getQueue(messageMap, messageType).poll();
-        } catch (final EmptyStackException e) {
-            throw new DeviceSimulatorException(String.format("No message of type %s found for device %s", messageType, this.deviceUID), e);
+        final Oslp.Message message = this.getQueue(messageMap, messageType).poll();
+        if (message == null) {
+            throw new DeviceSimulatorException(String.format("No message of type %s found for device %s", messageType, this.deviceUID));
         }
+
+        return message;
     }
 
 }
