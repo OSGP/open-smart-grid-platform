@@ -212,7 +212,7 @@ public class OslpDeviceSteps {
      *            The device identification expected in the message to the
      *            device.
      */
-    @Then("^a resume schedule \"([^\"]*)\" message is sent to device \"([^\"]*)\"(datatable )?$")
+    @Then("^a resume schedule \"([^\"]*)\" message is sent to device \"([^\"]*)\"$")
     public void aResumeScheduleOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification,
             final Map<String, String> expectedRequest) throws DeviceSimulatorException {
         final Message message = this.oslpMockServer.waitForRequest(this.getDeviceUID(expectedRequest), MessageType.RESUME_SCHEDULE);
@@ -986,6 +986,7 @@ public class OslpDeviceSteps {
             final Map<String, String> settings) throws DeviceSimulatorException {
 
         try {
+            this.oslpMockServer.incrementSequenceNumber(this.getDeviceUID(settings));
             final OslpEnvelope request = this
                     .createEnvelopeBuilder(getString(settings, PlatformPubliclightingKeys.KEY_DEVICE_UID,
                             PlatformPubliclightingDefaults.DEVICE_UID), this.oslpMockServer.getSequenceNumber(this.getDeviceUID(settings)))
@@ -1043,6 +1044,7 @@ public class OslpDeviceSteps {
                     .setConfirmRegisterDeviceRequest(confirmRegisterDeviceRequest)
                     .build();
 
+            this.oslpMockServer.incrementSequenceNumber(this.getDeviceUID(settings));
             final OslpEnvelope request = this.createEnvelopeBuilder(deviceUid, this.oslpMockServer.getSequenceNumber(this.getDeviceUID(settings)))
                     .withPayloadMessage(message)
                     .build();
@@ -1057,7 +1059,7 @@ public class OslpDeviceSteps {
     public void theDeviceSendsAnEventNotificationRequestToThePlatform(final String protocol,
             final Map<String, String> settings) throws IOException, DeviceSimulatorException {
 
-        this.oslpMockServer.incrementSequenceNumber(this.getDeviceUID(settings));
+
 
         final Oslp.EventNotification.Builder builder = Oslp.EventNotification.newBuilder()
                 .setEvent(getEnum(settings, PlatformKeys.KEY_EVENT, Event.class))
@@ -1071,6 +1073,7 @@ public class OslpDeviceSteps {
         final Integer index = indexValue == null || "EMPTY".equals(indexValue) ? 0 : Integer.valueOf(indexValue);
         builder.setIndex(ByteString.copyFrom(new byte[] { index.byteValue() }));
 
+        this.oslpMockServer.incrementSequenceNumber(this.getDeviceUID(settings));
         final OslpEnvelope request = this
                 .createEnvelopeBuilder(getString(settings, PlatformPubliclightingKeys.KEY_DEVICE_UID,
                         PlatformPubliclightingDefaults.DEVICE_UID), this.oslpMockServer.getSequenceNumber(this.getDeviceUID(settings)))
@@ -1087,7 +1090,7 @@ public class OslpDeviceSteps {
     public void theDeviceSendsMultipleEventNotificationsRequestToThePlatform(final String protocol,
             final Map<String, String> settings) throws IOException, DeviceSimulatorException {
 
-        this.oslpMockServer.incrementSequenceNumber(this.getDeviceUID(settings));
+
 
         final Oslp.EventNotificationRequest.Builder requestBuilder = Oslp.EventNotificationRequest.newBuilder();
         final Oslp.EventNotification.Builder builder = Oslp.EventNotification.newBuilder();
@@ -1110,6 +1113,7 @@ public class OslpDeviceSteps {
             }
         }
 
+        this.oslpMockServer.incrementSequenceNumber(this.getDeviceUID(settings));
         final OslpEnvelope request = this
                 .createEnvelopeBuilder(getString(settings, PlatformPubliclightingKeys.KEY_DEVICE_UID,
                         PlatformPubliclightingDefaults.DEVICE_UID), this.oslpMockServer.getSequenceNumber(this.getDeviceUID(settings)))

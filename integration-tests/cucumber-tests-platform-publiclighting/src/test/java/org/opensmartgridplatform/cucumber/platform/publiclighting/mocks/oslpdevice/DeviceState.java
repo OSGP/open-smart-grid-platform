@@ -9,8 +9,8 @@ package org.opensmartgridplatform.cucumber.platform.publiclighting.mocks.oslpdev
 
 import java.util.EmptyStackException;
 import java.util.Map;
-import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
 
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
@@ -19,50 +19,53 @@ import org.opensmartgridplatform.oslp.Oslp;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 
 import lombok.Getter;
+import lombok.Setter;
 
 public class DeviceState {
 
     @Getter
     private final String deviceUID;
-
-    // Device settings
-    @Getter
+    @Getter @Setter
     private Integer sequenceNumber = 0;
 
     private static final Integer SEQUENCE_NUMBER_MAXIMUM = 65535;
 
-    private final ConcurrentMap<MessageType, Stack<Oslp.Message>> mockedResponsesMap = new ConcurrentHashMap<>();
-    private final ConcurrentMap<MessageType, Stack<Oslp.Message>> receivedRequestsMap = new ConcurrentHashMap<>();
+    private final ConcurrentMap<MessageType, ConcurrentLinkedQueue<Oslp.Message>> mockedResponsesMap = new ConcurrentHashMap<>();
+    private final ConcurrentMap<MessageType, ConcurrentLinkedQueue<Oslp.Message>> receivedRequestsMap = new ConcurrentHashMap<>();
 
     public DeviceState(final String deviceUID) {
         this.deviceUID = deviceUID;
     }
 
-    public Oslp.Message getResponse(final MessageType messageType) throws DeviceSimulatorException {
+    public Oslp.Message getMockedResponse(final MessageType messageType) throws DeviceSimulatorException {
         return this.getFromMap(this.mockedResponsesMap, messageType);
     }
 
-    public Oslp.Message getRequest(final MessageType messageType) throws DeviceSimulatorException {
+    public Oslp.Message getReceivedRequest(final MessageType messageType) throws DeviceSimulatorException {
         return this.getFromMap(this.receivedRequestsMap, messageType);
     }
 
-    public void addResponse(final MessageType messageType, final Oslp.Message message) {
-        this.getStack(this.mockedResponsesMap, messageType).push(message);
+    public void addMockedResponse(final MessageType messageType, final Oslp.Message message) {
+        this.getQueue(this.mockedResponsesMap, messageType).add(message);
     }
 
     public void addReceivedRequest(final MessageType messageType, final Oslp.Message message) {
-        this.getStack(this.receivedRequestsMap, messageType).add(message);
+        this.getQueue(this.receivedRequestsMap, messageType).add(message);
     }
 
-    public boolean hasResponses(final MessageType messageType) {
-        return !this.getStack(this.mockedResponsesMap, messageType).empty();
+    public boolean hasMockedResponses(final MessageType messageType) {
+        return !this.getQueue(this.mockedResponsesMap, messageType).isEmpty();
     }
 
-    public boolean hasRequests(final MessageType messageType) {
-        return !this.getStack(this.receivedRequestsMap, messageType).empty();
+    public boolean hasReceivedRequests(final MessageType messageType) {
+        return !this.getQueue(this.receivedRequestsMap, messageType).isEmpty();
     }
 
-    public int incrementSequenceNumber() {
+    public int mockedResponsesQueued(final MessageType messageType) {
+        return this.getQueue(this.receivedRequestsMap, messageType).size();
+    }
+
+    public void incrementSequenceNumber() {
         int numberToAddToSequenceNumberValue = 1;
 
         if (ScenarioContext.current().get(PlatformKeys.NUMBER_TO_ADD_TO_SEQUENCE_NUMBER) != null) {
@@ -85,20 +88,19 @@ public class DeviceState {
                 next = SEQUENCE_NUMBER_MAXIMUM - sequenceNumberMaximumCross + 1;
             }
         }
-        return this.sequenceNumber = next;
+
+        this.sequenceNumber = next;
     }
 
-    private Stack<Oslp.Message> getStack(final Map<MessageType, Stack<Oslp.Message>> messageMap, final MessageType messageType) {
-        if (messageMap.get(messageType) == null) {
-            messageMap.put(messageType, new Stack<>());
-        }
+    private ConcurrentLinkedQueue<Oslp.Message> getQueue(final Map<MessageType, ConcurrentLinkedQueue<Oslp.Message>> messageMap, final MessageType messageType) {
+        messageMap.computeIfAbsent(messageType, k -> new ConcurrentLinkedQueue<>());
         return messageMap.get(messageType);
     }
 
-    private Oslp.Message getFromMap(final Map<MessageType, Stack<Oslp.Message>> messageMap, final MessageType messageType)
+    private Oslp.Message getFromMap(final Map<MessageType, ConcurrentLinkedQueue<Oslp.Message>> messageMap, final MessageType messageType)
             throws DeviceSimulatorException {
         try {
-            return this.getStack(messageMap, messageType).pop();
+            return this.getQueue(messageMap, messageType).poll();
         } catch (final EmptyStackException e) {
             throw new DeviceSimulatorException(String.format("No message of type %s found for device %s", messageType, this.deviceUID), e);
         }

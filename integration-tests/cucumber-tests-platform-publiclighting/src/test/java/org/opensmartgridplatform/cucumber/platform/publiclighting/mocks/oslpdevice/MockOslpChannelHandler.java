@@ -203,6 +203,13 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
     public void channelRead0(final ChannelHandlerContext ctx, final OslpEnvelope message) throws Exception {
 
         if (message.isValid()) {
+            final String deviceUID = this.getDeviceUID(message);
+            final DeviceState deviceState = this.devicesContext.getDeviceState(deviceUID);
+
+            //deviceState.setSequenceNumber(convertByteArrayToInteger(message.getSequenceNumber()));
+
+            LOGGER.debug("Device {} received a message with sequence number {}", deviceUID, deviceState.getSequenceNumber());
+
             if (this.isOslpResponse(message)) {
                 LOGGER.debug("Device {} received an OSLP Response (before callback): {}", this.getDeviceUID(message), message.getPayloadMessage());
 
@@ -217,13 +224,13 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
                 callback.handle(message);
             } else {
 
-                final String deviceUID = this.getDeviceUID(message);
+
                 final MessageType messageType = this.getMessageType(message.getPayloadMessage());
-                final DeviceState deviceState = this.devicesContext.getDeviceState(deviceUID);
+
 
                 LOGGER.debug("Device {} received an OSLP Request of type {}", deviceUID, messageType);
 
-                if (deviceState.hasResponses(messageType)) {
+                if (deviceState.hasMockedResponses(messageType)) {
 
                     // Build the OslpEnvelope.
                     final OslpEnvelope.Builder responseBuilder = new OslpEnvelope.Builder()
@@ -240,7 +247,7 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
 
                     final OslpEnvelope response = responseBuilder.build();
 
-                    LOGGER.debug("Device {} is sending OSLP an response with sequence number: {}",
+                    LOGGER.debug("Device {} is sending OSLP an response with sequence number {}",
                            this.getDeviceUID(response), convertByteArrayToInteger(response.getSequenceNumber()));
 
                     // wait for the response to actually be written. This
@@ -249,6 +256,8 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
                     future.await();
 
                     LOGGER.debug("Send OSLP Response: {}", response.getPayloadMessage().toString().split(" ")[0]);
+                } else {
+                    LOGGER.error("Device {} received a message of type {}, but no mocks are available, this test will fail!", deviceUID, messageType);
                 }
             }
         } else {
@@ -272,7 +281,7 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
             if (channelFuture.channel() != null && channelFuture.channel().isActive()) {
                 LOGGER.debug("Connection established to: {}", address);
             } else {
-                LOGGER.debug("The connnection to the device {} is not successfull", deviceIdentification);
+                LOGGER.debug("The connection to the device {} is not successful", deviceIdentification);
                 LOGGER.warn("Unable to connect to: {}", address);
                 throw new IOException("Unable to connect");
             }
@@ -322,6 +331,7 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
     public Oslp.Message handleRequest(final OslpEnvelope message, final int sequenceNumber)
             throws DeviceSimulatorException, IOException, ParseException {
 
+        message.setSequenceNumber(convertIntegerToByteArray(sequenceNumber));
         return this.handleRequest(message);
     }
 
@@ -351,7 +361,7 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
         deviceState.addReceivedRequest(messageType, request);
 
         // Create response requestMessage
-        final Oslp.Message response = deviceState.getResponse(messageType);
+        final Oslp.Message response = deviceState.getMockedResponse(messageType);
 
         // Write log entry for response
         LOGGER.info("Device {} mocked response: [{}]", deviceState.getDeviceUID(), response);
