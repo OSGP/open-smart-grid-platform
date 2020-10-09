@@ -1,10 +1,10 @@
-@Publiclighting @Platform @FirmwareManagement
+@Publiclighting @Platform @FirmwareManagement @UpdateFirmware
 Feature: FirmwareManagement update firmware
   As OSGP 
   I want to manage the firmware of a device
   In order to ...
 
-  @OslpMockServer
+  @OslpMockServer @UpdateFirmwareDefault
   Scenario Outline: Update firmware
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
@@ -26,6 +26,7 @@ Feature: FirmwareManagement update firmware
       | Protocol    |
       | OSLP ELSTER |
 
+  @UpdateFirmwareUnknownFirmware
   Scenario: Update the firmware for an unknown firmware
     When receiving an update firmware request
       | DeviceIdentification | unknown |
