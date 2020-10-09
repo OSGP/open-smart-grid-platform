@@ -17,13 +17,6 @@ public class SearchUtilTest {
     }
 
     @Test
-    void regex() {
-        final String regexp = "(^[\\w\\.\\*@,&-?]*[\\r\\n]*$)|(^[\\w\\.\\r\\n @,&-]*$)";
-        assertThat("TST%".matches(regexp)).isFalse();
-        assertThat("TST*".matches(regexp)).isTrue();
-    }
-
-    @Test
     public void escapePercentageCharacters() {
         final String input = "TST%-111%";
 
