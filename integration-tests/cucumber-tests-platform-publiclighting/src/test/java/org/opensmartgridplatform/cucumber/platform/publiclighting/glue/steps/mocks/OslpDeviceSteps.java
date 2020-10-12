@@ -939,16 +939,16 @@ public class OslpDeviceSteps {
     }
 
     @Given("^the device returns a set configuration status over \"([^\"]*)\"$")
-    public void theDeviceReturnsASetConfigurationStatusOverOSLP(final String protocol,
-            final Map<String, String> requestParameters) {
+    public void theDeviceReturnsASetConfigurationStatusOverOSLP(final String protocol, final Map<String, String> requestParameters) {
         this.oslpMockServer.mockSetConfigurationResponse(this.getDeviceUID(requestParameters), getEnum(requestParameters, PlatformPubliclightingKeys.KEY_STATUS, Status.class));
+
     }
 
 
-    /**
-     * Setup method to set the configuration status which should be returned by
-     * the mock.
-     */
+        /**
+         * Setup method to set the configuration status which should be returned by
+         * the mock.
+         */
     @Given("^the device returns a set configuration status \"([^\"]*)\" over \"([^\"]*)\"$")
     public void theDeviceReturnsASetConfigurationStatusWithStatusOverOSLP(final String result, final String protocol) {
         this.theSpecificDeviceReturnsASetConfigurationStatusWithStatusOverOSLP(result, protocol, this.getDeviceUID(new HashMap<>()));
@@ -1094,7 +1094,7 @@ public class OslpDeviceSteps {
      */
     @Given("^the device returns firmware version \"([^\"]*)\" over \"([^\"]*)\"$")
     public void theDeviceReturnsFirmwareVersionOverOSLP(final String firmwareVersion, final String protocol) {
-        this.theSpecificDeviceReturnsFirmwareVersionOverOSLP(this.getDeviceUID(new HashMap<>()), firmwareVersion, protocol);
+        this.theSpecificDeviceReturnsFirmwareVersionOverOSLP(firmwareVersion, protocol, this.getDeviceUID(new HashMap<>()));
     }
 
     @Given("^the device returns firmware version \"([^\"]*)\" over \"([^\"]*)\" with deviceUid \"([^\"]*)\"$")

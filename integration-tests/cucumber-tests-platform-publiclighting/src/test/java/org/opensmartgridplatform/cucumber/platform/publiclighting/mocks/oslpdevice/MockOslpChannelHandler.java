@@ -247,7 +247,7 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
 
                     final OslpEnvelope response = responseBuilder.build();
 
-                    LOGGER.debug("Device {} is sending OSLP an response with sequence number {}",
+                    LOGGER.debug("Device {} is sending an OSLP response with sequence number {}",
                            this.getDeviceUID(response), convertByteArrayToInteger(response.getSequenceNumber()));
 
                     // wait for the response to actually be written. This

@@ -65,7 +65,7 @@ Feature: CoreConfigurationManagement GetConfiguration
     Then the get configuration async response contains soap fault
       | Message | UNKNOWN_DEVICE |
 
-  @OslpMockServer
+  @OslpMockServer @GetConfigurationFailed
   Scenario Outline: Failed get configuration of a device
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
