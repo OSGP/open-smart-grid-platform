@@ -182,8 +182,8 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
     }
 
     /**
-     * Get an OutOfSequenceEvent for given device id. The OutOfSequenceEvent instance will be removed from the list,
-     * before the instance is returned.
+     * Get an OutOfSequenceEvent for given device id. The OutOfSequenceEvent
+     * instance will be removed from the list, before the instance is returned.
      *
      * @param deviceId
      *            The id of the device.
@@ -297,8 +297,9 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
             LOGGER.debug("Received OSLP response (after callback): {}", response.getPayloadMessage());
 
             /*
-             * Devices expect the channel to be closed if (and only if) the platform initiated the conversation. If the
-             * device initiated the conversation it needs to close the channel itself.
+             * Devices expect the channel to be closed if (and only if) the
+             * platform initiated the conversation. If the device initiated the
+             * conversation it needs to close the channel itself.
              */
             channelFuture.channel().close();
 
@@ -381,9 +382,6 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
         } else if (request.hasSetDeviceVerificationKeyRequest()
                 && this.mockResponses.containsKey(MessageType.UPDATE_KEY)) {
             response = this.processRequest(MessageType.UPDATE_KEY, request);
-        } else if (request.hasGetPowerUsageHistoryRequest()
-                && this.mockResponses.containsKey(MessageType.GET_POWER_USAGE_HISTORY)) {
-            response = this.processRequest(MessageType.GET_POWER_USAGE_HISTORY, request);
         } else if (request.hasSetScheduleRequest()) {
             if (this.mockResponses.containsKey(MessageType.SET_LIGHT_SCHEDULE)) {
                 response = this.processRequest(MessageType.SET_LIGHT_SCHEDULE, request);

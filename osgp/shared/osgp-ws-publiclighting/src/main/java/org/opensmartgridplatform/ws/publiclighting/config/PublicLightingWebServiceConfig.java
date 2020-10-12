@@ -20,12 +20,10 @@ import org.springframework.xml.xsd.SimpleXsdSchema;
 public class PublicLightingWebServiceConfig {
 
     private static final String COMMON_XSD_PATH = "schemas/common.xsd";
-    private static final String PL_DEVICE_MONITORING_XSD_PATH = "schemas/pl-devicemonitoring.xsd";
     private static final String PL_ADHOCMANAGEMENT_XSD_PATH = "schemas/pl-adhocmanagement.xsd";
     private static final String PL_SCHEDULEMANAGEMENT_XSD_PATH = "schemas/pl-schedulemanagement.xsd";
     private static final String PL_NOTIFICATION_XSD_PATH = "schemas/pl-notification.xsd";
 
-    private static final String PL_DEVICE_MONITORING_WSDL_PATH = "PublicLightingDeviceMonitoring.wsdl";
     private static final String PL_ADHOC_MANAGEMENT_WSDL_PATH = "PublicLightingAdHocManagement.wsdl";
     private static final String PL_SCHEDULE_MANAGEMENT_WSDL_PATH = "PublicLightingScheduleManagement.wsdl";
     private static final String PL_NOTIFICATION_WSDL_PATH = "PublicLightingNotification.wsdl";
@@ -34,7 +32,6 @@ public class PublicLightingWebServiceConfig {
     public PayloadValidatingInterceptor payloadValidatingInterceptor() {
         final PayloadValidatingInterceptor payloadValidatingInterceptor = new PayloadValidatingInterceptor();
         final Resource[] resources = new Resource[] { new ClassPathResource(COMMON_XSD_PATH),
-                new ClassPathResource(PL_DEVICE_MONITORING_XSD_PATH),
                 new ClassPathResource(PL_ADHOCMANAGEMENT_XSD_PATH),
                 new ClassPathResource(PL_SCHEDULEMANAGEMENT_XSD_PATH) };
         payloadValidatingInterceptor.setSchemas(resources);
@@ -44,16 +41,6 @@ public class PublicLightingWebServiceConfig {
     @Bean(name = "common")
     public SimpleXsdSchema commonXsd() {
         return new SimpleXsdSchema(new ClassPathResource(COMMON_XSD_PATH));
-    }
-
-    @Bean(name = "PublicLightingDeviceMonitoring")
-    public WsdlDefinition deviceMonitoringWsdl() {
-        return new SimpleWsdl11Definition(new ClassPathResource(PL_DEVICE_MONITORING_WSDL_PATH));
-    }
-
-    @Bean(name = "pl-devicemonitoring")
-    public SimpleXsdSchema deviceMonitoringXsd() {
-        return new SimpleXsdSchema(new ClassPathResource(PL_DEVICE_MONITORING_XSD_PATH));
     }
 
     @Bean(name = "PublicLightingAdHocManagement")

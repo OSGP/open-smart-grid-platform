@@ -45,8 +45,6 @@ Feature: CoreConfigurationManagement GetConfiguration
       | OSLP ELSTER |                         |          |         |            | GPRS              | 10.20.30.50   |    12122 |
       | OSLP ELSTER | DALI                    |          |         |            |                   | 10.20.30.50   |    12122 |
       | OSLP ELSTER |                         |          |         |            |                   | 10.20.30.50   |    12122 |
-      | OSLP ELSTER |                         |          |         |            |                   | 10.20.30.50   |    12122 |
-      | OSLP ELSTER |                         |          |         |            |                   | 10.20.30.50   |    12123 |
       | OSLP ELSTER |                         |          |         |            |                   | 10.20.30.50   |    12123 |
       | OSLP ELSTER | RELAY                   |          |         | 1,1,LIGHT  | CDMA              | 10.20.30.50   |    12123 |
       | OSLP ELSTER | RELAY                   |          |         | 1,1,LIGHT  | ETHERNET          | 10.20.30.50   |    12123 |

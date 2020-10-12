@@ -19,7 +19,6 @@ import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceMessageS
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceResponseHandler;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld.SsldDeviceService;
-import org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld.requests.GetPowerUsageHistoryDeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld.requests.SetConfigurationDeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld.requests.SetEventNotificationsDeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld.requests.SetLightDeviceRequest;
@@ -30,7 +29,6 @@ import org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld.requests.
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld.responses.EmptyDeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld.responses.GetConfigurationDeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld.responses.GetFirmwareVersionDeviceResponse;
-import org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld.responses.GetPowerUsageHistoryDeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld.responses.GetStatusDeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DeviceConnectionParameters;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.EventType;
@@ -46,7 +44,6 @@ import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.serv
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850GetConfigurationCommand;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850GetFirmwareVersionCommand;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850GetStatusCommand;
-import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850PowerUsageHistoryCommand;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850RebootCommand;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850SetConfigurationCommand;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850SetEventNotificationFilterCommand;
@@ -65,7 +62,6 @@ import org.opensmartgridplatform.dto.valueobjects.DeviceStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.EventNotificationTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
 import org.opensmartgridplatform.dto.valueobjects.LightValueDto;
-import org.opensmartgridplatform.dto.valueobjects.PowerUsageDataDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
@@ -132,35 +128,6 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
             this.handleException(deviceRequest, deviceResponseHandler, e);
             this.iec61850DeviceConnectionService.disconnect(devCon, deviceRequest);
         }
-    }
-
-    @Override
-    public void getPowerUsageHistory(final GetPowerUsageHistoryDeviceRequest deviceRequest,
-            final DeviceResponseHandler deviceResponseHandler) throws JMSException {
-        DeviceConnection deviceConnection = null;
-        try {
-            deviceConnection = this.connectToDevice(deviceRequest);
-
-            // Getting the SSLD for the device output-settings.
-            final Ssld ssld = this.ssldDataService.findDevice(deviceRequest.getDeviceIdentification());
-            final List<DeviceOutputSetting> deviceOutputSettingsLightRelays = this.ssldDataService.findByRelayType(ssld,
-                    RelayType.LIGHT);
-
-            final List<PowerUsageDataDto> powerUsageHistoryData = new Iec61850PowerUsageHistoryCommand(
-                    this.deviceMessageLoggingService).getPowerUsageHistoryDataFromDevice(this.iec61850Client,
-                            deviceConnection, deviceRequest.getPowerUsageHistoryContainer(),
-                            deviceOutputSettingsLightRelays);
-
-            final GetPowerUsageHistoryDeviceResponse deviceResponse = new GetPowerUsageHistoryDeviceResponse(
-                    deviceRequest, DeviceMessageStatus.OK, powerUsageHistoryData);
-
-            deviceResponseHandler.handleResponse(deviceResponse);
-        } catch (final ConnectionFailureException se) {
-            this.handleConnectionFailureException(deviceRequest, deviceResponseHandler, se);
-        } catch (final Exception e) {
-            this.handleException(deviceRequest, deviceResponseHandler, e);
-        }
-        this.iec61850DeviceConnectionService.disconnect(deviceConnection, deviceRequest);
     }
 
     @Override

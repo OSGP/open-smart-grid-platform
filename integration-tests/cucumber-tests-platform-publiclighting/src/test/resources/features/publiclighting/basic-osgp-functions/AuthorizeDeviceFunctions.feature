@@ -65,16 +65,6 @@ Feature: BasicOsgpFunctions PublicLighting Authorizing Device Functions
       | SET_TARIFF_SCHEDULE      | CONFIGURATION       | false   |
       | SET_TARIFF_SCHEDULE      | MONITORING          | false   |
       | SET_TARIFF_SCHEDULE      | METADATA_MANAGEMENT | false   |
-      | GET_POWER_USAGE_HISTORY  | OWNER               | true    |
-      | GET_POWER_USAGE_HISTORY  | INSTALLATION        | false   |
-      | GET_POWER_USAGE_HISTORY  | AD_HOC              | false   |
-      | GET_POWER_USAGE_HISTORY  | MANAGEMENT          | false   |
-      | GET_POWER_USAGE_HISTORY  | FIRMWARE            | false   |
-      | GET_POWER_USAGE_HISTORY  | SCHEDULING          | false   |
-      | GET_POWER_USAGE_HISTORY  | TARIFF_SCHEDULING   | false   |
-      | GET_POWER_USAGE_HISTORY  | CONFIGURATION       | false   |
-      | GET_POWER_USAGE_HISTORY  | MONITORING          | true    |
-      | GET_POWER_USAGE_HISTORY  | METADATA_MANAGEMENT | false   |
       | RESUME_SCHEDULE          | OWNER               | true    |
       | RESUME_SCHEDULE          | INSTALLATION        | false   |
       | RESUME_SCHEDULE          | AD_HOC              | true    |

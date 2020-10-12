@@ -8,8 +8,6 @@
  */
 package org.opensmartgridplatform.core.infra.jms.protocol.outbound;
 
-import static org.opensmartgridplatform.shared.infra.jms.MessageType.GET_POWER_USAGE_HISTORY;
-
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
@@ -42,9 +40,6 @@ public class ProtocolRequestMessageSender implements ProtocolRequestService {
     @Autowired
     private ProtocolRequestMessageJmsTemplateFactory protocolRequestMessageJmsTemplateFactory;
 
-    @Autowired
-    private Long getPowerUsageHistoryRequestTimeToLive;
-
     @Override
     public boolean isSupported(final ProtocolInfo protocolInfo) {
         return this.protocolRequestMessageJmsTemplateFactory.getJmsTemplate(protocolInfo) != null;
@@ -68,19 +63,11 @@ public class ProtocolRequestMessageSender implements ProtocolRequestService {
             final JmsTemplate jmsTemplate) {
         LOGGER.info("Sending request message to protocol requests queue");
 
-        final long originalTimeToLive = jmsTemplate.getTimeToLive();
-        boolean isCustomTimeToLiveSet = false;
-        if (requestMessage.getMessageType().equals(GET_POWER_USAGE_HISTORY.toString())) {
-            jmsTemplate.setTimeToLive(this.getPowerUsageHistoryRequestTimeToLive);
-            isCustomTimeToLiveSet = true;
-        }
-
-        jmsTemplate.send(session -> createObjectMessage(requestMessage, protocolInfo, session));
+        jmsTemplate.send(session -> this.createObjectMessage(requestMessage, protocolInfo, session));
 
         if (requestMessage.getRetryCount() != 0) {
-            final String decodedMessageWithDescription = String
-                    .format("retry count= %s, correlationuid= %s ", requestMessage.getRetryCount(),
-                            requestMessage.getCorrelationUid());
+            final String decodedMessageWithDescription = String.format("retry count= %s, correlationuid= %s ",
+                    requestMessage.getRetryCount(), requestMessage.getCorrelationUid());
 
             final CoreLogItemRequestMessage coreLogItemRequestMessage = new CoreLogItemRequestMessage(
                     requestMessage.getDeviceIdentification(), requestMessage.getOrganisationIdentification(),
@@ -88,14 +75,10 @@ public class ProtocolRequestMessageSender implements ProtocolRequestService {
 
             this.coreLogItemRequestMessageSender.send(coreLogItemRequestMessage);
         }
-
-        if (isCustomTimeToLiveSet) {
-            jmsTemplate.setTimeToLive(originalTimeToLive);
-        }
     }
 
-    private ObjectMessage createObjectMessage(ProtocolRequestMessage requestMessage, ProtocolInfo protocolInfo,
-            Session session) throws JMSException {
+    private ObjectMessage createObjectMessage(final ProtocolRequestMessage requestMessage,
+            final ProtocolInfo protocolInfo, final Session session) throws JMSException {
         final ObjectMessage objectMessage = session.createObjectMessage(requestMessage.getRequest());
         objectMessage.setJMSCorrelationID(requestMessage.getCorrelationUid());
         objectMessage.setJMSType(requestMessage.getMessageType());

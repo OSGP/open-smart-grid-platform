@@ -42,16 +42,14 @@ public class DeviceModel extends AbstractEntity implements Comparable<DeviceMode
     }
 
     public DeviceModel(final Manufacturer manufacturer, final String modelCode, final String description) {
-        this.manufacturer = manufacturer;
-        this.modelCode = modelCode;
-        this.description = description;
-        // default behavior is true
-        this.fileStorage = true;
+        this(manufacturer, modelCode, description, true);
     }
 
     public DeviceModel(final Manufacturer manufacturer, final String modelCode, final String description,
             final boolean fileStorage) {
-        this(manufacturer, modelCode, description);
+        this.manufacturer = manufacturer;
+        this.modelCode = modelCode;
+        this.description = description;
         this.fileStorage = fileStorage;
     }
 

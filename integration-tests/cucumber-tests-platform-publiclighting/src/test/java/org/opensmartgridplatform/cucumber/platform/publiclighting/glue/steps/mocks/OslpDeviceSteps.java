@@ -48,8 +48,6 @@ import org.opensmartgridplatform.oslp.Oslp.Event;
 import org.opensmartgridplatform.oslp.Oslp.EventNotification;
 import org.opensmartgridplatform.oslp.Oslp.EventNotificationRequest;
 import org.opensmartgridplatform.oslp.Oslp.EventNotificationResponse;
-import org.opensmartgridplatform.oslp.Oslp.GetPowerUsageHistoryRequest;
-import org.opensmartgridplatform.oslp.Oslp.HistoryTermType;
 import org.opensmartgridplatform.oslp.Oslp.IndexAddressMap;
 import org.opensmartgridplatform.oslp.Oslp.LightType;
 import org.opensmartgridplatform.oslp.Oslp.LightValue;
@@ -123,44 +121,6 @@ public class OslpDeviceSteps {
         assertThat(message.hasGetFirmwareVersionRequest()).isTrue();
 
         message.getGetFirmwareVersionRequest();
-    }
-
-    /**
-     * Verify that a get power usage history OSLP message is sent to the device.
-     *
-     * @param expectedParameters
-     *            The parameters expected in the message of the device.
-     */
-    @Then("^a get power usage history \"([^\"]*)\" message is sent to the device$")
-    public void aGetPowerUsageHistoryOslpMessageIsSentToTheDevice(final String protocol,
-            final Map<String, String> expectedParameters) {
-        final Message message = this.oslpMockServer.waitForRequest(MessageType.GET_POWER_USAGE_HISTORY);
-        assertThat(message).isNotNull();
-        assertThat(message.hasGetPowerUsageHistoryRequest()).isTrue();
-
-        final GetPowerUsageHistoryRequest request = message.getGetPowerUsageHistoryRequest();
-        assertThat(request.getTermType())
-                .isEqualTo(getEnum(expectedParameters, PlatformPubliclightingKeys.HISTORY_TERM_TYPE,
-                        HistoryTermType.class, PlatformPubliclightingDefaults.DEFAULT_OSLP_HISTORY_TERM_TYPE));
-
-        if (expectedParameters.containsKey(PlatformPubliclightingKeys.KEY_PAGE)
-                && !expectedParameters.get(PlatformPubliclightingKeys.KEY_PAGE).isEmpty()) {
-            assertThat(request.getPage())
-                    .isEqualTo((int) getInteger(expectedParameters, PlatformPubliclightingKeys.KEY_PAGE));
-
-        }
-        if (expectedParameters.containsKey(PlatformPubliclightingKeys.START_TIME)
-                && !expectedParameters.get(PlatformPubliclightingKeys.START_TIME).isEmpty()
-                && expectedParameters.get(PlatformPubliclightingKeys.START_TIME) != null) {
-            assertThat(request.getTimePeriod().getStartTime())
-                    .isEqualTo(getString(expectedParameters, PlatformPubliclightingKeys.START_TIME));
-        }
-        if (expectedParameters.containsKey(PlatformPubliclightingKeys.END_TIME)
-                && !expectedParameters.get(PlatformPubliclightingKeys.END_TIME).isEmpty()
-                && expectedParameters.get(PlatformPubliclightingKeys.END_TIME) != null) {
-            assertThat(request.getTimePeriod().getEndTime())
-                    .isEqualTo(getString(expectedParameters, PlatformPubliclightingKeys.END_TIME));
-        }
     }
 
     /**
@@ -680,29 +640,6 @@ public class OslpDeviceSteps {
                         PlatformPubliclightingDefaults.DEFAULT_PREFERRED_LINKTYPE),
                 osgpIpAddressMock, getInteger(requestParameters, PlatformPubliclightingKeys.OSGP_PORT,
                         PlatformPubliclightingDefaults.DEFAULT_OSLP_PORT));
-    }
-
-    /**
-     * Setup method to get the power usage history which should be returned by
-     * the mock.
-     */
-    @Given("^the device returns a get power usage history response \"([^\"]*)\" over \"([^\"]*)\"$")
-    public void theDeviceReturnsAGetPowerUsageHistoryOverOSLP(final String result, final String protocol,
-            final Map<String, String> requestParameters) {
-
-        final Map<String, String[]> requestMap = new HashMap<>();
-
-        for (final String key : requestParameters.keySet()) {
-            final String[] values;
-            if (requestParameters.get(key) == null) {
-                values = new String[] { "" };
-            } else {
-                values = requestParameters.get(key).split(PlatformPubliclightingKeys.SEPARATOR_SPACE_COLON_SPACE);
-            }
-            requestMap.put(key, values);
-        }
-
-        this.oslpMockServer.mockGetPowerUsageHistoryResponse(Enum.valueOf(Status.class, result), requestMap);
     }
 
     /**

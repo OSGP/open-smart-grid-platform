@@ -38,7 +38,6 @@ Feature: CoreConfigurationManagement SetConfiguration
       | Protocol    | LightType               | DcLights | DcMap   | RelayConf  | PreferredLinkType | OsgpIpAddress | OsgpPort |
       | OSLP ELSTER | RELAY                   |          |         |            |                   | 10.20.30.40   | 12122    |
       | OSLP ELSTER | RELAY                   |          |         | 1,1,TARIFF |                   | 10.20.30.40   | 12122    |
-      | OSLP ELSTER | RELAY                   |          |         | 1,1,TARIFF |                   | 10.20.30.40   | 12122    |
       | OSLP ELSTER | ONE_TO_TEN_VOLT         |          |         |            |                   | 10.20.30.40   | 12122    |
       | OSLP ELSTER | ONE_TO_TEN_VOLT_REVERSE |          |         |            |                   | 10.20.30.40   | 12122    |
       | OSLP ELSTER | DALI                    | 2        | 1,2;2,1 |            |                   | 10.20.30.40   | 12123    |
@@ -47,9 +46,6 @@ Feature: CoreConfigurationManagement SetConfiguration
       | OSLP ELSTER | RELAY                   |          |         |            |                   | 10.20.30.40   | 12123    |
       | OSLP ELSTER | DALI                    |          |         |            |                   | 10.20.30.40   | 12123    |
       | OSLP ELSTER | RELAY                   |          |         | 1,1,LIGHT  |                   | 10.20.30.50   | 12122    |
-      | OSLP ELSTER |                         |          |         |            |                   | 10.20.30.50   | 12122    |
-      | OSLP ELSTER |                         |          |         |            |                   | 10.20.30.50   | 12122    |
-      | OSLP ELSTER |                         |          |         |            |                   | 10.20.30.50   | 12122    |
       | OSLP ELSTER |                         |          |         |            |                   | 10.20.30.50   | 12122    |
       | OSLP ELSTER | RELAY                   |          |         | 1,1,LIGHT  | CDMA              | 10.20.30.50   | 12123    |
       | OSLP ELSTER | RELAY                   |          |         | 1,1,LIGHT  | ETHERNET          | 10.20.30.50   | 12123    |
