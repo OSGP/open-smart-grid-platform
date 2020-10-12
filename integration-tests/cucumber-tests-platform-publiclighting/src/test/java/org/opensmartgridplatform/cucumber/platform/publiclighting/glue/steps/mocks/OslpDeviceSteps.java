@@ -1039,6 +1039,11 @@ public class OslpDeviceSteps {
         this.theSpecificDeviceReturnsASetTariffScheduleResponseOverOSLP(result, protocol, this.getDeviceUID(new HashMap<>()));
     }
 
+    @Given("^the device returns a set tariff schedule response \"([^\"]*)\" over \"([^\"]*)\"$")
+    public void theDeviceReturnsASetTariffScheduleResponseOverOSLP(final String result, final String protocol) {
+        this.theSpecificDeviceReturnsASetTariffScheduleResponseOverOSLP(result, protocol, this.getDeviceUID(new HashMap<>()));
+    }
+
     @Given("^the device returns a set tariff schedule response \"([^\"]*)\" over \"([^\"]*)\" with deviceUid \"([^\"]*)\"$")
     public void theSpecificDeviceReturnsASetTariffScheduleResponseOverOSLP(final String result, final String protocol, final String deviceUid) {
         this.callMockSetScheduleResponse(deviceUid, result, MessageType.SET_TARIFF_SCHEDULE);
