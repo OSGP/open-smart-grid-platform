@@ -15,7 +15,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-integration-tests</artifactId>
-    <version>5.2.0-SNAPSHOT</version>
+    <version>5.4.0-SNAPSHOT</version>
     <relativePath>../parent-integration-tests/pom.xml</relativePath>
   </parent>
 
@@ -52,6 +52,11 @@
     <dependency>
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.javalite</groupId>
+      <artifactId>activejdbc</artifactId>
+      <version>1.4.13</version>
     </dependency>
 
     <!-- Cucumber Framework -->
@@ -154,6 +159,11 @@
       <artifactId>osgp-adapter-ws-smartmetering</artifactId>
       <classifier>classes</classifier>
     </dependency>
+<!--    <dependency>-->
+<!--      <groupId>org.opensmartgridplatform</groupId>-->
+<!--      <artifactId>osgp-secret-management</artifactId>-->
+<!--      <classifier>classes</classifier>-->
+<!--    </dependency>-->
 
     <!-- Automatic tests platform -->
     <dependency>

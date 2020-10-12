@@ -19,6 +19,8 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.BooleanUtils;
+import org.opensmartgridplatform.oslp.Oslp.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -187,28 +189,36 @@ public final class OslpUtils {
     }
 
     public static boolean isOslpResponse(final OslpEnvelope envelope) {
-        return envelope.getPayloadMessage().hasRegisterDeviceResponse()
-                || envelope.getPayloadMessage().hasConfirmRegisterDeviceResponse()
-                || envelope.getPayloadMessage().hasStartSelfTestResponse()
-                || envelope.getPayloadMessage().hasStopSelfTestResponse()
-                || envelope.getPayloadMessage().hasUpdateFirmwareResponse()
-                || envelope.getPayloadMessage().hasSetLightResponse()
-                || envelope.getPayloadMessage().hasSetEventNotificationsResponse()
-                || envelope.getPayloadMessage().hasEventNotificationResponse()
-                || envelope.getPayloadMessage().hasSetScheduleResponse()
-                || envelope.getPayloadMessage().hasGetFirmwareVersionResponse()
-                || envelope.getPayloadMessage().hasGetStatusResponse()
-                || envelope.getPayloadMessage().hasResumeScheduleResponse()
-                || envelope.getPayloadMessage().hasSetRebootResponse()
-                || envelope.getPayloadMessage().hasSetTransitionResponse()
-                || envelope.getPayloadMessage().hasSetConfigurationResponse()
-                || envelope.getPayloadMessage().hasGetConfigurationResponse()
-                || envelope.getPayloadMessage().hasSwitchConfigurationResponse()
-                || envelope.getPayloadMessage().hasGetActualPowerUsageResponse()
-                || envelope.getPayloadMessage().hasGetPowerUsageHistoryResponse()
-                || envelope.getPayloadMessage().hasSwitchFirmwareResponse()
-                || envelope.getPayloadMessage().hasUpdateDeviceSslCertificationResponse()
-                || envelope.getPayloadMessage().hasSetDeviceVerificationKeyResponse();
+
+        final Message message = envelope.getPayloadMessage();
+
+        // @formatter:off
+        final boolean[] hasResponse = {
+                message.hasRegisterDeviceResponse(),
+                message.hasConfirmRegisterDeviceResponse(),
+                message.hasStartSelfTestResponse(),
+                message.hasStopSelfTestResponse(),
+                message.hasUpdateFirmwareResponse(),
+                message.hasSetLightResponse(),
+                message.hasSetEventNotificationsResponse(),
+                message.hasEventNotificationResponse(),
+                message.hasSetScheduleResponse(),
+                message.hasGetFirmwareVersionResponse(),
+                message.hasGetStatusResponse(),
+                message.hasResumeScheduleResponse(),
+                message.hasSetRebootResponse(),
+                message.hasSetTransitionResponse(),
+                message.hasSetConfigurationResponse(),
+                message.hasGetConfigurationResponse(),
+                message.hasSwitchConfigurationResponse(),
+                message.hasGetActualPowerUsageResponse(),
+                message.hasGetPowerUsageHistoryResponse(),
+                message.hasSwitchFirmwareResponse(),
+                message.hasUpdateDeviceSslCertificationResponse(),
+                message.hasSetDeviceVerificationKeyResponse() };
+        // @formatter:on
+
+        return BooleanUtils.or(hasResponse);
     }
 
     private static byte[] createEncryptedHash(final byte[] message, final PrivateKey privateKey)

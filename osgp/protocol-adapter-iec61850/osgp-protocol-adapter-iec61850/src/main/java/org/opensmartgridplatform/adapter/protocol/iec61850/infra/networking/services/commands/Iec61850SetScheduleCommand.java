@@ -14,8 +14,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.joda.time.DateTime;
-import com.beanit.openiec61850.BdaBoolean;
-import com.beanit.openiec61850.Fc;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.ScheduleEntry;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.ScheduleWeekday;
@@ -49,6 +47,9 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionTyp
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.beanit.openiec61850.BdaBoolean;
+import com.beanit.openiec61850.Fc;
+
 public class Iec61850SetScheduleCommand {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850SetScheduleCommand.class);
@@ -61,13 +62,17 @@ public class Iec61850SetScheduleCommand {
 
     private final DeviceMessageLoggingService loggingService;
 
-    public Iec61850SetScheduleCommand(final DeviceMessageLoggingService loggingService) {
+    private final SsldDataService ssldDataService;
+
+    public Iec61850SetScheduleCommand(final DeviceMessageLoggingService loggingService,
+            final SsldDataService ssldDataService) {
         this.loggingService = loggingService;
+        this.ssldDataService = ssldDataService;
     }
 
     public void setScheduleOnDevice(final Iec61850Client iec61850Client, final DeviceConnection deviceConnection,
-            final RelayTypeDto relayType, final ScheduleDto scheduleDto, final Ssld ssld,
-            final SsldDataService ssldDataService) throws ProtocolAdapterException {
+            final RelayTypeDto relayType, final ScheduleDto scheduleDto, final Ssld ssld)
+            throws ProtocolAdapterException {
 
         final String tariffOrLight = relayType.equals(RelayTypeDto.LIGHT) ? "light" : "tariff";
         final List<ScheduleEntryDto> scheduleList = scheduleDto.getScheduleList();
@@ -77,7 +82,7 @@ public class Iec61850SetScheduleCommand {
         try {
             // Creating a list of all Schedule entries, grouped by relay index.
             final Map<Integer, List<ScheduleEntry>> relaySchedulesEntries = this.createScheduleEntries(scheduleList,
-                    ssld, relayType, ssldDataService);
+                    ssld, relayType);
 
             final Function<Void> function = new Function<Void>() {
 
@@ -87,7 +92,7 @@ public class Iec61850SetScheduleCommand {
                     this.writeAstronomicalOffsetsForSchedule(deviceMessageLog);
 
                     Iec61850SetScheduleCommand.this.disableScheduleEntries(relayType, deviceConnection, iec61850Client,
-                            deviceMessageLog, ssld, ssldDataService);
+                            deviceMessageLog, ssld);
 
                     for (final Integer relayIndex : relaySchedulesEntries.keySet()) {
                         final List<ScheduleEntry> scheduleEntries = relaySchedulesEntries.get(relayIndex);
@@ -161,20 +166,44 @@ public class Iec61850SetScheduleCommand {
                     final String scheduleEntryName = SubDataAttribute.SCHEDULE_ENTRY.getDescription() + (i + 1);
                     final NodeContainer scheduleNode = schedule.getChild(scheduleEntryName);
 
+                    this.setEnabled(deviceMessageLog, logicalNode, scheduleEntry, scheduleEntryName, scheduleNode);
+
+                    this.setDay(deviceMessageLog, logicalNode, scheduleEntry, scheduleEntryName, scheduleNode);
+
+                    this.setSwitchTimes(deviceMessageLog, logicalNode, scheduleEntry, scheduleEntryName, scheduleNode);
+
+                    this.setMinimumTimeOn(deviceMessageLog, logicalNode, scheduleEntry, scheduleEntryName,
+                            scheduleNode);
+
+                    this.setTriggerWindow(deviceMessageLog, logicalNode, scheduleEntry, scheduleEntryName,
+                            scheduleNode);
+                }
+
+                private void setEnabled(final DeviceMessageLog deviceMessageLog, final LogicalNode logicalNode,
+                        final ScheduleEntry scheduleEntry, final String scheduleEntryName,
+                        final NodeContainer scheduleNode) throws NodeWriteException {
                     final BdaBoolean enabled = scheduleNode.getBoolean(SubDataAttribute.SCHEDULE_ENABLE);
                     if (enabled.getValue() != scheduleEntry.isEnabled()) {
                         scheduleNode.writeBoolean(SubDataAttribute.SCHEDULE_ENABLE, scheduleEntry.isEnabled());
                     }
                     deviceMessageLog.addVariable(logicalNode, DataAttribute.SCHEDULE, Fc.CF, scheduleEntryName,
                             SubDataAttribute.SCHEDULE_ENABLE, Boolean.toString(scheduleEntry.isEnabled()));
+                }
 
+                private void setDay(final DeviceMessageLog deviceMessageLog, final LogicalNode logicalNode,
+                        final ScheduleEntry scheduleEntry, final String scheduleEntryName,
+                        final NodeContainer scheduleNode) throws NodeWriteException {
                     final Integer day = scheduleNode.getInteger(SubDataAttribute.SCHEDULE_DAY).getValue();
                     if (day != scheduleEntry.getDay()) {
                         scheduleNode.writeInteger(SubDataAttribute.SCHEDULE_DAY, scheduleEntry.getDay());
                     }
                     deviceMessageLog.addVariable(logicalNode, DataAttribute.SCHEDULE, Fc.CF, scheduleEntryName,
                             SubDataAttribute.SCHEDULE_DAY, Integer.toString(scheduleEntry.getDay()));
+                }
 
+                private void setSwitchTimes(final DeviceMessageLog deviceMessageLog, final LogicalNode logicalNode,
+                        final ScheduleEntry scheduleEntry, final String scheduleEntryName,
+                        final NodeContainer scheduleNode) throws NodeWriteException {
                     /*
                      * A schedule entry on the platform is about switching on a
                      * certain time, or on a certain trigger. The schedule
@@ -226,7 +255,11 @@ public class Iec61850SetScheduleCommand {
                     }
                     deviceMessageLog.addVariable(logicalNode, DataAttribute.SCHEDULE, Fc.CF, scheduleEntryName,
                             SubDataAttribute.SCHEDULE_TIME_OFF_TYPE, Byte.toString(timeOffTypeValue));
+                }
 
+                private void setMinimumTimeOn(final DeviceMessageLog deviceMessageLog, final LogicalNode logicalNode,
+                        final ScheduleEntry scheduleEntry, final String scheduleEntryName,
+                        final NodeContainer scheduleNode) throws NodeWriteException {
                     final Integer minimumTimeOn = scheduleNode.getUnsignedShort(SubDataAttribute.MINIMUM_TIME_ON)
                             .getValue();
                     final Integer newMinimumTimeOn = scheduleEntry.getMinimumLightsOn() / 60;
@@ -235,7 +268,11 @@ public class Iec61850SetScheduleCommand {
                     }
                     deviceMessageLog.addVariable(logicalNode, DataAttribute.SCHEDULE, Fc.CF, scheduleEntryName,
                             SubDataAttribute.MINIMUM_TIME_ON, Integer.toString(newMinimumTimeOn));
+                }
 
+                private void setTriggerWindow(final DeviceMessageLog deviceMessageLog, final LogicalNode logicalNode,
+                        final ScheduleEntry scheduleEntry, final String scheduleEntryName,
+                        final NodeContainer scheduleNode) throws NodeWriteException {
                     final Integer triggerMinutesBefore = scheduleNode
                             .getUnsignedShort(SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_BEFORE)
                             .getValue();
@@ -258,6 +295,7 @@ public class Iec61850SetScheduleCommand {
                             SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_AFTER,
                             Integer.toString(scheduleEntry.getTriggerWindowMinutesAfter()));
                 }
+
             };
 
             iec61850Client.sendCommandWithRetry(function, "SetSchedule", deviceConnection.getDeviceIdentification());
@@ -271,72 +309,77 @@ public class Iec61850SetScheduleCommand {
      * Returns a map of schedule entries, grouped by the internal index.
      */
     private Map<Integer, List<ScheduleEntry>> createScheduleEntries(final List<ScheduleEntryDto> scheduleList,
-            final Ssld ssld, final RelayTypeDto relayTypeDto, final SsldDataService ssldDataService)
-            throws FunctionalException {
+            final Ssld ssld, final RelayTypeDto relayTypeDto) throws FunctionalException {
 
         final Map<Integer, List<ScheduleEntry>> relaySchedulesEntries = new HashMap<>();
 
         final RelayType relayType = RelayType.valueOf(relayTypeDto.name());
 
-        final List<DeviceOutputSetting> settings = ssldDataService.findByRelayType(ssld, relayType);
+        final List<DeviceOutputSetting> settings = this.ssldDataService.findByRelayType(ssld, relayType);
 
         for (final ScheduleEntryDto schedule : scheduleList) {
             for (final LightValueDto lightValue : schedule.getLightValue()) {
 
-                final List<Integer> indexes = new ArrayList<>();
-
-                if (lightValue.getIndex() == 0
-                        && (RelayType.TARIFF.equals(relayType) || RelayType.TARIFF_REVERSED.equals(relayType))) {
-
-                    // Index 0 is not allowed for tariff switching.
-                    throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
-                            ComponentType.PROTOCOL_IEC61850);
-
-                } else if (lightValue.getIndex() == 0 && RelayType.LIGHT.equals(relayType)) {
-
-                    // Index == 0, getting all light relays and adding their
-                    // internal indexes to the indexes list.
-                    for (final DeviceOutputSetting deviceOutputSetting : settings) {
-                        indexes.add(deviceOutputSetting.getInternalId());
-                    }
-                } else {
-                    // Index != 0, adding just the one index to the list.
-                    indexes.add(ssldDataService.convertToInternalIndex(ssld, lightValue.getIndex()));
-                }
-
-                ScheduleEntry scheduleEntry;
-                try {
-                    scheduleEntry = this.convertToScheduleEntry(schedule, lightValue);
-                } catch (final ProtocolAdapterException e) {
-                    throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
-                            ComponentType.PROTOCOL_IEC61850, e);
-                }
-
-                for (final Integer internalIndex : indexes) {
-
-                    if (relaySchedulesEntries.containsKey(internalIndex)) {
-                        // Internal index already in the Map, adding to the List
-                        relaySchedulesEntries.get(internalIndex).add(scheduleEntry);
-                    } else {
-
-                        // First time we come across this relay, checking its
-                        // type.
-                        this.checkRelayForSchedules(
-                                ssldDataService.getDeviceOutputSettingForInternalIndex(ssld, internalIndex)
-                                        .getRelayType(),
-                                relayType, internalIndex);
-
-                        // Adding it to scheduleEntries.
-                        final List<ScheduleEntry> scheduleEntries = new ArrayList<>();
-                        scheduleEntries.add(scheduleEntry);
-
-                        relaySchedulesEntries.put(internalIndex, scheduleEntries);
-                    }
-                }
+                this.setScheduleEntry(ssld, relaySchedulesEntries, relayType, settings, schedule, lightValue);
             }
         }
 
         return relaySchedulesEntries;
+    }
+
+    private ScheduleEntry setScheduleEntry(final Ssld ssld,
+            final Map<Integer, List<ScheduleEntry>> relaySchedulesEntries, final RelayType relayType,
+            final List<DeviceOutputSetting> settings, final ScheduleEntryDto schedule, final LightValueDto lightValue)
+            throws FunctionalException {
+        final List<Integer> indexes = new ArrayList<>();
+
+        if (lightValue.getIndex() == 0
+                && (RelayType.TARIFF.equals(relayType) || RelayType.TARIFF_REVERSED.equals(relayType))) {
+
+            // Index 0 is not allowed for tariff switching.
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.PROTOCOL_IEC61850);
+
+        } else if (lightValue.getIndex() == 0 && RelayType.LIGHT.equals(relayType)) {
+
+            // Index == 0, getting all light relays and adding their
+            // internal indexes to the indexes list.
+            for (final DeviceOutputSetting deviceOutputSetting : settings) {
+                indexes.add(deviceOutputSetting.getInternalId());
+            }
+        } else {
+            // Index != 0, adding just the one index to the list.
+            indexes.add(this.ssldDataService.convertToInternalIndex(ssld, lightValue.getIndex()));
+        }
+
+        ScheduleEntry scheduleEntry;
+        try {
+            scheduleEntry = this.convertToScheduleEntry(schedule, lightValue);
+        } catch (final ProtocolAdapterException e) {
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.PROTOCOL_IEC61850, e);
+        }
+
+        for (final Integer internalIndex : indexes) {
+
+            if (relaySchedulesEntries.containsKey(internalIndex)) {
+                // Internal index already in the Map, adding to the List
+                relaySchedulesEntries.get(internalIndex).add(scheduleEntry);
+            } else {
+
+                // First time we come across this relay, checking its
+                // type.
+                this.checkRelayForSchedules(
+                        this.ssldDataService.getDeviceOutputSettingForInternalIndex(ssld, internalIndex).getRelayType(),
+                        relayType, internalIndex);
+
+                // Adding it to scheduleEntries.
+                final List<ScheduleEntry> scheduleEntries = new ArrayList<>();
+                scheduleEntries.add(scheduleEntry);
+
+                relaySchedulesEntries.put(internalIndex, scheduleEntries);
+            }
+        }
+
+        return scheduleEntry;
     }
 
     private ScheduleEntry convertToScheduleEntry(final ScheduleEntryDto schedule, final LightValueDto lightValue)
@@ -454,10 +497,10 @@ public class Iec61850SetScheduleCommand {
      * @throws NodeException
      */
     private void disableScheduleEntries(final RelayTypeDto relayTypeDto, final DeviceConnection deviceConnection,
-            final Iec61850Client iec61850Client, final DeviceMessageLog deviceMessageLog, final Ssld ssld,
-            final SsldDataService ssldDataService) throws NodeException {
+            final Iec61850Client iec61850Client, final DeviceMessageLog deviceMessageLog, final Ssld ssld)
+            throws NodeException {
 
-        final List<DeviceOutputSetting> deviceOutputSettings = ssldDataService.findByRelayType(ssld,
+        final List<DeviceOutputSetting> deviceOutputSettings = this.ssldDataService.findByRelayType(ssld,
                 RelayType.valueOf(relayTypeDto.name()));
 
         for (final DeviceOutputSetting deviceOutputSetting : deviceOutputSettings) {

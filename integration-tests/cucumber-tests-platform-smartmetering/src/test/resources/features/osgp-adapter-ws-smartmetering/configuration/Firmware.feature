@@ -66,7 +66,7 @@ Feature: SmartMetering Configuration - Firmware
       | FirmwareModuleVersionFunc | M57 4836               |
       | FirmwareModuleVersionMbda | M00 0000               |
       | FirmwareIsForSmartMeters  | true                   |
-  @NightlyBuildOnly
+  @NightlyBuildOnly @Skip
   Scenario: successful upgrade of firmware
     Given a manufacturer
       | ManufacturerCode | KAIF  |
@@ -103,7 +103,7 @@ Feature: SmartMetering Configuration - Firmware
       | FirmwareModuleVersionComm | Telit 10.00.154        |
       | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
       | FirmwareModuleVersionFunc | M57 4836               |
-  @NightlyBuildOnly
+  @NightlyBuildOnly @Skip
   Scenario: successful upgrade of a single firmware module
     Given a manufacturer
       | ManufacturerCode | KAIF  |
@@ -138,7 +138,7 @@ Feature: SmartMetering Configuration - Firmware
       | FirmwareModuleVersionComm | Telit 10.00.154        |
       | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
       | FirmwareModuleVersionFunc | M57 4836          |
-  @NightlyBuildOnly
+  @NightlyBuildOnly @Skip
   Scenario: upgrade of firmware, installation file not available
     Given a manufacturer
       | ManufacturerCode | KAIF  |
@@ -177,7 +177,7 @@ Feature: SmartMetering Configuration - Firmware
       | FirmwareModuleVersionComm | Telit 10.00.154        |
       | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
       | FirmwareModuleVersionFunc | M57 4836               |
-  @NightlyBuildOnly
+  @NightlyBuildOnly @Skip
   Scenario: upgrade of firmware, corrupt installation file
     Given a manufacturer
       | ManufacturerCode | KAIF  |

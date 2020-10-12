@@ -70,7 +70,7 @@ A test request could look like this:
          <ns:RtuDevice>
             <ns:DeviceIdentification>TST-01</ns:DeviceIdentification>
             <ns:ProtocolName>MQTT</ns:ProtocolName>
-            <ns:ProtocolVersion>3</ns:ProtocolVersion>
+            <ns:ProtocolVersion>3.1.1</ns:ProtocolVersion>
             <ns:NetworkAddress>127.0.0.1</ns:NetworkAddress> 
          </ns:RtuDevice>
          <ns:DeviceModel>
@@ -93,7 +93,7 @@ INSERT INTO public.protocol_info(
             outgoing_requests_property_prefix, incoming_responses_property_prefix, 
             incoming_requests_property_prefix, outgoing_responses_property_prefix, 
             parallel_requests_allowed)
-    VALUES (now(), now(), 0, 'MQTT', '3', 
+    VALUES (now(), now(), 0, 'MQTT', '3.1.1', 
     'jms.protocol.mqtt.outgoing.requests', 'jms.protocol.mqtt.incoming.responses',
     'jms.protocol.mqtt.incoming.requests', 'jms.protocol.mqtt.outgoing.responses',TRUE
     );
@@ -119,8 +119,8 @@ It may be needed to delete TST-1 or rename it before inserting the device using 
 
 ```
 INSERT INTO public.rtu_device(
-            id, last_communication_time)
-    VALUES ((SELECT id FROM device WHERE device_identification = 'TST-01'), now());
+            id, last_communication_time, domain_info_id)
+    VALUES ((SELECT id FROM device WHERE device_identification = 'TST-01'), now(), (SELECT id FROM domain_info WHERE domain = 'DISTRIBUTION_AUTOMATION'));
 
 INSERT INTO public.device_authorization(
             creation_time, modification_time, version, function_group, 

@@ -31,6 +31,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 /**
@@ -56,6 +57,7 @@ public class ReplaceKeyCommandExecutor
     private static final String WAS_SUCCESFULL = " was successful";
 
     @Autowired
+    @Qualifier("secretManagementService")
     private SecurityKeyService securityKeyService;
 
     static class KeyWrapper {
@@ -174,9 +176,8 @@ public class ReplaceKeyCommandExecutor
         } catch (final IOException e) {
             throw new ConnectionException(e);
         } catch (final EncrypterException e) {
-            LOGGER.error("Unexpected exception during decryption of security keys", e);
             throw new ProtocolAdapterException(
-                    "Unexpected exception during decryption of security keys, reason = " + e.getMessage());
+                    "Unexpected exception during decryption of security keys, reason = " + e.getMessage(), e);
         }
     }
 }

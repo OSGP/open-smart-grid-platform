@@ -21,16 +21,18 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-pa-dlms</artifactId>
-    <version>5.2.0-SNAPSHOT</version>
+    <version>5.4.0-SNAPSHOT</version>
     <relativePath>../parent-pa-dlms/pom.xml</relativePath>
   </parent>
 
   <properties>
     <display.version>${project.version}-${BUILD_TAG}</display.version>
+    <osgp-ws-secret-management-version>${project.version}</osgp-ws-secret-management-version>
     <skipITs>true</skipITs>
   </properties>
 
   <build>
+
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -76,11 +78,29 @@
     </plugins>
   </build>
 
+  <!-- This repository was added to be able to draw the snapshot jDLMS version from artifactory -->
+  <repositories>
+    <repository>
+      <snapshots/>
+      <id>osgp-snapshots</id>
+      <name>osgp-snapshots</name>
+      <url>http://artifactory.shs.osgp.cloud/artifactory/osgp-snapshots</url>
+    </repository>
+  </repositories>
+
   <dependencies>
     <!-- OpenMUC Dependencies -->
     <dependency>
       <groupId>org.openmuc</groupId>
       <artifactId>jdlms</artifactId>
+      <!-- Note: version is hardcoded here because this is a TEMP fix only for the protocol-adapter-dlms -->
+      <version>1.7.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openmuc</groupId>
+      <artifactId>jasn1</artifactId>
+      <!-- Note: version is hardcoded here because this is a TEMP fix only for the protocol-adapter-dlms -->
+      <version>1.10.0</version>
     </dependency>
 
     <!-- OSGP -->
@@ -113,6 +133,12 @@
     <dependency>
       <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-dlms</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.opensmartgridplatform</groupId>
+      <artifactId>osgp-ws-secret-management</artifactId>
+      <version>${osgp-ws-secret-management-version}</version>
     </dependency>
 
     <!-- Spring Framework -->
@@ -218,8 +244,8 @@
       <artifactId>logback-classic</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.logback-extensions</groupId>
-      <artifactId>logback-ext-spring</artifactId>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-core</artifactId>
     </dependency>
 
     <!-- Netty -->
@@ -301,5 +327,11 @@
       <artifactId>postgresql</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
+
 </project>

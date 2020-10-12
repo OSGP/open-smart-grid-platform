@@ -11,7 +11,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
-import com.google.common.primitives.UnsignedInteger;
 import org.apache.commons.lang3.StringUtils;
 import org.openmuc.jdlms.AuthenticationMechanism;
 import org.openmuc.jdlms.DlmsConnection;
@@ -32,6 +31,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -44,6 +44,7 @@ public class Hls5Connector extends SecureDlmsConnector {
     private final RecoverKeyProcessInitiator recoverKeyProcessInitiator;
 
     @Autowired
+    @Qualifier("secretManagementService")
     private SecurityKeyService securityKeyService;
 
     public Hls5Connector(final RecoverKeyProcessInitiator recoverKeyProcessInitiator, final int responseTimeout,
@@ -142,9 +143,9 @@ public class Hls5Connector extends SecureDlmsConnector {
         }
         tcpConnectionBuilder.setSystemTitle(manufacturerId, device.getDeviceId());
 
-        UnsignedInteger frameCounter = UnsignedInteger.valueOf(device.getInvocationCounter());
+        long frameCounter = device.getInvocationCounter();
 
-        tcpConnectionBuilder.setFrameCounter(frameCounter.intValue());
+        tcpConnectionBuilder.setFrameCounter(frameCounter);
         LOGGER.debug("Framecounter for device {} set to {}", device.getDeviceIdentification(), frameCounter);
 
     }

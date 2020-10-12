@@ -174,7 +174,7 @@
         minOccurs="0" />
       <xsd:element name="DeviceIdentification" type="common:Identification" />
       <xsd:element name="Alias" type="xsd:string" minOccurs="0" />
-      <xsd:element name="Owner" type="xsd:string" minOccurs="0" />
+      <xsd:element name="Owner" type="xsd:string" />
       <xsd:element name="ContainerAddress" type="common:Address" minOccurs="0" />
       <xsd:element name="GpsLatitude" type="xsd:float"
         minOccurs="0" />

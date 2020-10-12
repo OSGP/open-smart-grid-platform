@@ -14,11 +14,14 @@ import java.util.Map;
 
 import org.joda.time.DateTime;
 import org.opensmartgridplatform.cucumber.core.DateTimeHelper;
+import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.glue.steps.database.core.BaseDeviceSteps;
 import org.opensmartgridplatform.domain.core.entities.Device;
+import org.opensmartgridplatform.domain.core.entities.DomainInfo;
 import org.opensmartgridplatform.domain.core.entities.RtuDevice;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
+import org.opensmartgridplatform.domain.core.repositories.DomainInfoRepository;
 import org.opensmartgridplatform.domain.core.repositories.RtuDeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +38,9 @@ public class RtuDeviceSteps extends BaseDeviceSteps {
 
     @Autowired
     private DeviceRepository deviceRepository;
+    
+    @Autowired
+    private DomainInfoRepository domainInfoRepository;
 
     @Given("^an rtu device$")
     @Transactional("txMgrCore")
@@ -42,6 +48,8 @@ public class RtuDeviceSteps extends BaseDeviceSteps {
 
         final String deviceIdentification = getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION);
         final RtuDevice rtuDevice = new RtuDevice(deviceIdentification);
+        rtuDevice.setDomainInfo(domainInfoRepository.findByDomainAndDomainVersion(getString(settings, PlatformKeys.KEY_DOMAIN, PlatformDefaults.DOMAIN), 
+                getString(settings, PlatformKeys.KEY_DOMAIN_VERSION, PlatformDefaults.DOMAIN_VERSION)));
         rtuDevice.messageReceived(this.getLastCommunicationTime(settings).toDate());
         return this.rtuDeviceRepository.save(rtuDevice);
     }

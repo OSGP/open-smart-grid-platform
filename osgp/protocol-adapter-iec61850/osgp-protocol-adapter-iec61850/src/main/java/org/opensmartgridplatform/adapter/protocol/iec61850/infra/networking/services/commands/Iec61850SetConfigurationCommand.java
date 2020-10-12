@@ -10,10 +10,9 @@ package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.ser
 import java.util.List;
 
 import org.joda.time.DateTime;
-import com.beanit.openiec61850.BdaInt8;
-import com.beanit.openiec61850.Fc;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DaylightSavingTimeTransition;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
+import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.NodeException;
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
@@ -30,6 +29,9 @@ import org.opensmartgridplatform.dto.valueobjects.RelayMapDto;
 import org.opensmartgridplatform.dto.valueobjects.RelayTypeDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.beanit.openiec61850.BdaInt8;
+import com.beanit.openiec61850.Fc;
 
 public class Iec61850SetConfigurationCommand {
 
@@ -51,6 +53,26 @@ public class Iec61850SetConfigurationCommand {
             @Override
             public Void apply(final DeviceMessageLog deviceMessageLog) throws ProtocolAdapterException {
 
+                this.setRelayConfiguration(iec61850Client, deviceConnection, configuration, deviceMessageLog);
+
+                this.setOsgpIpAddressAndPort(iec61850Client, deviceConnection, configuration, deviceMessageLog);
+
+                this.setAstronomicalOffsets(iec61850Client, deviceConnection, configuration, deviceMessageLog);
+
+                this.setClockConfiguration(iec61850Client, deviceConnection, configuration, deviceMessageLog);
+
+                this.setDhcpConfiguration(iec61850Client, deviceConnection, configuration, deviceMessageLog);
+
+                Iec61850SetConfigurationCommand.this.loggingService.logMessage(deviceMessageLog,
+                        deviceConnection.getDeviceIdentification(), deviceConnection.getOrganisationIdentification(),
+                        false);
+
+                return null;
+            }
+
+            private void setRelayConfiguration(final Iec61850Client iec61850Client,
+                    final DeviceConnection deviceConnection, final ConfigurationDto configuration,
+                    final DeviceMessageLog deviceMessageLog) throws NodeException {
                 if (configuration.getRelayConfiguration() != null
                         && configuration.getRelayConfiguration().getRelayMap() != null) {
 
@@ -83,7 +105,11 @@ public class Iec61850SetConfigurationCommand {
                                 Byte.toString(switchTypeValue));
                     }
                 }
+            }
 
+            private void setOsgpIpAddressAndPort(final Iec61850Client iec61850Client,
+                    final DeviceConnection deviceConnection, final ConfigurationDto configuration,
+                    final DeviceMessageLog deviceMessageLog) throws NodeException {
                 // Checking to see if all register values are null, so that we
                 // don't read the values for no reason.
                 if (!(configuration.getOsgpIpAddres() == null && configuration.getOsgpPortNumber() == null)) {
@@ -109,10 +135,13 @@ public class Iec61850SetConfigurationCommand {
                                 Fc.CF, SubDataAttribute.SERVER_PORT, configuration.getOsgpPortNumber().toString());
                     }
                 }
+            }
 
+            private void setAstronomicalOffsets(final Iec61850Client iec61850Client,
+                    final DeviceConnection deviceConnection, final ConfigurationDto configuration,
+                    final DeviceMessageLog deviceMessageLog) throws NodeException {
                 // Checking to see if all software configuration values are
-                // null, so
-                // that we don't read the values for no reason.
+                // null, so that we don't read the values for no reason.
                 if (!(configuration.getAstroGateSunRiseOffset() == null
                         && configuration.getAstroGateSunSetOffset() == null && configuration.getLightType() == null)) {
 
@@ -151,14 +180,25 @@ public class Iec61850SetConfigurationCommand {
                                 configuration.getLightType().name());
                     }
                 }
+            }
 
-                // Checking to see if all register values are null, so that we
-                // don't read the values for no reason.
-                final boolean clockConfigurationChanged = configuration.getTimeSyncFrequency() != null
+            private boolean isClockConfigurationPresent(final ConfigurationDto configuration) {
+                return configuration.getTimeSyncFrequency() != null
                         || configuration.isAutomaticSummerTimingEnabled() != null
-                        || configuration.getSummerTimeDetails() != null && configuration.getWinterTimeDetails() != null
-                        || configuration.getNtpEnabled() != null && configuration.getNtpHost() != null
+                        || configuration.getSummerTimeDetails() != null && configuration.getWinterTimeDetails() != null;
+            }
+
+            private boolean isNtpConfigurationPresent(final ConfigurationDto configuration) {
+                return configuration.getNtpEnabled() != null && configuration.getNtpHost() != null
                         || configuration.getNtpSyncInterval() != null;
+            }
+
+            private void setClockConfiguration(final Iec61850Client iec61850Client,
+                    final DeviceConnection deviceConnection, final ConfigurationDto configuration,
+                    final DeviceMessageLog deviceMessageLog) throws NodeException {
+
+                final boolean clockConfigurationChanged = this.isClockConfigurationPresent(configuration)
+                        && this.isNtpConfigurationPresent(configuration);
 
                 if (clockConfigurationChanged) {
                     final NodeContainer clock = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
@@ -252,7 +292,11 @@ public class Iec61850SetConfigurationCommand {
                                 SubDataAttribute.NTP_SYNC_INTERVAL, configuration.getNtpSyncInterval().toString());
                     }
                 }
+            }
 
+            private void setDhcpConfiguration(final Iec61850Client iec61850Client,
+                    final DeviceConnection deviceConnection, final ConfigurationDto configuration,
+                    final DeviceMessageLog deviceMessageLog) throws NodeException {
                 // Checking to see if all network values are null, so that we
                 // don't read the values for no reason.
                 if (!(configuration.isDhcpEnabled() == null && configuration.getDeviceFixedIp() == null)) {
@@ -293,13 +337,8 @@ public class Iec61850SetConfigurationCommand {
                     deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.IP_CONFIGURATION,
                             Fc.CF, SubDataAttribute.GATEWAY, deviceFixedIp.getGateWay());
                 }
-
-                Iec61850SetConfigurationCommand.this.loggingService.logMessage(deviceMessageLog,
-                        deviceConnection.getDeviceIdentification(), deviceConnection.getOrganisationIdentification(),
-                        false);
-
-                return null;
             }
+
         };
 
         iec61850Client.sendCommandWithRetry(function, "SetConfiguration", deviceConnection.getDeviceIdentification());

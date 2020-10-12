@@ -11,6 +11,8 @@ package org.opensmartgridplatform.cucumber.platform.glue.steps.database.logging;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
+import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -19,8 +21,11 @@ import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.logging.domain.entities.DeviceLogItem;
 import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemPagingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.transaction.annotation.Transactional;
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -30,7 +35,12 @@ public class DeviceLogItemSteps {
     @Autowired
     private DeviceLogItemPagingRepository deviceLogItemRepository;
 
+    @Autowired
+    @Qualifier("txMgrLogging")
+    JpaTransactionManager txMgrLogging;
+
     @Given("^I have a device log item$")
+    @Transactional("txMgrLogging")
     public void iHaveADeviceLogItem(final Map<String, String> settings) {
 
         final String deviceIdentification = getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION);
@@ -44,11 +54,28 @@ public class DeviceLogItemSteps {
         final boolean valid = true;
 
         final DeviceLogItem deviceLogItem = new DeviceLogItem.Builder().withDeviceIdentification(deviceIdentification)
-                .withDeviceUid(deviceUid).withDecodedMessage(decodedMessage).withEncodedMessage(encodedMessage)
-                .withIncoming(incoming).withOrganisationIdentification(organisationIdentification)
-                .withPayloadMessageSerializedSize(payloadMessageSerializedSize).withValid(valid).build();
+                .withDeviceUid(deviceUid)
+                .withDecodedMessage(decodedMessage)
+                .withEncodedMessage(encodedMessage)
+                .withIncoming(incoming)
+                .withOrganisationIdentification(organisationIdentification)
+                .withPayloadMessageSerializedSize(payloadMessageSerializedSize)
+                .withValid(valid)
+                .build();
 
-        this.deviceLogItemRepository.save(deviceLogItem);
+        final DeviceLogItem savedDeviceLogItem = this.deviceLogItemRepository.save(deviceLogItem);
+
+        final String modificationTimeString = getString(settings, PlatformKeys.KEY_MODIFICATION_TIME);
+        if (modificationTimeString != null) {
+            final ZonedDateTime modificationTime = ZonedDateTime.parse(modificationTimeString);
+            this.updateModificationTime(savedDeviceLogItem.getId(), modificationTime);
+        }
+    }
+
+    private void updateModificationTime(final long deviceLogItemId, final ZonedDateTime modificationTime) {
+        if (modificationTime != null) {
+            this.deviceLogItemRepository.setModificationTime(deviceLogItemId, Date.from(modificationTime.toInstant()));
+        }
     }
 
     @Given("^I have (\\d+) device log items$")
@@ -74,9 +101,11 @@ public class DeviceLogItemSteps {
 
         final Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE);
         final List<org.opensmartgridplatform.logging.domain.entities.DeviceLogItem> deviceLogItems = this.deviceLogItemRepository
-                .findByDeviceIdentification(deviceIdentification, pageable).getContent();
+                .findByDeviceIdentification(deviceIdentification, pageable)
+                .getContent();
         assertThat(this.countGetAdministrativeStatusLogItems(deviceLogItems) > 0)
-                .as("number of device log items for " + deviceIdentification).isTrue();
+                .as("number of device log items for " + deviceIdentification)
+                .isTrue();
     }
 
     @Then("^the get administrative status communication for device \"([^\"]*)\" should not be in the device_log_item table$")
@@ -85,13 +114,16 @@ public class DeviceLogItemSteps {
 
         final Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE);
         final List<org.opensmartgridplatform.logging.domain.entities.DeviceLogItem> deviceLogItems = this.deviceLogItemRepository
-                .findByDeviceIdentification(deviceIdentification, pageable).getContent();
+                .findByDeviceIdentification(deviceIdentification, pageable)
+                .getContent();
         assertThat(this.countGetAdministrativeStatusLogItems(deviceLogItems))
-                .as("number of device log items for " + deviceIdentification).isEqualTo(0);
+                .as("number of device log items for " + deviceIdentification)
+                .isEqualTo(0);
     }
 
     private long countGetAdministrativeStatusLogItems(final List<DeviceLogItem> deviceLogItems) {
-        return deviceLogItems.stream().filter(deviceLogItem -> this.isGetAdministrativeStatusLogItem(deviceLogItem))
+        return deviceLogItems.stream()
+                .filter(deviceLogItem -> this.isGetAdministrativeStatusLogItem(deviceLogItem))
                 .count();
     }
 

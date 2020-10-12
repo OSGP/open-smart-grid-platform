@@ -10,11 +10,15 @@ package org.opensmartgridplatform.adapter.domain.core.application.services;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -53,6 +57,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
 @Service(value = "domainCoreFirmwareManagementService")
 @Transactional(value = "transactionManager")
@@ -153,25 +158,67 @@ public class FirmwareManagementService extends AbstractService {
 
     public void handleSsldPendingFirmwareUpdate(final String deviceIdentification) {
 
-        final SsldPendingFirmwareUpdate ssldPendingFirmwareUpdate = this.ssldPendingFirmwareUpdateRepository
+        final List<SsldPendingFirmwareUpdate> ssldPendingFirmwareUpdates = this.ssldPendingFirmwareUpdateRepository
                 .findByDeviceIdentification(deviceIdentification);
 
-        if (ssldPendingFirmwareUpdate != null) {
-            final String organisationIdentification = ssldPendingFirmwareUpdate.getOrganisationIdentification();
-            final String correlationUid = ssldPendingFirmwareUpdate.getCorrelationUid();
-
-            LOGGER.info(
-                    "Handling SSLD pending firmware update for device identification: {}, organisation identification: {} and correlation UID: {}.",
-                    deviceIdentification, organisationIdentification, correlationUid);
-
-            try {
-                final int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
-                this.getFirmwareVersion(organisationIdentification, deviceIdentification, correlationUid,
-                        DeviceFunction.GET_FIRMWARE_VERSION.name(), messagePriority, this.getFirmwareVersionDelay);
-            } catch (final FunctionalException e) {
-                LOGGER.error("Caught exception when calling get firmware version", e);
-            }
+        if (CollectionUtils.isEmpty(ssldPendingFirmwareUpdates)) {
+            return;
         }
+
+        /*
+         * A pending firmware update record was stored for this device earlier.
+         * This means this method is probably called following a firmware
+         * update. Retrieve the firmware version from the device to have the
+         * current version that is installed available.
+         *
+         * If multiple pending update records exist, it is not really clear what
+         * to do. The following approach assumes the most recently created one
+         * is relevant, and other pending records are out-dated.
+         */
+        final SsldPendingFirmwareUpdate ssldPendingFirmwareUpdate;
+        if (ssldPendingFirmwareUpdates.size() == 1) {
+            ssldPendingFirmwareUpdate = ssldPendingFirmwareUpdates.get(0);
+        } else {
+            LOGGER.warn("Found multiple pending firmware update records for SSLD: {}", ssldPendingFirmwareUpdates);
+            ssldPendingFirmwareUpdate = this.getMostRecentSsldPendingFirmwareUpdate(ssldPendingFirmwareUpdates)
+                    .orElseThrow(
+                            () -> new AssertionError("No most recent pending firmware update from a non-empty list"));
+            this.deleteOutdatedSsldPendingFirmwareUpdates(ssldPendingFirmwareUpdates, ssldPendingFirmwareUpdate);
+        }
+
+        final String organisationIdentification = ssldPendingFirmwareUpdate.getOrganisationIdentification();
+        final String correlationUid = ssldPendingFirmwareUpdate.getCorrelationUid();
+
+        LOGGER.info(
+                "Handling SSLD pending firmware update for device identification: {}, organisation identification: {} and correlation UID: {}.",
+                deviceIdentification, organisationIdentification, correlationUid);
+
+        try {
+            final int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
+            this.getFirmwareVersion(organisationIdentification, deviceIdentification, correlationUid,
+                    DeviceFunction.GET_FIRMWARE_VERSION.name(), messagePriority, this.getFirmwareVersionDelay);
+        } catch (final FunctionalException e) {
+            LOGGER.error("Caught exception when calling get firmware version", e);
+        }
+    }
+
+    private Optional<SsldPendingFirmwareUpdate> getMostRecentSsldPendingFirmwareUpdate(
+            final List<SsldPendingFirmwareUpdate> ssldPendingFirmwareUpdates) {
+
+        return ssldPendingFirmwareUpdates.stream()
+                .max(Comparator.comparing(SsldPendingFirmwareUpdate::getCreationTime)
+                        .thenComparing(SsldPendingFirmwareUpdate::getId));
+    }
+
+    private void deleteOutdatedSsldPendingFirmwareUpdates(final List<SsldPendingFirmwareUpdate> updatesToDelete,
+            final SsldPendingFirmwareUpdate notToBeDeleted) {
+
+        updatesToDelete.stream()
+                .filter(pendingUpdate -> !Objects.equals(notToBeDeleted.getId(), pendingUpdate.getId()))
+                .forEach(pendingUpdate -> {
+                    LOGGER.warn("Deleting pending firmware update assumed outdated: {}", pendingUpdate);
+                    this.ssldPendingFirmwareUpdateRepository.delete(pendingUpdate);
+                });
     }
 
     // === GET FIRMWARE VERSION ===
@@ -238,17 +285,17 @@ public class FirmwareManagementService extends AbstractService {
         }
     }
 
-    private boolean checkSsldPendingFirmwareUpdate(final CorrelationIds ids,
-            final List<FirmwareVersion> firmwareVersions) {
+    boolean checkSsldPendingFirmwareUpdate(final CorrelationIds ids, final List<FirmwareVersion> firmwareVersions) {
 
         final String deviceIdentification = ids.getDeviceIdentification();
 
         final SsldPendingFirmwareUpdate ssldPendingFirmwareUpdate = this.ssldPendingFirmwareUpdateRepository
-                .findByDeviceIdentification(deviceIdentification);
+                .findByDeviceIdentification(deviceIdentification)
+                .stream()
+                .filter(pendingUpdate -> pendingUpdate.getCorrelationUid().equals(ids.getCorrelationUid()))
+                .findAny()
+                .orElse(null);
         if (ssldPendingFirmwareUpdate == null) {
-            return false;
-        }
-        if (!ssldPendingFirmwareUpdate.getCorrelationUid().equals(ids.getCorrelationUid())) {
             return false;
         }
 
@@ -267,7 +314,7 @@ public class FirmwareManagementService extends AbstractService {
                     deviceIdentification, expectedFirmwareVersion, expectedFirmwareModuleType);
         } else {
             LOGGER.error(
-                    "Expected firmware version from SSLD pending firmware update record does not match firmware version as retrieved from device identification: {}, expected firmware version: {}, expected firmware module type: {}, actual firmware version and module type list: {}",
+                    "Expected firmware version from SSLD pending firmware update record does )not match firmware version as retrieved from device identification: {}, expected firmware version: {}, expected firmware module type: {}, actual firmware version and module type list: {}",
                     deviceIdentification, expectedFirmwareVersion, expectedFirmwareModuleType, firmwareVersions);
         }
 
@@ -277,18 +324,12 @@ public class FirmwareManagementService extends AbstractService {
 
     private void checkFirmwareHistory(final String deviceId,
             final List<org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion> firmwareVersions) {
-        final List<org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion> versionsNotInHistory = this
-                .checkFirmwareHistoryForVersion(deviceId, firmwareVersions);
-        for (final org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion firmwareVersion : versionsNotInHistory) {
-            LOGGER.info("Firmware version {} is not in history of device {}, we are trying to add it", firmwareVersion,
-                    deviceId);
-            this.tryToAddFirmwareVersionToHistory(deviceId, firmwareVersion);
-        }
+        final List<org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion> firmwareVersionsNotCurrent = this
+                .checkFirmwareHistoryForModuleVersionsNotCurrentlyInstalled(deviceId, firmwareVersions);
+        this.tryToAddDeviceFirmwareFile(deviceId, firmwareVersionsNotCurrent);
     }
 
     /**
-     * @param organisationIdentification
-     *            the organisation the device we want to check belongs to
      * @param deviceId
      *            the id of the device we are checking
      * @param firmwareVersions
@@ -296,7 +337,6 @@ public class FirmwareManagementService extends AbstractService {
      *            history of the devices firmware history
      * @return a list of firmware versions not present in the the devices
      *         firmware history
-     * @throws FunctionalException
      */
     public List<FirmwareVersion> checkFirmwareHistoryForVersion(final String deviceId,
             final List<FirmwareVersion> firmwareVersions) {
@@ -305,8 +345,7 @@ public class FirmwareManagementService extends AbstractService {
             return firmwareVersions;
         }
         // copy input parameter
-        final List<FirmwareVersion> firmwareVersionsToCheck = new ArrayList<>();
-        firmwareVersionsToCheck.addAll(firmwareVersions);
+        final List<FirmwareVersion> firmwareVersionsToCheck = new ArrayList<>(firmwareVersions);
 
         // get history
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceId);
@@ -325,38 +364,150 @@ public class FirmwareManagementService extends AbstractService {
         return firmwareVersionsToCheck;
     }
 
-    public void tryToAddFirmwareVersionToHistory(final String deviceIdentification,
-            final FirmwareVersion firmwareVersion) {
+    /**
+     * @param deviceId
+     *            the id of the device we are checking
+     * @param firmwareVersions
+     *            the list of firmware modules versions (so type and version) to
+     *            check if they are currently installed on the device, using the
+     *            history of the devices firmware history
+     * @return a list of firmware module versions not present in the the devices
+     *         firmware history
+     */
+    private List<FirmwareVersion> checkFirmwareHistoryForModuleVersionsNotCurrentlyInstalled(final String deviceId,
+            final List<FirmwareVersion> firmwareVersions) {
 
-        final FirmwareModule module = createFirmwareModule(firmwareVersion);
+        if (firmwareVersions.isEmpty()) {
+            return firmwareVersions;
+        }
+        // copy input parameter
+        final List<FirmwareVersion> firmwareVersionsToCheck = new ArrayList<>(firmwareVersions);
+
+        // gets list of all historically installed modules
+        final Device device = this.deviceRepository.findByDeviceIdentification(deviceId);
+        final List<DeviceFirmwareFile> deviceFirmwareFiles = this.deviceFirmwareFileRepository
+                .findByDeviceOrderByInstallationDateAsc(device);
+
+        // Transform this list so it contains only the latest entry for each
+        // moduleType
+        final Map<String, FirmwareVersionWithInstallationDate> currentlyInstalledFirmwareVersionsPerType = new HashMap<>();
+
+        for (final DeviceFirmwareFile firmwareFile : deviceFirmwareFiles) {
+
+            final Map<FirmwareModule, String> fwms = firmwareFile.getFirmwareFile().getModuleVersions();
+            final Date installationDate = firmwareFile.getInstallationDate();
+
+            for (final Map.Entry<FirmwareModule, String> entry : fwms.entrySet()) {
+                final String version = entry.getValue();
+                final FirmwareModule fwm = entry.getKey();
+                // check if this installation of this same kind of module is
+                // of a later date
+                if (currentlyInstalledFirmwareVersionsPerType.containsKey(fwm.getDescription())
+                        && currentlyInstalledFirmwareVersionsPerType.get(fwm.getDescription())
+                                .getInstallationDate()
+                                .before(installationDate)) {
+                    currentlyInstalledFirmwareVersionsPerType.replace(fwm.getDescription(),
+                            new FirmwareVersionWithInstallationDate(installationDate, new FirmwareVersion(
+                                    FirmwareModuleType.forDescription(fwm.getDescription()), version)));
+                } else {
+                    // no other module of this type found yet so just add it
+                    currentlyInstalledFirmwareVersionsPerType.put(fwm.getDescription(),
+                            new FirmwareVersionWithInstallationDate(installationDate, new FirmwareVersion(
+                                    FirmwareModuleType.forDescription(fwm.getDescription()), version)));
+                }
+            }
+        }
+
+        final List<FirmwareVersion> latestfirmwareVersionsOfEachModuleTypeInHistory = currentlyInstalledFirmwareVersionsPerType
+                .values()
+                .stream()
+                .map(e -> new FirmwareVersion(e.getFirmwareVersion().getFirmwareModuleType(),
+                        e.getFirmwareVersion().getVersion()))
+                .collect(Collectors.toList());
+
+        // remove the latest history (module)versions from the firmwareVersions
+        // parameter
+        firmwareVersionsToCheck.removeAll(latestfirmwareVersionsOfEachModuleTypeInHistory);
+
+        return firmwareVersionsToCheck;
+    }
+
+    // Helper class to keep track of InstallationDate and FirmwareVersion
+    private static class FirmwareVersionWithInstallationDate {
+        private final Date installationDate;
+        private final FirmwareVersion firmwareVersion;
+
+        public FirmwareVersionWithInstallationDate(final Date installationDate, final FirmwareVersion firmwareVersion) {
+            this.installationDate = installationDate;
+            this.firmwareVersion = firmwareVersion;
+        }
+
+        public Date getInstallationDate() {
+            return this.installationDate;
+        }
+
+        public FirmwareVersion getFirmwareVersion() {
+            return this.firmwareVersion;
+        }
+
+
+    }
+
+    public void tryToAddDeviceFirmwareFile(final String deviceIdentification,
+            final List<FirmwareVersion> firmwareVersionsNotCurrent) {
+
+        if (firmwareVersionsNotCurrent.isEmpty()) {
+            LOGGER.info("No firmware to look for, concerning device {}, so nothing to add.", deviceIdentification);
+            return;
+        }
+
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-        final List<FirmwareFile> firmwareFiles = this.getAvailableFirmwareFilesForDeviceModel(device.getDeviceModel());
 
         // check each file for the module and the version as returned by the
-        // device
-        boolean recordAdded = false;
+        // device, in theory there could be files that have partially
+        // overlapping modules,
+        // therefore we check if all modules are in the file
 
-        for (final FirmwareFile file : firmwareFiles) {
-            final Map<FirmwareModule, String> moduleVersions = file.getModuleVersions();
-            if (moduleVersions.containsKey(module) && moduleVersions.get(module).equals(firmwareVersion.getVersion())) {
-
+        for (final FirmwareFile file : this.getAvailableFirmwareFilesForDeviceModel(device.getDeviceModel())) {
+            if (firmwareFileContainsAllOfTheseModules(file, firmwareVersionsNotCurrent)) {
                 // file found, insert a record into the history
                 final DeviceFirmwareFile deviceFirmwareFile = new DeviceFirmwareFile(device, file, new Date(),
                         INSTALLER);
                 this.deviceFirmwareFileRepository.save(deviceFirmwareFile);
-                LOGGER.info("Firmware version {} added to device {}", firmwareVersion.getVersion(),
-                        deviceIdentification);
 
-                // we only want to add one record in history
-                recordAdded = true;
-                break;
+                if (LOGGER.isInfoEnabled()) {
+                    LOGGER.info(
+                            "Added new record to deviceFirmwareFile for device: {} with following modules (ModulesType/Versions):{} " + ", using file: {}",
+                            deviceIdentification, firmwareVersionsNotCurrent.toString(), file.getFilename());
+                }
+                return;
             }
         }
 
-        if (!recordAdded) {
-            LOGGER.warn("No firmware file record found for: {} for device: {}", firmwareVersion, deviceIdentification);
-        }
+        LOGGER.warn("Could not find any firmware file for device: {} that contains (all of) the following modules (ModulesType/Versions):{}",
+                deviceIdentification, firmwareVersionsNotCurrent);
+    }
 
+    private static boolean firmwareFileContainsAllOfTheseModules(final FirmwareFile file,
+            final List<FirmwareVersion> firmwareVersions) {
+        int numberOfModulesFound = 0;
+        final Map<FirmwareModule, String> moduleVersionsInFile = file.getModuleVersions();
+
+        for (final FirmwareVersion firmwareVersion : firmwareVersions) {
+            final FirmwareModule module = createFirmwareModule(firmwareVersion);
+
+            if (moduleVersionsInFile.containsKey(module)
+                    && moduleVersionsInFile.get(module).equals(firmwareVersion.getVersion())) {
+                // module found in this file
+                numberOfModulesFound++;
+
+                // check if all different modules are in this file
+                if (numberOfModulesFound == firmwareVersions.size()) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private static FirmwareModule createFirmwareModule(final FirmwareVersion firmwareVersion) {

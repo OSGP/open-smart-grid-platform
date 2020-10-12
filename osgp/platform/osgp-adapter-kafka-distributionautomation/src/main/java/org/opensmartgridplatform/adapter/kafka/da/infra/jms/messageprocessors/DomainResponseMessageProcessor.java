@@ -12,7 +12,7 @@ import java.io.Serializable;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.opensmartgridplatform.adapter.kafka.da.infra.kafka.out.PeakShavingProducer;
+import org.opensmartgridplatform.adapter.kafka.da.infra.kafka.out.GridMeasurementPublishedEventProducer;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -34,7 +34,7 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
     private static final MessageType GET_DATA = MessageType.GET_DATA;
 
     @Autowired
-    private PeakShavingProducer peakShavingProducer;
+    private GridMeasurementPublishedEventProducer producer;
 
     @Override
     public void processMessage(final ObjectMessage message) {
@@ -86,7 +86,7 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
         final Serializable dataObject = message.getDataObject();
 
         if (dataObject instanceof String && GET_DATA.equals(messageType)) {
-            this.peakShavingProducer.send((String) dataObject);
+            this.producer.send((String) dataObject);
         } else {
             LOGGER.warn("Discarding the message. For this component we only handle (MQTT) GET_DATA responses. "
                     + "Received message type: {}, message {}", messageType, dataObject);

@@ -28,7 +28,7 @@
     <appender-ref ref="CONSOLE"/>
   </logger>
 
-  <root level="INFO" additivity="false">
+  <root level="WARN" additivity="false">
     <appender-ref ref="CONSOLE"/>
     <appender-ref ref="FILE"/>
   </root>

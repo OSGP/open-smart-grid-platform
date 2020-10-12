@@ -86,6 +86,7 @@ public class PlatformDefaults {
 
     public static final Boolean DEFAULT_IS_ACTIVATED = true;
     public static final Boolean DEFAULT_ISIMMEDIATE = false;
+    public static final String DEFAULT_INTEGRATION_TYPE = "WEB_SERVICE";
     public static final Float DEFAULT_LATITUDE = null;
     public static final String DEFAULT_LATITUDE_STRING = null;
     public static final String DEFAULT_LIGHTVALUES = "";
@@ -219,4 +220,9 @@ public class PlatformDefaults {
     public static final Short DEFAULT_ASTRONOMICAL_SUNRISE_OFFSET = 0;
     public static final Short DEFAULT_ASTRONOMICAL_SUNSET_OFFSET = 0;
     public static final Long NON_EXISTENT_PROTOCOL_INFO_ID = -1L;
+    
+    public static final String DOMAIN = "DISTRIBUTION_AUTOMATION";
+    public static final String DOMAIN_VERSION = "1.0";
+    
+    
 }

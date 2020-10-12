@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.opensmartgridplatform.adapter.kafka.da.infra.kafka.out.PeakShavingProducer;
+import org.opensmartgridplatform.adapter.kafka.da.infra.kafka.out.GridMeasurementPublishedEventProducer;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
@@ -30,7 +30,7 @@ class DomainResponseMessageProcessorTest {
     DomainResponseMessageProcessor domainResponseMessageProcessor;
 
     @Mock
-    private PeakShavingProducer peakShavingProducer;
+    private GridMeasurementPublishedEventProducer producer;
 
     @Mock
     private ObjectMessage receivedMessage;
@@ -71,7 +71,7 @@ class DomainResponseMessageProcessorTest {
         this.domainResponseMessageProcessor.processMessage(this.receivedMessage);
 
         // Assert
-        verify(this.peakShavingProducer, times(1)).send(payload);
+        verify(this.producer, times(1)).send(payload);
     }
 
 }

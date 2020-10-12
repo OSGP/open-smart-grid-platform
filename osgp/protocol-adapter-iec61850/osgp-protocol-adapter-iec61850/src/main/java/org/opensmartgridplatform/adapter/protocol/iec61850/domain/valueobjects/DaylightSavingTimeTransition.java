@@ -166,8 +166,8 @@ public class DaylightSavingTimeTransition {
                 } else {
                     n = Integer.parseInt(transition.substring(0, timeSeparatorPos));
                 }
-                return new DateTime(year, 1, 1, 0, 0, 0, 0, dateTimeZone).plusDays(n).plusHours(
-                        this.getTime(transition));
+                return new DateTime(year, 1, 1, 0, 0, 0, 0, dateTimeZone).plusDays(n)
+                        .plusHours(this.getTime(transition));
             }
         },
         /**
@@ -207,7 +207,18 @@ public class DaylightSavingTimeTransition {
                 } catch (final NumberFormatException nfe) {
                     return false;
                 }
-                if (m < 1 || m > 12 || w < 1 || w > 5 || d < 0 || d > 6) {
+                return this.checkTransitionTime(transition, timeSeparatorPos, m, w, d);
+            }
+
+            private boolean checkTransitionTime(final String transition, final int timeSeparatorPos, final int m,
+                    final int w, final int d) {
+                if (m < 1 || m > 12) {
+                    return false;
+                }
+                if (w < 1 || w > 5) {
+                    return false;
+                }
+                if (d < 0 || d > 6) {
                     return false;
                 }
                 if (timeSeparatorPos == -1) {
