@@ -38,11 +38,12 @@ public class DefaultDeviceResponseServiceTest {
 		MockitoAnnotations.initMocks(this);
 	}
 
+	private static final CorrelationIds ids = new CorrelationIds("orginazationTestId", "deviceIdTest", "correlationUid");
+
     @Test
     public void testDefaultDeviceResponseWithNotOkTypeAndException() {
 
     	//Arrange
-    	final CorrelationIds ids = new CorrelationIds("orginazationTestId", "deviceIdTest", "correlationUid");
     	final String messageType = "Warning";
     	final int messagePriority = 3;
     	final ResponseMessageResultType deviceResult = ResponseMessageResultType.NOT_OK;
@@ -66,10 +67,9 @@ public class DefaultDeviceResponseServiceTest {
     }
     
     @Test
-    public void testDefaultDeviceResponseWithNotOkTypeAndNoException2() {
+    public void testDefaultDeviceResponseWithNotOkTypeAndNoException() {
 
     	//Arrange
-    	final CorrelationIds ids = new CorrelationIds("orginazationTestId", "deviceIdTest", "correlationUid");
     	final String messageType = "Warning";
     	final int messagePriority = 3;
     	final ResponseMessageResultType deviceResult = ResponseMessageResultType.NOT_OK;
@@ -97,7 +97,6 @@ public class DefaultDeviceResponseServiceTest {
     public void testDefaultDeviceResponseWithOkTypeAndException() {
 
     	//Arrange
-    	final CorrelationIds ids = new CorrelationIds("orginazationTestId", "deviceIdTest", "correlationUid");
     	final String messageType = "Warning";
     	final int messagePriority = 3;
     	final ResponseMessageResultType deviceResult = ResponseMessageResultType.OK;
@@ -123,9 +122,8 @@ public class DefaultDeviceResponseServiceTest {
     
     @Test
     public void testDefaultDeviceResponseWithOkTypeAndNoException() {
-		
+
     	//Arrange
-    	final CorrelationIds ids = new CorrelationIds("orginazationTestId", "deviceIdTest", "correlationUid");
     	final String messageType = "Warning";
     	final int messagePriority = 3;
     	final ResponseMessageResultType deviceResult = ResponseMessageResultType.OK;
