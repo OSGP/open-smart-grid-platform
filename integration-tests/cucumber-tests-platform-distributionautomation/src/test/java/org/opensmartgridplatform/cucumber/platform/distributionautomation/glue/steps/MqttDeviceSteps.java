@@ -105,7 +105,7 @@ public class MqttDeviceSteps {
 
     private Analog createAnalog(final String description, final Float value, final UnitSymbol unitSymbol,
             final UnitMultiplier unitMultiplier) {
-        return new Analog(Arrays.asList(new AnalogValue(null, value)), AccumulationKind.none, description,
+        return new Analog(Arrays.asList(new AnalogValue(null, value)), AccumulationKind.none, new Utf8(description),
                 MeasuringPeriodKind.none, unitMultiplier, unitSymbol);
     }
 
