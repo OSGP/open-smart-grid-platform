@@ -372,8 +372,10 @@ public class DeviceManagementEndpoint {
     public UpdateDeviceResponse updateDevice(@OrganisationIdentification final String organisationIdentification,
             @RequestPayload final UpdateDeviceRequest request) throws OsgpException {
 
-        LOGGER.info("UpdateDeviceRequest received for device: {} for organisation: {}.",
-                request.getDeviceIdentification(), organisationIdentification);
+        final String deviceIdentification = request.getUpdatedDevice().getDeviceIdentification();
+
+        LOGGER.info("UpdateDeviceRequest received for device: {} for organisation: {}.", deviceIdentification,
+                organisationIdentification);
 
         try {
             final org.opensmartgridplatform.domain.core.entities.Ssld ssld = this.deviceManagementMapper
@@ -385,7 +387,7 @@ public class DeviceManagementEndpoint {
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
-            LOGGER.error(EXCEPTION_WHILE_UPDATING_DEVICE, e.getMessage(), request.getDeviceIdentification(),
+            LOGGER.error(EXCEPTION_WHILE_UPDATING_DEVICE, e.getMessage(), deviceIdentification,
                     organisationIdentification, e);
             this.handleException(e);
         }
@@ -393,17 +395,17 @@ public class DeviceManagementEndpoint {
         final UpdateDeviceResponse updateDeviceResponse = new UpdateDeviceResponse();
 
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
-                request.getDeviceIdentification());
+                deviceIdentification);
 
         final AsyncResponse asyncResponse = new AsyncResponse();
         asyncResponse.setCorrelationUid(correlationUid);
-        asyncResponse.setDeviceId(request.getDeviceIdentification());
+        asyncResponse.setDeviceId(deviceIdentification);
 
         updateDeviceResponse.setAsyncResponse(asyncResponse);
 
         try {
-            this.notificationService.sendNotification(organisationIdentification, request.getDeviceIdentification(),
-                    null, null, null, NotificationType.DEVICE_UPDATED);
+            this.notificationService.sendNotification(organisationIdentification, deviceIdentification, null, null,
+                    null, NotificationType.DEVICE_UPDATED);
         } catch (final Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
