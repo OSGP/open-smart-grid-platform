@@ -33,19 +33,20 @@ public class DefaultDeviceResponseServiceTest {
     @InjectMocks
     private DefaultDeviceResponseService defaultDeviceResponseService;
 
+	//constants that are used in all the tests
+	private static final CorrelationIds ids = new CorrelationIds("orginazationTestId", "deviceIdTest", "correlationUid");
+	private static final String messageType = "Warning";
+	private static final int messagePriority = 3;
+
 	@BeforeEach
 	public void initMocks() {
 		MockitoAnnotations.initMocks(this);
 	}
 
-	private static final CorrelationIds ids = new CorrelationIds("orginazationTestId", "deviceIdTest", "correlationUid");
-
     @Test
     public void testDefaultDeviceResponseWithNotOkTypeAndException() {
 
     	//Arrange
-    	final String messageType = "Warning";
-    	final int messagePriority = 3;
     	final ResponseMessageResultType deviceResult = ResponseMessageResultType.NOT_OK;
     	final OsgpException exception = new OsgpException(ComponentType.DOMAIN_CORE, "There was an exception");
 
@@ -70,8 +71,6 @@ public class DefaultDeviceResponseServiceTest {
     public void testDefaultDeviceResponseWithNotOkTypeAndNoException() {
 
     	//Arrange
-    	final String messageType = "Warning";
-    	final int messagePriority = 3;
     	final ResponseMessageResultType deviceResult = ResponseMessageResultType.NOT_OK;
     	final OsgpException exception = null;
     	final OsgpException osgpException = new TechnicalException(ComponentType.DOMAIN_CORE, "An unknown error occurred");
@@ -97,8 +96,6 @@ public class DefaultDeviceResponseServiceTest {
     public void testDefaultDeviceResponseWithOkTypeAndException() {
 
     	//Arrange
-    	final String messageType = "Warning";
-    	final int messagePriority = 3;
     	final ResponseMessageResultType deviceResult = ResponseMessageResultType.OK;
     	final OsgpException exception = new OsgpException(ComponentType.DOMAIN_CORE, "There was an exception");
 
@@ -124,8 +121,6 @@ public class DefaultDeviceResponseServiceTest {
     public void testDefaultDeviceResponseWithOkTypeAndNoException() {
 
     	//Arrange
-    	final String messageType = "Warning";
-    	final int messagePriority = 3;
     	final ResponseMessageResultType deviceResult = ResponseMessageResultType.OK;
     	final OsgpException exception = null;
 
