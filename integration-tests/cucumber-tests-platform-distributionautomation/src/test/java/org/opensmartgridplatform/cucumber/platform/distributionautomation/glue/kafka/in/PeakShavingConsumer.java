@@ -9,8 +9,6 @@ package org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.List;
-
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +16,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
-import com.alliander.data.scadameasurementpublishedevent.Analog;
 import com.alliander.data.scadameasurementpublishedevent.ScadaMeasurementPublishedEvent;
 
 @Component
@@ -50,10 +47,8 @@ public class PeakShavingConsumer {
         assertThat(message).isEqualToComparingOnlyGivenFields(expectedMessage, "description");
         assertThat(message.getPowerSystemResource().getBaseVoltage()).isEqualToComparingOnlyGivenFields(
                 expectedMessage.getPowerSystemResource().getBaseVoltage(), "description");
-        List<Analog> measurements = message.getMeasurements();
-        List<Analog> expectedNeasurements = expectedMessage.getMeasurements();
-        assertThat(measurements).usingElementComparatorIgnoringFields("mRID")
-                .isEqualTo(expectedNeasurements);
+        assertThat(message.getMeasurements()).usingElementComparatorIgnoringFields("mRID")
+                .isEqualTo(expectedMessage.getMeasurements());
 
     }
 
