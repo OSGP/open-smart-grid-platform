@@ -437,7 +437,6 @@
 
   <xsd:complexType name="UpdatedDevice">
     <xsd:sequence>
-      <xsd:element name="DeviceIdentification" type="common:Identification" />
       <xsd:element name="Alias" type="xsd:string" minOccurs="0" />
       <xsd:element name="ContainerAddress" type="common:Address" minOccurs="0" />
       <xsd:element name="GpsLatitude" type="xsd:string" minOccurs="0" />
