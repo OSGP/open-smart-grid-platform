@@ -10,12 +10,13 @@ package org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.opensmartgridplatform.adapter.kafka.da.avro.GridMeasurementPublishedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
+
+import com.alliander.data.scadameasurementpublishedevent.ScadaMeasurementPublishedEvent;
 
 @Component
 public class PeakShavingConsumer {
@@ -25,15 +26,15 @@ public class PeakShavingConsumer {
     @Value("${peakshaving.kafka.consumer.wait.fail.duration:90000}")
     private long waitFailMillis;
 
-    private ConsumerRecord<String, GridMeasurementPublishedEvent> consumerRecord;
+    private ConsumerRecord<String, ScadaMeasurementPublishedEvent> consumerRecord;
 
     @KafkaListener(containerFactory = "peakShavingKafkaListenerContainerFactory", topics = "${peakshaving.kafka.topic}")
-    public void listen(final ConsumerRecord<String, GridMeasurementPublishedEvent> consumerRecord) {
+    public void listen(final ConsumerRecord<String, ScadaMeasurementPublishedEvent> consumerRecord) {
         LOGGER.info("received consumerRecord");
         this.consumerRecord = consumerRecord;
     }
 
-    public void checkKafkaOutput(final GridMeasurementPublishedEvent expectedMessage) {
+    public void checkKafkaOutput(final ScadaMeasurementPublishedEvent expectedMessage) {
 
         final long startTime = System.currentTimeMillis();
         long remaining = this.waitFailMillis;
@@ -42,8 +43,8 @@ public class PeakShavingConsumer {
             remaining = this.waitFailMillis - elapsed;
         }
         assertThat(this.consumerRecord).isNotNull();
-        final GridMeasurementPublishedEvent message = this.consumerRecord.value();
-        assertThat(message).isEqualToComparingOnlyGivenFields(expectedMessage, "description", "kind");
+        final ScadaMeasurementPublishedEvent message = this.consumerRecord.value();
+        assertThat(message).isEqualToComparingOnlyGivenFields(expectedMessage, "description");
         assertThat(message.getPowerSystemResource())
                 .isEqualToComparingOnlyGivenFields(expectedMessage.getPowerSystemResource(), "description");
         assertThat(message.getMeasurements()).usingElementComparatorIgnoringFields("mRID")

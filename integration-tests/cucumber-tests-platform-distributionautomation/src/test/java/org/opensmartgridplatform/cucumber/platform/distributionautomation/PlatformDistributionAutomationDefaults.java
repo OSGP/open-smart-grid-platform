@@ -9,7 +9,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.distributionautomation;
 
-import org.opensmartgridplatform.adapter.kafka.da.avro.UnitMultiplier;
+import com.alliander.data.scadameasurementpublishedevent.UnitMultiplier;
 
 public class PlatformDistributionAutomationDefaults {
 

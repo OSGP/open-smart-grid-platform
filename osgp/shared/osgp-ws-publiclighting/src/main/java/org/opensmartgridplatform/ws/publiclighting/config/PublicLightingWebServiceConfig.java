@@ -38,6 +38,7 @@ public class PublicLightingWebServiceConfig {
                 new ClassPathResource(PL_ADHOCMANAGEMENT_XSD_PATH),
                 new ClassPathResource(PL_SCHEDULEMANAGEMENT_XSD_PATH) };
         payloadValidatingInterceptor.setSchemas(resources);
+        payloadValidatingInterceptor.setValidateRequest(false);
         return payloadValidatingInterceptor;
     }
 
