@@ -1,3 +1,11 @@
+/**
+ * Copyright 2020 Alliander N.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
+
 package org.opensmartgridplatform.adapter.domain.core.application.services;
 
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,14 +26,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 
-
 import org.junit.jupiter.api.Test;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class DefaultDeviceResponseServiceTest {
-
-
+	
     @Mock
     private WebServiceResponseMessageSender webServiceResponseMessageSender;
     
